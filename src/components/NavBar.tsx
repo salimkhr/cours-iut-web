@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
 
 import {
     NavigationMenu,
@@ -113,11 +112,9 @@ export default function NavBar() {
                     </NavigationMenuContent>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                    <Link href="https://ui.shadcn.com/docs" legacyBehavior passHref>
-                        <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                        <NavigationMenuLink className={navigationMenuTriggerStyle()} href="https://ui.shadcn.com/docs">
                             Documentation
                         </NavigationMenuLink>
-                    </Link>
                 </NavigationMenuItem>
             </NavigationMenuList>
         </NavigationMenu>
