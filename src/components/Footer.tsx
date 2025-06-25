@@ -11,13 +11,15 @@ export default function Footer() {
                 <p className="text-base">
                     &copy; 2024 - {currentYear} Salim Khraimeche.
                 </p>
-                <Link href="mailto:salimkhr@gmail.com" target="_blank"
-                      className="flex items-center text-base hover:underline">
+                <Link
+                    href="mailto:salimkhr@gmail.com"
+                    target="_blank"
+                    className="flex items-center text-base hover:underline">
                     {/*<FaEnvelope className="mr-2"/>*/}
                     <span>salimkhr@gmail.com</span>
                 </Link>
             </div>
         </div>
-    )
+    );
 }
 
