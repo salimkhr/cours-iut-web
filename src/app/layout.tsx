@@ -30,7 +30,7 @@ export default function RootLayout({
       <html lang="fr">
           <body className={`${geistSans.variable} ${geistMono.variable} flex flex-col`}>
               <header><NavBar/></header>
-              <main className="mx-auto w-full max-w-7xl px-4 md:px-8 min-h-screen">{children}</main>
+              <main className="mx-auto w-full min-h-screen">{children}</main>
               <Footer/>
           </body>
       </html>

@@ -13,6 +13,7 @@ import {
 import {BookOpen, BracesIcon, CodeXml, Home, LucideIcon, ServerCog} from "lucide-react";
 import Link from "next/link";
 import modules from "../../data/modules";
+import {usePathname} from "next/navigation";
 
 const iconMap: Record<string, LucideIcon> = {
     CodeXml: CodeXml,
@@ -21,30 +22,48 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export default function NavBar() {
+
+    const pathname = usePathname()
+    const isActive = (href: string) => {
+
+        console.log(pathname,'/'+href, pathname === '/'+href);
+
+        return pathname === '/'+href || pathname.startsWith(href + '/')
+    }
+
+
     return (
-        <NavigationMenu className="z-5 mx-auto mt-5">
-            <NavigationMenuList>
+        <NavigationMenu>
+            <NavigationMenuList className="flex items-center">
                 <NavigationMenuItem>
                     <NavigationMenuLink asChild>
                         <Link href="/" className={navigationMenuTriggerStyle()}>
-                            <Home className="w-20 h-20 mr-2"/>
+                            <Home className="size-8" />
                         </Link>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
+            </NavigationMenuList>
+
+            {/* Groupe Modules */}
+            <NavigationMenuList className="flex items-center m-2">
                 {modules.map((module) => {
-                        const Icon = iconMap[module.iconName] || BookOpen;
-                        return (
-                            <NavigationMenuItem key={module.id}>
-                                <NavigationMenuLink asChild>
-                                    <Link href={'/'+module.path} className={navigationMenuTriggerStyle()}>
-                                        <Icon className="w-20 h-20 mr-2"/>
-                                        {module.title}
-                                    </Link>
-                                </NavigationMenuLink>
-                            </NavigationMenuItem>
-                        )
-                    }
-                )}
+                    const Icon = iconMap[module.iconName] || BookOpen;
+                    return (
+                        <NavigationMenuItem key={module.id}>
+                            <NavigationMenuLink asChild>
+                                <Link
+                                    href={module.path}
+                                    className={navigationMenuTriggerStyle({
+                                        className: isActive(module.path) ? "border-2 border-primary" : "",
+                                    })}
+                                >
+                                    <Icon className="size-8" />
+                                    <span className="mx-2 text-lg">{module.title}</span>
+                                </Link>
+                            </NavigationMenuLink>
+                        </NavigationMenuItem>
+                    );
+                })}
             </NavigationMenuList>
         </NavigationMenu>
     )

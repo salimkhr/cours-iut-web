@@ -36,20 +36,20 @@ export default function ModuleCard({ currentModule }: ModuleCardProps) {
     const Icon = iconMap[iconName] || BookOpen;
 
     return (
-        <Card className="w-full max-w-sm text-center">
-            <CardHeader className="flex flex-col items-center gap-4">
-                <Icon className="w-20 h-20" />
+        <Card className="w-full h-full text-center flex flex-col justify-between">
+            <CardHeader className="flex flex-row items-center text-xl">
+                <Icon size={40} />
                 <CardTitle className="text-2xl">{title}</CardTitle>
             </CardHeader>
 
             <CardContent>
                 <p className="text-gray-700">
-                    Cours et TP pour maîtriser {title}.
+
                 </p>
             </CardContent>
 
-            <CardFooter>
-                <Button asChild className="w-full">
+            <CardFooter className="flex flex-row items-center justify-end gap-4">
+                <Button asChild className="">
                     <Link href={path}>Voir les cours</Link>
                 </Button>
             </CardFooter>
