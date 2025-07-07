@@ -46,29 +46,29 @@ export default function NavBar() {
             </NavigationMenuList>
 
             {/* Groupe Modules */}
-                <div className="flex justify-center w-full">
+                <div className="flex w-full overflow-x-auto whitespace-nowrap justify-end md:justify-center">
                     <NavigationMenuList className="flex items-center m-2">
-                    {modules.map((module) => {
-                        const Icon = iconMap[module.iconName] || BookOpen;
-                        return (
-                            <NavigationMenuItem key={module.id}>
-                                <NavigationMenuLink asChild>
-                                    <Link
-                                        href={module.path}
-                                        className={navigationMenuTriggerStyle({
-                                            className: isActive(module.path) ? "border-2 border-primary" : "",
-                                        })}
-                                    >
-                                        <Icon className="size-8"/>
-                                        <span className="mx-2 text-lg">{module.title}</span>
-                                    </Link>
-                                </NavigationMenuLink>
-                            </NavigationMenuItem>
-                        );
-                    })}
-                </NavigationMenuList>
+                        {modules.map((module) => {
+                            const Icon = iconMap[module.iconName] || BookOpen;
+                            return (
+                                <NavigationMenuItem key={module.id}>
+                                    <NavigationMenuLink asChild>
+                                        <Link
+                                            href={module.path}
+                                            className={navigationMenuTriggerStyle({
+                                                className: isActive(module.path) ? "border-2 border-primary" : "",
+                                            })}
+                                        >
+                                            <Icon className="size-8"/>
+                                            <span className="mx-2 text-lg hidden md:inline">{module.title}</span>
+                                        </Link>
+                                    </NavigationMenuLink>
+                                </NavigationMenuItem>
+                            );
+                        })}
+                    </NavigationMenuList>
                 </div>
             </NavigationMenu>
         </header>
-)
-            }
+    )
+}
