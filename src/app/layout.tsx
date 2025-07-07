@@ -5,6 +5,7 @@ import "./globals.css";
 
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import * as React from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,17 +23,22 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
-}: Readonly<{
+                                     children,
+                                   }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
       <html lang="fr">
-          <body className={`${geistSans.variable} ${geistMono.variable} flex flex-col`}>
-              <header><NavBar/></header>
-              <main className="mx-auto w-full min-h-screen">{children}</main>
-              <Footer/>
-          </body>
+        <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col justify-between`}>
+
+        <header><NavBar /></header>
+
+        <main className="flex-grow">
+          {children}
+        </main>
+        <Footer />
+
+        </body>
       </html>
   );
 }

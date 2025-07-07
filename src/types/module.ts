@@ -7,6 +7,7 @@ export interface Module {
     iconName: string;
     description?: string;
     sections: Section[];
+    color: string;
     // Statistiques du module
     sectionsCount: number;
     totalContents: number;
