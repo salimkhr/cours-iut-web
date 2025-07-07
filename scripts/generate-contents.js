@@ -1,6 +1,8 @@
-// scripts/generate-contents.js
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const fs = require('fs');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require('path');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const matter = require('gray-matter');
 
 /**
@@ -12,21 +14,24 @@ const MODULES_BASE_CONFIG = [
         title: 'HTML & CSS',
         path: 'html-css',
         iconName: 'CodeXml',
-        description: 'Apprenez les fondamentaux du développement web avec HTML5 et CSS3. Créez des sites web modernes et responsives en maîtrisant la structure et le style.'
+        description: 'Créez des interfaces web responsives avec HTML, CSS et Bootstrap',
+        color: '#E34F26'
     },
     {
         id: 'php',
         title: 'PHP',
         path: 'php',
         iconName: 'ServerCog',
-        description: 'Découvrez la programmation côté serveur avec PHP. Créez des applications web dynamiques, gérez des bases de données et développez des API robustes.'
+        description: 'Maîtrisez la programmation côté serveur et la gestion des données',
+        color: '#777BB4'
     },
     {
         id: 'javascript',
         title: 'JavaScript',
         path: 'javascript',
         iconName: 'BracesIcon',
-        description: 'Maîtrisez le langage de programmation incontournable du web. De la manipulation du DOM aux frameworks modernes comme React et Vue.js.'
+        description: 'Créez des expériences web dynamiques et réactives',
+        color: '#F7DF1E'
     }
 ];
 

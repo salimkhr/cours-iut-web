@@ -10,7 +10,7 @@ export default function RootLayout({
 }>) {
   return (
       <MDXProvider components={useMDXComponents}>
-          <main className="mx-auto w-full max-w-7xl px-4 md:px-8 min-h-screen">{children}</main>
+          <section className="mx-auto px-4 md:px-8">{children}</section>
       </MDXProvider>
   );
 }
