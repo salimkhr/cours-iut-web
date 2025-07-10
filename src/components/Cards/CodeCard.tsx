@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, forwardRef } from 'react';
+import React, { useState } from 'react';
 import {
     Card,
     CardContent,
@@ -9,8 +9,6 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ClipboardCopyIcon } from 'lucide-react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface CodeCardProps {
     code: string;
@@ -18,32 +16,10 @@ interface CodeCardProps {
     color?: string;
 }
 
-const Prism = forwardRef<HTMLDivElement, any>((props, ref) => {
-    const [isClient, setIsClient] = useState(false);
-    useEffect(() => setIsClient(true), []);
-    if (!isClient) return null;
-
-    return (
-        <SyntaxHighlighter
-            ref={ref}
-            {...props}
-            customStyle={{
-                border: 'none',
-                borderRadius: 0,
-                margin: 0,
-                padding: '1rem',
-                background: '#f8f8f8',
-                fontSize: '0.875rem',
-            }}
-        />
-    );
-});
-Prism.displayName = 'Prism';
 
 export default function CodeCard({
                                      code,
-                                     language = 'js',
-                                     color = '#FFD700',
+                                     language = 'js'
                                  }: CodeCardProps) {
     const [copied, setCopied] = useState(false);
 
@@ -74,9 +50,9 @@ export default function CodeCard({
                 </CardHeader>
 
                 <CardContent className="p-0">
-                    <Prism language={language} style={oneLight}>
+                    {/*<Prism language={language} style={oneLight}>*/}
                         {code}
-                    </Prism>
+                    {/*</Prism>*/}
                 </CardContent>
 
                 <CardFooter className="hidden" />

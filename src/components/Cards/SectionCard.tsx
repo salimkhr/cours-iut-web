@@ -63,7 +63,6 @@ export default function SectionCard({ section, currentModule }: CourseCardProps)
                     {/* Footer avec boutons */}
                     <CardFooter className="p-4 flex flex-wrap gap-2 justify-center">
                         {section.contents.map((item, index) => {
-                            const label = item.type === 'cours' ? 'Cours' : item.type.toUpperCase();
                             return (
                                 <Button
                                     key={index}
@@ -76,7 +75,7 @@ export default function SectionCard({ section, currentModule }: CourseCardProps)
                                         router.push(`/${currentModule.path}/${section.path}/${item.type}`);
                                     }}
                                 >
-                                    {label}
+                                    {item.type}
                                 </Button>
                             );
                         })}

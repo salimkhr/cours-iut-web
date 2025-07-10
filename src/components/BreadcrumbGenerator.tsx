@@ -56,7 +56,7 @@ export default function BreadcrumbGenerator({ currentModule, currentSection, cur
                     <>
                         <BreadcrumbSeparator />
                         <BreadcrumbItem>
-                            <BreadcrumbPage>{currentContent?.slug}</BreadcrumbPage>
+                            <BreadcrumbPage>{currentContent?.type}</BreadcrumbPage>
                         </BreadcrumbItem>
                     </>
                 )}
