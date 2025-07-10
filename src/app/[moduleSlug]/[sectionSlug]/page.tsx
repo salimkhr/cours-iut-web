@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import modules from "../../../../data/modules";
 import SectionCard from "@/components/Cards/SectionCard";
+import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 
 // Interface pour les props de la page
 interface ModulePageProps {
@@ -46,10 +47,12 @@ export async function generateMetadata({ params }: ModulePageProps) {
 export default async function Module({ params }: ModulePageProps) {
 
     // Récupération du paramètre de manière asynchrone
-    const { moduleSlug } = await params;
+    const { moduleSlug, sectionSlug } = await params;
 
     // Récupération du module basé sur le slug
     const currentModule = modules.find(m => m.path === moduleSlug);
+    const currentSection = currentModule?.sections.find(s => s.path === sectionSlug);
+
 
     // Si le module n'existe pas, afficher une page 404
     if (!currentModule) {
@@ -57,6 +60,9 @@ export default async function Module({ params }: ModulePageProps) {
     }
 
     return (
+        <div>
+            <BreadcrumbGenerator currentModule={currentModule} currentSection={currentSection}/>
+
         <div className="flex flex-col w-full items-center justify-start">
             {/* Section du titre du module */}
             <section className="max-w-4xl text-center mb-8">
@@ -78,5 +84,6 @@ export default async function Module({ params }: ModulePageProps) {
                 ))}
             </section>
         </div>
+    </div>
     );
 }

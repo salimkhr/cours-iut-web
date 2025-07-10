@@ -1,0 +1,9 @@
+{
+  "title": "Les Formulaires",
+  "description": "Introduction et gestion des formulaires en HTML et React.",
+  "duration": 40,
+  "order": 1,
+  "tags": ["html", "formulaire", "react"],
+  "difficulty": "débutant",
+  "prerequisites": ["html-basics"]
+}

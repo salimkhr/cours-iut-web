@@ -2,12 +2,7 @@
 const fs = require('fs');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require('path');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const matter = require('gray-matter');
 
-/**
- * Configuration des modules (directement dans le script)
- */
 const MODULES_BASE_CONFIG = [
     {
         id: 'html-css',
@@ -35,21 +30,17 @@ const MODULES_BASE_CONFIG = [
     }
 ];
 
-// Chemin vers le dossier MDX
-const mdxDirectory = path.join(process.cwd(), 'src', 'mdx');
+const courseDirectory = path.join(process.cwd(), 'src', 'cours');
 
-/**
- * Scanne récursivement un dossier et retourne tous les fichiers MDX organisés par section
- */
 function scanMdxDirectory(modulePath) {
-    const moduleDir = path.join(mdxDirectory, modulePath);
+    const moduleDir = path.join(courseDirectory, modulePath);
 
     if (!fs.existsSync(moduleDir)) {
         console.warn(`⚠️  Le dossier ${moduleDir} n'existe pas`);
         return new Map();
     }
 
-    const sectionFiles = new Map(); // Map<sectionPath, files[]>
+    const sectionFiles = new Map();
 
     function scanRecursive(currentDir, relativePath = '') {
         const items = fs.readdirSync(currentDir, { withFileTypes: true });
@@ -59,17 +50,14 @@ function scanMdxDirectory(modulePath) {
                 const subDir = path.join(currentDir, item.name);
                 const newRelativePath = relativePath ? `${relativePath}/${item.name}` : item.name;
                 scanRecursive(subDir, newRelativePath);
-            } else if (item.name.endsWith('.md') || item.name.endsWith('.mdx')) {
-                // Utiliser le chemin relatif comme clé de section (ou 'root' si à la racine)
+            } else if (item.name.endsWith('.tsx') || item.name.endsWith('.jsx')) {
                 const sectionKey = relativePath || 'root';
-
                 if (!sectionFiles.has(sectionKey)) {
                     sectionFiles.set(sectionKey, []);
                 }
-
                 sectionFiles.get(sectionKey).push({
                     filePath: path.join(currentDir, item.name),
-                    relativePath: relativePath,
+                    relativePath,
                     fileName: item.name
                 });
             }
@@ -80,67 +68,59 @@ function scanMdxDirectory(modulePath) {
     return sectionFiles;
 }
 
-/**
- * Génère un objet Content à partir d'un fichier MDX
- */
-function createContentFromMdx(filePath, modulePath, relativePath, fileName) {
+function loadSectionMeta(directory) {
+    const metaPath = path.join(directory, 'config.meta.json');
+    if (!fs.existsSync(metaPath)) return {};
     try {
-        const fileContent = fs.readFileSync(filePath, 'utf-8');
-        const { data: frontMatter } = matter(fileContent);
-
-        const slug = path.basename(fileName, path.extname(fileName));
-        const fullRelativePath = relativePath ? `${relativePath}/${fileName}` : fileName;
-
-        // Générer un ID unique basé sur le chemin
-        const pathParts = relativePath ? relativePath.split('/') : [];
-        const idParts = [modulePath, ...pathParts, slug].join('-');
-
-        return {
-            id: idParts,
-            title: frontMatter.title || formatTitle(slug),
-            slug: slug,
-            description: frontMatter.description || `Contenu ${formatTitle(slug)}`,
-            duration: frontMatter.duration || 30,
-            type: frontMatter.type || inferTypeFromFilename(fileName),
-            mdxPath: `${modulePath}/${fullRelativePath}`,
-            order: frontMatter.order || 999,
-            // Métadonnées additionnelles
-            ...(frontMatter.tags && { tags: frontMatter.tags }),
-            ...(frontMatter.difficulty && { difficulty: frontMatter.difficulty }),
-            ...(frontMatter.prerequisites && { prerequisites: frontMatter.prerequisites })
-        };
-    } catch (error) {
-        console.error(`❌ Erreur lors du traitement de ${filePath}:`, error.message);
-        return null;
+        return JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+    } catch (err) {
+        console.warn(`⚠️ Erreur de lecture de ${metaPath}: ${err.message}`);
+        return {};
     }
 }
 
-/**
- * Crée un objet Section à partir des fichiers d'un dossier
- */
+function createContentFromComponent(filePath, modulePath, relativePath, fileName, metaFromFolder) {
+    const slug = path.basename(fileName, path.extname(fileName));
+    const baseFileName = path.basename(fileName, path.extname(fileName));
+    const fullRelativePath = relativePath ? `${relativePath}/${baseFileName}` : baseFileName;
+    const pathParts = relativePath ? relativePath.split('/') : [];
+    const idParts = [modulePath, ...pathParts, slug].join('-');
+
+    const frontMatter = metaFromFolder || {};
+
+    return {
+        id: idParts,
+        title: frontMatter.title || formatTitle(slug),
+        slug,
+        description: frontMatter.description || `Contenu ${formatTitle(slug)}`,
+        duration: frontMatter.duration || 30,
+        type: frontMatter.type || inferTypeFromFilename(fileName),
+        componentPath: `${modulePath}/${fullRelativePath}`,
+        order: frontMatter.order || 999,
+        ...(frontMatter.tags && { tags: frontMatter.tags }),
+        ...(frontMatter.difficulty && { difficulty: frontMatter.difficulty }),
+        ...(frontMatter.prerequisites && { prerequisites: frontMatter.prerequisites })
+    };
+}
+
 function createSectionFromFiles(sectionPath, files, modulePath) {
     const contents = [];
+    const folderPath = path.join(courseDirectory, modulePath, sectionPath || '');
+    const metaFromFolder = loadSectionMeta(folderPath);
 
     files.forEach(({ filePath, relativePath, fileName }) => {
-        const content = createContentFromMdx(
+        const content = createContentFromComponent(
             filePath,
             modulePath,
             relativePath,
-            fileName
+            fileName,
+            metaFromFolder
         );
-
-        if (content) {
-            contents.push(content);
-        }
+        if (content) contents.push(content);
     });
 
-    // Trier par ordre puis par titre
-    contents.sort((a, b) => {
-        if (a.order !== b.order) return a.order - b.order;
-        return a.title.localeCompare(b.title);
-    });
+    contents.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
 
-    // Générer l'ID et le titre de la section
     const sectionId = sectionPath === 'root'
         ? `${modulePath}-root`
         : `${modulePath}-${sectionPath.replace(/\//g, '-')}`;
@@ -149,8 +129,7 @@ function createSectionFromFiles(sectionPath, files, modulePath) {
         ? 'Introduction'
         : formatSectionTitle(sectionPath);
 
-    // Calculer la durée totale et les statistiques
-    const totalDuration = contents.reduce((sum, content) => sum + (content.duration || 0), 0);
+    const totalDuration = contents.reduce((sum, c) => sum + (c.duration || 0), 0);
     const contentTypes = [...new Set(contents.map(c => c.type))];
 
     return {
@@ -166,62 +145,43 @@ function createSectionFromFiles(sectionPath, files, modulePath) {
     };
 }
 
-/**
- * Formate un titre à partir d'un slug
- */
 function formatTitle(slug) {
     return slug
-        .split('-')
+        .split('_')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 }
 
-/**
- * Formate un titre de section à partir du chemin
- */
 function formatSectionTitle(sectionPath) {
     const lastPart = sectionPath.split('/').pop();
     return formatTitle(lastPart);
 }
 
-/**
- * Déduit l'ordre d'une section
- */
 function inferSectionOrder(sectionPath, contents) {
-    // Si un contenu de la section a un sectionOrder dans le frontmatter, l'utiliser
     const sectionOrders = contents
         .map(c => c.sectionOrder)
         .filter(order => order !== undefined);
+    if (sectionOrders.length > 0) return Math.min(...sectionOrders);
 
-    if (sectionOrders.length > 0) {
-        return Math.min(...sectionOrders);
-    }
-
-    // Sinon, déduire de la structure du chemin
     const path = sectionPath.toLowerCase();
-    if (path === 'root' || path.includes('intro') || path.includes('getting-started')) return 1;
+    if (path === 'root' || path.includes('intro')) return 1;
     if (path.includes('basic') || path.includes('fondamental')) return 2;
     if (path.includes('intermediate') || path.includes('intermediaire')) return 5;
     if (path.includes('advanced') || path.includes('avance')) return 8;
     if (path.includes('project') || path.includes('projet')) return 9;
-
-    return 5; // Ordre par défaut
+    return 5;
 }
 
-/**
- * Déduit le type de contenu à partir du nom du fichier
- */
 function inferTypeFromFilename(fileName) {
+
     const name = fileName.toLowerCase();
-    if (name.includes('exercice') || name.includes('exercise')) return 'exercise';
-    if (name.includes('projet') || name.includes('project')) return 'project';
-    if (name.includes('tp') || name.includes('lab')) return 'exercise';
-    return 'lesson';
+
+    console.log(name);
+    if (name.endsWith('projet.tsx')) return 'projet';
+    if (name.endsWith('tp.tsx')) return 'tp';
+    return 'cours';
 }
 
-/**
- * Génère les sections d'un module
- */
 function generateModuleSections(moduleConfig) {
     const sectionFiles = scanMdxDirectory(moduleConfig.path);
     const sections = [];
@@ -233,18 +193,10 @@ function generateModuleSections(moduleConfig) {
         }
     });
 
-    // Trier les sections par ordre
-    sections.sort((a, b) => {
-        if (a.order !== b.order) return a.order - b.order;
-        return a.title.localeCompare(b.title);
-    });
-
+    sections.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
     return sections;
 }
 
-/**
- * Génère le fichier de données des modules
- */
 function generateModulesData() {
     console.log('> Génération des données ...');
 
@@ -256,7 +208,6 @@ function generateModulesData() {
         return {
             ...moduleConfig,
             sections,
-            // Statistiques du module
             sectionsCount: sections.length,
             totalContents,
             totalDuration,
@@ -265,9 +216,6 @@ function generateModulesData() {
     });
 
     const output = `// 🤖 Ce fichier est généré automatiquement par scripts/generate-contents.js
-// Ne pas modifier manuellement !
-// Pour régénérer : npm run generate:contents
-
 import { Module } from '@/types/module';
 
 const modules: Module[] = ${JSON.stringify(modules, null, 2)};
@@ -275,43 +223,34 @@ const modules: Module[] = ${JSON.stringify(modules, null, 2)};
 export default modules;
 `;
 
-    // Créer le dossier data s'il n'existe pas
     const dataDir = path.join(process.cwd(), 'data');
-    if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
-    }
-
+    if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
     fs.writeFileSync(path.join(dataDir, 'modules.ts'), output);
 
-    // Générer les métadonnées
     const totalSections = modules.reduce((sum, m) => sum + m.sectionsCount, 0);
     const totalContents = modules.reduce((sum, m) => sum + m.totalContents, 0);
+
     const metaOutput = `// 🤖 Métadonnées de génération
 export const generationMeta = {
-    timestamp: "${new Date().toISOString()}",
-    totalModules: ${modules.length},
-    totalSections: ${totalSections},
-    totalContents: ${totalContents},
-    moduleStats: ${JSON.stringify(
-        modules.map(m => ({
-            id: m.id,
-            sectionsCount: m.sectionsCount,
-            contentsCount: m.totalContents,
-            duration: m.totalDuration,
-            types: m.contentTypes
-        })),
-        null,
-        2
-    )}
+  timestamp: "${new Date().toISOString()}",
+  totalModules: ${modules.length},
+  totalSections: ${totalSections},
+  totalContents: ${totalContents},
+  moduleStats: ${JSON.stringify(modules.map(m => ({
+        id: m.id,
+        sectionsCount: m.sectionsCount,
+        contentsCount: m.totalContents,
+        duration: m.totalDuration,
+        types: m.contentTypes
+    })), null, 2)}
 };
 `;
 
     fs.writeFileSync(path.join(dataDir, 'generation-meta.ts'), metaOutput);
-
     return modules;
 }
 
-// Exécution du script
+// Exécution
 try {
     generateModulesData();
 } catch (error) {

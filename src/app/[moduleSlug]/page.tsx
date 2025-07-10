@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import modules from "../../../data/modules";
 import SectionCard from "@/components/Cards/SectionCard";
+import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 
 // Interface pour les props de la page
 interface ModulePageProps {
@@ -29,7 +30,6 @@ export async function generateMetadata({ params }: ModulePageProps) {
 
     return {
         title: currentModule.title,
-        description: currentModule.description || `Apprenez ${currentModule.title}`,
     };
 }
 
@@ -47,6 +47,9 @@ export default async function Module({ params }: ModulePageProps) {
     }
 
     return (
+        <div>
+            <BreadcrumbGenerator currentModule={currentModule}></BreadcrumbGenerator>
+
         <div className="flex flex-col w-full items-center justify-start">
             {/* Section du titre du module */}
             <section className="max-w-4xl text-center mb-8">
@@ -67,6 +70,7 @@ export default async function Module({ params }: ModulePageProps) {
                     </div>
                 ))}
             </section>
+        </div>
         </div>
     );
 }

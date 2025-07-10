@@ -54,12 +54,12 @@ export default function NavBar() {
                                 <NavigationMenuItem key={module.id}>
                                     <NavigationMenuLink asChild>
                                         <Link
-                                            href={module.path}
+                                            href={`/${module.path}`}
                                             className={navigationMenuTriggerStyle({
-                                                className: isActive(module.path) ? "border-2 border-primary" : "",
+                                                className: isActive(module.path) ? "border-b-2 rounded-none border-primary" : "",
                                             })}
                                         >
-                                            <Icon className="size-8"/>
+                                            <Icon className="size-8" height={8} width={8}/>
                                             <span className="mx-2 text-lg hidden md:inline">{module.title}</span>
                                         </Link>
                                     </NavigationMenuLink>

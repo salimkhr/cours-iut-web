@@ -4,11 +4,11 @@ export interface Content {
     slug: string;
     description: string;
     duration: number;
-    type?: 'lesson' | 'exercise' | 'project';
-    mdxPath: string;
+    type?: 'cours' | 'TP' | 'project';
+    componentPath: string;
     order: number;
     // Métadonnées optionnelles
     tags?: string[];
-    difficulty?: 'beginner' | 'intermediate' | 'advanced';
+    difficulty?: 'débutant' | 'intermédiaire' | 'avancé';
     prerequisites?: string[];
 }

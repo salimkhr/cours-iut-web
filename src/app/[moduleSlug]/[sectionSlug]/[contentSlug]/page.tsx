@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
+import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
+import dynamic from 'next/dynamic'
 import modules from "../../../../../data/modules";
-import MDXRenderer from '@/components/MDXRenderer';
 
 interface ContentPageProps {
     params: Promise<{
@@ -45,17 +46,34 @@ export async function generateMetadata({ params }: ContentPageProps) {
 
 export default async function Content({ params }: ContentPageProps) {
     const { moduleSlug, sectionSlug, contentSlug } = await params;
+
     const currentModule = modules.find(m => m.path === moduleSlug);
     if (!currentModule) notFound();
 
     const currentSection = currentModule.sections.find(s => s.path === sectionSlug);
     if (!currentSection) notFound();
 
-    const currentContent = currentSection.contents.find(c => c.slug === contentSlug);
+    const currentContent = currentSection.contents.find(c => c.type === contentSlug);
     if (!currentContent) notFound();
 
-    // Exemple : 'html-css/01-introduction/exercise'
-    const mdxPath = `${moduleSlug}/${sectionSlug}/${currentContent.slug}`;
 
-    return <MDXRenderer mdxPath={mdxPath} />;
+    console.log(currentContent.componentPath)
+
+    const ComponentToRender = dynamic(() =>
+        import(`@/cours/${currentContent.componentPath}`)
+            .catch(() => notFound())
+    );
+
+    if (!ComponentToRender) notFound();
+
+    return (
+        <div>
+            <BreadcrumbGenerator
+                currentModule={currentModule}
+                currentSection={currentSection}
+                currentContent={currentContent}
+            />
+            <ComponentToRender />
+        </div>
+    );
 }
