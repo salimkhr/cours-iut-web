@@ -8,9 +8,4 @@ export interface Module {
     description?: string;
     sections: Section[];
     color: string;
-    // Statistiques du module
-    sectionsCount: number;
-    totalContents: number;
-    totalDuration: number;
-    contentTypes: string[];
 }

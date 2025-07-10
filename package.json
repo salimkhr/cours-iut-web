@@ -7,10 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "next lint --fix",
-    "generate:contents": "node scripts/generate-contents.js",
-    "prebuild": "npm run generate:contents",
-    "predev": "npm run generate:contents"
+    "lint:fix": "next lint --fix"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",

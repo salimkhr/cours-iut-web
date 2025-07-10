@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import dynamic from 'next/dynamic'
-import modules from "../../../../../data/modules";
+import modules from "@/config";
 
 interface ContentPageProps {
     params: Promise<{
@@ -20,7 +20,7 @@ export async function generateStaticParams() {
                 params.push({
                     moduleSlug: module.path,
                     sectionSlug: section.path,
-                    contentSlug: content.slug
+                    contentSlug: content.type
                 });
             });
         });

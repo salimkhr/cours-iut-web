@@ -6,9 +6,8 @@ export interface Section {
     path: string;
     description?: string;
     contents: Content[];
+    tags: string[];
     // Statistiques de la section
     totalDuration: number;
-    contentTypes: string[];
-    contentsCount: number;
     order: number;
 }

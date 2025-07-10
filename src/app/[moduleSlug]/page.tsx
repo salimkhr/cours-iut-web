@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
-import modules from "../../../data/modules";
 import SectionCard from "@/components/Cards/SectionCard";
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
+import modules from "@/config";
 
 // Interface pour les props de la page
 interface ModulePageProps {

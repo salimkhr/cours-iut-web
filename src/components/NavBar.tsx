@@ -12,7 +12,7 @@ import {
 
 import {BookOpen, BracesIcon, CodeXml, Home, LucideIcon, ServerCog} from "lucide-react";
 import Link from "next/link";
-import modules from "../../data/modules";
+import modules from "@/config";
 import {usePathname} from "next/navigation";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -25,9 +25,6 @@ export default function NavBar() {
 
     const pathname = usePathname()
     const isActive = (href: string) => {
-
-        console.log(pathname,'/'+href, pathname === '/'+href);
-
         return pathname === '/'+href || pathname.startsWith(href + '/')
     }
 

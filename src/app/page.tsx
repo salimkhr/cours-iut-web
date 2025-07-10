@@ -1,6 +1,6 @@
 import ModuleCard from "@/components/Cards/ModuleCard";
-import modules from "../../data/modules";
 import Image from "next/image";
+import modules from "@/config";
 
 export default function Home() {
     return (
