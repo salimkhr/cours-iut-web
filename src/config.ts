@@ -1,4 +1,4 @@
-import { Module } from '@/types/module';
+import {Module} from '@/types/module';
 
 const modules: Module[] = [
     {
@@ -17,8 +17,8 @@ const modules: Module[] = [
                 "totalDuration": 1,
                 "tags": ["html", "formulaire", "react"],
                 "contents": [
-                    { "type": "cours", "componentPath": "html-css/1_formulaire/LesFormulaires" },
-                    { "type": "TP", "componentPath": "html-css/1_formulaire/LesFormulairesTp" }
+                    {"type": "cours", "componentPath": "html-css/1_formulaire/LesFormulaires"},
+                    {"type": "TP", "componentPath": "html-css/1_formulaire/LesFormulairesTp"}
                 ],
                 "order": 1
             },
@@ -30,21 +30,21 @@ const modules: Module[] = [
                 "totalDuration": 1,
                 "tags": ["css", "bases"],
                 "contents": [
-                    { "type": "cours", "componentPath": "html-css/2_css/RappelCss" },
-                    { "type": "TP", "componentPath": "html-css/2_css/RappelCssTp" }
+                    {"type": "cours", "componentPath": "html-css/2_css/RappelCss"},
+                    {"type": "TP", "componentPath": "html-css/2_css/RappelCssTp"}
                 ],
                 "order": 2
             },
             {
                 "id": "html-css-3_flex-grid",
-                "title": "Flex, Grid & media queries",
+                "title": "Structure Responsive",
                 "path": "3_flex-grid",
                 "description": "Maîtrisez le positionnement avec Flexbox et Grid, et adaptez vos mises en page avec les media queries.",
                 "totalDuration": 1,
                 "tags": ["css", "flexbox", "grid", "responsive"],
                 "contents": [
-                    { "type": "cours", "componentPath": "html-css/3_flex-grid/FlexGrid" },
-                    { "type": "TP", "componentPath": "html-css/3_flex-grid/FlexGridTp" }
+                    {"type": "cours", "componentPath": "html-css/3_flex-grid/FlexGrid"},
+                    {"type": "TP", "componentPath": "html-css/3_flex-grid/FlexGridTp"}
                 ],
                 "order": 3
             },
@@ -56,8 +56,8 @@ const modules: Module[] = [
                 "totalDuration": 1,
                 "tags": ["bootstrap", "framework", "css"],
                 "contents": [
-                    { "type": "cours", "componentPath": "html-css/4_bootstrap/BootstrapIntro" },
-                    { "type": "TP", "componentPath": "html-css/4_bootstrap/BootstrapTp" }
+                    {"type": "cours", "componentPath": "html-css/4_bootstrap/BootstrapIntro"},
+                    {"type": "TP", "componentPath": "html-css/4_bootstrap/BootstrapTp"}
                 ],
                 "order": 4
             },
@@ -69,8 +69,8 @@ const modules: Module[] = [
                 "totalDuration": 1,
                 "tags": ["bootstrap", "components", "css"],
                 "contents": [
-                    { "type": "cours", "componentPath": "html-css/5_bootstrap/BootstrapAvance" },
-                    { "type": "TP", "componentPath": "html-css/5_bootstrap/BootstrapAvanceTp" }
+                    {"type": "cours", "componentPath": "html-css/5_bootstrap/BootstrapAvance"},
+                    {"type": "TP", "componentPath": "html-css/5_bootstrap/BootstrapAvanceTp"}
                 ],
                 "order": 5
             },
@@ -82,13 +82,13 @@ const modules: Module[] = [
                 "totalDuration": 1,
                 "tags": ["html", "bases"],
                 "contents": [
-                    { "type": "cours", "componentPath": "html-css/10_html/RappelHtml" }
+                    {"type": "cours", "componentPath": "html-css/10_html/RappelHtml"}
                 ],
                 "order": 10
             }
         ]
 
-},
+    },
     {
         "id": "php",
         "title": "PHP",
@@ -105,21 +105,21 @@ const modules: Module[] = [
                 "totalDuration": 1,
                 "tags": ["php", "introduction", "bases"],
                 "contents": [
-                    { "type": "cours", "componentPath": "php/1_intro/IntroductionPhp" },
-                    { "type": "TP", "componentPath": "php/1_intro/IntroductionPhpTp" },
+                    {"type": "cours", "componentPath": "php/1_intro/IntroductionPhp"},
+                    {"type": "TP", "componentPath": "php/1_intro/IntroductionPhpTp"},
                 ],
                 "order": 1
             },
             {
                 "id": "php-2_fonctions-poo",
-                "title": "Fonctions, POO, Tableaux",
+                "title": "POO & Tableaux",
                 "path": "2_fonctions-poo",
-                "description": "Utilisation des fonctions, tableaux simples et associatifs, et bases de la programmation orientée objet.",
+                "description": "Utilisation des fonction / tableaux et de la programmation orientée objet.",
                 "totalDuration": 2,
-                "tags": ["php", "poo", "fonctions", "tableaux"],
+                "tags": ["php", "poo", "fonctions", "tableaux", "tableauxAssociatifs"],
                 "contents": [
-                    { "type": "cours", "componentPath": "php/2_fonctions-poo/FonctionsEtPoo" },
-                    { "type": "TP", "componentPath": "php/2_fonctions-poo/FonctionsEtPooTp" },
+                    {"type": "cours", "componentPath": "php/2_fonctions-poo/FonctionsEtPoo"},
+                    {"type": "TP", "componentPath": "php/2_fonctions-poo/FonctionsEtPooTp"},
                 ],
                 "order": 2
             },
@@ -131,8 +131,8 @@ const modules: Module[] = [
                 "totalDuration": 3,
                 "tags": ["php", "formulaires", "validation"],
                 "contents": [
-                    { "type": "cours", "componentPath": "php/3_formulaires/Formulaires" },
-                    { "type": "TP", "componentPath": "php/3_formulaires/FormulairesTp" },
+                    {"type": "cours", "componentPath": "php/3_formulaires/Formulaires"},
+                    {"type": "TP", "componentPath": "php/3_formulaires/FormulairesTp"},
                 ],
                 "order": 3
             },
@@ -144,8 +144,8 @@ const modules: Module[] = [
                 "totalDuration": 1,
                 "tags": ["php", "mvc", "architecture"],
                 "contents": [
-                    { "type": "cours", "componentPath": "php/4_mvc/MvcIntro" },
-                    { "type": "TP", "componentPath": "php/4_mvc/MvcTp" },
+                    {"type": "cours", "componentPath": "php/4_mvc/MvcIntro"},
+                    {"type": "TP", "componentPath": "php/4_mvc/MvcTp"},
                 ],
                 "order": 4
             },
@@ -157,8 +157,8 @@ const modules: Module[] = [
                 "totalDuration": 2,
                 "tags": ["php", "bdd", "pdo"],
                 "contents": [
-                    { "type": "cours", "componentPath": "php/5_bdd/ConnexionBdd" },
-                    { "type": "TP", "componentPath": "php/5_bdd/ConnexionBddTp" },
+                    {"type": "cours", "componentPath": "php/5_bdd/ConnexionBdd"},
+                    {"type": "TP", "componentPath": "php/5_bdd/ConnexionBddTp"},
                 ],
                 "order": 5
             },
@@ -170,8 +170,8 @@ const modules: Module[] = [
                 "totalDuration": 2,
                 "tags": ["php", "sql", "bdd", "avancé"],
                 "contents": [
-                    { "type": "cours", "componentPath": "php/6_bdd-avancees/BddAvancees" },
-                    { "type": "TP", "componentPath": "php/6_bdd-avancees/BddAvanceesTp" },
+                    {"type": "cours", "componentPath": "php/6_bdd-avancees/BddAvancees"},
+                    {"type": "TP", "componentPath": "php/6_bdd-avancees/BddAvanceesTp"},
                 ],
                 "order": 6
             },
@@ -183,8 +183,8 @@ const modules: Module[] = [
                 "totalDuration": 1,
                 "tags": ["php", "sessions", "auth"],
                 "contents": [
-                    { "type": "cours", "componentPath": "php/7_sessions/Sessions" },
-                    { "type": "TP", "componentPath": "php/7_sessions/SessionsTp" },
+                    {"type": "cours", "componentPath": "php/7_sessions/Sessions"},
+                    {"type": "TP", "componentPath": "php/7_sessions/SessionsTp"},
                 ],
                 "order": 7
             },
@@ -196,8 +196,8 @@ const modules: Module[] = [
                 "totalDuration": 1,
                 "tags": ["php", "symfony", "framework"],
                 "contents": [
-                    { "type": "cours", "componentPath": "php/8_symfony/SymfonyIntro" },
-                    { "type": "TP", "componentPath": "php/8_symfony/SymfonyTp" },
+                    {"type": "cours", "componentPath": "php/8_symfony/SymfonyIntro"},
+                    {"type": "TP", "componentPath": "php/8_symfony/SymfonyTp"},
                 ],
                 "order": 8
             },
@@ -205,16 +205,16 @@ const modules: Module[] = [
                 "id": "php-9_examen",
                 "title": "Examen",
                 "path": "9_examen",
-                "description": "Sujet d’examen final PHP reprenant l’ensemble des notions du module.",
+                "description": "Sujet d’examen final PHP reprenant, avec un MCV, les Formulaires, la base de données et les session",
                 "totalDuration": 1,
                 "tags": ["php", "examen", "évaluation"],
                 "contents": [
-                    { "type": "examen", "componentPath": "php/9_examen/Examen" }
+                    {"type": "examen", "componentPath": "php/9_examen/Examen"}
                 ],
                 "order": 9
             }
         ]
-},
+    },
     {
         "id": "javascript",
         "title": "JavaScript",
@@ -231,8 +231,8 @@ const modules: Module[] = [
                 "totalDuration": 2,
                 "tags": ["javascript", "dom", "manipulation"],
                 "contents": [
-                    { "type": "cours", "componentPath": "js/1_dom/DomIntro" },
-                    { "type": "TP", "componentPath": "js/1_dom/DomTp" },
+                    {"type": "cours", "componentPath": "js/1_dom/DomIntro"},
+                    {"type": "TP", "componentPath": "js/1_dom/DomTp"},
                 ],
                 "order": 1
             },
@@ -244,8 +244,8 @@ const modules: Module[] = [
                 "totalDuration": 2,
                 "tags": ["javascript", "events", "interaction"],
                 "contents": [
-                    { "type": "cours", "componentPath": "js/2_evenements/EvenementsIntro" },
-                    { "type": "TP", "componentPath": "js/2_evenements/EvenementsTp" },
+                    {"type": "cours", "componentPath": "js/2_evenements/EvenementsIntro"},
+                    {"type": "TP", "componentPath": "js/2_evenements/EvenementsTp"},
                 ],
                 "order": 2
             },
@@ -257,8 +257,8 @@ const modules: Module[] = [
                 "totalDuration": 2,
                 "tags": ["javascript", "events", "advanced"],
                 "contents": [
-                    { "type": "cours", "componentPath": "js/3_evenements-avances/EvenementsAvances" },
-                    { "type": "TP", "componentPath": "js/3_evenements-avances/EvenementsAvancesTp" },
+                    {"type": "cours", "componentPath": "js/3_evenements-avances/EvenementsAvances"},
+                    {"type": "TP", "componentPath": "js/3_evenements-avances/EvenementsAvancesTp"},
                 ],
                 "order": 3
             },
@@ -266,12 +266,12 @@ const modules: Module[] = [
                 "id": "js-4_fetch",
                 "title": "Fetch",
                 "path": "4_fetch",
-                "description": "Utilisation de l’API Fetch pour interagir avec des ressources distantes : requêtes GET/POST, promesses, JSON.",
+                "description": "Utilisation de l’API Fetch pour interagir avec des ressources distantes.",
                 "totalDuration": 2,
                 "tags": ["javascript", "fetch", "api", "asynchrone"],
                 "contents": [
-                    { "type": "cours", "componentPath": "js/4_fetch/FetchIntro" },
-                    { "type": "TP", "componentPath": "js/4_fetch/FetchTp" },
+                    {"type": "cours", "componentPath": "js/4_fetch/FetchIntro"},
+                    {"type": "TP", "componentPath": "js/4_fetch/FetchTp"},
                 ],
                 "order": 4
             },
@@ -283,8 +283,8 @@ const modules: Module[] = [
                 "totalDuration": 1,
                 "tags": ["javascript", "react", "frontend"],
                 "contents": [
-                    { "type": "cours", "componentPath": "js/5_react/ReactIntro" },
-                    { "type": "TP", "componentPath": "js/5_react/ReactTp" },
+                    {"type": "cours", "componentPath": "js/5_react/ReactIntro"},
+                    {"type": "TP", "componentPath": "js/5_react/ReactTp"},
                 ],
                 "order": 5
             },
@@ -292,11 +292,11 @@ const modules: Module[] = [
                 "id": "js-6_examen",
                 "title": "Examen",
                 "path": "6_examen",
-                "description": "Sujet d’évaluation final JavaScript incluant DOM, événements, fetch et React.",
+                "description": "Sujet d’évaluation final JavaScript incluant DOM, événements, fetch.",
                 "totalDuration": 1,
                 "tags": ["javascript", "examen", "évaluation"],
                 "contents": [
-                    { "type": "projet", "componentPath": "js/6_examen/Examen" }
+                    {"type": "projet", "componentPath": "js/6_examen/Examen"}
                 ],
                 "order": 6
             }

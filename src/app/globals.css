@@ -4,117 +4,157 @@
 /* Ajoutez ces animations dans votre globals.css */
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 @keyframes slideInFromBottom {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Classes d'animation */
 .animate-fade-in {
-  animation: fadeIn 0.8s ease-out forwards;
+    animation: fadeIn 0.8s ease-out forwards;
 }
 
 .animate-fade-in-up {
-  animation: fadeInUp 0.6s ease-out forwards;
+    animation: fadeInUp 0.6s ease-out forwards;
 }
 
 .animate-fade-in-right {
-  animation: fadeInRight 0.8s ease-out 0.6s forwards;
+    animation: fadeInRight 0.8s ease-out 0.6s forwards;
 }
 
 .animate-slide-in-bottom {
-  animation: slideInFromBottom 0.8s ease-out forwards;
+    animation: slideInFromBottom 0.8s ease-out forwards;
 }
 
 /* Animation au scroll avec CSS pur */
 @media (prefers-reduced-motion: no-preference) {
-  .animate-on-scroll {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  }
+    .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
 
-  .animate-on-scroll.in-view {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    .animate-on-scroll.in-view {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Améliorations pour les cartes */
 .card-hover-effect {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card-hover-effect:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 /* Animations pour les icônes */
 .icon-hover {
-  transition: transform 0.3s ease;
+    transition: transform 0.3s ease;
 }
 
 .icon-hover:hover {
-  transform: rotate(360deg);
+    transform: rotate(360deg);
 }
 
 /* Gradient text */
 .gradient-text {
-  /*background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);*/
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-size: 200% 200%;
-  animation: gradientShift 3s ease infinite;
+    /*background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);*/
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
 }
 
 @keyframes gradientShift {
-  0% {
-    background-position: 0 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0 50%;
-  }
+    0% {
+        background-position: 0 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+/** HTML */
+.text-HTML {
+    color: #E34F26;
+}
+
+.bg-HTML {
+    background: #E34F26;
+}
+
+.border-HTML {
+    border-color: #E34F26;
+}
+
+/** PHP */
+.text-PHP {
+    color: #777BB4;
+}
+
+.bg-PHP {
+    background: #777BB4;
+}
+
+.border-PHP {
+    border-color: #777BB4;
+}
+
+
+/** JS */
+.text-JavaScript {
+    color: #ac9b14;
+}
+
+.bg-JavaScript {
+    background: #ac9b14;
+}
+
+.border-JavaScript {
+    border-color: #ac9b14;
 }

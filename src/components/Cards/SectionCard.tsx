@@ -1,87 +1,69 @@
 'use client';
+import {useRouter} from "next/navigation";
+import {Section} from '@/types/Section';
+import {Module} from '@/types/module';
+import {Badge} from '@/components/ui/badge';
+import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
 
-import * as React from 'react';
-import Link from 'next/link';
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Module } from '@/types/module';
-import { Section } from "@/types/Section";
-import { useRouter } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
-
-interface CourseCardProps {
+interface SectionCardProps {
     section: Section;
     currentModule: Module;
 }
 
-export default function SectionCard({ section, currentModule }: CourseCardProps) {
-    const { color } = currentModule;
+export default function SectionCard({section, currentModule}: SectionCardProps) {
     const router = useRouter();
 
-    return (
-        <div className="group hover:scale-105 hover:shadow-xl transition-all duration-300">
-            <Link href={`/${currentModule.path}/${section.path}`} className="block h-full">
-                <Card className="w-full h-full text-center flex flex-col justify-between border-2 border-black bg-white p-0 rounded-lg shadow-lg overflow-hidden">
+    const header = (
 
-                    {/* Header avec "LEDs" et couleur dynamique */}
-                    <CardHeader
-                        className="flex flex-row justify-between items-center p-4 border-b-2 group-hover:brightness-110 transition-all duration-300"
-                        style={{ backgroundColor: color }}
-                    >
-                        <div className="flex gap-2">
-                            <div className="w-2 h-2 bg-black rounded-full group-hover:animate-pulse"></div>
-                            <div className="w-2 h-2 bg-black rounded-full group-hover:animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                            <div className="w-2 h-2 bg-black rounded-full group-hover:animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-                        </div>
-                        <span className="text-xs font-mono text-black">{section.totalDuration} Séance{section.totalDuration > 1 ?'s':''} </span>
-                    </CardHeader>
+        <span className="text-xs font-mono text-black">
+            {section.totalDuration} Séance{section.totalDuration > 1 ? 's' : ''}
+        </span>
+    );
 
-                    {/* Contenu principal */}
-                    <CardContent className="flex-grow flex flex-col items-center justify-center p-6">
-                        <h2 className="text-2xl font-bold mb-2">
-                            {section.order}. {section.title}
-                        </h2>
-                        <p className="text-sm text-gray-700 mb-3">
-                            {section.description}
-                        </p>
+    const content = (
+        <>
+            <h2 className={`text-2xl font-bold mb-2 text-${currentModule?.title}`}>
+                {section.order}. {section.title}
+            </h2>
+            <p className="text-sm text-gray-700 mb-3">
+                {section.description}
+            </p>
+            <div className="flex flex-wrap justify-center gap-1 mt-2">
+                {section.tags?.map((tag) => (
+                    <Badge key={tag} className="border border-black bg-white text-black font-mono text-xs">
+                        #{tag}
+                    </Badge>
+                ))}
+            </div>
+        </>
+    );
 
-                        {/* Tags */}
-                        <div className="flex flex-wrap justify-center gap-1 mt-2">
-                            {section.tags?.map((tag) => (
-                                <Badge key={tag} className="border border-black bg-white text-black font-mono text-xs">
-                                    #{tag}
-                                </Badge>
-                            ))}
-                        </div>
-                    </CardContent>
-
-                    {/* Footer avec boutons */}
-                    <CardFooter className="p-4 flex flex-wrap gap-2 justify-center">
-                        {section.contents.map((item, index) => {
-                            return (
-                                <Button
-                                    key={index}
-                                    variant="outline"
-                                    className="text-black font-semibold hover:brightness-110 transition-all duration-300 border-2 border-black"
-                                    style={{ backgroundColor: color }}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        router.push(`/${currentModule.path}/${section.path}/${item.type}`);
-                                    }}
-                                >
-                                    {item.type}
-                                </Button>
-                            );
-                        })}
-                    </CardFooter>
-                </Card>
-            </Link>
+    const footer = (
+        <div className="flex flex-row gap-2 justify-center w-full">
+            {section.contents.map((item, index) => (
+                <ActionButton
+                    key={index}
+                    currentModule={currentModule}
+                    className="w-1/2"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(`/${currentModule.path}/${section.path}/${item.type}`);
+                    }}
+                >
+                    {item.type}
+                </ActionButton>
+            ))}
         </div>
+    );
+
+    return (
+        <BaseCard
+            href={`/${currentModule.path}/${section.path}`}
+            currentModule={currentModule}
+            header={header}
+            content={content}
+            footer={footer}
+        />
     );
 }

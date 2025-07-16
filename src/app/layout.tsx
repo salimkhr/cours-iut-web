@@ -1,20 +1,13 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-
-import "./globals.css";
-
+import type {Metadata} from 'next';
+import {JetBrains_Mono} from 'next/font/google';
+import './globals.css';
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import * as React from "react";
 
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
+const jetbrainsMono = JetBrains_Mono({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700'],
+    variable: '--font-jetbrains-mono',
 });
 
 export const metadata: Metadata = {
@@ -28,16 +21,11 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="fr">
-        <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen w-full`}>
-
-        <header><NavBar /></header>
-
-        <main className="flex-grow">
-            {children}
-        </main>
-        <Footer />
-
+        <html lang="en" className={jetbrainsMono.variable}>
+        <body className="min-h-screen font-mono">
+        <NavBar/>
+        {children}
+        <Footer/>
         </body>
         </html>
     );
