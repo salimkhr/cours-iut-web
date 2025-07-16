@@ -70,7 +70,9 @@ export default async function Content({params}: ContentPageProps) {
                 currentSection={currentSection}
                 currentContent={currentContent}
             />
-            <ComponentToRender/>
+            <div className={`mx-10 header-${currentModule.path}`}>
+                <ComponentToRender/>
+            </div>
         </div>
     );
 }

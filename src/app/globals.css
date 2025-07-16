@@ -132,6 +132,11 @@
     border-color: #E34F26;
 }
 
+.header-html-css h2,
+.header-html-css h3 {
+    color: #E34F26;
+}
+
 /** php */
 .text-php {
     color: #777BB4;
@@ -143,6 +148,11 @@
 
 .border-php {
     border-color: #777BB4;
+}
+
+.header-php h2,
+.header-php h3 {
+    color: #777BB4;
 }
 
 
@@ -157,4 +167,9 @@
 
 .border-javascript {
     border-color: #ac9b14;
+}
+
+.header-javascript h2,
+.header-javascript h3 {
+    color: #ac9b14;
 }

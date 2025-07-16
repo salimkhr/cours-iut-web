@@ -1,4 +1,5 @@
-import React from "react";
+'use client'
+import React, {useEffect, useState} from "react";
 
 type TemplateColumns = {
     base?: string;
@@ -15,22 +16,22 @@ type GridProps = {
     className?: string;
 };
 
-// const breakpoints = {
-//     sm: 640,
-//     md: 768,
-//     lg: 1024,
-// };
+const breakpoints = {
+    sm: 640,
+    md: 768,
+    lg: 1024,
+};
 
 export default function Grid({
-                                 templateColumns = { base: "1fr" },
+                                 templateColumns = {base: "1fr"},
                                  gap = 6,
                                  width = "100%",
                                  children,
                                  className = "",
                              }: GridProps) {
-    // const [columns, setColumns] = useState(templateColumns.base || "1fr");
+    const [columns, setColumns] = useState(templateColumns.base || "1fr");
 
-    /*useEffect(() => {
+    useEffect(() => {
         function updateColumns() {
             const w = window.innerWidth;
 
@@ -44,14 +45,14 @@ export default function Grid({
 
         window.addEventListener("resize", updateColumns);
         return () => window.removeEventListener("resize", updateColumns);
-    }, [templateColumns]);*/
+    }, [templateColumns]);
 
     return (
         <div
             className={className}
             style={{
                 display: "grid",
-                gridTemplateColumns: templateColumns.base || "1fr",
+                gridTemplateColumns: columns || templateColumns?.base,
                 gap: typeof gap === "number" ? `${gap * 4}px` : gap, // gap * 4 = Tailwind gap-6 = 24px
                 width,
             }}
