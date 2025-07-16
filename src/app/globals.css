@@ -1,74 +1,175 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/* Ajoutez ces animations dans votre globals.css */
 
-:root {
-  --background: "#ffffff";
-  --secondary-background: oklch(100% 0 0);
-  --foreground: oklch(0% 0 0);
-  --main-foreground: oklch(0% 0 0);
-  --main: oklch(67.28% 0.2147 24.22);
-  --border: oklch(0% 0 0);
-  --ring: oklch(0% 0 0);
-  --overlay: oklch(0% 0 0 / 0.8);
-  --shadow: 4px 4px 0px 0px var(--border);
-  --chart-1: #FF4D50;
-  --chart-2: #5294FF;
-  --chart-3: #FACC00;
-  --chart-4: #05E17A;
-  --chart-5: #7A83FF;
-  --chart-active-dot: #000;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.dark {
-  --background: "#ffffff";
-  --secondary-background: oklch(23.93% 0 0);
-  --foreground: oklch(92.49% 0 0);
-  --main-foreground: oklch(0% 0 0);
-  --main: oklch(70.49% 0.1869 22.23);
-  --border: oklch(0% 0 0);
-  --ring: oklch(100% 0 0);
-  --shadow: 4px 4px 0px 0px var(--border);
-  --chart-1: #FF6669;
-  --chart-2: #5294FF;
-  --chart-3: #E0B700;
-  --chart-4: #04C86D;
-  --chart-5: #7A83FF;
-  --chart-active-dot: #fff;
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-@theme inline {
-  --color-main: var(--main);
-  --color-background: var(--background);
-  --color-secondary-background: var(--secondary-background);
-  --color-foreground: var(--foreground);
-  --color-main-foreground: var(--main-foreground);
-  --color-border: var(--border);
-  --color-overlay: var(--overlay);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-
-  --spacing-boxShadowX: 4px;
-  --spacing-boxShadowY: 4px;
-  --spacing-reverseBoxShadowX: -4px;
-  --spacing-reverseBoxShadowY: -4px;
-  --radius-base: 10px;
-  --shadow-shadow: var(--shadow);
-  --font-weight-base: 500;
-  --font-weight-heading: 900;
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-@layer base {
-  body {
-    @apply text-foreground font-base bg-background;
-  }
+@keyframes slideInFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-  h1, h2, h3, h4, h5, h6{
-    @apply font-heading;
-  }
+/* Classes d'animation */
+.animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-fade-in-right {
+    animation: fadeInRight 0.8s ease-out 0.6s forwards;
+}
+
+.animate-slide-in-bottom {
+    animation: slideInFromBottom 0.8s ease-out forwards;
+}
+
+/* Animation au scroll avec CSS pur */
+@media (prefers-reduced-motion: no-preference) {
+    .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .animate-on-scroll.in-view {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Améliorations pour les cartes */
+.card-hover-effect {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Animations pour les icônes */
+.icon-hover {
+    transition: transform 0.3s ease;
+}
+
+.icon-hover:hover {
+    transform: rotate(360deg);
+}
+
+/* Gradient text */
+.gradient-text {
+    /*background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);*/
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+/** html-css */
+.text-html-css {
+    color: #E34F26;
+}
+
+.bg-html-css {
+    background: #E34F26;
+}
+
+.border-html-css {
+    border-color: #E34F26;
+}
+
+.header-html-css h2,
+.header-html-css h3 {
+    color: #E34F26;
+}
+
+/** php */
+.text-php {
+    color: #777BB4;
+}
+
+.bg-php {
+    background: #777BB4;
+}
+
+.border-php {
+    border-color: #777BB4;
+}
+
+.header-php h2,
+.header-php h3 {
+    color: #777BB4;
+}
+
+
+/** JS */
+.text-javascript {
+    color: #ac9b14;
+}
+
+.bg-javascript {
+    background: #ac9b14;
+}
+
+.border-javascript {
+    border-color: #ac9b14;
+}
+
+.header-javascript h2,
+.header-javascript h3 {
+    color: #ac9b14;
 }

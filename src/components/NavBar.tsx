@@ -1,63 +1,54 @@
-"use client"
-import * as React from "react"
-
+import {BookOpen, BracesIcon, CodeXml, Home, LucideIcon, ServerCog} from 'lucide-react'
+import Link from 'next/link'
+import {headers} from 'next/headers'
 import {
     NavigationMenu,
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
-    navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
+    navigationMenuTriggerStyle
+} from "@/components/ui/navigation-menu";
+import modules from "@/config";
 
+export default async function NavBar() {
 
-import {BookOpen, BracesIcon, CodeXml, Home, LucideIcon, ServerCog} from "lucide-react";
-import Link from "next/link";
-import modules from "../../data/modules";
-import {usePathname} from "next/navigation";
+    const header = await headers();
+    const pathname = header.get('x-pathname');
 
-const iconMap: Record<string, LucideIcon> = {
-    CodeXml: CodeXml,
-    ServerCog: ServerCog,
-    BracesIcon: BracesIcon,
-};
-
-export default function NavBar() {
-
-    const pathname = usePathname()
     const isActive = (href: string) => {
-
-        console.log(pathname,'/'+href, pathname === '/'+href);
-
-        return pathname === '/'+href || pathname.startsWith(href + '/')
+        return pathname === '/' + href || pathname?.startsWith(href + '/')
     }
 
+    const iconMap: Record<string, LucideIcon> = {
+        CodeXml: CodeXml,
+        ServerCog: ServerCog,
+        BracesIcon: BracesIcon,
+    };
 
     return (
         <header>
             <NavigationMenu className="border-b-2 border-border">
-            <NavigationMenuList className="flex items-center">
-                <NavigationMenuItem>
-                    <NavigationMenuLink asChild>
-                        <Link href="/" className={navigationMenuTriggerStyle()}>
-                            <Home className="size-8"/>
-                        </Link>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-            </NavigationMenuList>
+                <NavigationMenuList className="flex items-center">
+                    <NavigationMenuItem>
+                        <NavigationMenuLink asChild>
+                            <Link href="/" className={navigationMenuTriggerStyle()}>
+                                <Home className="size-8"/>
+                            </Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                </NavigationMenuList>
 
-            {/* Groupe Modules */}
+                {/* Groupe Modules */}
                 <div className="flex w-full overflow-x-auto whitespace-nowrap justify-end md:justify-center">
                     <NavigationMenuList className="flex items-center m-2">
                         {modules.map((module) => {
                             const Icon = iconMap[module.iconName] || BookOpen;
                             return (
                                 <NavigationMenuItem key={module.id}>
-                                    <NavigationMenuLink asChild>
+                                    <NavigationMenuLink asChild active={isActive(module.path)}>
                                         <Link
-                                            href={module.path}
-                                            className={navigationMenuTriggerStyle({
-                                                className: isActive(module.path) ? "border-2 border-primary" : "",
-                                            })}
+                                            href={`/${module.path}`}
+                                            className={navigationMenuTriggerStyle()}
                                         >
                                             <Icon className="size-8"/>
                                             <span className="mx-2 text-lg hidden md:inline">{module.title}</span>

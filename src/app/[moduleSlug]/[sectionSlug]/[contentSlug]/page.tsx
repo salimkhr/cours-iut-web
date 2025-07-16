@@ -1,6 +1,7 @@
-import { notFound } from 'next/navigation';
-import modules from "../../../../../data/modules";
-import MDXRenderer from '@/components/MDXRenderer';
+import {notFound} from 'next/navigation';
+import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
+import dynamic from 'next/dynamic'
+import modules from "@/config";
 
 interface ContentPageProps {
     params: Promise<{
@@ -19,7 +20,7 @@ export async function generateStaticParams() {
                 params.push({
                     moduleSlug: module.path,
                     sectionSlug: section.path,
-                    contentSlug: content.slug
+                    contentSlug: content.type
                 });
             });
         });
@@ -28,13 +29,13 @@ export async function generateStaticParams() {
     return params;
 }
 
-export async function generateMetadata({ params }: ContentPageProps) {
-    const { moduleSlug, sectionSlug } = await params;
+export async function generateMetadata({params}: ContentPageProps) {
+    const {moduleSlug, sectionSlug} = await params;
     const currentModule = modules.find(m => m.path === moduleSlug);
     const currentSection = currentModule?.sections.find(s => s.path === sectionSlug);
 
     if (!currentModule || !currentSection) {
-        return { title: 'Module non trouvé' };
+        return {title: 'Module non trouvé'};
     }
 
     return {
@@ -43,19 +44,35 @@ export async function generateMetadata({ params }: ContentPageProps) {
     };
 }
 
-export default async function Content({ params }: ContentPageProps) {
-    const { moduleSlug, sectionSlug, contentSlug } = await params;
+export default async function Content({params}: ContentPageProps) {
+    const {moduleSlug, sectionSlug, contentSlug} = await params;
+
     const currentModule = modules.find(m => m.path === moduleSlug);
     if (!currentModule) notFound();
 
     const currentSection = currentModule.sections.find(s => s.path === sectionSlug);
     if (!currentSection) notFound();
 
-    const currentContent = currentSection.contents.find(c => c.slug === contentSlug);
+    const currentContent = currentSection.contents.find(c => c.type === contentSlug);
     if (!currentContent) notFound();
 
-    // Exemple : 'html-css/01-introduction/exercise'
-    const mdxPath = `${moduleSlug}/${sectionSlug}/${currentContent.slug}`;
+    const ComponentToRender = dynamic(() =>
+        import(`@/cours/${currentContent.componentPath}`)
+            .catch(() => notFound())
+    );
 
-    return <MDXRenderer mdxPath={mdxPath} />;
+    if (!ComponentToRender) notFound();
+
+    return (
+        <div>
+            <BreadcrumbGenerator
+                currentModule={currentModule}
+                currentSection={currentSection}
+                currentContent={currentContent}
+            />
+            <div className={`mx-10 header-${currentModule.path}`}>
+                <ComponentToRender/>
+            </div>
+        </div>
+    );
 }

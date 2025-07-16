@@ -1,68 +1,56 @@
-'use client';
+import {BookOpen, Braces, Code, type LucideIcon, Server} from 'lucide-react';
+import {Module} from '@/types/module';
+import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
 
-import * as React from 'react';
-import Link from 'next/link';
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import {
-    BookOpen,
-    BracesIcon,
-    CodeXml,
-    ServerCog,
-    LucideIcon,
-} from 'lucide-react';
-import { Module } from '@/types/module';
-import { motion } from "framer-motion";
 
 interface ModuleCardProps {
     currentModule: Module;
 }
 
-// Mapping string => icône
 const iconMap: Record<string, LucideIcon> = {
-    CodeXml: CodeXml,
-    ServerCog: ServerCog,
-    BracesIcon: BracesIcon,
+    Code: Code,
+    Server: Server,
+    Braces: Braces,
+    BookOpen: BookOpen,
+    CodeXml: Code,
+    ServerCog: Server,
+    BracesIcon: Braces,
 };
 
-export default function ModuleCard({ currentModule }: ModuleCardProps) {
-
-    const {title, description,path,iconName, color} = currentModule
+export default function ModuleCard({currentModule}: ModuleCardProps) {
+    const {title, description, path, iconName} = currentModule;
     const Icon = iconMap[iconName] || BookOpen;
 
-    console.log(color.toUpperCase())
+    const header = (
+        <div className="group-hover:rotate-12 transition-transform duration-300">
+            <Icon size={40} className="text-white"/>
+        </div>
+    );
+
+    const content = (
+        <>
+            <h2 className={`text-3xl font-bold mb-3 text-${path}`}>
+                {title}
+            </h2>
+            <p className="text-gray-700 text-center leading-relaxed">
+                {description}
+            </p>
+        </>
+    );
+
+    const footer = (
+        <ActionButton currentModule={currentModule} className="w-full">
+            Voir les cours
+        </ActionButton>
+    );
 
     return (
-        <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-        >
-            <Card
-            className="w-full h-full text-center flex flex-col justify-between border-2 border-black bg-white p-0 rounded-base">
-                <CardHeader className={`flex flex-row justify-between items-center p-4 rounded-t-base border-b-2`}
-                            style={{backgroundColor: color}}>
-                    <Icon size={40}/>
-                    <div className="flex gap-2">
-                        <div className="w-2 h-2 bg-black rounded-full"></div>
-                        <div className="w-2 h-2 bg-black rounded-full"></div>
-                        <div className="w-2 h-2 bg-black rounded-full"></div>
-                    </div>
-                </CardHeader>
-                <CardContent className="flex-grow flex flex-col items-center justify-center">
-                    <h2 className="text-3xl font-bold">{title}</h2>
-                    <p className="text-gray-700 text-center">{description}</p>
-                </CardContent>
-                <CardFooter className="p-4">
-                <Button asChild variant="noShadow" className={`w-full text-black`} style={{backgroundColor: color}}>
-                    <Link href={path}>Voir les cours</Link>
-                </Button>
-            </CardFooter>
-        </Card>
-        </motion.div>
-            );
-            }
+        <BaseCard
+            href={path}
+            currentModule={currentModule}
+            header={header}
+            content={content}
+            footer={footer}
+        />
+    );
+}
