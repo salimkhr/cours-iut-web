@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import {notFound} from 'next/navigation';
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import dynamic from 'next/dynamic'
 import modules from "@/config";
@@ -29,13 +29,13 @@ export async function generateStaticParams() {
     return params;
 }
 
-export async function generateMetadata({ params }: ContentPageProps) {
-    const { moduleSlug, sectionSlug } = await params;
+export async function generateMetadata({params}: ContentPageProps) {
+    const {moduleSlug, sectionSlug} = await params;
     const currentModule = modules.find(m => m.path === moduleSlug);
     const currentSection = currentModule?.sections.find(s => s.path === sectionSlug);
 
     if (!currentModule || !currentSection) {
-        return { title: 'Module non trouvé' };
+        return {title: 'Module non trouvé'};
     }
 
     return {
@@ -44,8 +44,8 @@ export async function generateMetadata({ params }: ContentPageProps) {
     };
 }
 
-export default async function Content({ params }: ContentPageProps) {
-    const { moduleSlug, sectionSlug, contentSlug } = await params;
+export default async function Content({params}: ContentPageProps) {
+    const {moduleSlug, sectionSlug, contentSlug} = await params;
 
     const currentModule = modules.find(m => m.path === moduleSlug);
     if (!currentModule) notFound();
@@ -55,9 +55,6 @@ export default async function Content({ params }: ContentPageProps) {
 
     const currentContent = currentSection.contents.find(c => c.type === contentSlug);
     if (!currentContent) notFound();
-
-
-    console.log(currentContent.componentPath)
 
     const ComponentToRender = dynamic(() =>
         import(`@/cours/${currentContent.componentPath}`)
@@ -73,7 +70,7 @@ export default async function Content({ params }: ContentPageProps) {
                 currentSection={currentSection}
                 currentContent={currentContent}
             />
-            <ComponentToRender />
+            <ComponentToRender/>
         </div>
     );
 }

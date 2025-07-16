@@ -9,5 +9,7 @@ export interface Section {
     tags: string[];
     // Statistiques de la section
     totalDuration: number;
+    hasCorrection: boolean;
+    isAvailable: boolean;
     order: number;
 }

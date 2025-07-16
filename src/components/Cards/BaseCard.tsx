@@ -18,10 +18,10 @@ export default function BaseCard({href, currentModule, header, content, footer}:
         <div className="group hover:scale-105 hover:shadow-xl transition-all duration-300">
             <Link href={href} className="block h-full">
                 <Card
-                    className={`w-full h-full text-center flex flex-col justify-between border-2 border-${currentModule?.title} bg-white p-0 rounded-lg shadow-lg overflow-hidden`}
+                    className={`w-full h-full text-center flex flex-col justify-between border-2 border-${currentModule?.path} bg-white p-0 rounded-lg shadow-lg overflow-hidden`}
                 >
                     <CardHeader
-                        className={`flex flex-row justify-between items-center p-4 group-hover:brightness-110 transition-all duration-300 bg-${currentModule?.title}`}
+                        className={`flex flex-row justify-between items-center p-4 group-hover:brightness-110 transition-all duration-300 bg-${currentModule?.path}`}
                     >
                         <LEDIndicator/>
                         {header}
@@ -57,14 +57,16 @@ interface ActionButtonProps {
     onClick?: (e: React.MouseEvent) => void;
     children: React.ReactNode;
     className?: string;
+    disabled?: boolean
 }
 
-export function ActionButton({currentModule, onClick, children, className = ''}: ActionButtonProps) {
+export function ActionButton({currentModule, onClick, children, className = '', disabled = false}: ActionButtonProps) {
     return (
         <Button
             variant="destructive"
-            className={`text-black font-semibold hover:brightness-110 transition-all duration-300 border-2 border-${currentModule?.title} text-${currentModule?.title} ${className}`}
+            className={`text-black font-semibold hover:brightness-110 transition-all duration-300 border-2 border-${currentModule?.path} text-${currentModule?.path} ${className}`}
             onClick={onClick}
+            disabled={disabled}
         >
             {children}
         </Button>

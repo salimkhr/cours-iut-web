@@ -32,8 +32,7 @@ export default function Home() {
                     />
                 </div>
             </section>
-
-            {/* Section Module Cards */}
+            
             <section className="w-full px-4 lg:px-8">
                 <h2 className="text-4xl lg:text-6xl font-extrabold mb-4 lg:mb-8 text-center opacity-0 animate-fade-in-up">
                     Liste des cours
@@ -53,7 +52,6 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Footer Image */}
             <div className="opacity-0 animate-fade-in">
                 <Image
                     src="/footer.svg"

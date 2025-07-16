@@ -119,42 +119,42 @@
     }
 }
 
-/** HTML */
-.text-HTML {
+/** html-css */
+.text-html-css {
     color: #E34F26;
 }
 
-.bg-HTML {
+.bg-html-css {
     background: #E34F26;
 }
 
-.border-HTML {
+.border-html-css {
     border-color: #E34F26;
 }
 
-/** PHP */
-.text-PHP {
+/** php */
+.text-php {
     color: #777BB4;
 }
 
-.bg-PHP {
+.bg-php {
     background: #777BB4;
 }
 
-.border-PHP {
+.border-php {
     border-color: #777BB4;
 }
 
 
 /** JS */
-.text-JavaScript {
+.text-javascript {
     color: #ac9b14;
 }
 
-.bg-JavaScript {
+.bg-javascript {
     background: #ac9b14;
 }
 
-.border-JavaScript {
+.border-javascript {
     border-color: #ac9b14;
 }

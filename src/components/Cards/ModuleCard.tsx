@@ -29,7 +29,7 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
 
     const content = (
         <>
-            <h2 className={`text-3xl font-bold mb-3 text-${title}`}>
+            <h2 className={`text-3xl font-bold mb-3 text-${path}`}>
                 {title}
             </h2>
             <p className="text-gray-700 text-center leading-relaxed">
