@@ -10,24 +10,26 @@ import CodeCard from "@/components/Cards/CodeCard";
 
 
 export default function LesFormulairesTp() {
-    
+
     return (
         <Stack>
             <Box>
                 {/* Création d'un formulaire HTML */}
                 <Heading level={2}>A/ Page de connexion</Heading>
                 <Text>En partant du fichier <Code>login.html</Code> :</Text>
-                <CodeCard language="html" code=
+                <CodeCard language="html">
                     {`<!DOCTYPE html>
-<html lang="fr">
-    <head>
-        <meta charset="UTF-8">
-        <title>Connexion</title>
-    </head>
-    <body>
-        <h1>Connexion</h1>
-    </body>
-</html>`}/>
+                <html lang="fr">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Connexion</title>
+                    </head>
+                    <body>
+                        <h1>Connexion</h1>
+                    </body>
+                </html>`}
+                </CodeCard>
+
                 <Text>Créez un formulaire de connexion avec les champs suivants :</Text>
                 <List ordered>
                     <ListItem>Un champ pour le nom d&apos;utilisateur (input de type <Code>text</Code>).</ListItem>
@@ -79,7 +81,7 @@ export default function LesFormulairesTp() {
                     </ListItem>
                     <ListItem>Un bouton de soumission.</ListItem>
                 </List>
-                
+
                 <Text>Ajoutez les contraintes suivantes :</Text>
                 <List>
                     <ListItem>Tous les champs, à l&apos;exception de la photo de profil, sont obligatoires.</ListItem>
@@ -92,13 +94,14 @@ export default function LesFormulairesTp() {
                 <Heading level={3}>1/ Bootstrap</Heading>
                 <Text>Modifiez le <Code>&lt;head&gt;</Code> des
                     fichiers <Code>login.html</Code> et <Code>register.html</Code> pour y ajouter :</Text>
-                {/*<CodeBlock language="html">*/}
-                {/*    {`<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">`}*/}
-                {/*</CodeBlock>*/}
+                <CodeCard language="html">
+                    {`<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">`}
+                </CodeCard>
 
                 <Text>
                     Utilisez <Link href="https://getbootstrap.com/docs/5.3/forms/overview/#overview" target="_blank">les
-                        classes fournies par Bootstrap </Link> pour améliorer l&apos;esthétique de la page. Nous verrons le fonctionnement des
+                    classes fournies par Bootstrap </Link> pour améliorer l&apos;esthétique de la page. Nous verrons le
+                    fonctionnement des
                     classes <Code>.mb</Code> lors du TP sur Bootstrap.
                 </Text>
 
@@ -106,40 +109,6 @@ export default function LesFormulairesTp() {
                 <Text>Ajoutez l&apos;utilisation de l&apos;attribut <Code>autocomplete</Code> dans les formulaires pour
                     améliorer l&apos;expérience utilisateur et faciliter la saisie des informations.</Text>
             </Box>
-            {/*<Box>*/}
-            {/*    <Heading level={2}>D/ Rappel de HTML</Heading>*/}
-            {/*    <Text>*/}
-            {/*        Dans un fichier <Code>rappel.html</Code>, créer une page contenant la structure de*/}
-            {/*        base d&apos;un fichier HTML ainsi qu&apos;un tableau.*/}
-            {/*        La page devra résumer les montants collectés par les streamers lors du dernier Z-Event avec 4*/}
-            {/*        colonnes : Nom du Streamer, Pseudo, Montant Collecté (en euros), Rang. Avec les données suivantes :*/}
-            {/*        La page sera affichée sur votre navigateur à*/}
-            {/*        l&apos;adresse <Code>http://woody.iut.univ-lehavre.fr/~loginLDAP/TP1/rappel.html</Code> ou <Code>http://localhost/~loginLDAP/TP1/rappel.html</Code>*/}
-            {/*    </Text>*/}
-
-            {/*    <Table.Root>*/}
-            {/*        <Table.Header>*/}
-            {/*            <Table.Row>*/}
-            {/*                <Table.ColumnHeader scope="row">Nom du Streamer</Table.ColumnHeader>*/}
-            {/*                <Table.ColumnHeader scope="row">Prénom/Pseudo</Table.ColumnHeader>*/}
-            {/*                <Table.ColumnHeader scope="row">Montant Collecté (en euros)</Table.ColumnHeader>*/}
-            {/*                <Table.ColumnHeader scope="row">Rang</Table.ColumnHeader>*/}
-            {/*            </Table.Row>*/}
-            {/*        </Table.Header>*/}
-            {/*        <Table.Body>*/}
-            {/*            {streamers.map((streamer) => (*/}
-            {/*                <Table.Row key={streamer.rank}>*/}
-            {/*                    <Table.Cell>{streamer.name}</Table.Cell>*/}
-            {/*                    <Table.Cell>{streamer.pseudo}</Table.Cell>*/}
-            {/*                    <Table.Cell>{formatNumberToFrench(streamer.amount)}</Table.Cell>*/}
-            {/*                    <Table.Cell>{streamer.rank}</Table.Cell>*/}
-            {/*                </Table.Row>*/}
-            {/*            ))}*/}
-            {/*        </Table.Body>*/}
-            {/*    </Table.Root>*/}
-
-            {/*    <Text as={'small'}>Source : ChatGPT (les montants ne sont pas factuels)</Text>*/}
-            {/*</Box>*/}
         </Stack>
     );
 }

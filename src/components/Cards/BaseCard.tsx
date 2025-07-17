@@ -1,41 +1,52 @@
 'use client';
 import {ReactNode} from 'react';
-import Link from 'next/link';
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import {Module} from '@/types/module';
 import {Button} from "@/components/ui/button";
+import {cn} from "@/lib/utils";
+
 
 interface BaseCardProps {
-    href: string;
-    currentModule: Module;
+    href?: string;
+    currentModule?: Module;
     header: ReactNode;
     content: ReactNode;
-    footer: ReactNode;
+    footer?: ReactNode;
+    withMarge?: boolean
+    withHover?: boolean
+    withLed?: boolean
 }
 
-export default function BaseCard({href, currentModule, header, content, footer}: BaseCardProps) {
+export default function BaseCard({
+                                     currentModule,
+                                     header,
+                                     content,
+                                     footer,
+                                     withMarge = true,
+                                     withHover = true,
+                                     withLed = true
+                                 }: BaseCardProps) {
     return (
-        <div className="group hover:scale-105 hover:shadow-xl transition-all duration-300">
-            <Link href={href} className="block h-full">
-                <Card
-                    className={`w-full h-full text-center flex flex-col justify-between border-2 border-${currentModule?.path} bg-white p-0 rounded-lg shadow-lg overflow-hidden`}
+        <div className={cn("group ", withHover ? 'hover:shadow-xl transition-all duration-300 hover:scale-105' : '')}>
+            <Card
+                className={`w-full h-full text-center flex flex-col justify-between border-2 border-${currentModule ? currentModule.path : 'module'} bg-white p-0 rounded-lg shadow-lg overflow-hidden`}
+            >
+                <CardHeader
+                    className={cn("flex flex-row justify-between items-center p-4 group-hover:brightness-110 transition-all duration-300", `bg-${currentModule ? currentModule.path : 'module'}`)}
                 >
-                    <CardHeader
-                        className={`flex flex-row justify-between items-center p-4 group-hover:brightness-110 transition-all duration-300 bg-${currentModule?.path}`}
-                    >
-                        <LEDIndicator/>
-                        {header}
-                    </CardHeader>
+                    {withLed ? <LEDIndicator/> : null}
+                    {header}
+                </CardHeader>
 
-                    <CardContent className="flex-grow flex flex-col items-center justify-center p-6">
-                        {content}
-                    </CardContent>
+                <CardContent
+                    className={cn(withMarge ? 'p-6' : '', "flex-grow flex flex-col items-center justify-center")}>
+                    {content}
+                </CardContent>
 
-                    <CardFooter className="p-4">
-                        {footer}
-                    </CardFooter>
-                </Card>
-            </Link>
+                {footer ? <CardFooter className="p-4">
+                    {footer}
+                </CardFooter> : null}
+            </Card>
         </div>
     );
 }
@@ -53,7 +64,7 @@ export function LEDIndicator() {
 }
 
 interface ActionButtonProps {
-    currentModule: Module;
+    currentModule?: Module;
     onClick?: (e: React.MouseEvent) => void;
     children: React.ReactNode;
     className?: string;
@@ -64,7 +75,7 @@ export function ActionButton({currentModule, onClick, children, className = '', 
     return (
         <Button
             variant="destructive"
-            className={`text-black font-semibold hover:brightness-110 transition-all duration-300 border-2 border-${currentModule?.path} text-${currentModule?.path} ${className}`}
+            className={`text-black font-semibold hover:brightness-110 transition-all duration-300 border-2 border-${currentModule ? currentModule.path : 'module'} text-${currentModule ? currentModule.path : 'module'} ${className}`}
             onClick={onClick}
             disabled={disabled}
         >

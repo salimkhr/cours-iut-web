@@ -1,5 +1,5 @@
 'use client'
-import React, {useEffect, useState} from "react";
+import React, {CSSProperties, useEffect, useState} from "react";
 
 type TemplateColumns = {
     base?: string;
@@ -21,6 +21,41 @@ const breakpoints = {
     md: 768,
     lg: 1024,
 };
+
+type GridItemProps = {
+    colStart?: number;
+    colEnd?: number;
+    rowStart?: number;
+    rowEnd?: number;
+    children: React.ReactNode;
+    className?: string;
+    style?: CSSProperties;
+};
+
+
+export function GridItem({
+                             colStart,
+                             colEnd,
+                             rowStart,
+                             rowEnd,
+                             children,
+                             className = "",
+                             style = {},
+                         }: GridItemProps) {
+    const gridStyles: CSSProperties = {
+        gridColumnStart: colStart,
+        gridColumnEnd: colEnd,
+        gridRowStart: rowStart,
+        gridRowEnd: rowEnd,
+        ...style,
+    };
+
+    return (
+        <div className={className} style={gridStyles}>
+            {children}
+        </div>
+    );
+}
 
 export default function Grid({
                                  templateColumns = {base: "1fr"},

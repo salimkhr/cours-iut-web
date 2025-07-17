@@ -8,9 +8,13 @@ import {Stack} from "@/components/ui/Stack";
 import Grid from "@/components/ui/Grid";
 import CardInput from "@/components/Cards/InputCard";
 import Link from "next/link";
+import CodeCard from "@/components/Cards/CodeCard";
+import CodeWithPreviewCard from "@/components/Cards/CodeWithPreviewCard";
+import CodeWithPreview, {CodePanel, PreviewPanel} from "@/components/Cards/CodeWithPreviewCard";
+import Image from "next/image";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 
-export default function RappelHTML() {
-
+export default async function RappelHTML() {
     return (
         <section>
             <Box>
@@ -25,21 +29,22 @@ export default function RappelHTML() {
                     Voici un exemple de structure minimale d’une page HTML5.
                 </Text>
 
-                {/*                <CodeBlock language="html">*/}
-                {/*                    {`<!DOCTYPE html>*/}
-                {/*<html lang="fr">*/}
-                {/*  <head>*/}
-                {/*    <meta charset="UTF-8" />*/}
-                {/*    <meta name="viewport" content="width=device-width, initial-scale=1.0" />*/}
-                {/*    <title>Ma page HTML5</title>*/}
-                {/*    <link rel="stylesheet" href="styles.css" />*/}
-                {/*  </head>*/}
-                {/*  <body>*/}
-                {/*    <h1>Bonjour HTML5 !</h1>*/}
-                {/*    <p>Ceci est une structure de base.</p>*/}
-                {/*  </body>*/}
-                {/*</html>`}*/}
-                {/*                </CodeBlock>*/}
+                <CodeCard language="html">
+                    {`<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ma page HTML5</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>Bonjour HTML5 !</h1>
+    <p>Ceci est une structure de base.</p>
+  </body>
+</html>`}
+                </CodeCard>
+
                 <List>
                     <ListItem><Code>&lt;!DOCTYPE html&gt;</Code> : indique qu&apos;on utilise HTML5.</ListItem>
                     <ListItem><Code>&lt;html lang=&quot;fr&quot;&gt;</Code> : la langue principale est le
@@ -56,36 +61,36 @@ export default function RappelHTML() {
                 </List>
 
                 <Heading level={3}>Sectionnement sémantique avancé</Heading>
-                {/*                <CodeBlock language="html">*/}
-                {/*                    {`<header>*/}
-                {/*  <h1>Mon Blog</h1>*/}
-                {/*  <nav>*/}
-                {/*    <a href="#articles">Articles</a>*/}
-                {/*    <a href="#contact">Contact</a>*/}
-                {/*  </nav>*/}
-                {/*</header>*/}
+                <CodeCard language="html">
+                    {`<header>
+  <h1>Mon Blog</h1>
+  <nav>
+    <a href="#articles">Articles</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
 
-                {/*<main>*/}
-                {/*  <section id="articles">*/}
-                {/*    <article>*/}
-                {/*      <Heading level={2}>Premier article</Heading>*/}
-                {/*      <p>Contenu de l’article...</p>*/}
-                {/*    </article>*/}
-                {/*    <article>*/}
-                {/*      <Heading level={2}>Deuxième article</Heading>*/}
-                {/*      <p>Autre contenu...</p>*/}
-                {/*    </article>*/}
-                {/*  </section>*/}
+<main>
+  <section id="articles">
+    <article>
+      <Heading level={2}>Premier article</Heading>
+      <p>Contenu de l’article...</p>
+    </article>
+    <article>
+      <Heading level={2}>Deuxième article</Heading>
+      <p>Autre contenu...</p>
+    </article>
+  </section>
 
-                {/*  <aside>*/}
-                {/*    <h3>À propos</Heading>*/}
-                {/*    <p>Petit texte complémentaire.</p>*/}
-                {/*  </aside>*/}
-                {/*</main>*/}
+  <aside>
+    <h3>À propos</Heading>
+    <p>Petit texte complémentaire.</p>
+  </aside>
+</main>
 
-                {/*<footer>*/}
-                {/*  <p>© 2025 Mon Blog</p>*/}
-                {/*</footer>`}</CodeBlock>*/}
+<footer>
+  <p>© 2025 Mon Blog</p>
+</footer>`}</CodeCard>
                 <Text>En HTML5, on utilise des balises sémantiques pour structurer clairement le contenu, au lieu
                     d’empiler des &lt;div&gt;.
                     Voici les principales :</Text>
@@ -130,26 +135,26 @@ export default function RappelHTML() {
                     <Heading level={4}>
                         Titres (<Code>H1</Code> à <Code>H6</Code>)
                     </Heading>
-                    {/*                    <CodeWithPreview language="html">*/}
-                    {/*                        <CodePanel>*/}
-                    {/*                            {`<h1>1/ Titre principal</h1>*/}
-                    {/*<h2>2/ Sous-titre</h2>*/}
-                    {/*<h3>3/ Section</h3>*/}
-                    {/*<h4>4/ Sous-section</h4>*/}
-                    {/*<h5>5/ Détail</h5>*/}
-                    {/*<h6>6/ Note ou remarque</h6>`}*/}
-                    {/*                        </CodePanel>*/}
-                    {/*                        <PreviewPanel>*/}
-                    {/*                            <Box>*/}
-                    {/*                                <Heading level={1}>1/ Titre principal</Heading>*/}
-                    {/*                                <Heading level={2}>2/ Sous-titre</Heading>*/}
-                    {/*                                <Heading level={3}>3/ Section</Heading>*/}
-                    {/*                                <Heading level={4}>4/ Sous-section</Heading>*/}
-                    {/*                                <Heading level={5}>5/ Détail</Heading>*/}
-                    {/*                                <Heading level={6}>6/ Note ou remarque</Heading>*/}
-                    {/*                            </Box>*/}
-                    {/*                        </PreviewPanel>*/}
-                    {/*                    </CodeWithPreview>*/}
+                    <CodeWithPreview language="html">
+                        <CodePanel>
+                            {`<h1>1/ Titre principal</h1>
+                    <h2>2/ Sous-titre</h2>
+                    <h3>3/ Section</h3>
+                    <h4>4/ Sous-section</h4>
+                    <h5>5/ Détail</h5>
+                    <h6>6/ Note ou remarque</h6>`}
+                        </CodePanel>
+                        <PreviewPanel>
+                            <Box>
+                                <Heading level={1}>1/ Titre principal</Heading>
+                                <Heading level={2}>2/ Sous-titre</Heading>
+                                <Heading level={3}>3/ Section</Heading>
+                                <Heading level={4}>4/ Sous-section</Heading>
+                                <Heading level={5}>5/ Détail</Heading>
+                                <Heading level={6}>6/ Note ou remarque</Heading>
+                            </Box>
+                        </PreviewPanel>
+                    </CodeWithPreview>
                 </Stack>
 
                 <Stack>
@@ -157,20 +162,20 @@ export default function RappelHTML() {
                     <Heading level={4}>
                         Paragraphe (p)
                     </Heading>
-                    {/*                    <CodeWithPreview language="html">*/}
-                    {/*                        <CodePanel>*/}
-                    {/*                            {`<p>*/}
-                    {/*    Ce texte est un paragraphe. */}
-                    {/*    Il est utilisé pour structurer les blocs de contenu dans une page HTML.*/}
-                    {/*</p>`}*/}
-                    {/*                        </CodePanel>*/}
-                    {/*                        <PreviewPanel>*/}
-                    {/*                            <Text>*/}
-                    {/*                                Ce texte est un paragraphe. Il est utilisé pour structurer les blocs de contenu dans une*/}
-                    {/*                                page HTML.*/}
-                    {/*                            </Text>*/}
-                    {/*                        </PreviewPanel>*/}
-                    {/*                    </CodeWithPreview>*/}
+                    <CodeWithPreview language="html">
+                        <CodePanel>
+                            {`<p>
+                        Ce texte est un paragraphe. 
+                        Il est utilisé pour structurer les blocs de contenu dans une page HTML.
+                    </p>`}
+                        </CodePanel>
+                        <PreviewPanel>
+                            <Text>
+                                Ce texte est un paragraphe. Il est utilisé pour structurer les blocs de contenu dans une
+                                page HTML.
+                            </Text>
+                        </PreviewPanel>
+                    </CodeWithPreview>
                 </Stack>
 
                 <Stack>
@@ -178,16 +183,16 @@ export default function RappelHTML() {
                     <Text>
                         Texte important (strong)
                     </Text>
-                    {/*<CodeWithPreview language="html">*/}
-                    {/*    <CodePanel>*/}
-                    {/*        {`<p>Attention : <strong>le mot de passe est obligatoire</strong> pour continuer.</p>`}*/}
-                    {/*    </CodePanel>*/}
-                    {/*    <PreviewPanel>*/}
-                    {/*        <Text>*/}
-                    {/*            Attention : <Strong>le mot de passe est obligatoire</Strong> pour continuer.*/}
-                    {/*        </Text>*/}
-                    {/*    </PreviewPanel>*/}
-                    {/*</CodeWithPreview>*/}
+                    <CodeWithPreviewCard language="html">
+                        <CodePanel>
+                            {`<p>Attention : <strong>le mot de passe est obligatoire</strong> pour continuer.</p>`}
+                        </CodePanel>
+                        <PreviewPanel>
+                            <Text>
+                                Attention : <strong>le mot de passe est obligatoire</strong> pour continuer.
+                            </Text>
+                        </PreviewPanel>
+                    </CodeWithPreviewCard>
                 </Stack>
 
                 <Stack>
@@ -195,16 +200,16 @@ export default function RappelHTML() {
                     <Text>
                         Texte accentué (em)
                     </Text>
-                    {/*<CodeWithPreview language="html">*/}
-                    {/*    <CodePanel>*/}
-                    {/*        {`<p><em>Ce document est très important</em>, lisez-le attentivement.</p>`}*/}
-                    {/*    </CodePanel>*/}
-                    {/*    <PreviewPanel>*/}
-                    {/*        <Text>*/}
-                    {/*            <Em>Ce document est très important</Em>, lisez-le attentivement.*/}
-                    {/*        </Text>*/}
-                    {/*    </PreviewPanel>*/}
-                    {/*</CodeWithPreview>*/}
+                    <CodeWithPreviewCard language="html">
+                        <CodePanel>
+                            {`<p><em>Ce document est très important</em>, lisez-le attentivement.</p>`}
+                        </CodePanel>
+                        <PreviewPanel>
+                            <Text>
+                                <em>Ce document est très important</em>, lisez-le attentivement.
+                            </Text>
+                        </PreviewPanel>
+                    </CodeWithPreviewCard>
                 </Stack>
 
 
@@ -231,69 +236,70 @@ export default function RappelHTML() {
                     <Text>
                         Liste non ordonnée (ul)
                     </Text>
-                    {/*                    <CodeWithPreview language="html">*/}
-                    {/*                        <CodePanel>*/}
-                    {/*                            {`<ul>*/}
-                    {/*  <li>HTML</li>*/}
-                    {/*  <li>CSS</li>*/}
-                    {/*  <li>JavaScript</li>*/}
-                    {/*</ul>`}*/}
-                    {/*                        </CodePanel>*/}
-                    {/*                        <PreviewPanel>*/}
-                    {/*                            <List.Root ml={4}>*/}
-                    {/*                                <ListItem>HTML</ListItem>*/}
-                    {/*                                <ListItem>CSS</ListItem>*/}
-                    {/*                                <ListItem>JavaScript</ListItem>*/}
-                    {/*                            </List>*/}
-                    {/*                        </PreviewPanel>*/}
-                    {/*                    </CodeWithPreview>*/}
+                    <CodeWithPreviewCard language="html">
+                        <CodePanel>
+                            {`<ul>
+                      <li>HTML</li>
+                      <li>CSS</li>
+                      <li>JavaScript</li>
+                    </ul>`}
+                        </CodePanel>
+                        <PreviewPanel>
+                            <List>
+                                <ListItem>HTML</ListItem>
+                                <ListItem>CSS</ListItem>
+                                <ListItem>JavaScript</ListItem>
+                            </List>
+                        </PreviewPanel>
+                    </CodeWithPreviewCard>
                 </Stack>
                 <Stack>
                     {/* Exemple OL */}
                     <Text>
                         Liste ordonnée (ol)
                     </Text>
-                    {/*                    <CodeWithPreview language="html">*/}
-                    {/*                        <CodePanel>*/}
-                    {/*                            {`<ol>*/}
-                    {/*  <li>Préparer le projet</li>*/}
-                    {/*  <li>Écrire le code</li>*/}
-                    {/*  <li>Tester et publier</li>*/}
-                    {/*</ol>`}*/}
-                    {/*                        </CodePanel>*/}
-                    {/*                        <PreviewPanel>*/}
-                    {/*                            <List.Root as={"ol"} ml={4}>*/}
-                    {/*                                <ListItem>Préparer le projet</ListItem>*/}
-                    {/*                                <ListItem>Écrire le code</ListItem>*/}
-                    {/*                                <ListItem>Tester et publier</ListItem>*/}
-                    {/*                            </List>*/}
-                    {/*                        </PreviewPanel>*/}
-                    {/*                    </CodeWithPreview>*/}
+                    <CodeWithPreviewCard language="html">
+                        <CodePanel>
+                            {`<ol>
+                      <li>Préparer le projet</li>
+                      <li>Écrire le code</li>
+                      <li>Tester et publier</li>
+                    </ol>`}
+                        </CodePanel>
+                        <PreviewPanel>
+                            <List ordered={true}>
+                                <ListItem>Préparer le projet</ListItem>
+                                <ListItem>Écrire le code</ListItem>
+                                <ListItem>Tester et publier</ListItem>
+                            </List>
+                        </PreviewPanel>
+                    </CodeWithPreviewCard>
                 </Stack>
                 <Stack>
                     {/* Exemple DL */}
                     <Text>
                         Liste de définition (dl)
                     </Text>
-                    {/*                    <CodeWithPreview language="html">*/}
-                    {/*                        <CodePanel>*/}
-                    {/*                            {`<dl>*/}
-                    {/*  <dt>HTML</dt>*/}
-                    {/*  <dd>Langage de structure des pages web</dd>*/}
-                    {/*  */}
-                    {/*  <dt>CSS</dt>*/}
-                    {/*  <dd>Langage de style</dd>*/}
-                    {/*</dl>`}*/}
-                    {/*                        </CodePanel>*/}
-                    {/*                        <PreviewPanel>*/}
-                    {/*                            <DataList.Root>*/}
-                    {/*                                <DataListItemLabel>HTML</DataListItemLabel>*/}
-                    {/*                                <DataListItemValue>Langage de structure des pages web</DataListItemValue>*/}
-                    {/*                                <DataListItemLabel>CSS</DataListItemLabel>*/}
-                    {/*                                <DataListItemValue>Langage de style</DataListItemValue>*/}
-                    {/*                            </DataList.Root>*/}
-                    {/*                        </PreviewPanel>*/}
-                    {/*                    </CodeWithPreview>*/}
+                    <CodeWithPreviewCard language="html">
+                        <CodePanel>
+                            {`<dl>
+                      <dt>HTML</dt>
+                      <dd>Langage de structure des pages web</dd>
+                      
+                      <dt>CSS</dt>
+                      <dd>Langage de style</dd>
+                    </dl>`}
+                        </CodePanel>
+                        <PreviewPanel>
+                            <></>
+                            {/*<DataList>*/}
+                            {/*    <DataListItemLabel>HTML</DataListItemLabel>*/}
+                            {/*    <DataListItemValue>Langage de structure des pages web</DataListItemValue>*/}
+                            {/*    <DataListItemLabel>CSS</DataListItemLabel>*/}
+                            {/*    <DataListItemValue>Langage de style</DataListItemValue>*/}
+                            {/*</DataList>*/}
+                        </PreviewPanel>
+                    </CodeWithPreviewCard>
                 </Stack>
                 <Heading level={3}>Tableaux</Heading>
                 <Text>
@@ -302,154 +308,154 @@ export default function RappelHTML() {
                     <Code>&lt;td&gt;</Code> (cellule) et <Code>&lt;th&gt;</Code> (cellule d’en-tête).
                 </Text>
 
-                {/*                <CodeWithPreview language="html">*/}
-                {/*                    <CodePanel>*/}
-                {/*                        {`<table>*/}
-                {/*<thead>*/}
-                {/*  <tr>*/}
-                {/*    <th>Nom</th>*/}
-                {/*    <th>Âge</th>*/}
-                {/*  </tr>*/}
-                {/* </thead> */}
-                {/*  <tbody>*/}
-                {/*      <tr>*/}
-                {/*        <td>Alice</td>*/}
-                {/*        <td>25</td>*/}
-                {/*      </tr>*/}
-                {/*      <tr>*/}
-                {/*        <td>Bob</td>*/}
-                {/*        <td>30</td>*/}
-                {/*      </tr>*/}
-                {/*  <tbody/>*/}
-                {/*</table>`}*/}
-                {/*                    </CodePanel>*/}
-                {/*                    <PreviewPanel>*/}
-                {/*                        <Table.Root size="sm" borderWidth="1px" rounded="md" showColumnBorder interactive>*/}
-                {/*                            <Table.Header>*/}
-                {/*                                <Table.Row bg="bg.subtle">*/}
-                {/*                                    <Table.ColumnHeader>Nom</Table.ColumnHeader>*/}
-                {/*                                    <Table.ColumnHeader>Âge</Table.ColumnHeader>*/}
-                {/*                                </Table.Row>*/}
-                {/*                            </Table.Header>*/}
-                {/*                            <Table.Body>*/}
-                {/*                                <Table.Row>*/}
-                {/*                                    <Table.Cell>Alice</Table.Cell>*/}
-                {/*                                    <Table.Cell>25</Table.Cell>*/}
-                {/*                                </Table.Row>*/}
-                {/*                                <Table.Row>*/}
-                {/*                                    <Table.Cell>Bob</Table.Cell>*/}
-                {/*                                    <Table.Cell>30</Table.Cell>*/}
-                {/*                                </Table.Row>*/}
-                {/*                            </Table.Body>*/}
-                {/*                        </Table.Root>*/}
-                {/*                    </PreviewPanel>*/}
-                {/*                </CodeWithPreview>*/}
+                <CodeWithPreviewCard language="html">
+                    <CodePanel>
+                        {`<table>
+                <thead>
+                  <tr>
+                    <th>Nom</th>
+                    <th>Âge</th>
+                  </tr>
+                 </thead> 
+                  <tbody>
+                      <tr>
+                        <td>Alice</td>
+                        <td>25</td>
+                      </tr>
+                      <tr>
+                        <td>Bob</td>
+                        <td>30</td>
+                      </tr>
+                  <tbody/>
+                </table>`}
+                    </CodePanel>
+                    <PreviewPanel>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Nom</TableHead>
+                                    <TableHead>Âge</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell>Alice</TableCell>
+                                    <TableCell>25</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Bob</TableCell>
+                                    <TableCell>30</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </PreviewPanel>
+                </CodeWithPreviewCard>
                 <Text>
                     Il est possible de définir un nombre de ligne ou de colonne occupé par une cellule :</Text>
-                {/*                <CodeWithPreview language="html">*/}
-                {/*                    <CodePanel>*/}
-                {/*                        {`<table>*/}
-                {/*  <thead>*/}
-                {/*  <tr>*/}
-                {/*    <th>Nom</th>*/}
-                {/*    <th colspan="2">Contact</th>*/}
-                {/*  </tr>*/}
-                {/*  </thead>*/}
-                {/*  <tbody>*/}
-                {/*  <tr>*/}
-                {/*    <td>Alice</td>*/}
-                {/*    <td>Email</td>*/}
-                {/*    <td>alice@mail.com</td>*/}
-                {/*  </tr>*/}
-                {/*  <tr>*/}
-                {/*    <td rowspan="2">Bob</td>*/}
-                {/*    <td>Email</td>*/}
-                {/*    <td>bob@mail.com</td>*/}
-                {/*  </tr>*/}
-                {/*  <tr>*/}
-                {/*    <td>Téléphone</td>*/}
-                {/*    <td>06 12 34 56 78</td>*/}
-                {/*  </tr>*/}
-                {/*  </tbody>*/}
-                {/*</table>`}*/}
-                {/*                    </CodePanel>*/}
-                {/*                    <PreviewPanel>*/}
-                {/*                        <Table.Root size="sm" borderWidth="1px" rounded="md" showColumnBorder interactive>*/}
-                {/*                            <Table.Header>*/}
-                {/*                                <Table.Row bg="bg.subtle">*/}
-                {/*                                    <Table.ColumnHeader>Nom</Table.ColumnHeader>*/}
-                {/*                                    <Table.ColumnHeader colSpan={2}>Contact</Table.ColumnHeader>*/}
-                {/*                                </Table.Row>*/}
-                {/*                            </Table.Header>*/}
-                {/*                            <Table.Body>*/}
-                {/*                                <Table.Row>*/}
-                {/*                                    <Table.Cell>Alice</Table.Cell>*/}
-                {/*                                    <Table.Cell>Email</Table.Cell>*/}
-                {/*                                    <Table.Cell>alice@mail.com</Table.Cell>*/}
-                {/*                                </Table.Row>*/}
-                {/*                                <Table.Row>*/}
-                {/*                                    <Table.Cell rowSpan={2}>Bob</Table.Cell>*/}
-                {/*                                    <Table.Cell>Email</Table.Cell>*/}
-                {/*                                    <Table.Cell>bob@mail.com</Table.Cell>*/}
-                {/*                                </Table.Row>*/}
-                {/*                                <Table.Row>*/}
-                {/*                                    <Table.Cell>Téléphone</Table.Cell>*/}
-                {/*                                    <Table.Cell>06 01 02 03 04</Table.Cell>*/}
-                {/*                                </Table.Row>*/}
-                {/*                            </Table.Body>*/}
-                {/*                        </Table.Root>*/}
-                {/*                    </PreviewPanel>*/}
-                {/*                </CodeWithPreview>*/}
+                <CodeWithPreviewCard language="html">
+                    <CodePanel>
+                        {`<table>
+                  <thead>
+                  <tr>
+                    <th>Nom</th>
+                    <th colspan="2">Contact</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td>Alice</td>
+                    <td>Email</td>
+                    <td>alice@mail.com</td>
+                  </tr>
+                  <tr>
+                    <td rowspan="2">Bob</td>
+                    <td>Email</td>
+                    <td>bob@mail.com</td>
+                  </tr>
+                  <tr>
+                    <td>Téléphone</td>
+                    <td>06 12 34 56 78</td>
+                  </tr>
+                  </tbody>
+                </table>`}
+                    </CodePanel>
+                    <PreviewPanel>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Nom</TableHead>
+                                    <TableHead colSpan={2}>Contact</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell>Alice</TableCell>
+                                    <TableCell>Email</TableCell>
+                                    <TableCell>alice@mail.com</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell rowSpan={2}>Bob</TableCell>
+                                    <TableCell>Email</TableCell>
+                                    <TableCell>bob@mail.com</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Téléphone</TableCell>
+                                    <TableCell>06 01 02 03 04</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </PreviewPanel>
+                </CodeWithPreviewCard>
 
                 <Text>ou des en-tête sur chaque ligne :</Text>
-                {/*                <CodeWithPreview language="html">*/}
-                {/*                    <CodePanel>*/}
-                {/*                        {`<table>*/}
-                {/*  <thead>*/}
-                {/*    <tr>*/}
-                {/*      <th></th>*/}
-                {/*      <th>Lundi</th>*/}
-                {/*      <th>Mardi</th>*/}
-                {/*    </tr>*/}
-                {/*  </thead>*/}
-                {/*  <tbody>*/}
-                {/*    <tr>*/}
-                {/*      <th scope="row">Matin</th>*/}
-                {/*      <td>Maths</td>*/}
-                {/*      <td>Français</td>*/}
-                {/*    </tr>*/}
-                {/*    <tr>*/}
-                {/*      <th scope="row">Après-midi</th>*/}
-                {/*      <td>Histoire</td>*/}
-                {/*      <td>Sport</td>*/}
-                {/*    </tr>*/}
-                {/*  </tbody>*/}
-                {/*</table>`}*/}
-                {/*                    </CodePanel>*/}
-                {/*                    <PreviewPanel>*/}
-                {/*                        <Table.Root size="sm" borderWidth="1px" rounded="md" showColumnBorder interactive>*/}
-                {/*                            <Table.Header>*/}
-                {/*                                <Table.Row bg="bg.subtle">*/}
-                {/*                                    <Table.ColumnHeader></Table.ColumnHeader>*/}
-                {/*                                    <Table.ColumnHeader>Lundi</Table.ColumnHeader>*/}
-                {/*                                    <Table.ColumnHeader>Mardi</Table.ColumnHeader>*/}
-                {/*                                </Table.Row>*/}
-                {/*                            </Table.Header>*/}
-                {/*                            <Table.Body>*/}
-                {/*                                <Table.Row>*/}
-                {/*                                    <Table.Cell scope="row" bg="bg.subtle">Matin</Table.Cell>*/}
-                {/*                                    <Table.Cell>Maths</Table.Cell>*/}
-                {/*                                    <Table.Cell>Français</Table.Cell>*/}
-                {/*                                </Table.Row>*/}
-                {/*                                <Table.Row>*/}
-                {/*                                    <Table.Cell scope="row" bg="bg.subtle">Après-midi</Table.Cell>*/}
-                {/*                                    <Table.Cell>Histoire</Table.Cell>*/}
-                {/*                                    <Table.Cell>Sport</Table.Cell>*/}
-                {/*                                </Table.Row>*/}
-                {/*                            </Table.Body>*/}
-                {/*                        </Table.Root>*/}
-                {/*                    </PreviewPanel>*/}
-                {/*                </CodeWithPreview>*/}
+                <CodeWithPreviewCard language="html">
+                    <CodePanel>
+                        {`<table>
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Lundi</th>
+                      <th>Mardi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Matin</th>
+                      <td>Maths</td>
+                      <td>Français</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Après-midi</th>
+                      <td>Histoire</td>
+                      <td>Sport</td>
+                    </tr>
+                  </tbody>
+                </table>`}
+                    </CodePanel>
+                    <PreviewPanel>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead/>
+                                    <TableHead>Lundi</TableHead>
+                                    <TableHead>Mardi</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell scope="row">Matin</TableCell>
+                                    <TableCell>Maths</TableCell>
+                                    <TableCell>Français</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell scope="row">Après-midi</TableCell>
+                                    <TableCell>Histoire</TableCell>
+                                    <TableCell>Sport</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </PreviewPanel>
+                </CodeWithPreviewCard>
                 <Text>
                     Ici, les <Code>&lt;th scope=&quot;row&quot;&gt;</Code> servent à indiquer le contexte de chaque
                     ligne (Matin,
@@ -542,12 +548,12 @@ export default function RappelHTML() {
                     Elle prend principalement les attributs <Code>src</Code> (l’URL de l’image)
                     et <Code>alt</Code> (texte alternatif).
                 </Text>
-                {/*<CodeWithPreview language="html">*/}
-                {/*    <CodePanel>{`<img src="https://picsum.photos/300/200" alt="Exemple d'image" />`}</CodePanel>*/}
-                {/*    <PreviewPanel>*/}
-                {/*        <Image src="https://picsum.photos/300/200" alt="Exemple d'image"/>*/}
-                {/*    </PreviewPanel>*/}
-                {/*</CodeWithPreview>*/}
+                <CodeWithPreviewCard language="html">
+                    <CodePanel>{`<img src="https://picsum.photos/300/200" alt="Exemple d'image" />`}</CodePanel>
+                    <PreviewPanel>
+                        <Image src="https://picsum.photos/300/200" alt="Exemple d'image" width={50} height={50}/>
+                    </PreviewPanel>
+                </CodeWithPreviewCard>
                 <Text>
                     Le texte <Code>alt</Code> est important pour l’accessibilité et s’affiche si l’image ne se charge
                     pas.
@@ -560,18 +566,18 @@ export default function RappelHTML() {
                     <code>controls</code> pour que l’utilisateur puisse lire, mettre en pause, etc.
                 </Text>
 
-                {/*                <CodeWithPreview language="html">*/}
-                {/*                    <CodePanel>{`<audio controls>*/}
-                {/*  <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg" />*/}
-                {/*  Votre navigateur ne supporte pas l'audio.*/}
-                {/*</audio>`}</CodePanel>*/}
-                {/*                    <PreviewPanel>*/}
-                {/*                        <audio controls>*/}
-                {/*                            <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg"/>*/}
-                {/*                            Votre navigateur ne supporte pas l&apos;audio.*/}
-                {/*                        </audio>*/}
-                {/*                    </PreviewPanel>*/}
-                {/*                </CodeWithPreview>*/}
+                <CodeWithPreviewCard language="html">
+                    <CodePanel>{`<audio controls>
+                  <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg" />
+                  Votre navigateur ne supporte pas l'audio.
+                </audio>`}</CodePanel>
+                    <PreviewPanel>
+                        <audio controls>
+                            <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg"/>
+                            Votre navigateur ne supporte pas l&apos;audio.
+                        </audio>
+                    </PreviewPanel>
+                </CodeWithPreviewCard>
 
                 <Text>
                     On peut aussi fournir plusieurs formats dans des balises <code>&lt;source&gt;</code> pour une
@@ -584,18 +590,18 @@ export default function RappelHTML() {
                     <code>controls</code> pour permettre les actions de lecture.
                 </Text>
 
-                {/*                <CodeWithPreview language="html">*/}
-                {/*                    <CodePanel>{`<video width="320" height="240" controls>*/}
-                {/*  <source src="https://www.w3schools.com/html/movie.mp4" type="video/mp4" />*/}
-                {/*  Votre navigateur ne supporte pas la vidéo.*/}
-                {/*</video>`}</CodePanel>*/}
-                {/*                    <PreviewPanel>*/}
-                {/*                        <video width="320" height="240" controls>*/}
-                {/*                            <source src="https://www.w3schools.com/html/movie.mp4" type="video/mp4"/>*/}
-                {/*                            Votre navigateur ne supporte pas la vidéo.*/}
-                {/*                        </video>*/}
-                {/*                    </PreviewPanel>*/}
-                {/*                </CodeWithPreview>*/}
+                <CodeWithPreviewCard language="html">
+                    <CodePanel>{`<video width="320" height="240" controls>
+                  <source src="https://www.w3schools.com/html/movie.mp4" type="video/mp4" />
+                  Votre navigateur ne supporte pas la vidéo.
+                </video>`}</CodePanel>
+                    <PreviewPanel>
+                        <video width="320" height="240" controls>
+                            <source src="https://www.w3schools.com/html/movie.mp4" type="video/mp4"/>
+                            Votre navigateur ne supporte pas la vidéo.
+                        </video>
+                    </PreviewPanel>
+                </CodeWithPreviewCard>
 
                 <Text>
                     Tu peux aussi ajouter des options comme <Code>autoplay</Code>, <Code>loop</Code>,

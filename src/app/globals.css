@@ -137,6 +137,14 @@
     color: #E34F26;
 }
 
+.header-html-css .bg-module {
+    background: #E34F26;
+}
+
+.header-html-css .border-module {
+    border-color: #E34F26;
+}
+
 /** php */
 .text-php {
     color: #777BB4;
@@ -153,6 +161,14 @@
 .header-php h2,
 .header-php h3 {
     color: #777BB4;
+}
+
+.header-php .bg-module {
+    background: #777BB4;
+}
+
+.header-php .border-module {
+    border-color: #777BB4;
 }
 
 
@@ -172,4 +188,12 @@
 .header-javascript h2,
 .header-javascript h3 {
     color: #ac9b14;
+}
+
+.header-javascript .bg-module {
+    background: #ac9b14;
+}
+
+.header-javascript .border-module {
+    border-color: #ac9b14;
 }

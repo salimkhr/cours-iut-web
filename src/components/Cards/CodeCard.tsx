@@ -1,62 +1,72 @@
-'use client';
-
-import React, { useState } from 'react';
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ClipboardCopyIcon } from 'lucide-react';
+'use client'
+import React, {useState} from 'react';
+import BaseCard from "@/components/Cards/BaseCard";
+import {ClipboardCopyIcon} from "lucide-react";
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
+import {Button} from "@/components/ui/button";
 
 interface CodeCardProps {
-    code: string;
-    language?: string;
-    color?: string;
+    language: string;
+    children: string;
+    className?: string;
+    showLineNumbers?: boolean;
 }
 
-
-export default function CodeCard({
-                                     code,
-                                     language = 'js'
-                                 }: CodeCardProps) {
+export default function CodeCard({language, children, showLineNumbers = true}: CodeCardProps) {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(code).then(() => {
+        navigator.clipboard.writeText(children).then(() => {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         });
     };
 
-    return (
-        <div className="group hover:shadow-xl">
-            <Card className="border-2 border-black bg-white rounded-lg shadow-lg overflow-hidden text-left py-0 gap-0">
-                <CardHeader
-                    className="flex justify-between items-center border-b-2"
-                    // style={{ backgroundColor: color }}
+    const headerCard = (
+        <>
+            <span className="text-sm text-white font-mono">{language.toUpperCase()}</span>
+            <div className="flex gap-1">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCopy}
+                    className="flex items-center gap-2 text-white"
                 >
-                    <span className="text-sm font-mono text-black uppercase">{language}</span>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleCopy}
-                        className="flex items-center gap-1 text-black hover:underline"
-                    >
-                        <ClipboardCopyIcon className="w-4 h-4" />
-                        {copied ? 'Copié' : 'Copier'}
-                    </Button>
-                </CardHeader>
+                    <ClipboardCopyIcon className="w-4 h-4"/>
+                    {copied ? 'Copié !' : 'Copier'}
+                </Button>
+            </div>
+        </>
+    );
 
-                <CardContent className="p-0">
-                    {/*<Prism language={language} style={oneLight}>*/}
-                        {code}
-                    {/*</Prism>*/}
-                </CardContent>
+    const content = (
+        <div className="w-full h-full overflow-hidden">
+            <SyntaxHighlighter
+                language={language}
+                // style={github}
+                customStyle={{
+                    margin: 0,
+                    fontSize: '0.875rem',
+                    lineHeight: '1.25rem',
+                    height: '100%',
+                }}
+                wrapLongLines={true}
+                showLineNumbers={showLineNumbers}
+            >
+                {children}
+            </SyntaxHighlighter>
+        </div>
+    );
 
-                <CardFooter className="hidden" />
-            </Card>
+    return (
+        <div className="mx-6 my-8">
+            <BaseCard
+                header={headerCard}
+                content={content}
+                withMarge={false}
+                withHover={false}
+                withLed={false}
+            />
         </div>
     );
 }
