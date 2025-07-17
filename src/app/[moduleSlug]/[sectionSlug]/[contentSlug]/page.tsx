@@ -15,7 +15,7 @@ export async function generateStaticParams() {
     const params: { moduleSlug: string; sectionSlug: string; contentSlug: string }[] = [];
 
     modules.forEach((module) => {
-        module.sections.forEach((section) => {
+        module.sections.filter((section) => section.isAvailable).forEach((section) => {
             section.contents.forEach((content) => {
                 params.push({
                     moduleSlug: module.path,

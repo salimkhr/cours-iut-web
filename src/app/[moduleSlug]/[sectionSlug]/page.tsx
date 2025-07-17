@@ -17,7 +17,7 @@ export async function generateStaticParams() {
     const params: { moduleSlug: string; sectionSlug: string }[] = [];
 
     modules.forEach((module) => {
-        module.sections.forEach((section) => {
+        module.sections.filter((section) => section.isAvailable).forEach((section) => {
             params.push({
                 moduleSlug: module.path,
                 sectionSlug: section.path // Fallback pour les sections root
@@ -63,7 +63,7 @@ export default async function Module({params}: ModulePageProps) {
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
             <BreadcrumbGenerator currentModule={currentModule}/>
-            
+
             <section
                 className="w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between p-4 lg:px-6 gap-4 lg:gap-6 lg:min-h-[45vh]">
                 <div className="flex flex-col items-center justify-center w-full lg:w-2/3 opacity-0 animate-fade-in">
