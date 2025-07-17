@@ -24,6 +24,3 @@ jobs:
       - name: Build (static export)
         run: npm run build
 
-      - name: List output
-        run: ls -la ./next
-
