@@ -25,5 +25,5 @@ jobs:
         run: npm run build
 
       - name: List output
-        run: ls -la ./out
+        run: ls -la ./next
 
