@@ -2,6 +2,7 @@ import {notFound} from 'next/navigation';
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import dynamic from 'next/dynamic'
 import modules from "@/config";
+import AntiCopyProtector from "@/components/AntiCopyProtector";
 
 interface ContentPageProps {
     params: Promise<{
@@ -71,7 +72,9 @@ export default async function Content({params}: ContentPageProps) {
                 currentContent={currentContent}
             />
             <div className={`mx-10 header-${currentModule.path} py-20`}>
-                <ComponentToRender/>
+                <AntiCopyProtector>
+                    <ComponentToRender/>
+                </AntiCopyProtector>
             </div>
         </div>
     );
