@@ -1,0 +1,272 @@
+:root {
+    /* Couleurs */
+    --primary-color: #6a00f4;
+    --secondary-color: #00c2ff;
+    --background-color: #f8f8fc;
+    --text-color: #111;
+    --light-text-color: #444;
+    --border-color: #e0e0e0;
+    --input-border-color: #ccc;
+    --card-shadow: rgba(0, 0, 0, 0.1);
+    --gradient-primary: linear-gradient(to right, rgba(123, 47, 247, 0.85), rgba(0, 194, 255, 0.85));
+    --gradient-secondary: linear-gradient(to right, #7b2ff7, #00c2ff);
+
+    /* Police */
+    --font-family: "JetBrains Mono";
+
+    /* Espacements */
+    --padding-small: 0.5rem;
+    --padding-medium: 1rem;
+    --padding-large: 2rem;
+    --margin-small: 0.5rem;
+    --margin-medium: 1rem;
+    --margin-large: 2rem;
+
+    /* Bordures */
+    --border-radius-small: 5px;
+    --border-radius-medium: 8px;
+    --border-radius-large: 12px;
+    --border-radius-full: 999px;
+}
+
+/* Reset de base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family), ui-monospace,;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--padding-medium) var(--padding-large);
+    background-color: white;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.navbar nav a {
+    margin: 0 var(--margin-medium);
+    text-decoration: none;
+    color: var(--light-text-color);
+    font-weight: 500;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+}
+
+.actions input {
+    padding: var(--padding-small);
+    border-radius: var(--border-radius-small);
+    border: 1px solid var(--input-border-color);
+    margin-right: var(--margin-medium);
+}
+
+.actions button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: var(--padding-small) var(--padding-medium);
+    border-radius: var(--border-radius-medium);
+    cursor: pointer;
+}
+
+/* Hero */
+.hero {
+    padding: 3rem var(--padding-medium);
+    background-image: var(--gradient-primary),
+    url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1470');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+    border-radius: var(--border-radius-medium);
+    margin: var(--margin-medium);
+    height: 35vh;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: var(--margin-medium);
+}
+
+.hero p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.hero button {
+    background-color: white;
+    color: var(--primary-color);
+    font-weight: bold;
+    padding: var(--padding-small) var(--padding-medium);
+    border: none;
+    border-radius: var(--border-radius-full);
+    cursor: pointer;
+}
+
+/* Sections */
+section {
+    padding: var(--padding-large);
+}
+
+h2 {
+    margin-bottom: var(--margin-medium);
+}
+
+.card {
+    min-width: 160px;
+    max-width: 250px;
+    background-color: white;
+    border-radius: var(--border-radius-large);
+    box-shadow: 0 4px 8px var(--card-shadow);
+    overflow: hidden;
+    text-align: left;
+    margin: var(--margin-small);
+}
+
+.card img {
+    width: 100%;
+    height: auto; /* ensure the original ratio is maintained */
+}
+
+.card-title {
+    font-weight: bold;
+    padding: var(--padding-small);
+}
+
+.card-sub {
+    font-size: 0.85rem;
+    color: #666;
+    padding: 0 var(--padding-small) var(--padding-medium);
+}
+
+.card {
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Artistes */
+.artist {
+    background: var(--gradient-secondary);
+    color: white;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 8px 16px var(--card-shadow);
+    margin: auto;
+}
+
+/* Catégories */
+.cat-buttons button {
+    padding: var(--padding-medium);
+    border-radius: var(--border-radius-medium);
+    background: var(--gradient-secondary);
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+.player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border-top: 1px solid var(--border-color);
+    padding: var(--padding-medium) var(--padding-large);
+    box-shadow: 0 -2px 8px var(--card-shadow);
+}
+
+.track-info {
+    font-size: 0.9rem;
+}
+
+.controls span {
+    font-size: 1.4rem;
+    margin: 0 var(--margin-small);
+    cursor: pointer;
+}
+
+.volume input {
+    width: 80px;
+}
+
+.nouveautes {
+    margin-bottom: 65px;
+}
+
+/** a faire dans le TP */
+
+/** 1/ Player */
+.player {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/** 2/ cards */
+.cards {
+    display: flex;
+    justify-content: space-around;
+    gap: 1rem;
+    overflow-x: auto;
+    flex-wrap: wrap;
+}
+
+/** 3/ Catégories */
+.cat-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3rem;
+}
+
+/** 4/ Artistes */
+.artist-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 3rem;
+}
+
+.artist {
+    display: grid;
+    justify-items: center;
+    align-items: center;
+}
+
+/** B- Media Query */
+
+/* Modifier le template de grid pour les tablettes */
+@media (max-width: 768px) {
+    .cat-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Modifier le template de grid pour les téléphones */
+@media (max-width: 576px) {
+    .cat-buttons {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}

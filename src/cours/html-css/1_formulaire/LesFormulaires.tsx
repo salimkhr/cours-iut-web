@@ -1,63 +1,19 @@
-import React from "react";
 import InputCard from "@/components/Cards/InputCard";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import Box from "@/components/ui/Box";
 import Text from "@/components/ui/Text";
-import {List,ListItem} from "@/components/ui/List";
+import {List, ListItem} from "@/components/ui/List";
 
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import Heading from "@/components/ui/Heading";
 import Code from "@/components/ui/Code";
-import {Stack} from "@/components/ui/Stack";
+import {Stack, VStack} from "@/components/ui/Stack";
 import Grid from "@/components/ui/Grid";
 import {Button} from "@/components/ui/button";
+import CodeWithPreviewCard, {CodePanel, PreviewPanel} from "@/components/Cards/CodeWithPreviewCard";
 
 export default function LesFormulaires() {
-
-    // const handleSubmitCVC = (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //
-    //     const examplePromise = new Promise((resolve) => {
-    //         setTimeout(() => resolve(200), 5000)
-    //     })
-    //
-    //     // Will display the loading toast until the promise is either resolved
-    //     // or rejected.
-    //     /*toaster.promise(examplePromise, {
-    //         loading: {
-    //             title: 'Payment of 100€ in progress',
-    //             description: 'Please wait...'
-    //         },
-    //         success: {
-    //             title: 'Payment Successful',
-    //             description: 'The teacher thanks you'
-    //         },
-    //         error: {
-    //             title: 'Payment Error',
-    //             description: 'An error occurred. Please try again.'
-    //         },
-    //     });*/
-    // }
-
-    // const handleSubmitRegistration = (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //
-    //     // Vous pouvez ajouter ici la logique de soumission, par exemple un appel API
-    //     toaster.create({
-    //         title: "Registration Successful",
-    //         description: "Your account has been created successfully.",
-    //         type: "success",
-    //         duration: 3000
-    //     });
-    // };
 
     /*const frameworks = createListCollection({
         items: [
@@ -108,22 +64,37 @@ export default function LesFormulaires() {
                         type=&quot;submit&quot;&gt;</Code>) : Permettant de soumettre le formulaire.
                     </ListItem>
                 </List>
-{/*                <CodeWithPreview language="html">*/}
-{/*                    <CodePanel>*/}
-{/*                        {`<form method="get" action="index.php">*/}
-{/*    <label for="input-hello">Hello</label>*/}
-{/*    <input type="text" value="Hello" id="input-hello">*/}
-{/*    */}
-{/*    <input type="submit" value="send">*/}
-{/*</form>`}</CodePanel>*/}
-{/*                    <PreviewPanel>*/}
-{/*                        <Field.Root>*/}
-{/*                            <Field.Label>Hello</Field.Label>*/}
-{/*                            <Input defaultValue="Hello"/>*/}
-{/*                        </Field.Root>*/}
-{/*                        <Button type="submit" mt={2}>Send</Button>*/}
-{/*                    </PreviewPanel>*/}
-{/*                </CodeWithPreview>*/}
+                <CodeWithPreviewCard language="html">
+                    <CodePanel>
+                        {`<form method="get" action="index.php">
+    <label for="input-hello">Hello</label>
+    <input type="text" value="Hello" id="input-hello">
+    
+    <input type="submit" value="send">
+</form>`}</CodePanel>
+                    <PreviewPanel>
+                        <form method="get" className="space-y-4 max-w-md mx-auto">
+                            <div className="flex items-center gap-4">
+                                <label htmlFor="input-hello" className="w-32 font-semibold">Hello:</label>
+                                <input
+                                    type="text"
+                                    id="input-hello"
+                                    name="input-hello"
+                                    defaultValue="Hello"
+                                    className="flex-1 p-2 border rounded"
+                                />
+                            </div>
+
+                            <div className="pt-2 text-right">
+                                <input
+                                    type="submit"
+                                    value="Send"
+                                    className="bg-html-css text-white py-2 px-4 rounded cursor-pointer w-full"
+                                />
+                            </div>
+                        </form>
+                    </PreviewPanel>
+                </CodeWithPreviewCard>
                 <Heading level={3}>2. Types d’entrées dans un formulaire</Heading>
                 {/* Section Champs de texte */}
                 <Box>
@@ -144,35 +115,35 @@ export default function LesFormulaires() {
                             description="Champ de texte pour entrer des informations simples"
                             code={`<input placeholder="Username" />`}
                             inputElement={<Input placeholder=" Username" className="mt-2 px-2"
-                                                 />}
+                            />}
                         />
                         <InputCard
                             title="Password"
                             description="Champ pour entrer un mot de passe avec des caractères masqués"
                             code={`<input type="password" placeholder="Password" />`}
                             inputElement={<Input type="password" placeholder=" Password" className="mt-2 px-2"
-                                                 />}
+                            />}
                         />
                         <InputCard
                             title="Search"
                             description="Champ pour entrer une requête de recherche"
                             code={`<input type="search" placeholder="Search" />`}
                             inputElement={<Input type="search" placeholder=" Search" className="mt-2 px-2"
-                                                 />}
+                            />}
                         />
                         <InputCard
                             title="Email"
                             description="Champ pour entrer une adresse e-mail avec validation"
                             code={`<input type="email" placeholder="Email" />`}
                             inputElement={<Input type="email" placeholder=" Email" className="mt-2 px-2"
-                                                 />}
+                            />}
                         />
                         <InputCard
                             title="Tel"
                             description="Champ pour entrer un numéro de téléphone avec validation du format"
                             code={`<input type="tel" placeholder="123-456-7890" />`}
                             inputElement={<Input type="tel" placeholder=" 123-456-7890" className="mt-2 px-2"
-                                                 />}
+                            />}
                         />
                         <InputCard
                             title="URL"
@@ -269,20 +240,20 @@ export default function LesFormulaires() {
                             description="Boutons radio pour sélectionner une option parmi plusieurs"
                             code={`<label for="radio1">Option 1</label>\n<input type="radio" id="radio1" value="option1" name="option"/>\n\n<label for="radio2">Option 2</label>\n<input type="radio" id="radio2" value="option2" name="option"/>`}
                             // inputElement={
-                                // <RadioGroup.Root defaultValue="option1" mt={2}>
-                                //     <Stack direction="row">
-                                //         <RadioGroup.Item value="option1">
-                                //             <RadioGroup.ItemHiddenInput/>
-                                //             <RadioGroup.ItemIndicator/>
-                                //             <RadioGroup.ItemText>Option 1</RadioGroup.ItemText>
-                                //         </RadioGroup.Item>
-                                //         <RadioGroup.Item value="option2">
-                                //             <RadioGroup.ItemHiddenInput/>
-                                //             <RadioGroup.ItemIndicator/>
-                                //             <RadioGroup.ItemText>Option 2</RadioGroup.ItemText>
-                                //         </RadioGroup.Item>
-                                //     </Stack>
-                                // </RadioGroup.Root>
+                            // <RadioGroup.Root defaultValue="option1" mt={2}>
+                            //     <Stack direction="row">
+                            //         <RadioGroup.Item value="option1">
+                            //             <RadioGroup.ItemHiddenInput/>
+                            //             <RadioGroup.ItemIndicator/>
+                            //             <RadioGroup.ItemText>Option 1</RadioGroup.ItemText>
+                            //         </RadioGroup.Item>
+                            //         <RadioGroup.Item value="option2">
+                            //             <RadioGroup.ItemHiddenInput/>
+                            //             <RadioGroup.ItemIndicator/>
+                            //             <RadioGroup.ItemText>Option 2</RadioGroup.ItemText>
+                            //         </RadioGroup.Item>
+                            //     </Stack>
+                            // </RadioGroup.Root>
                             // }
                         />
                         <InputCard
@@ -299,7 +270,7 @@ export default function LesFormulaires() {
     </datalist>`}
                             inputElement={
                                 <>
-                                    <Input id="inputWithList" list="fruits" />
+                                    <Input id="inputWithList" list="fruits"/>
                                     <datalist id="fruits">
                                         <option value="Apple"/>
                                         <option value="Banana"/>
@@ -324,42 +295,42 @@ export default function LesFormulaires() {
 </select>
 `}
                             // inputElement={
-                                // <Select.Root collection={frameworks} size="sm" width="320px">
-                                //     <Select.HiddenSelect/>
-                                //     <Select.Label>Choose a fruit:</Select.Label>
-                                //     <Select.Control>
-                                //         <Select.Trigger>
-                                //             <Select.ValueText/>
-                                //         </Select.Trigger>
-                                //         <Select.IndicatorGroup>
-                                //             <Select.Indicator/>
-                                //         </Select.IndicatorGroup>
-                                //     </Select.Control>
-                                //     <Portal>
-                                //         <Select.Positioner>
-                                //             <Select.Content>
-                                //                 {frameworks.items.map((framework) => ( <Select.Item item={framework} key={framework.value}>     {framework.label}     <Select.ItemIndicator/> </Select.Item>
-                                //                 ))}
-                                //             </Select.Content>
-                                //         </Select.Positioner>
-                                //     </Portal>
-                                // </Select.Root>
-                                //  }
+                            // <Select.Root collection={frameworks} size="sm" width="320px">
+                            //     <Select.HiddenSelect/>
+                            //     <Select.Label>Choose a fruit:</Select.Label>
+                            //     <Select.Control>
+                            //         <Select.Trigger>
+                            //             <Select.ValueText/>
+                            //         </Select.Trigger>
+                            //         <Select.IndicatorGroup>
+                            //             <Select.Indicator/>
+                            //         </Select.IndicatorGroup>
+                            //     </Select.Control>
+                            //     <Portal>
+                            //         <Select.Positioner>
+                            //             <Select.Content>
+                            //                 {frameworks.items.map((framework) => ( <Select.Item item={framework} key={framework.value}>     {framework.label}     <Select.ItemIndicator/> </Select.Item>
+                            //                 ))}
+                            //             </Select.Content>
+                            //         </Select.Positioner>
+                            //     </Portal>
+                            // </Select.Root>
+                            //  }
                         />
                         <InputCard
                             title="Range"
                             description="Champ pour sélectionner une valeur dans une plage"
                             code={`<label for="range1">Select a range:</label>\n<input type="range" id="range1" min="0" max="100" />`}
                             // inputElement={
-                                // <Slider.Root width="200px" min={0} max={100}>
-                                //     <Slider.Control>
-                                //         <Slider.Track>
-                                //             <Slider.Range/>
-                                //         </Slider.Track>
-                                //         <Slider.Thumbs/>
-                                //     </Slider.Control>
-                                // </Slider.Root>
-                           // }
+                            // <Slider.Root width="200px" min={0} max={100}>
+                            //     <Slider.Control>
+                            //         <Slider.Track>
+                            //             <Slider.Range/>
+                            //         </Slider.Track>
+                            //         <Slider.Thumbs/>
+                            //     </Slider.Control>
+                            // </Slider.Root>
+                            // }
                         />
                     </Grid>
                 </Box>
@@ -380,32 +351,32 @@ export default function LesFormulaires() {
                             title="Date"
                             description="Champ pour sélectionner une date"
                             code={`<input type="date" />`}
-                            inputElement={<Input type="date" className="mt-2 px-2" />}
+                            inputElement={<Input type="date" className="mt-2 px-2"/>}
                         />
                         <InputCard
                             title="Datetime-local"
                             description="Champ pour sélectionner une date et une heure"
                             code={`<input type="datetime-local" />`}
                             inputElement={<Input type="datetime-local" className="mt-2 px-2"
-                                                 />}
+                            />}
                         />
                         <InputCard
                             title="Month"
                             description="Champ pour sélectionner un mois et une année"
                             code={`<input type="month" />`}
-                            inputElement={<Input type="month" className="mt-2 px-2" />}
+                            inputElement={<Input type="month" className="mt-2 px-2"/>}
                         />
                         <InputCard
                             title="Time"
                             description="Champ pour sélectionner une heure"
                             code={`<input type="time" />`}
-                            inputElement={<Input type="time" className="mt-2 px-2" />}
+                            inputElement={<Input type="time" className="mt-2 px-2"/>}
                         />
                         <InputCard
                             title="Week"
                             description="Champ pour sélectionner une semaine"
                             code={`<input type="week" />`}
-                            inputElement={<Input type="week" className="mt-2 px-2" />}
+                            inputElement={<Input type="week" className="mt-2 px-2"/>}
                         />
                     </Grid>
                 </Box>
@@ -439,7 +410,7 @@ export default function LesFormulaires() {
                             description="Champ pour entrer des nombres avec des contrôles de valeurs"
                             code={`<input type="number" min="0" max="120" />`}
                             inputElement={<Input type="number" min="0" max="120" className="mt-2 px-2"
-                                                 />}
+                            />}
                         />
                         <InputCard
                             title="Hidden"
@@ -451,43 +422,43 @@ export default function LesFormulaires() {
                     <Heading level={3}>3. Validation des formulaires en HTML5 </Heading>
                     <Text>HTML5 propose des outils de validation intégrés qui permettent de vérifier la saisie des
                         utilisateurs</Text>
-                   
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Attribut</TableHead>
-                                    <TableHead>Description</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell><Code>required</Code></TableCell>
-                                    <TableCell>Rend un champ obligatoire</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell><Code>minlength</Code>/<Code>maxlength</Code></TableCell>
-                                    <TableCell>Définit la longueur minimale/maximale d’un champ texte</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell><Code>pattern</Code></TableCell>
-                                    <TableCell>Utilise une expression régulière pour imposer un format
-                                        spécifique</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell><Code>step</Code>/<Code>min</Code>/<Code>max</Code></TableCell>
-                                    <TableCell> Définit un incrément spécifique pour un champ numérique ainsi
-                                        qu&apos;une
-                                        valeur
-                                        minimal et maximal</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell><Code>type</Code></TableCell>
-                                    <TableCell> type Certains types d’input (email, url, number) intègrent déjà des
-                                        validations
-                                        automatiques</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
+
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Attribut</TableHead>
+                                <TableHead>Description</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell><Code>required</Code></TableCell>
+                                <TableCell>Rend un champ obligatoire</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell><Code>minlength</Code>/<Code>maxlength</Code></TableCell>
+                                <TableCell>Définit la longueur minimale/maximale d’un champ texte</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell><Code>pattern</Code></TableCell>
+                                <TableCell>Utilise une expression régulière pour imposer un format
+                                    spécifique</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell><Code>step</Code>/<Code>min</Code>/<Code>max</Code></TableCell>
+                                <TableCell> Définit un incrément spécifique pour un champ numérique ainsi
+                                    qu&apos;une
+                                    valeur
+                                    minimal et maximal</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell><Code>type</Code></TableCell>
+                                <TableCell> type Certains types d’input (email, url, number) intègrent déjà des
+                                    validations
+                                    automatiques</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
 
 
                     <Heading level={3}>4. L&apos;auto complete </Heading>
@@ -637,67 +608,91 @@ export default function LesFormulaires() {
                             pré-remplir des champs comme le nom, l&apos;adresse e-mail et d&apos;autres informations
                             personnelles.
                         </Text>
-{/*                        <CodeWithPreview language="html" variant="tabs">*/}
-{/*                            <CodePanel>*/}
-{/*                                {`<form action="/submit" method="post">*/}
-{/*    <label for="firstname">First Name:</label>*/}
-{/*    <input type="text" id="firstname" name="firstname" placeholder="Enter your first name" autocomplete="given-name" required>*/}
-{/*    */}
-{/*    <label for="lastname">Last Name:</label>*/}
-{/*    <input type="text" id="lastname" name="lastname"  placeholder="Enter your last name" autocomplete="family-name" required>*/}
-{/*    */}
-{/*    <label for="email">Email:</label>*/}
-{/*    <input type="email" id="email" name="email" placeholder="Enter your email" autocomplete="email" required>*/}
-{/*    */}
-{/*    <label for="password">Password:</label>*/}
-{/*    <input type="password" id="password" name="password"  placeholder="Enter your password" autocomplete="new-password" required>*/}
-{/*    */}
-{/*    <input type="submit" value="Register">*/}
-{/*</form>`}*/}
-{/*                            </CodePanel>*/}
-{/*                            <PreviewPanel>*/}
-{/*                                <form onSubmit={handleSubmitRegistration}>*/}
-{/*                                    <VStack align="stretch">*/}
-{/*                                        <Field.Root required>*/}
-{/*                                            <Field.Label>*/}
-{/*                                                First Name:*/}
-{/*                                            </Field.Label>*/}
-{/*                                            <Input placeholder="Enter your first name" autoComplete="given-name"/>*/}
-{/*                                        </Field.Root>*/}
+                        <CodeWithPreviewCard language="html">
+                            <CodePanel>
+                                {`<form action="/submit" method="post">
+    <label for="firstname">First Name:</label>
+    <input type="text" id="firstname" name="firstname" placeholder="Enter your first name" autocomplete="given-name" required>
+    
+    <label for="lastname">Last Name:</label>
+    <input type="text" id="lastname" name="lastname"  placeholder="Enter your last name" autocomplete="family-name" required>
+    
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" placeholder="Enter your email" autocomplete="email" required>
+    
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password"  placeholder="Enter your password" autocomplete="new-password" required>
+    
+    <input type="submit" value="Register">
+</form>`}
+                            </CodePanel>
+                            <PreviewPanel>
+                                <VStack>
+                                    <form>
+                                        <div className="flex items-center gap-4">
+                                            <label htmlFor="firstname" className="w-32 font-semibold">First
+                                                Name:</label>
+                                            <input
+                                                type="text"
+                                                id="firstname"
+                                                name="firstname"
+                                                placeholder="Enter your first name"
+                                                autoComplete="given-name"
+                                                required
+                                                className="flex-1 p-2 border rounded"
+                                            />
+                                        </div>
 
-{/*                                        <Field.Root required>*/}
-{/*                                            <Field.Label>*/}
-{/*                                                Last Name:*/}
-{/*                                            </Field.Label>*/}
-{/*                                            <Input placeholder="Enter your last name" autoComplete="family-name"/>*/}
-{/*                                        </Field.Root>*/}
+                                        <div className="flex items-center gap-4">
+                                            <label htmlFor="lastname" className="w-32 font-semibold">Last Name:</label>
+                                            <input
+                                                type="text"
+                                                id="lastname"
+                                                name="lastname"
+                                                placeholder="Enter your last name"
+                                                autoComplete="family-name"
+                                                required
+                                                className="flex-1 p-2 border rounded"
+                                            />
+                                        </div>
 
-{/*                                        <Field.Root required>*/}
-{/*                                            <Field.Label>*/}
-{/*                                                Email:*/}
-{/*                                            </Field.Label>*/}
-{/*                                            <Input type="email" placeholder="Enter your email" autoComplete="email"/>*/}
-{/*                                        </Field.Root>*/}
+                                        <div className="flex items-center gap-4">
+                                            <label htmlFor="email" className="w-32 font-semibold">Email:</label>
+                                            <input
+                                                type="email"
+                                                id="email"
+                                                name="email"
+                                                placeholder="Enter your email"
+                                                autoComplete="email"
+                                                required
+                                                className="flex-1 p-2 border rounded"
+                                            />
+                                        </div>
 
-{/*                                        <Field.Root required>*/}
-{/*                                            <Field.Label>*/}
-{/*                                                Password:*/}
-{/*                                            </Field.Label>*/}
-{/*                                            <Input type="password" placeholder="Enter your password"autoComplete="new-password" />*/}
-{/*                                        </Field.Root>*/}
+                                        <div className="flex items-center gap-4">
+                                            <label htmlFor="password" className="w-32 font-semibold">Password:</label>
+                                            <input
+                                                type="password"
+                                                id="password"
+                                                name="password"
+                                                placeholder="Enter your password"
+                                                autoComplete="new-password"
+                                                required
+                                                className="flex-1 p-2 border rounded"
+                                            />
+                                        </div>
 
-{/*                                        <Button*/}
-{/*                                            type="submit"*/}
-{/*                                            colorScheme="teal"*/}
-{/*                                            width="full"*/}
-{/*                                            mt={4}*/}
-{/*                                        >*/}
-{/*                                            Register*/}
-{/*                                        </Button>*/}
-{/*                                    </VStack>*/}
-{/*                                </form>*/}
-{/*                            </PreviewPanel>*/}
-{/*                        </CodeWithPreview>*/}
+                                        <div className="pt-2 text-right">
+                                            <input
+                                                type="submit"
+                                                value="Register"
+                                                className="bg-html-css text-white py-2 px-4 rounded cursor-pointer w-full"
+                                            />
+                                        </div>
+                                    </form>
+                                </VStack>
+                            </PreviewPanel>
+                        </CodeWithPreviewCard>
                     </Box>
 
                     <Box>
@@ -708,59 +703,82 @@ export default function LesFormulaires() {
                             les informations liées à la carte bancaire comme le numéro de carte, la date
                             d&apos;expiration et le code de sécurité.
                         </Text>
-{/*                        <CodeWithPreview language="html" variant="tabs">*/}
-{/*                            <CodePanel>*/}
-{/*                                {`<form action="/payment" method="post" autocomplete="on">*/}
-{/*    <label for="cardnumber">Card Number:</label>*/}
-{/*    <input type="text" id="cardnumber" name="cardnumber" placeholder="Enter your card number" autocomplete="cc-number" required>*/}
-{/*    */}
-{/*    <label for="expiration">Expiration Date:</label>*/}
-{/*    <input type="month" id="expiration" name="expiration" placeholder="Select expiration date" autocomplete="cc-exp" required>*/}
-{/*    */}
-{/*    <label for="cvc">CVC:</label>*/}
-{/*    <input type="text" id="cvc" name="cvc" placeholder="Enter CVC" autocomplete="cc-csc" pattern="^\\d{3,4}$" required>*/}
-{/*    */}
-{/*    <input type="submit" value="Pay Now">*/}
-{/*</form>`}*/}
-{/*                            </CodePanel>*/}
-{/*                            <PreviewPanel>*/}
-{/*                                <form onSubmit={handleSubmitCVC}>*/}
-{/*                                    <VStack align="stretch">*/}
-{/*                                        <Field.Root required>*/}
-{/*                                            <Field.Label>*/}
-{/*                                                Card Number:*/}
-{/*                                            </Field.Label>*/}
-{/*                                            <Input placeholder="Enter your card number" autoComplete="cc-number"/>*/}
-{/*                                        </Field.Root>*/}
-{/*                                        <Field.Root required>*/}
-{/*                                            <Field.Label>*/}
-{/*                                                Expiration Date:*/}
-{/*                                            </Field.Label>*/}
-{/*                                            <Input type="month" placeholder="Select expiration date"autoComplete="cc-exp" />*/}
-{/*                                        </Field.Root>*/}
-{/*                                        <Field.Root required>*/}
-{/*                                            <Field.Label>*/}
-{/*                                                CVC:*/}
-{/*                                            </Field.Label>*/}
-{/*                                            <Input placeholder="Enter CVC" autoComplete="cc-csc" pattern="^\d{3,4}$"/>*/}
-{/*                                        </Field.Root>*/}
+                        <CodeWithPreviewCard language="html">
+                            <CodePanel>
+                                {`<form action="/payment" method="post" autocomplete="on">
+                            <label for="cardnumber">Card Number:</label>
+                            <input type="text" id="cardnumber" name="cardnumber" placeholder="Enter your card number" autocomplete="cc-number" required>
+                            
+                            <label for="expiration">Expiration Date:</label>
+                            <input type="month" id="expiration" name="expiration" placeholder="Select expiration date" autocomplete="cc-exp" required>
+                            
+                            <label for="cvc">CVC:</label>
+                            <input type="text" id="cvc" name="cvc" placeholder="Enter CVC" autocomplete="cc-csc" pattern="^\\d{3,4}$" required>
+                            
+                            <input type="submit" value="Pay Now">
+                        </form>`}
+                            </CodePanel>
+                            <PreviewPanel>
+                                <VStack>
+                                    <form action="/payment" method="post" autoComplete="on"
+                                          className="space-y-4 max-w-md mx-auto">
+                                        <div className="flex items-center gap-4">
+                                            <label htmlFor="cardnumber" className="w-32 font-semibold">Card
+                                                Number:</label>
+                                            <input
+                                                type="text"
+                                                id="cardnumber"
+                                                name="cardnumber"
+                                                placeholder="Enter your card number"
+                                                autoComplete="cc-number"
+                                                required
+                                                className="flex-1 p-2 border rounded"
+                                            />
+                                        </div>
 
-{/*                                        <Button*/}
-{/*                                            type="submit"*/}
-{/*                                            colorScheme="teal"*/}
-{/*                                            size={useBreakpointValue({base: 'sm', md: 'md'})}*/}
-{/*                                            width="full"*/}
-{/*                                            mt={4}*/}
-{/*                                        >*/}
-{/*                                            Pay Now*/}
-{/*                                        </Button>*/}
-{/*                                    </VStack>*/}
-{/*                                </form>*/}
-{/*                            </PreviewPanel>*/}
-{/*                        </CodeWithPreview>*/}
+                                        <div className="flex items-center gap-4">
+                                            <label htmlFor="expiration"
+                                                   className="w-32 font-semibold">Expiration:</label>
+                                            <input
+                                                type="month"
+                                                id="expiration"
+                                                name="expiration"
+                                                placeholder="Select expiration date"
+                                                autoComplete="cc-exp"
+                                                required
+                                                className="flex-1 p-2 border rounded"
+                                            />
+                                        </div>
+
+                                        <div className="flex items-center gap-4">
+                                            <label htmlFor="cvc" className="w-32 font-semibold">CVC:</label>
+                                            <input
+                                                type="text"
+                                                id="cvc"
+                                                name="cvc"
+                                                placeholder="Enter CVC"
+                                                autoComplete="cc-csc"
+                                                pattern="^\d{3,4}$"
+                                                required
+                                                className="flex-1 p-2 border rounded"
+                                            />
+                                        </div>
+
+                                        <div className="pt-2 text-right">
+                                            <input
+                                                type="submit"
+                                                value="Pay Now"
+                                                className="bg-html-css text-white py-2 px-4 rounded cursor-pointer hover:bg-green-700 w-full"
+                                            />
+                                        </div>
+                                    </form>
+                                </VStack>
+                            </PreviewPanel>
+                        </CodeWithPreviewCard>
                     </Box>
                 </Box>
             </Box>
         </section>
-    );
+    )
+        ;
 }

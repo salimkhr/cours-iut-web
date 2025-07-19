@@ -5,7 +5,7 @@ import {ClipboardCopyIcon} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {Button} from "@/components/ui/button";
 
-interface CodeWithPreviewProps {
+interface CodeWithPreviewCardProps {
     language: string;
     children: React.ReactNode;
     className?: string;
@@ -33,7 +33,7 @@ export function PreviewPanel({children}: PreviewPanelProps) {
     return <div data-preview-content>{children}</div>;
 }
 
-export default function CodeWithPreview({language, children}: CodeWithPreviewProps) {
+export default function CodeWithPreviewCard({language, children}: CodeWithPreviewCardProps) {
     let codeContent = "";
     let previewContent: ReactNode = null;
 
@@ -50,7 +50,7 @@ export default function CodeWithPreview({language, children}: CodeWithPreviewPro
     React.Children.forEach(children, (child) => {
         if (React.isValidElement(child)) {
             const element = child as React.ReactElement<PanelProps>;
-            
+
             if (typeof element.props.children === 'string') {
                 codeContent = element.props.children;
             } else {
@@ -62,7 +62,7 @@ export default function CodeWithPreview({language, children}: CodeWithPreviewPro
 
     const headerCard = (
         <>
-            <span className="text-sm text-white font-mono">{language}</span>
+            <span className="text-sm text-white font-mono">{language.toUpperCase()}</span>
             <div className="flex gap-1">
                 <Button
                     variant="ghost"

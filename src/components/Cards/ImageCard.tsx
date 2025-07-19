@@ -1,14 +1,16 @@
 'use client';
 import BaseCard from "@/components/Cards/BaseCard";
 import Image from "next/image";
-import React from "react";
+
 
 interface ImageCardProps {
     src: string;
-    title: string;
+    title?: string;
+    width?: number;
+    height?: number;
 }
 
-export default function ImageCard({src, title}: ImageCardProps) {
+export default function ImageCard({src, title, width = 800, height = 800}: ImageCardProps) {
 
     const header = (
 
@@ -21,7 +23,7 @@ export default function ImageCard({src, title}: ImageCardProps) {
 
     const content = (
         <>
-            <Image src={src} alt={title} className={"w-full"} width={800} height={800}/>
+            <Image src={src} alt={title ?? ''} className={"w-full"} width={width} height={height}/>
         </>
     );
 

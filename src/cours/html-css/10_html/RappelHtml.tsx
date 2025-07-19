@@ -1,4 +1,3 @@
-import React from "react";
 import Heading from "@/components/ui/Heading";
 import Box from "@/components/ui/Box";
 import Text from "@/components/ui/Text";
@@ -9,8 +8,7 @@ import Grid from "@/components/ui/Grid";
 import CardInput from "@/components/Cards/InputCard";
 import Link from "next/link";
 import CodeCard from "@/components/Cards/CodeCard";
-import CodeWithPreviewCard from "@/components/Cards/CodeWithPreviewCard";
-import CodeWithPreview, {CodePanel, PreviewPanel} from "@/components/Cards/CodeWithPreviewCard";
+import CodeWithPreviewCard, {CodePanel, PreviewPanel} from "@/components/Cards/CodeWithPreviewCard";
 import Image from "next/image";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 
@@ -135,7 +133,7 @@ export default async function RappelHTML() {
                     <Heading level={4}>
                         Titres (<Code>H1</Code> à <Code>H6</Code>)
                     </Heading>
-                    <CodeWithPreview language="html">
+                    <CodeWithPreviewCard language="html">
                         <CodePanel>
                             {`<h1>1/ Titre principal</h1>
                     <h2>2/ Sous-titre</h2>
@@ -154,7 +152,7 @@ export default async function RappelHTML() {
                                 <Heading level={6}>6/ Note ou remarque</Heading>
                             </Box>
                         </PreviewPanel>
-                    </CodeWithPreview>
+                    </CodeWithPreviewCard>
                 </Stack>
 
                 <Stack>
@@ -162,7 +160,7 @@ export default async function RappelHTML() {
                     <Heading level={4}>
                         Paragraphe (p)
                     </Heading>
-                    <CodeWithPreview language="html">
+                    <CodeWithPreviewCard language="html">
                         <CodePanel>
                             {`<p>
                         Ce texte est un paragraphe. 
@@ -175,7 +173,7 @@ export default async function RappelHTML() {
                                 page HTML.
                             </Text>
                         </PreviewPanel>
-                    </CodeWithPreview>
+                    </CodeWithPreviewCard>
                 </Stack>
 
                 <Stack>
@@ -481,7 +479,7 @@ export default async function RappelHTML() {
                             title="Lien vers une autre page"
                             description='Le navigateur charge une autre page du même site via l’attribut `href`.'
                             code={`<a href="/contact.html">Page Contact</a>`}
-                            inputElement={<Link color="teal.500" href="/contact.html">Page Contact</Link>}
+                            inputElement={<Link href="/contact.html">Page Contact</Link>}
                         />
                     </div>
 
@@ -490,7 +488,7 @@ export default async function RappelHTML() {
                             title="Lien vers un autre site"
                             description='L’attribut `href` pointe vers un domaine différent.'
                             code={`<a href="https://www.example.com">Visiter example.com</a>`}
-                            inputElement={<Link color="teal.500" href="https://www.example.com">Visiter
+                            inputElement={<Link href="https://www.example.com">Visiter
                                 example.com</Link>}
                         />
                     </div>
@@ -500,7 +498,7 @@ export default async function RappelHTML() {
                             title="Lien vers une ancre interne"
                             description='L’attribut `href="#id"` fait défiler la page jusqu’à l’élément correspondant à l’ID.'
                             code={`<a href="#lien">\n    Aller à la section "Lien"\n</a>`}
-                            inputElement={<Link color="teal.500" href="#lien">Aller à la
+                            inputElement={<Link href="#lien">Aller à la
                                 section &quot;Lien&quot;</Link>}
                         />
                     </div>
@@ -511,7 +509,7 @@ export default async function RappelHTML() {
                             description='L’attribut `target="_blank"` ouvre le lien dans un nouvel onglet du navigateur.'
                             code={`<a href="https://www.example.com" target="_blank">\n    Ouvrir dans un nouvel onglet\n</a>`}
                             inputElement={
-                                <Link color="teal.500" href="https://www.example.com" target="_blank"
+                                <Link href="https://www.example.com" target="_blank"
                                       rel="noopener noreferrer">
                                     Ouvrir dans un nouvel onglet
                                 </Link>
@@ -524,7 +522,7 @@ export default async function RappelHTML() {
                             title="Lien vers une adresse e-mail"
                             description='Le préfixe `mailto:` ouvre le client de messagerie par défaut avec le champ "À" prérempli.'
                             code={`<a href="mailto:contact@monsite.com">Envoyer un e-mail</a>`}
-                            inputElement={<Link color="teal.500" href="mailto:contact@monsite.com">Envoyer un
+                            inputElement={<Link href="mailto:contact@monsite.com">Envoyer un
                                 e-mail</Link>}
                         />
                     </div>
@@ -534,7 +532,7 @@ export default async function RappelHTML() {
                             title="Lien vers un numéro de téléphone"
                             description='Le préfixe `tel:` ouvre l’application téléphonique sur mobile ou logiciel compatible.'
                             code={`<a href="tel:+33123456789">Appeler le 01 23 45 67 89</a>`}
-                            inputElement={<Link color="teal.500" href="tel:+33123456789">Appeler le 01 23 45 67
+                            inputElement={<Link href="tel:+33123456789">Appeler le 01 23 45 67
                                 89</Link>}
                         />
                     </div>

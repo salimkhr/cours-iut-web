@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>SteamLite</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700" rel="stylesheet">
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#"><strong>STEAMLITE</strong></a>
+        <button class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="#">Accueil</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Catalogue</a></li>
+            </ul>
+            <form class="d-flex">
+                <input class="form-control me-2" placeholder="Search" type="search">
+            </form>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero section -->
+<section class="hero"
+         style="background: url('./img/hero.jpg') center/cover no-repeat; color: white; padding: 100px 10vw; text-align: left;">
+    <div class="container-fluid">
+        <h1>MythiCode</h1>
+        <a class="btn btn-outline-light btn-lg" href="#">Acheter maintenant</a>
+    </div>
+</section>
+
+<!-- Carousel -->
+<div class="carousel slide" data-bs-ride="carousel" id="carouselExample">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img alt="ShadowQuest" class="d-block w-100" src="https://via.placeholder.com/1200x400?text=ShadowQuest">
+        </div>
+        <div class="carousel-item">
+            <img alt="Neon Strike" class="d-block w-100" src="https://via.placeholder.com/1200x400?text=Neon+Strike">
+        </div>
+        <div class="carousel-item">
+            <img alt="Empire Legacy" class="d-block w-100"
+                 src="https://via.placeholder.com/1200x400?text=Empire+Legacy">
+        </div>
+    </div>
+    <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carouselExample" type="button">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carouselExample" type="button">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+</div>
+
+<!-- Catalogue -->
+<div class="container my-5">
+    <h2 class="mb-4 fw-bold">Catalogue de jeux</h2>
+    <div class="row g-4" id="game-catalogue">
+        <!-- Cartes injectées ici par JS -->
+    </div>
+</div>
+
+<!-- Modale d'achat -->
+<div aria-hidden="true" aria-labelledby="buyModalLabel" class="modal fade" id="buyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="buyModalLabel">Acheter le jeu</h5>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+            <div class="modal-body">
+                <p id="modal-game-title"></p>
+                <p id="modal-game-price"></p>
+                <p id="modal-game-genre"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Fermer</button>
+                <button class="btn btn-primary" id="buy-button" type="button">Acheter</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast de confirmation d'achat -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div aria-atomic="true" aria-live="assertive" class="toast" id="buyToast" role="alert">
+        <div class="toast-header">
+            <strong class="me-auto">Achat</strong>
+            <button class="btn-close" data-bs-dismiss="toast" type="button"></button>
+        </div>
+        <div class="toast-body">
+            Merci pour votre achat ! Le jeu est ajouté à votre bibliothèque.
+        </div>
+    </div>
+</div>
+
+<!-- Section FAQ -->
+<div class="container my-5">
+    <h2 class="fw-bold mb-4">Foire aux questions</h2>
+    <div class="accordion" id="faqAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" data-bs-target="#collapseOne" data-bs-toggle="collapse" type="button">
+                    Comment acheter un jeu ?
+                </button>
+            </h2>
+            <div class="accordion-collapse collapse show" data-bs-parent="#faqAccordion" id="collapseOne">
+                <div class="accordion-body">
+                    Cliquez sur "Acheter maintenant" pour ouvrir la fenêtre de confirmation.
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" data-bs-target="#collapseTwo" data-bs-toggle="collapse"
+                        type="button">
+                    Puis-je être remboursé ?
+                </button>
+            </h2>
+            <div class="accordion-collapse collapse" data-bs-parent="#faqAccordion" id="collapseTwo">
+                <div class="accordion-body">
+                    Vous pouvez demander un remboursement dans les 14 jours si vous n'avez pas joué plus de 2 heures.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer text-center bg-dark text-body-secondary p-4" data-bs-theme="dark">
+    <div class="container d-flex flex-column flex-md-row justify-content-between">
+        <span>À propos</span>
+        <span>Conditions Générales d'Utilisation</span>
+        <span>Politique de confidentialité</span>
+    </div>
+</footer>
+
+<!-- Scripts JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const games = [
+        {
+            title: "ShadowQuest",
+            price: "24,99 €",
+            genre: "RPG",
+            badgeColor: "primary",
+            image: "https://via.placeholder.com/350x200?text=ShadowQuest"
+        },
+        {
+            title: "Neon Strike",
+            price: "29,99 €",
+            genre: "FPS",
+            badgeColor: "danger",
+            image: "https://via.placeholder.com/350x200?text=Neon+Strike"
+        },
+        {
+            title: "Jump Jungle",
+            price: "14,99 €",
+            genre: "Plateforme",
+            badgeColor: "warning text-dark",
+            image: "https://via.placeholder.com/350x200?text=Jump+Jungle"
+        },
+        {
+            title: "Silent Corridor",
+            price: "19,99 €",
+            genre: "Horreur",
+            badgeColor: "dark",
+            image: "https://via.placeholder.com/350x200?text=Silent+Corridor"
+        },
+        {
+            title: "Speed Rush",
+            price: "9,99 €",
+            genre: "Course",
+            badgeColor: "success",
+            image: "https://via.placeholder.com/350x200?text=Speed+Rush"
+        },
+        {
+            title: "Empire Legacy",
+            price: "34,99 €",
+            genre: "Stratégie",
+            badgeColor: "secondary",
+            image: "https://via.placeholder.com/350x200?text=Empire+Legacy"
+        },
+        {
+            title: "Whispering Tides",
+            price: "17,99 €",
+            genre: "Aventure",
+            badgeColor: "info text-dark",
+            image: "https://via.placeholder.com/350x200?text=Whispering+Tides"
+        },
+        {
+            title: "Mindshift",
+            price: "11,99 €",
+            genre: "Puzzle",
+            badgeColor: "light text-dark",
+            image: "https://via.placeholder.com/350x200?text=Mindshift"
+        },
+        {
+            title: "Life Architect",
+            price: "22,99 €",
+            genre: "Simulation",
+            badgeColor: "success",
+            image: "https://via.placeholder.com/350x200?text=Life+Architect"
+        },
+        {
+            title: "Blood Aether",
+            price: "26,99 €",
+            genre: "Hack 'n' Slash",
+            badgeColor: "danger",
+            image: "https://via.placeholder.com/350x200?text=Blood+Aether"
+        },
+        {
+            title: "War Sigil",
+            price: "Gratuit",
+            genre: "MOBA",
+            badgeColor: "warning text-dark",
+            image: "https://via.placeholder.com/350x200?text=War+Sigil"
+        },
+        {
+            title: "Crypt Runner",
+            price: "13,49 €",
+            genre: "Rogue-lite",
+            badgeColor: "secondary",
+            image: "https://via.placeholder.com/350x200?text=Crypt+Runner"
+        }
+    ];
+
+    const container = document.getElementById("game-catalogue");
+
+    games.forEach(game => {
+        container.innerHTML += `
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="${game.image}" alt="${game.title}" class="rounded img-fluid">
+                    <div class="card-body">
+                        <h5 class="card-title">${game.title}</h5>
+                        <p class="card-text">${game.price}</p>
+                    </div>
+                    <div class="card-footer text-body-secondary d-flex justify-content-between align-items-center">
+                        <span class="badge bg-${game.badgeColor}">${game.genre}</span>
+                        <button class="btn btn-outline-primary mt-3 buy-btn" data-bs-toggle="modal" data-bs-target="#buyModal"
+                            data-title="${game.title}" data-price="${game.price}" data-genre="${game.genre}">
+                            Acheter maintenant
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    container.addEventListener("click", function (event) {
+        if (event.target && event.target.classList.contains("buy-btn")) {
+            const title = event.target.getAttribute("data-title");
+            const price = event.target.getAttribute("data-price");
+            const genre = event.target.getAttribute("data-genre");
+
+            document.getElementById("modal-game-title").textContent = "Jeu: " + title;
+            document.getElementById("modal-game-price").textContent = "Prix: " + price;
+            document.getElementById("modal-game-genre").textContent = "Genre: " + genre;
+        }
+    });
+
+    document.getElementById("buy-button").addEventListener("click", () => {
+        const toast = new bootstrap.Toast(document.getElementById("buyToast"));
+        toast.show();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+/* Mise en forme générale */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.container {
+    max-width: 60vw;
+    margin: 0 auto 10px;
+}
+
+h1, h2, h3 {
+    color: #222;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.center {
+    text-align: center;
+}
+
+p {
+    line-height: 1.6;
+    margin: 10px 0;
+}
+
+a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Style des cartes */
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Section des critiques de la communauté */
+.reactions {
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.reactions h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.reactions p {
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Style des critiques individuelles */
+.reaction {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.reaction img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.reaction h3 {
+    font-size: 24px;
+    margin: 0 0 10px 0;
+}
+
+.reaction p {
+    font-size: 16px;
+    font-style: italic;
+    color: #666;
+    flex-grow: 1;
+}
+
+.reaction a {
+    font-size: 16px;
+    display: inline-block;
+    margin-top: 10px;
+    background-color: #0066cc;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.reaction a:hover {
+    background-color: #005bb5;
+}
+
+/* Footer */
+footer {
+    background-color: #222;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 20px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+footer p {
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Style pour le tableau */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background-color: #0066cc;
+    color: white;
+    padding: 10px;
+    border: 2px solid #ddd;
+}
+
+td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody > tr:hover {
+    background-color: #f1f1f1;
+}

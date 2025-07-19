@@ -145,6 +145,11 @@
     border-color: #E34F26;
 }
 
+.header-html-css a {
+    color: #E34F26;
+    text-decoration: underline;
+}
+
 /** php */
 .text-php {
     color: #777BB4;
@@ -169,6 +174,11 @@
 
 .header-php .border-module {
     border-color: #777BB4;
+}
+
+.header-php a {
+    color: #777BB4;
+    text-decoration: underline;
 }
 
 
@@ -196,4 +206,9 @@
 
 .header-javascript .border-module {
     border-color: #ac9b14;
+}
+
+.header-javascript a {
+    color: #ac9b14;
+    text-decoration: underline;
 }

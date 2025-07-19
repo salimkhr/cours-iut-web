@@ -62,7 +62,7 @@ const modules: Module[] = [
                 "totalDuration": 1,
                 "tags": ["bootstrap", "framework", "css"],
                 "contents": [
-                    {"type": "cours", "componentPath": "html-css/4_bootstrap/BootstrapIntro"},
+                    {"type": "cours", "componentPath": "html-css/4_bootstrap/Bootstrap"},
                     {"type": "TP", "componentPath": "html-css/4_bootstrap/BootstrapTp"}
                 ],
                 "order": 4,
@@ -77,7 +77,7 @@ const modules: Module[] = [
                 "totalDuration": 1,
                 "tags": ["bootstrap", "components", "css"],
                 "contents": [
-                    {"type": "cours", "componentPath": "html-css/5_bootstrap/BootstrapAvance"},
+                    // {"type": "cours", "componentPath": "html-css/5_bootstrap/BootstrapAvance"},
                     {"type": "TP", "componentPath": "html-css/5_bootstrap/BootstrapAvanceTp"}
                 ],
                 "order": 5,

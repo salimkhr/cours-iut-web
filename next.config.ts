@@ -6,7 +6,7 @@ const nextConfig = {
     pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
     // Optionally, add any other Next.js config below
     images: {
-        domains: ['picsum.photos', 'developer.mozilla.org'],
+        domains: ['picsum.photos', 'developer.mozilla.org', 'media0.giphy.com', 'media1.giphy.com', 'media2.giphy.com', 'media3.giphy.com', 'media4.giphy.com', 'media5.giphy.com'],
     },
 }
 

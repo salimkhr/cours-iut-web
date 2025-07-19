@@ -1,18 +1,19 @@
 'use client'
 import React, {useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
-import {ClipboardCopyIcon} from "lucide-react";
+import {ClipboardCopyIcon, DownloadIcon} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {Button} from "@/components/ui/button";
 
 interface CodeCardProps {
-    language: string;
-    children: string;
-    className?: string;
-    showLineNumbers?: boolean;
+    language: string,
+    children: string,
+    className?: string,
+    showLineNumbers?: boolean,
+    filename?: string
 }
 
-export default function CodeCard({language, children, showLineNumbers = true}: CodeCardProps) {
+export default function CodeCard({language, children, showLineNumbers = true, filename}: CodeCardProps) {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
@@ -22,10 +23,54 @@ export default function CodeCard({language, children, showLineNumbers = true}: C
         });
     };
 
+    const getMimeType = (language: string): string => {
+        switch (language.toLowerCase()) {
+            case "html":
+                return "text/html";
+            case "css":
+                return "text/css";
+            case "js":
+            case "javascript":
+                return "application/javascript";
+            case "json":
+                return "application/json";
+            case "ts":
+            case "typescript":
+                return "application/typescript";
+            case "php":
+                return "application/x-httpd-php";
+            case "txt":
+            default:
+                return "text/plain";
+        }
+    };
+
+    const handleDownload = () => {
+        const mimeType = getMimeType(language);
+        const blob = new Blob([children], {type: `${mimeType};charset=utf-8`});
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename ?? '';
+        link.click();
+
+        URL.revokeObjectURL(url);
+    };
+
     const headerCard = (
         <>
             <span className="text-sm text-white font-mono">{language.toUpperCase()}</span>
             <div className="flex gap-1">
+                {filename ?
+                    <Button
+                        variant="ghost"
+                        onClick={handleDownload}
+                        className="flex items-center gap-2 text-white">
+                        <DownloadIcon className="w-4 h-4"/>
+                        {filename}
+                    </Button>
+                    : null}
                 <Button
                     variant="ghost"
                     size="sm"

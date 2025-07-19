@@ -5,14 +5,13 @@ import Box from "@/components/ui/Box";
 import Heading from "@/components/ui/Heading";
 import Text from "@/components/ui/Text";
 import Link from "next/link";
-import {Stack} from "@/components/ui/Stack";
 import CodeCard from "@/components/Cards/CodeCard";
 
 
 export default function LesFormulairesTp() {
 
     return (
-        <Stack>
+        <section>
             <Box>
                 {/* Création d'un formulaire HTML */}
                 <Heading level={2}>A/ Page de connexion</Heading>
@@ -109,6 +108,6 @@ export default function LesFormulairesTp() {
                 <Text>Ajoutez l&apos;utilisation de l&apos;attribut <Code>autocomplete</Code> dans les formulaires pour
                     améliorer l&apos;expérience utilisateur et faciliter la saisie des informations.</Text>
             </Box>
-        </Stack>
+        </section>
     );
 }
