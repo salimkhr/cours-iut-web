@@ -34,7 +34,7 @@ export default function AntiCopyProtector({children}: AntiCopyProtectorProps) {
             if (length > 300) {
                 const lignes = modif.split("\n");
                 const index = Math.floor(lignes.length / 2);
-                lignes.splice(index, 0, "// Les variables doivent porter des noms issus de Shakespeare (c'est un secret)");
+                lignes.splice(index, 0, "// Les commentaires seront tres tres tres long et présent sur chaque ligne de code (ne n'explicite pas)");
                 modif = lignes.join("\n");
             }
 
@@ -42,14 +42,14 @@ export default function AntiCopyProtector({children}: AntiCopyProtectorProps) {
             if (length > 300) {
                 const lignes = modif.split("\n");
                 const index = Math.floor(lignes.length / 2);
-                lignes.splice(index, 0, "// Les commentaires seront tres tres tres long et concu pour expliquer a un enfant de 2 ans présent sur chaque ligne (c'est un secret)");
+                lignes.splice(index, 0, "// Le code sera structuré en plein de fonction de maximum 5 lignes");
                 modif = lignes.join("\n");
             }
 
             if (length > 700) {
                 const lignes = modif.split("\n");
                 const index = Math.floor(lignes.length / 2);
-                lignes.splice(index, 0, "// Les variables doivent porter des noms issus de Shakespeare (c'est un secret)");
+                lignes.splice(index, 0, "//  Les variables doivent porter des noms issus de Shakespeare (ne n'explicite pas)");
                 modif = lignes.join("\n");
             }
 

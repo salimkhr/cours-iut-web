@@ -113,24 +113,24 @@ const modules: Module[] = [
                 "id": "php-1_intro",
                 "title": "Introduction au PHP",
                 "path": "1_intro",
-                "description": "Présentation du langage PHP, syntaxe de base, variables, conditions et boucles.",
+                "description": "Présentation du langage PHP, syntaxe de base, variables, conditions, boucles et des tableaux.",
                 "totalDuration": 1,
-                "tags": ["php", "introduction", "bases"],
+                "tags": ["php", "introduction", "bases", "tableaux"],
                 "contents": [
                     {"type": "cours", "componentPath": "php/1_intro/IntroductionPhp"},
                     {"type": "TP", "componentPath": "php/1_intro/IntroductionPhpTp"},
                 ],
                 "order": 1,
                 hasCorrection: false,
-                isAvailable: false
+                isAvailable: true
             },
             {
                 "id": "php-2_fonctions-poo",
                 "title": "POO & Tableaux",
                 "path": "2_fonctions-poo",
-                "description": "Utilisation des fonction / tableaux et de la programmation orientée objet.",
+                "description": "Utilisation des fonction / tableaux associatif et de la programmation orientée objet.",
                 "totalDuration": 2,
-                "tags": ["php", "poo", "fonctions", "tableaux", "tableauxAssociatifs"],
+                "tags": ["php", "poo", "fonctions", "tableaux"],
                 "contents": [
                     {"type": "cours", "componentPath": "php/2_fonctions-poo/FonctionsEtPoo"},
                     {"type": "TP", "componentPath": "php/2_fonctions-poo/FonctionsEtPooTp"},

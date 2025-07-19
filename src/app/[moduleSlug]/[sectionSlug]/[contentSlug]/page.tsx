@@ -3,6 +3,7 @@ import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import dynamic from 'next/dynamic'
 import modules from "@/config";
 import AntiCopyProtector from "@/components/AntiCopyProtector";
+import Heading from "@/components/ui/Heading";
 
 interface ContentPageProps {
     params: Promise<{
@@ -72,6 +73,7 @@ export default async function Content({params}: ContentPageProps) {
                 currentContent={currentContent}
             />
             <div className={`mx-10 header-${currentModule.path} py-20`}>
+                <Heading level={1}>{currentSection.order}. {currentSection.title}</Heading>
                 <AntiCopyProtector>
                     <ComponentToRender/>
                 </AntiCopyProtector>

@@ -9,7 +9,7 @@ export default function Footer() {
             <div className="mx-auto max-w-6xl px-4 py-3 flex flex-wrap justify-between items-center gap-4">
                 {/* Copyright */}
                 <p className="text-base text-center sm:text-left w-full sm:w-auto">
-                    &copy; {yearDisplay} Salim Khraimeche.
+                    &copy; {yearDisplay}-{yearDisplay + 1} Salim Khraimeche.
                 </p>
 
                 {/* Contact Links */}
