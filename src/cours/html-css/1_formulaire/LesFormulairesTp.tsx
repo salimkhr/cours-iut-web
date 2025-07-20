@@ -18,15 +18,15 @@ export default function LesFormulairesTp() {
                 <Text>En partant du fichier <Code>login.html</Code> :</Text>
                 <CodeCard language="html">
                     {`<!DOCTYPE html>
-                <html lang="fr">
-                    <head>
-                        <meta charset="UTF-8">
-                        <title>Connexion</title>
-                    </head>
-                    <body>
-                        <h1>Connexion</h1>
-                    </body>
-                </html>`}
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Connexion</title>
+    </head>
+    <body>
+        <h1>Connexion</h1>
+    </body>
+</html>`}
                 </CodeCard>
 
                 <Text>Créez un formulaire de connexion avec les champs suivants :</Text>
