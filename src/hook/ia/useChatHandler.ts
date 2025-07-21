@@ -6,7 +6,7 @@ import useFormattedDate from "@/hook/ia/useFormattedDate";
 type ChatChunk = {
     model: string;
     created_at: string;
-    response: string;
+    content: string;
     done: boolean;
     done_reason?: string;
     context?: number[];
@@ -59,17 +59,13 @@ export default function useChatHandler() {
 
                 for (const data of events) {
                     // Concatène la réponse partielle
-                    if (data.response) {
-                        botMsg += data.response;
+                    if (data.content) {
+                        botMsg += data.content;
                     }
-                    updateLastBotMessage(botMsg, formattedDate);
-
-                    // Si signal de fin
-                    if (data.done) {
-                        setIsTyping(false);
-                    }
+                    updateLastBotMessage(botMsg);
                 }
             }
+            setIsTyping(false);
         } catch (error) {
             console.error(error);
             setIsTyping(false);
@@ -80,21 +76,30 @@ export default function useChatHandler() {
 }
 
 function parseStreamChunk(buffer: string): { events: ChatChunk[], remainder: string } {
-    // Découpe le buffer par lignes
     const lines = buffer.split("\n");
-    const events = [];
+    const events: ChatChunk[] = [];
     let remainder = "";
 
-    // On ne traite que les lignes complètes (tout sauf la dernière qui peut être partielle)
+    // Parcourir toutes les lignes sauf la dernière (potentiellement incomplète)
     for (let i = 0; i < lines.length - 1; i++) {
         const line = lines[i].trim();
+
         if (!line) continue;
 
-        try {
-            const json = JSON.parse(line);
-            events.push(json);
-        } catch (e) {
-            console.error("Erreur JSON parse line:", line, e);
+        // On s'attend à un format SSE : "data: {...json...}"
+        if (line.startsWith("data: ")) {
+            const jsonStr = line.slice(6).trim(); // Extraire la partie JSON après "data: "
+            if (jsonStr !== '[DONE]') {
+                try {
+                    const json = JSON.parse(jsonStr);
+                    events.push(json);
+                } catch (e) {
+                    console.error("Erreur JSON parse line:", jsonStr, e);
+                }
+            }
+        } else {
+            // Optionnel: log ou ignore les lignes sans "data: "
+            console.warn("Ligne SSE ignorée (pas de 'data: '):", line);
         }
     }
 

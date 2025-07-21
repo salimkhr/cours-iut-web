@@ -1,5 +1,6 @@
 import {create} from "zustand";
 import {persist} from "zustand/middleware";
+import useFormattedDate from "@/hook/ia/useFormattedDate";
 
 export type Message = {
     from: "user" | "bot";
@@ -10,9 +11,10 @@ export type Message = {
 type ChatStore = {
     messages: Message[];
     addMessage: (msg: Message) => void;
-    updateLastBotMessage: (text: string, timestamp: string) => void;
+    updateLastBotMessage: (timestamp: string) => void;
     clearMessages: () => void;
 };
+
 
 export const useChatStore = create(
     persist<ChatStore>(
@@ -21,10 +23,13 @@ export const useChatStore = create(
             addMessage: (msg) =>
                 set((state) => ({messages: [...state.messages, msg]})),
             clearMessages: () => set({messages: []}),
-            updateLastBotMessage: (text: string, timestamp: string) => {
+            updateLastBotMessage: (text: string) => {
                 useChatStore.setState((state) => {
                     const messages = [...state.messages];
                     const lastIndex = messages.map(m => m.from).lastIndexOf("bot");
+
+                    const {formatDate} = useFormattedDate();
+                    const timestamp = formatDate();
 
                     if (lastIndex !== -1) {
                         messages[lastIndex] = {...messages[lastIndex], text, timestamp};
