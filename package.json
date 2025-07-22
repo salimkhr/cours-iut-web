@@ -8,9 +8,14 @@
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "extract-cours": " node script/extractCours.js"
+    "extract-cours": " node script/extractCours.js",
+    "extract-coursmd": " node script/extractToMarkdown.js"
   },
   "dependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/generator": "^7.28.0",
+    "@babel/parser": "^7.28.0",
+    "@babel/traverse": "^7.28.0",
     "@hookform/resolvers": "^5.1.1",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",

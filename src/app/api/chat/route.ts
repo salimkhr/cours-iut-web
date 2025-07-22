@@ -2,7 +2,8 @@ import {cookies} from "next/headers";
 import Tokens from "csrf";
 
 const tokens = new Tokens();
-const backendUrl = process.env.BACKEND_API_URL;
+const backendUrl = process.env.BACKEND_IA_API_URL;
+const backendKey = process.env.BACKEND_IA_API_KEY;
 
 export async function POST(req: Request) {
     const cookieStore = await cookies();
@@ -17,10 +18,13 @@ export async function POST(req: Request) {
 
     const {message} = await req.json();
 
+    console.log(backendKey);
+
     const ollamaRes = await fetch(`${backendUrl}/chat/stream`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            'x-api-key': backendKey ?? ""
         },
         body: JSON.stringify({
             message,

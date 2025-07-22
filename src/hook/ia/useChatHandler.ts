@@ -38,7 +38,9 @@ export default function useChatHandler() {
         try {
             const csrfRes = await fetch('/api/csrf-token');
             const {csrfToken} = await csrfRes.json();
-            
+
+            console.log(csrfToken)
+
             const res = await fetch("/api/chat", {
                 method: "POST",
                 headers: {

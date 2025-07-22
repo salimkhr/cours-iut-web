@@ -45,8 +45,7 @@ export default function LesFormulaires() {
                         <List>
                             <ListItem>action : Spécifie l&apos;URL vers laquelle les données du formulaire seront
                                 envoyées.</ListItem>
-                            <ListItem>method : Définit la méthode de soumission des données (GET ou
-                                POST).</ListItem>
+                            <ListItem>method : Définit la méthode de soumission des données (GET ou POST).</ListItem>
                         </List>
                     </ListItem>
                     <ListItem>
@@ -707,15 +706,15 @@ export default function LesFormulaires() {
                             <CodePanel>
                                 {`<form action="/payment" method="post" autocomplete="on">
                             <label for="cardnumber">Card Number:</label>
-                            <input type="text" id="cardnumber" name="cardnumber" placeholder="Enter your card number" autocomplete="cc-number" required>
+                            <input type="text" id="cardnumber" name="cardnumber" placeholder="Enter your card number" autocomplete="cc-number" required/>
                             
                             <label for="expiration">Expiration Date:</label>
-                            <input type="month" id="expiration" name="expiration" placeholder="Select expiration date" autocomplete="cc-exp" required>
+                            <input type="month" id="expiration" name="expiration" placeholder="Select expiration date" autocomplete="cc-exp" required/>
                             
                             <label for="cvc">CVC:</label>
-                            <input type="text" id="cvc" name="cvc" placeholder="Enter CVC" autocomplete="cc-csc" pattern="^\\d{3,4}$" required>
+                            <input type="text" id="cvc" name="cvc" placeholder="Enter CVC" autocomplete="cc-csc" pattern="^\\d{3,4}$" required/>
                             
-                            <input type="submit" value="Pay Now">
+                            <input type="submit" value="Pay Now"/>
                         </form>`}
                             </CodePanel>
                             <PreviewPanel>
