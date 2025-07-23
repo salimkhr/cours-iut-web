@@ -1,8 +1,0 @@
-target:
-  - url: "docs/"
-
-include:
-  - "src/"
-  - "public/"
-
-reinit: "e2e7f09c-b10a-4fc3-8143-3b769e5aa2d4"
