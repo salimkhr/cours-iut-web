@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import modules from "@/config";
 import AntiCopyProtector from "@/components/AntiCopyProtector";
 import Heading from "@/components/ui/Heading";
+import ChatWidget from "@/components/ia/ChatWidget";
 
 interface ContentPageProps {
     params: Promise<{
@@ -77,6 +78,7 @@ export default async function Content({params}: ContentPageProps) {
                 <AntiCopyProtector>
                     <ComponentToRender/>
                 </AntiCopyProtector>
+                <ChatWidget currentModule={currentModule}/>
             </div>
         </div>
     );

@@ -265,11 +265,11 @@ export default async function RappelHTML() {
                     </ol>`}
                         </CodePanel>
                         <PreviewPanel>
-                            <List ordered={true}>
-                                <ListItem>Préparer le projet</ListItem>
-                                <ListItem>Écrire le code</ListItem>
-                                <ListItem>Tester et publier</ListItem>
-                            </List>
+                            <ol>
+                                <li>Préparer le projet</li>
+                                <li>Écrire le code</li>
+                                <li>Tester et publier</li>
+                            </ol>
                         </PreviewPanel>
                     </CodeWithPreviewCard>
                 </Stack>
@@ -289,13 +289,13 @@ export default async function RappelHTML() {
                     </dl>`}
                         </CodePanel>
                         <PreviewPanel>
-                            <></>
-                            {/*<DataList>*/}
-                            {/*    <DataListItemLabel>HTML</DataListItemLabel>*/}
-                            {/*    <DataListItemValue>Langage de structure des pages web</DataListItemValue>*/}
-                            {/*    <DataListItemLabel>CSS</DataListItemLabel>*/}
-                            {/*    <DataListItemValue>Langage de style</DataListItemValue>*/}
-                            {/*</DataList>*/}
+                            <dl>
+                                <dt>HTML</dt>
+                                <dd>Langage de structure des pages web</dd>
+
+                                <dt>CSS</dt>
+                                <dd>Langage de style</dd>
+                            </dl>
                         </PreviewPanel>
                     </CodeWithPreviewCard>
                 </Stack>

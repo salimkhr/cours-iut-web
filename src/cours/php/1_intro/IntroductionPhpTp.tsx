@@ -45,12 +45,24 @@ export default function IntroductionPhpTp() {
             <Box>
                 <Heading level={2}>A- Rappel de HTML</Heading>
                 <Text>
-                    Dans un fichier <Code>~/public_html/TP1/rappel.html</Code>, créer une page contenant la structure de
-                    base d&apos;un fichier HTML ainsi qu&apos;un tableau.
-                    La page devra résumer les montants collectés par les streamers lors du dernier Z-Event avec 4
-                    colonnes : Nom du Streamer, Pseudo, Montant Collecté (en euros), Rang. Avec les données suivantes :
-                    La page sera affichée sur votre navigateur à
-                    l&apos;adresse <Code>http://woody.iut.univ-lehavre.fr/~loginLDAP/TP1/rappel.html</Code> ou <Code>http://localhost/~loginLDAP/TP1/rappel.html</Code>
+                    Le serveur <strong>woody</strong> est un serveur web de l&apos;IUT configuré
+                    avec <strong>Apache</strong>.
+                    Il permet d&apos;interpréter les scripts PHP et de rendre accessibles sur le réseau les fichiers
+                    HTML et PHP que vous placez dans votre dossier personnel <Code>~/public_html</Code>.
+                    Par exemple, si vous ajoutez un fichier
+                    nommé <Code>index.php</Code> dans <Code>~/public_html/TP1/</Code>, il sera accessible à
+                    l&apos;adresse :
+                    <Code>http://woody.iut.univ-lehavre.fr/~votre_login/TP1/index.php</Code> ou <Code>http://localhost/~loginLDAP/TP1/index.php</Code>.
+                </Text>
+
+                <Text>
+                    Dans le fichier <Code>~/public_html/TP1/rappel.html</Code>, créez une page HTML contenant la
+                    structure de base d&apos;un document HTML, ainsi qu&apos;un tableau.
+                    Ce tableau devra récapituler les montants collectés par les streamers lors du dernier Z-Event, avec
+                    les 4 colonnes suivantes :
+                    <em>Nom du Streamer</em>, <em>Pseudo</em>, <em>Montant Collecté (en euros)</em> et <em>Rang</em>.
+                    Vous pourrez ensuite consulter cette page dans votre navigateur à l&apos;adresse :
+                    <Code>http://woody.iut.univ-lehavre.fr/~loginLDAP/TP1/rappel.html</Code> ou <Code>http://localhost/~loginLDAP/TP1/rappel.html</Code>.
                 </Text>
 
                 <Table>
