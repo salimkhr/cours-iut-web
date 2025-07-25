@@ -2,26 +2,24 @@
 import {useEffect, useRef, useState} from "react";
 import {useChatStore} from "@/lib/store/useChatStore";
 import {Button} from "@/components/ui/button";
-import {ScrollArea} from "@/components/ui/scroll-area";
 import {Textarea} from "@/components/ui/textarea";
-import {AppWindow, Bot, Send, Trash} from "lucide-react";
-import Message from "./Message";
+import {Bot, Send, Trash} from "lucide-react";
 import useChatHandler from "@/hook/ia/useChatHandler";
 import {Module} from "@/types/module";
 import {cn} from "@/lib/utils";
+import Message from "@/components/ia/Message";
+import {ScrollArea} from "@/components/ui/scroll-area";
 
 
 interface ChatBoxProps {
     currentModule?: Module;
 }
 
-export default function ChatBox({currentModule}: ChatBoxProps) {
+export default function ChatBoxPage({currentModule}: ChatBoxProps) {
     const {messages, clearMessages} = useChatStore();
     const [input, setInput] = useState("");
     const scrollRef = useRef<HTMLDivElement>(null);
-    const openMessages = () => {
-        window.open('/chat', '_blank')
-    }
+
     const {sendMessage, isTyping} = useChatHandler();
 
     useEffect(() => {
@@ -31,7 +29,7 @@ export default function ChatBox({currentModule}: ChatBoxProps) {
     const nbMessage = messages.length;
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-[85vh]">
             <Button
                 variant="outline"
                 onClick={clearMessages}
@@ -40,15 +38,7 @@ export default function ChatBox({currentModule}: ChatBoxProps) {
             >
                 <Trash className="h-5 w-5"/>
             </Button>
-            <Button
-                variant="outline"
-                onClick={openMessages}
-                className={cn("absolute top-2 right-23 z-10", `border-${currentModule?.path}`, `text-${currentModule?.path}`)}
-                aria-label="ouvrir en grand"
-            >
-                <AppWindow className="h-5 w-5"/>
-            </Button>
-            <ScrollArea className="px-4 pt-2">
+            <ScrollArea className="flex-1 px-4 pt-2 pb-20 overflow-hidden">
                 <div className="space-y-4">
                     {messages.map((msg, i) => (
                         <Message
@@ -58,6 +48,8 @@ export default function ChatBox({currentModule}: ChatBoxProps) {
                             currentModule={currentModule}
                         />
                     ))}
+                    {messages?.length === 0 ? <Message msg={{from: 'bot', text: 'Aucun message', timestamp: ''}}
+                                                       isLastBotTyping={false}></Message> : null}
 
                     {isTyping && messages[nbMessage - 1].from === "user" && (
                         <div className="flex items-center space-x-2">
@@ -73,7 +65,7 @@ export default function ChatBox({currentModule}: ChatBoxProps) {
             </ScrollArea>
 
             <form
-                className="pt-2 flex gap-2 px-4 pb-4"
+                className="bg-white p-0 flex gap-2 absolute bottom-10 left-[2%] pb-5 w-[96%]"
                 onSubmit={(e) => {
                     e.preventDefault();
                     sendMessage(input);

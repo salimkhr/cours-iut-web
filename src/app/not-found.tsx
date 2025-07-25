@@ -39,7 +39,7 @@ export default function NotFound() {
 
             {gifUrl && (
                 <div className="mb-8 mx-auto max-w-[500px] w-full">
-                    <ImageCard src={gifUrl}/>
+                    <ImageCard unoptimized src={gifUrl}/>
                 </div>
             )}
 

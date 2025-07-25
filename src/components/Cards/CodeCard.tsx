@@ -4,16 +4,18 @@ import BaseCard from "@/components/Cards/BaseCard";
 import {ClipboardCopyIcon, DownloadIcon} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {Button} from "@/components/ui/button";
+import {Module} from "@/types/module";
 
 interface CodeCardProps {
     language: string,
     children: string,
     className?: string,
     showLineNumbers?: boolean,
-    filename?: string
+    filename?: string,
+    currentModule?: Module
 }
 
-export default function CodeCard({language, children, showLineNumbers = true, filename}: CodeCardProps) {
+export default function CodeCard({language, children, showLineNumbers = true, filename, currentModule}: CodeCardProps) {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
@@ -111,6 +113,7 @@ export default function CodeCard({language, children, showLineNumbers = true, fi
                 withMarge={false}
                 withHover={false}
                 withLed={false}
+                currentModule={currentModule}
             />
         </div>
     );

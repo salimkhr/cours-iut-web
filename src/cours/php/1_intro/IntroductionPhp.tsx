@@ -15,7 +15,7 @@ export default function IntroductionPHP() {
         <section>
             {/* Contenu du cours */}
             <Box>
-                <Heading level={2}>A- Protocole HTTP, URL, et architecture des appl²ications web</Heading>
+                <Heading level={2}>A- Protocole HTTP, URL, et architecture des applications web</Heading>
 
                 {/* Introduction au protocole HTTP */}
                 <Heading level={3}>1. Introduction au protocole HTTP</Heading>
