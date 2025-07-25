@@ -1,5 +1,5 @@
-import ChatBoxPage from "@/components/ia/ChatBoxPage";
 import './chat.css';
+import ChatBox from "@/components/ia/ChatBox";
 
 export async function generateMetadata() {
     return {
@@ -13,7 +13,7 @@ export default async function Chat() {
             <section
                 className="w-full flex flex-col justify-center p-4 lg:px-6  gap-4"
             >
-                <ChatBoxPage></ChatBoxPage>
+                <ChatBox showOpenButton={false} variant="fullpage"></ChatBox>
             </section>
         </div>
     );

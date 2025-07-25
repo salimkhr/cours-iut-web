@@ -21,6 +21,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build (static export)
+      - name: Build
         run: npm run build
 
+      - name: Generate Markdown
+        run: npm run extract-coursmd
