@@ -8,9 +8,10 @@ interface ImageCardProps {
     title?: string;
     width?: number;
     height?: number;
+    unoptimized?: boolean
 }
 
-export default function ImageCard({src, title, width = 800, height = 800}: ImageCardProps) {
+export default function ImageCard({src, title, width = 800, height = 800, unoptimized = true}: ImageCardProps) {
 
     const header = (
 
@@ -22,9 +23,13 @@ export default function ImageCard({src, title, width = 800, height = 800}: Image
     );
 
     const content = (
-        <>
-            <Image src={src} alt={title ?? ''} className={"w-full"} width={width} height={height}/>
-        </>
+        <Image
+            src={src}
+            alt={title ?? ''}
+            className={"w-full"}
+            width={width}
+            height={height}
+            unoptimized={unoptimized}/>
     );
 
     return (
