@@ -7,7 +7,6 @@ const modules: Module[] = [
         "path": "html-css",
         "iconName": "CodeXml",
         "description": "Créez des interfaces web responsives avec HTML, CSS et Bootstrap",
-        "color": "#E34F26",
         "sections": [
             {
                 "id": "html-css-1_formulaire",
@@ -107,7 +106,6 @@ const modules: Module[] = [
         "path": "php",
         "iconName": "ServerCog",
         "description": "Maîtrisez la programmation côté serveur et la gestion des données",
-        "color": "#777BB4",
         "sections": [
             {
                 "id": "php-1_intro",
@@ -251,7 +249,6 @@ const modules: Module[] = [
         "path": "javascript",
         "iconName": "BracesIcon",
         "description": "Créez des expériences web dynamiques et réactives",
-        "color": "#F7DF1E",
         "sections": [
             {
                 "id": "js-1_dom",

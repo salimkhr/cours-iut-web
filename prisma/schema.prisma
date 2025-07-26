@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Module {
+  id          Int       @id @default(autoincrement())
+  title       String
+  path        String    @unique
+  iconName    String
+  description String?
+  sections    Section[]
+}
+
+model Section {
+  id            Int     @id @default(autoincrement())
+  title         String
+  path          String  @unique
+  description   String?
+  tags          String // Peut être changé en Json si nécessaire
+  totalDuration Int
+  hasCorrection Boolean
+  isAvailable   Boolean
+  order         Int
+
+  moduleId Int
+  module   Module @relation(fields: [moduleId], references: [id])
+
+  contents Content[]
+}
+
+model Content {
+  id            Int    @id @default(autoincrement())
+  type          String
+  componentPath String
+
+  sectionId Int
+  section   Section @relation(fields: [sectionId], references: [id])
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  password String
+  name     String?
+  role     Role    @default(USER)
+}
+
+enum Role {
+  USER
+  ADMIN
+}

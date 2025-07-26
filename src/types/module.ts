@@ -7,5 +7,4 @@ export interface Module {
     iconName: string;
     description?: string;
     sections: Section[];
-    color: string;
 }

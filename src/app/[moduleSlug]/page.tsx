@@ -2,29 +2,33 @@ import {notFound} from 'next/navigation';
 import Image from "next/image";
 import SectionCard from "@/components/Cards/SectionCard";
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
-import modules from "@/config";
 import {GlitchText} from "@/components/GlitchText";
 import {Badge} from "@/components/ui/badge";
+import {getModuleByPath} from "@/hook/useModulesByPath";
 
 interface ModulePageProps {
-    params: Promise<{
+    params: {
         moduleSlug: string;
-    }>;
+    };
 }
 
-export async function generateStaticParams() {
-    return modules.map((module) => ({
-        moduleSlug: module.path,
-    }));
-}
+// export async function generateStaticParams() {
+//     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/modules`, {
+//         next: {revalidate: 60},
+//     });
+//     const modules = await res.json();
+//
+//     return modules.map((m: IModule) => ({
+//         moduleSlug: m.path,
+//     }));
+// }
 
 export async function generateMetadata({params}: ModulePageProps) {
-    const {moduleSlug} = await params;
-    const currentModule = modules.find(m => m.path === moduleSlug);
+    const currentModule = await getModuleByPath(params.moduleSlug);
 
     if (!currentModule) {
         return {
-            title: 'Module non trouvé'
+            title: "Module non trouvé",
         };
     }
 
@@ -35,8 +39,7 @@ export async function generateMetadata({params}: ModulePageProps) {
 }
 
 export default async function Module({params}: ModulePageProps) {
-    const {moduleSlug} = await params;
-    const currentModule = modules.find(m => m.path === moduleSlug);
+    const currentModule = await getModuleByPath(params.moduleSlug);
 
     if (!currentModule) {
         notFound();
@@ -53,7 +56,7 @@ export default async function Module({params}: ModulePageProps) {
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
             <BreadcrumbGenerator currentModule={currentModule}/>
-            
+
             <section
                 className="w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between p-4 lg:px-6 gap-4 lg:gap-6 lg:min-h-[45vh]">
                 <div className="flex flex-col items-center justify-center w-full lg:w-2/3 opacity-0 animate-fade-in">

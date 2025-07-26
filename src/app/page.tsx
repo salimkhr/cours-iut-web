@@ -1,9 +1,14 @@
-import ModuleCard from "@/components/Cards/ModuleCard";
 import Image from "next/image";
-import modules from "@/config";
 import Link from "next/link";
+import ModuleCard from "@/components/Cards/ModuleCard";
+import {getModules} from "@/hook/useModules";
 
-export default function Home() {
+export default async function Home() {
+
+    const modules = await getModules();
+
+    console.log(modules);
+
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
             {/* Hero Section */}
@@ -41,7 +46,7 @@ export default function Home() {
 
                 <div
                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full max-w-7xl mx-auto mb-12 lg:mb-16">
-                    {modules.map((currentModule, index) => (
+                    {modules?.map((currentModule, index) => (
                         <Link
                             key={currentModule.id}
                             className="opacity-0 animate-fade-in-up"
