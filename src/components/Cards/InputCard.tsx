@@ -1,16 +1,11 @@
 'use client';
 
-import React, { useEffect, useState, CSSProperties, forwardRef } from 'react';
-import {
-    Card,
-    CardHeader,
-    CardContent,
-    CardFooter,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ClipboardCopyIcon } from 'lucide-react';
-import { Prism as ReactPrism } from 'react-syntax-highlighter';
-import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import React, {CSSProperties, forwardRef, useEffect, useState} from 'react';
+import {Card, CardContent, CardFooter, CardHeader,} from '@/components/ui/card';
+import {Button} from '@/components/ui/button';
+import {ClipboardCopyIcon} from 'lucide-react';
+import {Prism as ReactPrism} from 'react-syntax-highlighter';
+// import {oneLight} from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 type PrismProps = {
     children: string;
@@ -28,7 +23,7 @@ const Prism = forwardRef<HTMLDivElement, PrismProps>((props, ref) => {
     if (!isClient) return null;
 
     // @ts-expect-error: ReactPrism may not support all props typing
-    return <ReactPrism ref={ref} {...props} customStyle={{ border: '1px solid #ccc', borderRadius: '0.5rem' }} />;
+    return <ReactPrism ref={ref} {...props} customStyle={{border: '1px solid #ccc', borderRadius: '0.5rem'}}/>;
 });
 Prism.displayName = 'Prism';
 
@@ -39,7 +34,7 @@ type CardInputProps = {
     inputElement?: React.ReactNode;
 };
 
-const CardInput: React.FC<CardInputProps> = ({ title, description, code, inputElement }) => {
+const CardInput: React.FC<CardInputProps> = ({title, description, code, inputElement}) => {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
@@ -60,7 +55,7 @@ const CardInput: React.FC<CardInputProps> = ({ title, description, code, inputEl
                         onClick={handleCopy}
                         className="flex items-center gap-2"
                     >
-                        <ClipboardCopyIcon className="w-4 h-4" />
+                        <ClipboardCopyIcon className="w-4 h-4"/>
                         {copied ? 'Copié !' : 'Copier'}
                     </Button>
                 </CardHeader>
@@ -70,7 +65,7 @@ const CardInput: React.FC<CardInputProps> = ({ title, description, code, inputEl
                     <div className="mb-4">
                         <Prism
                             language="html"
-                            style={oneLight}
+                            // style={oneLight}
                         >
                             {code}
                         </Prism>
@@ -78,7 +73,7 @@ const CardInput: React.FC<CardInputProps> = ({ title, description, code, inputEl
                     {inputElement}
                 </CardContent>
 
-                <CardFooter className="hidden" />
+                <CardFooter className="hidden"/>
             </Card>
         </div>
     );
