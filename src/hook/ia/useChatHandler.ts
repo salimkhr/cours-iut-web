@@ -48,7 +48,9 @@ export default function useChatHandler() {
                 body: JSON.stringify({message: input}),
             });
 
-            if (!res.body) throw new Error("No response body");
+            if (!res.body) {
+                throw new Error("No response body");
+            }
 
             const reader = res.body.getReader();
             const decoder = new TextDecoder("utf-8");
@@ -84,7 +86,7 @@ export default function useChatHandler() {
 function parseStreamChunk(buffer: string): { events: ChatChunk[], remainder: string } {
     const lines = buffer.split("\n");
     const events: ChatChunk[] = [];
-    let remainder = "";
+
 
     // Parcourir toutes les lignes sauf la dernière (potentiellement incomplète)
     for (let i = 0; i < lines.length - 1; i++) {
@@ -110,7 +112,7 @@ function parseStreamChunk(buffer: string): { events: ChatChunk[], remainder: str
     }
 
     // La dernière ligne est mise en remainder pour concat avec la suite
-    remainder = lines[lines.length - 1];
+    const remainder = lines[lines.length - 1];
 
     return {events, remainder};
 }
