@@ -4,42 +4,40 @@ import SectionCard from "@/components/Cards/SectionCard";
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import {GlitchText} from "@/components/GlitchText";
 import {Badge} from "@/components/ui/badge";
-import {getModuleByPath} from "@/hook/useModulesByPath";
+import {getModuleByPath} from "@/lib/prisma/data";
 
 interface ModulePageProps {
-    params: {
+    params: Promise<{
         moduleSlug: string;
-    };
+    }>;
 }
 
 // export async function generateStaticParams() {
-//     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/modules`, {
-//         next: {revalidate: 60},
-//     });
-//     const modules = await res.json();
+//     const modules = await getModules();
 //
-//     return modules.map((m: IModule) => ({
+//     return modules.map((m) => ({
 //         moduleSlug: m.path,
 //     }));
 // }
 
-export async function generateMetadata({params}: ModulePageProps) {
-    const currentModule = await getModuleByPath(params.moduleSlug);
-
-    if (!currentModule) {
-        return {
-            title: "Module non trouvé",
-        };
-    }
-
-    return {
-        title: currentModule.title,
-        description: currentModule.description,
-    };
-}
+// export async function generateMetadata({params}: ModulePageProps) {
+//     const currentModule = await getModuleByPath(params.moduleSlug);
+//
+//     if (!currentModule) {
+//         return {
+//             title: "Module non trouvé",
+//         };
+//     }
+//
+//     return {
+//         title: currentModule.title,
+//         description: currentModule.description,
+//     };
+// }
 
 export default async function Module({params}: ModulePageProps) {
-    const currentModule = await getModuleByPath(params.moduleSlug);
+    const {moduleSlug} = await params;
+    const currentModule = await getModuleByPath(moduleSlug);
 
     if (!currentModule) {
         notFound();
@@ -51,7 +49,7 @@ export default async function Module({params}: ModulePageProps) {
     const progress = totalSections > 0 ? Math.round((totalAvailableSections / totalSections) * 100) : 0;
     const hasAvailableContent = totalAvailableSections > 0;
 
-    const allTags = [...new Set(currentModule.sections.flatMap(section => section.tags || []))];
+    const allTags = [...new Set(currentModule.sections.flatMap(section => JSON.parse(section.tags) || []))];
 
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">

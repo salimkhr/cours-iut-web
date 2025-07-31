@@ -1,13 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import ModuleCard from "@/components/Cards/ModuleCard";
-import {getModules} from "@/hook/useModules";
+import {getModules} from "@/lib/prisma/data";
+
 
 export default async function Home() {
 
     const modules = await getModules();
-
-    console.log(modules);
 
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">

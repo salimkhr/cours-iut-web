@@ -1,10 +1,10 @@
 import {Section} from "@/types/Section";
 
 export interface Module {
-    id: string;
+    id: number;
     title: string;
     path: string;
     iconName: string;
-    description?: string;
+    description: string | null;
     sections: Section[];
 }

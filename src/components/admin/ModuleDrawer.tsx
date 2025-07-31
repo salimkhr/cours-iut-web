@@ -37,7 +37,7 @@ export default function ModuleDrawer() {
         const newModule: Module = {
             ...form,
             sections: [],
-            id: ''
+            id: 0
         };
 
         setModules([...modules, newModule]);

@@ -1,12 +1,12 @@
 import {Content} from "@/types/content";
 
 export interface Section {
-    id: string;
+    id: number;
     title: string;
     path: string;
-    description?: string;
+    description?: string | null;
     contents: Content[];
-    tags: string[];
+    tags: string;
     // Statistiques de la section
     totalDuration: number;
     hasCorrection: boolean;

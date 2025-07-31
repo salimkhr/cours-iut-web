@@ -2,8 +2,8 @@
 import {useRouter} from "next/navigation";
 import {Section} from '@/types/Section';
 import {Module} from '@/types/module';
-import {Badge} from '@/components/ui/badge';
 import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
+import {Badge} from "@/components/ui/badge";
 
 interface SectionCardProps {
     section: Section;
@@ -29,7 +29,7 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
                 {section.description}
             </p>
             <div className="flex flex-wrap justify-center gap-1 mt-2">
-                {section.tags?.map((tag) => (
+                {JSON.parse(section.tags)?.map((tag: string) => (
                     <Badge key={tag} className="border border-black bg-white text-black font-mono text-xs">
                         #{tag}
                     </Badge>

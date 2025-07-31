@@ -14,9 +14,9 @@ export async function getModules() {
 }
 
 // Récupère un seul module via son `path` (slug)
-export async function getModuleBySlug(slug: string) {
+export async function getModuleByPath(path: string) {
     return prisma.module.findFirst({
-        where: {path: slug},
+        where: {path: path},
         include: {
             sections: {
                 include: {

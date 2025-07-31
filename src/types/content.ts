@@ -1,4 +1,6 @@
 export interface Content {
-    type: 'cours' | 'TP' | 'projet' | 'examen';
+    id: number;
+    type: string;
     componentPath: string;
+    sectionId: number;
 }

@@ -3,7 +3,6 @@ import Image from "next/image";
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import modules from "@/config";
 import {GlitchText} from "@/components/GlitchText";
-import {Badge} from "@/components/ui/badge";
 import ContentCard from "@/components/Cards/ContentCard";
 
 interface ModulePageProps {
@@ -13,20 +12,20 @@ interface ModulePageProps {
     }>;
 }
 
-export async function generateStaticParams() {
-    const params: { moduleSlug: string; sectionSlug: string }[] = [];
-
-    modules.forEach((module) => {
-        module.sections.filter((section) => section.isAvailable).forEach((section) => {
-            params.push({
-                moduleSlug: module.path,
-                sectionSlug: section.path // Fallback pour les sections root
-            });
-        });
-    });
-
-    return params;
-}
+// export async function generateStaticParams() {
+//     const params: { moduleSlug: string; sectionSlug: string }[] = [];
+//
+//     modules.forEach((module) => {
+//         module.sections.filter((section) => section.isAvailable).forEach((section) => {
+//             params.push({
+//                 moduleSlug: module.path,
+//                 sectionSlug: section.path // Fallback pour les sections root
+//             });
+//         });
+//     });
+//
+//     return params;
+// }
 
 export async function generateMetadata({params}: ModulePageProps) {
     const {moduleSlug, sectionSlug} = await params;
@@ -83,12 +82,12 @@ export default async function Module({params}: ModulePageProps) {
                     {currentSection.tags.length > 0 && (
                         <div className="flex flex-wrap justify-center gap-2 mb-8 opacity-0 animate-fade-in-up"
                              style={{animationDelay: '0.3s'}}>
-                            {currentSection.tags.slice(0, 8).map((tag) => (
-                                <Badge key={tag}
-                                       className={`border-2 border-${currentModule.title} bg-white text-${currentModule.title} font-mono text-xs hover:bg-${currentModule.title} hover:text-white transition-colors`}>
-                                    #{tag}
-                                </Badge>
-                            ))}
+                            {/*{currentSection.tags.slice(0, 8).map((tag) => (*/}
+                            {/*    <Badge key={tag}*/}
+                            {/*           className={`border-2 border-${currentModule.title} bg-white text-${currentModule.title} font-mono text-xs hover:bg-${currentModule.title} hover:text-white transition-colors`}>*/}
+                            {/*        #{tag}*/}
+                            {/*    </Badge>*/}
+                            {/*))}*/}
                         </div>
                     )}
                 </div>
