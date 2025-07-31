@@ -478,63 +478,77 @@ export default async function RappelHTML() {
                         <CardInput
                             title="Lien vers une autre page"
                             description='Le navigateur charge une autre page du même site via l’attribut `href`.'
-                            code={`<a href="/contact.html">Page Contact</a>`}
                             inputElement={<Link href="/contact.html">Page Contact</Link>}
-                        />
+                            language="html"
+                        >
+                            {`<a href="/contact.html">Page Contact</a>`}
+                        </CardInput>
                     </div>
 
                     <div>
                         <CardInput
                             title="Lien vers un autre site"
                             description='L’attribut `href` pointe vers un domaine différent.'
-                            code={`<a href="https://www.example.com">Visiter example.com</a>`}
                             inputElement={<Link href="https://www.example.com">Visiter
                                 example.com</Link>}
-                        />
+                            language="html"
+                        >
+                            {`<a href="https://www.example.com">Visiter example.com</a>`}
+                        </CardInput>
                     </div>
 
                     <div>
                         <CardInput
                             title="Lien vers une ancre interne"
                             description='L’attribut `href="#id"` fait défiler la page jusqu’à l’élément correspondant à l’ID.'
-                            code={`<a href="#lien">\n    Aller à la section "Lien"\n</a>`}
+
                             inputElement={<Link href="#lien">Aller à la
                                 section &quot;Lien&quot;</Link>}
-                        />
+                            language="html"
+                        >
+                            {`<a href="#lien">\n    Aller à la section "Lien"\n</a>`}
+                        </CardInput>
                     </div>
 
                     <div>
                         <CardInput
                             title="Lien dans un nouvel onglet"
                             description='L’attribut `target="_blank"` ouvre le lien dans un nouvel onglet du navigateur.'
-                            code={`<a href="https://www.example.com" target="_blank">\n    Ouvrir dans un nouvel onglet\n</a>`}
                             inputElement={
                                 <Link href="https://www.example.com" target="_blank"
                                       rel="noopener noreferrer">
                                     Ouvrir dans un nouvel onglet
                                 </Link>
                             }
-                        />
+                            language="html"
+                        >
+                            {`<a href="https://www.example.com" target="_blank">\n    Ouvrir dans un nouvel onglet\n</a>`}
+                        </CardInput>
                     </div>
 
                     <div>
                         <CardInput
                             title="Lien vers une adresse e-mail"
                             description='Le préfixe `mailto:` ouvre le client de messagerie par défaut avec le champ "À" prérempli.'
-                            code={`<a href="mailto:contact@monsite.com">Envoyer un e-mail</a>`}
                             inputElement={<Link href="mailto:contact@monsite.com">Envoyer un
                                 e-mail</Link>}
-                        />
+                            language="html"
+                        >
+                            {`<a href="mailto:contact@monsite.com">Envoyer un e-mail</a>`}
+                        </CardInput>
                     </div>
 
                     <div>
                         <CardInput
                             title="Lien vers un numéro de téléphone"
                             description='Le préfixe `tel:` ouvre l’application téléphonique sur mobile ou logiciel compatible.'
-                            code={`<a href="tel:+33123456789">Appeler le 01 23 45 67 89</a>`}
                             inputElement={<Link href="tel:+33123456789">Appeler le 01 23 45 67
                                 89</Link>}
-                        />
+                            language="html"
+                        >
+                            {`<a href="tel:+33123456789">Appeler le 01 23 45 67 89</a>`}
+
+                        </CardInput>
                     </div>
                 </Grid>
 
