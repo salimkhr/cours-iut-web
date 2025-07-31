@@ -1,10 +1,10 @@
 import {notFound} from 'next/navigation';
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import dynamic from 'next/dynamic'
-import modules from "@/config";
 import AntiCopyProtector from "@/components/AntiCopyProtector";
 import Heading from "@/components/ui/Heading";
 import ChatWidget from "@/components/ia/ChatWidget";
+import {getModules} from "@/lib/prisma/data";
 
 interface ContentPageProps {
     params: Promise<{
@@ -16,7 +16,7 @@ interface ContentPageProps {
 
 export async function generateStaticParams() {
     const params: { moduleSlug: string; sectionSlug: string; contentSlug: string }[] = [];
-
+    const modules = await getModules();
     modules.forEach((module) => {
         module.sections.filter((section) => section.isAvailable).forEach((section) => {
             section.contents.forEach((content) => {
@@ -32,24 +32,27 @@ export async function generateStaticParams() {
     return params;
 }
 
-export async function generateMetadata({params}: ContentPageProps) {
-    const {moduleSlug, sectionSlug} = await params;
-    const currentModule = modules.find(m => m.path === moduleSlug);
-    const currentSection = currentModule?.sections.find(s => s.path === sectionSlug);
-
-    if (!currentModule || !currentSection) {
-        return {title: 'Module non trouvé'};
-    }
-
-    return {
-        title: `${currentModule.title} | ${currentSection.title}`,
-        description: currentModule.description || `Apprenez ${currentModule.title}`,
-    };
-}
+// export async function generateMetadata({params}: ContentPageProps) {
+//     const {moduleSlug, sectionSlug} = await params;
+//     const modules = await getModules();
+//
+//     const currentModule = modules.find(m => m.path === moduleSlug);
+//     const currentSection = currentModule?.sections.find(s => s.path === sectionSlug);
+//
+//     if (!currentModule || !currentSection) {
+//         return {title: 'Module non trouvé'};
+//     }
+//
+//     return {
+//         title: `${currentModule.title} | ${currentSection.title}`,
+//         description: currentModule.description || `Apprenez ${currentModule.title}`,
+//     };
+// }
 
 export default async function Content({params}: ContentPageProps) {
     const {moduleSlug, sectionSlug, contentSlug} = await params;
-
+    const modules = await getModules();
+    
     const currentModule = modules.find(m => m.path === moduleSlug);
     if (!currentModule) notFound();
 

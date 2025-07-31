@@ -9,7 +9,6 @@ import {Module} from "@/types/module";
  */
 export async function getModuleByPath(path: string): Promise<Module> {
     try {
-        console.log(path)
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/modules/${path}`, {
             next: {revalidate: 60}, // Revalidation SSR (facultatif)
         });

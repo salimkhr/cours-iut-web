@@ -53,7 +53,6 @@ export default function SectionDrawer() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        console.log("New section to submit:", form);
         // TODO: Ajouter appel API ou mutation Prisma
         setOpen(false);
         setForm({

@@ -20,8 +20,6 @@ export default function Message({
     isLastBotTyping: boolean;
     currentModule?: Module;
 }) {
-    console.log(currentModule?.path);
-
     return (
         <div className={cn("flex items-start", currentModule ? "w-[420px]" : '')}>
             {msg.from === "bot" && (

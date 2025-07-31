@@ -4,7 +4,7 @@ import SectionCard from "@/components/Cards/SectionCard";
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import {GlitchText} from "@/components/GlitchText";
 import {Badge} from "@/components/ui/badge";
-import {getModuleByPath} from "@/lib/prisma/data";
+import {getModuleByPath, getModules} from "@/lib/prisma/data";
 
 interface ModulePageProps {
     params: Promise<{
@@ -12,28 +12,12 @@ interface ModulePageProps {
     }>;
 }
 
-// export async function generateStaticParams() {
-//     const modules = await getModules();
-//
-//     return modules.map((m) => ({
-//         moduleSlug: m.path,
-//     }));
-// }
-
-// export async function generateMetadata({params}: ModulePageProps) {
-//     const currentModule = await getModuleByPath(params.moduleSlug);
-//
-//     if (!currentModule) {
-//         return {
-//             title: "Module non trouvé",
-//         };
-//     }
-//
-//     return {
-//         title: currentModule.title,
-//         description: currentModule.description,
-//     };
-// }
+export async function generateStaticParams() {
+    const modules = await getModules();
+    return modules.map((m) => ({
+        moduleSlug: m.path,
+    }));
+}
 
 export default async function Module({params}: ModulePageProps) {
     const {moduleSlug} = await params;

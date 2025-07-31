@@ -4,6 +4,7 @@ import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import modules from "@/config";
 import {GlitchText} from "@/components/GlitchText";
 import ContentCard from "@/components/Cards/ContentCard";
+import {getModules} from "@/lib/prisma/data";
 
 interface ModulePageProps {
     params: Promise<{
@@ -12,20 +13,21 @@ interface ModulePageProps {
     }>;
 }
 
-// export async function generateStaticParams() {
-//     const params: { moduleSlug: string; sectionSlug: string }[] = [];
-//
-//     modules.forEach((module) => {
-//         module.sections.filter((section) => section.isAvailable).forEach((section) => {
-//             params.push({
-//                 moduleSlug: module.path,
-//                 sectionSlug: section.path // Fallback pour les sections root
-//             });
-//         });
-//     });
-//
-//     return params;
-// }
+export async function generateStaticParams() {
+    const params: { moduleSlug: string; sectionSlug: string }[] = [];
+    const modules = await getModules();
+
+    modules.forEach((module) => {
+        module.sections.filter((section) => section.isAvailable).forEach((section) => {
+            params.push({
+                moduleSlug: module.path,
+                sectionSlug: section.path
+            });
+        });
+    });
+
+    return params;
+}
 
 export async function generateMetadata({params}: ModulePageProps) {
     const {moduleSlug, sectionSlug} = await params;
