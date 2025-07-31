@@ -20,8 +20,6 @@ export default function Message({
     isLastBotTyping: boolean;
     currentModule?: Module;
 }) {
-    console.log(currentModule?.path);
-
     return (
         <div className={cn("flex items-start", currentModule ? "w-[420px]" : '')}>
             {msg.from === "bot" && (
@@ -80,8 +78,6 @@ export default function Message({
                                     {children}
                                 </Code>
                             );
-                            // Si pas inline, tu peux retourner null ou un autre rendu
-                            return null;
                         },
                     }}
                 >

@@ -66,11 +66,11 @@ export default function LesFormulaires() {
                 <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<form method="get" action="index.php">
-    <label for="input-hello">Hello</label>
-    <input type="text" value="Hello" id="input-hello">
-    
-    <input type="submit" value="send">
-</form>`}</CodePanel>
+                    <label for="input-hello">Hello</label>
+                    <input type="text" value="Hello" id="input-hello">
+                    
+                    <input type="submit" value="send">
+                </form>`}</CodePanel>
                     <PreviewPanel>
                         <form method="get" className="space-y-4 max-w-md mx-auto">
                             <div className="flex items-center gap-4">
@@ -112,48 +112,61 @@ export default function LesFormulaires() {
                         <InputCard
                             title="Text"
                             description="Champ de texte pour entrer des informations simples"
-                            code={`<input placeholder="Username" />`}
+                            language="html"
                             inputElement={<Input placeholder=" Username" className="mt-2 px-2"
                             />}
-                        />
+                        >
+                            {`<input placeholder="Username" />`}
+                        </InputCard>
                         <InputCard
                             title="Password"
                             description="Champ pour entrer un mot de passe avec des caractères masqués"
-                            code={`<input type="password" placeholder="Password" />`}
+                            language="html"
                             inputElement={<Input type="password" placeholder=" Password" className="mt-2 px-2"
                             />}
-                        />
+                        >
+                            {`<input type="password" placeholder="Password" />`}
+                        </InputCard>
                         <InputCard
                             title="Search"
                             description="Champ pour entrer une requête de recherche"
-                            code={`<input type="search" placeholder="Search" />`}
+                            language="html"
                             inputElement={<Input type="search" placeholder=" Search" className="mt-2 px-2"
                             />}
-                        />
+                        >
+                            {`<input type="search" placeholder="Search" />`}
+
+                        </InputCard>
                         <InputCard
                             title="Email"
                             description="Champ pour entrer une adresse e-mail avec validation"
-                            code={`<input type="email" placeholder="Email" />`}
+                            language="html"
                             inputElement={<Input type="email" placeholder=" Email" className="mt-2 px-2"
                             />}
-                        />
+                        >
+                            {`<input type="email" placeholder="Email" />`}
+                        </InputCard>
                         <InputCard
                             title="Tel"
                             description="Champ pour entrer un numéro de téléphone avec validation du format"
-                            code={`<input type="tel" placeholder="123-456-7890" />`}
+                            language="html"
                             inputElement={<Input type="tel" placeholder=" 123-456-7890" className="mt-2 px-2"
                             />}
-                        />
+                        >
+                            {`<input type="tel" placeholder="123-456-7890" />`}
+                        </InputCard>
                         <InputCard
                             title="URL"
                             description="Champ pour entrer une URL avec validation du format"
-                            code={`<input type="url" placeholder="https://example.com" />`}
+                            language="html"
                             inputElement={<Input type="url" placeholder=" https://example.com"/>}
-                        />
+                        >
+                            {`<input type="url" placeholder="https://example.com" />`}
+                        </InputCard>
                         <InputCard
                             title="Textarea"
                             description="Zone de texte pour saisir plusieurs lignes"
-                            code={`<label for="textarea1">Your message:</label>\n<textarea id="textarea1" rows="4" cols="50">\n   Type your message here...\n</textarea>`}
+                            language="html"
                             inputElement={
                                 <Textarea
                                     id="textarea1"
@@ -162,7 +175,9 @@ export default function LesFormulaires() {
                                     cols={50}
                                 />
                             }
-                        />
+                        >
+                            {`<label for="textarea1">Your message:</label>\n<textarea id="textarea1" rows="4" cols="50">\n   Type your message here...\n</textarea>`}
+                        </InputCard>
                     </Grid>
                 </Box>
 
@@ -183,21 +198,27 @@ export default function LesFormulaires() {
                         <InputCard
                             title="Button"
                             description="Bouton cliquable, souvent utilisé pour des actions"
-                            code={`<input type="button" value="Click me" />`}
+                            language="html"
                             inputElement={<Button type="button">Click me</Button>}
-                        />
+                        >
+                            {`<input type="button" value="Click me" />`}
+                        </InputCard>
                         <InputCard
                             title="Reset"
                             description="Bouton pour réinitialiser les valeurs du formulaire"
-                            code={`<input type="reset" value="Reset" />`}
+                            language="html"
                             inputElement={<Button type="reset">Reset</Button>}
-                        />
+                        >
+                            {`<input type="reset" value="Reset" />`}
+                        </InputCard>
                         <InputCard
                             title="Submit"
                             description="Bouton pour soumettre le formulaire"
-                            code={`<input type="submit" value="Submit" />`}
+                            language="html"
                             inputElement={<Button type="submit">Submit</Button>}
-                        />
+                        >
+                            {`<input type="submit" value="Submit" />`}
+                        </InputCard>
                     </Grid>
                 </Box>
 
@@ -218,7 +239,7 @@ export default function LesFormulaires() {
                         <InputCard
                             title="Checkbox"
                             description="Case à cocher pour sélectionner une option"
-                            code={`<label for="checkbox1">Check me</label>\n<input type="checkbox" id="checkbox1" />\n\n<label for="checkbox2">Check me too</label>\n<input type="checkbox" id="checkbox2" />`}
+                            language="html"
                             inputElement={
                                 <>
                                     {/*<Checkbox.Root>*/}
@@ -233,11 +254,13 @@ export default function LesFormulaires() {
                                     {/*</Checkbox.Root>*/}
                                 </>
                             }
-                        />
+                        >
+                            {`<label for="checkbox1">Check me</label>\n<input type="checkbox" id="checkbox1" />\n\n<label for="checkbox2">Check me too</label>\n<input type="checkbox" id="checkbox2" />`}
+                        </InputCard>
                         <InputCard
                             title="Radio"
                             description="Boutons radio pour sélectionner une option parmi plusieurs"
-                            code={`<label for="radio1">Option 1</label>\n<input type="radio" id="radio1" value="option1" name="option"/>\n\n<label for="radio2">Option 2</label>\n<input type="radio" id="radio2" value="option2" name="option"/>`}
+                            language="html"
                             // inputElement={
                             // <RadioGroup.Root defaultValue="option1" mt={2}>
                             //     <Stack direction="row">
@@ -254,19 +277,13 @@ export default function LesFormulaires() {
                             //     </Stack>
                             // </RadioGroup.Root>
                             // }
-                        />
+                        >
+                            {`<label for="radio1">Option 1</label>\n<input type="radio" id="radio1" value="option1" name="option"/>\n\n<label for="radio2">Option 2</label>\n<input type="radio" id="radio2" value="option2" name="option"/>`}
+                        </InputCard>
                         <InputCard
                             title="Datalist"
                             description="Champ de texte avec une liste de suggestions"
-                            code={`<label for="inputWithList">Choose a fruit:</label>
-<Input id="inputWithList" list="fruits"/>
-<datalist id="fruits">
-    <option value="Apple" />
-    <option value="Banana" />
-    <option value="Cherry" />
-    <option value="Date" />
-    <option value="Grape" />
-    </datalist>`}
+                            language="html"
                             inputElement={
                                 <>
                                     <Input id="inputWithList" list="fruits"/>
@@ -279,20 +296,21 @@ export default function LesFormulaires() {
                                     </datalist>
                                 </>
                             }
-                        />
+                        >
+                            {`<label for="inputWithList">Choose a fruit:</label>
+<Input id="inputWithList" list="fruits"/>
+<datalist id="fruits">
+    <option value="Apple" />
+    <option value="Banana" />
+    <option value="Cherry" />
+    <option value="Date" />
+    <option value="Grape" />
+    </datalist>`}
+                        </InputCard>
                         <InputCard
                             title="Select"
                             description="Menu déroulant pour sélectionner une option"
-                            code={`<label for="select1">Choose a fruit:</label>
-
-<select id="select1">
-    <option value="Apple">Apple</option>
-    <option value="Banana">Banana</option>
-    <option value="Cherry">Cherry</option>
-    <option value="Date">Date</option>
-    <option value="Grape">Grape</option>
-</select>
-`}
+                            language="html"
                             // inputElement={
                             // <Select.Root collection={frameworks} size="sm" width="320px">
                             //     <Select.HiddenSelect/>
@@ -315,11 +333,22 @@ export default function LesFormulaires() {
                             //     </Portal>
                             // </Select.Root>
                             //  }
-                        />
+                        >
+                            {`<label for="select1">Choose a fruit:</label>
+
+<select id="select1">
+    <option value="Apple">Apple</option>
+    <option value="Banana">Banana</option>
+    <option value="Cherry">Cherry</option>
+    <option value="Date">Date</option>
+    <option value="Grape">Grape</option>
+</select>
+`}
+                        </InputCard>
                         <InputCard
                             title="Range"
                             description="Champ pour sélectionner une valeur dans une plage"
-                            code={`<label for="range1">Select a range:</label>\n<input type="range" id="range1" min="0" max="100" />`}
+                            language="html"
                             // inputElement={
                             // <Slider.Root width="200px" min={0} max={100}>
                             //     <Slider.Control>
@@ -330,7 +359,9 @@ export default function LesFormulaires() {
                             //     </Slider.Control>
                             // </Slider.Root>
                             // }
-                        />
+                        >
+                            {`<label for="range1">Select a range:</label>\n<input type="range" id="range1" min="0" max="100" />`}
+                        </InputCard>
                     </Grid>
                 </Box>
 
@@ -349,34 +380,44 @@ export default function LesFormulaires() {
                         <InputCard
                             title="Date"
                             description="Champ pour sélectionner une date"
-                            code={`<input type="date" />`}
+                            language="html"
                             inputElement={<Input type="date" className="mt-2 px-2"/>}
-                        />
+                        >
+                            {`<input type="date" />`}
+                        </InputCard>
                         <InputCard
                             title="Datetime-local"
                             description="Champ pour sélectionner une date et une heure"
-                            code={`<input type="datetime-local" />`}
+                            language="html"
                             inputElement={<Input type="datetime-local" className="mt-2 px-2"
                             />}
-                        />
+                        >
+                            {`<input type="datetime-local" />`}
+                        </InputCard>
                         <InputCard
                             title="Month"
                             description="Champ pour sélectionner un mois et une année"
-                            code={`<input type="month" />`}
+                            language="html"
                             inputElement={<Input type="month" className="mt-2 px-2"/>}
-                        />
+                        >
+                            {`<input type="month" />`}
+                        </InputCard>
                         <InputCard
                             title="Time"
                             description="Champ pour sélectionner une heure"
-                            code={`<input type="time" />`}
+                            language="html"
                             inputElement={<Input type="time" className="mt-2 px-2"/>}
-                        />
+                        >
+                            {`<input type="time" />`}
+                        </InputCard>
                         <InputCard
                             title="Week"
                             description="Champ pour sélectionner une semaine"
-                            code={`<input type="week" />`}
+                            language="html"
                             inputElement={<Input type="week" className="mt-2 px-2"/>}
-                        />
+                        >
+                            {`<input type="week" />`}
+                        </InputCard>
                     </Grid>
                 </Box>
 
@@ -395,28 +436,36 @@ export default function LesFormulaires() {
                         <InputCard
                             title="Color"
                             description="Champ pour sélectionner une couleur"
-                            code={`<input type="color" />`}
+                            language="html"
                             inputElement={<Input type="color" className="mt-2 px-2"/>}
-                        />
+                        >
+                            {`<input type="color" />`}
+                        </InputCard>
                         <InputCard
                             title="File"
                             description="Champ pour sélectionner un fichier à télécharger"
-                            code={`<input type="file" />`}
+                            language="html"
                             inputElement={<Input type="file" className="mt-2 px-2"/>}
-                        />
+                        >
+                            {`<input type="file" />`}
+                        </InputCard>
                         <InputCard
                             title="Number"
                             description="Champ pour entrer des nombres avec des contrôles de valeurs"
-                            code={`<input type="number" min="0" max="120" />`}
+                            language="html"
                             inputElement={<Input type="number" min="0" max="120" className="mt-2 px-2"
                             />}
-                        />
+                        >
+                            {`<input type="number" min="0" max="120" />`}
+                        </InputCard>
                         <InputCard
                             title="Hidden"
                             description="Champ caché, souvent utilisé pour stocker des informations non visibles"
-                            code={`<input type="hidden" value="hiddenValue" />`}
+                            language="html"
                             inputElement={<Stack><Input type="hidden" value="hiddenValue"/></Stack>}
-                        />
+                        >
+                            {`<input type="hidden" value="hiddenValue" />`}
+                        </InputCard>
                     </Grid>
                     <Heading level={3}>3. Validation des formulaires en HTML5 </Heading>
                     <Text>HTML5 propose des outils de validation intégrés qui permettent de vérifier la saisie des
