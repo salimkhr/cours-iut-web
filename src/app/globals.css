@@ -227,3 +227,40 @@
     color: #ac9b14;
     text-decoration: underline;
 }
+
+/* Couleur login (bleu) */
+.text-login {
+    color: #1E40AF;
+}
+
+.bg-login {
+    background-color: #1E40AF;
+}
+
+.border-login {
+    border-color: #1E40AF;
+}
+
+.header-login h1,
+.header-login h2,
+.header-login h3 {
+    color: #1E40AF;
+}
+
+.header-login h1 {
+    text-align: center;
+}
+
+.header-login .bg-module {
+    background-color: #1E40AF;
+}
+
+.header-login .border-module {
+    border-color: #1E40AF;
+}
+
+.header-login a {
+    color: #1E40AF;
+    text-decoration: underline;
+    cursor: pointer;
+}
