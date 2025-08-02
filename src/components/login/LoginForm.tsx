@@ -28,7 +28,6 @@ export default function LoginForm() {
                     router.push('/admin');
                 })
             .catch((err) => {
-                console.log(err);
                 setError(err.message);
                 setLoading(false)
             });
