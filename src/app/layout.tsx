@@ -21,7 +21,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" className={jetbrainsMono.variable}>
+        <html lang="fr" className={jetbrainsMono.variable}>
         <body className="min-h-screen font-mono">
         <NavBar/>
         {children}

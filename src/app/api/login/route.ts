@@ -27,8 +27,8 @@ export async function POST(req: Request) {
             headers: {'Content-Type': 'application/json'},
         });
     }
-     
-    const hash = Buffer.from(process.env.ADMIN_PASSWORD_HASH ?? '', 'base64').toString();
+
+    const hash = Buffer.from(ADMIN_PASSWORD_HASH ?? '', 'base64').toString();
     const isValidPassword = await bcrypt.compare(password, hash || '');
 
     if (!isValidPassword) {
@@ -45,10 +45,12 @@ export async function POST(req: Request) {
         headers: {'Content-Type': 'application/json'},
     });
 
-    response.headers.append(
-        'Set-Cookie',
-        `session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`
-    );
+    cookieStore.set('session', sessionToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 3600
+    });
 
     return response;
 }
