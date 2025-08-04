@@ -2,9 +2,10 @@ import {notFound} from 'next/navigation';
 import Image from "next/image";
 import SectionCard from "@/components/Cards/SectionCard";
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
-import modules from "@/config";
 import {GlitchText} from "@/components/GlitchText";
 import {Badge} from "@/components/ui/badge";
+import getMergedModules from "@/hook/getMergedModules";
+
 
 interface ModulePageProps {
     params: Promise<{
@@ -13,6 +14,7 @@ interface ModulePageProps {
 }
 
 export async function generateStaticParams() {
+    const modules = getMergedModules();
     return modules.map((module) => ({
         moduleSlug: module.path,
     }));
@@ -20,6 +22,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({params}: ModulePageProps) {
     const {moduleSlug} = await params;
+    const modules = getMergedModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
 
     if (!currentModule) {
@@ -36,6 +39,7 @@ export async function generateMetadata({params}: ModulePageProps) {
 
 export default async function Module({params}: ModulePageProps) {
     const {moduleSlug} = await params;
+    const modules = getMergedModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
 
     if (!currentModule) {
@@ -53,7 +57,7 @@ export default async function Module({params}: ModulePageProps) {
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
             <BreadcrumbGenerator currentModule={currentModule}/>
-            
+
             <section
                 className="w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between p-4 lg:px-6 gap-4 lg:gap-6 lg:min-h-[45vh]">
                 <div className="flex flex-col items-center justify-center w-full lg:w-2/3 opacity-0 animate-fade-in">

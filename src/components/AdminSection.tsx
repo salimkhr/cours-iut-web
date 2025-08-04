@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import {Switch} from "@/components/ui/switch";
 import {Label} from "@/components/ui/label";
 import {Section} from "@/types/Section";
+import updateSectionState from "@/hook/admin/updateSectionState";
 
 interface AdminSectionProps {
     section: Section;
@@ -19,7 +20,6 @@ interface AdminSectionProps {
 export function AdminSection({
                                  section,
                                  moduleId,
-                                 onToggle,
                              }: AdminSectionProps) {
     // local state pour rendre le switch réactif immédiatement
     const [isAvailable, setIsAvailable] = useState(!!section.isAvailable);
@@ -40,8 +40,12 @@ export function AdminSection({
         value: boolean
     ) => {
         if (key === "isAvailable") setIsAvailable(value);
+
         if (key === "correctionIsAvailable") setHasCorrection(value);
-        onToggle?.(moduleId, section.id, key, value);
+
+        updateSectionState(moduleId, section.id, key, value)
+            .then(() => console.log("✅ Mise à jour réussie"))
+            .catch((err) => console.error("❌ Erreur:", err));
     };
 
     return (

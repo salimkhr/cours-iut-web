@@ -1,10 +1,11 @@
 import {notFound} from 'next/navigation';
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import dynamic from 'next/dynamic'
-import modules from "@/config";
 import AntiCopyProtector from "@/components/AntiCopyProtector";
 import Heading from "@/components/ui/Heading";
 import ChatWidget from "@/components/ia/ChatWidget";
+import getMergedModules from "@/hook/getMergedModules";
+
 
 interface ContentPageProps {
     params: Promise<{
@@ -16,6 +17,7 @@ interface ContentPageProps {
 
 export async function generateStaticParams() {
     const params: { moduleSlug: string; sectionSlug: string; contentSlug: string }[] = [];
+    const modules = getMergedModules();
 
     modules.forEach((module) => {
         module.sections.filter((section) => section.isAvailable).forEach((section) => {
@@ -34,6 +36,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({params}: ContentPageProps) {
     const {moduleSlug, sectionSlug} = await params;
+    const modules = getMergedModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
     const currentSection = currentModule?.sections.find(s => s.path === sectionSlug);
 
@@ -50,6 +53,7 @@ export async function generateMetadata({params}: ContentPageProps) {
 export default async function Content({params}: ContentPageProps) {
     const {moduleSlug, sectionSlug, contentSlug} = await params;
 
+    const modules = getMergedModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
     if (!currentModule) notFound();
 

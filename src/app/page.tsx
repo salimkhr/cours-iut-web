@@ -1,9 +1,10 @@
 import ModuleCard from "@/components/Cards/ModuleCard";
 import Image from "next/image";
-import modules from "@/config";
 import Link from "next/link";
+import getMergedModules from "@/hook/getMergedModules";
 
 export default function Home() {
+    const modules = getMergedModules();
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
             {/* Hero Section */}

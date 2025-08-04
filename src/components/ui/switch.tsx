@@ -5,11 +5,12 @@ import * as SwitchPrimitive from "@radix-ui/react-switch"
 import {cn} from "@/lib/utils";
 
 
-function Switch({className}: React.ComponentProps<typeof SwitchPrimitive.Root>) {
+function Switch({className, onCheckedChange, checked}: React.ComponentProps<typeof SwitchPrimitive.Root>) {
     return (
         <SwitchPrimitive.Root
+            onCheckedChange={onCheckedChange}
             className={cn("peer inline-flex h-6 w-11 items-center rounded-full border", className)}
-            defaultChecked={false}
+            defaultChecked={checked}
             id="toggle"
         >
             <SwitchPrimitive.Thumb

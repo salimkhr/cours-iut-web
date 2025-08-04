@@ -1,9 +1,10 @@
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
-import modules from "@/config";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {cn} from "@/lib/utils";
 import {AdminSection} from "@/components/AdminSection";
+import getMergedModules from "@/hook/getMergedModules";
+
 
 export default async function LoginPage() {
 
@@ -13,6 +14,7 @@ export default async function LoginPage() {
     if (!hasSession) {
         redirect('/login')
     }
+    const modules = getMergedModules();
 
     return (
         <div className="items-center justify-center p-4 pb-25">

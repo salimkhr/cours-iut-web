@@ -8,12 +8,15 @@ import {
     NavigationMenuList,
     navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
-import modules from "@/config";
+import getMergedModules from "@/hook/getMergedModules";
+
 
 export default async function NavBar() {
 
     const header = await headers();
     const pathname = header.get('x-pathname');
+
+    const modules = getMergedModules();
 
     const isActive = (href: string) => {
         return pathname === '/' + href || pathname?.startsWith(href + '/')

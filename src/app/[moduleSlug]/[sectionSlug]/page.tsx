@@ -1,10 +1,11 @@
 import {notFound} from 'next/navigation';
 import Image from "next/image";
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
-import modules from "@/config";
 import {GlitchText} from "@/components/GlitchText";
 import {Badge} from "@/components/ui/badge";
 import ContentCard from "@/components/Cards/ContentCard";
+import getMergedModules from "@/hook/getMergedModules";
+
 
 interface ModulePageProps {
     params: Promise<{
@@ -16,6 +17,7 @@ interface ModulePageProps {
 export async function generateStaticParams() {
     const params: { moduleSlug: string; sectionSlug: string }[] = [];
 
+    const modules = getMergedModules();
     modules.forEach((module) => {
         module.sections.filter((section) => section.isAvailable).forEach((section) => {
             params.push({

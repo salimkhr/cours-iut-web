@@ -44,3 +44,5 @@ next-env.d.ts
 
 data
 rag
+
+config/section-state.json
