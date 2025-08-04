@@ -5,7 +5,7 @@ import AntiCopyProtector from "@/components/AntiCopyProtector";
 import Heading from "@/components/ui/Heading";
 import ChatWidget from "@/components/ia/ChatWidget";
 import getMergedModules from "@/lib/getMergedModules";
-import {getContentParams} from "../../../../../config/ routes";
+import {getContentParams} from "@/lib/generateSSR";
 
 
 interface ContentPageProps {
@@ -22,7 +22,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({params}: ContentPageProps) {
     const {moduleSlug, sectionSlug} = await params;
-    const modules = getMergedModules();
+    const modules = await getMergedModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
     const currentSection = currentModule?.sections.find(s => s.path === sectionSlug);
 
@@ -39,7 +39,7 @@ export async function generateMetadata({params}: ContentPageProps) {
 export default async function Content({params}: ContentPageProps) {
     const {moduleSlug, sectionSlug, contentSlug} = await params;
 
-    const modules = getMergedModules();
+    const modules = await getMergedModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
     if (!currentModule) notFound();
 

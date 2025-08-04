@@ -3,8 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import getMergedModules from "@/lib/getMergedModules";
 
-export default function Home() {
-    const modules = getMergedModules();
+export default async function Home() {
+    const modules = await getMergedModules();
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
             {/* Hero Section */}

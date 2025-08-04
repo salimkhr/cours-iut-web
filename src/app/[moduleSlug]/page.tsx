@@ -5,7 +5,7 @@ import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import {GlitchText} from "@/components/GlitchText";
 import {Badge} from "@/components/ui/badge";
 import getMergedModules from "@/lib/getMergedModules";
-import {getModuleParams} from "../../../config/ routes";
+import {getModuleParams} from "@/lib/generateSSR";
 
 
 interface ModulePageProps {
@@ -20,7 +20,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({params}: ModulePageProps) {
     const {moduleSlug} = await params;
-    const modules = getMergedModules();
+    const modules = await getMergedModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
 
     if (!currentModule) {
@@ -37,7 +37,7 @@ export async function generateMetadata({params}: ModulePageProps) {
 
 export default async function Module({params}: ModulePageProps) {
     const {moduleSlug} = await params;
-    const modules = getMergedModules();
+    const modules = await getMergedModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
 
     if (!currentModule) {

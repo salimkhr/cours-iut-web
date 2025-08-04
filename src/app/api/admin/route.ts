@@ -1,5 +1,7 @@
 import {promises as fs} from 'fs';
 import path from 'path';
+import {cookies} from "next/headers";
+import Tokens from "csrf";
 
 type AllowedKey = 'isAvailable' | 'correctionIsAvailable';
 
@@ -10,10 +12,24 @@ interface Body {
     value: boolean;
 }
 
+const tokens = new Tokens();
+
 const stateFilePath = path.resolve(process.cwd(), 'config/section-state.json');
 
 export async function POST(req: Request) {
     try {
+
+        const cookieStore = await cookies();
+        const secret = cookieStore.get('csrfSecret')?.value;
+        const token = req.headers.get('csrf-token');
+
+        if (!secret || !token || !tokens.verify(secret, token)) {
+            return new Response(JSON.stringify({error: 'Invalid CSRF token'}), {
+                status: 403,
+                headers: {'Content-Type': 'application/json'},
+            });
+        }
+
         const body = (await req.json()) as Body;
         const {moduleId, sectionId, key, value} = body;
 

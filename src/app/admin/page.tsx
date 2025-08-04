@@ -14,10 +14,10 @@ export default async function LoginPage() {
     if (!hasSession) {
         redirect('/login')
     }
-    const modules = getMergedModules();
+    const modules = await getMergedModules();
 
     return (
-        <div className="items-center justify-center p-4 pb-25">
+        <div className="items-center justify-center p-4">
             <h1 className="text-2xl font-bold text-center">Gestion des Modules</h1>
             <Accordion type="multiple" className="w-full">
                 {modules.map((mod) => (
