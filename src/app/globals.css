@@ -155,6 +155,10 @@
     text-decoration: underline;
 }
 
+.header-html-css .data-\[state\=checked\]\:bg-module[data-state="checked"] {
+    background: #E34F26;
+}
+
 /** php */
 .text-php {
     color: #777BB4;
@@ -189,6 +193,10 @@
 .header-php a {
     color: #777BB4;
     text-decoration: underline;
+}
+
+.header-php .data-\[state\=checked\]\:bg-module[data-state="checked"] {
+    background: #777BB4;
 }
 
 
@@ -226,6 +234,10 @@
 .header-javascript a {
     color: #ac9b14;
     text-decoration: underline;
+}
+
+.header-javascript .data-\[state\=checked\]\:bg-module[data-state="checked"] {
+    background: #ac9b14;
 }
 
 /* Couleur login (bleu) */

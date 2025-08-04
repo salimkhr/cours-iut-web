@@ -44,7 +44,7 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
                 <ActionButton
                     key={index}
                     currentModule={currentModule}
-                    className="w-1/2"
+                    className="w-1/3"
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -57,13 +57,13 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
             ))}
             {section.hasCorrection ? <ActionButton
                 currentModule={currentModule}
-                className="w-1/2"
+                className="w-1/3"
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     router.push(`/${currentModule.path}/${section.path}/correction`);
                 }}
-                disabled={!section.isAvailable}
+                disabled={!section.correctionIsAvailable}
             >
                 Correction
             </ActionButton> : null}

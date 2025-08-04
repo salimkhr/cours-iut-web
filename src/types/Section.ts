@@ -10,6 +10,7 @@ export interface Section {
     // Statistiques de la section
     totalDuration: number;
     hasCorrection: boolean;
-    isAvailable: boolean;
+    isAvailable?: boolean;
+    correctionIsAvailable?: boolean;
     order: number;
 }

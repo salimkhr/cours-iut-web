@@ -20,9 +20,9 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "html-css/1_formulaire/LesFormulaires"},
                     {"type": "TP", "componentPath": "html-css/1_formulaire/LesFormulairesTp"}
                 ],
+                "hasCorrection": true,
                 "order": 1,
-                hasCorrection: false,
-                isAvailable: true
+
             },
             {
                 "id": "html-css-2_css",
@@ -35,9 +35,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "html-css/2_css/RappelCss"},
                     {"type": "TP", "componentPath": "html-css/2_css/RappelCssTp"}
                 ],
-                "order": 2,
-                hasCorrection: false,
-                isAvailable: true
+                "hasCorrection": true,
+                "order": 2
             },
             {
                 "id": "html-css-3_flex-grid",
@@ -50,9 +49,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "html-css/3_flex-grid/FlexGrid"},
                     {"type": "TP", "componentPath": "html-css/3_flex-grid/FlexGridTp"}
                 ],
-                "order": 3,
-                hasCorrection: false,
-                isAvailable: true
+                "hasCorrection": true,
+                "order": 3
             },
             {
                 "id": "html-css-4_bootstrap",
@@ -65,9 +63,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "html-css/4_bootstrap/Bootstrap"},
                     {"type": "TP", "componentPath": "html-css/4_bootstrap/BootstrapTp"}
                 ],
-                "order": 4,
-                hasCorrection: false,
-                isAvailable: true
+                "hasCorrection": true,
+                "order": 4
             },
             {
                 "id": "html-css-5_bootstrap",
@@ -80,9 +77,8 @@ const modules: Module[] = [
                     // {"type": "cours", "componentPath": "html-css/5_bootstrap/BootstrapAvance"},
                     {"type": "TP", "componentPath": "html-css/5_bootstrap/BootstrapAvanceTp"}
                 ],
-                "order": 5,
-                hasCorrection: false,
-                isAvailable: true
+                "hasCorrection": true,
+                "order": 5
             },
             {
                 "id": "html-css-10_html",
@@ -94,9 +90,8 @@ const modules: Module[] = [
                 "contents": [
                     {"type": "cours", "componentPath": "html-css/10_html/RappelHtml"}
                 ],
-                "order": 10,
-                hasCorrection: false,
-                isAvailable: true
+                "hasCorrection": false,
+                "order": 10
             }
         ]
 
@@ -120,9 +115,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "php/1_intro/IntroductionPhp"},
                     {"type": "TP", "componentPath": "php/1_intro/IntroductionPhpTp"},
                 ],
-                "order": 1,
-                hasCorrection: false,
-                isAvailable: true
+                "hasCorrection": true,
+                "order": 1
             },
             {
                 "id": "php-2_fonctions-poo",
@@ -135,9 +129,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "php/2_fonctions-poo/FonctionsEtPoo"},
                     {"type": "TP", "componentPath": "php/2_fonctions-poo/FonctionsEtPooTp"},
                 ],
-                "order": 2,
-                hasCorrection: false,
-                isAvailable: false
+                "hasCorrection": true,
+                "order": 2
             },
             {
                 "id": "php-3_formulaires",
@@ -150,9 +143,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "php/3_formulaires/Formulaires"},
                     {"type": "TP", "componentPath": "php/3_formulaires/FormulairesTp"},
                 ],
-                "order": 3,
-                hasCorrection: false,
-                isAvailable: false
+                "hasCorrection": true,
+                "order": 3
             },
             {
                 "id": "php-4_mvc",
@@ -165,9 +157,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "php/4_mvc/MvcIntro"},
                     {"type": "TP", "componentPath": "php/4_mvc/MvcTp"},
                 ],
-                "order": 4,
-                hasCorrection: false,
-                isAvailable: false
+                "hasCorrection": true,
+                "order": 4
             },
             {
                 "id": "php-5_bdd",
@@ -180,9 +171,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "php/5_bdd/ConnexionBdd"},
                     {"type": "TP", "componentPath": "php/5_bdd/ConnexionBddTp"},
                 ],
-                "order": 5,
-                hasCorrection: false,
-                isAvailable: false
+                "hasCorrection": true,
+                "order": 5
             },
             {
                 "id": "php-6_bdd-avancees",
@@ -195,9 +185,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "php/6_bdd-avancees/BddAvancees"},
                     {"type": "TP", "componentPath": "php/6_bdd-avancees/BddAvanceesTp"},
                 ],
-                "order": 6,
-                hasCorrection: false,
-                isAvailable: false
+                "hasCorrection": true,
+                "order": 6
             },
             {
                 "id": "php-7_sessions",
@@ -210,9 +199,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "php/7_sessions/Sessions"},
                     {"type": "TP", "componentPath": "php/7_sessions/SessionsTp"},
                 ],
-                "order": 7,
-                hasCorrection: false,
-                isAvailable: false
+                "hasCorrection": true,
+                "order": 7
             },
             {
                 "id": "php-8_symfony",
@@ -225,9 +213,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "php/8_symfony/SymfonyIntro"},
                     {"type": "TP", "componentPath": "php/8_symfony/SymfonyTp"},
                 ],
-                "order": 8,
-                hasCorrection: false,
-                isAvailable: false
+                "hasCorrection": false,
+                "order": 8
             },
             {
                 "id": "php-9_examen",
@@ -239,9 +226,8 @@ const modules: Module[] = [
                 "contents": [
                     {"type": "examen", "componentPath": "php/9_examen/Examen"}
                 ],
-                "order": 9,
-                hasCorrection: false,
-                isAvailable: false
+                "hasCorrection": false,
+                "order": 9
             }
         ]
     },
@@ -264,9 +250,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "js/1_dom/DomIntro"},
                     {"type": "TP", "componentPath": "js/1_dom/DomTp"},
                 ],
-                "order": 1,
-                hasCorrection: false,
-                isAvailable: false
+                "hasCorrection": true,
+                "order": 1
             },
             {
                 "id": "js-2_evenements",
@@ -279,9 +264,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "js/2_evenements/EvenementsIntro"},
                     {"type": "TP", "componentPath": "js/2_evenements/EvenementsTp"},
                 ],
-                "order": 2,
-                hasCorrection: false,
-                isAvailable: false
+                "hasCorrection": true,
+                "order": 2
             },
             {
                 "id": "js-3_evenements-avances",
@@ -294,9 +278,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "js/3_evenements-avances/EvenementsAvances"},
                     {"type": "TP", "componentPath": "js/3_evenements-avances/EvenementsAvancesTp"},
                 ],
-                "order": 3,
-                hasCorrection: false,
-                isAvailable: false
+                "hasCorrection": true,
+                "order": 3
             },
             {
                 "id": "js-4_fetch",
@@ -309,9 +292,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "js/4_fetch/FetchIntro"},
                     {"type": "TP", "componentPath": "js/4_fetch/FetchTp"},
                 ],
-                "order": 4,
-                hasCorrection: false,
-                isAvailable: false
+                "hasCorrection": true,
+                "order": 4
             },
             {
                 "id": "js-5_react",
@@ -324,9 +306,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "js/5_react/ReactIntro"},
                     {"type": "TP", "componentPath": "js/5_react/ReactTp"},
                 ],
-                "order": 5,
-                hasCorrection: false,
-                isAvailable: false
+                "hasCorrection": true,
+                "order": 5
             },
             {
                 "id": "js-6_examen",
@@ -338,9 +319,8 @@ const modules: Module[] = [
                 "contents": [
                     {"type": "projet", "componentPath": "js/6_examen/Examen"}
                 ],
-                "order": 6,
-                hasCorrection: false,
-                isAvailable: false
+                "hasCorrection": false,
+                "order": 6
             }
         ]
     }
