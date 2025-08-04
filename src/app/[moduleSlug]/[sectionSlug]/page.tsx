@@ -32,6 +32,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({params}: ModulePageProps) {
     const {moduleSlug, sectionSlug} = await params;
+
+    const modules = getMergedModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
     const currentSection = currentModule?.sections.find(s => s.path === sectionSlug);
 
@@ -55,7 +57,7 @@ export async function generateMetadata({params}: ModulePageProps) {
 
 export default async function Module({params}: ModulePageProps) {
     const {moduleSlug, sectionSlug} = await params;
-
+    const modules = getMergedModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
     if (!currentModule) notFound();
 
