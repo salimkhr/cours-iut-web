@@ -16,7 +16,7 @@ export default function getMergedModules(): Module[] {
                 isAvailable: rawState.isAvailable ?? false,
                 correctionIsAvailable: rawState.correctionIsAvailable ?? false
             };
-            
+
             return {
                 ...section,
                 ...dynamicState

@@ -1,7 +1,7 @@
 import ModuleCard from "@/components/Cards/ModuleCard";
 import Image from "next/image";
 import Link from "next/link";
-import getMergedModules from "@/hook/getMergedModules";
+import getMergedModules from "@/lib/getMergedModules";
 
 export default function Home() {
     const modules = getMergedModules();

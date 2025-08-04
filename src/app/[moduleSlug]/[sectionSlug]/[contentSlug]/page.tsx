@@ -4,7 +4,8 @@ import dynamic from 'next/dynamic'
 import AntiCopyProtector from "@/components/AntiCopyProtector";
 import Heading from "@/components/ui/Heading";
 import ChatWidget from "@/components/ia/ChatWidget";
-import getMergedModules from "@/hook/getMergedModules";
+import getMergedModules from "@/lib/getMergedModules";
+import {getContentParams} from "../../../../../config/ routes";
 
 
 interface ContentPageProps {
@@ -16,22 +17,7 @@ interface ContentPageProps {
 }
 
 export async function generateStaticParams() {
-    const params: { moduleSlug: string; sectionSlug: string; contentSlug: string }[] = [];
-    const modules = getMergedModules();
-
-    modules.forEach((module) => {
-        module.sections.filter((section) => section.isAvailable).forEach((section) => {
-            section.contents.forEach((content) => {
-                params.push({
-                    moduleSlug: module.path,
-                    sectionSlug: section.path,
-                    contentSlug: content.type
-                });
-            });
-        });
-    });
-
-    return params;
+    return getContentParams();
 }
 
 export async function generateMetadata({params}: ContentPageProps) {

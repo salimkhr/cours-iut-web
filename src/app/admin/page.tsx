@@ -3,7 +3,7 @@ import {redirect} from "next/navigation";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {cn} from "@/lib/utils";
 import {AdminSection} from "@/components/AdminSection";
-import getMergedModules from "@/hook/getMergedModules";
+import getMergedModules from "@/lib/getMergedModules";
 
 
 export default async function LoginPage() {

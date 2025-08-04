@@ -8,7 +8,7 @@ import {
     NavigationMenuList,
     navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
-import getMergedModules from "@/hook/getMergedModules";
+import getMergedModules from "@/lib/getMergedModules";
 
 
 export default async function NavBar() {

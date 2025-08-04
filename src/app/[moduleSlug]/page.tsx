@@ -4,7 +4,8 @@ import SectionCard from "@/components/Cards/SectionCard";
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import {GlitchText} from "@/components/GlitchText";
 import {Badge} from "@/components/ui/badge";
-import getMergedModules from "@/hook/getMergedModules";
+import getMergedModules from "@/lib/getMergedModules";
+import {getModuleParams} from "../../../config/ routes";
 
 
 interface ModulePageProps {
@@ -14,10 +15,7 @@ interface ModulePageProps {
 }
 
 export async function generateStaticParams() {
-    const modules = getMergedModules();
-    return modules.map((module) => ({
-        moduleSlug: module.path,
-    }));
+    return getModuleParams();
 }
 
 export async function generateMetadata({params}: ModulePageProps) {

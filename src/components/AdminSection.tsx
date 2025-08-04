@@ -23,7 +23,7 @@ export function AdminSection({
                              }: AdminSectionProps) {
     // local state pour rendre le switch réactif immédiatement
     const [isAvailable, setIsAvailable] = useState(!!section.isAvailable);
-    const [hasCorrection, setHasCorrection] = useState(!!section.correctionIsAvailable);
+    const [correctionIsAvailable, setIscorrectionIsAvailable] = useState(!!section.correctionIsAvailable);
 
     // sync avec les props si elles changent de l'extérieur
     useEffect(() => {
@@ -31,7 +31,7 @@ export function AdminSection({
     }, [section.isAvailable]);
 
     useEffect(() => {
-        setHasCorrection(!!section.correctionIsAvailable);
+        setIscorrectionIsAvailable(!!section.correctionIsAvailable);
     }, [section.correctionIsAvailable]);
 
     // gestion du toggle avec update local + callback parent
@@ -41,11 +41,9 @@ export function AdminSection({
     ) => {
         if (key === "isAvailable") setIsAvailable(value);
 
-        if (key === "correctionIsAvailable") setHasCorrection(value);
+        if (key === "correctionIsAvailable") setIscorrectionIsAvailable(value);
 
-        updateSectionState(moduleId, section.id, key, value)
-            .then(() => console.log("✅ Mise à jour réussie"))
-            .catch((err) => console.error("❌ Erreur:", err));
+        updateSectionState(moduleId, section.id, key, value);
     };
 
     return (
@@ -70,8 +68,9 @@ export function AdminSection({
                     </Label>
                     <Switch
                         id={`${section.id}-correction`}
-                        checked={hasCorrection}
+                        checked={correctionIsAvailable}
                         onCheckedChange={(checked) => handleToggle("correctionIsAvailable", !!checked)}
+                        disabled={!section.hasCorrection}
                     />
                 </div>
             </div>
