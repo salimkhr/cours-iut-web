@@ -81,9 +81,9 @@ const modules: Module[] = [
                 "order": 5
             },
             {
-                "id": "html-css-10_html",
+                "id": "html-css-6_html",
                 "title": "Rappel de HTML",
-                "path": "10_html",
+                "path": "6_html",
                 "description": "Revue des balises HTML essentielles : structure de page, titres, paragraphes, listes, liens et images.",
                 "totalDuration": 1,
                 "tags": ["html", "bases"],
@@ -91,7 +91,8 @@ const modules: Module[] = [
                     {"type": "cours", "componentPath": "html-css/10_html/RappelHtml"}
                 ],
                 "hasCorrection": false,
-                "order": 10
+                "order": 6
+                
             }
         ]
 

@@ -24,9 +24,7 @@ export default function RootLayout({
         <html lang="fr" className={jetbrainsMono.variable}>
         <body className="min-h-screen font-mono">
         <NavBar/>
-        <div className="pb-25">
-            {children}
-        </div>
+        {children}
         <Footer/>
         </body>
         </html>

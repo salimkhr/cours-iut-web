@@ -4,6 +4,7 @@ import {Section} from '@/types/Section';
 import {Module} from '@/types/module';
 import {Badge} from '@/components/ui/badge';
 import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
+import {BookOpen, CodeXml, FolderCode, Gitlab, GraduationCap} from "lucide-react";
 
 interface SectionCardProps {
     section: Section;
@@ -15,7 +16,7 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
 
     const header = (
 
-        <span className="text-xs font-mono text-black">
+        <span className="text-xs font-mono text-white">
             {section.totalDuration} Séance{section.totalDuration > 1 ? 's' : ''}
         </span>
     );
@@ -53,6 +54,10 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
                     disabled={!section.isAvailable}
                 >
                     {item.type}
+                    {item.type === 'cours' && <BookOpen/>}
+                    {item.type === 'TP' && <CodeXml/>}
+                    {item.type === 'projet' && <FolderCode/>}
+                    {item.type === 'examen' && <GraduationCap/>}
                 </ActionButton>
             ))}
             {section.hasCorrection ? <ActionButton
@@ -61,11 +66,11 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    router.push(`/${currentModule.path}/${section.path}/correction`);
+                    window.open(`https://gitlab.com/iut3334332/${currentModule.path}/${section.path}`, '_blank');
                 }}
                 disabled={!section.correctionIsAvailable}
             >
-                Correction
+                Correction <Gitlab></Gitlab>
             </ActionButton> : null}
         </div>
     );
@@ -77,6 +82,7 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
             header={header}
             content={content}
             footer={footer}
+            withHover={false}
         />
     );
 }

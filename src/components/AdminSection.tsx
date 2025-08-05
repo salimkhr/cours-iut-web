@@ -48,15 +48,13 @@ export function AdminSection({
 
     return (
         <div className="rounded-lg border p-3 space-y-3 bg-muted/40">
-            <div className="flex items-center justify-between">
+            <div>
                 <h3 className="text-xl font-medium leading-tight">{section.title}</h3>
-                <span
-                    className="text-md">{section.contents.map(content => content.type).join('/')}</span>
             </div>
             <div className="space-y-3">
                 <div className="flex items-center justify-between">
                     <Label htmlFor={`${section.id}-available`} className="text-sm">
-                        Disponible
+                        {section.contents.map(content => content.type).join('/')}
                     </Label>
                     <Switch
                         id={`${section.id}-available`}
