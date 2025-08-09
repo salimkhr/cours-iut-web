@@ -4,8 +4,8 @@ import SectionCard from "@/components/Cards/SectionCard";
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import {GlitchText} from "@/components/GlitchText";
 import {Badge} from "@/components/ui/badge";
-import getMergedModules from "@/lib/getMergedModules";
-import {getModuleParams} from "@/lib/generateSSR";
+import {Section} from "@/types/Section";
+import getModules from "@/lib/getModules";
 
 
 interface ModulePageProps {
@@ -14,13 +14,9 @@ interface ModulePageProps {
     }>;
 }
 
-export async function generateStaticParams() {
-    return getModuleParams();
-}
-
 export async function generateMetadata({params}: ModulePageProps) {
     const {moduleSlug} = await params;
-    const modules = await getMergedModules();
+    const modules = await getModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
 
     if (!currentModule) {
@@ -37,7 +33,7 @@ export async function generateMetadata({params}: ModulePageProps) {
 
 export default async function Module({params}: ModulePageProps) {
     const {moduleSlug} = await params;
-    const modules = await getMergedModules();
+    const modules = await getModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
 
     if (!currentModule) {
@@ -46,11 +42,11 @@ export default async function Module({params}: ModulePageProps) {
 
     // Calcul des statistiques du module
     const totalSections = currentModule.sections.length;
-    const totalAvailableSections = currentModule.sections.filter((section) => section.isAvailable).length;
+    const totalAvailableSections = currentModule.sections.filter((section: Section) => section.isAvailable).length;
     const progress = totalSections > 0 ? Math.round((totalAvailableSections / totalSections) * 100) : 0;
     const hasAvailableContent = totalAvailableSections > 0;
 
-    const allTags = [...new Set(currentModule.sections.flatMap(section => section.tags || []))];
+    const allTags = [...new Set(currentModule.sections.flatMap((section: Section) => section.tags || []))];
 
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
@@ -108,7 +104,7 @@ export default async function Module({params}: ModulePageProps) {
                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full max-w-7xl mx-auto mb-12 lg:mb-16">
                     {currentModule.sections.map((section, index) => (
                         <div
-                            key={section.id}
+                            key={section.path}
                             className="opacity-0 animate-fade-in-up"
                             style={{animationDelay: `${index * 0.1}s`}}
                         >
@@ -122,7 +118,7 @@ export default async function Module({params}: ModulePageProps) {
             <section className="w-full px-4 lg:px-8 mb-8">
                 <div className="max-w-4xl mx-auto text-center opacity-0 animate-fade-in">
                     <div
-                        className={`bg-gradient-to-r from-${currentModule.id}/10 to-${currentModule.id}/20 rounded-xl p-6 border-2 border-${currentModule.id}/30`}
+                        className={`bg-gradient-to-r rounded-xl p-6 border-2`}
                     >
                         <h4 className="text-xl font-bold mb-2">Prêt à commencer ?</h4>
 
@@ -135,7 +131,7 @@ export default async function Module({params}: ModulePageProps) {
                                 </p>
                                 <div className="w-full bg-gray-200 rounded-full h-2">
                                     <div
-                                        className={`bg-${currentModule.id} h-2 rounded-full transition-all duration-300`}
+                                        className={`bg-${currentModule.path} h-2 rounded-full transition-all duration-300`}
                                         style={{width: `${progress}%`}}
                                     />
                                 </div>

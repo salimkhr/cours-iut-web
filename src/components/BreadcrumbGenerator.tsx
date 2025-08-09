@@ -10,22 +10,21 @@ import {
 } from "@/components/ui/breadcrumb";
 import {Module} from "@/types/module";
 import {Section} from "@/types/Section";
-import {Content} from "@/types/content";
 
 interface BreadcrumbPageProps {
     currentModule: Module;
     currentSection?: Section;
-    currentContent?: Content;
+    currentContent?: string;
 }
 
-export default function BreadcrumbGenerator({ currentModule, currentSection, currentContent }: BreadcrumbPageProps) {
+export default function BreadcrumbGenerator({currentModule, currentSection, currentContent}: BreadcrumbPageProps) {
     return (
         <Breadcrumb className={'mx-5 mt-3'}>
             <BreadcrumbList>
                 <BreadcrumbItem>
                     <BreadcrumbLink href="/">Home</BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator />
+                <BreadcrumbSeparator/>
 
                 <BreadcrumbItem>
                     {currentSection || currentContent ? (
@@ -39,7 +38,7 @@ export default function BreadcrumbGenerator({ currentModule, currentSection, cur
 
                 {currentSection && (
                     <>
-                        <BreadcrumbSeparator />
+                        <BreadcrumbSeparator/>
                         <BreadcrumbItem>
                             {currentContent ? (
                                 <BreadcrumbLink href={`/${currentModule?.path}/${currentSection?.path}`}>
@@ -54,9 +53,9 @@ export default function BreadcrumbGenerator({ currentModule, currentSection, cur
 
                 {currentContent && (
                     <>
-                        <BreadcrumbSeparator />
+                        <BreadcrumbSeparator/>
                         <BreadcrumbItem>
-                            <BreadcrumbPage>{currentContent?.type}</BreadcrumbPage>
+                            <BreadcrumbPage>{currentContent}</BreadcrumbPage>
                         </BreadcrumbItem>
                     </>
                 )}

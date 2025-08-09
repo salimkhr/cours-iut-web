@@ -1,10 +1,10 @@
 import ModuleCard from "@/components/Cards/ModuleCard";
 import Image from "next/image";
 import Link from "next/link";
-import getMergedModules from "@/lib/getMergedModules";
+import getModules from "@/lib/getModules";
 
 export default async function Home() {
-    const modules = await getMergedModules();
+    const modules = await getModules();
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
             {/* Hero Section */}
@@ -44,7 +44,7 @@ export default async function Home() {
                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full max-w-7xl mx-auto mb-12 lg:mb-16">
                     {modules.map((currentModule, index) => (
                         <Link
-                            key={currentModule.id}
+                            key={currentModule._id}
                             className="opacity-0 animate-fade-in-up"
                             style={{animationDelay: `${index * 0.1}s`}}
                             href={currentModule.path}

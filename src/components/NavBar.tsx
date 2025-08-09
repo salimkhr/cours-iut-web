@@ -8,7 +8,7 @@ import {
     NavigationMenuList,
     navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
-import getMergedModules from "@/lib/getMergedModules";
+import getModules from "@/lib/getModules";
 
 
 export default async function NavBar() {
@@ -16,7 +16,7 @@ export default async function NavBar() {
     const header = await headers();
     const pathname = header.get('x-pathname');
 
-    const modules = await getMergedModules();
+    const modules = await getModules();
 
     const isActive = (href: string) => {
         return pathname === '/' + href || pathname?.startsWith(href + '/')
@@ -47,7 +47,7 @@ export default async function NavBar() {
                         {modules.map((module) => {
                             const Icon = iconMap[module.iconName] || BookOpen;
                             return (
-                                <NavigationMenuItem key={module.id}>
+                                <NavigationMenuItem key={module._id}>
                                     <NavigationMenuLink asChild active={isActive(module.path)}>
                                         <Link
                                             href={`/${module.path}`}

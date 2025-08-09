@@ -49,15 +49,15 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        router.push(`/${currentModule.path}/${section.path}/${item.type}`);
+                        router.push(`/${currentModule.path}/${section.path}/${item}`);
                     }}
                     disabled={!section.isAvailable}
                 >
-                    {item.type}
-                    {item.type === 'cours' && <BookOpen/>}
-                    {item.type === 'TP' && <CodeXml/>}
-                    {item.type === 'projet' && <FolderCode/>}
-                    {item.type === 'examen' && <GraduationCap/>}
+                    {item.charAt(0).toUpperCase() + item.slice(1)}
+                    {item === 'cours' && <BookOpen/>}
+                    {item === 'TP' && <CodeXml/>}
+                    {item === 'projet' && <FolderCode/>}
+                    {item === 'examen' && <GraduationCap/>}
                 </ActionButton>
             ))}
             {section.hasCorrection ? <ActionButton
@@ -70,7 +70,7 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
                 }}
                 disabled={!section.correctionIsAvailable}
             >
-                Correction <Gitlab></Gitlab>
+                Correction <Gitlab/>
             </ActionButton> : null}
         </div>
     );

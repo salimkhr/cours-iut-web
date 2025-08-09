@@ -1,11 +1,11 @@
-import {Content} from "@/types/content";
+import {ObjectId} from "bson";
 
 export interface Section {
-    id: string;
+    _id: string | ObjectId;
     title: string;
     path: string;
     description?: string;
-    contents: Content[];
+    contents: string[];
     tags: string[];
     // Statistiques de la section
     totalDuration: number;

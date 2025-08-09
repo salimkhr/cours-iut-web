@@ -4,8 +4,9 @@ import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import {GlitchText} from "@/components/GlitchText";
 import {Badge} from "@/components/ui/badge";
 import ContentCard from "@/components/Cards/ContentCard";
-import getMergedModules from "@/lib/getMergedModules";
 import {getSectionParams} from "@/lib/generateSSR";
+import getModules from "@/lib/getModules";
+import {Section} from "@/types/Section";
 
 
 interface ModulePageProps {
@@ -22,9 +23,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({params}: ModulePageProps) {
     const {moduleSlug, sectionSlug} = await params;
 
-    const modules = await getMergedModules();
+    const modules = await getModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
-    const currentSection = currentModule?.sections.find(s => s.path === sectionSlug);
+    const currentSection = currentModule?.sections.find((s: Section) => s.path === sectionSlug);
 
     if (!currentModule) {
         return {
@@ -46,7 +47,7 @@ export async function generateMetadata({params}: ModulePageProps) {
 
 export default async function Module({params}: ModulePageProps) {
     const {moduleSlug, sectionSlug} = await params;
-    const modules = await getMergedModules();
+    const modules = await getModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
     if (!currentModule) notFound();
 

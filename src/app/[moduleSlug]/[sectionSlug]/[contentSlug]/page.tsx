@@ -4,8 +4,7 @@ import dynamic from 'next/dynamic'
 import AntiCopyProtector from "@/components/AntiCopyProtector";
 import Heading from "@/components/ui/Heading";
 import ChatWidget from "@/components/ia/ChatWidget";
-import getMergedModules from "@/lib/getMergedModules";
-import {getContentParams} from "@/lib/generateSSR";
+import getModules from "@/lib/getModules";
 
 
 interface ContentPageProps {
@@ -16,13 +15,9 @@ interface ContentPageProps {
     }>;
 }
 
-export async function generateStaticParams() {
-    return getContentParams();
-}
-
 export async function generateMetadata({params}: ContentPageProps) {
     const {moduleSlug, sectionSlug} = await params;
-    const modules = await getMergedModules();
+    const modules = await getModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
     const currentSection = currentModule?.sections.find(s => s.path === sectionSlug);
 
@@ -39,18 +34,20 @@ export async function generateMetadata({params}: ContentPageProps) {
 export default async function Content({params}: ContentPageProps) {
     const {moduleSlug, sectionSlug, contentSlug} = await params;
 
-    const modules = await getMergedModules();
+    const modules = await getModules();
     const currentModule = modules.find(m => m.path === moduleSlug);
     if (!currentModule) notFound();
 
     const currentSection = currentModule.sections.find(s => s.path === sectionSlug);
     if (!currentSection) notFound();
 
-    const currentContent = currentSection.contents.find(c => c.type === contentSlug);
+    const currentContent = currentSection.contents.find(c => c === contentSlug);
     if (!currentContent) notFound();
 
+    console.log(`@/cours/${currentModule.path}/${currentSection.path}/${currentContent}.tsx`);
+
     const ComponentToRender = dynamic(() =>
-        import(`@/cours/${currentContent.componentPath}`)
+        import(`@/cours/${currentModule.path}/${currentSection.path}/${currentContent}.tsx`)
             .catch(() => notFound())
     );
 
