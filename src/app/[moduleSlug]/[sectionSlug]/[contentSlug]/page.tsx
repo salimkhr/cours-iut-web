@@ -1,10 +1,10 @@
 import {notFound} from 'next/navigation';
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
-import dynamic from 'next/dynamic'
 import AntiCopyProtector from "@/components/AntiCopyProtector";
 import Heading from "@/components/ui/Heading";
 import ChatWidget from "@/components/ia/ChatWidget";
 import getModules from "@/lib/getModules";
+import {contentImports} from '@/lib/contentImports'; // import auto-généré
 
 
 interface ContentPageProps {
@@ -44,12 +44,11 @@ export default async function Content({params}: ContentPageProps) {
     const currentContent = currentSection.contents.find(c => c === contentSlug);
     if (!currentContent) notFound();
 
-    console.log(`@/cours/${currentModule.path}/${currentSection.path}/${currentContent}.tsx`);
+    const importFunc = contentImports?.[moduleSlug]?.[sectionSlug]?.[contentSlug];
 
-    const ComponentToRender = dynamic(() =>
-        import(`@/cours/${currentModule.path}/${currentSection.path}/${currentContent}.tsx`)
-            .catch(() => notFound())
-    );
+    if (!importFunc) notFound();
+
+    const ComponentToRender = (await importFunc()).default;
 
     if (!ComponentToRender) notFound();
 

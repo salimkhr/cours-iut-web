@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "prebuild": "node ./script/generateContentImports.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "extract-cours": " node script/extractCours.js",
-    "extract-coursmd": " node script/extractToMarkdown.js"
+    "extract-coursmd": " node script/extractToMarkdown.js",
+    "generate-imports": " node script/generateContentImports.js"
   },
   "dependencies": {
     "@babel/core": "^7.28.0",
