@@ -1,6 +1,8 @@
+import {ObjectId} from "bson";
+
 export default async function updateSectionState(
-    moduleId: string,
-    sectionId: string,
+    moduleId: string | ObjectId,
+    sectionId: string | ObjectId,
     key: 'isAvailable' | 'correctionIsAvailable',
     value: boolean
 ) {

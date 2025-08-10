@@ -3,12 +3,14 @@ import Image from "next/image";
 import SectionCard from "@/components/Cards/SectionCard";
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import {GlitchText} from "@/components/GlitchText";
-import {Badge} from "@/components/ui/badge";
 import Section from "@/types/Section";
 import getModules from "@/lib/getModules";
 import {List, ListItem} from "@/components/ui/List";
 import Link from "next/link";
 import Heading from "@/components/ui/Heading";
+import iconMap from "@/lib/iconMap";
+import {BookOpen} from "lucide-react";
+import {Badge} from "@/components/ui/badge";
 
 
 interface ModulePageProps {
@@ -48,22 +50,24 @@ export default async function Module({params}: ModulePageProps) {
     const totalAvailableSections = currentModule.sections.filter((section: Section) => section.isAvailable).length;
     const progress = totalSections > 0 ? Math.round((totalAvailableSections / totalSections) * 100) : 0;
     const hasAvailableContent = totalAvailableSections > 0;
-
-    const allTags = [...new Set(currentModule.sections.flatMap((section: Section) => section.tags || []))];
-
+    const allTags = [...new Set(currentModule.sections.flatMap((section: Section) => section.tags || []))].sort((a, b) => (a.localeCompare(b)));
     const coefficients = currentModule.coefficients?.filter(c => c.value > 0);
+    const Icon = iconMap[currentModule.iconName] || BookOpen;
 
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
             <BreadcrumbGenerator currentModule={currentModule}/>
 
             <section
-                className="w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between p-4 lg:px-6 gap-4 lg:gap-6 lg:min-h-[45vh]">
+                className="w-full flex flex-col lg:flex-row items-end justify-center lg:justify-between p-4 lg:px-6 gap-4 lg:gap-6 lg:min-h-[45vh]">
                 <div className="flex flex-col items-center w-full lg:w-2/3 opacity-0 animate-fade-in">
                     <GlitchText>
-                        <h1 className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-extrabold mt-10 lg:mb-4 text-center bg-gradient-to-r bg-clip-text">
-                            {currentModule.title}
-                        </h1>
+                        <div className="flex flex-col items-center justify-center w-full mt-10">
+                            <Icon size={70} className="mb-4"/>
+                            <h1 className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-extrabold lg:mb-4 text-center bg-gradient-to-r bg-clip-text">
+                                {currentModule.title}
+                            </h1>
+                        </div>
                     </GlitchText>
 
                     {currentModule.description && (
@@ -71,9 +75,21 @@ export default async function Module({params}: ModulePageProps) {
                             {currentModule.description}
                         </p>
                     )}
-                    <div className="flex flex-row items-top justify-center w-full opacity-0 animate-fade-in">
+                    {allTags.length > 0 && (
+                        <div className="flex flex-wrap justify-center gap-2 mb-8 opacity-0 animate-fade-in-up"
+                             style={{animationDelay: '0.3s'}}>
+                            {allTags.slice(0, 8).map((tag) => (
+                                <Badge key={tag}
+                                       className={`border-2 border-${currentModule.title} bg-white text-${currentModule.title} font-mono text-xs hover:bg-${currentModule.title} hover:text-white transition-colors`}>
+                                    #{tag}
+                                </Badge>
+                            ))}
+                        </div>
+                    )}
+                    <div
+                        className="flex flex-col md:flex-row items-top justify-center w-full opacity-0 animate-fade-in">
                         <div
-                            className="flex flex-col items-center justify-center w-full lg:w-1/2 opacity-0 animate-fade-in">
+                            className="flex flex-col justify-center w-full lg:w-1/2 opacity-0 animate-fade-in">
                             <div>
                                 <Heading level={4} className="mb-2">Équipe pédagogique</Heading>
                                 <div>
@@ -99,13 +115,13 @@ export default async function Module({params}: ModulePageProps) {
                                             {sae}
                                         </ListItem>
                                     ))}
-                                    {currentModule.associatedSae.length === 0 && (
+                                    {currentModule.associatedSae?.length === 0 && (
                                         <span>Aucune SAÉ pour ce module</span>)}
                                 </List>
                             </div>
                         </div>
 
-                        <div>
+                        <div className="animate-fade-in">
                             <Heading level={4} className="mb-2">Coefficients des compétences</Heading>
                             <List>
                                 {coefficients?.map(coefficient => (
@@ -115,18 +131,6 @@ export default async function Module({params}: ModulePageProps) {
                             </List>
                         </div>
                     </div>
-
-                    {allTags.length > 0 && (
-                        <div className="flex flex-wrap justify-center gap-2 mb-8 opacity-0 animate-fade-in-up"
-                             style={{animationDelay: '0.3s'}}>
-                            {allTags.slice(0, 8).map((tag) => (
-                                <Badge key={tag}
-                                       className={`border-2 border-${currentModule.title} bg-white text-${currentModule.title} font-mono text-xs hover:bg-${currentModule.title} hover:text-white transition-colors`}>
-                                    #{tag}
-                                </Badge>
-                            ))}
-                        </div>
-                    )}
                 </div>
 
 
@@ -146,11 +150,11 @@ export default async function Module({params}: ModulePageProps) {
 
             <section className="w-full px-4 lg:px-8">
                 <h2 className="text-4xl lg:text-6xl font-extrabold mb-4 lg:mb-8 text-center opacity-0 animate-fade-in-up">
-                    Programme du cours
+                    Les cours
                 </h2>
 
                 <div
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full max-w-7xl mx-auto mb-12 lg:mb-16">
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full p-4 lg:px-40 mx-auto mb-12 lg:mb-16">
                     {currentModule.sections.map((section, index) => (
                         <div
                             key={section.path}
@@ -167,7 +171,7 @@ export default async function Module({params}: ModulePageProps) {
             <section className="w-full px-4 lg:px-8 mb-8">
                 <div className="max-w-4xl mx-auto text-center opacity-0 animate-fade-in">
                     <div
-                        className={`bg-gradient-to-r rounded-xl p-6 border-2`}
+                        className={`bg-gradient-to-r rounded-xl p-6 border-2 mb-20 lg:mb-5 shadow-lg`}
                     >
                         <h4 className="text-xl font-bold mb-2">Prêt à commencer ?</h4>
 

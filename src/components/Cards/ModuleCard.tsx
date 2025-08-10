@@ -1,21 +1,12 @@
-import {BookOpen, Braces, Code, type LucideIcon, Server} from 'lucide-react';
+import {BookOpen} from 'lucide-react';
 import Module from "@/types/module";
 import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
+import iconMap from "@/lib/iconMap";
 
 
 interface ModuleCardProps {
     currentModule: Module;
 }
-
-const iconMap: Record<string, LucideIcon> = {
-    Code: Code,
-    Server: Server,
-    Braces: Braces,
-    BookOpen: BookOpen,
-    CodeXml: Code,
-    ServerCog: Server,
-    BracesIcon: Braces,
-};
 
 export default function ModuleCard({currentModule}: ModuleCardProps) {
     const {title, description, path, iconName} = currentModule;

@@ -59,7 +59,7 @@ export default async function Content({params}: ContentPageProps) {
                 currentSection={currentSection}
                 currentContent={currentContent}
             />
-            <div className={`mx-10 header-${currentModule.path} py-20`}>
+            <div className={`lg:mx-10 header-${currentModule.path} py-20 mb-12 lg:mb-6`}>
                 <Heading level={1}>{currentSection.order}. {currentSection.title}</Heading>
                 <AntiCopyProtector>
                     <ComponentToRender/>

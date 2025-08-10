@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+* {
+    word-spacing: -0.3em;
+}
+
 /* Ajoutez ces animations dans votre globals.css */
 
 @keyframes fadeIn {

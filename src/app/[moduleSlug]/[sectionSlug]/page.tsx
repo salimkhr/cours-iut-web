@@ -4,7 +4,6 @@ import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import {GlitchText} from "@/components/GlitchText";
 import {Badge} from "@/components/ui/badge";
 import ContentCard from "@/components/Cards/ContentCard";
-import {getSectionParams} from "@/lib/generateSSR";
 import getModules from "@/lib/getModules";
 import Section from "@/types/Section";
 
@@ -14,10 +13,6 @@ interface ModulePageProps {
         moduleSlug: string;
         sectionSlug: string;
     }>;
-}
-
-export async function generateStaticParams() {
-    return getSectionParams();
 }
 
 export async function generateMetadata({params}: ModulePageProps) {
@@ -102,14 +97,14 @@ export default async function Module({params}: ModulePageProps) {
 
             <section className="w-full px-4 lg:px-8">
                 <h2 className="text-4xl lg:text-6xl font-extrabold mb-4 lg:mb-8 text-center opacity-0 animate-fade-in-up">
-                    Programme du cours
+                    Les cours
                 </h2>
 
                 <div
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full max-w-7xl mx-auto mb-12 lg:mb-16">
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full max-w-7xl mx-auto">
                     {currentSection.contents.map((content, index) => (
                         <div
-                            key={content.type}
+                            key={content}
                             className="opacity-0 animate-fade-in-up"
                             style={{animationDelay: `${index * 0.1}s`}}
                         >

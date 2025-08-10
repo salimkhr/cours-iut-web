@@ -2,11 +2,10 @@
 import {useRouter} from "next/navigation";
 import Module from "@/types/module";
 import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
-import {Content} from "@/types/content";
 import Section from "@/types/Section";
 
 interface SectionCardProps {
-    content: Content;
+    content: string;
     section: Section;
     currentModule: Module;
 }
@@ -21,7 +20,7 @@ export default function ContentCard({content, section, currentModule}: SectionCa
     const contentCard = (
         <>
             <h2 className={`text-2xl font-bold mb-2 text-${currentModule?.path}`}>
-                {content.type}
+                {content}
             </h2>
         </>
     );
@@ -34,11 +33,11 @@ export default function ContentCard({content, section, currentModule}: SectionCa
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    router.push(`/${currentModule.path}/${section.path}/${content.type}`);
+                    router.push(`/${currentModule.path}/${section.path}/${content}`);
                 }}
                 disabled={!section.isAvailable}
             >
-                {content.type}
+                {content}
             </ActionButton>
         </div>
     );

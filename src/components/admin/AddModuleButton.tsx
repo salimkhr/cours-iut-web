@@ -9,6 +9,7 @@ import {Label} from "@/components/ui/label";
 import Section from "@/types/Section";
 import Coefficient from "@/types/Coefficient";
 import Instructor from "@/types/Instructor";
+import {Textarea} from "@/components/ui/textarea";
 
 interface AddModuleButtonProps {
     onAdd: (module: {
@@ -16,11 +17,11 @@ interface AddModuleButtonProps {
         path: string;
         iconName: string;
         description?: string;
-        sections: Section[];
         associatedSae: string[];
         coefficients: Coefficient[];
         manager?: Instructor;
         instructors?: Instructor[];
+        sections: Section[];
     }) => void;
 }
 
@@ -29,19 +30,29 @@ type FormData = {
     path: string;
     iconName: string;
     description?: string;
+    associatedSae: string[];
     coefficients: Coefficient[];
     manager: Instructor;
     instructors: Instructor[];
+
 };
 
 const FIXED_COMPETENCES = [
-    "1-Réaliser un développement",
-    "2-Optimiser des applications",
-    "3-Administrer des systèmes informatiques communicants complexes",
-    "4-Gérer des données de l'information",
-    "5-Conduire un projet",
-    "6-Travailler en équipe"
+    "1/ Réaliser un développement",
+    "2/ Optimiser des applications",
+    "3/ Administrer des systèmes informatiques communicants complexes",
+    "4/ Gérer des données de l'information",
+    "5/ Conduire un projet",
+    "6/ Travailler en équipe"
 ];
+
+const FIXED_SAES = [
+    'S2.01 : Développement d\'application',
+    'S2.02 : Exploration algorithmique d\'un problème',
+    'S2.05 : Gestion d\'un projet',
+    'S3.01 : Développement d\'une Application',
+    'S4.01 : Développement d\'une application'
+]
 
 export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
     const [open, setOpen] = useState(false);
@@ -66,7 +77,6 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
         onAdd({
             ...data,
             sections: [],
-            associatedSae: [],
         });
 
         reset();
@@ -86,25 +96,28 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2">
 
                         {/* Titre */}
-                        <div>
-                            <Label htmlFor="title">Titre *</Label>
-                            <Input
-                                id="title"
-                                {...register("title", {required: "Le titre est obligatoire"})}
-                                aria-invalid={errors.title ? "true" : "false"}
-                            />
-                            {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
-                        </div>
+                        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
 
-                        {/* Path */}
-                        <div>
-                            <Label htmlFor="path">Path *</Label>
-                            <Input
-                                id="path"
-                                {...register("path", {required: "Le path est obligatoire"})}
-                                aria-invalid={errors.path ? "true" : "false"}
-                            />
-                            {errors.path && <p className="text-red-500 text-sm">{errors.path.message}</p>}
+                            <div>
+                                <Label htmlFor="title">Titre *</Label>
+                                <Input
+                                    id="title"
+                                    {...register("title", {required: "Le titre est obligatoire"})}
+                                    aria-invalid={errors.title ? "true" : "false"}
+                                />
+                                {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+                            </div>
+
+                            {/* Path */}
+                            <div>
+                                <Label htmlFor="path">Path *</Label>
+                                <Input
+                                    id="path"
+                                    {...register("path", {required: "Le path est obligatoire"})}
+                                    aria-invalid={errors.path ? "true" : "false"}
+                                />
+                                {errors.path && <p className="text-red-500 text-sm">{errors.path.message}</p>}
+                            </div>
                         </div>
 
                         {/* Icon */}
@@ -121,7 +134,7 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
                         {/* Description */}
                         <div>
                             <Label htmlFor="description">Description</Label>
-                            <Input
+                            <Textarea
                                 id="description"
                                 {...register("description")}
                             />
@@ -136,7 +149,7 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
                                         <span className="flex-1">{competence}</span>
                                         <Input
                                             type="number"
-                                            step="0.1"
+                                            step="1"
                                             className="w-24"
                                             {...register(`coefficients.${index}.value` as const, {valueAsNumber: true})}
                                         />
@@ -149,7 +162,6 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
                             </div>
                         </div>
 
-                        {/* Manager */}
                         <div>
                             <Label>Responsable du module</Label>
                             <div className="grid grid-cols-3 gap-2">
@@ -159,7 +171,6 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
                             </div>
                         </div>
 
-                        {/* Instructors */}
                         <div>
                             <Label>Enseignants</Label>
                             {watch("instructors").map((_, index) => (
@@ -171,6 +182,13 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
                                            type="email" {...register(`instructors.${index}.email` as const)} />
                                 </div>
                             ))}
+                        </div>
+
+                        <div>
+                            <select multiple
+                                    className="border border-gray-300 rounded-md p-2"  {...register("associatedSae")}>
+                                {FIXED_SAES.map((sae, index) => (<option key={index} value={sae}>{sae}</option>))}
+                            </select>
                         </div>
 
                         <DialogFooter>

@@ -8,6 +8,7 @@ import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import Module from "@/types/module";
 import {Checkbox} from '@/components/ui/checkbox';
+import {Textarea} from "@/components/ui/textarea";
 
 interface AddSectionButtonProps {
     modData: Module;
@@ -16,6 +17,7 @@ interface AddSectionButtonProps {
         path: string;
         iconName: string;
         description?: string;
+        tags: string[];
         totalDuration: number;
         hasCorrection: boolean;
         isAvailable: boolean;
@@ -30,6 +32,7 @@ type FormData = {
     path: string;
     iconName: string;
     description?: string;
+    tags: string;
     totalDuration: number;
     hasCorrection: boolean;
     isAvailable: boolean;
@@ -57,8 +60,6 @@ export default function AddSectionButton({
             hasCorrection: true,
             isAvailable: true,
             correctionIsAvailable: true,
-            totalDuration: 1,
-            order: (modData.sections.length ?? 0) + 1,
             contents: [],
         },
     });
@@ -67,12 +68,15 @@ export default function AddSectionButton({
     const title = watch('title');
     useEffect(() => {
         if (title) {
-            setValue('path', title.toLowerCase().replace(/\s+/g, '-'));
+            setValue('path', `${modData.sections.length + 1}-${title.toLowerCase().replace(/\s+/g, '-')}`);
         }
-    }, [title, setValue]);
+    }, [title, setValue, modData.sections.length]);
 
     const onSubmit = (data: FormData) => {
-        onAdd(data);
+        onAdd({
+            ...data,
+            tags: data.tags.split(',').map(tag => tag.trim()),
+        });
 
         reset();
         setOpen(false);
@@ -99,9 +103,11 @@ export default function AddSectionButton({
         }
     };
 
+    console.log(modData.sections.length);
+
     return (
         <>
-            <div className="flex justify-end">
+            <div className="flex justify-end mb-2">
                 <Button
                     onClick={() => setOpen(true)}
                     variant="outline"
@@ -116,27 +122,29 @@ export default function AddSectionButton({
                         <DialogHeader>
                             <DialogTitle>Ajouter un nouveau cours</DialogTitle>
                         </DialogHeader>
-                        <div>
-                            <Label htmlFor="title">Titre *</Label>
-                            <Input
-                                id="title"
-                                {...register('title', {required: 'Le titre est obligatoire'})}
-                                aria-invalid={errors.title ? 'true' : 'false'}
-                            />
-                            {errors.title && (
-                                <p className="text-red-500 text-sm">{errors.title.message}</p>
-                            )}
-                        </div>
-                        <div>
-                            <Label htmlFor="path">Path *</Label>
-                            <Input
-                                id="path"
-                                {...register('path', {required: 'Le path est obligatoire'})}
-                                aria-invalid={errors.path ? 'true' : 'false'}
-                            />
-                            {errors.path && (
-                                <p className="text-red-500 text-sm">{errors.path.message}</p>
-                            )}
+                        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                            <div>
+                                <Label htmlFor="title">Titre *</Label>
+                                <Input
+                                    id="title"
+                                    {...register('title', {required: 'Le titre est obligatoire'})}
+                                    aria-invalid={errors.title ? 'true' : 'false'}
+                                />
+                                {errors.title && (
+                                    <p className="text-red-500 text-sm">{errors.title.message}</p>
+                                )}
+                            </div>
+                            <div>
+                                <Label htmlFor="path">Path *</Label>
+                                <Input
+                                    id="path"
+                                    {...register('path', {required: 'Le path est obligatoire'})}
+                                    aria-invalid={errors.path ? 'true' : 'false'}
+                                />
+                                {errors.path && (
+                                    <p className="text-red-500 text-sm">{errors.path.message}</p>
+                                )}
+                            </div>
                         </div>
                         <div>
                             <Label>Contenu</Label>
@@ -161,7 +169,13 @@ export default function AddSectionButton({
                         </div>
                         <div>
                             <Label htmlFor="description">Description</Label>
-                            <Input id="description" {...register('description')} />
+                            <Textarea id="description" {...register('description')} />
+                        </div>
+                        <div>
+                            <Label htmlFor="tags">Tags</Label>
+                            <Textarea id="tags" {...register('tags')} />
+                            <span
+                                className="text-sm text-gray-500">Ajouter les tags en les séparant par une &apos;,&apos;</span>
                         </div>
                         <div>
                             <Label htmlFor="totalDuration">Nombre de séance *</Label>
@@ -169,6 +183,7 @@ export default function AddSectionButton({
                                 id="totalDuration"
                                 type="number"
                                 min={1}
+                                defaultValue={1}
                                 {...register('totalDuration', {
                                     required: 'Le nombre de séance est obligatoire',
                                     valueAsNumber: true,
@@ -185,6 +200,7 @@ export default function AddSectionButton({
                             <Input
                                 id="order"
                                 type="number"
+                                defaultValue={(modData.sections.length ?? 0) + 1}
                                 min={1}
                                 {...register('order', {
                                     required: 'La Position est obligatoire',

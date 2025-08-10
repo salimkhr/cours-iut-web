@@ -53,7 +53,7 @@ export default function ModulesList({initialModules}: ModulesListProps) {
             <div className="space-y-4">
                 <Accordion type="single" collapsible>
                     {modules.map(mod => (
-                        <AdminModule key={mod._id} module={mod}/>
+                        <AdminModule key={`${mod._id}_${mod.sections.length}`} module={mod}/>
                     ))}
                 </Accordion>
             </div>

@@ -41,7 +41,7 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
 
     const footer = (
         <div className="flex flex-row gap-2 justify-center w-full">
-            {section.contents.map((item, index) => (
+            {section.contents.sort((a, b) => a.localeCompare(b)).map((item, index) => (
                 <ActionButton
                     key={index}
                     currentModule={currentModule}
