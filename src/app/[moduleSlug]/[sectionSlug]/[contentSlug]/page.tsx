@@ -6,7 +6,6 @@ import ChatWidget from "@/components/ia/ChatWidget";
 import getModules from "@/lib/getModules";
 import {contentImports} from '@/lib/contentImports'; // import auto-généré
 
-
 interface ContentPageProps {
     params: Promise<{
         moduleSlug: string;
