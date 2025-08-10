@@ -35,12 +35,12 @@ type FormData = {
 };
 
 const FIXED_COMPETENCES = [
-    "Réaliser un développement",
-    "Optimiser des applications",
-    "Administrer des systèmes informatiques communicants complexes",
-    "Gérer des données de l'information",
-    "Conduire un projet",
-    "Travailler en équipe"
+    "1-Réaliser un développement",
+    "2-Optimiser des applications",
+    "3-Administrer des systèmes informatiques communicants complexes",
+    "4-Gérer des données de l'information",
+    "5-Conduire un projet",
+    "6-Travailler en équipe"
 ];
 
 export default function AddModuleButton({onAdd}: AddModuleButtonProps) {

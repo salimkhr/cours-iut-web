@@ -12,5 +12,6 @@ export default interface Module {
     sections: Section[];
     coefficients?: Coefficient[];
     instructors?: Instructor[];
+    manager?: Instructor;
     associatedSae: string[];
 }

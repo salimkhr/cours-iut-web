@@ -6,6 +6,9 @@ import {GlitchText} from "@/components/GlitchText";
 import {Badge} from "@/components/ui/badge";
 import Section from "@/types/Section";
 import getModules from "@/lib/getModules";
+import {List, ListItem} from "@/components/ui/List";
+import Link from "next/link";
+import Heading from "@/components/ui/Heading";
 
 
 interface ModulePageProps {
@@ -48,13 +51,15 @@ export default async function Module({params}: ModulePageProps) {
 
     const allTags = [...new Set(currentModule.sections.flatMap((section: Section) => section.tags || []))];
 
+    const coefficients = currentModule.coefficients?.filter(c => c.value > 0);
+
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
             <BreadcrumbGenerator currentModule={currentModule}/>
 
             <section
                 className="w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between p-4 lg:px-6 gap-4 lg:gap-6 lg:min-h-[45vh]">
-                <div className="flex flex-col items-center justify-center w-full lg:w-2/3 opacity-0 animate-fade-in">
+                <div className="flex flex-col items-center w-full lg:w-2/3 opacity-0 animate-fade-in">
                     <GlitchText>
                         <h1 className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-extrabold mt-10 lg:mb-4 text-center bg-gradient-to-r bg-clip-text">
                             {currentModule.title}
@@ -66,6 +71,50 @@ export default async function Module({params}: ModulePageProps) {
                             {currentModule.description}
                         </p>
                     )}
+                    <div className="flex flex-row items-top justify-center w-full opacity-0 animate-fade-in">
+                        <div
+                            className="flex flex-col items-center justify-center w-full lg:w-1/2 opacity-0 animate-fade-in">
+                            <div>
+                                <Heading level={4} className="mb-2">Équipe pédagogique</Heading>
+                                <div>
+                                    <span><Link
+                                        className={`text-${currentModule.path} border-b-1 border-${currentModule.path}`}
+                                        href={`mailto:${currentModule.manager?.email}`}>M.{currentModule.manager?.firstName} {currentModule.manager?.lastName}</Link>,&nbsp;
+                                    </span>
+                                    {currentModule.instructors?.map((instructor) => (
+                                        <span key={instructor.email}>
+                                            <Link
+                                                className={`text-${currentModule.path} border-b-1 border-${currentModule.path}`}
+                                                href={`mailto:${instructor.email}`}>
+                                                M.{instructor.firstName} {instructor.lastName}
+                                            </Link>
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <Heading level={4} className="mt-6">SAÉ associée</Heading>
+                                <List>
+                                    {currentModule.associatedSae?.map((sae) => (
+                                        <ListItem key={sae}>
+                                            {sae}
+                                        </ListItem>
+                                    ))}
+                                    {currentModule.associatedSae.length === 0 && (
+                                        <span>Aucune SAÉ pour ce module</span>)}
+                                </List>
+                            </div>
+                        </div>
+
+                        <div>
+                            <Heading level={4} className="mb-2">Coefficients des compétences</Heading>
+                            <List>
+                                {coefficients?.map(coefficient => (
+                                    <ListItem
+                                        key={`value_${coefficient.competenceName}`}>{coefficient.competenceName}&nbsp;:&nbsp;{coefficient.value}</ListItem>
+                                ))}
+                            </List>
+                        </div>
+                    </div>
 
                     {allTags.length > 0 && (
                         <div className="flex flex-wrap justify-center gap-2 mb-8 opacity-0 animate-fade-in-up"
