@@ -1,5 +1,5 @@
 import {connectToDB} from "@/lib/mongodb";
-import {Module} from "@/types/module";
+import Module from "@/types/module";
 import {WithId} from "mongodb";
 
 export default async function getModules(): Promise<(Module & { _id: string })[]> {

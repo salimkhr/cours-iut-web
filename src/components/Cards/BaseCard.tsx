@@ -1,7 +1,7 @@
 'use client';
 import {ReactNode} from 'react';
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
-import {Module} from '@/types/module';
+import Module from "@/types/module";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 

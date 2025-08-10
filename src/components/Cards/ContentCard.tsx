@@ -1,9 +1,9 @@
 'use client';
 import {useRouter} from "next/navigation";
-import {Module} from '@/types/module';
+import Module from "@/types/module";
 import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
 import {Content} from "@/types/content";
-import {Section} from "@/types/Section";
+import Section from "@/types/Section";
 
 interface SectionCardProps {
     content: Content;

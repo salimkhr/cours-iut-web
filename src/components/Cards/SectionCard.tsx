@@ -1,7 +1,7 @@
 'use client';
 import {useRouter} from "next/navigation";
-import {Section} from '@/types/Section';
-import {Module} from '@/types/module';
+import Section from "@/types/Section";
+import Module from "@/types/module";
 import {Badge} from '@/components/ui/badge';
 import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
 import {BookOpen, CodeXml, FolderCode, Gitlab, GraduationCap} from "lucide-react";

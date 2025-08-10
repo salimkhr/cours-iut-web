@@ -6,7 +6,7 @@ import {Badge} from "@/components/ui/badge";
 import ContentCard from "@/components/Cards/ContentCard";
 import {getSectionParams} from "@/lib/generateSSR";
 import getModules from "@/lib/getModules";
-import {Section} from "@/types/Section";
+import Section from "@/types/Section";
 
 
 interface ModulePageProps {

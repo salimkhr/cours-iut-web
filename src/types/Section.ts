@@ -1,6 +1,6 @@
 import {ObjectId} from "bson";
 
-export interface Section {
+export default interface Section {
     _id: string | ObjectId;
     title: string;
     path: string;

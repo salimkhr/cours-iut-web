@@ -6,7 +6,9 @@ import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
-import {Section} from "@/types/Section";
+import Section from "@/types/Section";
+import Coefficient from "@/types/Coefficient";
+import Instructor from "@/types/Instructor";
 
 interface AddModuleButtonProps {
     onAdd: (module: {
@@ -15,6 +17,10 @@ interface AddModuleButtonProps {
         iconName: string;
         description?: string;
         sections: Section[];
+        associatedSae: string[];
+        coefficients: Coefficient[];
+        manager?: Instructor;
+        instructors?: Instructor[];
     }) => void;
 }
 
@@ -23,12 +29,30 @@ type FormData = {
     path: string;
     iconName: string;
     description?: string;
+    coefficients: Coefficient[];
+    manager: Instructor;
+    instructors: Instructor[];
 };
+
+const FIXED_COMPETENCES = [
+    "Réaliser un développement",
+    "Optimiser des applications",
+    "Administrer des systèmes informatiques communicants complexes",
+    "Gérer des données de l'information",
+    "Conduire un projet",
+    "Travailler en équipe"
+];
 
 export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
     const [open, setOpen] = useState(false);
 
-    const {register, handleSubmit, watch, setValue, reset, formState: {errors}} = useForm<FormData>();
+    const {register, handleSubmit, watch, setValue, reset, formState: {errors}} = useForm<FormData>({
+        defaultValues: {
+            coefficients: FIXED_COMPETENCES.map(c => ({competenceName: c, value: 0})),
+            instructors: [{firstName: "", lastName: "", email: ""}],
+            manager: {firstName: "", lastName: "", email: ""}
+        }
+    });
 
     // Met à jour automatiquement "path" à partir de "title"
     const title = watch("title");
@@ -42,6 +66,7 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
         onAdd({
             ...data,
             sections: [],
+            associatedSae: [],
         });
 
         reset();
@@ -54,11 +79,13 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
                 <Button onClick={() => setOpen(true)} variant="outline">Ajouter un module</Button>
             </div>
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent>
+                <DialogContent className="max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>Ajouter un nouveau module</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2">
+
+                        {/* Titre */}
                         <div>
                             <Label htmlFor="title">Titre *</Label>
                             <Input
@@ -68,6 +95,8 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
                             />
                             {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
                         </div>
+
+                        {/* Path */}
                         <div>
                             <Label htmlFor="path">Path *</Label>
                             <Input
@@ -77,6 +106,8 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
                             />
                             {errors.path && <p className="text-red-500 text-sm">{errors.path.message}</p>}
                         </div>
+
+                        {/* Icon */}
                         <div>
                             <Label htmlFor="iconName">Icon Name *</Label>
                             <Input
@@ -86,6 +117,8 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
                             />
                             {errors.iconName && <p className="text-red-500 text-sm">{errors.iconName.message}</p>}
                         </div>
+
+                        {/* Description */}
                         <div>
                             <Label htmlFor="description">Description</Label>
                             <Input
@@ -93,6 +126,53 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
                                 {...register("description")}
                             />
                         </div>
+
+                        {/* Coefficients */}
+                        <div>
+                            <Label>Coefficients</Label>
+                            <div className="space-y-2">
+                                {FIXED_COMPETENCES.map((competence, index) => (
+                                    <div key={index} className="flex gap-2 items-center">
+                                        <span className="flex-1">{competence}</span>
+                                        <Input
+                                            type="number"
+                                            step="0.1"
+                                            className="w-24"
+                                            {...register(`coefficients.${index}.value` as const, {valueAsNumber: true})}
+                                        />
+                                        {/* Champ caché pour competenceName */}
+                                        <input
+                                            type="hidden" {...register(`coefficients.${index}.competenceName` as const)}
+                                            value={competence}/>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Manager */}
+                        <div>
+                            <Label>Responsable du module</Label>
+                            <div className="grid grid-cols-3 gap-2">
+                                <Input placeholder="Prénom" {...register("manager.firstName")} />
+                                <Input placeholder="Nom" {...register("manager.lastName")} />
+                                <Input placeholder="Email" type="email" {...register("manager.email")} />
+                            </div>
+                        </div>
+
+                        {/* Instructors */}
+                        <div>
+                            <Label>Enseignants</Label>
+                            {watch("instructors").map((_, index) => (
+                                <div key={index} className="grid grid-cols-3 gap-2 mb-2">
+                                    <Input
+                                        placeholder="Prénom" {...register(`instructors.${index}.firstName` as const)} />
+                                    <Input placeholder="Nom" {...register(`instructors.${index}.lastName` as const)} />
+                                    <Input placeholder="Email"
+                                           type="email" {...register(`instructors.${index}.email` as const)} />
+                                </div>
+                            ))}
+                        </div>
+
                         <DialogFooter>
                             <Button type="submit" variant="outline">Ajouter</Button>
                         </DialogFooter>

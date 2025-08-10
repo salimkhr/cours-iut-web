@@ -2,7 +2,7 @@
 
 import {useState} from 'react';
 import {AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion';
-import {Module} from "@/types/module";
+import Module from "@/types/module";
 import AdminSection from "@/components/admin/AdminSection";
 import {BookOpen, BracesIcon, CodeXml, LucideIcon, ServerCog} from "lucide-react";
 import AddSectionButton from "@/components/admin/AddSectionButton";

@@ -8,8 +8,8 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import {Module} from "@/types/module";
-import {Section} from "@/types/Section";
+import Module from "@/types/module";
+import Section from "@/types/Section";
 
 interface BreadcrumbPageProps {
     currentModule: Module;

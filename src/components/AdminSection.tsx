@@ -3,7 +3,7 @@
 import {useEffect, useState} from "react";
 import {Switch} from "@/components/ui/switch";
 import {Label} from "@/components/ui/label";
-import {Section} from "@/types/Section";
+import Section from "@/types/Section";
 import updateSectionState from "@/hook/admin/updateSectionState";
 
 interface AdminSectionProps {

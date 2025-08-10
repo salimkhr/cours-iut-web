@@ -1,5 +1,5 @@
 import {BookOpen, Braces, Code, type LucideIcon, Server} from 'lucide-react';
-import {Module} from '@/types/module';
+import Module from "@/types/module";
 import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
 
 

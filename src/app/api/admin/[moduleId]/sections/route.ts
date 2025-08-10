@@ -1,7 +1,7 @@
 import {NextResponse} from 'next/server';
-import {Section} from '@/types/Section';
+import Section from "@/types/Section";
 import {connectToDB} from "@/lib/mongodb";
-import {Module} from "@/types/module";
+import Module from "@/types/module";
 import {ObjectId} from "bson";
 import path from 'path';
 import fs from 'fs/promises';
@@ -30,7 +30,7 @@ export async function POST(
         if (modulePath === undefined || modulePath === null || modulePath === '') {
             return NextResponse.json({error: 'Module introuvable'}, {status: 404});
         }
-        
+
         if (section.contents && Array.isArray(section.contents)) {
             for (const content of section.contents) {
                 const currentModulePath = modulePath;

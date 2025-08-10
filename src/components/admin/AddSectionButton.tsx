@@ -6,7 +6,7 @@ import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,} from '@
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
-import {Module} from '@/types/module';
+import Module from "@/types/module";
 import {Checkbox} from '@/components/ui/checkbox';
 
 interface AddSectionButtonProps {

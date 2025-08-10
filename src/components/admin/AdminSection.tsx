@@ -1,6 +1,6 @@
 'use client';
 
-import {Section} from "@/types/Section";
+import Section from "@/types/Section";
 
 interface AdminSectionProps {
     section: Section;

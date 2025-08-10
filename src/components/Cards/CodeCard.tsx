@@ -4,7 +4,7 @@ import BaseCard from "@/components/Cards/BaseCard";
 import {ClipboardCopyIcon, DownloadIcon} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {Button} from "@/components/ui/button";
-import {Module} from "@/types/module";
+import Module from "@/types/module";
 
 interface CodeCardProps {
     language: string,

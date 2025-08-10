@@ -3,8 +3,10 @@
 import {useState} from 'react';
 import AdminModule from "@/components/admin/AdminModule";
 import AddModuleButton from "./AddModuleButton";
-import {Section} from "@/types/Section";
+import Section from "@/types/Section";
 import {Accordion} from "@/components/ui/accordion";
+import Coefficient from "@/types/Coefficient";
+import Instructor from "@/types/Instructor";
 
 interface Module {
     _id: string;
@@ -13,6 +15,10 @@ interface Module {
     iconName: string;
     description?: string;
     sections: Section[];
+    associatedSae: string[];
+    coefficients?: Coefficient[];
+    manager?: Instructor;
+    instructors?: Instructor[];
 }
 
 interface ModulesListProps {

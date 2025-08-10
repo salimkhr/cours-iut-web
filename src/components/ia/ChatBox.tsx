@@ -7,7 +7,7 @@ import {Textarea} from "@/components/ui/textarea";
 import {AppWindow, Bot, Send, Trash} from "lucide-react";
 import Message from "@/components/ia/Message";
 import useChatHandler from "@/hook/ia/useChatHandler";
-import {Module} from "@/types/module";
+import Module from "@/types/module";
 import {cn} from "@/lib/utils";
 
 interface ChatBoxProps {

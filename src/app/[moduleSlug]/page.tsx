@@ -4,7 +4,7 @@ import SectionCard from "@/components/Cards/SectionCard";
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import {GlitchText} from "@/components/GlitchText";
 import {Badge} from "@/components/ui/badge";
-import {Section} from "@/types/Section";
+import Section from "@/types/Section";
 import getModules from "@/lib/getModules";
 
 
