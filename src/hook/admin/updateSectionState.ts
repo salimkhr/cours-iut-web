@@ -2,7 +2,7 @@ import {ObjectId} from "bson";
 
 export default async function updateSectionState(
     moduleId: string | ObjectId,
-    sectionId: string | ObjectId,
+    order: number,
     key: 'isAvailable' | 'correctionIsAvailable',
     value: boolean
 ) {
@@ -10,17 +10,17 @@ export default async function updateSectionState(
         const csrfRes = await fetch('/api/csrf-token');
         const {csrfToken} = await csrfRes.json();
 
-        const updateRes = await fetch('/api/admin', {
-            method: 'POST',
+        const updateRes = await fetch(`/api/admin/${moduleId}/sections/${order}`, {
+            method: 'PUT',
             headers: {'Content-Type': 'application/json', 'csrf-token': csrfToken},
-            body: JSON.stringify({moduleId, sectionId, key, value}),
+            body: JSON.stringify({key, value}),
         });
 
         if (!updateRes.ok) {
             const errorData = await updateRes.json().catch(() => ({}));
             throw new Error(
                 errorData.message ||
-                `Erreur lors de la mise à jour du fichier section-state.json (${updateRes.status})`
+                `Erreur lors de la mise à jour (${updateRes.status})`
             );
         }
 

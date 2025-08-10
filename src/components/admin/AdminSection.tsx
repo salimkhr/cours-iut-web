@@ -4,8 +4,8 @@ import Section from "@/types/Section";
 import {Label} from "@/components/ui/label";
 import {Switch} from "@/components/ui/switch";
 import {useEffect, useState} from "react";
-import updateSectionState from "@/hook/admin/updateSectionState";
 import {ObjectId} from "bson";
+import updateSectionState from "@/hook/admin/updateSectionState";
 
 interface AdminSectionProps {
     section: Section;
@@ -28,8 +28,7 @@ export default function AdminSection({
         if (key === "isAvailable") setIsAvailable(value);
 
         if (key === "correctionIsAvailable") setIscorrectionIsAvailable(value);
-
-        updateSectionState(moduleId, section._id, key, value);
+        updateSectionState(moduleId, section.order, key, value);
     };
 
     // sync avec les props si elles changent de l'extérieur

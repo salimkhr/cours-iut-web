@@ -27,7 +27,6 @@ interface ModulesListProps {
 
 export default function ModulesList({initialModules}: ModulesListProps) {
     const [modules, setModules] = useState(initialModules);
-
     const handleAddModule = async (newMod: Omit<Module, '_id'>) => {
         try {
             const res = await fetch('/api/admin/modules', {

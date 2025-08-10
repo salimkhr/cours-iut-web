@@ -103,8 +103,6 @@ export default function AddSectionButton({
         }
     };
 
-    console.log(modData.sections.length);
-
     return (
         <>
             <div className="flex justify-end mb-2">

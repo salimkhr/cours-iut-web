@@ -9,5 +9,9 @@ export default async function getModules(): Promise<(Module & { _id: string })[]
     return modules.map(mod => ({
         ...mod,
         _id: mod._id.toString(),
+        sections: mod.sections?.map(({...rest}) => ({
+            ...rest,
+            _id: mod._id.toString(),
+        })) ?? []
     }));
 }
