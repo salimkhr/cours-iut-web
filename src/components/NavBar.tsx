@@ -1,4 +1,4 @@
-import {BookOpen, Home} from 'lucide-react'
+import {BookOpen, BracesIcon, CodeXml, Home, LucideIcon, ServerCog} from 'lucide-react'
 import Link from 'next/link'
 import {headers} from 'next/headers'
 import {
@@ -9,7 +9,7 @@ import {
     navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
 import getModules from "@/lib/getModules";
-import iconMap from "@/lib/iconMap";
+// import iconMap from "@/lib/iconMap";
 
 
 export default async function NavBar() {
@@ -22,6 +22,12 @@ export default async function NavBar() {
     const isActive = (href: string) => {
         return pathname === '/' + href || pathname?.startsWith(href + '/')
     }
+
+    const iconMap: Record<string, LucideIcon> = {
+        CodeXml: CodeXml,
+        ServerCog: ServerCog,
+        BracesIcon: BracesIcon,
+    };
 
     return (
         <header>
@@ -38,7 +44,7 @@ export default async function NavBar() {
 
                 {/* Groupe Modules */}
                 <div className="flex w-full overflow-x-auto whitespace-nowrap justify-end md:justify-center">
-                    <NavigationMenuList className="flex items-center m-2">
+                    <NavigationMenuList className="flex items-center gap-2">
                         {modules.map((module) => {
                             const Icon = iconMap[module.iconName] || BookOpen;
                             return (
@@ -46,10 +52,12 @@ export default async function NavBar() {
                                     <NavigationMenuLink asChild active={isActive(module.path)}>
                                         <Link
                                             href={`/${module.path}`}
-                                            className={navigationMenuTriggerStyle()}
+                                            className={`${navigationMenuTriggerStyle()} gap-2`}
                                         >
-                                            <Icon className="size-8"/>
-                                            <span className="mx-2 text-lg hidden md:inline">{module.title}</span>
+                                            <div className="flex flex-row gap-2">
+                                                <Icon className="size-7 shrink-0"/>
+                                                <span className="text-lg hidden md:inline">{module.title}</span>
+                                            </div>
                                         </Link>
                                     </NavigationMenuLink>
                                 </NavigationMenuItem>

@@ -13,6 +13,14 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
     title: "Développement Web | Liste des cours",
     description: "",
+    manifest: '/manifest.json',
+    icons: {
+        icon: '/icons/icon-192x192.png',
+        apple: '/icons/icon-192x192.png'
+    },
+    other: {
+        'theme-color': '#317EFB'
+    }
 };
 
 export default function RootLayout({
