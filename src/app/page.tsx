@@ -41,7 +41,7 @@ export default async function Home() {
                 </h2>
 
                 <div
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full p-4 lg:px-40 mx-auto mb-12 lg:mb-16">
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full p-4 lg:px-40 mx-auto mb-25 lg:mb-16 ">
                     {modules.map((currentModule, index) => (
                         <Link
                             key={currentModule._id}
@@ -55,7 +55,7 @@ export default async function Home() {
                 </div>
             </section>
 
-            <div className="opacity-0 animate-fade-in">
+            <div className="opacity-0 animate-fade-in ">
                 <Image
                     src="/footer.svg"
                     alt=""
