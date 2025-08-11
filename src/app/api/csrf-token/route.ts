@@ -1,21 +1,13 @@
-import {cookies} from 'next/headers';
-import Tokens from 'csrf';
-
-const tokens = new Tokens();
+import {randomBytes} from 'crypto';
 
 export async function GET() {
-    const secret = tokens.secretSync();
-    const token = tokens.create(secret);
+    const csrfToken = randomBytes(32).toString('hex');
 
-    const cookieStore = await cookies();
-    cookieStore.set('csrfSecret', secret, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-    });
-
-    return new Response(JSON.stringify({csrfToken: token}), {
-        headers: {'Content-Type': 'application/json'},
+    return new Response(JSON.stringify({csrfToken}), {
+        status: 200,
+        headers: {
+            'Content-Type': 'application/json',
+            'Set-Cookie': `csrfToken=${csrfToken}; Path=/; SameSite=Lax; Secure=${process.env.NODE_ENV === 'production'};`,
+        },
     });
 }

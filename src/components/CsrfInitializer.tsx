@@ -1,7 +1,6 @@
 'use client';
 import {useEffect} from 'react';
-import {initCsrf} from "@/lib/api";
-
+import {initCsrf} from '@/lib/api';
 
 export default function CsrfInitializer() {
     useEffect(() => {

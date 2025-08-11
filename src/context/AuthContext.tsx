@@ -2,6 +2,7 @@
 
 import {createContext, useContext, useEffect, useState} from 'react'
 import axios from "axios";
+import {useRouter} from "next/navigation";
 
 
 type AuthContextType = {
@@ -20,8 +21,10 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         setIsLoggedIn(hasSession);
     }, []);
 
+    const router = useRouter();
+
     const login = async (login: string, password: string) => {
-        return axios.put('/api/login',
+        return axios.post('/api/login',
             {login, password},
             {headers: {'Content-Type': 'application/json'}}
         )
@@ -29,6 +32,7 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
                 const res = response.data;
                 if (res.success !== undefined) {
                     setIsLoggedIn(true);
+                    router.push('/admin');
                 } else {
                     throw new Error(res.error);
                 }

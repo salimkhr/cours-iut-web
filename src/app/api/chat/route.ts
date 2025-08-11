@@ -1,6 +1,3 @@
-import Tokens from "csrf";
-
-const tokens = new Tokens();
 const backendUrl = process.env.BACKEND_IA_API_URL;
 const backendKey = process.env.BACKEND_IA_API_KEY;
 

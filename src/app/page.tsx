@@ -44,7 +44,7 @@ export default async function Home() {
                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full p-4 lg:px-40 mx-auto mb-25 lg:mb-16 ">
                     {modules.map((currentModule, index) => (
                         <Link
-                            key={currentModule.path}
+                            key={`${currentModule.path}_${index}`}
                             className="opacity-0 animate-fade-in-up"
                             style={{animationDelay: `${index * 0.1}s`}}
                             href={currentModule.path}
