@@ -1,6 +1,6 @@
 import {JWTPayload, jwtVerify, SignJWT} from 'jose';
 
-const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'ma_super_cle_secrete');
+const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function generateToken(payload: JWTPayload, expiresInSeconds = '2h') {
     return new SignJWT(payload)
