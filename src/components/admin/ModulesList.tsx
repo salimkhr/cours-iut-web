@@ -7,6 +7,7 @@ import Section from "@/types/Section";
 import {Accordion} from "@/components/ui/accordion";
 import Coefficient from "@/types/Coefficient";
 import Instructor from "@/types/Instructor";
+import axios from "axios";
 
 interface Module {
     _id: string;
@@ -29,22 +30,19 @@ export default function ModulesList({initialModules}: ModulesListProps) {
     const [modules, setModules] = useState(initialModules);
     const handleAddModule = async (newMod: Omit<Module, '_id'>) => {
         try {
-            const res = await fetch('/api/admin/modules', {
-                method: 'POST',
+            const res = await axios.post('/api/admin/modules', newMod, {
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(newMod),
             });
 
-            if (!res.ok) throw new Error('Erreur ajout module');
-
-            const createdModule: Module = await res.json();
+            // Axios parse automatiquement la réponse JSON dans res.data
+            const createdModule: Module = res.data;
 
             setModules(prev => [...prev, createdModule]);
         } catch (error) {
-            console.error(error);
-            alert("Impossible d'ajouter le module");
+            console.error('Erreur ajout module', error);
+            throw error; // ou gestion spécifique de l'erreur
         }
-    };
+    }
 
     return (
         <>

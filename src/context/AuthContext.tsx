@@ -1,6 +1,7 @@
 'use client';
 
 import {createContext, useContext, useEffect, useState} from 'react'
+import axios from "axios";
 
 
 type AuthContextType = {
@@ -20,22 +21,18 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     }, []);
 
     const login = async (login: string, password: string) => {
-        const csrfRes = await fetch('/api/csrf-token');
-        const {csrfToken} = await csrfRes.json();
-        return fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'csrf-token': csrfToken,
-            },
-            body: JSON.stringify({login, password}),
-        }).then((response) => response.json())
-            .then((res) => {
-                if (res.success !== undefined)
+        return axios.put('/api/login',
+            {login, password},
+            {headers: {'Content-Type': 'application/json'}}
+        )
+            .then(response => {
+                const res = response.data;
+                if (res.success !== undefined) {
                     setIsLoggedIn(true);
-                else
+                } else {
                     throw new Error(res.error);
-                return res
+                }
+                return res;
             });
     };
 

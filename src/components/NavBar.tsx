@@ -1,4 +1,4 @@
-import {BookOpen, BracesIcon, CodeXml, Home, LucideIcon, ServerCog} from 'lucide-react'
+import {BookOpen, Home} from 'lucide-react'
 import Link from 'next/link'
 import {headers} from 'next/headers'
 import {
@@ -9,6 +9,7 @@ import {
     navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
 import getModules from "@/lib/getModules";
+import iconMap from "@/lib/iconMap";
 // import iconMap from "@/lib/iconMap";
 
 
@@ -22,12 +23,6 @@ export default async function NavBar() {
     const isActive = (href: string) => {
         return pathname === '/' + href || pathname?.startsWith(href + '/')
     }
-
-    const iconMap: Record<string, LucideIcon> = {
-        CodeXml: CodeXml,
-        ServerCog: ServerCog,
-        BracesIcon: BracesIcon,
-    };
 
     return (
         <header>

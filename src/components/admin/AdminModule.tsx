@@ -9,6 +9,7 @@ import AddSectionButton from "@/components/admin/AddSectionButton";
 import {cn} from "@/lib/utils";
 import Heading from "@/components/ui/Heading";
 import iconMap from "@/lib/iconMap";
+import axios from "axios";
 
 interface AdminModuleProps {
     module: Module;
@@ -32,25 +33,19 @@ export default function AdminModule({module}: AdminModuleProps) {
         order: number;
         contents: string[];
     }) => {
-        try {
+        const res = await axios.post(`/api/admin/${modData._id}/sections`, section, {
+            headers: {'Content-Type': 'application/json'},
+        });
 
-            const res = await fetch(`/api/admin/${modData._id}/sections`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(section)
-            });
-
-            if (!res.ok) throw new Error('Erreur API');
-
-            const {section: savedSection} = await res.json();
-
-            setModData(prev => ({
-                ...prev,
-                sections: [...prev.sections, savedSection]
-            }));
-        } catch (err) {
-            console.error('Erreur ajout section:', err);
+        if (res.status < 200 || res.status >= 300) {
+            throw new Error('Erreur API');
         }
+        const {section: savedSection} = res.data;
+
+        setModData(prev => ({
+            ...prev,
+            sections: [...prev.sections, savedSection]
+        }));
     };
 
     return (

@@ -3,6 +3,7 @@ import {JetBrains_Mono} from 'next/font/google';
 import './globals.css';
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import CsrfInitializer from "@/components/CsrfInitializer";
 
 const jetbrainsMono = JetBrains_Mono({
     subsets: ['latin'],
@@ -34,6 +35,7 @@ export default function RootLayout({
         <NavBar/>
         {children}
         <Footer/>
+        <CsrfInitializer/>
         </body>
         </html>
     );
