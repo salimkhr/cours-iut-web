@@ -44,3 +44,5 @@ next-env.d.ts
 
 data
 rag
+/public/sw.js
+/public/workbox*.js

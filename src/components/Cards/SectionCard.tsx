@@ -53,7 +53,7 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
                     }}
                     disabled={!section.isAvailable}
                 >
-                    {item.charAt(0).toUpperCase() + item.slice(1)}
+                    <span className="hidden md:inline">{item.charAt(0).toUpperCase() + item.slice(1)}</span>
                     {item === 'cours' && <BookOpen/>}
                     {item === 'TP' && <CodeXml/>}
                     {item === 'projet' && <FolderCode/>}
@@ -70,7 +70,7 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
                 }}
                 disabled={!section.correctionIsAvailable}
             >
-                Correction <Gitlab/>
+                <span className="hidden md:inline">Correction</span> <Gitlab/>
             </ActionButton> : null}
         </div>
     );
