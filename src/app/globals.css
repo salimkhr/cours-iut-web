@@ -8,6 +8,7 @@
     --color-php: #53567d;
     --color-javascript: #D4A017;
     --color-login: #ac9b14;
+    --color-brainfuck: #8A2BE2;
 
     /* Durées animations */
     --animation-duration-short: 0.6s;
@@ -281,6 +282,40 @@
 
 .header-login a {
     color: var(--color-login);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
+/* Classes pour Tailwind */
+.text-brainfuck {
+    color: var(--color-brainfuck);
+}
+
+.bg-brainfuck {
+    background-color: var(--color-brainfuck);
+}
+
+.border-brainfuck {
+    border-color: var(--color-brainfuck);
+}
+
+.header-brainfuck h1,
+.header-brainfuck h2,
+.header-brainfuck h3 {
+    color: var(--color-brainfuck);
+}
+
+.header-brainfuck .bg-module {
+    background-color: var(--color-brainfuck);
+}
+
+.header-brainfuck .border-module {
+    border-color: var(--color-brainfuck);
+}
+
+.header-brainfuck a {
+    color: var(--color-brainfuck);
     text-decoration: underline;
     cursor: pointer;
 }
