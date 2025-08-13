@@ -9,7 +9,7 @@ export default async function Home() {
     const modules = await getModules();
 
     return (
-        <div className="flex flex-col w-full items-center justify-start min-h-screen">
+        <div className="flex flex-col w-full items-center justify-start min-h-screen mb-10 lg:mb-0">
             <HeroSection
                 title="Développement Web"
                 description="Maîtriser les bases du développement web front-end et back-end pour exploiter efficacement les frameworks modernes."

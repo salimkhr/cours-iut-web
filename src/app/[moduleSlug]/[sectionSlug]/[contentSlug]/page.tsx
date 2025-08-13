@@ -1,7 +1,5 @@
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
-import AntiCopyProtector from "@/components/AntiCopyProtector";
 import Heading from "@/components/ui/Heading";
-import ChatWidget from "@/components/ia/ChatWidget";
 import {contentImports} from '@/lib/contentImports';
 import {notFound} from "next/navigation";
 import {getModuleData} from "@/hook/getModuleData";
@@ -54,11 +52,11 @@ export default async function Content({params}: ContentPageProps) {
                     {currentSection.order}. {currentSection.title}
                 </Heading>
 
-                <AntiCopyProtector>
-                    <ComponentToRender/>
-                </AntiCopyProtector>
+                {/*<AntiCopyProtector>*/}
+                <ComponentToRender/>
+                {/*</AntiCopyProtector>*/}
 
-                <ChatWidget currentModule={currentModule}/>
+                {/*<ChatWidget currentModule={currentModule}/>*/}
             </div>
         </div>
     );
