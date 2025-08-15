@@ -1,12 +1,27 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Variables CSS */
+:root {
+    /* Couleurs principales par langage */
+    --color-html-css: #9e371a;
+    --color-php: #53567d;
+    --color-javascript: #D4A017;
+    --color-login: #ac9b14;
+    --color-brainfuck: #8A2BE2;
+
+    /* Durées animations */
+    --animation-duration-short: 0.6s;
+    --animation-duration-medium: 0.8s;
+    --animation-duration-long: 3s;
+}
+
+/* Réglage global */
 * {
     word-spacing: -0.3em;
 }
 
-/* Ajoutez ces animations dans votre globals.css */
-
+/* Animations keyframes */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -51,66 +66,6 @@
     }
 }
 
-/* Classes d'animation */
-.animate-fade-in {
-    animation: fadeIn 0.8s ease-out forwards;
-}
-
-.animate-fade-in-up {
-    animation: fadeInUp 0.6s ease-out forwards;
-}
-
-.animate-fade-in-right {
-    animation: fadeInRight 0.8s ease-out 0.6s forwards;
-}
-
-.animate-slide-in-bottom {
-    animation: slideInFromBottom 0.8s ease-out forwards;
-}
-
-/* Animation au scroll avec CSS pur */
-@media (prefers-reduced-motion: no-preference) {
-    .animate-on-scroll {
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-
-    .animate-on-scroll.in-view {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Améliorations pour les cartes */
-.card-hover-effect {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card-hover-effect:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-}
-
-/* Animations pour les icônes */
-.icon-hover {
-    transition: transform 0.3s ease;
-}
-
-.icon-hover:hover {
-    transform: rotate(360deg);
-}
-
-/* Gradient text */
-.gradient-text {
-    /*background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);*/
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-size: 200% 200%;
-    animation: gradientShift 3s ease infinite;
-}
-
 @keyframes gradientShift {
     0% {
         background-position: 0 50%;
@@ -123,23 +78,80 @@
     }
 }
 
-/** html-css */
+/* Classes d'animation */
+.animate-fade-in {
+    animation: fadeIn var(--animation-duration-medium) ease-out forwards;
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp var(--animation-duration-short) ease-out forwards;
+}
+
+.animate-fade-in-right {
+    animation: fadeInRight var(--animation-duration-medium) ease-out 0.6s forwards;
+}
+
+.animate-slide-in-bottom {
+    animation: slideInFromBottom var(--animation-duration-medium) ease-out forwards;
+}
+
+/* Animation au scroll */
+@media (prefers-reduced-motion: no-preference) {
+    .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity var(--animation-duration-short) ease-out, transform var(--animation-duration-short) ease-out;
+    }
+
+    .animate-on-scroll.in-view {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Effets sur cartes et icônes */
+.card-hover-effect {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.icon-hover {
+    transition: transform 0.3s ease;
+}
+
+.icon-hover:hover {
+    transform: rotate(360deg);
+}
+
+/* Gradient text */
+.gradient-text {
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 200%;
+    animation: gradientShift var(--animation-duration-long) ease infinite;
+}
+
+/* ===== Couleurs par langage ===== */
+/* HTML/CSS */
 .text-html-css {
-    color: #E34F26;
+    color: var(--color-html-css);
 }
 
 .bg-html-css {
-    background: #E34F26;
+    background: var(--color-html-css);
 }
 
 .border-html-css {
-    border-color: #E34F26;
+    border-color: var(--color-html-css);
 }
 
-.header-html-css h1,
-.header-html-css h2,
-.header-html-css h3 {
-    color: #E34F26;
+.header-html-css h1, .header-html-css h2, .header-html-css h3 {
+    color: var(--color-html-css);
 }
 
 .header-html-css h1 {
@@ -147,39 +159,37 @@
 }
 
 .header-html-css .bg-module {
-    background: #E34F26;
+    background: var(--color-html-css);
 }
 
 .header-html-css .border-module {
-    border-color: #E34F26;
+    border-color: var(--color-html-css);
 }
 
 .header-html-css a {
-    color: #E34F26;
+    color: var(--color-html-css);
     text-decoration: underline;
 }
 
 .header-html-css .data-\[state\=checked\]\:bg-module[data-state="checked"] {
-    background: #E34F26;
+    background: var(--color-html-css);
 }
 
-/** php */
+/* PHP */
 .text-php {
-    color: #777BB4;
+    color: var(--color-php);
 }
 
 .bg-php {
-    background: #777BB4;
+    background: var(--color-php);
 }
 
 .border-php {
-    border-color: #777BB4;
+    border-color: var(--color-php);
 }
 
-.header-php h1,
-.header-php h2,
-.header-php h3 {
-    color: #777BB4;
+.header-php h1, .header-php h2, .header-php h3 {
+    color: var(--color-php);
 }
 
 .header-php h1 {
@@ -187,40 +197,37 @@
 }
 
 .header-php .bg-module {
-    background: #777BB4;
+    background: var(--color-php);
 }
 
 .header-php .border-module {
-    border-color: #777BB4;
+    border-color: var(--color-php);
 }
 
 .header-php a {
-    color: #777BB4;
+    color: var(--color-php);
     text-decoration: underline;
 }
 
 .header-php .data-\[state\=checked\]\:bg-module[data-state="checked"] {
-    background: #777BB4;
+    background: var(--color-php);
 }
 
-
-/** JS */
+/* JavaScript */
 .text-javascript {
-    color: #ac9b14;
+    color: var(--color-javascript);
 }
 
 .bg-javascript {
-    background: #ac9b14;
+    background: var(--color-javascript);
 }
 
 .border-javascript {
-    border-color: #ac9b14;
+    border-color: var(--color-javascript);
 }
 
-.header-javascript h1,
-.header-javascript h2,
-.header-javascript h3 {
-    color: #ac9b14;
+.header-javascript h1, .header-javascript h2, .header-javascript h3 {
+    color: var(--color-javascript);
 }
 
 .header-javascript h1 {
@@ -228,39 +235,37 @@
 }
 
 .header-javascript .bg-module {
-    background: #ac9b14;
+    background: var(--color-javascript);
 }
 
 .header-javascript .border-module {
-    border-color: #ac9b14;
+    border-color: var(--color-javascript);
 }
 
 .header-javascript a {
-    color: #ac9b14;
+    color: var(--color-javascript);
     text-decoration: underline;
 }
 
 .header-javascript .data-\[state\=checked\]\:bg-module[data-state="checked"] {
-    background: #ac9b14;
+    background: var(--color-javascript);
 }
 
-/* Couleur login (bleu) */
+/* Login */
 .text-login {
-    color: #1E40AF;
+    color: var(--color-login);
 }
 
 .bg-login {
-    background-color: #1E40AF;
+    background-color: var(--color-login);
 }
 
 .border-login {
-    border-color: #1E40AF;
+    border-color: var(--color-login);
 }
 
-.header-login h1,
-.header-login h2,
-.header-login h3 {
-    color: #1E40AF;
+.header-login h1, .header-login h2, .header-login h3 {
+    color: var(--color-login);
 }
 
 .header-login h1 {
@@ -268,15 +273,49 @@
 }
 
 .header-login .bg-module {
-    background-color: #1E40AF;
+    background-color: var(--color-login);
 }
 
 .header-login .border-module {
-    border-color: #1E40AF;
+    border-color: var(--color-login);
 }
 
 .header-login a {
-    color: #1E40AF;
+    color: var(--color-login);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
+/* Classes pour Tailwind */
+.text-brainfuck {
+    color: var(--color-brainfuck);
+}
+
+.bg-brainfuck {
+    background-color: var(--color-brainfuck);
+}
+
+.border-brainfuck {
+    border-color: var(--color-brainfuck);
+}
+
+.header-brainfuck h1,
+.header-brainfuck h2,
+.header-brainfuck h3 {
+    color: var(--color-brainfuck);
+}
+
+.header-brainfuck .bg-module {
+    background-color: var(--color-brainfuck);
+}
+
+.header-brainfuck .border-module {
+    border-color: var(--color-brainfuck);
+}
+
+.header-brainfuck a {
+    color: var(--color-brainfuck);
     text-decoration: underline;
     cursor: pointer;
 }

@@ -5,12 +5,17 @@ import React from 'react';
 export type ContentImportsType = {
     [moduleSlug: string]: {
         [sectionSlug: string]: {
-            [contentSlug: string]: () => Promise<{ default: React.ComponentType<unknown> }>;
+            [contentSlug: string]: () => Promise<{ default: React.ComponentType<any> }>;
         }
     }
 };
 
 export const contentImports: ContentImportsType = {
+    'brainfuck': {
+        'brainfuck-basics': {
+            'cours': () => import('@/cours/brainfuck/brainfuck-basics/cours'),
+        },
+    },
     'html-css': {
         '1-les-formulaires': {
             'cours': () => import('@/cours/html-css/1-les-formulaires/cours'),
