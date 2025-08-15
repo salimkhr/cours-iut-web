@@ -1,4 +1,4 @@
-name: Static Export Build
+name: Upload To Pelican
 
 on:
   push:
