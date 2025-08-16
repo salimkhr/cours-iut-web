@@ -1,5 +1,7 @@
+import Module from "@/types/module";
+
 interface ProgressSectionProps {
-    currentModule: any;
+    currentModule: Module;
     totalSections: number;
     totalAvailableSections: number;
     progress: number;
@@ -39,7 +41,7 @@ export default function ProgressSection({
                         </>
                     ) : (
                         <p className="text-gray-600">
-                            Aucun cours n'est encore disponible pour ce module.
+                            Aucun cours n&apos;est encore disponible pour ce module.
                         </p>
                     )}
                 </div>
