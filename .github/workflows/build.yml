@@ -13,16 +13,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Generate Markdown
-        run: npm run extract-coursmd
+      - name: Go prod
+        run: |
+          curl --request POST \
+            --url https://${{ secrets.PELICAN_DOMAIN }}/api/client/servers/${{ secrets.PELICAN_SERVER_ID }}/power \
+            --header 'Accept: application/json' \
+            --header 'Authorization: Bearer ${{ secrets.PELICAN_API_KEY }}' \
+            --header 'Content-Type: application/json' \
+            --data '{
+            "signal": "restart"
+          }'
