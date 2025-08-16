@@ -15,11 +15,8 @@ jobs:
 
       - name: Go prod
         run: |
-          curl --request POST \
-            --url https://${{ secrets.PELICAN_DOMAIN }}/api/client/servers/1f15f72e-301f-4b18-bee8-22c80b236b6f/power \
-            --header 'Accept: application/json' \
-            --header 'Authorization: Bearer ${{ secrets.PELICAN_API_KEY }}' \
-            --header 'Content-Type: application/json' \
-            --data '{
-            "signal": "restart"
-          }'
+          curl -X POST "https://${{ secrets.PELICAN_DOMAIN }}/api/client/servers/1f15f72e-301f-4b18-bee8-22c80b236b6f/power" \
+          -H "Accept: application/json" \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer ${{ secrets.PELICAN_API_KEY }}" \
+          -d '{"signal": "restart"}'           
