@@ -5,7 +5,7 @@ import React from 'react';
 export type ContentImportsType = {
     [moduleSlug: string]: {
         [sectionSlug: string]: {
-            [contentSlug: string]: () => Promise<{ default: React.ComponentType<any> }>;
+            [contentSlug: string]: () => Promise<{ default: React.ComponentType }>;
         }
     }
 };
