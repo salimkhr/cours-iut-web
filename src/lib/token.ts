@@ -12,7 +12,6 @@ export async function generateToken(payload: JWTPayload, expiresInSeconds = '2h'
 
 export async function verifyToken(token: string) {
     try {
-        console.log(token, secret, await jwtVerify(token, secret))
         const {payload} = await jwtVerify(token, secret);
         return payload; // payload est un objet avec tes données
     } catch (e) {

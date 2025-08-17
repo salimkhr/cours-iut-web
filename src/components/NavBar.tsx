@@ -1,6 +1,6 @@
-import {BookOpen, Home} from 'lucide-react'
+import {BookOpen, Home, UserLock} from 'lucide-react'
 import Link from 'next/link'
-import {headers} from 'next/headers'
+import {cookies, headers} from 'next/headers'
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import getModules from "@/lib/getModules";
 import iconMap from "@/lib/iconMap";
+import {verifyToken} from "@/lib/token";
 // import iconMap from "@/lib/iconMap";
 
 
@@ -23,6 +24,11 @@ export default async function NavBar() {
     const isActive = (href: string) => {
         return pathname === '/' + href || pathname?.startsWith(href + '/')
     }
+
+    const cookie = await cookies();
+
+    const session = cookie.get('session')?.value;
+    const isAdmin = session !== undefined && await verifyToken(session);
 
     return (
         <header>
@@ -58,6 +64,19 @@ export default async function NavBar() {
                                 </NavigationMenuItem>
                             );
                         })}
+                        {isAdmin ? <NavigationMenuItem key="admin">
+                            <NavigationMenuLink asChild active={isActive(module.path)}>
+                                <Link
+                                    href={`/admin`}
+                                    className={`${navigationMenuTriggerStyle()} gap-2`}
+                                >
+                                    <div className="flex flex-row gap-2">
+                                        <UserLock className="size-7 shrink-0"/>
+                                        <span className="text-lg hidden md:inline">Admin</span>
+                                    </div>
+                                </Link>
+                            </NavigationMenuLink>
+                        </NavigationMenuItem> : null}
                     </NavigationMenuList>
                 </div>
             </NavigationMenu>
