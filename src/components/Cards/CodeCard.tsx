@@ -106,7 +106,7 @@ export default function CodeCard({language, children, showLineNumbers = true, fi
     );
 
     return (
-        <div className="mx-6 my-8">
+        <div className="my-8">
             <BaseCard
                 header={headerCard}
                 content={content}

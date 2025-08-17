@@ -103,7 +103,7 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
                 {/* Panel Preview */}
                 <div className="flex-1 min-h-0">
                     <div className="h-full overflow-hidden">
-                        <div className="bg-white h-full overflow-auto flex items-center justify-center">
+                        <div className="bg-white h-full text-left p-4">
                             {previewContent}
                         </div>
                     </div>
@@ -113,12 +113,14 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
     );
 
     return (
-        <BaseCard
-            header={headerCard}
-            content={content}
-            withLed={false}
-            withHover={false}
-            withMarge={false}
-        />
+        <div className="my-8">
+            <BaseCard
+                header={headerCard}
+                content={content}
+                withLed={false}
+                withHover={false}
+                withMarge={false}
+            />
+        </div>
     );
 }
