@@ -15,7 +15,7 @@ jobs:
 
       - name: Go prod
         run: |
-          curl -X POST "https://${{ secrets.PELICAN_DOMAIN }}/api/client/servers/1f15f72e-301f-4b18-bee8-22c80b236b6f/power" \
+          curl -X POST "https://${{ secrets.PELICAN_DOMAIN }}/api/client/servers/1f15f72e-301f-4b18-bee8-22c80b236b6f/rebuild" \
           -H "Accept: application/json" \
           -H "Content-Type: application/json" \
           -H "Authorization: Bearer ${{ secrets.PELICAN_API_KEY }}" \
