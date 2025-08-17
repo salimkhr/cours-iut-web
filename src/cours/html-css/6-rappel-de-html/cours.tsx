@@ -1316,7 +1316,7 @@ export default function cours() {
 
             <section>
                 <Heading level={2}>H/ Ressources pour aller plus loin</Heading>
-                <div className='flex gap-2 justify-between'>
+                <div className='flex flex-col lg:flex-row gap-2 justify-between'>
                     <div>
                         <Heading level={3}>Documentation officielle</Heading>
                         <List>
