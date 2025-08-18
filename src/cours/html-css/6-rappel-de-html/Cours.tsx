@@ -5,21 +5,10 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import Code from "@/components/ui/Code";
 import CodeWithPreviewCard, {CodePanel, PreviewPanel} from "@/components/Cards/CodeWithPreviewCard";
 import Link from "next/link";
-import React, {useEffect, useState} from "react";
+import React from "react";
 import Image from "next/image";
 
 export default function Cours() {
-
-    const [src, setSrc] = useState('/images/1x.png');
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const dpr = window.devicePixelRatio || 1;
-            if (dpr >= 3) setSrc('/images/3x.png');
-            else if (dpr >= 2) setSrc('/images/2x.png');
-            else setSrc('/images/1x.png');
-        }
-    }, []);
 
     return (
         <article>

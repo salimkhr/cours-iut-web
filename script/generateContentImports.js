@@ -39,7 +39,7 @@ async function generateContentImports() {
     tsContent += `export type ContentImportsType = {\n`;
     tsContent += `  [moduleSlug: string]: {\n`;
     tsContent += `    [sectionSlug: string]: {\n`;
-    tsContent += `      [contentSlug: string]: () => Promise<{ default: React.ComponentType<any> }>;\n`;
+    tsContent += `      [contentSlug: string]: () => Promise<{ default: React.ComponentType }>;\n`;
     tsContent += `    }\n`;
     tsContent += `  }\n`;
     tsContent += `};\n\n`;

@@ -1,4 +1,4 @@
-import {BookOpen, Home, UserLock} from 'lucide-react'
+import {BookOpen, Home, UserRound, UserRoundCheck} from 'lucide-react'
 import Link from 'next/link'
 import {cookies, headers} from 'next/headers'
 import {
@@ -37,10 +37,35 @@ export default async function NavBar() {
                     <NavigationMenuItem>
                         <NavigationMenuLink asChild>
                             <Link href="/" className={navigationMenuTriggerStyle()}>
-                                <Home className="size-8"/>
+                                <Home className="size-7 shrink-0"/>
                             </Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
+                    {isAdmin ? <NavigationMenuItem key="admin">
+                        <NavigationMenuLink asChild active={isActive(module.path)}>
+                            <Link
+                                href={`/admin`}
+                                className={`${navigationMenuTriggerStyle()}`}
+                            >
+                                <div className="flex flex-row gap-2">
+                                    <UserRoundCheck className="size-7 shrink-0"/>
+                                    {/*<span className="text-lg hidden md:inline">Admin</span>*/}
+                                </div>
+                            </Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem> : <NavigationMenuItem key="login">
+                        <NavigationMenuLink asChild active={isActive(module.path)}>
+                            <Link
+                                href={`/admin`}
+                                className={`${navigationMenuTriggerStyle()}`}
+                            >
+                                <div className="flex flex-row gap-2">
+                                    <UserRound className="size-7 shrink-0"/>
+                                    {/*<span className="text-lg hidden md:inline">Login</span>*/}
+                                </div>
+                            </Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>}
                 </NavigationMenuList>
 
                 {/* Groupe Modules */}
@@ -64,19 +89,7 @@ export default async function NavBar() {
                                 </NavigationMenuItem>
                             );
                         })}
-                        {isAdmin ? <NavigationMenuItem key="admin">
-                            <NavigationMenuLink asChild active={isActive(module.path)}>
-                                <Link
-                                    href={`/admin`}
-                                    className={`${navigationMenuTriggerStyle()} gap-2`}
-                                >
-                                    <div className="flex flex-row gap-2">
-                                        <UserLock className="size-7 shrink-0"/>
-                                        <span className="text-lg hidden md:inline">Admin</span>
-                                    </div>
-                                </Link>
-                            </NavigationMenuLink>
-                        </NavigationMenuItem> : null}
+
                     </NavigationMenuList>
                 </div>
             </NavigationMenu>

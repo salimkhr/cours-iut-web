@@ -121,7 +121,7 @@ export default function AddSectionButton({
                             <DialogTitle>Ajouter un nouveau cours</DialogTitle>
                         </DialogHeader>
                         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                            <div>
+                            <div className="w-full">
                                 <Label htmlFor="title">Titre *</Label>
                                 <Input
                                     id="title"
@@ -132,7 +132,7 @@ export default function AddSectionButton({
                                     <p className="text-red-500 text-sm">{errors.title.message}</p>
                                 )}
                             </div>
-                            <div>
+                            <div className="w-full">
                                 <Label htmlFor="path">Path *</Label>
                                 <Input
                                     id="path"
