@@ -83,7 +83,7 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
             <div className="flex flex-col lg:flex-row h-full">
                 {/* Panel Code */}
                 <div className="flex-1 min-h-0">
-                    <div className="h-full overflow-hidden lg:border-r-2 border-b-2 lg:border-b-0 border-module"
+                    <div className="h-full overflow-hidden lg:border-r-2 border-b-2 lg:border-b-0 border-module">
                         <SyntaxHighlighter
                             language={language}
                             customStyle={{
