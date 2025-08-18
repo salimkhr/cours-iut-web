@@ -32,8 +32,8 @@ export default async function Content({params}: ContentPageProps) {
 
     if (currentContent === null) notFound();
     if (currentSection === null) notFound();
-
-    const importFunc = contentImports?.[moduleSlug]?.[sectionSlug]?.[contentSlug];
+    
+    const importFunc = contentImports?.[moduleSlug]?.[sectionSlug]?.[contentSlug.charAt(0).toUpperCase() + contentSlug.slice(1)] ?? [];
     if (!importFunc) notFound();
 
     const ComponentToRender = (await importFunc()).default;

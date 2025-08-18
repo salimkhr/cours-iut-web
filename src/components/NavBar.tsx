@@ -1,4 +1,4 @@
-import {BookOpen, Home, UserRound, UserRoundCheck} from 'lucide-react'
+import {BookOpen, Home, UserCheck, UserLockIcon} from 'lucide-react'
 import Link from 'next/link'
 import {cookies, headers} from 'next/headers'
 import {
@@ -45,23 +45,23 @@ export default async function NavBar() {
                         <NavigationMenuLink asChild active={isActive(module.path)}>
                             <Link
                                 href={`/admin`}
-                                className={`${navigationMenuTriggerStyle()}`}
+                                className={`${navigationMenuTriggerStyle()} gap-2`}
                             >
                                 <div className="flex flex-row gap-2">
-                                    <UserRoundCheck className="size-7 shrink-0"/>
-                                    {/*<span className="text-lg hidden md:inline">Admin</span>*/}
+                                    <UserCheck className="size-7 shrink-0"/>
+                                    <span className="text-lg hidden md:inline">Admin</span>
                                 </div>
                             </Link>
                         </NavigationMenuLink>
-                    </NavigationMenuItem> : <NavigationMenuItem key="login">
+                    </NavigationMenuItem> : <NavigationMenuItem key="admin">
                         <NavigationMenuLink asChild active={isActive(module.path)}>
                             <Link
                                 href={`/admin`}
-                                className={`${navigationMenuTriggerStyle()}`}
+                                className={`${navigationMenuTriggerStyle()} gap-2`}
                             >
                                 <div className="flex flex-row gap-2">
-                                    <UserRound className="size-7 shrink-0"/>
-                                    {/*<span className="text-lg hidden md:inline">Login</span>*/}
+                                    <UserLockIcon className="size-7 shrink-0"/>
+                                    <span className="text-lg hidden md:inline">Login</span>
                                 </div>
                             </Link>
                         </NavigationMenuLink>
@@ -89,7 +89,6 @@ export default async function NavBar() {
                                 </NavigationMenuItem>
                             );
                         })}
-
                     </NavigationMenuList>
                 </div>
             </NavigationMenu>
