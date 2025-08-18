@@ -1,11 +1,13 @@
 {
   "name": "Développement Web",
-  "short_name": "Développement Web",
+  "short_name": "DevWeb",
   "start_url": "/",
-  "display": "standalone",
+  "scope": "/",
+  "display": "minimal-ui",
+  "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#317EFB",
-  "description": "",
+  "theme_color": "#ffffff",
+  "description": "Application dédiée à l’apprentissage et à la pratique du développement web.",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
@@ -16,6 +18,44 @@
       "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Cours HTML/CSS",
+      "short_name": "HTML/CSS",
+      "url": "/cours/html-css",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Cours PHP",
+      "short_name": "PHP",
+      "url": "/cours/php",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Cours JavaScript",
+      "short_name": "JS",
+      "url": "/cours/javascript",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
