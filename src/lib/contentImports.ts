@@ -13,16 +13,16 @@ export type ContentImportsType = {
 export const contentImports: ContentImportsType = {
     'brainfuck': {
         'brainfuck-basics': {
-            'cours': () => import('@/cours/brainfuck/brainfuck-basics/cours'),
+            'cours': () => import('@/cours/brainfuck/brainfuck-basics/Cours'),
         },
     },
     'html-css': {
         '1-les-formulaires': {
-            'cours': () => import('@/cours/html-css/1-les-formulaires/cours'),
+            'cours': () => import('@/cours/html-css/1-les-formulaires/Cours'),
             'TP': () => import('@/cours/html-css/1-les-formulaires/TP'),
         },
         '2-rappel-de-css': {
-            'cours': () => import('@/cours/html-css/2-rappel-de-css/cours'),
+            'cours': () => import('@/cours/html-css/2-rappel-de-css/Cours'),
             'TP': () => import('@/cours/html-css/2-rappel-de-css/TP'),
         },
         '3-structure-responsive': {

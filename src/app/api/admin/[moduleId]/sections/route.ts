@@ -45,14 +45,14 @@ export async function POST(
                     currentSectionPath
                 );
 
-                const contentFilePath = path.join(contentDir, `${currentContent}.tsx`);
+                const contentFilePath = path.join(contentDir, `${currentContent.charAt(0).toUpperCase() + currentContent.slice(1)}}.tsx`);
 
                 const tsxContent = `
 import Heading from "@/components/ui/Heading";
 
-export default function ${currentContent}() {
+export default function ${currentContent.charAt(0).toUpperCase() + currentContent.slice(1)}() {
     return (
-        <Heading level={2}>Hello !!</Heading>
+        <Heading level={2}>${currentContent}</Heading>
     );
 }
 `.trim();

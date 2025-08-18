@@ -1,12 +1,26 @@
+'use client'
 import Heading from "@/components/ui/Heading";
 import {List, ListItem} from "@/components/ui/List";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import Code from "@/components/ui/Code";
 import CodeWithPreviewCard, {CodePanel, PreviewPanel} from "@/components/Cards/CodeWithPreviewCard";
 import Link from "next/link";
-import React from "react";
+import React, {useEffect, useState} from "react";
+import Image from "next/image";
 
-export default function cours() {
+export default function Cours() {
+
+    const [src, setSrc] = useState('/images/1x.png');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const dpr = window.devicePixelRatio || 1;
+            if (dpr >= 3) setSrc('/images/3x.png');
+            else if (dpr >= 2) setSrc('/images/2x.png');
+            else setSrc('/images/1x.png');
+        }
+    }, []);
+
     return (
         <article>
             <section>
@@ -988,9 +1002,12 @@ export default function cours() {
                     </CodePanel>
                     <PreviewPanel>
                         <figure style={{textAlign: 'center', margin: '20px 0'}}>
-                            <img src="https://placehold.co/400x300/007bff/ffffff?text=Graphique+Ventes"
-                                 alt="Graphique en barres montrant l'évolution des ventes trimestrielles 2024"
-                                 style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}}/>
+                            <Image src="https://placehold.co/400x300/007bff/ffffff?text=Graphique+Ventes"
+                                   alt="Graphique en barres montrant l'évolution des ventes trimestrielles 2024"
+                                   style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}}
+                                   width={400} height={300}
+                                   unoptimized
+                            />
                             <figcaption style={{marginTop: '10px', fontStyle: 'italic', color: '#6c757d'}}>
                                 <strong>Figure 1 :</strong> Évolution des ventes par trimestre
                             </figcaption>
@@ -1011,10 +1028,13 @@ export default function cours() {
      style="width:100%; max-width:600px; height:auto; border-radius:8px;">`}
                     </CodePanel>
                     <PreviewPanel>
-                        <img src="https://placehold.co/600x400/28a745/ffffff?text=Image+Lourde"
-                             alt="Démonstration d'image avec chargement différé"
-                             loading="lazy"
-                             style={{width: '100%', maxWidth: '600px', height: 'auto', borderRadius: '8px'}}/>
+                        <Image src="https://placehold.co/600x400/28a745/ffffff?text=Image+Lourde"
+                               alt="Démonstration d'image avec chargement différé"
+                               loading="lazy"
+                               style={{width: '100%', maxWidth: '600px', height: 'auto', borderRadius: '8px'}}
+                               width={400} height={300}
+                               unoptimized
+                        />
                     </PreviewPanel>
                 </CodeWithPreviewCard>
 
@@ -1030,12 +1050,12 @@ export default function cours() {
                     </CodePanel>
                     <PreviewPanel>
                         <div style={{display: 'flex', gap: '10px', justifyContent: 'center', margin: '20px 0'}}>
-                            <img src="https://placehold.co/80x80/ffc107/000000?text=1" alt="" role="presentation"
-                                 style={{borderRadius: '50%'}}/>
-                            <img src="https://placehold.co/80x80/dc3545/ffffff?text=2" alt="" role="presentation"
-                                 style={{borderRadius: '50%'}}/>
-                            <img src="https://placehold.co/80x80/20c997/ffffff?text=3" alt="" role="presentation"
-                                 style={{borderRadius: '50%'}}/>
+                            <Image src="https://placehold.co/80x80/ffc107/000000?text=1" alt="" role="presentation"
+                                   style={{borderRadius: '50%'}} width={400} height={300} unoptimized/>
+                            <Image src="https://placehold.co/80x80/dc3545/ffffff?text=2" alt="" role="presentation"
+                                   style={{borderRadius: '50%'}} width={400} height={300} unoptimized/>
+                            <Image src="https://placehold.co/80x80/20c997/ffffff?text=3" alt="" role="presentation"
+                                   style={{borderRadius: '50%'}} width={400} height={300} unoptimized/>
                         </div>
                     </PreviewPanel>
                 </CodeWithPreviewCard>
@@ -1051,10 +1071,10 @@ export default function cours() {
      style="display:block; margin:0 auto; border-radius:8px;">`}
                     </CodePanel>
                     <PreviewPanel>
-                        <img src="https://placehold.co/300x200/6f42c1/ffffff?text=Logo+Entreprise"
-                             alt="Logo de l'entreprise - retour à l'accueil"
-                             width="300" height="200"
-                             style={{display: 'block', margin: '0 auto', borderRadius: '8px'}}/>
+                        <Image src="https://placehold.co/300x200/6f42c1/ffffff?text=Logo+Entreprise"
+                               alt="Logo de l'entreprise - retour à l'accueil"
+                               width="300" height="200"
+                               style={{display: 'block', margin: '0 auto', borderRadius: '8px'}} unoptimized/>
                     </PreviewPanel>
                 </CodeWithPreviewCard>
 
@@ -1072,12 +1092,14 @@ export default function cours() {
                     </CodePanel>
                     <PreviewPanel>
                         <div style={{textAlign: 'center', margin: '20px 0'}}>
-                            <img src="https://placehold.co/200x150/fd7e14/ffffff?text=Standard"
-                                 srcSet="https://placehold.co/200x150/fd7e14/ffffff?text=1x 1x,
+                            <picture>
+                                <img src="https://placehold.co/200x150/fd7e14/ffffff?text=Standard"
+                                     srcSet="https://placehold.co/200x150/fd7e14/ffffff?text=1x 1x,
                          https://placehold.co/400x300/fd7e14/ffffff?text=2x 2x,
                          https://placehold.co/600x450/fd7e14/ffffff?text=3x 3x"
-                                 alt="Image adaptée à la densité de pixels de l'écran"
-                                 style={{maxWidth: '200px', height: 'auto', borderRadius: '8px'}}/>
+                                     alt="Image adaptée à la densité de pixels de l'écran"
+                                     style={{maxWidth: '200px', height: 'auto', borderRadius: '8px'}}/>
+                            </picture>
                         </div>
                     </PreviewPanel>
                 </CodeWithPreviewCard>

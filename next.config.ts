@@ -7,17 +7,19 @@ import type {NextConfig} from 'next';
 const nextConfig: NextConfig = {
     pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
     images: {
-        domains: [
-            'picsum.photos',
-            'developer.mozilla.org',
-            'media0.giphy.com',
-            'media1.giphy.com',
-            'media2.giphy.com',
-            'media3.giphy.com',
-            'media4.giphy.com',
-            'media5.giphy.com'
-        ]
-    }
+        remotePatterns: [
+            {protocol: 'https', hostname: 'picsum.photos'},
+            {protocol: 'https', hostname: 'placehold.co'},
+            {protocol: 'https', hostname: 'developer.mozilla.org'},
+            {protocol: 'https', hostname: 'media0.giphy.com'},
+            {protocol: 'https', hostname: 'media1.giphy.com'},
+            {protocol: 'https', hostname: 'media2.giphy.com'},
+            {protocol: 'https', hostname: 'media3.giphy.com'},
+            {protocol: 'https', hostname: 'media4.giphy.com'},
+            {protocol: 'https', hostname: 'media5.giphy.com'},
+        ],
+        formats: ['image/avif', 'image/webp'],
+    },
 };
 
 // Forcer les types génériques pour éviter le conflit TS2345

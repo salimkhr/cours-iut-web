@@ -3,7 +3,7 @@ import CodeCard from "@/components/Cards/CodeCard";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import Code from "@/components/ui/Code";
 
-export default function cours() {
+export default function Cours() {
     return (
         <div className="mx-auto p-6">
             <section>
