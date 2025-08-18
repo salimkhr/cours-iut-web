@@ -43,7 +43,7 @@ export default function AdminSection({
     return (
         <div className="rounded-lg border p-3 space-y-3 bg-muted/40">
             <div className="flex items-center justify-between">
-                <h3 className="text-xl font-medium leading-tight">{section.order}. {section.title}</h3
+                <h3 className="text-xl font-medium leading-tight">{section.order}. {section.title}</h3>
                 <span className="text-sm text-muted-foreground">{section.totalDuration} Séance(s)</span>
             </div>
             <div className="space-y-3">
