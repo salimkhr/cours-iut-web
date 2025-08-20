@@ -19,8 +19,8 @@ export type Section = {
     tags: string[] | string;
     totalDuration: number;
     hasCorrection: boolean;
-    isAvailable: boolean;
-    correctionIsAvailable: boolean;
+    isAvailable?: boolean;
+    correctionIsAvailable?: boolean;
     order: number;
     contents: string[];
 };

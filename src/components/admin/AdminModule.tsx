@@ -10,6 +10,7 @@ import {cn} from "@/lib/utils";
 import Heading from "@/components/ui/Heading";
 import iconMap from "@/lib/iconMap";
 import axios from "axios";
+import {Section} from "@/components/admin/SectionForm";
 
 interface AdminModuleProps {
     module: Module;
@@ -21,7 +22,7 @@ export default function AdminModule({module}: AdminModuleProps) {
     const Icon = iconMap[modData.iconName] || BookOpen;
 
     // Exemple : fonction pour ajouter une section
-    const addSection = async (section) => {
+    const addSection = async (section: Section) => {
         const res = await axios.post(`/api/admin/${modData._id}/sections`, section, {
             headers: {'Content-Type': 'application/json'},
         });

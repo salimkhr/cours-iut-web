@@ -8,6 +8,7 @@ import updateSectionState from "@/hook/admin/updateSectionState";
 import EditSectionButton from "@/components/admin/EditSectionButton";
 import Module from "@/types/module";
 import axios from "axios";
+import {Section as SectionFrom} from "@/components/admin/SectionForm";
 
 interface AdminSectionProps {
     section: Section;
@@ -27,7 +28,7 @@ export default function AdminSection({
 
     const [currentSection, setCurrentSection] = useState<Section>(section)
 
-    const editSection = async (updatedSection) => {
+    const editSection = async (updatedSection: SectionFrom) => {
 
         const res = await axios.put(`/api/admin/${modData._id}/sections`, updatedSection, {
             headers: {'Content-Type': 'application/json'},
