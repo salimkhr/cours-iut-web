@@ -115,7 +115,6 @@ export async function PUT(
                 $set: {
                     [`sections.${oldSectionIndex}.title`]: updatedSection.title,
                     [`sections.${oldSectionIndex}.path`]: updatedSection.path,
-                    [`sections.${oldSectionIndex}.iconName`]: updatedSection.iconName,
                     [`sections.${oldSectionIndex}.description`]: updatedSection.description,
                     [`sections.${oldSectionIndex}.tags`]: updatedSection.tags,
                     [`sections.${oldSectionIndex}.totalDuration`]: updatedSection.totalDuration,
