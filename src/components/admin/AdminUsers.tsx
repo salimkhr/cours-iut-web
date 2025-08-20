@@ -5,6 +5,7 @@ import axios from 'axios';
 import User, {UserRole} from '@/types/User';
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
 import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
 import UserForm, {UserFormData} from '@/components/admin/UserForm';
 import {Pencil, Plus, Trash2} from 'lucide-react';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
@@ -12,6 +13,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 export default function AdminUsers() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
+    const [q, setQ] = useState('');
     const [roleFilter, setRoleFilter] = useState<UserRole | 'all'>('all');
     const [extraTimeFilter, setExtraTimeFilter] = useState<'all' | 'true' | 'false'>('all');
 
@@ -23,6 +25,7 @@ export default function AdminUsers() {
         setLoading(true);
         try {
             const params: Record<string, string> = {};
+            if (q.trim()) params.q = q.trim();
             if (roleFilter !== 'all') params.role = roleFilter;
             if (extraTimeFilter !== 'all') params.extraTime = extraTimeFilter;
             const res = await axios.get('/api/admin/users', {params});
@@ -34,7 +37,7 @@ export default function AdminUsers() {
 
     useEffect(() => {
         fetchUsers();
-    }, [roleFilter, extraTimeFilter]);
+    }, [q, roleFilter, extraTimeFilter]);
 
     const onAdd = async (data: UserFormData) => {
         const res = await axios.post('/api/admin/users', data, {headers: {'Content-Type': 'application/json'}});
@@ -72,6 +75,29 @@ export default function AdminUsers() {
 
     return (
         <div className="space-y-4">
+            <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                    <Input placeholder="Rechercher..." value={q} onChange={(e) => setQ(e.target.value)} className="w-[220px]" />
+                    <Select value={roleFilter} onValueChange={(v: UserRole | 'all') => setRoleFilter(v)}>
+                        <SelectTrigger className="w-[160px]"><SelectValue placeholder="Rôle"/></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Tous les rôles</SelectItem>
+                            <SelectItem value="student">student</SelectItem>
+                            <SelectItem value="admin">admin</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Select value={extraTimeFilter}
+                            onValueChange={(v: 'all' | 'true' | 'false') => setExtraTimeFilter(v)}>
+                        <SelectTrigger className="w-[180px]"><SelectValue placeholder="Tiers temps"/></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Tous</SelectItem>
+                            <SelectItem value="true">Tiers temps</SelectItem>
+                            <SelectItem value="false">Sans tiers temps</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <Button onClick={openAdd} variant="outline"><Plus className="mr-2"/>Ajouter</Button>
+            </div>
             <div className="border rounded-md overflow-hidden">
                 <Table>
                     <TableHeader>
@@ -110,28 +136,6 @@ export default function AdminUsers() {
                         )}
                     </TableBody>
                 </Table>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                    <Select value={roleFilter} onValueChange={(v: UserRole | 'all') => setRoleFilter(v)}>
-                        <SelectTrigger className="w-[160px]"><SelectValue placeholder="Rôle"/></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Tous les rôles</SelectItem>
-                            <SelectItem value="student">student</SelectItem>
-                            <SelectItem value="admin">admin</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <Select value={extraTimeFilter}
-                            onValueChange={(v: 'all' | 'true' | 'false') => setExtraTimeFilter(v)}>
-                        <SelectTrigger className="w-[180px]"><SelectValue placeholder="Tiers temps"/></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Tous</SelectItem>
-                            <SelectItem value="true">Tiers temps</SelectItem>
-                            <SelectItem value="false">Sans tiers temps</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                <Button onClick={openAdd} variant="outline"><Plus className="mr-2"/>Ajouter</Button>
             </div>
 
             <UserForm

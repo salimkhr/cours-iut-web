@@ -8,6 +8,7 @@ export async function GET(request: Request) {
         const role = url.searchParams.get('role') as UserRole | null;
         const extraTimeParam = url.searchParams.get('extraTime');
         const extraTime = extraTimeParam === null ? undefined : extraTimeParam === 'true';
+        const q = url.searchParams.get('q');
 
         const db = await connectToDB();
         const collection = db.collection<User>('users');
@@ -15,6 +16,15 @@ export async function GET(request: Request) {
         const query: Record<string, unknown> = {};
         if (role) query.role = role;
         if (extraTime !== undefined) query.extraTime = extraTime;
+        if (q && q.trim()) {
+            const regex = new RegExp(q.trim(), 'i');
+            query.$or = [
+                { lastName: { $regex: regex } },
+                { firstName: { $regex: regex } },
+                { email: { $regex: regex } },
+                { scodocId: { $regex: regex } },
+            ];
+        }
 
         const users = await collection.find(query).sort({lastName: 1, firstName: 1}).toArray();
         return NextResponse.json({users});

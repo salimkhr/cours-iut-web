@@ -3,9 +3,11 @@ import Link from 'next/link'
 import {cookies, headers} from 'next/headers'
 import {
     NavigationMenu,
+    NavigationMenuContent,
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
+    NavigationMenuTrigger,
     navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
 import getModules from "@/lib/getModules";
@@ -42,21 +44,37 @@ export default async function NavBar() {
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                     {isAdmin ? <NavigationMenuItem key="admin">
+                        <NavigationMenuTrigger>
+                            <div className="flex flex-row gap-2">
+                                <UserCheck className="size-7 shrink-0"/>
+                                <span className="text-lg hidden md:inline">Admin</span>
+                            </div>
+                        </NavigationMenuTrigger>
+                        <NavigationMenuContent>
+                            <ul className="grid w-[300px] gap-4">
+                                <li>
+                                    <NavigationMenuLink asChild>
+                                        <Link href="/admin/modules">
+                                            <div className="font-medium">Modules</div>
+                                        </Link>
+                                    </NavigationMenuLink>
+                                    <NavigationMenuLink asChild>
+                                        <Link href="/admin/users">
+                                            <div className="font-medium">Utilisateurs</div>
+                                        </Link>
+                                    </NavigationMenuLink>
+                                    <NavigationMenuLink asChild>
+                                        <Link href="/admin/questions">
+                                            <div className="font-medium">Questions</div>
+                                        </Link>
+                                    </NavigationMenuLink>
+                                </li>
+                            </ul>
+                        </NavigationMenuContent>
+                    </NavigationMenuItem> : <NavigationMenuItem key="login">
                         <NavigationMenuLink asChild active={isActive(module.path)}>
                             <Link
-                                href={`/admin`}
-                                className={`${navigationMenuTriggerStyle()} gap-2`}
-                            >
-                                <div className="flex flex-row gap-2">
-                                    <UserCheck className="size-7 shrink-0"/>
-                                    <span className="text-lg hidden md:inline">Admin</span>
-                                </div>
-                            </Link>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem> : <NavigationMenuItem key="admin">
-                        <NavigationMenuLink asChild active={isActive(module.path)}>
-                            <Link
-                                href={`/admin`}
+                                href={`/login`}
                                 className={`${navigationMenuTriggerStyle()} gap-2`}
                             >
                                 <div className="flex flex-row gap-2">
