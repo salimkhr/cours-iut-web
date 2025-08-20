@@ -186,7 +186,7 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
 
                         <div>
                             <select multiple
-                                    className="border border-gray-300 rounded-md p-2"  {...register("associatedSae")}>
+                                    className="border border-gray-300 rounded-md p-2 w-full"  {...register("associatedSae")}>
                                 {FIXED_SAES.map((sae, index) => (<option key={index} value={sae}>{sae}</option>))}
                             </select>
                         </div>

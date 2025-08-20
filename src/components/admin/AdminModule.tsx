@@ -21,18 +21,7 @@ export default function AdminModule({module}: AdminModuleProps) {
     const Icon = iconMap[modData.iconName] || BookOpen;
 
     // Exemple : fonction pour ajouter une section
-    const addSection = async (section: {
-        title: string;
-        path: string;
-        iconName: string;
-        description?: string;
-        totalDuration: number;
-        hasCorrection: boolean;
-        isAvailable: boolean;
-        correctionIsAvailable: boolean;
-        order: number;
-        contents: string[];
-    }) => {
+    const addSection = async (section) => {
         const res = await axios.post(`/api/admin/${modData._id}/sections`, section, {
             headers: {'Content-Type': 'application/json'},
         });
@@ -62,7 +51,7 @@ export default function AdminModule({module}: AdminModuleProps) {
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 mb-4">
                         {modData.sections.map(sec => (
                             <AdminSection
-                                moduleId={modData._id}
+                                modData={modData}
                                 key={sec.path}
                                 section={sec}
                             />
