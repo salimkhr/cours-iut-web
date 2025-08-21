@@ -56,29 +56,48 @@ export default function UserForm({open, onOpenChange, mode, user, onSubmit}: Use
                     </DialogHeader>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <Label>Nom</Label>
+                            <Label>Nom*</Label>
                             <Input {...register('lastName', {required: 'Nom requis'})} />
                             {errors.lastName && <p className="text-red-500 text-xs">{errors.lastName.message}</p>}
                         </div>
                         <div>
-                            <Label>Prénom</Label>
+                            <Label>Prénom*</Label>
                             <Input {...register('firstName', {required: 'Prénom requis'})} />
                             {errors.firstName && <p className="text-red-500 text-xs">{errors.firstName.message}</p>}
                         </div>
-                        <div className="md:col-span-2">
-                            <Label>Email</Label>
+                        <div>
+                            <Label>Email*</Label>
                             <Input type="email" {...register('email', {required: 'Email requis'})} />
                             {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
                         </div>
                         <div>
+                            <Label>Login*</Label>
+                            <Input type="text" {...register('login', {required: 'login requis'})} />
+                            {errors.login && <p className="text-red-500 text-xs">{errors.login.message}</p>}
+                        </div>
+                        <div>
                             <Label>Rôle</Label>
-                            <Select onValueChange={(v: UserRole)=> setValue('role', v)} defaultValue={mode === 'edit' && user ? user.role : 'student'}>
+                            <Select onValueChange={(v: UserRole) => setValue('role', v)}
+                                    defaultValue={mode === 'edit' && user ? user.role : 'student'}>
                                 <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Sélectionner un rôle" />
+                                    <SelectValue placeholder="Sélectionner un rôle"/>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="student">student</SelectItem>
                                     <SelectItem value="admin">admin</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <Label>Groupe</Label>
+                            <Select onValueChange={(v: string) => setValue('groupe', v)}
+                                    defaultValue={user?.groupe}>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Sélectionner un Groupe"/>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="F">F</SelectItem>
+                                    <SelectItem value="G">G</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -93,7 +112,7 @@ export default function UserForm({open, onOpenChange, mode, user, onSubmit}: Use
                     </div>
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Annuler</Button>
-                        <Button type="submit">{mode === 'add' ? 'Ajouter' : 'Enregistrer'}</Button>
+                        <Button type="submit" variant="outline">{mode === 'add' ? 'Ajouter' : 'Enregistrer'}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

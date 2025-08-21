@@ -6,8 +6,10 @@ export async function GET(request: Request) {
     try {
         const url = new URL(request.url);
         const role = url.searchParams.get('role') as UserRole | null;
+        const groupe = url.searchParams.get('groupe') as string | null;
         const extraTimeParam = url.searchParams.get('extraTime');
         const extraTime = extraTimeParam === null ? undefined : extraTimeParam === 'true';
+
         const q = url.searchParams.get('q');
 
         const db = await connectToDB();
@@ -15,14 +17,17 @@ export async function GET(request: Request) {
 
         const query: Record<string, unknown> = {};
         if (role) query.role = role;
+        if (groupe) query.groupe = groupe;
         if (extraTime !== undefined) query.extraTime = extraTime;
         if (q && q.trim()) {
             const regex = new RegExp(q.trim(), 'i');
             query.$or = [
-                { lastName: { $regex: regex } },
-                { firstName: { $regex: regex } },
-                { email: { $regex: regex } },
-                { scodocId: { $regex: regex } },
+                {lastName: {$regex: regex}},
+                {firstName: {$regex: regex}},
+                {email: {$regex: regex}},
+                {scodocId: {$regex: regex}},
+                {login: {$regex: regex}},
+                {groupe: {$regex: regex}},
             ];
         }
 
@@ -43,6 +48,22 @@ export async function POST(request: Request) {
         }
         if (!['admin', 'student'].includes(body.role)) {
             return NextResponse.json({error: 'Rôle invalide'}, {status: 400});
+        }
+
+        // Validate login (2 letters then 6 digits)
+        if (!body.login || !/^[A-Za-z]{2}\d{6}$/.test(body.login)) {
+            return NextResponse.json({error: 'Login invalide (attendu: 2 lettres puis 6 chiffres)'}, {status: 400});
+        }
+
+        // Validate/normalize group: must be 'F' or 'G'; default to 'F' if missing
+        if (!body.groupe || !body.groupe.trim()) {
+            body.groupe = 'F';
+        } else {
+            const normalizedGroup = body.groupe.trim().toUpperCase();
+            if (normalizedGroup !== 'F' && normalizedGroup !== 'G') {
+                return NextResponse.json({error: "Groupe invalide (attendu: 'F' ou 'G')"}, {status: 400});
+            }
+            body.groupe = normalizedGroup;
         }
 
         const db = await connectToDB();

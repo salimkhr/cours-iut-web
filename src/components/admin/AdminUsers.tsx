@@ -1,14 +1,15 @@
 'use client';
 
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import axios from 'axios';
 import User, {UserRole} from '@/types/User';
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import UserForm, {UserFormData} from '@/components/admin/UserForm';
-import {Pencil, Plus, Trash2} from 'lucide-react';
+import {Clock4, Pencil, Plus, Trash2} from 'lucide-react';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import Link from "next/link";
 
 export default function AdminUsers() {
     const [users, setUsers] = useState<User[]>([]);
@@ -16,28 +17,31 @@ export default function AdminUsers() {
     const [q, setQ] = useState('');
     const [roleFilter, setRoleFilter] = useState<UserRole | 'all'>('all');
     const [extraTimeFilter, setExtraTimeFilter] = useState<'all' | 'true' | 'false'>('all');
+    const [groupeFilter, setGroupeFilter] = useState<'all' | 'F' | 'G'>('all');
 
     const [openForm, setOpenForm] = useState(false);
     const [mode, setMode] = useState<'add' | 'edit'>('add');
     const [editingUser, setEditingUser] = useState<User | undefined>(undefined);
 
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         setLoading(true);
         try {
             const params: Record<string, string> = {};
             if (q.trim()) params.q = q.trim();
             if (roleFilter !== 'all') params.role = roleFilter;
             if (extraTimeFilter !== 'all') params.extraTime = extraTimeFilter;
+            if (groupeFilter !== 'all') params.groupe = groupeFilter;
+
             const res = await axios.get('/api/admin/users', {params});
             setUsers(res.data.users || []);
         } finally {
             setLoading(false);
         }
-    };
+    }, [q, roleFilter, extraTimeFilter, groupeFilter]);
 
     useEffect(() => {
         fetchUsers();
-    }, [q, roleFilter, extraTimeFilter]);
+    }, [fetchUsers]);
 
     const onAdd = async (data: UserFormData) => {
         const res = await axios.post('/api/admin/users', data, {headers: {'Content-Type': 'application/json'}});
@@ -77,7 +81,8 @@ export default function AdminUsers() {
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                    <Input placeholder="Rechercher..." value={q} onChange={(e) => setQ(e.target.value)} className="w-[220px]" />
+                    <Input placeholder="Rechercher..." value={q} onChange={(e) => setQ(e.target.value)}
+                           className="w-[220px]"/>
                     <Select value={roleFilter} onValueChange={(v: UserRole | 'all') => setRoleFilter(v)}>
                         <SelectTrigger className="w-[160px]"><SelectValue placeholder="Rôle"/></SelectTrigger>
                         <SelectContent>
@@ -90,9 +95,18 @@ export default function AdminUsers() {
                             onValueChange={(v: 'all' | 'true' | 'false') => setExtraTimeFilter(v)}>
                         <SelectTrigger className="w-[180px]"><SelectValue placeholder="Tiers temps"/></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">Tous</SelectItem>
-                            <SelectItem value="true">Tiers temps</SelectItem>
-                            <SelectItem value="false">Sans tiers temps</SelectItem>
+                            <SelectItem value="all">Avec - Sans 1/3 temps</SelectItem>
+                            <SelectItem value="true">Avec 1/3 temps</SelectItem>
+                            <SelectItem value="false">Sans 1/3 temps</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Select value={groupeFilter}
+                            onValueChange={(v: 'all' | 'F' | 'G') => setGroupeFilter(v)}>
+                        <SelectTrigger className="w-[180px]"><SelectValue placeholder="Groupe"/></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Tous les groupes</SelectItem>
+                            <SelectItem value="F">F</SelectItem>
+                            <SelectItem value="G">G</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -102,28 +116,37 @@ export default function AdminUsers() {
                 <Table>
                     <TableHeader>
                         <TableRow>
+                            <TableHead>Photo</TableHead>
+                            <TableHead>Login</TableHead>
                             <TableHead>Nom</TableHead>
                             <TableHead>Prénom</TableHead>
+                            <TableHead>Groupe</TableHead>
                             <TableHead>Email</TableHead>
+                            <TableHead>1/3</TableHead>
                             <TableHead>Rôle</TableHead>
-                            <TableHead>Tiers temps</TableHead>
-                            <TableHead>scodocId</TableHead>
+
+
                             <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {users.map(u => (
                             <TableRow key={String(u._id)}>
+                                <TableCell>{u.scodocId || ''}</TableCell>
+                                <TableCell>{u.login}</TableCell>
                                 <TableCell>{u.lastName}</TableCell>
                                 <TableCell>{u.firstName}</TableCell>
-                                <TableCell>{u.email}</TableCell>
+                                <TableCell>{u.groupe}</TableCell>
+                                <TableCell><Link target="_blank" href={`mailto:${u.email}`}
+                                                 className="text-blue-500">{u.email}</Link></TableCell>
+                                <TableCell>{!u.extraTime ? <Clock4/> : null}</TableCell>
                                 <TableCell>{u.role}</TableCell>
-                                <TableCell>{u.extraTime ? 'Oui' : 'Non'}</TableCell>
-                                <TableCell>{u.scodocId || ''}</TableCell>
+
                                 <TableCell className="text-right space-x-2">
                                     <Button size="sm" variant="outline" onClick={() => openEdit(u)}><Pencil
                                         className="size-4"/></Button>
-                                    <Button size="sm" variant="destructive" onClick={() => onDelete(u)}><Trash2
+                                    <Button size="sm" variant="outline" className="text-red-600"
+                                            onClick={() => onDelete(u)}><Trash2
                                         className="size-4"/></Button>
                                 </TableCell>
                             </TableRow>

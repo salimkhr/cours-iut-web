@@ -8,6 +8,23 @@ export async function PUT(request: Request, {params}: { params: Promise<{ id: st
         const {id} = await params;
         const updates = await request.json() as Partial<User>;
 
+        // Validate login format if provided
+        if (typeof updates.login === 'string' && updates.login.length > 0 && !/^[A-Za-z]{2}\d{6}$/.test(updates.login)) {
+            return NextResponse.json({error: 'Login invalide (attendu: 2 lettres puis 6 chiffres)'}, {status: 400});
+        }
+        // Validate/normalize group if provided: must be 'F' or 'G'
+        if (typeof updates.groupe === 'string') {
+            const trimmed = updates.groupe.trim();
+            if (trimmed.length === 0) {
+                return NextResponse.json({error: "Groupe invalide (attendu: 'F' ou 'G')"}, {status: 400});
+            }
+            const normalized = trimmed.toUpperCase();
+            if (normalized !== 'F' && normalized !== 'G') {
+                return NextResponse.json({error: "Groupe invalide (attendu: 'F' ou 'G')"}, {status: 400});
+            }
+            updates.groupe = normalized;
+        }
+
         const db = await connectToDB();
         const collection = db.collection<User>('users');
 
