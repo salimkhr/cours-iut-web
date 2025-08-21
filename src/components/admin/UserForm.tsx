@@ -10,7 +10,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Switch} from "@/components/ui/switch";
 import {useEffect} from "react";
 
-export type UserFormData = Omit<User, "_id">;
+export type UserFormData = Omit<User, "_id"> & { password?: string };
 
 interface UserFormProps {
     open: boolean;
@@ -28,7 +28,8 @@ export default function UserForm({open, onOpenChange, mode, user, onSubmit}: Use
             email: '',
             role: 'student',
             extraTime: false,
-            scodocId: ''
+            scodocId: '',
+            password: ''
         }
     });
 
@@ -38,12 +39,22 @@ export default function UserForm({open, onOpenChange, mode, user, onSubmit}: Use
                 lastName: user.lastName,
                 firstName: user.firstName,
                 email: user.email,
+                login: user.login,
                 role: user.role,
                 extraTime: !!user.extraTime,
-                scodocId: user.scodocId || ''
+                scodocId: user.scodocId || '',
+                password: ''
             });
         } else if (mode === 'add') {
-            reset({lastName: '', firstName: '', email: '', role: 'student', extraTime: false, scodocId: ''});
+            reset({
+                lastName: '',
+                firstName: '',
+                email: '',
+                role: 'student',
+                extraTime: false,
+                scodocId: '',
+                password: ''
+            });
         }
     }, [mode, user, reset]);
 
@@ -74,6 +85,13 @@ export default function UserForm({open, onOpenChange, mode, user, onSubmit}: Use
                             <Label>Login*</Label>
                             <Input type="text" {...register('login', {required: 'login requis'})} />
                             {errors.login && <p className="text-red-500 text-xs">{errors.login.message}</p>}
+                        </div>
+                        <div>
+                            <Label>Mot de passe{mode === 'add' ? '*' : ''}</Label>
+                            <Input
+                                type="password" {...register('passwordHash', {required: mode === 'add' ? 'Mot de passe requis' : false})} />
+                            {errors.passwordHash &&
+                                <p className="text-red-500 text-xs">{String(errors.passwordHash.message)}</p>}
                         </div>
                         <div>
                             <Label>Rôle</Label>

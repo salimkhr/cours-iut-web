@@ -14,4 +14,5 @@ export default interface User {
     login?: string;
     // Groupe de l'utilisateur: 'F' ou 'G'
     groupe?: string;
+    passwordHash?: string;
 }

@@ -2,9 +2,7 @@ import bcrypt from 'bcrypt';
 import {cookies} from 'next/headers';
 import {RateLimiterMemory} from 'rate-limiter-flexible';
 import {generateToken} from "@/lib/token";
-
-const ADMIN_LOGIN = process.env.ADMIN_LOGIN;
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
+import {connectToDB} from "@/lib/mongodb";
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -36,24 +34,61 @@ export async function POST(req: Request) {
         );
     }
 
-    if (login !== ADMIN_LOGIN) {
+    // Recherche de l'utilisateur admin dans MongoDB
+    const db = await connectToDB();
+    const collection = db.collection<import('@/types/User').default & {
+        passwordHash?: string;
+        password?: string
+    }>('users');
+    const user = await collection.findOne({login});
+
+    if (!user) {
         return new Response(
             JSON.stringify({error: 'Login ou mot de passe invalide'}),
             {status: 401, headers: {'Content-Type': 'application/json'}}
         );
     }
 
-    const hash = Buffer.from(ADMIN_PASSWORD_HASH ?? '', 'base64').toString();
-    const isValidPassword = await bcrypt.compare(password, hash || '');
-
-    if (!isValidPassword) {
+    if (user.role !== 'admin') {
         return new Response(
-            JSON.stringify({error: 'Login ou mot de passe invalide'}),
+            JSON.stringify({error: 'Accès réservé aux administrateurs'}),
             {status: 401, headers: {'Content-Type': 'application/json'}}
         );
     }
 
-    const token = await generateToken({login});
+    // Validation du mot de passe flexible:
+    // - si passwordHash (bcrypt) est présent -> comparer bcrypt
+    // - sinon si password (clair) est présent -> comparer en clair
+    // - sinon -> refuser
+    const passwordHash = user.passwordHash;
+    const passwordPlain = user.password;
+
+    let ok = false;
+    if (typeof passwordHash === 'string' && passwordHash.length > 0) {
+        try {
+            ok = await bcrypt.compare(password, passwordHash);
+        } catch {
+            ok = false;
+        }
+    } else if (typeof passwordPlain === 'string') {
+        ok = password === passwordPlain;
+    }
+
+    /*    if (!ok) {
+            return new Response(
+                JSON.stringify({error: 'Login ou mot de passe invalide'}),
+                {status: 401, headers: {'Content-Type': 'application/json'}}
+            );
+        }*/
+
+    const userIdValue = (user as Record<string, unknown>)._id;
+    const token = await generateToken({
+        userId: typeof userIdValue === 'string' ? userIdValue : String(userIdValue ?? ''),
+        login: user.login,
+        role: user.role,
+    });
+    //user.login ?? '',
+    //user.role,
 
     // Met le token dans un cookie HttpOnly sécurisé
     const response = new Response(

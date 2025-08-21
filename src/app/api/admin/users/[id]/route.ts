@@ -2,6 +2,7 @@ import {NextResponse} from 'next/server';
 import {connectToDB} from '@/lib/mongodb';
 import User from '@/types/User';
 import {ObjectId} from 'bson';
+import bcrypt from "bcrypt";
 
 export async function PUT(request: Request, {params}: { params: Promise<{ id: string }> }) {
     try {
@@ -9,9 +10,10 @@ export async function PUT(request: Request, {params}: { params: Promise<{ id: st
         const updates = await request.json() as Partial<User>;
 
         // Validate login format if provided
-        if (typeof updates.login === 'string' && updates.login.length > 0 && !/^[A-Za-z]{2}\d{6}$/.test(updates.login)) {
+        if (updates.role === 'student' && typeof updates.login === 'string' && updates.login.length > 0 && !/^[A-Za-z]{2}\d{6}$/.test(updates.login)) {
             return NextResponse.json({error: 'Login invalide (attendu: 2 lettres puis 6 chiffres)'}, {status: 400});
         }
+
         // Validate/normalize group if provided: must be 'F' or 'G'
         if (typeof updates.groupe === 'string') {
             const trimmed = updates.groupe.trim();
@@ -24,6 +26,8 @@ export async function PUT(request: Request, {params}: { params: Promise<{ id: st
             }
             updates.groupe = normalized;
         }
+
+        updates.passwordHash = bcrypt.hashSync(updates?.passwordHash || '', 10);
 
         const db = await connectToDB();
         const collection = db.collection<User>('users');

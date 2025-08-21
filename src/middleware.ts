@@ -9,22 +9,21 @@ export async function middleware(req: NextRequest) {
         const headerToken = req.headers.get('x-csrf-token');
 
         if (!cookieToken || !headerToken || cookieToken !== headerToken) {
-            return NextResponse.json({error: 'Invalid CSRF token'}, {status: 403});
+            return NextResponse.json({error: cookieToken ?? 'null'}, {status: 403});
+            // return NextResponse.json({error: 'Invalid CSRF token'}, {status: 403});
         }
     }
 
     if (req.nextUrl.pathname.startsWith('/admin')) {
-
         const cookie = await cookies();
-
         const session = cookie.get('session')?.value;
         if (!session) {
             return NextResponse.redirect(new URL('/login', req.url));
         }
 
-        const verif = await verifyToken(session);
-
-        if (!verif) {
+        const payload = await verifyToken(session);
+        const role = (payload as Record<string, unknown> | null)?.role;
+        if (role !== 'admin') {
             return NextResponse.redirect(new URL('/login', req.url));
         }
     }
