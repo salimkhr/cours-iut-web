@@ -741,20 +741,47 @@ export default function TP() {
                     HTML et PHP que vous placez dans votre dossier personnel <Code>~/public_html</Code>.
                     Par exemple, si vous ajoutez un fichier
                     nommé <Code>index.php</Code> dans <Code>~/public_html/TP1/</Code>, il sera accessible à
-                    l&apos;adresse :
-                    <Code>http://woody.iut.univ-lehavre.fr/~<strong>loginLDAP</strong>/TP1/index.php</Code> ou <Code>http://localhost/~<strong>loginLDAP</strong>/TP1/index.php</Code>.
+                    l&apos;adresse :<Link href="http://woody.iut.univ-lehavre.fr/~loginLDAP/TP1/index.php"
+                                          target="_blank"><Code>http://woody.iut.univ-lehavre.fr/~<strong>loginLDAP</strong>/TP1/index.php</Code></Link> ou <Link
+                    href="http://localhost/~loginLDAP/TP1/index.php"
+                    target="_blank"><Code>http://localhost/~<strong>loginLDAP</strong>/TP1/index.php</Code></Link>.
                 </Text>
 
                 <Heading level={3}>Rappel de HTML</Heading>
                 <Text className="mt-4">
                     Dans le fichier <Code>~/public_html/TP1/rappel.html</Code>, créez une page HTML contenant la
-                    structure de base d&apos;un document HTML, ainsi qu&apos;un tableau.
-                    Ce tableau devra récapituler les montants collectés par les streamers lors du dernier Z-Event, avec
+                    structure de base d&apos;un document HTML, ainsi qu&apos;un tableau.</Text>
+                <CodeCard language="html" filename="rappel.html">
+                    {`<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Z-Event 2025</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+</head>
+<body>
+    <h1>Tableau des dons Z-Event</h1>
+    
+    <!-- Ajouter le tableau avec les données ci-dessous -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+</body>
+</html>`}
+                </CodeCard>
+                <Text>Ce tableau devra récapituler les montants collectés par les streamers lors du dernier Z-Event,
+                    avec
                     les 5 colonnes suivantes :
                     <Code>Nom du Streamer</Code>, <Code>Pseudo</Code>, <Code>Montant Collecté (en
-                    euros)</Code>, <Code>Rang</Code> et <Code>Lieu</Code>.
+                        euros)</Code>, <Code>Rang</Code> et <Code>Lieu</Code>.
                     Vous pourrez ensuite consulter cette page dans votre navigateur à l&apos;adresse :
-                    <Code>http://woody.iut.univ-lehavre.fr/<strong>loginLDAP</strong>/TP1/rappel.html</Code> ou <Code>http://localhost/<strong>loginLDAP</strong>/TP1/rappel.html</Code>.
+                    <Link href="http://woody.iut.univ-lehavre.fr/~loginLDAP/TP1/rappel.html"
+                          target="_blank"><Code>http://woody.iut.univ-lehavre.fr/~<strong>loginLDAP</strong>/TP1/rappel.html</Code>
+                    </Link> ou
+                    <Link href="http://localhost/~loginLDAP/TP1/rappel.html" target="_blank">
+                        <Code>http://localhost/~<strong>loginLDAP</strong>/TP1/rappel.html</Code>
+                    </Link>.
                 </Text>
 
                 <Text><strong>Données à utiliser :</strong></Text>
@@ -773,7 +800,9 @@ export default function TP() {
                             .slice(0, 5).map((streamer) => (
                                 <TableRow key={streamer.rank}>
                                     <TableCell>{streamer.name}</TableCell>
-                                    <TableCell>{streamer.pseudo}</TableCell>
+                                    <TableCell><Link
+                                        href={`https://twitch.tv/${streamer.pseudo}`}
+                                        target="_blank">{streamer.pseudo}</Link></TableCell>
                                     <TableCell>{formatNumberToFrench(streamer.lastAmount)}</TableCell>
                                     <TableCell>{streamer.rank}</TableCell>
                                     <TableCell>{streamer.isRemote ? "À domicile" : "Sur site"}</TableCell>
@@ -923,10 +952,6 @@ echo $streamer1;
 
                 <List ordered>
                     <ListItem>
-                        <strong>Inclusion :</strong> Incluez votre
-                        fichier <Code>streamer.php</Code> avec <Code>require_once</Code>.
-                    </ListItem>
-                    <ListItem>
                         <strong>Création du tableau :</strong> Créez le même tableau que rappel.html, mais en affichant
                         les données de <Code>$Streamers</Code>.
                     </ListItem>
@@ -941,30 +966,24 @@ echo $streamer1;
                         </List>
                     </ListItem>
                     <ListItem>
-                        <strong>Affichage HTML :</strong> Créez un tableau HTML qui affiche les informations de chaque
-                        streamer.
-                        Utilisez les méthodes de vos objets pour :
-                        <List>
-                            <ListItem>Afficher le nom, pseudo, et montant formaté</ListItem>
-                            <ListItem>Appliquer la bonne couleur selon le rang (classes CSS gold, silver,
-                                bronze)</ListItem>
-                            <ListItem>Afficher &quot;Au-dessus de la moyenne&quot; ou &quot;En dessous de la
-                                moyenne&quot; dans
-                                une colonne
-                                Performance</ListItem>
+                        <strong>Affichage du podium :</strong>
+                        Créez un fichier CSS avec les classes suivantes et ajoutez-le dans la
+                        balise <Code>{`<head>`}</Code> de <Code>zevent.php</Code> :
+                        <List ordered>
+                            <ListItem><Code>{`.gold {background-color:#FFD700;}`}</Code></ListItem>
+                            <ListItem><Code>{`.silver {background-color:#C0C0C0;}`}</Code></ListItem>
+                            <ListItem><Code>{`.bronze{background-color:#CD7F32;}`}</Code></ListItem>
                         </List>
-                    </ListItem>
-                    <ListItem>
-                        <strong>Tableau de statistiques :</strong> Ajoutez sous le tableau principal un second tableau
-                        récapitulant les statistiques calculées.
+                        Ensuite, utilisez la fonction <Code>getRankColor()</Code> de la
+                        classe <Code>Streamer</Code> pour
+                        déterminer la classe CSS à appliquer à chaque <Code>&lt;tr&gt;</Code> selon le rang du streamer
+                        et affichez le rang dans la ligne correspondante.
                     </ListItem>
                 </List>
 
                 <Text><strong>Structure de départ :</strong></Text>
                 <CodeCard language="php" filename="zevent.php">
                     {`<?php
-// Inclusion de la classe
-// À COMPLÉTER
 
 // Création du tableau d'objets streamers
 $streamers = [
@@ -1028,140 +1047,7 @@ ${streamersData.map((streamer) => `\tnew Streamer("${streamer.name}","${streamer
                 </Table>
             </Box>
 
-            <Box>
-                <Heading level={2}>F- Héritage : Streamers sur place vs à domicile (Optionel)</Heading>
-                <Text>
-                    Cette année, le Z-Event introduit une nouveauté : certains streamers participent
-                    physiquement sur place à Montpellier, tandis que d&apos;autres streamient depuis leur domicile.
-                    Cette distinction implique des coûts et des spécificités différentes.
-                </Text>
 
-                <Text>
-                    Nous allons utiliser l&apos;<strong>héritage</strong> pour modéliser cette distinction.
-                    L&apos;héritage permet de créer des classes spécialisées qui partagent des caractéristiques communes
-                    tout en ayant leurs propres spécificités.
-                </Text>
-
-                <Text>Dans un fichier <Code>~/public_html/TP1/streamer_heritage.php</Code> :</Text>
-
-                <List ordered>
-                    <ListItem>
-                        <strong>Classe abstraite de base :</strong> Transformez votre classe <Code>Streamer</Code> en
-                        classe abstraite <Code>BaseStreamer</Code> :
-                        <List>
-                            <ListItem>Changez les propriétés privées en <Code>protected</Code></ListItem>
-                            <ListItem>Gardez les méthodes communes (getters, formatage, etc.)</ListItem>
-                            <ListItem>Ajoutez des méthodes abstraites
-                                : <Code>getLocation()</Code>, <Code>getLocationDetails()</Code>, <Code>getSetupCost()</Code></ListItem>
-                        </List>
-                    </ListItem>
-
-                    <ListItem>
-                        <strong>Classe OnSiteStreamer :</strong> Créez une classe pour les streamers sur place :
-                        <List>
-                            <ListItem>Hérite de <Code>BaseStreamer</Code></ListItem>
-                            <ListItem>Propriétés supplémentaires : <Code>$venue</Code> (lieu, par défaut
-                                &quot;Montpellier&quot;), <Code>$hasOwnSetup</Code> (booléen)</ListItem>
-                            <ListItem>Implémente les méthodes abstraites</ListItem>
-                            <ListItem><Code>getSetupCost()</Code> : retourne 500€ si setup personnel, 200€
-                                sinon</ListItem>
-                            <ListItem>Méthodes spécifiques
-                                : <Code>hasOwnSetup()</Code>, <Code>getVenue()</Code></ListItem>
-                        </List>
-                    </ListItem>
-
-                    <ListItem>
-                        <strong>Classe HomeStreamer :</strong> Créez une classe pour les streamers à domicile :
-                        <List>
-                            <ListItem>Hérite de <Code>BaseStreamer</Code></ListItem>
-                            <ListItem>Propriétés supplémentaires : <Code>$city</Code>, <Code>$internetSpeed</Code> (en
-                                Mbps)</ListItem>
-                            <ListItem>Implémente les méthodes abstraites</ListItem>
-                            <ListItem><Code>getSetupCost()</Code> : retourne 300€ si débit ≥ 200 Mbps, 150€
-                                sinon</ListItem>
-                            <ListItem>Méthodes spécifiques
-                                : <Code>getCity()</Code>, <Code>getInternetSpeed()</Code>, <Code>hasHighSpeedInternet()</Code></ListItem>
-                        </List>
-                    </ListItem>
-
-                    <ListItem>
-                        <strong>Classe utilitaire StreamerStats :</strong> Créez une classe pour gérer les statistiques
-                        :
-                        <List>
-                            <ListItem>Constructeur qui prend un tableau de streamers</ListItem>
-                            <ListItem>Méthodes pour calculer : total, moyenne, min, max, nombre de streamers sur
-                                place/domicile</ListItem>
-                            <ListItem>Méthode <Code>getTotalSetupCost()</Code></ListItem>
-                            <ListItem>Méthode <Code>getStreamersBy($type)</Code> qui filtre par type</ListItem>
-                        </List>
-                    </ListItem>
-                </List>
-
-                <Text><strong>Conseils d&apos;implémentation :</strong></Text>
-                <List>
-                    <ListItem>Utilisez <Code>instanceof</Code> pour vérifier le type d&apos;un objet</ListItem>
-                    <ListItem>Utilisez <Code>array_filter()</Code> pour filtrer les streamers par type</ListItem>
-                    <ListItem>N&apos;oubliez pas d&apos;implémenter toutes les méthodes abstraites dans les classes
-                        filles</ListItem>
-                </List>
-            </Box>
-
-            <Box>
-                <Heading level={2}>G- Application finale</Heading>
-                <Text>Dans un fichier <Code>~/public_html/TP1/zevent_final.php</Code>, créez l&apos;application finale
-                    :</Text>
-
-                <List ordered>
-                    <ListItem>
-                        <strong>Données :</strong> Créez un tableau d&apos;objets mixtes (OnSiteStreamer et
-                        HomeStreamer)
-                        avec ces informations :
-                        <List>
-                            <ListItem>ZeratoR, Domingo, MisterMV, Antoine Daniel : sur place à
-                                Montpellier</ListItem>
-                            <ListItem>Les autres : à domicile dans différentes villes (Paris, Lyon, Nantes,
-                                etc.)</ListItem>
-                            <ListItem>Variez les débits internet (100-300 Mbps) et les setups personnels</ListItem>
-                        </List>
-                    </ListItem>
-
-                    <ListItem>
-                        <strong>Tableau principal :</strong> Affichez un tableau avec toutes les colonnes :
-                        <List>
-                            <ListItem>Colonnes de base : Rang, Nom, Pseudo, Montant, Performance</ListItem>
-                            <ListItem>Nouvelles colonnes : Lieu, Détails du lieu, Coût de setup</ListItem>
-                            <ListItem>Appliquez des couleurs différentes pour distinguer les streamers sur place vs
-                                domicile</ListItem>
-                        </List>
-                    </ListItem>
-
-                    <ListItem>
-                        <strong>Statistiques avancées :</strong> Affichez :
-                        <List>
-                            <ListItem>Les statistiques générales (total, moyenne, min, max)</ListItem>
-                            <ListItem>La répartition par lieu (nombre et pourcentage)</ListItem>
-                            <ListItem>Le coût total de setup</ListItem>
-                        </List>
-                    </ListItem>
-
-                    <ListItem>
-                        <strong>Tableaux spécialisés :</strong> Créez des sections séparées pour :
-                        <List>
-                            <ListItem>Détails des streamers sur place (avec info setup personnel)</ListItem>
-                            <ListItem>Détails des streamers à domicile (avec ville et débit internet)</ListItem>
-                        </List>
-                    </ListItem>
-
-                    <ListItem>
-                        <strong>Style :</strong> Ajoutez du CSS pour :
-                        <List>
-                            <ListItem>Distinguer visuellement les streamers sur place vs domicile</ListItem>
-                            <ListItem>Mettre en évidence les informations importantes</ListItem>
-                            <ListItem>Rendre la page attractive et lisible</ListItem>
-                        </List>
-                    </ListItem>
-                </List>
-            </Box>
         </section>
     );
 }
