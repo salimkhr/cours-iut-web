@@ -4,6 +4,7 @@ import BaseCard from "@/components/Cards/BaseCard";
 import {ClipboardCopyIcon} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {Button} from "@/components/ui/button";
+import {oneLight} from "react-syntax-highlighter/dist/esm/styles/prism";
 
 interface CodeWithPreviewCardProps {
     language: string;
@@ -86,6 +87,7 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
                     <div className="h-full overflow-hidden lg:border-r-2 border-b-2 lg:border-b-0 border-module">
                         <SyntaxHighlighter
                             language={language}
+                            style={oneLight}
                             customStyle={{
                                 margin: 0,
                                 fontSize: '0.875rem',

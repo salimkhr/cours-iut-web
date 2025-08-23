@@ -5,14 +5,15 @@ import Module from "@/types/module";
 import {useState} from "react";
 import {Button} from "@/components/ui/button";
 import SectionForm, {Section} from "@/components/admin/SectionForm";
-import {PlusSquare} from "lucide-react";
+import {Edit} from "lucide-react";
 
 interface AddSectionButtonProps {
     modData: Module;
     onAdd: (section: Section) => void;
+    section: Section;
 }
 
-export default function AddSectionButton({modData, onAdd}: AddSectionButtonProps) {
+export default function EditSectionButton({modData, onAdd, section}: AddSectionButtonProps) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -23,16 +24,17 @@ export default function AddSectionButton({modData, onAdd}: AddSectionButtonProps
                     variant="outline"
                     className={`border-${modData.path} text-${modData.path}`}
                 >
-                    <PlusSquare/> Ajouter un nouveau cours
+                    <Edit/>
                 </Button>
             </div>
 
             <SectionForm
                 modData={modData}
-                mode="add"
+                mode="edit"
                 open={open}
                 onOpenChange={setOpen}
                 onSubmit={onAdd}
+                section={section}
             />
         </>
     );

@@ -1,7 +1,7 @@
 import {ObjectId} from "bson";
 
 export default interface Section {
-    _id: string | ObjectId;
+    _id?: string | ObjectId;
     title: string;
     path: string;
     description?: string;

@@ -6,6 +6,7 @@ import {ClipboardCopyIcon, DownloadIcon} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {Button} from "@/components/ui/button";
 import Module from "@/types/module";
+import {oneLight} from "react-syntax-highlighter/dist/esm/styles/prism";
 
 interface CodeCardProps {
     title: string;
@@ -109,6 +110,7 @@ export default function InputCard({
             <div className="w-full overflow-hidden">
                 <SyntaxHighlighter
                     language={language}
+                    style={oneLight}
                     customStyle={{
                         margin: 0,
                         fontSize: '0.875rem',
