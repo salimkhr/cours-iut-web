@@ -1,7 +1,8 @@
 'use client';
 
 import {useCallback, useEffect, useState} from 'react';
-import axios from 'axios';
+// API calls are encapsulated in a dedicated hook
+import useAdminUsersApi, {UserPayload} from '@/hook/admin/useAdminUsersApi';
 import User, {UserRole} from '@/types/User';
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
 import {Button} from '@/components/ui/button';
@@ -12,6 +13,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import Link from "next/link";
 
 export default function AdminUsers() {
+    const {listUsers, addUser, editUser, deleteUser} = useAdminUsersApi();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [q, setQ] = useState('');
@@ -32,11 +34,13 @@ export default function AdminUsers() {
             if (extraTimeFilter !== 'all') params.extraTime = extraTimeFilter;
             if (groupeFilter !== 'all') params.groupe = groupeFilter;
 
-            const res = await axios.get('/api/admin/users', {params});
-            setUsers(res.data.users || []);
+            const list = await listUsers(params);
+            setUsers(list);
         } finally {
             setLoading(false);
         }
+        // listUsers  est volontairement pas ajouté au dependence
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [q, roleFilter, extraTimeFilter, groupeFilter]);
 
     useEffect(() => {
@@ -44,25 +48,21 @@ export default function AdminUsers() {
     }, [fetchUsers]);
 
     const onAdd = async (data: UserFormData) => {
-        const res = await axios.post('/api/admin/users', data, {headers: {'Content-Type': 'application/json'}});
-        if (res.status >= 200 && res.status < 300) {
-            setUsers(prev => [res.data.user as User, ...prev]);
-            setOpenForm(false);
-        }
+        const created = await addUser(data as unknown as UserPayload);
+        setUsers(prev => [created as User, ...prev]);
+        setOpenForm(false);
     };
 
     const onEdit = async (data: UserFormData) => {
         if (!editingUser?._id) return;
-        const res = await axios.put(`/api/admin/users/${editingUser._id}`, data, {headers: {'Content-Type': 'application/json'}});
-        if (res.status >= 200 && res.status < 300) {
-            setUsers(prev => prev.map(u => String(u._id) === String(editingUser._id) ? (res.data.user as User) : u));
-            setOpenForm(false);
-        }
+        const updated = await editUser(String(editingUser._id), data as unknown as UserPayload);
+        setUsers(prev => prev.map(u => String(u._id) === String(editingUser._id) ? (updated as User) : u));
+        setOpenForm(false);
     };
 
     const onDelete = async (user: User) => {
         if (!confirm(`Supprimer ${user.firstName} ${user.lastName} ?`)) return;
-        await axios.delete(`/api/admin/users/${user._id}`);
+        await deleteUser(String(user._id!));
         setUsers(prev => prev.filter(u => String(u._id) !== String(user._id)));
     };
 

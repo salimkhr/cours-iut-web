@@ -35,6 +35,9 @@ export default function Page() {
                 <AdminLink href="/admin/questions" icon={CircleHelp}>
                     Questions
                 </AdminLink>
+                <AdminLink href="/admin/quizzes" icon={CircleHelp}>
+                    Quizz
+                </AdminLink>
             </div>
         </div>
     );

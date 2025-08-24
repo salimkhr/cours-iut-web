@@ -74,12 +74,12 @@ export async function POST(req: Request) {
         ok = password === passwordPlain;
     }
 
-    /*    if (!ok) {
-            return new Response(
-                JSON.stringify({error: 'Login ou mot de passe invalide'}),
-                {status: 401, headers: {'Content-Type': 'application/json'}}
-            );
-        }*/
+    if (!ok) {
+        return new Response(
+            JSON.stringify({error: 'Login ou mot de passe invalide'}),
+            {status: 401, headers: {'Content-Type': 'application/json'}}
+        );
+    }
 
     const userIdValue = (user as Record<string, unknown>)._id;
     const token = await generateToken({
@@ -87,8 +87,6 @@ export async function POST(req: Request) {
         login: user.login,
         role: user.role,
     });
-    //user.login ?? '',
-    //user.role,
 
     // Met le token dans un cookie HttpOnly sécurisé
     const response = new Response(

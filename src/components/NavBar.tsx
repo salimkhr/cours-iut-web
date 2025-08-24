@@ -59,13 +59,13 @@ export default async function NavBar() {
                                         </Link>
                                     </NavigationMenuLink>
                                     <NavigationMenuLink asChild>
-                                        <Link href="/admin/users">
-                                            <div className="font-medium">Utilisateurs</div>
+                                        <Link href="/admin/quizzes">
+                                            <div className="font-medium">Quizz</div>
                                         </Link>
                                     </NavigationMenuLink>
                                     <NavigationMenuLink asChild>
-                                        <Link href="/admin/questions">
-                                            <div className="font-medium">Questions</div>
+                                        <Link href="/admin/users">
+                                            <div className="font-medium">Utilisateurs</div>
                                         </Link>
                                     </NavigationMenuLink>
                                 </li>

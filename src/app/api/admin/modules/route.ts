@@ -2,6 +2,17 @@ import {NextResponse} from 'next/server';
 import {connectToDB} from "@/lib/mongodb";
 import Module from "@/types/module";
 
+export async function GET() {
+    try {
+        const db = await connectToDB();
+        const modules = await db.collection<Module>('modules').find().toArray();
+        return NextResponse.json({ modules });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: 'Failed to list modules' }, { status: 500 });
+    }
+}
+
 export async function POST(request: Request) {
     try {
         const body = await request.json() as Omit<Module, '_id'>;

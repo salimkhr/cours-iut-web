@@ -4,6 +4,11 @@ import Module from "@/types/module";
 
 // Hook regroupant les appels API d'administration (modules/sections)
 export default function useAdminApi() {
+  async function listModules() {
+    const res = await axios.get("/api/admin/modules");
+    return (res.data.modules || []) as Module[];
+  }
+
   // Ajouter un module
   async function addModule(newMod: Omit<Module, "_id">) {
     const res = await axios.post("/api/admin/modules", newMod, {
@@ -38,5 +43,5 @@ export default function useAdminApi() {
     return res.data.section;
   }
 
-  return { addModule, addSection, editSection };
+  return { listModules, addModule, addSection, editSection };
 }

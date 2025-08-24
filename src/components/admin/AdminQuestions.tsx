@@ -1,7 +1,7 @@
 'use client';
 
-import {useEffect, useMemo, useState} from 'react';
-import axios from 'axios';
+import {useCallback, useEffect, useMemo, useState} from 'react';
+import useAdminQuestionsApi, {QuestionPayload} from '@/hook/admin/useAdminQuestionsApi';
 import Question, {Difficulty, QuestionType} from '@/types/Question';
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
 import {Button} from '@/components/ui/button';
@@ -11,6 +11,7 @@ import {Pencil, Plus, Trash2} from 'lucide-react';
 import QuestionForm, {QuestionFormData} from '@/components/admin/QuestionForm';
 
 export default function AdminQuestions() {
+    const {listQuestions, addQuestion, editQuestion, deleteQuestion} = useAdminQuestionsApi();
     const [questions, setQuestions] = useState<Question[]>([]);
     const [loading, setLoading] = useState(false);
     const [q, setQ] = useState('');
@@ -29,40 +30,36 @@ export default function AdminQuestions() {
         return p;
     }, [q, typeFilter, difficultyFilter]);
 
-    const fetchQuestions = async () => {
+    const fetchQuestions = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await axios.get('/api/admin/questions', {params});
-            setQuestions(res.data.questions || []);
+            const list = await listQuestions(params);
+            setQuestions(list);
         } finally {
             setLoading(false);
         }
-    };
+    }, [listQuestions, params]);
 
     useEffect(() => {
         fetchQuestions();
-    }, [params.q, params.type, params.difficulty]);
+    }, [params.q, params.type, params.difficulty, fetchQuestions]);
 
     const onAdd = async (data: QuestionFormData) => {
-        const res = await axios.post('/api/admin/questions', data, {headers: {'Content-Type': 'application/json'}});
-        if (res.status >= 200 && res.status < 300) {
-            setQuestions(prev => [res.data.question as Question, ...prev]);
-            setOpenForm(false);
-        }
+        const created = await addQuestion(data as unknown as QuestionPayload);
+        setQuestions(prev => [created as Question, ...prev]);
+        setOpenForm(false);
     };
 
     const onEdit = async (data: QuestionFormData) => {
         if (!editingQuestion?._id) return;
-        const res = await axios.put(`/api/admin/questions/${editingQuestion._id}`, data, {headers: {'Content-Type': 'application/json'}});
-        if (res.status >= 200 && res.status < 300) {
-            setQuestions(prev => prev.map(q => String(q._id) === String(editingQuestion._id) ? (res.data.question as Question) : q));
-            setOpenForm(false);
-        }
+        const updated = await editQuestion(String(editingQuestion._id), data as unknown as QuestionPayload);
+        setQuestions(prev => prev.map(q => String(q._id) === String(editingQuestion._id) ? (updated as Question) : q));
+        setOpenForm(false);
     };
 
     const onDelete = async (question: Question) => {
         if (!confirm(`Supprimer cette question ?`)) return;
-        await axios.delete(`/api/admin/questions/${question._id}`);
+        await deleteQuestion(String(question._id!));
         setQuestions(prev => prev.filter(q => String(q._id) !== String(question._id)));
     };
 
