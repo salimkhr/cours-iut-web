@@ -13,7 +13,7 @@ function AdminLink({
     return (
         <Link
             href={href}
-            className="flex flex-col items-center gap-2 rounded-xl p-4 hover:bg-gray-100 transition-colors shadow-sm"
+            className="flex flex-col items-center gap-2 rounded-xl p-4 hover:bg-gray-100 transition-colors shadow-sm border"
         >
             <Icon className="w-8 h-8"/>
             <span className="text-sm font-medium">{children}</span>
@@ -31,9 +31,6 @@ export default function Page() {
                 </AdminLink>
                 <AdminLink href="/admin/users" icon={User}>
                     Utilisateurs
-                </AdminLink>
-                <AdminLink href="/admin/questions" icon={CircleHelp}>
-                    Questions
                 </AdminLink>
                 <AdminLink href="/admin/quizzes" icon={CircleHelp}>
                     Quizz
