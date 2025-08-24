@@ -3,7 +3,6 @@ import Heading from "@/components/ui/Heading";
 import {contentImports} from '@/lib/contentImports';
 import {notFound} from "next/navigation";
 import {getModuleData} from "@/hook/getModuleData";
-import {generatePageMetadata} from "@/lib/generatePageMetadata";
 
 interface ContentPageProps {
     params: Promise<{
@@ -11,15 +10,6 @@ interface ContentPageProps {
         sectionSlug: string;
         contentSlug: string;
     }>;
-}
-
-export async function generateMetadata({params}: ContentPageProps) {
-    const {moduleSlug, sectionSlug} = await params;
-    const {currentModule, currentSection} = await getModuleData({
-        moduleSlug,
-        sectionSlug
-    });
-    return currentSection !== null ? generatePageMetadata({currentModule, currentSection}) : {};
 }
 
 export default async function Content({params}: ContentPageProps) {

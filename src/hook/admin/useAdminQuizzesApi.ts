@@ -49,5 +49,12 @@ export default function useAdminQuizzesApi() {
     await axios.delete(`/api/admin/quizzes/${id}`);
   }
 
-  return { listQuizzes, addQuiz, editQuiz, deleteQuiz, addQuestionToQuiz, editQuestionInQuiz };
+  async function createSession(quizId: string) {
+    const res = await axios.post(`/api/admin/quizzes/${quizId}/sessions`, {}, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return res.data.session as { _id: string; createdAt: string; participants: unknown[] };
+  }
+
+  return { listQuizzes, addQuiz, editQuiz, deleteQuiz, addQuestionToQuiz, editQuestionInQuiz, createSession };
 }

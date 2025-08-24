@@ -3,7 +3,6 @@ import React, {useEffect, useState} from "react";
 import Heading from "@/components/ui/Heading";
 import Quiz from "@/types/Quiz";
 import useAdminQuizzesApi from "@/hook/admin/useAdminQuizzesApi";
-import {QRCodeSVG} from "qrcode.react";
 
 
 export default function Page({params}: { params: Promise<{ id: string, sid: string }> }) {
@@ -27,14 +26,9 @@ export default function Page({params}: { params: Promise<{ id: string, sid: stri
 
     return (
         <div className={"flex flex-col items-center justify-center gap-4"}>
-            <Heading level={1}>Quizz : {quizz?.name}</Heading>
-            {quizz && (
-                <QRCodeSVG
-                    value={`${process.env.NEXT_PUBLIC_BASE_URL}/quizz/${quizz._id}/session/${sid}/join`}
-                    size={512}
-                    level="L"
-                />
-            )}
+            <Heading level={1}>{quizz?.name}</Heading>
+
+            
         </div>
 
     );

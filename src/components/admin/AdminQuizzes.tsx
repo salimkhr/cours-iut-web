@@ -14,9 +14,18 @@ import {Pencil, Play, Plus, Trash2} from "lucide-react";
 import QuizForm, {QuizFormData} from "@/components/admin/QuizForm";
 import QuestionForm, {QuestionFormData} from "@/components/admin/QuestionForm";
 import {QuestionPayload} from "@/hook/admin/useAdminQuestionsApi";
+import {useRouter} from "next/navigation";
 
 export default function AdminQuizzes() {
-    const {listQuizzes, addQuiz, editQuiz, deleteQuiz, addQuestionToQuiz, editQuestionInQuiz} = useAdminQuizzesApi();
+    const {
+        listQuizzes,
+        addQuiz,
+        editQuiz,
+        deleteQuiz,
+        addQuestionToQuiz,
+        editQuestionInQuiz,
+        createSession
+    } = useAdminQuizzesApi();
     const {listModules} = useAdminApi();
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);
     const [modules, setModules] = useState<Module[]>([]);
@@ -33,6 +42,8 @@ export default function AdminQuizzes() {
     const [managingQuiz, setManagingQuiz] = useState<Quiz | undefined>(undefined);
     const [manageOpen, setManageOpen] = useState(false);
     const [questionToEdit, setQuestionToEdit] = useState<Question | undefined>(undefined);
+
+    const router = useRouter();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -100,6 +111,19 @@ export default function AdminQuizzes() {
         setOpenQuestionForm(true);
     };
 
+    const OpenNewSession = async (z: Quiz) => {
+        const ok = confirm("Voulez-vous ouvrir une nouvelle session ?");
+        if (!ok || !z._id) return;
+        try {
+            const s = await createSession(String(z._id));
+            if (s && s._id) {
+                router.push(`/quizz/${z._id}/session/${s._id}`);
+            }
+        } catch (e) {
+            console.error("Erreur lors de la création de la session", e);
+        }
+    };
+
     const openManageQuestions = (z: Quiz) => {
         setManagingQuiz(z);
         setManageOpen(true);
@@ -157,8 +181,7 @@ export default function AdminQuizzes() {
                                     ?? 0}</Button></TableCell>
                                 <TableCell className="text-right space-x-2">
                                     <Button size="sm" variant="outline" className="text-green-600"
-                                            onClick={() => {
-                                            }}><Play
+                                            onClick={() => OpenNewSession(z)}><Play
                                         className="size-4"/></Button>
                                     <Button size="sm" variant="outline" onClick={() => openAddQuestion(z)}><Plus
                                         className="size-4"/></Button>
