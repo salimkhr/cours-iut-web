@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
+.nextjs__container_errors_desc {
+    word-spacing: 1em;
+}
+
 /* Variables CSS */
 :root {
     /* Couleurs principales par langage */

@@ -1,13 +1,13 @@
 'use client';
 
 import {createContext, useContext, useEffect, useState} from 'react'
-import axios from "axios";
 import {useRouter} from "next/navigation";
+import useAuthApi from "@/hook/useAuthApi";
 
 
 type AuthContextType = {
     isLoggedIn: boolean;
-    login: (login: string, password: string) => Promise<void>;
+    login: (login: string, password: string) => Promise<{ success?: boolean; error?: string }>;
     logout: () => void;
 };
 
@@ -23,21 +23,17 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
 
     const router = useRouter();
 
+    const { login: loginApi } = useAuthApi();
+
     const login = async (login: string, password: string) => {
-        return axios.post('/api/login',
-            {login, password},
-            {headers: {'Content-Type': 'application/json'}}
-        )
-            .then(response => {
-                const res = response.data;
-                if (res.success !== undefined) {
-                    setIsLoggedIn(true);
-                    router.push('/admin');
-                } else {
-                    throw new Error(res.error);
-                }
-                return res;
-            });
+        const res = await loginApi(login, password);
+        if (res.success !== undefined) {
+            setIsLoggedIn(true);
+            router.push('/admin');
+        } else {
+            throw new Error(res.error);
+        }
+        return res;
     };
 
     const logout = () => {

@@ -7,8 +7,8 @@ import {useEffect, useState} from "react";
 import updateSectionState from "@/hook/admin/updateSectionState";
 import EditSectionButton from "@/components/admin/EditSectionButton";
 import Module from "@/types/module";
-import axios from "axios";
 import {Section as SectionFrom} from "@/components/admin/SectionForm";
+import useAdminApi from "@/hook/admin/useAdminApi";
 
 interface AdminSectionProps {
     section: Section;
@@ -28,17 +28,11 @@ export default function AdminSection({
 
     const [currentSection, setCurrentSection] = useState<Section>(section)
 
+    const { editSection: editSectionApi } = useAdminApi();
+
     const editSection = async (updatedSection: SectionFrom) => {
-
-        const res = await axios.put(`/api/admin/${modData._id}/sections`, updatedSection, {
-            headers: {'Content-Type': 'application/json'},
-        });
-
-        setCurrentSection(res.data.section);
-
-        if (res.status < 200 || res.status >= 300) {
-            throw new Error('Erreur API');
-        }
+        const saved = await editSectionApi(modData._id as unknown as string, updatedSection);
+        setCurrentSection(saved);
     };
 
     const handleToggle = (

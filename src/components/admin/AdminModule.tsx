@@ -9,8 +9,8 @@ import AddSectionButton from "@/components/admin/AddSectionButton";
 import {cn} from "@/lib/utils";
 import Heading from "@/components/ui/Heading";
 import iconMap from "@/lib/iconMap";
-import axios from "axios";
 import {Section} from "@/components/admin/SectionForm";
+import useAdminApi from "@/hook/admin/useAdminApi";
 
 interface AdminModuleProps {
     module: Module;
@@ -21,17 +21,11 @@ export default function AdminModule({module}: AdminModuleProps) {
 
     const Icon = iconMap[modData.iconName] || BookOpen;
 
+    const { addSection: addSectionApi } = useAdminApi();
+
     // Exemple : fonction pour ajouter une section
     const addSection = async (section: Section) => {
-        const res = await axios.post(`/api/admin/${modData._id}/sections`, section, {
-            headers: {'Content-Type': 'application/json'},
-        });
-
-        if (res.status < 200 || res.status >= 300) {
-            throw new Error('Erreur API');
-        }
-        const {section: savedSection} = res.data;
-
+        const savedSection = await addSectionApi(modData._id as unknown as string, section);
         setModData(prev => ({
             ...prev,
             sections: [...prev.sections, savedSection]
