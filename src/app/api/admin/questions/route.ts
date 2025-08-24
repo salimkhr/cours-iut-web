@@ -53,7 +53,7 @@ export async function POST(request: Request) {
             if (!Array.isArray(body.choices) || body.choices.length < 2) {
                 return NextResponse.json({error: 'Au moins deux choix requis'}, {status: 400});
             }
-            if (!body.correctAnswer || !body.choices.some((choice) => choice.value === body.correctAnswer)) {
+            if (!body.correctAnswer || !body.choices.includes(body.correctAnswer)) {
                 return NextResponse.json({error: 'La réponse correcte doit faire partie des choix'}, {status: 400});
             }
         }

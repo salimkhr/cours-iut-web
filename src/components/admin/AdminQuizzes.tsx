@@ -10,7 +10,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
-import {Pencil, Plus, Trash2} from "lucide-react";
+import {Pencil, Play, Plus, Trash2} from "lucide-react";
 import QuizForm, {QuizFormData} from "@/components/admin/QuizForm";
 import QuestionForm, {QuestionFormData} from "@/components/admin/QuestionForm";
 import {QuestionPayload} from "@/hook/admin/useAdminQuestionsApi";
@@ -60,7 +60,7 @@ export default function AdminQuizzes() {
                 console.error(e);
             }
         })();
-        //listModules est volontairement pas ajouté au dependence  
+        //listModules est volontairement pas ajouté au dependence
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -156,6 +156,10 @@ export default function AdminQuizzes() {
                                                     onClick={() => openManageQuestions(z)}>{z.questions?.length
                                     ?? 0}</Button></TableCell>
                                 <TableCell className="text-right space-x-2">
+                                    <Button size="sm" variant="outline" className="text-green-600"
+                                            onClick={() => {
+                                            }}><Play
+                                        className="size-4"/></Button>
                                     <Button size="sm" variant="outline" onClick={() => openAddQuestion(z)}><Plus
                                         className="size-4"/></Button>
                                     <Button size="sm" variant="outline" onClick={() => openEdit(z)}><Pencil

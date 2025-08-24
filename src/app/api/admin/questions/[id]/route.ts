@@ -13,7 +13,7 @@ export async function PUT(request: Request, {params}: { params: Promise<{ id: st
             if (!Array.isArray(updates.choices) || updates.choices.length < 2) {
                 return NextResponse.json({error: 'Au moins deux choix requis'}, {status: 400});
             }
-            if (updates.correctAnswer && !updates.choices.some((choice) => choice.value === updates.correctAnswer)) {
+            if (updates.correctAnswer && !updates.choices.includes(updates.correctAnswer)) {
                 return NextResponse.json({error: 'La réponse correcte doit faire partie des choix'}, {status: 400});
             }
         }

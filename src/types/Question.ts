@@ -7,7 +7,7 @@ export default interface Question {
     _id?: string | ObjectId;
     text: string; // Markdown
     type: QuestionType;
-    choices?: { value: string }[]; // only for multiple-choice
+    choices?: string[]; // only for multiple-choice
     correctAnswer: string; // for true-false: "true" | "false"; for multiple-choice: one of choices; for short-answer: free text
     points: number;
     timeLimit?: number; // seconds

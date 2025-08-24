@@ -32,7 +32,7 @@ export default async function Content({params}: ContentPageProps) {
 
     if (currentContent === null) notFound();
     if (currentSection === null) notFound();
-    
+
     const importFunc = contentImports?.[moduleSlug]?.[sectionSlug]?.[contentSlug.charAt(0).toUpperCase() + contentSlug.slice(1)] ?? [];
     if (!importFunc) notFound();
 
@@ -47,7 +47,7 @@ export default async function Content({params}: ContentPageProps) {
                 currentContent={currentContent}
             />
 
-            <div className={`lg:mx-10 header-${currentModule.path} py-20 mb-12 lg:mb-6`}>
+            <div className={`lg:mx-10 header header-${currentModule.path} py-20 mb-12 lg:mb-6`}>
                 <Heading level={1}>
                     {currentSection.order}. {currentSection.title}
                 </Heading>

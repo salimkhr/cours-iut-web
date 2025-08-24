@@ -1,11 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
-.nextjs__container_errors_desc {
-    word-spacing: 1em;
-}
-
 /* Variables CSS */
 :root {
     /* Couleurs principales par langage */
@@ -21,8 +16,8 @@
     --animation-duration-long: 3s;
 }
 
-/* Réglage global */
-* {
+
+h1, h2, h3, h4, h5, h6, .header, .text-sm {
     word-spacing: -0.3em;
 }
 
