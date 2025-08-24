@@ -3,24 +3,9 @@
 import {useState} from 'react';
 import AdminModule from "@/components/admin/AdminModule";
 import AddModuleButton from "./AddModuleButton";
-import Section from "@/types/Section";
 import {Accordion} from "@/components/ui/accordion";
-import Coefficient from "@/types/Coefficient";
-import Instructor from "@/types/Instructor";
-import axios from "axios";
-
-interface Module {
-    _id: string;
-    title: string;
-    path: string;
-    iconName: string;
-    description?: string;
-    sections: Section[];
-    associatedSae: string[];
-    coefficients?: Coefficient[];
-    manager?: Instructor;
-    instructors?: Instructor[];
-}
+import useAdminApi from "@/hook/admin/useAdminApi";
+import Module from "@/types/module";
 
 interface ModulesListProps {
     initialModules: Module[];
@@ -28,15 +13,11 @@ interface ModulesListProps {
 
 export default function ModulesList({initialModules}: ModulesListProps) {
     const [modules, setModules] = useState(initialModules);
+    const { addModule } = useAdminApi();
+
     const handleAddModule = async (newMod: Omit<Module, '_id'>) => {
         try {
-            const res = await axios.post('/api/admin/modules', newMod, {
-                headers: {'Content-Type': 'application/json'},
-            });
-
-            // Axios parse automatiquement la réponse JSON dans res.data
-            const createdModule: Module = res.data;
-
+            const createdModule = await addModule(newMod as unknown as Omit<Module, '_id'>);
             setModules(prev => [...prev, createdModule]);
         } catch (error) {
             console.error('Erreur ajout module', error);
