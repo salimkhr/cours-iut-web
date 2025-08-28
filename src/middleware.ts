@@ -3,14 +3,16 @@ import {verifyToken} from "@/lib/token";
 import {cookies} from "next/headers";
 
 export async function middleware(req: NextRequest) {
+
+    const isDev = process.env.NODE_ENV === 'development';
+
     // Vérification CSRF sur toutes les requêtes non GET vers /api/*
-    if (req.nextUrl.pathname.startsWith('/api') && req.method !== 'GET') {
+    if (req.nextUrl.pathname.startsWith('/api') && req.method !== 'GET' && !isDev) {
         const cookieToken = req.cookies.get('csrfToken')?.value;
         const headerToken = req.headers.get('x-csrf-token');
 
         if (!cookieToken || !headerToken || cookieToken !== headerToken) {
-            return NextResponse.json({error: cookieToken ?? 'null'}, {status: 403});
-            // return NextResponse.json({error: 'Invalid CSRF token'}, {status: 403});
+            return NextResponse.json({error: 'Invalid CSRF token'}, {status: 403});
         }
     }
 
