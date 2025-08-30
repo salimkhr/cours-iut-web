@@ -48,6 +48,8 @@ export const contentImports: ContentImportsType = {
       'TP': () => import('@/cours/php/1-introduction-au-php/TP'),
     },
     '2-fonction-tableaux': {
+      'Cours': () => import('@/cours/php/2-fonction-tableaux/Cours'),
+      'TP': () => import('@/cours/php/2-fonction-tableaux/TP'),
     },
     '3-le-mvc': {
       'Cours': () => import('@/cours/php/3-le-mvc/Cours'),
