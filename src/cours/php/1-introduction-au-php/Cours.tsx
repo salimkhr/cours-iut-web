@@ -1,5 +1,4 @@
 import Heading from "@/components/ui/Heading";
-import Box from "@/components/ui/Box";
 import {List, ListItem} from "@/components/ui/List";
 import Text from "@/components/ui/Text";
 import ImageCard from "@/components/Cards/ImageCard";
@@ -9,9 +8,9 @@ import Code from "@/components/ui/Code";
 
 export default function Cours() {
     return (
-        <section>
+        <article>
             {/* Contenu du cours */}
-            <Box>
+            <section>
                 <Heading level={2}>A- Protocole HTTP, URL, et architecture des applications web</Heading>
 
                 {/* Introduction au protocole HTTP */}
@@ -99,11 +98,11 @@ export default function Cours() {
                     En fonction de la méthode utilisée, des données peuvent être ajoutées à la requête, soit dans
                     l&apos;URL (pour GET), soit dans le corps de la requête (pour POST / PUT).
                 </Text>
-            </Box>
+            </section>
 
             {/* Documents PHP */
             }
-            <Box>
+            <section>
                 <Heading level={2}>B- Présentation de PHP</Heading>
                 <Text> PHP est un langage de script associé à HTML. Son but est de générer du contenu HTML à partir de
                     données.</Text>
@@ -124,9 +123,9 @@ $isStudent = true;          // Booléen
                     caractères, <Code>$age</Code> est un entier, <Code>$price</Code> est un flottant,
                     et <Code>$isStudent</Code> est un booléen.
                 </Text>
-            </Box>
+            </section>
 
-            <Box>
+            <section>
                 <Heading level={3}>2. Affichage de Texte</Heading>
                 <CodeCard language="php">
                     {`<?php
@@ -136,9 +135,9 @@ echo "Hello, World!";
                 <Text>
                     Pour afficher du texte, utilisez les fonctions <Code>echo</Code> ou <Code>print</Code>.
                 </Text>
-            </Box>
+            </section>
 
-            <Box>
+            <section>
                 <Heading level={3}>3. Les structures de contrôle</Heading>
                 <Heading level={4}>Conditionnel</Heading>
                 <Heading level={5}>Conditions avec <Code>if</Code> :</Heading>
@@ -307,8 +306,8 @@ foreach ($fruits as $fruit => $couleur) {
 }
 ?>`}
                 </CodeCard>
-            </Box>
-            <Box>
+            </section>
+            <section>
                 <Heading level={2}>D- Programmation Orienté Objet</Heading>
 
                 <Heading level={3}>1. Définition d&lsquo;une classe</Heading>
@@ -469,8 +468,8 @@ class Employee extends Person {
                     relation hiérarchique. Les Traits permettent la réutilisation du code dans différentes classes sans
                     avoir besoin d&lsquo;utiliser l&lsquo;héritage.
                 </Text>
-            </Box>
-        </section>
+            </section>
+        </article>
     )
 
 }

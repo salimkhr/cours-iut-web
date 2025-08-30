@@ -1,6 +1,5 @@
 import Heading from "@/components/ui/Heading";
 import Code from "@/components/ui/Code";
-import Box from "@/components/ui/Box";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import CodeCard from "@/components/Cards/CodeCard";
 import {List, ListItem} from "@/components/ui/List";
@@ -930,8 +929,8 @@ const minAmount = Math.min(...amounts);
 
 export default function TP() {
     return (
-        <section>
-            <Box>
+        <article>
+            <section>
                 <Heading level={2}>A- Rappel de HTML</Heading>
                 <Heading level={3}>Woody</Heading>
                 <Text>
@@ -1010,9 +1009,9 @@ export default function TP() {
                 </Table>
 
                 <small>Source : ChatGPT (les montants ne sont pas factuels)</small>
-            </Box>
+            </section>
 
-            <Box>
+            <section>
                 <Heading level={2}>B- Hello World en PHP</Heading>
                 <Text>
                     Dans un fichier <Code>~/public_html/TP1/helloWorld.php</Code>, écrire une page contenant :
@@ -1047,9 +1046,9 @@ export default function TP() {
                         pour afficher le montant avec des espaces comme séparateurs de milliers.
                     </ListItem>
                 </List>
-            </Box>
+            </section>
 
-            <Box>
+            <section>
                 <Heading level={2}>C- Le debug</Heading>
                 <Text>
                     Dans un fichier <Code>~/public_html/TP1/debug.php</Code>, écrire une page contenant :
@@ -1073,9 +1072,9 @@ var_dump($age, $price, $isStudent, $lastname, $firstname);
                 </List>
                 <Text>Utiliser les fonctions <Code>var_dump()</Code> et <Code>die()</Code> pour ajouter des
                     traces dans le code afin d&apos;aider au débogage.</Text>
-            </Box>
+            </section>
 
-            <Box>
+            <section>
                 <Heading level={2}>D- Introduction aux objets</Heading>
 
                 <Text>Dans un fichier <Code>~/public_html/TP1/streamer.php</Code>, vous devez créer une
@@ -1140,9 +1139,9 @@ echo $streamer1;
                     </ListItem>
                 </List>
 
-            </Box>
+            </section>
 
-            <Box>
+            <section>
                 <Heading level={2}>E- Utilisation des objets dans le tableau</Heading>
                 <Text>Dans un fichier <Code>~/public_html/TP1/zevent.php</Code>, vous allez maintenant utiliser votre
                     classe Streamer :</Text>
@@ -1220,8 +1219,8 @@ ${streamersData.map((streamer) => `\tnew Streamer("${streamer.name}","${streamer
                         </TableRow>
                     </TableBody>
                 </Table>
-            </Box>
-            <Box>
+            </section>
+            <section>
                 <Heading level={2}>F- Héritage - Streamers Remote vs Physiques</Heading>
                 <List ordered>
                     <ListItem><strong>Class mére :</strong> Modifiez la class <Code>Streamer</Code> pour y ajouter la
@@ -1248,8 +1247,7 @@ ${streamersData.map((streamer) => `\tnew Streamer("${streamer.name}","${streamer
 ]`}
                     </CodeCard>
                 </List>
-            </Box>
-
-        </section>
+            </section>
+        </article>
     );
 }
