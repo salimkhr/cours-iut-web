@@ -75,6 +75,12 @@ export default function Cours() {
                             <TableCell>:80</TableCell>
                             <TableCell>pedago/info2/PHP/s1/s1.html</TableCell>
                         </TableRow>
+                        <TableRow>
+                            <TableCell>https://</TableCell>
+                            <TableCell>salimkhraimeche.dev</TableCell>
+                            <TableCell></TableCell>
+                            <TableCell>/php/</TableCell>
+                        </TableRow>
                     </TableBody>
                 </Table>
 
