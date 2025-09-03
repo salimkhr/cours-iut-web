@@ -116,10 +116,10 @@ export default function Cours() {
                 <Heading level={3}>1. Syntaxe de base</Heading>
                 <CodeCard language="php">
                     {`<?php
-$message = "Hello, World!"; // Chaîne de caractères
-$age = 25;                  // Entier
-$price = 19.99;             // Float
-$isStudent = true;          // Booléen
+    $message = "Hello, World!"; // Chaîne de caractères
+    $age = 25;                  // Entier
+    $price = 19.99;             // Float
+    $isStudent = true;          // Booléen
 ?>`}
                 </CodeCard>
                 <Text>
@@ -149,14 +149,14 @@ echo "Hello, World!";
                 <Heading level={5}>Conditions avec <Code>if</Code> :</Heading>
                 <CodeCard language="php">
                     {`<?php
-$humeur = 'triste';
-if ($humeur === 'heureux') {
-    echo 'Je suis de bonne humeur';
-} elseif ($humeur === 'triste') {
-    echo 'bof!!';
-} else {
-    echo $humeur;
-}
+    $humeur = 'triste';
+    if ($humeur === 'heureux') {
+        echo 'Je suis de bonne humeur';
+    } elseif ($humeur === 'triste') {
+        echo 'bof!!';
+    } else {
+        echo $humeur;
+    }
 ?>`}
                 </CodeCard>
 
@@ -187,17 +187,17 @@ if ($humeur === 'heureux') {
 
                 <CodeCard language="php">
                     {`<?php
-if (5 == '5') {
-    echo "5 == '5' : vrai";
-} else {
-    echo "5 == '5' : faux";
-}
-
-if (5 === '5') {
-    echo "5 === '5' : vrai";
-} else {
-    echo "5 === '5' : faux";
-}
+    if (5 == '5') {
+        echo "5 == '5' : vrai";
+    } else {
+        echo "5 == '5' : faux";
+    }
+    
+    if (5 === '5') {
+        echo "5 === '5' : vrai";
+    } else {
+        echo "5 === '5' : faux";
+    }
 ?>`}
                 </CodeCard>
 
@@ -220,29 +220,29 @@ echo $humeur !== 'heureux' ? 'Je suis de bonne humeur' : 'bof!!';
                 <Heading level={5}>Conditions avec <Code>switch</Code> :</Heading>
                 <CodeCard language="php">
                     {`<?php
-$humeur = 'triste';
-switch($humeur) {
-    case 'heureux':
-        echo 'Je suis de bonne humeur';
-        break;
-    case 'triste':
-        echo 'bof!!';
-        break;
-    default:
-        echo $humeur;
-}
+    $humeur = 'triste';
+    switch($humeur) {
+        case 'heureux':
+            echo 'Je suis de bonne humeur';
+            break;
+        case 'triste':
+            echo 'bof!!';
+            break;
+        default:
+            echo $humeur;
+    }
 ?>`}
                 </CodeCard>
 
                 <Heading level={5}>Conditions avec <Code>match</Code> :</Heading>
                 <CodeCard language="php">
                     {`<?php
-$humeur = 'triste';
-echo match ($humeur) {
-    'heureux' => 'Je suis de bonne humeur',
-    'triste' => 'bof!!',
-    default => $humeur,
-};
+    $humeur = 'triste';
+    echo match ($humeur) {
+        'heureux' => 'Je suis de bonne humeur',
+        'triste' => 'bof!!',
+        default => $humeur,
+    };
 ?>`}
                 </CodeCard>
 
@@ -252,64 +252,64 @@ echo match ($humeur) {
                 <Heading level={5}>La boucle <Code>while</Code> :</Heading>
                 <CodeCard language="php">
                     {`<?php
-$compteur = 1;
-while($compteur < 12) {
-    echo "compteur: $compteur <br>\\n";
-    $compteur++;
-}
+    $compteur = 1;
+    while($compteur < 12) {
+        echo "compteur: $compteur <br>\\n";
+        $compteur++;
+    }
 ?>`}
                 </CodeCard>
 
                 <Heading level={5}>La boucle <Code>do ... while</Code> :</Heading>
                 <CodeCard language="php">
                     {`<?php
-$num = 1;
-do {
-    echo "Nombre d&apos;exécution: $num <br>\\n";
-    $num++;
-} while($num > 200 && $num < 400);
+    $num = 1;
+    do {
+        echo "Nombre d&apos;exécution: $num <br>\\n";
+        $num++;
+    } while($num > 200 && $num < 400);
 ?>`}
                 </CodeCard>
 
                 <Heading level={5}>La boucle <Code>for</Code> :</Heading>
                 <CodeCard language="php">
                     {`<?php
-for($compteur = 1; $compteur < 12; $compteur++) {
-    echo "compteur: $compteur <br>\\n";
-}
+    for($compteur = 1; $compteur < 12; $compteur++) {
+        echo "compteur: $compteur <br>\\n";
+    }
 ?>`}
                 </CodeCard>
 
                 <Heading level={5}>La boucle <Code>foreach</Code> :</Heading>
                 <CodeCard language="php">
                     {`<?php
-// Définition d'un tableau de valeurs
-$fruits = array("pomme", "banane", "orange");
+    // Définition d'un tableau de valeurs
+    $fruits = array("pomme", "banane", "orange");
 
-// Utilisation de foreach pour parcourir le tableau
-foreach ($fruits as $fruit) {
-    echo 'J\\'aime les '.$fruit.'<br>';
-}
-
-/*---------------------------------------*/
-
-// Définition d'un tableau associatif
-$fruits = array(
-    "pomme" => "rouge",
-    "banane" => "jaune",
-    "orange" => "orange"
-);
-
-// Utilisation de foreach pour parcourir le tableau
-
-foreach ($fruits as $couleur) {
-    echo 'J\\'aime les fruits '.$couleur.'<br/>';
-}
-
-// Utilisation de foreach pour parcourir le tableau avec les clés
-foreach ($fruits as $fruit => $couleur) {
-    echo 'Le fruit '.$fruit.' est de couleur '.$couleur.'<br/>';
-}
+    // Utilisation de foreach pour parcourir le tableau
+    foreach ($fruits as $fruit) {
+        echo 'J\\'aime les '.$fruit.'<br>';
+    }
+    
+    /*---------------------------------------*/
+    
+    // Définition d'un tableau associatif
+    $fruits = array(
+        "pomme" => "rouge",
+        "banane" => "jaune",
+        "orange" => "orange"
+    );
+    
+    // Utilisation de foreach pour parcourir le tableau
+    
+    foreach ($fruits as $couleur) {
+        echo 'J\\'aime les fruits '.$couleur.'<br/>';
+    }
+    
+    // Utilisation de foreach pour parcourir le tableau avec les clés
+    foreach ($fruits as $fruit => $couleur) {
+        echo 'Le fruit '.$fruit.' est de couleur '.$couleur.'<br/>';
+    }
 ?>`}
                 </CodeCard>
             </section>
@@ -389,8 +389,8 @@ class Person {
                 </Text>
                 <CodeCard language="php">
                     {`<?php
-$person1 = new Person('Alice', 30);
-echo $person1; // Outputs "Name: Alice, Age: 30"
+    $person1 = new Person('Alice', 30);
+    echo $person1; // Outputs "Name: Alice, Age: 30"
 ?>`}
                 </CodeCard>
                 <Text>
