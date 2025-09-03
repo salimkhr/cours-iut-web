@@ -314,7 +314,7 @@ echo $humeur !== 'heureux' ? 'Je suis de bonne humeur' : 'bof!!';
                 </CodeCard>
             </section>
             <section>
-                <Heading level={2}>D- Programmation Orienté Objet</Heading>
+                <Heading level={2}>C- Programmation Orienté Objet</Heading>
 
                 <Heading level={3}>1. Définition d&lsquo;une classe</Heading>
                 <Text>
