@@ -85,7 +85,7 @@ export default function Cours() {
                 </Table>
 
                 {/* Requête HTTP */}
-                <Heading level={4}>
+                <Heading level={3}>
                     2.2 Requête HTTP
                 </Heading>
                 <Text>
