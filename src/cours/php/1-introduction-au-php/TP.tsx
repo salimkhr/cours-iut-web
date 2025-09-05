@@ -1016,12 +1016,24 @@ export default function TP() {
                 <Text>
                     Dans un fichier <Code>~/public_html/TP1/helloWorld.php</Code>, écrire une page contenant :
                 </Text>
-                <CodeCard language="php">
-                    {`<?php
-  echo 'Hello World!';
-  echo '<br/>';
-  echo 'Nous sommes le ' . date('d/m/Y');
-?>`}
+                <CodeCard language="php" filename="helloWorld.php">
+                    {`<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hello World PHP</title>
+</head>
+<body>
+    <h1>Ma première page PHP</h1>
+    
+    <?php
+        echo "<p>Hello World!</p>";
+        echo "<p>Nous sommes le " . date('d/m/Y') . "</p>";
+    ?>
+    
+</body>
+</html>`}
                 </CodeCard>
                 <List ordered>
                     <ListItem>Déterminer à quelle heure correspond la date affichée : celle du serveur ou celle du
@@ -1041,8 +1053,7 @@ export default function TP() {
                     <ListItem>
                         <strong>Formatage :</strong> Utiliser la fonction <Link
                         href="https://www.php.net/manual/fr/function.number-format.php" target="_blank"><Code>{`number_format($amount,
-                        0, ',', '
-                        ')`}</Code></Link>
+                        0, ',', ' ')`}</Code></Link>
                         pour afficher le montant avec des espaces comme séparateurs de milliers.
                     </ListItem>
                 </List>
@@ -1109,7 +1120,7 @@ echo $streamer1;
                         qui retourne le montant formaté avec des espaces comme séparateurs de milliers et le symbole €.
                         Utilisez la fonction <Link
                         href="https://www.php.net/manual/fr/function.number-format.php" target="_blank"><Code>
-                        {`number_format($amount,0,',', '')`}</Code></Link>.
+                        {`number_format($amount,0,',', ' ')`}</Code></Link>.
                     </ListItem>
                     <ListItem>
                         <strong>Méthode de comparaison :</strong> Créez une
