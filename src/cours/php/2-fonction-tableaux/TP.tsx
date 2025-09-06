@@ -1,7 +1,6 @@
 import Heading from "@/components/ui/Heading";
 import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
-import Text from "@/components/ui/Text"
 import CodeCard from "@/components/Cards/CodeCard";
 
 const teams = [
@@ -112,8 +111,8 @@ export default function TP() {
                     <ListItem>
                         Avec une boucle for, affiche tous les pilotes dans une liste {`<ul> / <li>`} :
                         <List>
-                            <ListItem>Pilote 0 : Squeezie </ListItem>
-                            <ListItem>Pilote 1 : Amine </ListItem>
+                            <ListItem>Pilote 1 : Squeezie </ListItem>
+                            <ListItem>Pilote 2 : Amine </ListItem>
                         </List>
                     </ListItem>
                     <ListItem>
@@ -135,7 +134,7 @@ export default function TP() {
                 <Heading level={2}>B- Tableau associatif</Heading>
                 <List ordered>
                     <ListItem>
-                        Dans un fichier <Code>2_equipe.php</Code>, crée un tableau <Code>$teams</Code> contenant les équipes du GP Explorer :
+                        Dans un fichier <Code>2_equipe.php</Code>, crée un tableau associatif <Code>$teams</Code> contenant les équipes du GP Explorer :
                         ({teams.flatMap(t => t.members.flatMap(m => `${m.name} : ${t.team}`)).join('), (')})
                     </ListItem>
 
@@ -269,18 +268,79 @@ export default function TP() {
 
             <section>
                 <Heading level={2}>F- Les fonctions avec paramètre par défaut</Heading>
-                <Text>
-                    Écris une fonction <Code>simulateRace($laps = 3)</Code> qui simule une course
-                    en utilisant la liste des pilotes générée par <Code>ExtractDriverName()</Code>.
-                    Pour chaque tour, utilise <Code>recordLap()</Code> afin d’ajouter un temps aléatoire
-                    à chaque pilote.</Text>
-                <Text>
-                    Utiliser la fonction showAllDrivers pour afficher le résultat de la course
-                </Text>
+                <Heading level={3}>1. Gestion de la course</Heading>
+                <List ordered>
+                    <ListItem>
+                        Écris une fonction <Code>simulateRace($laps = 3)</Code> qui simule une course
+                        en utilisant la liste des pilotes générée par <Code>ExtractDriverName()</Code>.
+                        Pour chaque tour, utilise <Code>recordLap()</Code> afin d’ajouter un temps aléatoire
+                        à chaque pilote. Utiliser ensuite la fonction <Code>showAllDrivers()</Code> pour afficher le résultat de la course.
+                    </ListItem>
+                </List>
+                <Heading level={3}>2. Gestion des incidents</Heading>
+                <List ordered>
+
+                    <ListItem>
+                        Crée une fonction <Code>giveWarning(string $driverName, string $reason = &apos;Conduite dangereuse&apos;)</Code>
+                        qui enregistre un avertissement pour un pilote.
+                        Exemples d’utilisation :
+                        <CodeCard language="php">
+                            {`giveWarning('Squeezie');
+// Avertissement : "Conduite dangereuse"
+
+giveWarning('Maghla', 'Non-respect du drapeau jaune');
+// Avertissement : "Non-respect du drapeau jaune"`}
+                        </CodeCard>
+                    </ListItem>
+
+                    <ListItem>
+                        Crée une fonction <Code>addPenalty(string $driverName, int $seconds = 5, string $reason = &apos;Coupe de virage&apos;)</Code>
+                        qui ajoute une pénalité à un pilote.
+                        Cette fonction doit aussi appeler <Code>giveWarning()</Code> pour que chaque pénalité génère automatiquement un avertissement.
+                        Exemples d’utilisation :
+                        <CodeCard language="php">
+                            {`addPenalty('Amine'); 
+// +5 secondes pour "Coupe de virage" + Avertissement
+
+addPenalty('Mastu', 10); 
+// +10 secondes pour "Coupe de virage" + Avertissement`}
+                        </CodeCard>
+                    </ListItem>
+
+                    <ListItem>
+                        Crée une fonction <Code>blackFlag(string $driverName, string $reason = &apos;Comportement dangereux&apos;)</Code>
+                        qui disqualifie un pilote.
+                        Exemples d’utilisation :
+                        <CodeCard language="php">
+                            {`blackFlag('Anyme'); 
+// Disqualifié pour "Comportement dangereux"
+
+blackFlag('Billy', reason: 'Collision volontaire'); 
+// Disqualifié pour "Collision volontaire"`}
+                        </CodeCard>
+                    </ListItem>
+
+                    <ListItem>
+                        Dans la fonction <Code>recordLap()</Code>, ajoute le code suivant après l’enregistrement du temps de tour pour simuler des incidents de course.
+                        <CodeCard language="php">
+                            {`// Simulation d’incidents aléatoires
+$rand = rand(1, 100);
+
+match (true) {
+    $rand <= 10 => addPenalty($driverName, 5,'Excès de vitesse dans la voie des stands'),
+    $rand <= 15 => addPenalty($driverName, 10,'Coupe de virage'),
+    $rand <= 20 => giveWarning($driverName, 'Dépassement dangereux'),
+    $rand === 99 => blackFlag($driverName, 'Collision volontaire'),
+    default => null, // aucun incident
+};`}
+                        </CodeCard>
+                        modifie l&apos; appel a addPenalty pour faire en sorte ce soit la pénalité par défaut qui soit utilisé en ca d&apos;excès de vitesse dans la voie des stands
+                    </ListItem>
+                </List>
             </section>
 
             <section>
-                <Heading level={2}>G- Les générateurs (optionnel)</Heading>
+                <Heading level={2}>H- Les générateurs (optionnel)</Heading>
                 <List ordered>
                     <ListItem>
                         Crée une fonction générateur <Code>generateDrivers()</Code> qui utilise
