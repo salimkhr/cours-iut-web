@@ -10,8 +10,8 @@ export default function Cours() {
             <section>
                 <Heading level={2}>A - Les tableaux indexés</Heading>
                 <Text>
-                    Un tableau indexé est une collection ordonnée d'éléments identifiés par un <strong>indice numérique</strong>
-                    commençant toujours à <Code>0</Code>. C'est la structure de données la plus simple pour stocker
+                    Un tableau indexé est une collection ordonnée d&apos;éléments identifiés par un <strong>indice numérique</strong>
+                    commençant toujours à <Code>0</Code>. C&apos;est la structure de données la plus simple pour stocker
                     plusieurs valeurs sous un seul nom de variable.
                 </Text>
 
@@ -159,7 +159,7 @@ arsort($notes);  // Tri par valeurs décroissant
             <section>
                 <Heading level={2}>C - Les tableaux multidimensionnels</Heading>
                 <Text>
-                    Un tableau multidimensionnel est un tableau qui contient d'autres tableaux comme éléments.
+                    Un tableau multidimensionnel est un tableau qui contient d&apos;autres tableaux comme éléments.
                     Cette structure permet de représenter des données complexes et hiérarchiques.
                 </Text>
 
@@ -237,7 +237,7 @@ count($equipes, COUNT_RECURSIVE); // Compte tous les éléments
                 <Heading level={2}>D - Les fonctions</Heading>
                 <Text>
                     Depuis PHP 7, il est possible de <strong>typer les paramètres</strong> et le <strong>type de retour</strong>
-                    d'une fonction. Cela permet d'éviter des erreurs et de rendre le code plus lisible et maintenable.
+                    d&apos;une fonction. Cela permet d&apos;éviter des erreurs et de rendre le code plus lisible et maintenable.
                 </Text>
 
                 <Heading level={3}>Syntaxe de base et typage</Heading>
@@ -403,18 +403,18 @@ echo $calc->send('* 3');    // 15
                 <Heading level={2}>F - Les chaînes de caractères</Heading>
                 <Text>
                     En PHP, les chaînes peuvent être déclarées de plusieurs façons, chacune ayant ses spécificités
-                    en termes d'interprétation des variables et des caractères spéciaux.
+                    en termes d&apos;interprétation des variables et des caractères spéciaux.
                 </Text>
 
                 <Heading level={3}>Types de chaînes et syntaxes</Heading>
                 <List>
                     <ListItem>
-                        <strong>Simple quotes ('')</strong> : le contenu est pris littéralement.
+                        <strong>Simple quotes (&apos;&apos;)</strong> : le contenu est pris littéralement.
                         Les variables ne sont <u>pas interprétées</u>.
                     </ListItem>
                     <ListItem>
-                        <strong>Double quotes ("")</strong> : les variables sont <u>interpolées</u>
-                        et certains caractères d'échappement reconnus.
+                        <strong>Double quotes (&quot;&quot;)</strong> : les variables sont <u>interpolées</u>
+                        et certains caractères d&apos;échappement reconnus.
                     </ListItem>
                     <ListItem>
                         <strong>Heredoc</strong> : texte multiligne avec interpolation de variables.
