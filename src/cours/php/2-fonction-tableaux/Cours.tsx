@@ -359,44 +359,6 @@ for ($i = 0; $i < 10; $i++) {
 }
 ?>`}
                 </CodeCard>
-
-                <Heading level={3}>Générateurs avancés</Heading>
-                <CodeCard language="php">
-                    {`<?php
-// yield from (PHP 7+) - Délégation de générateurs
-function nombres1a5(): Generator {
-    yield from range(1, 5);
-}
-
-function nombres6a10(): Generator {
-    yield from range(6, 10);
-}
-
-function tousLesNombres(): Generator {
-    yield from nombres1a5();
-    yield from nombres6a10();
-}
-
-// Générateur bidirectionnel
-function calculatrice(): Generator {
-    $resultat = 0;
-    
-    while (true) {
-        $operation = yield $resultat;
-        
-        if ($operation) {
-            eval('$resultat = $resultat ' . $operation . ';');
-        }
-    }
-}
-
-// Utilisation bidirectionnelle
-$calc = calculatrice();
-echo $calc->current();      // 0
-echo $calc->send('+ 5');    // 5
-echo $calc->send('* 3');    // 15
-?>`}
-                </CodeCard>
             </section>
 
             <section>
