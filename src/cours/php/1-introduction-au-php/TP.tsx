@@ -1232,7 +1232,7 @@ ${streamersData.map((streamer) => `\tnew Streamer("${streamer.name}","${streamer
                 </Table>
             </section>
             <section>
-                <Heading level={2}>F- Héritage - Streamers Remote vs Physiques</Heading>
+                <Heading level={2}>F- Héritage - Streamers Remote vs Physiques (optionnel)</Heading>
                 <List ordered>
                     <ListItem><strong>Class mére :</strong> Modifiez la class <Code>Streamer</Code> pour y ajouter la
                         méthode

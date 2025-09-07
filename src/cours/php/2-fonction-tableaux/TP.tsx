@@ -94,7 +94,55 @@ export default function TP() {
     return (
         <article>
             <section>
-                <Heading level={2}>A- Tableau indexé</Heading>
+                <Heading level={2}>A- Les Strings</Heading>
+                <List ordered>
+                    <ListItem>
+                        Crée un fichier <Code>0_strings.php</Code> et déclare deux variables :
+                        <Code>$pilote</Code> valant &quot;Amine&quot; et <Code>$equipe</Code> valant &quot;Durex&quot;.
+                    </ListItem>
+
+                    <ListItem>
+                        Affiche une phrase avec des <strong>doubles quotes</strong> pour dire :
+                        &quot;Le pilote Amine roule pour Durex&quot;.
+                        → Que remarques-tu concernant l&apos;interprétation des variables ?
+                    </ListItem>
+
+                    <ListItem>
+                        Refais la même phrase avec des <strong>simples quotes</strong>.
+                        → Quelle différence constates-tu cette fois ?
+                    </ListItem>
+
+                    <ListItem>
+                        Le speaker de la course veut crier le nom du pilote.
+                        Affiche <Code>$pilote</Code> en majuscules.
+                    </ListItem>
+
+                    <ListItem>
+                        L&apos;écran d&apos;affichage ne peut afficher que 3 caractères pour le nom de l&apos;équipe.
+                        Affiche uniquement les 3 premières lettres de <Code>$equipe</Code>.
+                    </ListItem>
+
+                    <ListItem>
+                        Le message d&apos;encouragement doit apparaître sur deux lignes :
+                        - Ligne 1 : &quot;Amine roule pour Durex&quot;
+                        - Ligne 2 : &quot;Bonne course !&quot;
+                        Utilise <Code>\n</Code> pour le retour à la ligne.
+                    </ListItem>
+
+                    <ListItem>
+                        Affiche le nom du pilote et son équipe séparés par une tabulation (\<Code>\t</Code>) :
+                        &quot;Amine&nbsp;&nbsp;&nbsp;&nbsp;Durex&quot;.
+                    </ListItem>
+
+                    <ListItem>
+                        Le pilote dit : &quot;Je roule pour Durex&quot;.
+                        Affiche cette phrase en échappant correctement les guillemets avec <Code>des doubles quotes</Code>.
+                    </ListItem>
+                </List>
+            </section>
+
+            <section>
+                <Heading level={2}>B- Tableau indexé</Heading>
                 <List ordered>
                     <ListItem>
                         Dans un fichier <Code>1_pilote.php</Code>, crée un tableau <Code>$pilots</Code> contenant tous les pilotes du GP Explorer :
@@ -131,7 +179,7 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>B- Tableau associatif</Heading>
+                <Heading level={2}>C- Tableau associatif</Heading>
                 <List ordered>
                     <ListItem>
                         Dans un fichier <Code>2_equipe.php</Code>, crée un tableau associatif <Code>$teams</Code> contenant les équipes du GP Explorer :
@@ -167,7 +215,7 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>C- Tableau à plusieurs dimensions</Heading>
+                <Heading level={2}>D- Tableau à plusieurs dimensions</Heading>
                 <List ordered>
                     <ListItem>
                         Dans un fichier <Code>3_teams_multidim.php</Code>, crée un tableau <Code>$teams</Code> contenant toutes les équipes et leurs membres. Chaque équipe doit être un tableau associatif avec :
@@ -225,7 +273,7 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>D- Les fonctions sans paramètre</Heading>
+                <Heading level={2}>E- Les fonctions sans paramètre</Heading>
                 <List ordered>
                     <ListItem>
                         Écris une fonction <Code>startRace()</Code> qui initialise la course en ajoutant,
@@ -243,7 +291,7 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>E- Les fonctions avec paramètre</Heading>
+                <Heading level={2}>F- Les fonctions avec paramètre</Heading>
                 <List>
                     <ListItem>
                         Écris une fonction <Code>driverExist(string $driverName): bool</Code>
@@ -267,7 +315,7 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>F- Les fonctions avec paramètre par défaut</Heading>
+                <Heading level={2}>G- Les fonctions avec paramètre par défaut</Heading>
                 <Heading level={3}>1. Gestion de la course</Heading>
                 <List ordered>
                     <ListItem>

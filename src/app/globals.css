@@ -6,6 +6,11 @@
     word-spacing: 1em;
 }
 
+.messageText
+{
+    word-spacing: .1em;
+}
+
 /* Variables CSS */
 :root {
     /* Couleurs principales par langage */
