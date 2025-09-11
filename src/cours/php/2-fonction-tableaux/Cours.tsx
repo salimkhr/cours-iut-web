@@ -59,7 +59,7 @@ foreach ($nombres as $index => $nombre) {
 
 // Méthode 3 : boucle for classique
 for ($i = 0; $i < count($nombres); $i++) {
-    echo "Element $i : " . $nombres[$i] . "\\n";
+    echo "Élément $i : " . $nombres[$i] . "\\n";
 }
 ?>`}
                 </CodeCard>
@@ -96,7 +96,7 @@ array_unique([1,1,2,2,3]);   // [1,2,3] (supprime les doublons)
                 <Text>
                     Un tableau associatif utilise des <strong>clés nommées</strong> (chaînes de caractères ou nombres)
                     plutôt que des indices numériques. Il établit une relation <strong>clé → valeur</strong>,
-                    idéal pour représenter des données structurées.
+                    idéale pour représenter des données structurées.
                 </Text>
 
                 <Heading level={3}>Syntaxe et utilisation</Heading>
@@ -190,13 +190,13 @@ $etudiants = [
 
 // 3. Structure complexe d'entreprise
 $entreprise = [
-    "employes" => [
+    "employés" => [
         "dev" => ["Alice", "Bob"],
         "design" => ["Charlie", "David"]
     ],
     "projets" => [
-        "site_web" => ["status" => "actif", "budget" => 5000],
-        "app_mobile" => ["status" => "terminé", "budget" => 8000]
+        "site_web" => ["statut" => "actif", "budget" => 5000],
+        "app_mobile" => ["statut" => "terminé", "budget" => 8000]
     ]
 ];
 ?>`}
@@ -282,7 +282,7 @@ function exempleScope(): void {
     static $compteur = 0;  // Variable statique (persiste entre appels)
     
     $compteur++;
-    echo "Compteur: $compteur\\n";
+    echo "Compteur : $compteur\\n";
 }
 
 // Fonction avec références
@@ -300,7 +300,7 @@ $multiplier = function(int $x, int $y): int {
     return $x * $y;
 };
 
-// Arrow functions (PHP 7.4+)
+// Fonctions fléchées (PHP 7.4+)
 $doubler = fn($x) => $x * 2;
 ?>`}
                 </CodeCard>
@@ -376,13 +376,13 @@ for ($i = 0; $i < 10; $i++) {
                     </ListItem>
                     <ListItem>
                         <strong>Double quotes (&quot;&quot;)</strong> : les variables sont <u>interpolées</u>
-                        et certains caractères d&apos;échappement reconnus.
+                        et certains caractères d&apos;échappement sont reconnus.
                     </ListItem>
                     <ListItem>
                         <strong>Heredoc</strong> : texte multiligne avec interpolation de variables.
                     </ListItem>
                     <ListItem>
-                        <strong>Nowdoc</strong> : texte multiligne sans interpolation (comme simple quotes).
+                        <strong>Nowdoc</strong> : texte multiligne sans interpolation (comme les simples quotes).
                     </ListItem>
                 </List>
 
@@ -409,14 +409,14 @@ $phrase .= $nom;  // Opérateur .= pour concaténer
 // 5. Heredoc - Multilignes avec interpolation
 $texteHeredoc = <<<EOT
 Nom: $nom
-Age: $age
+Âge: $age
 Message: Bienvenue sur notre site !
 EOT;
 
 // 6. Nowdoc - Multilignes sans interpolation
 $texteNowdoc = <<<'EOT'
 Nom: $nom
-Age: $age
+Âge: $age
 Message: Les variables ne sont pas interprétées
 EOT;
 ?>`}
@@ -425,7 +425,7 @@ EOT;
                 <Heading level={3}>Caractères d&apos;échappement et manipulation</Heading>
                 <CodeCard language="php">
                     {`<?php
-// Caractères d'échappement dans les double quotes
+// Caractères d'échappement dans les doubles quotes
 $texte = "Ligne 1\\nLigne 2\\tAvec tabulation";
 $guillemets = "Il a dit : \\"Bonjour\\"";
 $chemin = "C:\\\\Users\\\\Documents";  // Antislash échappé
@@ -449,7 +449,7 @@ str_replace("Monde", "PHP", $phrase);     // Remplace "Monde" par "PHP"
 strpos($phrase, "Monde");                 // Position de "Monde"
 substr($phrase, 0, 7);                    // Extraction de caractères
 
-// Division et jonction
+// Découpage et jointure
 $parties = explode(" ", trim($phrase));   // ["Bonjour", "le", "Monde"]
 $rejointe = implode("-", $parties);       // "Bonjour-le-Monde"
 

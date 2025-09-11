@@ -94,7 +94,7 @@ export default function TP() {
     return (
         <article>
             <section>
-                <Heading level={2}>A- Les Strings</Heading>
+                <Heading level={2}>A - Les chaînes de caractères</Heading>
                 <List ordered>
                     <ListItem>
                         Crée un fichier <Code>0_strings.php</Code> et déclare deux variables :
@@ -102,13 +102,13 @@ export default function TP() {
                     </ListItem>
 
                     <ListItem>
-                        Affiche une phrase avec des <strong>doubles quotes</strong> pour dire :
+                        Affiche une phrase avec des <strong>guillemets doubles</strong> pour dire :
                         &quot;Le pilote Amine roule pour Durex&quot;.
                         → Que remarques-tu concernant l&apos;interprétation des variables ?
                     </ListItem>
 
                     <ListItem>
-                        Refais la même phrase avec des <strong>simples quotes</strong>.
+                        Refais la même phrase avec des <strong>guillemets simples</strong>.
                         → Quelle différence constates-tu cette fois ?
                     </ListItem>
 
@@ -130,19 +130,19 @@ export default function TP() {
                     </ListItem>
 
                     <ListItem>
-                        Affiche le nom du pilote et son équipe séparés par une tabulation (\<Code>\t</Code>) :
+                        Affiche le nom du pilote et son équipe séparés par une tabulation (<Code>\t</Code>) :
                         &quot;Amine&nbsp;&nbsp;&nbsp;&nbsp;Durex&quot;.
                     </ListItem>
 
                     <ListItem>
                         Le pilote dit : &quot;Je roule pour Durex&quot;.
-                        Affiche cette phrase en échappant correctement les guillemets avec <Code>des doubles quotes</Code>.
+                        Affiche cette phrase en échappant correctement les guillemets avec <Code>des guillemets doubles</Code>.
                     </ListItem>
                 </List>
             </section>
 
             <section>
-                <Heading level={2}>B- Tableau indexé</Heading>
+                <Heading level={2}>B - Tableau indexé</Heading>
                 <List ordered>
                     <ListItem>
                         Dans un fichier <Code>1_pilote.php</Code>, crée un tableau <Code>$pilots</Code> contenant tous les pilotes du GP Explorer :
@@ -179,7 +179,7 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>C- Tableau associatif</Heading>
+                <Heading level={2}>C - Tableau associatif</Heading>
                 <List ordered>
                     <ListItem>
                         Dans un fichier <Code>2_equipe.php</Code>, crée un tableau associatif <Code>$teams</Code> contenant les équipes du GP Explorer :
@@ -194,7 +194,7 @@ export default function TP() {
                         </List>
                     </ListItem>
                     <ListItem>
-                        Affiche uniquement l’équipe de Anyme.
+                        Affiche uniquement l’équipe d’Anyme.
                     </ListItem>
                     <ListItem>
                         Ajoute à la fin du tableau un nouveau pilote : &quot;Sylvain Lyve&quot; roulant pour &quot;Chatenet&quot;
@@ -215,12 +215,12 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>D- Tableau à plusieurs dimensions</Heading>
+                <Heading level={2}>D - Tableau à plusieurs dimensions</Heading>
                 <List ordered>
                     <ListItem>
                         Dans un fichier <Code>3_teams_multidim.php</Code>, crée un tableau <Code>$teams</Code> contenant toutes les équipes et leurs membres. Chaque équipe doit être un tableau associatif avec :
                         <List>
-                            <ListItem>Le nom de l&apos;equipe comme clé</ListItem>
+                            <ListItem>Le nom de l&apos;équipe comme clé</ListItem>
                             <ListItem>Un tableau contenant des tableaux pour chaque pilote avec <Code>number</Code> et <Code>name</Code></ListItem>
                         </List>
                         Exemple :
@@ -250,7 +250,7 @@ export default function TP() {
                     </ListItem>
 
                     <ListItem>
-                        Affiche tous les pilotes de l&apos;equipe &quot;LEGO Racing Team&quot;.
+                        Affiche tous les pilotes de l&apos;équipe &quot;LEGO Racing Team&quot;.
                     </ListItem>
 
                     <ListItem>
@@ -259,11 +259,11 @@ export default function TP() {
                             <ListItem>Nom : &quot;Sylvain Lyve&quot;</ListItem>
                             <ListItem>Numéro : 99</ListItem>
                         </List>
-                        a l&apos;equipe &quot;Netflix&quot;
+                        à l&apos;équipe &quot;Netflix&quot;
                     </ListItem>
 
                     <ListItem>
-                        Supprime le pilote &quot;Houdi&quot; de l&apos;equipe &quot;Durex&quot;.
+                        Supprime le pilote &quot;Houdi&quot; de l&apos;équipe &quot;Durex&quot;.
                     </ListItem>
 
                     <ListItem>
@@ -273,7 +273,7 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>E- Les fonctions sans paramètre</Heading>
+                <Heading level={2}>E - Les fonctions sans paramètre</Heading>
                 <List ordered>
                     <ListItem>
                         Écris une fonction <Code>startRace()</Code> qui initialise la course en ajoutant,
@@ -291,31 +291,31 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>F- Les fonctions avec paramètre</Heading>
+                <Heading level={2}>F - Les fonctions avec paramètres</Heading>
                 <List>
                     <ListItem>
                         Écris une fonction <Code>driverExist(string $driverName): bool</Code>
-                        qui renvoie <Code>true</Code> si le pilote existe et <Code>false</Code> sinon.  Exemple d’utilisation :
+                        qui renvoie <Code>true</Code> si le pilote existe et <Code>false</Code> sinon. Exemple d’utilisation :
                         <CodeCard language="php">
                             {`echo driverExist('Djilsi') ? 'Yes' : 'No';`}
                         </CodeCard>
                     </ListItem>
                     <ListItem>
-                    Écris une fonction <Code>recordLap(string $driverName, float $lapTime)</Code>
-                    qui ajoute un nouveau temps <Code>$lapTime</Code> dans le tableau <Code>laps</Code>
-                    du pilote concerné. Exemple d’utilisation : <CodeCard language="php">
+                        Écris une fonction <Code>recordLap(string $driverName, float $lapTime)</Code>
+                        qui ajoute un nouveau temps <Code>$lapTime</Code> dans le tableau <Code>laps</Code>
+                        du pilote concerné. Exemple d’utilisation : <CodeCard language="php">
                         {`recordLap('Djilsi',2.54);`}
                     </CodeCard>
-                        en utilisant <Code>driverExist</Code>, généré une Exception si le driver n&apos;existe pas
-                    <CodeCard language="php">
-                        {`throw new Exception("Pilote inexistant : $driverName");`}
-                    </CodeCard>
+                        en utilisant <Code>driverExist</Code>, génère une exception si le pilote n’existe pas
+                        <CodeCard language="php">
+                            {`throw new Exception("Pilote inexistant : $driverName");`}
+                        </CodeCard>
                     </ListItem>
                 </List>
             </section>
 
             <section>
-                <Heading level={2}>G- Les fonctions avec paramètre par défaut</Heading>
+                <Heading level={2}>G - Les fonctions avec paramètres par défaut</Heading>
                 <Heading level={3}>1. Gestion de la course</Heading>
                 <List ordered>
                     <ListItem>
@@ -382,13 +382,13 @@ match (true) {
     default => null, // aucun incident
 };`}
                         </CodeCard>
-                        modifie l&apos; appel a addPenalty pour faire en sorte ce soit la pénalité par défaut qui soit utilisé en ca d&apos;excès de vitesse dans la voie des stands
+                        Modifie l’appel à <Code>addPenalty</Code> pour faire en sorte que la pénalité par défaut soit utilisée en cas d’excès de vitesse dans la voie des stands.
                     </ListItem>
                 </List>
             </section>
 
             <section>
-                <Heading level={2}>H- Les générateurs (optionnel)</Heading>
+                <Heading level={2}>H - Les générateurs (optionnel)</Heading>
                 <List ordered>
                     <ListItem>
                         Crée une fonction générateur <Code>generateDrivers()</Code> qui utilise
