@@ -77,7 +77,6 @@ isset($tab[2]);     // true (l'index 2 existe)
 // Manipulation
 sort($tab);         // Tri croissant
 rsort($tab);        // Tri décroissant
-shuffle($tab);      // Mélange aléatoire
 array_reverse($tab); // Inverse l'ordre
 
 // Recherche
@@ -244,22 +243,22 @@ count($equipes, COUNT_RECURSIVE); // Compte tous les éléments
                 <CodeCard language="php">
                     {`<?php
 // Fonction simple sans paramètres
-function direBonjour(): string {
+function sayHello(): string {
     return "Bonjour tout le monde !";
 }
 
 // Fonction avec paramètres typés
-function calculerSomme(int $a, int $b): int {
+function calculateSum(int $a, int $b): int {
     return $a + $b;
 }
 
 // Fonction avec paramètres par défaut
-function saluer(string $nom = "Visiteur", string $titre = "M./Mme"): string {
+function greet(string $nom = "Visiteur", string $titre = "M./Mme"): string {
     return "Bonjour $titre $nom !";
 }
 
 // Types supportés
-function exempleTypes(
+function exampleTypes(
     string $texte,        // Chaîne de caractères
     int $entier,          // Nombre entier
     float $decimal,       // Nombre décimal
@@ -277,22 +276,22 @@ function exempleTypes(
                     {`<?php
 $globale = "Variable globale";
 
-function exempleScope(): void {
+function exampleScope(): void {
     global $globale;  // Accès à la variable globale
-    static $compteur = 0;  // Variable statique (persiste entre appels)
+    static $counter = 0;  // Variable statique (persiste entre appels)
     
-    $compteur++;
-    echo "Compteur : $compteur\\n";
+    $counter++;
+    echo "Compteur : $counter\\n";
 }
 
 // Fonction avec références
-function modifierTableau(array &$tableau): void {
+function modifyArray(array &$tableau): void {
     $tableau[] = "nouvel élément";
 }
 
 // Fonction récursive
-function factorielle(int $n): int {
-    return ($n <= 1) ? 1 : $n * factorielle($n - 1);
+function factorial(int $n): int {
+    return ($n <= 1) ? 1 : $n * factorial($n - 1);
 }
 
 // Fonctions anonymes (closures)
@@ -301,7 +300,7 @@ $multiplier = function(int $x, int $y): int {
 };
 
 // Fonctions fléchées (PHP 7.4+)
-$doubler = fn($x) => $x * 2;
+$double = fn($x) => $x * 2;
 ?>`}
                 </CodeCard>
             </section>
@@ -317,7 +316,7 @@ $doubler = fn($x) => $x * 2;
                 <CodeCard language="php">
                     {`<?php
 // Générateur simple
-function compteur(int $debut, int $fin): Generator {
+function counter(int $debut, int $fin): Generator {
     for ($i = $debut; $i <= $fin; $i++) {
         yield $i;
     }
@@ -347,7 +346,7 @@ function fibonacci(): Generator {
 }
 
 // Utilisation
-foreach (compteur(1, 5) as $nombre) {
+foreach (counter(1, 5) as $nombre) {
     echo $nombre . " "; // 1 2 3 4 5
 }
 
@@ -359,6 +358,7 @@ for ($i = 0; $i < 10; $i++) {
 }
 ?>`}
                 </CodeCard>
+
             </section>
 
             <section>
