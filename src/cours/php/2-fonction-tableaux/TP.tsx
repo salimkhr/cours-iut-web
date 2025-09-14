@@ -2,6 +2,8 @@ import Heading from "@/components/ui/Heading";
 import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
 import CodeCard from "@/components/Cards/CodeCard";
+import {Alert, AlertDescription} from "@/components/ui/alert";
+import {Info} from "lucide-react";
 
 const teams = [
     {
@@ -274,6 +276,33 @@ export default function TP() {
 
             <section>
                 <Heading level={2}>E - Les fonctions sans paramètre</Heading>
+                <Alert>
+                    <Info />
+                    {/*<AlertTitle></AlertTitle>*/}
+                    <AlertDescription>
+                        <List>
+                            <ListItem>pour acceder a la variable <Code>$teams_multidim;</Code>, il faut utiliser <Code>global $teams_multidim;</Code> dans les fonctions.</ListItem>
+                            <ListItem>pour pouvoir modifier le constenu du tableauil faut utiliser le passage par reference dans le foreach, ou utiliser un for classique :
+
+                            <CodeCard language="php">
+                                {`<?php                               
+    $tableau = [1,2,3,4,5];
+    
+    function editTableau() {
+        global $tableau;
+        
+        foreach ($tableau as &$value) {
+            $value++;
+        }
+    }
+?>`}
+                            </CodeCard>
+                            </ListItem>
+                        </List>
+
+
+                    </AlertDescription>
+                </Alert>
                 <List ordered>
                     <ListItem>
                         Écris une fonction <Code>startRace()</Code> qui initialise la course en ajoutant,

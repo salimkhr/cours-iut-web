@@ -24,21 +24,7 @@ export default function TP() {
                     <ListItem>
                         Dans le dossier <Code>app/views/</Code>, créez un fichier <Code>home.php</Code> et intégrez-y le code suivant :
                         <CodeCard language="html" filename={"home.php"}>
-                            {`<!DOCTYPE html>
-<html lang="fr">
-  <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>NetFlex - Accueil</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="styles.css"/>
-  </head>
-  <body>
-    <h1>NetFlex</h1>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
-</html>`}
+                            {``}
                         </CodeCard>
                     </ListItem>
 
