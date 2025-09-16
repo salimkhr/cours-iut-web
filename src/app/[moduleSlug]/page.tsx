@@ -58,7 +58,7 @@ export default async function Module({params}: ModulePageProps) {
 
 
             <CoursesSection title="Les cours">
-                {currentModule.sections.map((section, index) => (
+                {currentModule.sections.sort((s1,s2) => s1.order - s2.order).map((section, index) => (
                     <div
                         key={section.path}
                         className="opacity-0 animate-fade-in-up"
