@@ -44,7 +44,7 @@ export default function AdminModule({module}: AdminModuleProps) {
                 <AddSectionButton onAdd={addSection} modData={modData}/>
                 {modData.sections.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 mb-4">
-                        {modData.sections.map(sec => (
+                        {modData.sections.sort((s1,s2) => s1.order - s2.order).map(sec => (
                             <AdminSection
                                 modData={modData}
                                 key={sec.path}
