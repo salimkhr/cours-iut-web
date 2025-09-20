@@ -282,7 +282,7 @@ export default function TP() {
                     <AlertDescription>
                         <List>
                             <ListItem>pour acceder a la variable <Code>$teams_multidim;</Code>, il faut utiliser <Code>global $teams_multidim;</Code> dans les fonctions.</ListItem>
-                            <ListItem>pour pouvoir modifier le constenu du tableauil faut utiliser le passage par reference dans le foreach, ou utiliser un for classique :
+                            <ListItem>pour pouvoir modifier le constenu du tableau, il faut utiliser le passage par reference dans le foreach, ou utiliser un for classique :
 
                             <CodeCard language="php">
                                 {`<?php                               
