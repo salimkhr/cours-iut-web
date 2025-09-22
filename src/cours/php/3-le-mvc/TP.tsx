@@ -165,21 +165,7 @@ cd mvc`}
                     <ListItem>
                         Dans le dossier <Code>app/views/</Code>, créez un fichier <Code>home.php</Code> et intégrez-y le code suivant :
                         <CodeCard language="html" filename="home.php">
-                            {`<h2>Bienvenue sur NetFlex, <?= htmlspecialchars($firstname) ?> !</h2>
-
-<?php if (!empty($films)): ?>
-    <section class="films">
-        <?php foreach ($films as $film): ?>
-            <div class="film">
-                <h3><?= htmlspecialchars($film['titre']) ?></h3>
-                <p>Année : <?= htmlspecialchars($film['annee']) ?></p>
-            </div>
-        <?php endforeach; ?>
-    </section>
-<?php endif; ?>
-
-<?php include __DIR__ . '/_template/header.php'; ?>
-<?php include __DIR__ . '/_template/footer.php'; ?>`}
+                            {``}
                         </CodeCard>
                     </ListItem>
 
