@@ -10,21 +10,27 @@ type DiagramCardProps = {
 
 export default function DiagramCard({ header, chart }: DiagramCardProps) {
     const containerRef = useRef<HTMLDivElement>(null);
+    // Générer un ID unique pour chaque instance du composant
+    const diagramId = useRef(`mermaid-diagram-${crypto.randomUUID()}`);
 
     useEffect(() => {
         if (containerRef.current) {
             mermaid.initialize({ startOnLoad: true, theme: "default" });
             try {
-                mermaid.render("mermaid-diagram", chart).then((result: RenderResult) => {
-                    containerRef.current!.innerHTML = result.svg;
+                mermaid.render(diagramId.current, chart).then((result: RenderResult) => {
+                    if (containerRef.current) {
+                        containerRef.current.innerHTML = result.svg;
 
-                    // Si bindFunctions est défini, on l’appelle
-                    if (result.bindFunctions) {
-                        result.bindFunctions(containerRef.current!);
+                        // Si bindFunctions est défini, on l'appelle
+                        if (result.bindFunctions) {
+                            result.bindFunctions(containerRef.current);
+                        }
                     }
                 });
             } catch {
-                containerRef.current.innerHTML = `<pre>${chart}</pre>`;
+                if (containerRef.current) {
+                    containerRef.current.innerHTML = `<pre>${chart}</pre>`;
+                }
             }
         }
     }, [chart]);
@@ -32,10 +38,11 @@ export default function DiagramCard({ header, chart }: DiagramCardProps) {
     return (
         <BaseCard
             header={header}
-            content={<div ref={containerRef} className="w-full overflow-x-auto mx-auto" />}
+            content={<div ref={containerRef} className="w-full mx-auto"/>}
             withMarge={false}
             withHover={false}
             withLed={false}
+            className={"w-full"}
         />
     );
 }

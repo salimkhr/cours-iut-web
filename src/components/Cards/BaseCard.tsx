@@ -14,7 +14,8 @@ interface BaseCardProps {
     footer?: ReactNode;
     withMarge?: boolean
     withHover?: boolean
-    withLed?: boolean
+    withLed?: boolean,
+    className?: string
 }
 
 export default function BaseCard({
@@ -24,10 +25,11 @@ export default function BaseCard({
                                      footer,
                                      withMarge = true,
                                      withHover = true,
-                                     withLed = true
+                                     withLed = true,
+                                     className = ""
                                  }: BaseCardProps) {
     return (
-        <div className={cn("group ", withHover ? 'hover:shadow-xl transition-all duration-300 hover:scale-105' : '')}>
+        <div className={cn("group ", withHover ? 'hover:shadow-xl transition-all duration-300 hover:scale-105' : '',className)}>
             <Card
                 className={`w-full h-full text-center flex flex-col justify-between border-2 border-${currentModule ? currentModule.path : 'module'} bg-white p-0 rounded-lg shadow-lg overflow-hidden`}
             >
