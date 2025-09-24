@@ -142,11 +142,11 @@ graph TD
  │   │
  │   ├── views/                 ← L'affichage (ce cours)
  │   │   ├── articles/
- │   │   │   ├── list.php
- │   │   │   └── show.php
+ │   │   │   ├── list.html.php
+ │   │   │   └── show.html.php
  │   │   └── _template/
- │   │       ├── header.php
- │   │       └── footer.php
+ │   │       ├── header.html.php
+ │   │       └── footer.html.php
  │   │
  │   └── core/                  ← Classes de base
  │        ├── Repository.php
@@ -227,6 +227,42 @@ $controller->index();
                     complexe (qui relève du Modèle) ni de code HTML (qui appartient à la Vue).
                 </Text>
 
+                <Heading level={3}>Méthodes héritées de la classe Controller</Heading>
+                <Text className={"mb-4"}>
+                    La classe <Code>Controller</Code> fournit des méthodes utilitaires
+                    qui évitent de réécrire des opérations courantes comme l&apos;affichage d’une vue, l’envoi de données au format JSON
+                    ou la redirection vers une autre page.
+                </Text>
+
+                <List ordered>
+                    <ListItem>
+                        <Code>protected function view(string $viewName, string $title = &apos;Titre de la page&apos;, array $data = [], int $status = 200)</Code>Affiche une vue PHP.
+                        <List>
+                            <ListItem><Code>$viewName</Code> : chemin relatif de la vue (ex. <Code>&apos;articles/list&apos;</Code>).</ListItem>
+                            <ListItem><Code>$title</Code> : titre envoyé à la vue dans la balise <Code>title</Code> du <Code>head</Code>.</ListItem>
+                            <ListItem><Code>$data</Code> : tableau associatif de données. Chaque clé devient une variable dans la vue.</ListItem>
+                            <ListItem><Code>$status</Code> : code HTTP (par défaut 200, mais peut être 404, 500...).</ListItem>
+                        </List>
+                    </ListItem>
+
+                    <ListItem>
+                        <Code>protected function json($data, int $status = 200)</Code>
+                        Retourne une réponse JSON.
+                        <List>
+                            <ListItem><Code>$data</Code> : données à encoder en JSON.</ListItem>
+                            <ListItem><Code>$status</Code> : code HTTP (200 par défaut, mais peut être 404, 500...).</ListItem>
+                        </List>
+                    </ListItem>
+
+                    <ListItem>
+                        <Code>protected function redirectTo(string $url)</Code>
+                        Redirige immédiatement vers une autre page.
+                        <List>
+                            <ListItem><Code>$url</Code> : l’URL de destination (ex. <Code>&apos;index.php&apos;</Code>).</ListItem>
+                        </List>
+                    </ListItem>
+                </List>
+
                 <Heading level={3}>Exemple : ArticleController</Heading>
                 <Text>
                     Voici un exemple montrant comment un contrôleur transmet des données à une vue,
@@ -247,7 +283,7 @@ class ArticleController extends Controller
             ['id' => 1, 'title' => 'PS5', 'content' => '...'],
             ['id' => 2, 'title' => 'XBox 360', 'content' => '...']
         ];
-        
+        // protected function view(string $viewName, string $title = 'Titre de la page', array $data = [], $status = 200)
         $this->view('articles/list', 'Liste des articles', ['articles' => $articles]);
     }
 
@@ -256,6 +292,7 @@ class ArticleController extends Controller
     {
         $article = ['id' => 1, 'title' => 'PS5', 'content' => 'Contenu...'];
         
+         // protected function view(string $viewName, string $title = 'Titre de la page', array $data = [], $status = 200)
         $this->view('articles/show', $article['title'], ['article' => $article]);
     }
 
@@ -266,13 +303,14 @@ class ArticleController extends Controller
             ['id' => 1, 'title' => 'PS5'],
             ['id' => 2, 'title' => 'XBox 360']
         ];
-        
+        // protected function json($data, $status = 200)
         $this->json(['articles' => $articles]);
     }    
     
     // Redirige vers la page d'accueil
     public function redirectToHome(): void
     {
+        // protected function redirectTo($url)
         $this->redirectTo('index.php');
     }
 }`}

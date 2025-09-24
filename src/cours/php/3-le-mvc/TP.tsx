@@ -22,17 +22,8 @@ cd mvc`}
 
                 <List ordered>
                     <ListItem>
-                        Dans le dossier <Code>app/controllers/</Code>, créez un fichier <Code>IndexController.php</Code>.
-                        Ce contrôleur doit hériter de la classe <Code>Controller</Code> et définir une méthode <Code>index()</Code> qui appelle la vue <Code>index</Code>.
-                    </ListItem>
-
-                    <ListItem>
-                        Dans <Code>public/index.php</Code>, ajoutez le code nécessaire pour instancier votre <Code>IndexController</Code> et appeler sa méthode <Code>index()</Code>.
-                    </ListItem>
-
-                    <ListItem>
-                        Dans le dossier <Code>app/views/</Code>, créez un fichier <Code>index.php</Code> et intégrez-y le code suivant :
-                        <CodeCard language="html" filename="index.php">
+                        Dans le dossier <Code>app/views/</Code>, créez la vue <Code>index.html.php</Code> et intégrez-y le code suivant :
+                        <CodeCard language="html" filename="index.html.php">
                             {`<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -139,7 +130,16 @@ cd mvc`}
                     </ListItem>
 
                     <ListItem>
-                        Lancez le serveur de développement : <Code> php -S localhost:8000 -t public public/error.php</Code>
+                        Dans le dossier <Code>app/controllers/</Code>, créez un fichier <Code>IndexController.php</Code>.
+                        Ce contrôleur doit hériter de la classe <Code>Controller</Code> et définir une méthode <Code>index()</Code> qui appelle la vue <Code>index</Code> la vue créé précédemment.
+                    </ListItem>
+
+                    <ListItem>
+                        Dans <Code>public/index.php</Code>, ajoutez le code nécessaire pour instancier votre <Code>IndexController</Code> et appeler sa méthode <Code>index()</Code>.
+                    </ListItem>
+
+                    <ListItem>
+                        Lancez le serveur de développement : <CodeCard language="bach" showLineNumbers={false}>{`php -S localhost:8000 -t public public/error.php`}</CodeCard>
                     </ListItem>
 
                     <ListItem>
@@ -153,9 +153,111 @@ cd mvc`}
                 <Heading level={2}>C - Gestion des paramètres : Page home.php</Heading>
 
                 <List ordered>
+
+                    <ListItem>
+                        Dans le dossier <Code>app/views/</Code>, créez un fichier <Code>home.html.php</Code> et intégrez-y le code suivant :
+                        <CodeCard language="html" filename="home.html.php">
+                            {`<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Stitch Design - Netflex</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&family=Spline+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet"/>
+</head>
+<body>
+<!-- HEADER -->
+<header class="border-bottom border-dark px-4 py-3 d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-3">
+        <h1 class="logo m-0">NETFLEX</h1>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+    <nav class="d-none d-md-flex gap-3">
+        <a class="text-white text-decoration-none" href="#">Home</a>
+        <a class="text-white text-decoration-none" href="#">Series</a>
+        <a class="text-white text-decoration-none" href="#">Movies</a>
+        <a class="text-white text-decoration-none" href="#">New & Popular</a>
+        <a class="text-white text-decoration-none" href="#">My List</a>
+    </nav>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <form class="d-none d-sm-block position-relative">
+            <span class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ps-2 text-muted">search</span>
+            <input class="form-control ps-5 bg-dark border-secondary text-white" type="search" placeholder="Search"/>
+        </form>
+        <i class="fa-regular fa-circle-user fa-2xl"></i>
+    </div>
+</header>
+
+<!-- HERO -->
+<section class="hero-home d-flex align-items-end text-white" style="background-image: linear-gradient(to top, rgba(20,20,20,0.9) 0%, rgba(20,20,20,0) 50%), url('img/HERO_IMG');">
+    <div class="container py-5">
+        <h1 class="display-4 fw-bold">HERO_TITLE</h1>
+        <div class="d-flex gap-3 small text-white">
+            <span>HERO_YEAR</span> | <span>HERO_DURATION</span> | <span class="border px-2">HERO_QUALITY</span> | <span class="border px-2">HERO_AUDIO</span>
+        </div>
+        <p class="mt-3">
+HERO_DESCRIPTION 
+        </p>
+        <div class="d-flex gap-3 mt-4">
+            <button class="btn btn-danger d-flex align-items-center gap-2">
+                <i class="fas fa-play"></i> Lire
+            </button>
+            <button class="btn btn-outline-light d-flex align-items-center gap-2">
+                <i class="fas fa-plus"></i> Ajouter à ma liste
+            </button>
+        </div>
+    </div>
+</section>
+
+<main class="container py-5">
+    <h2 class="text-white mb-4">Nos films</h2>
+    <div class="row g-4">
+         <!-- Répéter pour d'autres films -->
+         <div class="col-md-4 col-lg-3">
+            <div class="card bg-dark text-white overflow-hidden film-card">
+                <img src="img/ligne_verte.png" class="card-img" alt="La Ligne verte">
+                <div class="card-img-overlay d-flex flex-column justify-content-end p-3" style="background: rgba(0,0,0,0.5);">
+                    <h5 class="card-title">La Ligne verte</h5>
+                    <p class="card-text small">1999 | 3h 9m</p>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-danger btn-sm"><i class="fas fa-play"></i></button>
+                        <button class="btn btn-outline-light btn-sm"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Répéter pour d'autres films -->
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2025 Netflex Clone. <a href="#">Privacy</a> | <a href="#">Terms</a></p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+`}
+                        </CodeCard>
+                    </ListItem>
+
                     <ListItem>
                         Dans le dossier <Code>app/controllers/</Code>, créez un fichier <Code>HomeController.php</Code>.
-                        Ce contrôleur doit hériter de la classe <Code>Controller</Code> et définir une méthode <Code>index()</Code> qui transmet une variable <Code>$firstname</Code> et un tableau <Code>$films</Code> à la vue <Code>home</Code>.
+                        Ce contrôleur doit hériter de la classe <Code>Controller</Code> et définir une méthode <Code>home()</Code> qui transmet :
+                        <List>
+                            <ListItem>heroImg =&gt; &quot;ligne_verte.png&quot;</ListItem>
+                            <ListItem>heroTitle =&gt; &quot;La Ligne verte&quot;</ListItem>
+                            <ListItem>heroYear =&gt; 1999 </ListItem>
+                            <ListItem>heroDuration =&gt; &quot;3h 9m&quot;;</ListItem>
+                            <ListItem>heroQuality =&gt; &quot;HD&quot;;</ListItem>
+                            <ListItem>heroAudio =&gt; &quot;5.1&quot;;</ListItem>
+                            <ListItem>heroDescription =&gt; &quot;Paul Edgecomb, gardien dans le couloir de la mort, découvre que John Coffey possède un don extraordinaire qui bouleverse la vie de tous ceux qui l&apos;entourent.&quot;</ListItem>
+                        </List>
+                        à la vue <Code>home</Code>.
                     </ListItem>
 
                     <ListItem>
@@ -163,15 +265,55 @@ cd mvc`}
                     </ListItem>
 
                     <ListItem>
-                        Dans le dossier <Code>app/views/</Code>, créez un fichier <Code>home.php</Code> et intégrez-y le code suivant :
-                        <CodeCard language="html" filename="home.php">
-                            {``}
-                        </CodeCard>
-                    </ListItem>
-
-                    <ListItem>
                         Testez votre page sur <Link href="http://localhost:8000/home.php" target="_blank">http://localhost:8000/home.php</Link>.
                         Vous devez voir le prénom et la liste de films s&apos;afficher correctement.
+                    </ListItem>
+
+                    <ListItem>Mofifier la vue <Code>home</Code> pour afficher les films de la liste : <CodeCard
+                        language="php">
+                        {`[
+    [
+        "img" => "ligne_verte.png"
+        "title" => "La Ligne verte",
+        "year" => "1999",
+        "duration" => "3h 9m",
+    ],
+    [
+        "img" => "liste_schindler.jpg"
+        "title" => "La Liste de Schindler",
+        "year" => "1993",
+        "duration" => "3h 15m",
+    ],
+    "img" => "django.jpg",
+        "title" => "Django Unchained",
+        "year" => "2012",
+        "duration" => "2h 45m",
+    [
+        "img" => "forrest_gump.jpg",
+        "title" => "Forrest Gump",
+        "year" => "1994",
+        "duration" => "2h 22m",
+    ],
+    [
+        "img" => "shawshank_redemption.jpg",
+        "title" => "Les Évadés (The Shawshank Redemption)",
+        "year" => "1994",
+        "duration" => "2h 22m",
+    ],
+    [
+        "img" => "requiem_dream.jpg",
+        "title" => "Requiem for a Dream",
+        "year" => "2000",
+        "duration" => "1h 42m",
+    ],
+    [
+        "img" => "philadelphia.jpg",
+        "title" => "Philadelphia",
+        "year" => "1993",
+        "duration" => "2h 05m",
+    ]
+];`}
+                    </CodeCard>Pour chaque film, généré le HTML sous <Code>{`<h2 class="text-white mb-4">Nos films</h2>`}</Code>
                     </ListItem>
                 </List>
             </section>
@@ -180,8 +322,7 @@ cd mvc`}
             <Heading level={2}>D - Gestion des paramètres : Page index.php</Heading>
 
             <Text>
-                Analysez le code HTML statique de la section « Pricing » dans{" "}
-                <Code>index.php</Code>. Identifiez les différences et points communs entre
+                Analysez le code HTML statique de la section « Pricing » dans <Code>index.html.php</Code>. Identifiez les différences et points communs entre
                 les 3 offres.
             </Text>
 
@@ -192,18 +333,11 @@ cd mvc`}
                 </ListItem>
 
                 <ListItem>
-                    Modifiez le contrôleur <Code>IndexController</Code> pour créer ce tableau
-                    et le transmettre à la vue.
+                    Modifiez le contrôleur <Code>IndexController</Code> pour créer ce tableau et le transmettre à la vue.
                 </ListItem>
 
                 <ListItem>
-                    Adaptez la vue pour générer les cartes d’offres via une boucle
-                    <Code>foreach</Code>, au lieu d’écrire le HTML en dur.
-                </ListItem>
-
-                <ListItem>
-                    Vérifiez que le rendu visuel est identique et notez les avantages de cette
-                    approche (maintenabilité, réutilisation, séparation logique/affichage).
+                    Adaptez la vue pour générer les cartes d’offres via une boucle <Code>foreach</Code>, au lieu d’écrire le HTML en dur.
                 </ListItem>
             </List>
         </section>
@@ -217,15 +351,15 @@ cd mvc`}
                     </ListItem>
 
                     <ListItem>
-                        Créez le fichier <Code>app/views/_template/header.php</Code> avec le début du HTML commun aux pages index.php et home.php
+                        Créez le fichier <Code>app/views/_template/header.html.php</Code> avec le début du HTML commun aux pages index.php et home.php. le title de la page sera <Code>$title</Code>.
                     </ListItem>
 
                     <ListItem>
-                        Créez le fichier <Code>app/views/_template/footer.php</Code> aavec la fin du HTML commun aux pages index.php et home.php
+                        Créez le fichier <Code>app/views/_template/footer.html.php</Code> avec la fin du HTML commun aux pages index.php et home.php. les balise HTML ouverte par header.html.php doivent etre fermé par footer.html.php.
                     </ListItem>
 
                     <ListItem>
-                        Modifiez vos vues <Code>index.php</Code> et <Code>home.php</Code> pour inclure le header et le footer.
+                        Modifiez vos vues <Code>index.html.php</Code> et <Code>home.html.php</Code> pour inclure le header et le footer.
                     </ListItem>
 
                     <ListItem>
@@ -239,11 +373,7 @@ cd mvc`}
 
                 <List ordered>
                     <ListItem>
-                        Créez un fichier <Code>app/controllers/ErrorController.php</Code> qui hérite de la classe <Code>Controller</Code>.
-                    </ListItem>
-
-                    <ListItem>
-                        Créez la vue d&apos;erreur dans <Code>app/views/error.php</Code> :
+                        Créez la vue d&apos;erreur dans <Code>app/views/error.html.php</Code> :
                         <CodeCard language="html" filename="app/views/error.php">
                             {`<?php include __DIR__ . '/_template/header.php'; ?>
 <!-- Contenu 404 -->
@@ -258,7 +388,11 @@ cd mvc`}
                     </ListItem>
 
                     <ListItem>
-                        Dans la classe <Code>ErrorController</Code>, ajoutez une méthode <Code>error404()</Code> qui affiche cette vue avec le bon code de statut HTTP (404).
+                        Créez un fichier <Code>app/controllers/ErrorController.php</Code> qui hérite de la classe <Code>Controller</Code>.
+                    </ListItem>
+
+                    <ListItem>
+                        Dans la classe <Code>ErrorController</Code>, ajoutez une méthode <Code>error404()</Code> qui affiche cette vue avec le bon code de statut HTTP (404) paramètre de la fonction <Code>View()</Code>.
                     </ListItem>
 
                     <ListItem>
@@ -288,11 +422,11 @@ cd mvc`}
 │   │   ├── IndexController.php
 │   │   └── HomeController.php
 │   ├── views/
-│   │   ├── index.php
-│   │   ├── home.php
+│   │   ├── index.html.php
+│   │   ├── home.html.php
 │   │   └── _template/
-│   │       ├── header.php
-│   │       └── footer.php
+│   │       ├── header.html.php
+│   │       └── footer.html.php
 │   └── core/
 │       └── Controller.php`}
                 </CodeCard>
