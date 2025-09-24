@@ -13,5 +13,5 @@ export function List({ordered = false, className = '', type, ...props}: ListProp
 }
 
 export function ListItem({className = '', ...props}: React.LiHTMLAttributes<HTMLLIElement>) {
-    return <li className={`mb-2 ${className}`} {...props} />;
+    return <li className={`mb-2 text-gray-700 ${className}`} {...props} />;
 }
