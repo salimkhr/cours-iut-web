@@ -139,7 +139,7 @@ cd mvc`}
                     </ListItem>
 
                     <ListItem>
-                        Lancez le serveur de développement : <CodeCard language="bach" showLineNumbers={false}>{`php -S localhost:8000 -t public public/error.php`}</CodeCard>
+                        Lancez le serveur de développement : <CodeCard language="bach" showLineNumbers={false}>{`php -S localhost:8000 -t public`}</CodeCard>
                     </ListItem>
 
                     <ListItem>
@@ -369,63 +369,23 @@ HERO_DESCRIPTION
             </section>
 
             <section>
-                <Heading level={2}>F - Gestion des erreurs 404</Heading>
-
-                <List ordered>
-                    <ListItem>
-                        Créez la vue d&apos;erreur dans <Code>app/views/error.html.php</Code> :
-                        <CodeCard language="html" filename="app/views/error.php">
-                            {`<?php include __DIR__ . '/_template/header.php'; ?>
-<!-- Contenu 404 -->
-<main class="error-container">
-    <div class="error-code">404</div>
-    <h1 class="fw-bold">Oups ! Page introuvable</h1>
-    <p class="error-message">Il semble que vous soyez perdu dans le streaming...</p>
-    <a href="index.html" class="btn btn-danger btn-lg fw-bold">Retour à l'accueil</a>
-</main>
-<?php include __DIR__ . '/_template/footer.php'; ?>`}
-                        </CodeCard>
-                    </ListItem>
-
-                    <ListItem>
-                        Créez un fichier <Code>app/controllers/ErrorController.php</Code> qui hérite de la classe <Code>Controller</Code>.
-                    </ListItem>
-
-                    <ListItem>
-                        Dans la classe <Code>ErrorController</Code>, ajoutez une méthode <Code>error404()</Code> qui affiche cette vue avec le bon code de statut HTTP (404) paramètre de la fonction <Code>View()</Code>.
-                    </ListItem>
-
-                    <ListItem>
-                        Créé le fichier <Code>public/error.php</Code> pour appeler le controller d&apos;erreur.
-                    </ListItem>
-
-                    <ListItem>
-                        Testez en accédant à une page inexistante comme <Code>http://localhost:8000/pageInexistante.php</Code> - vous devriez voir votre page d&apos;erreur personnalisée !
-                    </ListItem>
-                </List>
-            </section>
-
-            <section>
-                <Heading level={2}>G - Résultat attendu</Heading>
+                <Heading level={2}>F - Résultat attendu</Heading>
 
                 <CodeCard language="txt" showLineNumbers={false}>
                     {`project_tp/
  ├── public/
  │   ├── index.php
  │   ├── home.php
- │   ├── error.php
  │   └── css/style.css
  │
  ├── app/
  │   ├── controllers/
  │   │   ├── IndexController.php
- │   │   ├── HomeController.php
- │   │   └── ErrorController.php
+ │   │   └── HomeController.php
  │   │
  │   ├── views/
  │   │   ├── index.html.php
  │   │   ├── home.html.php
- │   │   ├── error.html.php
  │   │   └── _template/
  │   │       ├── header.html.php
  │   │       └── footer.html.php
