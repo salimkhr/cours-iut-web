@@ -410,25 +410,31 @@ HERO_DESCRIPTION
 
                 <CodeCard language="txt" showLineNumbers={false}>
                     {`project_tp/
-├── public/
-│   ├── api
-│   │   └── films.php
-│   ├── index.php
-│   ├── home.php
-│   └── css/
-│       └── style.css
-├── app/
-│   ├── controllers/
-│   │   ├── IndexController.php
-│   │   └── HomeController.php
-│   ├── views/
-│   │   ├── index.html.php
-│   │   ├── home.html.php
-│   │   └── _template/
-│   │       ├── header.html.php
-│   │       └── footer.html.php
-│   └── core/
-│       └── Controller.php`}
+ ├── public/
+ │   ├── index.php
+ │   ├── home.php
+ │   ├── error.php
+ │   └── css/style.css
+ │
+ ├── app/
+ │   ├── controllers/
+ │   │   ├── IndexController.php
+ │   │   ├── HomeController.php
+ │   │   └── ErrorController.php
+ │   │
+ │   ├── views/
+ │   │   ├── index.html.php
+ │   │   ├── home.html.php
+ │   │   ├── error.html.php
+ │   │   └── _template/
+ │   │       ├── header.html.php
+ │   │       └── footer.html.php
+ │   │
+ │   └── core/
+ │       └── Controller.php
+ │
+ └── config/
+     └── config.php`}
                 </CodeCard>
             </section>
         </article>
