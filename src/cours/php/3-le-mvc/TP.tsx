@@ -1,4 +1,4 @@
-8import Heading from "@/components/ui/Heading";
+import Heading from "@/components/ui/Heading";
 import CodeCard from "@/components/Cards/CodeCard";
 import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
