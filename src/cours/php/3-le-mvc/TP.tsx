@@ -1,4 +1,4 @@
-import Heading from "@/components/ui/Heading";
+8import Heading from "@/components/ui/Heading";
 import CodeCard from "@/components/Cards/CodeCard";
 import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
@@ -273,21 +273,23 @@ HERO_DESCRIPTION
                         language="php">
                         {`[
     [
-        "img" => "ligne_verte.png"
+        "img" => "ligne_verte.png",
         "title" => "La Ligne verte",
         "year" => "1999",
         "duration" => "3h 9m",
     ],
     [
-        "img" => "liste_schindler.jpg"
+        "img" => "liste_schindler.jpg",
         "title" => "La Liste de Schindler",
         "year" => "1993",
         "duration" => "3h 15m",
     ],
-    "img" => "django.jpg",
+    [
+        "img" => "django.jpg",
         "title" => "Django Unchained",
         "year" => "2012",
         "duration" => "2h 45m",
+    ],
     [
         "img" => "forrest_gump.jpg",
         "title" => "Forrest Gump",
