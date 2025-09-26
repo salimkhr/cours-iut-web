@@ -392,10 +392,10 @@ class ArticleController extends Controller
 
                 <Heading level={4}>Condition (if)</Heading>
                 <Text>
-                    Si le contrôleur passe <Code>[&apos;articles&apos; =&gt; $articles, &apos;user&apos; =&gt; $user]</Code> :
+                    Si le contrôleur passe <Code>[&apos;articles&apos; =&gt; $articles, &apos;isAuthor&apos; =&gt; true]</Code> :
                 </Text>
                 <CodeCard language="php">
-                    {`<?php if ($user['isAuthor']): ?>
+                    {`<?php if ($isAuthor): ?>
     <a href="article_create.php" class="btn">Créer un article</a>
 <?php else: ?>
     <p>Seuls les auteurs peuvent créer des articles.</p>
