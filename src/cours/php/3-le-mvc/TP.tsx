@@ -315,6 +315,11 @@ HERO_DESCRIPTION
 ];`}
                     </CodeCard>Pour chaque film, généré le HTML sous <Code>{`<h2 class="text-white mb-4">Nos films</h2>`}</Code>
                     </ListItem>
+                     <ListItem>
+    Ajouter la gestion du cas où la liste est vide :  
+    afficher un message <CodeBlock>{`<div class="alert alert-info">Aucun film disponible pour le moment.</div>`}</CodeBlock>
+    à la place de la grille des films.
+  </ListItem>
                 </List>
             </section>
 
@@ -367,9 +372,17 @@ HERO_DESCRIPTION
                     </ListItem>
                 </List>
             </section>
+                 <Heading level={2}>F - Personnalisation des pages</Heading>
+                <Text>Ajoutez vos films préférés aux pages <Code>home</Code> et <Code>index</Code> en personnalisant uniquement les contrôleurs et les images du dossier <Code>public</Code>.  
+  Ne modifiez pas les vues <Code>home</Code> et <Code>index</Code>, car elles sont conçues pour être génériques et réutilisables.  
+  Toutes les modifications doivent passer par les contrôleurs et les images afin de préserver la structure et le style des pages.
+</Text>
+            <section>
+            
+            </section>
 
             <section>
-                <Heading level={2}>F - Résultat attendu</Heading>
+                <Heading level={2}>G - Résultat attendu</Heading>
 
                 <CodeCard language="txt" showLineNumbers={false}>
                     {`project_tp/
