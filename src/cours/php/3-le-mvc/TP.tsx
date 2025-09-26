@@ -317,7 +317,7 @@ HERO_DESCRIPTION
                     </ListItem>
                      <ListItem>
     Ajouter la gestion du cas où la liste est vide :  
-    afficher un message <CodeBlock>{`<div class="alert alert-info">Aucun film disponible pour le moment.</div>`}</CodeBlock>
+    afficher un message <CodeCard>{`<div class="alert alert-info">Aucun film disponible pour le moment.</div>`}</CodeCard>
     à la place de la grille des films.
   </ListItem>
                 </List>
