@@ -4,6 +4,8 @@ import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
 import Text from "@/components/ui/Text";
 import Link from "next/link";
+import {Alert, AlertDescription} from "@/components/ui/alert";
+import {Info} from "lucide-react";
 
 export default function TP() {
     return (
@@ -19,7 +21,10 @@ cd mvc`}
             </section>
             <section>
                 <Heading level={2}>B - Première page simple : index.php</Heading>
-
+                <Text>
+                    Dans cette étape, vous allez afficher votre <strong>première page</strong> avec le
+                    modèle MVC : une vue, un contrôleur, et un point d’entrée.
+                </Text>
                 <List ordered>
                     <ListItem>
                         Dans le dossier <Code>app/views/</Code>, créez la vue <Code>index.html.php</Code> et intégrez-y le code suivant :
@@ -130,12 +135,20 @@ cd mvc`}
                     </ListItem>
 
                     <ListItem>
-                        Dans le dossier <Code>app/controllers/</Code>, créez un fichier <Code>IndexController.php</Code>.
-                        Ce contrôleur doit hériter de la classe <Code>Controller</Code> et définir une méthode <Code>index()</Code> qui appelle la vue <Code>index</Code> la vue créé précédemment.
+                        Dans le dossier <Code>app/controllers/</Code>, créez <Code>IndexController.php</Code>. Ce contrôleur doit :
+                        <List>
+                            <ListItem>hériter de la classe <Code>Controller</Code></ListItem>
+                            <ListItem>définir une méthode <Code>index()</Code> qui appelle la vue <Code>index</Code></ListItem>
+                        </List>
                     </ListItem>
 
                     <ListItem>
-                        Dans <Code>public/index.php</Code>, ajoutez le code nécessaire pour instancier votre <Code>IndexController</Code> et appeler sa méthode <Code>index()</Code>.
+                        Dans <Code>public/index.php</Code>, ajoutez le code nécessaire pour :
+                        <List>
+                            <ListItem>inclure le contrôleur</ListItem>
+                            <ListItem>instancier <Code>IndexController</Code></ListItem>
+                            <ListItem>appeler sa méthode <Code>index()</Code></ListItem>
+                        </List>
                     </ListItem>
 
                     <ListItem>
@@ -151,6 +164,9 @@ cd mvc`}
 
             <section>
                 <Heading level={2}>C - Gestion des paramètres : Page home.php</Heading>
+                <Text>
+                    Ici, vous allez créer une deuxième page (<Code>home</Code>) et apprendre à{" "}<strong>transmettre des données du contrôleur à la vue</strong>.
+                </Text>
 
                 <List ordered>
 
@@ -246,22 +262,56 @@ HERO_DESCRIPTION
                     </ListItem>
 
                     <ListItem>
-                        Dans le dossier <Code>app/controllers/</Code>, créez un fichier <Code>HomeController.php</Code>.
-                        Ce contrôleur doit hériter de la classe <Code>Controller</Code> et définir une méthode <Code>home()</Code> qui transmet :
+                        Créez un fichier <Code>HomeController.php</Code> dans{" "}
+                        <Code>app/controllers/</Code>.
+                        Ce contrôleur doit définir une méthode <Code>home()</Code> qui envoie les
+                        données suivantes :
                         <List>
-                            <ListItem>heroImg =&gt; &quot;ligne_verte.png&quot;</ListItem>
-                            <ListItem>heroTitle =&gt; &quot;La Ligne verte&quot;</ListItem>
-                            <ListItem>heroYear =&gt; 1999 </ListItem>
-                            <ListItem>heroDuration =&gt; &quot;3h 9m&quot;;</ListItem>
-                            <ListItem>heroQuality =&gt; &quot;HD&quot;;</ListItem>
-                            <ListItem>heroAudio =&gt; &quot;5.1&quot;;</ListItem>
-                            <ListItem>heroDescription =&gt; &quot;Paul Edgecomb, gardien dans le couloir de la mort, découvre que John Coffey possède un don extraordinaire qui bouleverse la vie de tous ceux qui l&apos;entourent.&quot;</ListItem>
+                            <ListItem>heroImg = &quot;ligne_verte.png&quot;</ListItem>
+                            <ListItem>heroTitle = &quot;La Ligne verte&quot;</ListItem>
+                            <ListItem>heroYear = 1999</ListItem>
+                            <ListItem>heroDuration = &quot;3h 9m&quot;</ListItem>
+                            <ListItem>heroQuality = &quot;HD&quot;</ListItem>
+                            <ListItem>heroAudio = &quot;5.1&quot;</ListItem>
+                            <ListItem>
+                                heroDescription = &quot;Paul Edgecomb, gardien dans le couloir de la mort,
+                                découvre que John Coffey possède un don extraordinaire...&quot;
+                            </ListItem>
                         </List>
-                        à la vue <Code>home</Code>.
                     </ListItem>
 
                     <ListItem>
-                        Dans <Code>public/home.php</Code>, ajoutez le code nécessaire pour instancier votre <Code>HomeController</Code> et appeler sa méthode <Code>home()</Code>.
+                        Dans <Code>public/home.php</Code>, instanciez votre{" "}
+                        <Code>HomeController</Code> et appelez sa méthode{" "}
+                        <Code>home()</Code>.
+                    </ListItem>
+
+                    <ListItem>
+                        Modifiez <Code>home.html.php</Code> pour remplacer les mots clés
+                        (HERO_IMG, HERO_TITLE...) par les variables passées par le contrôleur :
+                        <Alert>
+                            <Info />
+                            <AlertDescription>
+                                <Text>
+                                    Chaque clé du tableau envoyé par le contrôleur devient une variable
+                                    dans la vue :
+                                </Text>
+                                <CodeCard language="php">
+                                    {`<?php
+$this->view('home', [
+  "img" => "ligne_verte.png",
+  "title" => "La Ligne verte",
+  "year" => "1999",
+  "duration" => "3h 9m"
+]);
+?>
+
+<img src="<?= $img ?>" alt="<?= $title ?>">
+<h1><?= $title ?></h1>
+<p><?= $year ?> | <?= $duration ?></p>`}
+                                </CodeCard>
+                            </AlertDescription>
+                        </Alert>
                     </ListItem>
 
                     <ListItem>
@@ -269,7 +319,7 @@ HERO_DESCRIPTION
                         Vous devez voir le prénom et la liste de films s&apos;afficher correctement.
                     </ListItem>
 
-                    <ListItem>Mofifier la vue <Code>home</Code> pour afficher les films de la liste : <CodeCard
+                    <ListItem>Mofifier la vue <Code>home</Code> pour que le controleur transmette a la vue les films de la liste : <CodeCard
                         language="php">
                         {`[
     [
@@ -318,69 +368,67 @@ HERO_DESCRIPTION
                     </CodeCard>Pour chaque film, généré le HTML sous <Code>{`<h2 class="text-white mb-4">Nos films</h2>`}</Code>
                     </ListItem>
                      <ListItem>
-    Ajouter la gestion du cas où la liste est vide :  
+    Ajouter la gestion du cas où la liste est vide :
     afficher un message <CodeCard language="html">{`<div class="alert alert-info">Aucun film disponible pour le moment.</div>`}</CodeCard>
     à la place de la grille des films.
   </ListItem>
                 </List>
             </section>
 
+            {/* D - Pricing dynamique */}
             <section>
-            <Heading level={2}>D - Gestion des paramètres : Page index.php</Heading>
+                <Heading level={2}>D - Gestion des paramètres : Page index.php</Heading>
 
-            <Text>
-                Analysez le code HTML statique de la section « Pricing » dans <Code>index.html.php</Code>. Identifiez les différences et points communs entre
-                les 3 offres.
-            </Text>
-
-            <List ordered>
-                <ListItem>
-                    Proposez une structure PHP (tableau associatif) pour représenter les 3
-                    offres avec titre, prix ...
-                </ListItem>
-
-                <ListItem>
-                    Modifiez le contrôleur <Code>IndexController</Code> pour créer ce tableau et le transmettre à la vue.
-                </ListItem>
-
-                <ListItem>
-                    Adaptez la vue pour générer les cartes d’offres via une boucle <Code>foreach</Code>, au lieu d’écrire le HTML en dur.
-                </ListItem>
-            </List>
-        </section>
-
-            <section>
-                <Heading level={2}>E - Templates header et footer</Heading>
+                <Text>
+                    Vous allez maintenant rendre la section « Pricing » dynamique avec un tableau PHP et une boucle <Code>foreach</Code>.
+                </Text>
 
                 <List ordered>
                     <ListItem>
-                        Créez un dossier <Code>_template/</Code> dans <Code>app/views/</Code>
+                        Analysez le code HTML statique de la section Pricing dansb<Code>index.html.php</Code>. Repérez les points communs (titre, prix, description...).
                     </ListItem>
-
                     <ListItem>
-                        Créez le fichier <Code>app/views/_template/header.html.php</Code> avec le début du HTML commun aux pages index.php et home.php. le title de la page sera <Code>$title</Code>.
+                        Dans <Code>IndexController</Code>, créez un tableau associatif avec les 3 offres (basique, standard, premium).
                     </ListItem>
-
                     <ListItem>
-                        Créez le fichier <Code>app/views/_template/footer.html.php</Code> avec la fin du HTML commun aux pages index.php et home.php. les balise HTML ouverte par header.html.php doivent etre fermé par footer.html.php.
+                        Transmettez ce tableau à la vue, puis adaptez le code pour générer les cartes via une boucle <Code>foreach</Code>.
                     </ListItem>
+                </List>
+            </section>
 
+            {/* E - Templates */}
+            <section>
+                <Heading level={2}>E - Templates header et footer</Heading>
+
+                <Text>
+                    Pour éviter de répéter le code HTML du header et du footer dans toutes vos vues, nous allons les mettre dans des fichiers séparés.
+                </Text>
+
+                <List ordered>
                     <ListItem>
-                        Modifiez vos vues <Code>index.html.php</Code> et <Code>home.html.php</Code> pour inclure le header et le footer.
+                        Créez un dossier <Code>_template/</Code> dans <Code>app/views/</Code>.
                     </ListItem>
-
                     <ListItem>
-                        Rechargez vos pages : l’affichage est identique mais le code est maintenant plus modulaire.
+                        Ajoutez <Code>header.html.php</Code> avec le début du code HTML (balises <Code>&lt;html&gt;</Code>, <Code>&lt;head&gt;</Code>, <Code>&lt;body&gt;</Code>, et la navbar). Utilisez une variable <Code>$title</Code> pour le titre de la page.
+                    </ListItem>
+                    <ListItem>
+                        Ajoutez <Code>footer.html.php</Code> avec la fin du HTML (balises fermantes et scripts).
+                    </ListItem>
+                    <ListItem>
+                        Incluez ces deux fichiers dans vos vues <Code>index</Code> et <Code>home</Code>.
+                    </ListItem>
+                    <ListItem>
+                        Rechargez vos pages : l’affichage reste identique, mais le code est désormais mieux organisé.
                     </ListItem>
                 </List>
             </section>
                  <Heading level={2}>F - Personnalisation des pages</Heading>
-                <Text>Ajoutez vos films préférés aux pages <Code>home</Code> et <Code>index</Code> en personnalisant uniquement les contrôleurs et les images du dossier <Code>public</Code>.  
-  Ne modifiez pas les vues <Code>home</Code> et <Code>index</Code>, car elles sont conçues pour être génériques et réutilisables.  
+                <Text>Ajoutez vos films préférés aux pages <Code>home</Code> et <Code>index</Code> en personnalisant uniquement les contrôleurs et les images du dossier <Code>public</Code>.
+  Ne modifiez pas les vues <Code>home</Code> et <Code>index</Code>, car elles sont conçues pour être génériques et réutilisables.
   Toutes les modifications doivent passer par les contrôleurs et les images afin de préserver la structure et le style des pages.
 </Text>
             <section>
-            
+
             </section>
 
             <section>
