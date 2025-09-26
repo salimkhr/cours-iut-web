@@ -261,7 +261,7 @@ HERO_DESCRIPTION
                     </ListItem>
 
                     <ListItem>
-                        Dans <Code>public/home.php</Code>, ajoutez le code nécessaire pour instancier votre <Code>HomeController</Code> et appeler sa méthode <Code>index()</Code>.
+                        Dans <Code>public/home.php</Code>, ajoutez le code nécessaire pour instancier votre <Code>HomeController</Code> et appeler sa méthode <Code>home()</Code>.
                     </ListItem>
 
                     <ListItem>
