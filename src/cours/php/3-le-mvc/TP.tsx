@@ -4,8 +4,7 @@ import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
 import Text from "@/components/ui/Text";
 import Link from "next/link";
-import {Alert, AlertDescription} from "@/components/ui/alert";
-import {Info} from "lucide-react";
+import CourseReminder from "@/components/CourseReminder";
 
 export default function TP() {
     return (
@@ -289,29 +288,45 @@ HERO_DESCRIPTION
                     <ListItem>
                         Modifiez <Code>home.html.php</Code> pour remplacer les mots clés
                         (HERO_IMG, HERO_TITLE...) par les variables passées par le contrôleur :
-                        <Alert>
-                            <Info />
-                            <AlertDescription>
-                                <Text>
-                                    Chaque clé du tableau envoyé par le contrôleur devient une variable
-                                    dans la vue :
-                                </Text>
-                                <CodeCard language="php">
-                                    {`<?php
-$this->view('home', [
-  "img" => "ligne_verte.png",
-  "title" => "La Ligne verte",
-  "year" => "1999",
-  "duration" => "3h 9m"
-]);
-?>
+{/*                        <Alert>*/}
+{/*                            <BookAlert />*/}
+{/*                            <AlertTitle><strong>Rappel du cours</strong></AlertTitle>*/}
+{/*                            <AlertDescription>*/}
 
+{/*                            </AlertDescription>*/}
+{/*                        </Alert>*/}
+                        <CourseReminder>
+                            <Text>Lorsqu’on appelle une vue depuis un <strong>Controller</strong>, on peut lui transmettre des données sous forme de tableau associatif.
+                            La méthode <code>view()</code> va alors automatiquement créer des variables dont le nom correspond aux clés du tableau, et qui seront disponibles directement dans la vue.
+                            </Text>
+                            <CodeCard language="php">
+                                {`<?php
+$this->view('home', [
+    "img" => "ligne_verte.png",
+    "title" => "La Ligne verte",
+    "year" => "1999",
+    "duration" => "3h 9m"
+]);
+
+// Utilisation dans la vue "home.php"
+?>
 <img src="<?= $img ?>" alt="<?= $title ?>">
 <h1><?= $title ?></h1>
-<p><?= $year ?> | <?= $duration ?></p>`}
-                                </CodeCard>
-                            </AlertDescription>
-                        </Alert>
+<p>Année : <?= $year ?></p>
+<p>Durée : <?= $duration ?></p>
+`}
+                            </CodeCard>
+
+                            <Text>Ici, chaque clé du tableau est devenue une variable :</Text>
+                            <List className="pl-6">
+                                <ListItem><Code>$img</Code> contient <em>&quot;ligne_verte.png&quot;</em></ListItem>
+                                <ListItem><Code>$title</Code> contient <em>&quot;La Ligne verte&quot;</em></ListItem>
+                                <ListItem><Code>$year</Code> contient <em>&quot;1999&quot;</em></ListItem>
+                                <ListItem><Code>$duration</Code> contient <em>&quot;3h 9m&quot;</em></ListItem>
+                            </List>
+
+                            <Text>Le <strong>Controller</strong> prépare donc les données, et la <strong>Vue</strong> se concentre uniquement sur leur affichage.</Text>
+                        </CourseReminder>
                     </ListItem>
 
                     <ListItem>
@@ -323,23 +338,21 @@ $this->view('home', [
                         language="php">
                         {`[
     [
-        "img" => "ligne_verte.png",
+        "img" => "ligne_verte.png"
         "title" => "La Ligne verte",
         "year" => "1999",
         "duration" => "3h 9m",
     ],
     [
-        "img" => "liste_schindler.jpg",
+        "img" => "liste_schindler.jpg"
         "title" => "La Liste de Schindler",
         "year" => "1993",
         "duration" => "3h 15m",
     ],
-    [
-        "img" => "django.jpg",
+    "img" => "django.jpg",
         "title" => "Django Unchained",
         "year" => "2012",
         "duration" => "2h 45m",
-    ],
     [
         "img" => "forrest_gump.jpg",
         "title" => "Forrest Gump",
@@ -409,7 +422,7 @@ $this->view('home', [
                         Créez un dossier <Code>_template/</Code> dans <Code>app/views/</Code>.
                     </ListItem>
                     <ListItem>
-                        Ajoutez <Code>header.html.php</Code> avec le début du code HTML (balises <Code>&lt;html&gt;</Code>, <Code>&lt;head&gt;</Code>, <Code>&lt;body&gt;</Code>, et la navbar). Utilisez une variable <Code>$title</Code> pour le titre de la page.
+                        Ajoutez <Code>header.html.php</Code> avec le début du code HTML (balises <Code>&lt;html&gt;</Code>, <Code>&lt;head&gt;</Code>, <Code>&lt;body&gt;</Code>). Utilisez une variable <Code>$title</Code> pour le titre de la page.
                     </ListItem>
                     <ListItem>
                         Ajoutez <Code>footer.html.php</Code> avec la fin du HTML (balises fermantes et scripts).
