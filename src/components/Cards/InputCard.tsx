@@ -2,7 +2,7 @@
 
 import React, {useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
-import {ClipboardCopyIcon, DownloadIcon} from "lucide-react";
+import {CheckIcon, ClipboardCopyIcon, DownloadIcon} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {Button} from "@/components/ui/button";
 import Module from "@/types/module";
@@ -11,8 +11,8 @@ import {oneLight} from "react-syntax-highlighter/dist/esm/styles/prism";
 interface CodeCardProps {
     title: string;
     description: string;
-    language: string;
-    children: string;
+    language?: string;
+    code: string;
     className?: string;
     showLineNumbers?: boolean;
     filename?: string;
@@ -23,8 +23,8 @@ interface CodeCardProps {
 export default function InputCard({
                                       title,
                                       description,
-                                      language,
-                                      children,
+                                      language="html",
+                                      code,
                                       showLineNumbers = true,
                                       filename,
                                       currentModule,
@@ -33,7 +33,7 @@ export default function InputCard({
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(children).then(() => {
+        navigator.clipboard.writeText(code).then(() => {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         });
@@ -63,7 +63,7 @@ export default function InputCard({
 
     const handleDownload = () => {
         const mimeType = getMimeType(language);
-        const blob = new Blob([children], {type: `${mimeType};charset=utf-8`});
+        const blob = new Blob([code], {type: `${mimeType};charset=utf-8`});
         const url = URL.createObjectURL(blob);
 
         const link = document.createElement("a");
@@ -77,8 +77,8 @@ export default function InputCard({
     const headerCard = (
         <>
             <div className="flex items-center gap-2">
-                <h3 className="text-md font-semibold text-white">{title}</h3>
-                <span className="text-sm text-white/70 font-mono">{language.toUpperCase()}</span>
+                <strong className="text-md font-semibold text-white">{title}</strong>
+                <span className="text-xs text-white/60 font-mono">{language.toUpperCase()}</span>
             </div>
             <div className="flex gap-1">
                 {filename && (
@@ -97,8 +97,8 @@ export default function InputCard({
                     onClick={handleCopy}
                     className="flex items-center gap-2 text-white hover:bg-white/10"
                 >
-                    <ClipboardCopyIcon className="w-4 h-4"/>
-                    {copied ? 'Copié !' : 'Copier'}
+                    {copied ? <CheckIcon className="w-4 h-4" /> : <ClipboardCopyIcon className="w-4 h-4"/>}
+                    {copied ? 'Copié' : 'Copier'}
                 </Button>
             </div>
         </>
@@ -106,26 +106,29 @@ export default function InputCard({
 
     const content = (
         <div className="space-y-4">
-            <p className="text-sm text-gray-600">{description}</p>
-            <div className="w-full overflow-hidden">
+            {description && (
+                <p className="text-sm text-gray-600 text-left">{description}</p>
+            )}
+
+            <div className="rounded-md border border-gray-200 overflow-hidden">
                 <SyntaxHighlighter
                     language={language}
                     style={oneLight}
                     customStyle={{
                         margin: 0,
                         fontSize: '0.875rem',
-                        lineHeight: '1.25rem',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '0.375rem',
+                        lineHeight: '1.5rem',
+                        background: '#fafafa',
                     }}
                     wrapLongLines={true}
                     showLineNumbers={showLineNumbers}
                 >
-                    {children}
+                    {code}
                 </SyntaxHighlighter>
             </div>
+
             {inputElement && (
-                <div className="mt-4">
+                <div>
                     {inputElement}
                 </div>
             )}
@@ -137,7 +140,7 @@ export default function InputCard({
             <BaseCard
                 header={headerCard}
                 content={content}
-                withMarge={false}
+                withMarge={true}
                 withHover={false}
                 withLed={false}
                 currentModule={currentModule}
