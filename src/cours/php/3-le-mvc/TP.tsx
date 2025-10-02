@@ -10,7 +10,7 @@ export default function TP() {
     return (
         <article>
             <section>
-                <Heading level={2}>A - Initialisation du projet</Heading>
+                <Heading level={2} netflex>A - Initialisation du projet</Heading>
 
                 Récupérez le code source de départ depuis le dépôt Git : <CodeCard language="bash" showLineNumbers={false}>
                 {`git clone https://gitlab.com/iut3334332/php/mvc.git
@@ -19,7 +19,7 @@ cd mvc`}
 
             </section>
             <section>
-                <Heading level={2}>B - Première page simple : index.php</Heading>
+                <Heading level={2} netflex>B - Première page simple : index.php</Heading>
                 <Text>
                     Dans cette étape, vous allez afficher votre <strong>première page</strong> avec le
                     modèle MVC : une vue, un contrôleur, et un point d’entrée.
@@ -162,7 +162,7 @@ cd mvc`}
             </section>
 
             <section>
-                <Heading level={2}>C - Gestion des paramètres : Page home.php</Heading>
+               <Heading level={2} netflex>C - Gestion des paramètres : Page home.php</Heading>
                 <Text>
                     Ici, vous allez créer une deuxième page (<Code>home</Code>) et apprendre à{" "}<strong>transmettre des données du contrôleur à la vue</strong>.
                 </Text>
@@ -390,7 +390,7 @@ $this->view('home', [
 
             {/* D - Pricing dynamique */}
             <section>
-                <Heading level={2}>D - Gestion des paramètres : Page index.php</Heading>
+               <Heading level={2} netflex>D - Gestion des paramètres : Page index.php</Heading>
 
                 <Text>
                     Vous allez maintenant rendre la section « Pricing » dynamique avec un tableau PHP et une boucle <Code>foreach</Code>.
@@ -411,7 +411,7 @@ $this->view('home', [
 
             {/* E - Templates */}
             <section>
-                <Heading level={2}>E - Templates header et footer</Heading>
+               <Heading level={2} netflex>E - Templates header et footer</Heading>
 
                 <Text>
                     Pour éviter de répéter le code HTML du header et du footer dans toutes vos vues, nous allons les mettre dans des fichiers séparés.
@@ -435,7 +435,7 @@ $this->view('home', [
                     </ListItem>
                 </List>
             </section>
-                 <Heading level={2}>F - Personnalisation des pages</Heading>
+                <Heading level={2} netflex>F - Personnalisation des pages</Heading>
                 <Text>Ajoutez vos films préférés aux pages <Code>home</Code> et <Code>index</Code> en personnalisant uniquement les contrôleurs et les images du dossier <Code>public</Code>.
   Ne modifiez pas les vues <Code>home</Code> et <Code>index</Code>, car elles sont conçues pour être génériques et réutilisables.
   Toutes les modifications doivent passer par les contrôleurs et les images afin de préserver la structure et le style des pages.
@@ -445,7 +445,7 @@ $this->view('home', [
             </section>
 
             <section>
-                <Heading level={2}>G - Résultat attendu</Heading>
+               <Heading level={2} netflex>G - Résultat attendu</Heading>
 
                 <CodeCard language="txt" showLineNumbers={false}>
                     {`project_tp/

@@ -1,13 +1,16 @@
 import {cn} from '@/lib/utils';
 import {JSX} from "react";
+import {Film} from 'lucide-react'; // Assurez-vous d'avoir lucide-react installé // Assurez-vous d'avoir lucide-react installé
+import Text from "./Text";
 
 type HeadingProps = {
     level?: 1 | 2 | 3 | 4 | 5 | 6;
     className?: string;
     children: React.ReactNode;
+    netflex?: boolean; // Nouvelle prop
 };
 
-export default function Heading({level = 2, className = '', children}: HeadingProps) {
+export default function Heading({ level = 2, className = '', children, netflex = false }: HeadingProps) {
     const Tag = `h${level}` as keyof JSX.IntrinsicElements;
 
     const styles = {
@@ -22,6 +25,9 @@ export default function Heading({level = 2, className = '', children}: HeadingPr
     return (
         <Tag className={cn(styles[level], className)}>
             {children}
+            {netflex && (
+                <Text title="À réaliser dans le projet Netflex" className="inline-block"><Film className="inline-block ml-2" /></Text>
+            )}
         </Tag>
     );
 }
