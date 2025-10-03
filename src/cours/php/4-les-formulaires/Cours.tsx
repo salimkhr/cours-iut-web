@@ -77,7 +77,8 @@ export default function Cours() {
                     <InputCard
                         title="Checkbox"
                         description="Choix multiples"
-                        code={`<input type="checkbox" name="agree" />`}
+                        code={`<label><input type="checkbox" name="opt[]" value="1"/> Option 1</label>
+<label><input type="checkbox" name="opt[]" value="2"/> Option 2</label>`}
                         inputElement={
                             <>
                                 <label><input type="checkbox"/> Option 1</label>
@@ -88,7 +89,8 @@ export default function Cours() {
                     <InputCard
                         title="Radio"
                         description="Choix unique"
-                        code={`<input type="radio" name="choice" value="1" />`}
+                        code={`<label><input type="radio" name="opt" value="1"/> Option 1</label>
+<label><input type="radio" name="opt" value="2"/> Option 2</label>`}
                         inputElement={
                             <>
                                 <label><input type="radio" name="ex" value="1"/> Option 1</label>
@@ -193,7 +195,8 @@ export default function Cours() {
                 <Heading level={3}>4. Autocomplete intelligent</Heading>
                 <Text>
                     L&quot;attribut <Code>autocomplete</Code> permet au navigateur de suggérer des valeurs sauvegardées.
-                    Valeurs courantes : <Code>name</Code>, <Code>email</Code>, <Code>tel</Code>, <Code>street-address</Code>,
+                    Valeurs courantes
+                    : <Code>name</Code>, <Code>email</Code>, <Code>tel</Code>, <Code>street-address</Code>,
                     <Code>postal-code</Code>, <Code>cc-number</Code>, <Code>new-password</Code>, <Code>current-password</Code>.
                 </Text>
 
@@ -217,7 +220,8 @@ export default function Cours() {
                         <form>
                             <input type="text" autoComplete="given-name" placeholder="Prénom" className="input"/>
                             <input type="email" autoComplete="email" placeholder="Email" className="input"/>
-                            <input type="password" autoComplete="new-password" placeholder="Mot de passe" className="input"/>
+                            <input type="password" autoComplete="new-password" placeholder="Mot de passe"
+                                   className="input"/>
                         </form>
                     </PreviewPanel>
                 </CodeWithPreviewCard>
@@ -553,8 +557,10 @@ if (in_array($gender, $valid_genders)) {
 
                 <Heading level={3}>7. $_REQUEST : à éviter</Heading>
                 <Text>
-                    <Code>$_REQUEST</Code> contient les données de <Code>$_GET</Code>, <Code>$_POST</Code> et <Code>$_COOKIE</Code>.
-                    Son utilisation n&quot;est pas recommandée car elle ne permet pas de distinguer la source des données
+                    <Code>$_REQUEST</Code> contient les données
+                    de <Code>$_GET</Code>, <Code>$_POST</Code> et <Code>$_COOKIE</Code>.
+                    Son utilisation n&quot;est pas recommandée car elle ne permet pas de distinguer la source des
+                    données
                     et peut créer des conflits.
                 </Text>
 
@@ -577,8 +583,10 @@ $username = $_GET['username'] ?? '';
 
                 <Heading level={3}>Qu&quot;est-ce qu&quot;une attaque XSS ?</Heading>
                 <Text>
-                    XSS (Cross-Site Scripting) est une vulnérabilité qui permet d&quot;injecter du code JavaScript malveillant.
-                    Sans protection, un attaquant peut voler des cookies, des sessions, ou manipuler le contenu de la page.
+                    XSS (Cross-Site Scripting) est une vulnérabilité qui permet d&quot;injecter du code JavaScript
+                    malveillant.
+                    Sans protection, un attaquant peut voler des cookies, des sessions, ou manipuler le contenu de la
+                    page.
                 </Text>
 
                 <CodeCard language="php">
@@ -653,7 +661,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <List>
                     <ListItem>Attribut <Code>name</Code> obligatoire sur chaque input (utilisé en PHP)</ListItem>
                     <ListItem>Attribut <Code>id</Code> pour lier au <Code>&lt;label&gt;</Code></ListItem>
-                    <ListItem>Validation HTML5 : <Code>required</Code>, <Code>pattern</Code>, <Code>min/max</Code></ListItem>
+                    <ListItem>Validation HTML5
+                        : <Code>required</Code>, <Code>pattern</Code>, <Code>min/max</Code></ListItem>
                     <ListItem>Autocomplete pour améliorer l&quot;expérience utilisateur</ListItem>
                 </List>
 
@@ -661,14 +670,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <List>
                     <ListItem><Code>GET</Code> : pour recherches, filtres (données dans l&quot;URL)</ListItem>
                     <ListItem><Code>POST</Code> : pour inscriptions, connexions (données cachées)</ListItem>
-                    <ListItem>Utiliser <Code>$_SERVER[&quot;REQUEST_METHOD&quot;]</Code> pour détecter la méthode</ListItem>
+                    <ListItem>Utiliser <Code>$_SERVER[&quot;REQUEST_METHOD&quot;]</Code> pour détecter la
+                        méthode</ListItem>
                     <ListItem>Toujours valider côté serveur (ne jamais faire confiance au client)</ListItem>
-                    <ListItem>Opérateur <Code>??</Code> pour valeurs par défaut : <Code>$var = $_POST[&quot;field&quot;] ?? &quot;&quot;</Code></ListItem>
+                    <ListItem>Opérateur <Code>??</Code> pour valeurs par défaut : <Code>$var = $_POST[&quot;field&quot;]
+                        ?? &quot;&quot;</Code></ListItem>
                 </List>
 
                 <Heading level={3}>Sécurité</Heading>
                 <List>
-                    <ListItem><strong>TOUJOURS</strong> utiliser <Code>htmlspecialchars($data, ENT_QUOTES, &quot;UTF-8&quot;)</Code></ListItem>
+                    <ListItem><strong>TOUJOURS</strong> utiliser <Code>htmlspecialchars($data,
+                        ENT_QUOTES, &quot;UTF-8&quot;)</Code></ListItem>
                     <ListItem>Validation email : <Code>filter_var($email, FILTER_VALIDATE_EMAIL)</Code></ListItem>
                     <ListItem>Validation des données : longueur, format, valeurs autorisées</ListItem>
                     <ListItem>Messages d&quot;erreur clairs et utiles pour l&quot;utilisateur</ListItem>
