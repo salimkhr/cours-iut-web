@@ -19,7 +19,7 @@ export default function Cours() {
                         règles de validation)
                     </ListItem>
                     <ListItem>
-                        <strong>La Vue</strong> : se concentre exclusivement sur l'affichage des données
+                        <strong>La Vue</strong> : se concentre exclusivement sur l&apos;affichage des données
                     </ListItem>
                     <ListItem>
                         <strong>Le Contrôleur</strong> : fait le lien entre le Modèle et la Vue, orchestre
