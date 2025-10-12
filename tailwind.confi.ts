@@ -12,6 +12,7 @@ export default {
     content: [
         "./src/**/*.{js,ts,jsx,tsx,mdx}",
     ],
+    darkMode: 'class', // Activation du dark mode
     theme: {
         extend: {
             colors: {
@@ -27,14 +28,29 @@ export default {
             > = {};
 
             Object.entries(moduleColors).forEach(([name, color]) => {
+                // Classes normales
                 newUtilities[`.text-${name}`] = {color};
                 newUtilities[`.bg-${name}`] = {backgroundColor: color};
                 newUtilities[`.border-${name}`] = {borderColor: color};
+
+                // Classes dark mode avec brightness augmenté
+                newUtilities[`.dark .text-${name}`] = {
+                    color,
+                    filter: 'brightness(1.3)'
+                };
+                newUtilities[`.dark .bg-${name}`] = {
+                    backgroundColor: color,
+                    filter: 'brightness(1.2)'
+                };
+                newUtilities[`.dark .border-${name}`] = {
+                    borderColor: color,
+                    filter: 'brightness(1.3)'
+                };
             });
 
             console.log(newUtilities);
 
-            addUtilities(newUtilities, ["responsive", "hover"]);
+            addUtilities(newUtilities);
         },
     ],
 } satisfies Config;

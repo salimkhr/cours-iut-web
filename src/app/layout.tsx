@@ -4,6 +4,7 @@ import './globals.css';
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import CsrfInitializer from "@/components/CsrfInitializer";
+import {ThemeProvider} from "@/components/ThemeProvider";
 
 const jetbrainsMono = JetBrains_Mono({
     subsets: ['latin'],
@@ -30,12 +31,19 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="fr" className={jetbrainsMono.variable}>
+        <html lang="fr" className={jetbrainsMono.variable} suppressHydrationWarning>
         <body className="min-h-screen font-mono">
-        <NavBar/>
-        {children}
-        <Footer/>
-        <CsrfInitializer/>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+        >
+            <NavBar/>
+            {children}
+            <Footer/>
+            <CsrfInitializer/>
+        </ThemeProvider>
         </body>
         </html>
     );

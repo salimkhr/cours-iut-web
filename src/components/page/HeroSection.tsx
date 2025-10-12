@@ -23,7 +23,7 @@ export default function HeroSection({
                                         tags = [],
                                     }: HeroSectionProps) {
     const titleElement = (
-        <h1 className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-extrabold mt-10 lg:mb-4 text-center bg-gradient-to-r bg-clip-text">
+        <h1 className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-extrabold mt-10 lg:mb-4 text-center bg-gradient-to-r bg-clip-text dark:text-white">
             {title}
         </h1>
     );
@@ -40,7 +40,7 @@ export default function HeroSection({
                 </GlitchText>
 
                 {description && (
-                    <p className="text-base sm:text-lg text-gray-600 text-center max-w-2xl leading-relaxed">
+                    <p className="text-base sm:text-lg text-gray-400 dark:text-gray-100 text-center max-w-2xl leading-relaxed">
                         {description}
                     </p>
                 )}
@@ -61,7 +61,7 @@ export default function HeroSection({
                     alt={imageAlt}
                     width={1200}
                     height={1200}
-                    className="w-full h-auto max-w-xs lg:max-w-sm hover:scale-105 transition-transform duration-300"
+                    className="w-full h-auto max-w-xs lg:max-w-sm hover:scale-105 transition-transform duration-300 dark:opacity-90"
                     style={{marginBottom: imagePath.includes('header.svg') ? '-20px' : '0', zIndex: 100}}
                     priority
                 />

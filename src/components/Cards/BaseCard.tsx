@@ -29,23 +29,36 @@ export default function BaseCard({
                                      className = ""
                                  }: BaseCardProps) {
     return (
-        <div className={cn("group ", withHover ? 'hover:shadow-xl transition-all duration-300 hover:scale-105' : '',className)}>
+        <div className={cn(
+            "group",
+            withHover ? 'hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-white/10 transition-all duration-300 hover:scale-105' : '',
+            className
+        )}>
             <Card
-                className={`w-full h-full text-center flex flex-col justify-between border-2 border-${currentModule ? currentModule.path : 'module'} bg-white p-0 rounded-lg shadow-lg overflow-hidden`}
+                className={cn(
+                    "w-full h-full text-center flex flex-col justify-between border-2 bg-white dark:bg-gray-900 p-0 rounded-lg shadow-lg overflow-hidden",
+                    `border-${currentModule ? currentModule.path : 'module'}`
+                )}
             >
                 <CardHeader
-                    className={cn("flex flex-row justify-between items-center p-4 group-hover:brightness-110 transition-all duration-300", `bg-${currentModule ? currentModule.path : 'module'}`)}
+                    className={cn(
+                        "flex flex-row justify-between items-center p-4 group-hover:brightness-110 dark:group-hover:brightness-125 transition-all duration-300",
+                        `bg-${currentModule ? currentModule.path : 'module'}`
+                    )}
                 >
                     {withLed ? <LEDIndicator/> : null}
                     {header}
                 </CardHeader>
 
                 <CardContent
-                    className={cn(withMarge ? 'p-6' : '', "flex-grow flex flex-col items-center justify-center")}>
+                    className={cn(
+                        withMarge ? 'p-6' : '',
+                        "flex-grow flex flex-col items-center justify-center text-black dark:text-white"
+                    )}>
                     {content}
                 </CardContent>
 
-                {footer ? <CardFooter className="p-4">
+                {footer ? <CardFooter className="p-4 dark:border-t dark:border-gray-800">
                     {footer}
                 </CardFooter> : null}
             </Card>
@@ -56,10 +69,10 @@ export default function BaseCard({
 export function LEDIndicator() {
     return (
         <div className="flex gap-2">
-            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse"></div>
-            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse"
+            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse shadow-sm"></div>
+            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse shadow-sm"
                  style={{animationDelay: '0.2s'}}></div>
-            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse"
+            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse shadow-sm"
                  style={{animationDelay: '0.4s'}}></div>
         </div>
     );
@@ -77,7 +90,12 @@ export function ActionButton({currentModule, onClick, children, className = '', 
     return (
         <Button
             variant="destructive"
-            className={`text-black font-semibold hover:brightness-110 transition-all duration-300 border-2 border-${currentModule ? currentModule.path : 'module'} text-${currentModule ? currentModule.path : 'module'} ${className}`}
+            className={cn(
+                "font-semibold hover:brightness-110 dark:hover:brightness-125 transition-all duration-300 border-2 bg-white dark:bg-gray-900 text-black dark:text-white",
+                `border-${currentModule ? currentModule.path : 'module'}`,
+                `text-${currentModule ? currentModule.path : 'module'}`,
+                className
+            )}
             onClick={onClick}
             disabled={disabled}
         >

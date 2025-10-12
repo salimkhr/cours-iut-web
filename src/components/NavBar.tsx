@@ -11,7 +11,7 @@ import {
 import getModules from "@/lib/getModules";
 import iconMap from "@/lib/iconMap";
 import {verifyToken} from "@/lib/token";
-// import iconMap from "@/lib/iconMap";
+import {ThemeToggle} from "@/components/ThemeToggle";
 
 
 export default async function NavBar() {
@@ -42,7 +42,7 @@ export default async function NavBar() {
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                     {isAdmin ? <NavigationMenuItem key="admin">
-                        <NavigationMenuLink asChild active={isActive(module.path)}>
+                        <NavigationMenuLink asChild active={isActive('admin')}>
                             <Link
                                 href={`/admin`}
                                 className={`${navigationMenuTriggerStyle()} gap-2`}
@@ -53,8 +53,8 @@ export default async function NavBar() {
                                 </div>
                             </Link>
                         </NavigationMenuLink>
-                    </NavigationMenuItem> : <NavigationMenuItem key="admin">
-                        <NavigationMenuLink asChild active={isActive(module.path)}>
+                    </NavigationMenuItem> : <NavigationMenuItem key="login">
+                        <NavigationMenuLink asChild active={isActive('admin')}>
                             <Link
                                 href={`/admin`}
                                 className={`${navigationMenuTriggerStyle()} gap-2`}
@@ -91,6 +91,13 @@ export default async function NavBar() {
                         })}
                     </NavigationMenuList>
                 </div>
+
+                {/* Bouton Theme Toggle */}
+                <NavigationMenuList className="flex items-center ml-auto">
+                    <NavigationMenuItem>
+                        <ThemeToggle />
+                    </NavigationMenuItem>
+                </NavigationMenuList>
             </NavigationMenu>
         </header>
     )
