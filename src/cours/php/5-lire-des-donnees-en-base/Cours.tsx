@@ -143,52 +143,6 @@ class CategoryRepository
 }`}
                         </CodeCard>
                     </ListItem>
-                    <ListItem>
-                        <strong>findById</strong> : Récupère une catégorie par son ID.
-                        <CodeCard language={"php"}>
-                            {`public function findById(int $id): ?Category
-{
-    $stmt = $this->pdo->prepare("SELECT * FROM category WHERE id = :id");
-    $stmt->execute(['id' => $id]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row) {
-        return $this->createCategoryFromRow($row);
-    }
-    return null;
-}`}
-                        </CodeCard>
-                    </ListItem>
-                    <ListItem>
-                        <strong>create</strong> : Crée une nouvelle catégorie.
-                        <CodeCard language={"php"}>
-                            {`public function create(string $name): ?int
-{
-    $stmt = $this->pdo->prepare("INSERT INTO category (name) VALUES (:name)");
-    $stmt->execute(['name' => $name]);
-    return (int) $this->pdo->lastInsertId();
-}`}
-                        </CodeCard>
-                    </ListItem>
-                    <ListItem>
-                        <strong>update</strong> : Met à jour une catégorie existante.
-                        <CodeCard language={"php"}>
-                            {`public function update(int $id, string $name): bool
-{
-    $stmt = $this->pdo->prepare("UPDATE category SET name = :name WHERE id = :id");
-    return $stmt->execute(['id' => $id, 'name' => $name]);
-}`}
-                        </CodeCard>
-                    </ListItem>
-                    <ListItem>
-                        <strong>delete</strong> : Supprime une catégorie.
-                        <CodeCard language={"php"}>
-                            {`public function delete(int $id): bool
-{
-    $stmt = $this->pdo->prepare("DELETE FROM category WHERE id = :id");
-    return $stmt->execute(['id' => $id]);
-}`}
-                        </CodeCard>
-                    </ListItem>
                 </List>
 
                 <Heading level={3}>Les Requêtes Préparées</Heading>
@@ -238,13 +192,135 @@ $stmt->execute(['name' => $categoryName]);`}
                 </Text>
                 <CodeCard language={'php'}>
                     {`$stmt = $this->pdo->prepare(
-    "UPDATE category SET name = :name WHERE id = :id"
+    "SELECT * FROM category 
+     WHERE name ILIKE :name 
+        AND is_active = :is_active 
+        AND created_at >= :created_after"
 );
+
 $stmt->execute([
-    'id' => $categoryId,
-    'name' => $categoryName
+    'name' => '%' . $searchName . '%',
+    'is_active' => $isActive,
+    'created_after' => $createdAfter
 ]);`}
                 </CodeCard>
+                <Text>Dans cet exemple,</Text>
+                <List>
+                    <ListItem>
+                        Le paramètre <Code>:name</Code> est lié à <Code>$searchName</Code>. Le caractère <Code>%</Code> permet une recherche partielle, donc toutes les catégories contenant la chaîne <Code>$searchName</Code> seront récupérées.
+                    </ListItem>
+                    <ListItem>
+                        Le paramètre <Code>:is_active</Code> filtre les catégories selon leur statut actif ou inactif, en utilisant la valeur booléenne <Code>$isActive</Code>.
+                    </ListItem>
+                    <ListItem>
+                        Le paramètre <Code>:created_after</Code> ne récupère que les catégories créées après la date spécifiée dans <Code>$createdAfter</Code>.
+                    </ListItem>
+                    <ListItem>
+                        L&apos;utilisation de requêtes préparées avec ces paramètres assure une <strong>protection contre les injections SQL</strong> et une exécution plus sécurisée et optimisée de la requête.
+                    </ListItem>
+                </List>
+                <Heading level={3}>Méthodes de la Classe Repository</Heading>
+                <List>
+                    <ListItem>
+                        <strong>findById</strong> : Récupère une catégorie par son ID.
+                        <CodeCard language={"php"}>
+                            {`public function findById(int $id): ?Category
+{
+    $stmt = $this->pdo->prepare("SELECT * FROM category WHERE id = :id");
+    $stmt->execute(['id' => $id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row) {
+        return $this->createCategoryFromRow($row);
+    }
+    return null;
+}`}
+                        </CodeCard>
+                    </ListItem>
+                    <ListItem>
+                        <strong>findByName</strong> : Récupère les catégories par le name.
+                        <CodeCard language={"php"}>
+                            {`public function findByName(string $name): array
+{
+    $stmt = $this->pdo->prepare("SELECT * FROM category WHERE name = :name");
+    $stmt->execute(['name' => $name]);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $categories = [];
+    foreach ($rows as $row) {
+        $categories[] = $this->createCategoryFromRow($row);
+    }
+
+    return $categories;
+}`}
+                        </CodeCard>
+                    </ListItem>
+                </List>
+               {/* <List>
+                    <ListItem>
+                        <strong>create</strong> : Crée une nouvelle catégorie.
+                        <CodeCard language={"php"}>
+                            {`public function create(string $name): ?int
+{
+    $stmt = $this->pdo->prepare("INSERT INTO category (name) VALUES (:name)");
+    $stmt->execute(['name' => $name]);
+    return (int) $this->pdo->lastInsertId();
+}`}
+                        </CodeCard>
+                    </ListItem>
+                    <ListItem>
+                        <strong>update</strong> : Met à jour une catégorie existante.
+                        <CodeCard language={"php"}>
+                            {`public function update(int $id, string $name): bool
+{
+    $stmt = $this->pdo->prepare("UPDATE category SET name = :name WHERE id = :id");
+    return $stmt->execute(['id' => $id, 'name' => $name]);
+}`}
+                        </CodeCard>
+                    </ListItem>
+                    <ListItem>
+                        <strong>delete</strong> : Supprime une catégorie.
+                        <CodeCard language={"php"}>
+                            {`public function delete(int $id): bool
+{
+    $stmt = $this->pdo->prepare("DELETE FROM category WHERE id = :id");
+    return $stmt->execute(['id' => $id]);
+}`}
+                        </CodeCard>
+                    </ListItem>
+                </List>*/}{/* <List>
+                    <ListItem>
+                        <strong>create</strong> : Crée une nouvelle catégorie.
+                        <CodeCard language={"php"}>
+                            {`public function create(string $name): ?int
+{
+    $stmt = $this->pdo->prepare("INSERT INTO category (name) VALUES (:name)");
+    $stmt->execute(['name' => $name]);
+    return (int) $this->pdo->lastInsertId();
+}`}
+                        </CodeCard>
+                    </ListItem>
+                    <ListItem>
+                        <strong>update</strong> : Met à jour une catégorie existante.
+                        <CodeCard language={"php"}>
+                            {`public function update(int $id, string $name): bool
+{
+    $stmt = $this->pdo->prepare("UPDATE category SET name = :name WHERE id = :id");
+    return $stmt->execute(['id' => $id, 'name' => $name]);
+}`}
+                        </CodeCard>
+                    </ListItem>
+                    <ListItem>
+                        <strong>delete</strong> : Supprime une catégorie.
+                        <CodeCard language={"php"}>
+                            {`public function delete(int $id): bool
+{
+    $stmt = $this->pdo->prepare("DELETE FROM category WHERE id = :id");
+    return $stmt->execute(['id' => $id]);
+}`}
+                        </CodeCard>
+                    </ListItem>
+                </List>*/}
+
 
                 <Heading level={3}>Utilisation des Repositories dans les Contrôleurs</Heading>
                 <Text>
@@ -439,14 +515,13 @@ class CategoryController extends Controller
             <tr>
                 <th>ID</th>
                 <th>Nom</th>
-                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($categories as $category): ?>
                 <tr>
                     <td><?= $category->getId() ?></td>
-                    <td><?= htmlspecialchars($category->getName()) ?></td>
+                    <td><?= $category->getName() ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
