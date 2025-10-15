@@ -2,16 +2,19 @@ import Heading from "@/components/ui/Heading";
 import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
 import CodeCard from "@/components/Cards/CodeCard";
+import Text from "@/components/ui/Text";
+import Link from "next/link";
 
 export default function TP() {
     return (
         <article>
             <section>
-                <Heading level={2}>A - Initialisation de la base & configuration de la connexion</Heading>
+                <Heading level={2} netflex>A - Initialisation de la base & configuration de la connexion</Heading>
 
                 <List ordered>
                     <ListItem>
-                        Dans le dossier <Code>config/</Code>, modifiez le fichier <Code>config.php</Code>. afin d&apos;y avoir les lignes suivantes :
+                        Dans le dossier <Code>config/</Code>, modifiez le fichier <Code>config.php</Code>. afin d&apos;y
+                        avoir les lignes suivantes :
                         <CodeCard language="php">
                             {`define('DB_HOST', 'woody');  // Hôte de la base de données (généralement localhost)
 define('DB_NAME', 'LOGINLDAP');  // Nom de la base de données
@@ -19,68 +22,74 @@ define('DB_USER', 'LOGINLDAP');  // Nom d'utilisateur de la base de données
 define('DB_PASS', 'PASSWORD');  // Mot de passe de la base de données
 define('DB_PORT', '5432');  // Mot de passe de la base de données`}
                         </CodeCard>
-                        ces constante seront utilisé dans la classe <Code>Repository</Code> pour initialiser la connexion
+                        ces constante seront utilisé dans la classe <Code>Repository</Code> pour initialiser la
+                        connexion
                     </ListItem>
 
                     <ListItem>
-                        Dans le dossier <Code>bd/</Code>, modifiez le fichier <Code>init.sql</Code>. afin d&apos;y avoir les lignes suivantes :
+                        Dans le dossier <Code>bd/</Code>, modifiez le fichier <Code>init.sql</Code>. afin d&apos;y avoir
+                        les lignes suivantes :
                         <CodeCard language='sql' filename={'init.sql'} collapsible>
-                            {`CREATE TABLE accounts (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-  );
+                            {`CREATE TABLE accounts
+                              (
+                                  id            SERIAL PRIMARY KEY,
+                                  username      VARCHAR(50)  NOT NULL UNIQUE,
+                                  email         VARCHAR(100) NOT NULL UNIQUE,
+                                  password_hash VARCHAR(255) NOT NULL,
+                                  created_at    TIMESTAMP DEFAULT NOW(),
+                                  updated_at    TIMESTAMP DEFAULT NOW()
+                              );
 
-CREATE TABLE series (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(150) NOT NULL,
-    description TEXT,
-    release_year_start INT,         -- année de début
-    release_year_end INT,           -- année de fin (NULL si toujours en cours)
-    current_season INT DEFAULT 1,   -- saison en cours
-    quality VARCHAR(10),            -- ex: "HD", "4K"
-    audio VARCHAR(20),              -- ex: "FR", "EN", "VO"
-    image VARCHAR(255),             -- URL ou chemin vers l’image
-    tags JSONB,                     -- tags pour filtrage / catégories
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
+                            CREATE TABLE series
+                            (
+                                id                 SERIAL PRIMARY KEY,
+                                title              VARCHAR(150) NOT NULL,
+                                description        TEXT,
+                                release_year_start INT,                 -- année de début
+                                release_year_end   INT,                 -- année de fin (NULL si toujours en cours)
+                                current_season     INT       DEFAULT 1, -- saison en cours
+                                quality            VARCHAR(10),         -- ex: "HD", "4K"
+                                audio              VARCHAR(20),         -- ex: "FR", "EN", "VO"
+                                image              VARCHAR(255),        -- URL ou chemin vers l’image
+                                tags               JSONB,               -- tags pour filtrage / catégories
+                                created_at         TIMESTAMP DEFAULT NOW(),
+                                updated_at         TIMESTAMP DEFAULT NOW()
+                            );
 
-CREATE TABLE episodes (
-  id SERIAL PRIMARY KEY,
-  series_id INT NOT NULL REFERENCES series(id) ON DELETE CASCADE,
-  title VARCHAR(150) NOT NULL,
-  season INT NOT NULL,
-  episode_number INT NOT NULL,
-  duration INTERVAL,  -- durée de l'épisode
-  release_date DATE,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW(),
-  UNIQUE(series_id, season, episode_number)
-);
+                            CREATE TABLE episodes
+                            (
+                                id             SERIAL PRIMARY KEY,
+                                series_id      INT          NOT NULL REFERENCES series (id) ON DELETE CASCADE,
+                                title          VARCHAR(150) NOT NULL,
+                                season         INT          NOT NULL,
+                                episode_number INT          NOT NULL,
+                                duration       INTERVAL, -- durée de l'épisode
+                                release_date   DATE,
+                                created_at     TIMESTAMP DEFAULT NOW(),
+                                updated_at     TIMESTAMP DEFAULT NOW(),
+                                UNIQUE (series_id, season, episode_number)
+                            );
 
-INSERT INTO series (id, title, release_year_start, release_year_end, tags, current_season) VALUES
-(1, 'The Wire', 2002, 2008, '["crime", "drama", "police"]', 5),
-(2, 'House of Cards', 2013, 2018, '["political", "drama", "thriller"]', 6),
-(3, 'Chernobyl', 2019, 2019, '["historical", "drama", "disaster"]', 1),
-(4, 'Breaking Bad', 2008, 2013, '["crime", "drama", "thriller"]', 5),
-(5, 'The Office', 2005, 2013, '["comedy", "mockumentary", "workplace"]', 9),
-(6, 'The Queen''s Gambit', 2020, 2020, '["drama", "chess", "miniseries"]', 1),
-(7, 'The Handmaid''s Tale', 2017, 2023, '["dystopian", "drama", "thriller"]', 5),
-(8, '3%', 2016, 2020, '["sci-fi", "dystopian", "thriller"]', 4),
-(9, 'Wednesday', 2022, 2022, '["comedy", "horror", "mystery"]', 1),
-(10, 'You', 2018, 2023, '["thriller", "psychological", "crime"]', 4),
-(11, 'Stranger Things', 2016, 2022, '["sci-fi", "horror", "supernatural"]', 4);
+                            INSERT INTO series (id, title, release_year_start, release_year_end, tags, current_season)
+                            VALUES (1, 'The Wire', 2002, 2008, '["crime", "drama", "police"]', 5),
+                                   (2, 'House of Cards', 2013, 2018, '["political", "drama", "thriller"]', 6),
+                                   (3, 'Chernobyl', 2019, 2019, '["historical", "drama", "disaster"]', 1),
+                                   (4, 'Breaking Bad', 2008, 2013, '["crime", "drama", "thriller"]', 5),
+                                   (5, 'The Office', 2005, 2013, '["comedy", "mockumentary", "workplace"]', 9),
+                                   (6, 'The Queen''s Gambit', 2020, 2020, '["drama", "chess", "miniseries"]', 1),
+                                   (7, 'The Handmaid''s Tale', 2017, 2023, '["dystopian", "drama", "thriller"]', 5),
+                                   (8, '3%', 2016, 2020, '["sci-fi", "dystopian", "thriller"]', 4),
+                                   (9, 'Wednesday', 2022, 2022, '["comedy", "horror", "mystery"]', 1),
+                                   (10, 'You', 2018, 2023, '["thriller", "psychological", "crime"]', 4),
+                                   (11, 'Stranger Things', 2016, 2022, '["sci-fi", "horror", "supernatural"]', 4);
 
--- ============================================
+                            -- ============================================
 -- TABLE: episodes
 -- ============================================
 
 -- THE WIRE (60 épisodes)
-INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date) VALUES
+                            INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date)
+                            VALUES
 -- Saison 1
 (1, 'The Target', 1, 1, '01:02:00', '2002-06-02'),
 (1, 'The Detail', 1, 2, '00:58:00', '2002-06-09'),
@@ -148,7 +157,8 @@ INSERT INTO episodes (series_id, title, season, episode_number, duration, releas
 (1, '-30-', 5, 10, '01:33:00', '2008-03-09');
 
 -- HOUSE OF CARDS (73 épisodes)
-                            INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date) VALUES
+                            INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date)
+                            VALUES
 -- Saison 1
 (2, 'Chapter 1', 1, 1, '00:58:00', '2013-02-01'),
 (2, 'Chapter 2', 1, 2, '00:53:00', '2013-02-01'),
@@ -230,15 +240,16 @@ INSERT INTO episodes (series_id, title, season, episode_number, duration, releas
 (2, 'Chapter 73', 6, 8, '01:13:00', '2018-11-02');
 
 -- CHERNOBYL (5 épisodes - minisérie)
-INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date) VALUES
-(3, '1:23:45', 1, 1, '00:56:00', '2019-05-06'),
-(3, 'Please Remain Calm', 1, 2, '01:03:00', '2019-05-13'),
-(3, 'Open Wide, O Earth', 1, 3, '01:04:00', '2019-05-20'),
-(3, 'The Happiness of All Mankind', 1, 4, '01:08:00', '2019-05-27'),
-(3, 'Vichnaya Pamyat', 1, 5, '01:08:00', '2019-06-03');
+                            INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date)
+                            VALUES (3, '1:23:45', 1, 1, '00:56:00', '2019-05-06'),
+                                   (3, 'Please Remain Calm', 1, 2, '01:03:00', '2019-05-13'),
+                                   (3, 'Open Wide, O Earth', 1, 3, '01:04:00', '2019-05-20'),
+                                   (3, 'The Happiness of All Mankind', 1, 4, '01:08:00', '2019-05-27'),
+                                   (3, 'Vichnaya Pamyat', 1, 5, '01:08:00', '2019-06-03');
 
 -- BREAKING BAD (62 épisodes)
-INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date) VALUES
+                            INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date)
+                            VALUES
 -- Saison 1
 (4, 'Pilot', 1, 1, '00:58:00', '2008-01-20'),
 (4, 'Cat''s in the Bag...', 1, 2, '00:48:00', '2008-01-27'),
@@ -307,9 +318,10 @@ INSERT INTO episodes (series_id, title, season, episode_number, duration, releas
 (4, 'Granite State', 5, 15, '00:47:00', '2013-09-22'),
 (4, 'Felina', 5, 16, '00:55:00', '2013-09-29');
 
--- THE OFFICE US (201 épisodes - sélection représentative des épisodes les plus notables)
+                            -- THE OFFICE US (201 épisodes - sélection représentative des épisodes les plus notables)
 -- Note: The Office a 201 épisodes. Pour la lisibilité, j'inclus les premiers et derniers épisodes de chaque saison
-INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date) VALUES
+                            INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date)
+                            VALUES
 -- Saison 1
 (5, 'Pilot', 1, 1, '00:22:00', '2005-03-24'),
 (5, 'Diversity Day', 1, 2, '00:22:00', '2005-03-29'),
@@ -390,17 +402,18 @@ INSERT INTO episodes (series_id, title, season, episode_number, duration, releas
 (5, 'Finale', 9, 23, '00:53:00', '2013-05-16');
 
 -- THE QUEEN'S GAMBIT (7 épisodes - minisérie)
-INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date) VALUES
-(6, 'Openings', 1, 1, '00:59:00', '2020-10-23'),
-(6, 'Exchanges', 1, 2, '01:05:00', '2020-10-23'),
-(6, 'Doubled Pawns', 1, 3, '00:46:00', '2020-10-23'),
-(6, 'Middle Game', 1, 4, '00:48:00', '2020-10-23'),
-(6, 'Fork', 1, 5, '00:48:00', '2020-10-23'),
-(6, 'Adjournment', 1, 6, '01:00:00', '2020-10-23'),
-(6, 'End Game', 1, 7, '01:07:00', '2020-10-23');
+                            INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date)
+                            VALUES (6, 'Openings', 1, 1, '00:59:00', '2020-10-23'),
+                                   (6, 'Exchanges', 1, 2, '01:05:00', '2020-10-23'),
+                                   (6, 'Doubled Pawns', 1, 3, '00:46:00', '2020-10-23'),
+                                   (6, 'Middle Game', 1, 4, '00:48:00', '2020-10-23'),
+                                   (6, 'Fork', 1, 5, '00:48:00', '2020-10-23'),
+                                   (6, 'Adjournment', 1, 6, '01:00:00', '2020-10-23'),
+                                   (6, 'End Game', 1, 7, '01:07:00', '2020-10-23');
 
 -- THE HANDMAID'S TALE (56 épisodes)
-INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date) VALUES
+                            INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date)
+                            VALUES
 -- Saison 1
 (7, 'Offred', 1, 1, '00:57:00', '2017-04-26'),
 (7, 'Birth Day', 1, 2, '00:47:00', '2017-04-26'),
@@ -464,7 +477,8 @@ INSERT INTO episodes (series_id, title, season, episode_number, duration, releas
 (7, 'Safe', 5, 10, '01:10:00', '2022-11-09');
 
 -- 3% (33 épisodes)
-INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date) VALUES
+                            INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date)
+                            VALUES
 -- Saison 1
 (8, 'Capítulo 01: Cubos', 1, 1, '00:46:00', '2016-11-25'),
 (8, 'Capítulo 02: Moedas', 1, 2, '00:44:00', '2016-11-25'),
@@ -504,18 +518,19 @@ INSERT INTO episodes (series_id, title, season, episode_number, duration, releas
 (8, 'Capítulo 07: Escolha', 4, 7, '00:45:00', '2020-08-14');
 
 -- WEDNESDAY (8 épisodes)
-INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date) VALUES
-(9, 'Wednesday''s Child Is Full of Woe', 1, 1, '00:55:00', '2022-11-23'),
-(9, 'Woe Is the Loneliest Number', 1, 2, '00:49:00', '2022-11-23'),
-(9, 'Friend or Woe', 1, 3, '00:50:00', '2022-11-23'),
-(9, 'Woe What a Night', 1, 4, '00:52:00', '2022-11-23'),
-(9, 'You Reap What You Woe', 1, 5, '00:48:00', '2022-11-23'),
-(9, 'Quid Pro Woe', 1, 6, '00:47:00', '2022-11-23'),
-(9, 'If You Don''t Woe Me by Now', 1, 7, '00:49:00', '2022-11-23'),
-(9, 'A Murder of Woes', 1, 8, '00:56:00', '2022-11-23');
+                            INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date)
+                            VALUES (9, 'Wednesday''s Child Is Full of Woe', 1, 1, '00:55:00', '2022-11-23'),
+                                   (9, 'Woe Is the Loneliest Number', 1, 2, '00:49:00', '2022-11-23'),
+                                   (9, 'Friend or Woe', 1, 3, '00:50:00', '2022-11-23'),
+                                   (9, 'Woe What a Night', 1, 4, '00:52:00', '2022-11-23'),
+                                   (9, 'You Reap What You Woe', 1, 5, '00:48:00', '2022-11-23'),
+                                   (9, 'Quid Pro Woe', 1, 6, '00:47:00', '2022-11-23'),
+                                   (9, 'If You Don''t Woe Me by Now', 1, 7, '00:49:00', '2022-11-23'),
+                                   (9, 'A Murder of Woes', 1, 8, '00:56:00', '2022-11-23');
 
 -- YOU (40 épisodes)
-INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date) VALUES
+                            INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date)
+                            VALUES
 -- Saison 1
 (10, 'Pilot', 1, 1, '00:45:00', '2018-09-09'),
 (10, 'The Last Nice Guy in New York', 1, 2, '00:46:00', '2018-09-16'),
@@ -562,7 +577,8 @@ INSERT INTO episodes (series_id, title, season, episode_number, duration, releas
 (10, 'The Death of Jonathan Moore', 4, 10, '00:55:00', '2023-03-09');
 
 -- STRANGER THINGS (34 épisodes)
-INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date) VALUES
+                            INSERT INTO episodes (series_id, title, season, episode_number, duration, release_date)
+                            VALUES
 -- Saison 1
 (11, 'Chapter One: The Vanishing of Will Byers', 1, 1, '00:48:00', '2016-07-15'),
 (11, 'Chapter Two: The Weirdo on Maple Street', 1, 2, '00:56:00', '2016-07-15'),
@@ -601,19 +617,721 @@ INSERT INTO episodes (series_id, title, season, episode_number, duration, releas
 (11, 'Chapter Seven: The Massacre at Hawkins Lab', 4, 7, '01:38:00', '2022-05-27'),
 (11, 'Chapter Eight: Papa', 4, 8, '01:25:00', '2022-07-01'),
 (11, 'Chapter Nine: The Piggyback', 4, 9, '02:30:00', '2022-07-01');
-`}
+                            `}
                         </CodeCard>
                     </ListItem>
 
                     <ListItem>
-                       Dans un terminal executer la commande
+                        Dans un terminal executer la commande
                         <CodeCard language="SH">
                             {`psql -h woody -f bd/init.sql`}
                         </CodeCard>
                     </ListItem>
+
+                    <ListItem>
+
+                        <Text>créez un fichier <Code>public/test_connexion.php</Code> et ajoutez le code suivant
+                            :</Text>
+                        <CodeCard language="php">
+                            {`<?php 
+require_once '../config/config.php';
+try {
+    $dsn = "pgsql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME;
+    $pdo = new PDO($dsn, DB_USER, DB_PASS);
+    echo "La connexion à la base de données est opérationnelle.";
+} 
+catch (PDOException $e) {
+    echo "Erreur : " . $e->getMessage();
+}`}
+                        </CodeCard>
+                        <Text>Testez la connexion sur <Link color="teal.500"
+                                                            href="localhost:8000/test_connexion.php">localhost:8000/test_connexion.php</Link></Text>
+                    </ListItem>
+                </List>
+
+            </section>
+            <section>
+                <Heading level={2} netflex>
+                    B - Les séries
+                </Heading>
+
+                <Heading level={3}>1/ Classe <Code>Series</Code></Heading>
+                <Text>
+                    Dans le dossier <Code>app/entities</Code>, créez la classe <Code>Series</Code> avec les
+                    propriétés suivantes :
+                </Text>
+
+                <List>
+                    <ListItem><Text><Code>id</Code> — <em>int</em> — colonne <Code>id</Code></Text></ListItem>
+                    <ListItem><Text><Code>title</Code> — <em>string</em> — colonne <Code>title</Code></Text></ListItem>
+                    <ListItem><Text><Code>description</Code> — <em>string</em> — colonne <Code>description</Code></Text></ListItem>
+                    <ListItem><Text><Code>releaseYearStart</Code> — <em>int</em> —
+                        colonne <Code>release_year_start</Code></Text></ListItem>
+                    <ListItem><Text><Code>releaseYearEnd</Code> — <em>int | null</em> —
+                        colonne <Code>release_year_end</Code></Text></ListItem>
+                    <ListItem><Text><Code>currentSeason</Code> — <em>int</em> —
+                        colonne <Code>current_season</Code></Text></ListItem>
+                    <ListItem><Text><Code>quality</Code> — <em>string</em> —
+                        colonne <Code>quality</Code></Text></ListItem>
+                    <ListItem><Text><Code>audio</Code> — <em>string</em> — colonne <Code>audio</Code></Text></ListItem>
+                    <ListItem><Text><Code>image</Code> — <em>string</em> — colonne <Code>image</Code></Text></ListItem>
+                    <ListItem><Text><Code>tags</Code> — <em>array</em> —
+                        colonne <Code>tags</Code> (JSON)</Text></ListItem>
+                    <ListItem><Text><Code>createdAt</Code> — <em>Date</em> —
+                        colonne <Code>created_at</Code></Text></ListItem>
+                    <ListItem><Text><Code>updatedAt</Code> — <em>Date</em> —
+                        colonne <Code>updated_at</Code></Text></ListItem>
+                </List>
+
+                <Heading level={3}>2/ Classe <Code>SeriesRepository</Code></Heading>
+                <Text>
+                    Dans le dossier <Code>app/repositories</Code>, créez la
+                    classe <Code>SeriesRepository</Code> contenant les méthodes :
+                </Text>
+
+                <List>
+                    <ListItem>
+                        <Text><Code>createSeriesFromRow(array $row): Series</Code> — transforme un tableau PDO en
+                            objet <Code>Series</Code>.</Text>
+                    </ListItem>
+                    <ListItem>
+                        <Text><Code>findAll(): array</Code> — renvoie un tableau d’objets <Code>Series</Code>.</Text>
+                    </ListItem>
+                </List>
+
+                <Heading level={3}>3/ Modification du <Code>HomeController</Code></Heading>
+                <Text>
+                    Modifiez la classe <Code>HomeController</Code> pour remplacer le tableau de films par un appel
+                    à <Code>findAll()</Code> du repository.
+                </Text>
+
+                <Heading level={3}>4/ Mise à jour de la vue <Code>home.html.php</Code></Heading>
+                <Text>
+                    Modifiez la vue <Code>home.html.php</Code> pour :
+                </Text>
+                <List>
+                    <ListItem>
+                        <Text>Remplacer la boucle actuelle et utiliser les objets <Code>Series</Code> pour
+                            l&apos;affichage.</Text>
+                    </ListItem>
+                    <ListItem>
+                        <Text>Ajouter un lien vers la page de détail de chaque série : <Code>&lt;a
+                            href=&quot;series.php?id=&lt;?=$serie-&gt;getId() ?&gt;&quot;&gt;</Code></Text>
+                    </ListItem>
                 </List>
             </section>
+            <section>
+                <Heading level={2} netflex>
+                    C - Page de détail d&apos;une série
+                </Heading>
 
+                <Heading level={3}>1/ Classe <Code>Episode</Code></Heading>
+                <Text>
+                    Dans le dossier <Code>app/entities</Code>, créez la classe <Code>Episode</Code> avec les
+                    propriétés suivantes :
+                </Text>
+
+                <List>
+                    <ListItem><Text><Code>id</Code> — <em>int</em> — colonne <Code>id</Code></Text></ListItem>
+                    <ListItem><Text><Code>seriesId</Code> — <em>int</em> —
+                        colonne <Code>series_id</Code></Text></ListItem>
+                    <ListItem><Text><Code>title</Code> — <em>string</em> — colonne <Code>title</Code></Text></ListItem>
+                    <ListItem><Text><Code>season</Code> — <em>int</em> — colonne <Code>season</Code></Text></ListItem>
+                    <ListItem><Text><Code>episodeNumber</Code> — <em>int</em> —
+                        colonne <Code>episode_number</Code></Text></ListItem>
+                    <ListItem><Text><Code>duration</Code> — <em>string | null</em> —
+                        colonne <Code>duration</Code></Text></ListItem>
+                    <ListItem><Text><Code>releaseDate</Code> — <em>Date | null</em> — colonne <Code>release_date</Code></Text></ListItem>
+                    <ListItem><Text><Code>createdAt</Code> — <em>Date</em> —
+                        colonne <Code>created_at</Code></Text></ListItem>
+                    <ListItem><Text><Code>updatedAt</Code> — <em>Date</em> —
+                        colonne <Code>updated_at</Code></Text></ListItem>
+                </List>
+
+                <Heading level={3}>2/ Modification de <Code>SeriesRepository</Code></Heading>
+                <Text>
+                    Ajoutez la méthode suivante dans la classe <Code>SeriesRepository</Code> :
+                </Text>
+
+                <List>
+                    <ListItem>
+                        <Text><Code>findById(int $id): ?Series</Code> — renvoie un
+                            objet <Code>Series</Code> correspondant à l&apos;ID ou <Code>null</Code> si non
+                            trouvé.</Text>
+                    </ListItem>
+                </List>
+
+                <Heading level={3}>3/ Création du <Code>SeriesController</Code></Heading>
+                <Text>
+                    Dans le dossier <Code>app/controllers</Code>, créez la classe <Code>SeriesController</Code> avec une
+                    méthode <Code>show()</Code> qui :
+                </Text>
+
+                <List>
+                    <ListItem>
+                        <Text>Récupère l&apos;<Code>id</Code> depuis <Code>$_GET[&apos;id&apos;]</Code>.</Text>
+                    </ListItem>
+                    <ListItem>
+                        <Text>Utilise <Code>SeriesRepository::findById()</Code> pour récupérer la série.</Text>
+                    </ListItem>
+                    <ListItem>
+                        <Text>Si la série n&apos;existe pas, redirige vers la page d&apos;accueil.</Text>
+                    </ListItem>
+                    <ListItem>
+                        <Text>Sinon, affiche la vue <Code>series.html.php</Code> en lui passant
+                            l&apos;objet <Code>$series</Code>.</Text>
+                    </ListItem>
+                </List>
+
+                <Heading level={3}>4/ Création de la page <Code>series.php</Code></Heading>
+                <Text>
+                    Créez le fichier <Code>public/series.php</Code> qui instancie <Code>SeriesController</Code> et
+                    appelle la méthode <Code>show()</Code>.
+                </Text>
+
+                <Heading level={3}>5/ Création de la vue <Code>series.html.php</Code></Heading>
+                <Text>
+                    Copiez le HTML suinant dans un nouveau fichier <Code>views/series.html.php</Code>.
+                    <CodeCard language="html" filename={"series.html.php"} collapsible>{`
+                        <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>__SERIES_TITLE__ - Netflex</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&family=Spline+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet"/>
+</head>
+<body>
+<!-- HEADER -->
+<header class="border-bottom border-dark px-4 py-3 d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-3">
+        <h1 class="logo m-0"><a href="index.php" class="text-decoration-none text-white">NETFLEX</a></h1>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <nav class="d-none d-md-flex gap-3">
+            <a class="text-white text-decoration-none" href="index.php">Home</a>
+            <a class="text-white text-decoration-none" href="#">Series</a>
+            <a class="text-white text-decoration-none" href="#">Movies</a>
+            <a class="text-white text-decoration-none" href="#">New & Popular</a>
+            <a class="text-white text-decoration-none" href="#">My List</a>
+        </nav>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <form class="d-none d-sm-block position-relative">
+            <span class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ps-2 text-muted">search</span>
+            <input class="form-control ps-5 bg-dark border-secondary text-white" type="search" placeholder="Search"/>
+        </form>
+        <i class="fa-regular fa-circle-user fa-2xl"></i>
+    </div>
+</header>
+
+<!-- HERO SERIE -->
+<section class="hero-home d-flex align-items-end text-white" style="background-image: linear-gradient(to top, rgba(20,20,20,0.9) 0%, rgba(20,20,20,0) 50%), url('img/__SERIES_IMAGE__');">
+    <div class="container py-5">
+        <h1 class="display-4 fw-bold">__SERIES_TITLE__</h1>
+        <div class="d-flex gap-3 small text-white mb-3">
+            <span>__RELEASE_YEAR_START__ - __RELEASE_YEAR_END__</span>
+            <span>|</span>
+            <span>__CURRENT_SEASON__ saison(s)</span>
+            <span>|</span>
+            <span class="border px-2">__QUALITY__</span>
+            <span class="border px-2">__AUDIO__</span>
+        </div>
+        
+        <!-- Tags -->
+        <div class="d-flex gap-2 mb-3">
+            __TAGS__
+        </div>
+        
+        <p class="mt-3">
+            __SERIES_DESCRIPTION__
+        </p>
+        
+        <div class="d-flex gap-3 mt-4">
+            <button class="btn btn-danger d-flex align-items-center gap-2">
+                <i class="fas fa-play"></i> Lire
+            </button>
+            <button class="btn btn-outline-light d-flex align-items-center gap-2">
+                <i class="fas fa-plus"></i> Ajouter à ma liste
+            </button>
+        </div>
+    </div>
+</section>
+
+<main class="container py-5">
+    <!-- Liste des épisodes -->
+    <h2 class="text-white mb-4">Épisodes</h2>
+    
+    <!-- Saison 1 -->
+    <div class="mb-5">
+        <h3 class="text-white mb-3">Saison __SEASON_NUMBER__</h3>
+        <div class="row g-3">
+            <!-- Épisode -->
+            <div class="col-12">
+                <div class="card bg-dark text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title">
+                                    __EPISODE_NUMBER__. __EPISODE_TITLE__
+                                </h5>
+                                <p class="card-text small text-muted">
+                                    <i class="far fa-clock"></i> __EPISODE_DURATION__
+                                    <span class="ms-3"><i class="far fa-calendar"></i> __EPISODE_RELEASE_DATE__</span>
+                                </p>
+                            </div>
+                            <button class="btn btn-danger btn-sm">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Répéter pour d'autres épisodes -->
+        </div>
+    </div>
+    <!-- Répéter pour d'autres saisons -->
+</main>
+
+<footer>
+    <p>&copy; 2025 Netflex Clone. <a href="#">Privacy</a> | <a href="#">Terms</a></p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>`}</CodeCard>
+                </Text>
+
+                <Text>
+                    Modifiez la section HERO pour afficher les informations de la série (titre, image, description,
+                    années, saison actuelle, qualité, audio, tags) en utilisant l&apos;objet <Code>$series</Code>.
+                </Text>
+
+                <Heading level={3}>6/ Classe <Code>EpisodeRepository</Code></Heading>
+                <Text>
+                    Dans le dossier <Code>app/repositories</Code>, créez la
+                    classe <Code>EpisodeRepository</Code> contenant les méthodes :
+                </Text>
+
+                <List>
+                    <ListItem>
+                        <Text><Code>createEpisodeFromRow(array $row): Episode</Code> — transforme un tableau PDO en
+                            objet <Code>Episode</Code>.</Text>
+                    </ListItem>
+                    <ListItem>
+                        <Text><Code>findBySeriesId(int $seriesId): array</Code> — renvoie un tableau
+                            d&apos;objets <Code>Episode</Code> pour une série donnée, triés par saison et numéro
+                            d&apos;épisode (<Code>ORDER BY season ASC, episode_number ASC</Code>).</Text>
+                    </ListItem>
+                </List>
+
+                <Heading level={3}>7/ Affichage des épisodes</Heading>
+                <Text>
+                    Modifiez le <Code>SeriesController</Code> pour récupérer les épisodes
+                    avec <Code>EpisodeRepository::findBySeriesId()</Code> et les passer à la vue.
+                </Text>
+
+                <Text>
+                    Il aurait été plus propre d&apos;avoir une table <Code>seasons</Code> en plus
+                    de <Code>series</Code> et <Code>episodes</Code> pour stocker les informations de chaque saison.
+                    Cependant, cela ajouterait de la complexité lors de la réalisation de la partie Administration
+                    (gestion des relations entre trois tables au lieu de deux). nous allons donc, dans le controller,
+                    ajouter ce code pour recréer le tableau de saisons :
+                </Text>
+
+                <CodeCard language="php">{`// Grouper les épisodes par saison
+$episodesBySeason = [];
+foreach ($episodes as $episode) {
+    $episodesBySeason[$episode->getSeason()][] = $episode;
+
+// Afficher chaque saison
+foreach ($episodesBySeason as $seasonNumber => $seasonEpisodes) {
+// Boucler sur $seasonEpisodes pour afficher chaque épisode`}
+                </CodeCard>
+
+                <Text>
+                    Dans la vue <Code>series.html.php</Code>, modifié le main <Code>&lt;main&gt;</Code> pour afficher
+                    les épisodes groupés par saison.
+                </Text>
+            </section>
+            <section>
+                <Heading level={2} netflex>
+                    D - Administration des séries
+                </Heading>
+                <Heading level={3}>1/ Templates d&apos;administration</Heading>
+
+                <Heading level={4}>Création du header admin</Heading>
+                <Text>
+                    Dans le dossier <Code>views/_template/</Code>, créez le fichier <Code>header_admin.html.php</Code> :
+                </Text>
+                <CodeCard language="php" filename="header_admin.html.php" collapsible>
+                    {`<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title><?= $title ?? 'Administration' ?> - Netflex Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&family=Spline+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet"/>
+</head>
+<body class="bg-dark">
+    <!-- HEADER ADMIN -->
+    <header class="bg-black border-bottom border-danger px-4 py-3">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-4">
+                    <h1 class="logo m-0">
+                        <a href="index.php" class="text-decoration-none text-white">NETFLEX</a>
+                        <span class="badge bg-danger ms-2">ADMIN</span>
+                    </h1>
+                    <nav class="d-none d-md-flex gap-3">
+                        <a class="text-white text-decoration-none" href="admin_series.php">
+                            <i class="fas fa-tv me-1"></i> Séries
+                        </a>
+                        <a class="text-white text-decoration-none" href="#">
+                            <i class="fas fa-film me-1"></i> Films
+                        </a>
+                        <a class="text-white text-decoration-none" href="#">
+                            <i class="fas fa-users me-1"></i> Utilisateurs
+                        </a>
+                    </nav>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <a href="index.php" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i> Retour au site
+                    </a>
+                    <i class="fa-regular fa-circle-user fa-2xl text-white"></i>
+                </div>
+            </div>
+        </div>
+    </header>`}
+                </CodeCard>
+                <Heading level={4}>Création du footer admin</Heading>
+                <Text>
+                    Dans le dossier <Code>views/_template/</Code>, créez le fichier <Code>footer_admin.html.php</Code> :
+                </Text>
+                <CodeCard language="php" filename="footer_admin.html.php">
+                    {`    <footer class="bg-black text-white py-4 mt-5">
+<div class="container-fluid text-center">
+<p class="mb-0">
+© 2025 Netflex Admin -
+<a href="#" class="text-danger text-decoration-none">Documentation</a> |
+<a href="#" class="text-danger text-decoration-none">Support</a>
+</p>
+</div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>`}
+                </CodeCard>
+
+                <Heading level={3}>4/ Création du <Code>AdminSeriesController</Code></Heading>
+
+                <Heading level={3}>5/ Création de la page <Code>admin_series.php</Code></Heading>
+                <Text>
+                    Créez le fichier <Code>public/admin_series.php</Code> :
+                </Text>
+{/*                <CodeCard language="php" filename="admin_series.php">*/}
+{/*                    {`<?php*/}
+{/*require_once DIR . '/../app/controllers/AdminSeriesController.php';*/}
+{/*$controller = new AdminSeriesController();*/}
+{/*// Gestion des actions*/}
+{/*$action = $_GET['action'] ?? 'index';*/}
+{/*switch ($action) {*/}
+{/*case 'episodes':*/}
+{/*$controller->episodes();*/}
+{/*break;*/}
+{/*case 'delete':*/}
+{/*$controller->delete();*/}
+{/*break;*/}
+{/*default:*/}
+{/*$controller->index();*/}
+{/*break;*/}
+{/*}`}*/}
+{/*                </CodeCard>*/}
+                <Heading level={3}>6/ Création de la vue <Code>admin/series_list.html.php</Code></Heading>
+                <Text>
+                    Dans le dossier <Code>views/admin/</Code>, créez le fichier <Code>series_list.html.php</Code> :
+                </Text>
+                <CodeCard language="php" filename="series_list.html.php" collapsible>
+                    {`<?php require_once __DIR__ . '/../_template/header_admin.html.php'; ?>
+<main class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-white mb-2">
+                        <i class="fas fa-tv text-danger me-2"></i>
+                        Gestion des séries
+                    </h2>
+                    <p class="text-muted mb-0">
+                        <?= count($series) ?> série(s) au total
+                    </p>
+                </div>
+                <a href="admin_series.php?action=create" class="btn btn-danger">
+                    <i class="fas fa-plus me-2"></i>
+                    Ajouter une série
+                </a>
+            </div>
+        </div>
+    </div>
+<?php if (isset($_GET['success']) && $_GET['success'] === 'deleted'): ?>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    La série a été supprimée avec succès.
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<?php endif; ?>
+
+<!-- Tableau des séries -->
+<div class="card bg-dark text-white border-secondary">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead class="border-bottom border-danger">
+                    <tr>
+                        <th style="width: 60px;">ID</th>
+                        <th>Titre</th>
+                        <th style="width: 120px;">Années</th>
+                        <th style="width: 100px;">Saisons</th>
+                        <th style="width: 100px;">Épisodes</th>
+                        <th style="width: 100px;">Qualité</th>
+                        <th style="width: 150px;">Créé le</th>
+                        <th style="width: 200px;" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($series as $serie): ?>
+                    <tr>
+                        <td class="align-middle">
+                            <span class="badge bg-secondary">#<?= $serie->getId() ?></span>
+                        </td>
+                        <td class="align-middle">
+                            <div class="d-flex align-items-center">
+                                <?php if ($serie->getImage()): ?>
+                                <img src="img/<?= htmlspecialchars($serie->getImage()) ?>" 
+                                     alt="<?= htmlspecialchars($serie->getTitle()) ?>"
+                                     class="rounded me-3"
+                                     style="width: 60px; height: 40px; object-fit: cover;">
+                                <?php endif; ?>
+                                <strong><?= htmlspecialchars($serie->getTitle()) ?></strong>
+                            </div>
+                        </td>
+                        <td class="align-middle">
+                            <?= $serie->getReleaseYearStart() ?> - 
+                            <?= $serie->getReleaseYearEnd() ?? 'En cours' ?>
+                        </td>
+                        <td class="align-middle text-center">
+                            <span class="badge bg-info"><?= $serie->getCurrentSeason() ?></span>
+                        </td>
+                        <td class="align-middle text-center">
+                            <span class="badge bg-primary"><?= $serie->episodeCount ?></span>
+                        </td>
+                        <td class="align-middle">
+                            <span class="badge bg-success"><?= htmlspecialchars($serie->getQuality() ?? 'N/A') ?></span>
+                        </td>
+                        <td class="align-middle text-muted small">
+                            <?= $serie->getCreatedAt()->format('d/m/Y') ?>
+                        </td>
+                        <td class="align-middle text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="admin_series.php?action=episodes&id=<?= $serie->getId() ?>" 
+                                   class="btn btn-outline-info"
+                                   title="Voir les épisodes">
+                                    <i class="fas fa-list"></i>
+                                </a>
+                                <a href="admin_series.php?action=edit&id=<?= $serie->getId() ?>" 
+                                   class="btn btn-outline-warning"
+                                   title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="admin_series.php?action=delete&id=<?= $serie->getId() ?>" 
+                                   class="btn btn-outline-danger"
+                                   title="Supprimer"
+                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette série et tous ses épisodes ?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</main>
+<?php require_once __DIR__ . '/../_template/footer_admin.html.php'; ?>`}
+                </CodeCard>
+
+                <Heading level={3}>7/ Création de la vue <Code>admin/episodes_list.html.php</Code></Heading>
+                <Text>
+                    Dans le dossier <Code>views/admin/</Code>, créez le fichier <Code>episodes_list.html.php</Code> :
+                </Text>
+                <CodeCard language="php" filename="episodes_list.html.php" collapsible>
+                    {`<?php require_once __DIR__ . '/../_template/header_admin.html.php'; ?>
+<main class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="admin_series.php" class="text-danger text-decoration-none">Séries</a>
+            </li>
+            <li class="breadcrumb-item active text-white" aria-current="page">
+                <?= htmlspecialchars($series->getTitle()) ?>
+            </li>
+        </ol>
+    </nav>
+<!-- En-tête -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h2 class="text-white mb-2">
+                    <i class="fas fa-list text-danger me-2"></i>
+                    Épisodes - <?= htmlspecialchars($series->getTitle()) ?>
+                </h2>
+                <div class="d-flex gap-3 text-muted">
+                    <span><i class="fas fa-calendar me-1"></i> 
+                        <?= $series->getReleaseYearStart() ?> - <?= $series->getReleaseYearEnd() ?? 'En cours' ?>
+                    </span>
+                    <span><i class="fas fa-layer-group me-1"></i> 
+                        <?= $series->getCurrentSeason() ?> saison(s)
+                    </span>
+                    <span><i class="fas fa-film me-1"></i> 
+                        <?= count($episodes) ?> épisode(s)
+                    </span>
+                </div>
+            </div>
+            <a href="admin_series.php?action=create_episode&series_id=<?= $series->getId() ?>" 
+               class="btn btn-danger">
+                <i class="fas fa-plus me-2"></i>
+                Ajouter un épisode
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Épisodes par saison -->
+<?php foreach ($episodesBySeason as $seasonNumber => $seasonEpisodes): ?>
+<div class="mb-4">
+    <div class="card bg-dark text-white border-secondary">
+        <div class="card-header bg-black border-danger d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                <i class="fas fa-layer-group text-danger me-2"></i>
+                Saison <?= $seasonNumber ?>
+            </h4>
+            <span class="badge bg-danger"><?= count($seasonEpisodes) ?> épisode(s)</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead class="border-bottom border-secondary">
+                        <tr>
+                            <th style="width: 80px;">N°</th>
+                            <th>Titre</th>
+                            <th style="width: 120px;">Durée</th>
+                            <th style="width: 150px;">Date de sortie</th>
+                            <th style="width: 150px;" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($seasonEpisodes as $episode): ?>
+                        <tr>
+                            <td class="align-middle">
+                                <span class="badge bg-info">E<?= str_pad($episode->getEpisodeNumber(), 2, '0', STR_PAD_LEFT) ?></span>
+                            </td>
+                            <td class="align-middle">
+                                <strong><?= htmlspecialchars($episode->getTitle()) ?></strong>
+                            </td>
+                            <td class="align-middle text-muted">
+                                <i class="far fa-clock me-1"></i>
+                                <?= $episode->getDuration() ?? 'N/A' ?>
+                            </td>
+                            <td class="align-middle text-muted">
+                                <i class="far fa-calendar me-1"></i>
+                                <?= $episode->getReleaseDate() ? $episode->getReleaseDate()->format('d/m/Y') : 'N/A' ?>
+                            </td>
+                            <td class="align-middle text-end">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="admin_series.php?action=edit_episode&id=<?= $episode->getId() ?>" 
+                                       class="btn btn-outline-warning"
+                                       title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="admin_series.php?action=delete_episode&id=<?= $episode->getId() ?>&series_id=<?= $series->getId() ?>" 
+                                       class="btn btn-outline-danger"
+                                       title="Supprimer"
+                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet épisode ?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endforeach; ?>
+
+<?php if (empty($episodes)): ?>
+<div class="alert alert-warning" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    Aucun épisode n'a été ajouté pour cette série.
+</div>
+<?php endif; ?>
+</main>
+<?php require_once __DIR__ . '/../_template/footer_admin.html.php'; ?>`}
+                </CodeCard>
+
+                <Heading level={3}>8/ Ajout du lien d&apos;administration</Heading>
+                <Text>
+                    Dans le header principal (<Code>header.html.php</Code> ou directement
+                    dans <Code>home.html.php</Code>), ajoutez un lien vers l&apos;administration :
+                </Text>
+                <CodeCard language="html">
+                    {`<a href="admin_series.php" className="text-white text-decoration-none"> <i
+                        className="fas fa-cog me-1"></i> Admin </a>`}
+                </CodeCard>
+                <div className="alert alert-info mt-4">
+                    <h5 className="alert-heading">
+                        <i className="fas fa-lightbulb me-2"></i>
+                        Points importants
+                    </h5>
+                    <List>
+                        <ListItem>
+                            Les templates admin utilisent un design cohérent avec le site principal (thème sombre
+                            Netflix)
+                        </ListItem>
+                        <ListItem>
+                            Le badge &quot;ADMIN&quot; distingue clairement l&apos;interface d&apos;administration
+                        </ListItem>
+                        <ListItem>
+                            Les tableaux utilisent Bootstrap pour un affichage responsive
+                        </ListItem>
+                        <ListItem>
+                            Les actions de suppression incluent une confirmation JavaScript
+                        </ListItem>
+                        <ListItem>
+                            Les épisodes sont groupés par saison pour une meilleure lisibilité
+                        </ListItem>
+                        <ListItem>
+                            Les compteurs d&apos;épisodes sont ajoutés dynamiquement pour chaque série
+                        </ListItem>
+                        <ListItem>
+                            Le breadcrumb facilite la navigation entre les pages d&apos;administration
+                        </ListItem>
+                    </List>
+                </div>
+            </section>
         </article>
     );
 }
