@@ -36,7 +36,7 @@ export default function BaseCard({
         )}>
             <Card
                 className={cn(
-                    "w-full h-full text-center flex flex-col justify-between border-2 bg-white dark:bg-gray-900 p-0 rounded-lg shadow-lg overflow-hidden",
+                    "w-full h-full text-center flex flex-col justify-between border-2 bg-white dark:bg-gray-900 dark:border-gray-700 p-0 rounded-lg shadow-lg dark:shadow-gray-950/50 overflow-hidden transition-colors duration-300",
                     `border-${currentModule ? currentModule.path : 'module'}`
                 )}
             >
@@ -53,12 +53,12 @@ export default function BaseCard({
                 <CardContent
                     className={cn(
                         withMarge ? 'p-6' : '',
-                        "flex-grow flex flex-col items-center justify-center text-black dark:text-white"
+                        "flex-grow flex flex-col items-center justify-center text-black dark:text-gray-100 bg-red"
                     )}>
                     {content}
                 </CardContent>
 
-                {footer ? <CardFooter className="p-4 dark:border-t dark:border-gray-800">
+                {footer ? <CardFooter className="p-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 transition-colors duration-300">
                     {footer}
                 </CardFooter> : null}
             </Card>
@@ -69,10 +69,10 @@ export default function BaseCard({
 export function LEDIndicator() {
     return (
         <div className="flex gap-2">
-            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse shadow-sm"></div>
-            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse shadow-sm"
+            <div className="w-2 h-2 bg-white dark:bg-gray-100 rounded-full group-hover:animate-pulse shadow-sm dark:shadow-white/20"></div>
+            <div className="w-2 h-2 bg-white dark:bg-gray-100 rounded-full group-hover:animate-pulse shadow-sm dark:shadow-white/20"
                  style={{animationDelay: '0.2s'}}></div>
-            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse shadow-sm"
+            <div className="w-2 h-2 bg-white dark:bg-gray-100 rounded-full group-hover:animate-pulse shadow-sm dark:shadow-white/20"
                  style={{animationDelay: '0.4s'}}></div>
         </div>
     );
@@ -91,9 +91,10 @@ export function ActionButton({currentModule, onClick, children, className = '', 
         <Button
             variant="destructive"
             className={cn(
-                "font-semibold hover:brightness-110 dark:hover:brightness-125 transition-all duration-300 border-2 bg-white dark:bg-gray-900 text-black dark:text-white",
+                "font-semibold hover:brightness-110 dark:hover:brightness-125 transition-all duration-300 border-2 bg-white dark:bg-gray-900 text-black dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800",
                 `border-${currentModule ? currentModule.path : 'module'}`,
                 `text-${currentModule ? currentModule.path : 'module'}`,
+                disabled && 'opacity-50 cursor-not-allowed dark:opacity-40',
                 className
             )}
             onClick={onClick}

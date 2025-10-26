@@ -1,18 +1,15 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-
 
 .nextjs__container_errors_desc {
     word-spacing: 1em;
 }
 
-.messageText
-{
+.messageText {
     word-spacing: .1em;
 }
 
 svg p {
-    word-spacing:.1em;
+    word-spacing: .1em;
 }
 
 /* Variables CSS */
@@ -35,7 +32,7 @@ svg p {
     word-spacing: -0.3em;
 }
 
-/* Animations keyframes */
+/* Vos keyframes et animations personnalisées */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -92,7 +89,7 @@ svg p {
     }
 }
 
-/* Classes d'animation */
+/* Classes d'animation personnalisées */
 .animate-fade-in {
     animation: fadeIn var(--animation-duration-medium) ease-out forwards;
 }
@@ -150,34 +147,15 @@ svg p {
     animation: gradientShift var(--animation-duration-long) ease infinite;
 }
 
-/* ===== Couleurs par langage ===== */
-/* HTML/CSS */
-.text-html-css {
-    color: var(--color-html-css);
-}
-
-.bg-html-css {
-    background: var(--color-html-css);
-}
-
-.border-html-css {
-    border-color: var(--color-html-css);
-}
-
-.header-html-css h1, .header-html-css h2, .header-html-css h3 {
+/* Classes spécifiques aux headers */
+.header-html-css h1,
+.header-html-css h2,
+.header-html-css h3 {
     color: var(--color-html-css);
 }
 
 .header-html-css h1 {
     text-align: center;
-}
-
-.header-html-css .bg-module {
-    background: var(--color-html-css);
-}
-
-.header-html-css .border-module {
-    border-color: var(--color-html-css);
 }
 
 .header-html-css a {
@@ -189,33 +167,14 @@ svg p {
     background: var(--color-html-css);
 }
 
-/* PHP */
-.text-php {
-    color: var(--color-php);
-}
-
-.bg-php {
-    background: var(--color-php);
-}
-
-.border-php {
-    border-color: var(--color-php);
-}
-
-.header-php h1, .header-php h2, .header-php h3 {
+.header-php h1,
+.header-php h2,
+.header-php h3 {
     color: var(--color-php);
 }
 
 .header-php h1 {
     text-align: center;
-}
-
-.header-php .bg-module {
-    background: var(--color-php);
-}
-
-.header-php .border-module {
-    border-color: var(--color-php);
 }
 
 .header-php a {
@@ -227,33 +186,14 @@ svg p {
     background: var(--color-php);
 }
 
-/* JavaScript */
-.text-javascript {
-    color: var(--color-javascript);
-}
-
-.bg-javascript {
-    background: var(--color-javascript);
-}
-
-.border-javascript {
-    border-color: var(--color-javascript);
-}
-
-.header-javascript h1, .header-javascript h2, .header-javascript h3 {
+.header-javascript h1,
+.header-javascript h2,
+.header-javascript h3 {
     color: var(--color-javascript);
 }
 
 .header-javascript h1 {
     text-align: center;
-}
-
-.header-javascript .bg-module {
-    background: var(--color-javascript);
-}
-
-.header-javascript .border-module {
-    border-color: var(--color-javascript);
 }
 
 .header-javascript a {
@@ -265,33 +205,14 @@ svg p {
     background: var(--color-javascript);
 }
 
-/* Login */
-.text-login {
-    color: var(--color-login);
-}
-
-.bg-login {
-    background-color: var(--color-login);
-}
-
-.border-login {
-    border-color: var(--color-login);
-}
-
-.header-login h1, .header-login h2, .header-login h3 {
+.header-login h1,
+.header-login h2,
+.header-login h3 {
     color: var(--color-login);
 }
 
 .header-login h1 {
     text-align: center;
-}
-
-.header-login .bg-module {
-    background-color: var(--color-login);
-}
-
-.header-login .border-module {
-    border-color: var(--color-login);
 }
 
 .header-login a {
@@ -300,32 +221,10 @@ svg p {
     cursor: pointer;
 }
 
-
-/* Classes pour Tailwind */
-.text-brainfuck {
-    color: var(--color-brainfuck);
-}
-
-.bg-brainfuck {
-    background-color: var(--color-brainfuck);
-}
-
-.border-brainfuck {
-    border-color: var(--color-brainfuck);
-}
-
 .header-brainfuck h1,
 .header-brainfuck h2,
 .header-brainfuck h3 {
     color: var(--color-brainfuck);
-}
-
-.header-brainfuck .bg-module {
-    background-color: var(--color-brainfuck);
-}
-
-.header-brainfuck .border-module {
-    border-color: var(--color-brainfuck);
 }
 
 .header-brainfuck a {
@@ -334,7 +233,8 @@ svg p {
     cursor: pointer;
 }
 
-.input{
+/* Classes pour formulaires */
+.input {
     border: 1px solid #222222;
     margin-left: 10px;
     margin-bottom: 10px;
@@ -342,16 +242,15 @@ svg p {
     padding: 0 10px;
 }
 
-.input > option
-{
+.input > option {
     color: #222222;
 }
 
 .input::placeholder {
-    color: #aaaaaa; /* couleur du texte placeholder */
+    color: #aaaaaa;
 }
 
-.button{
+.button {
     color: #222222;
     border: 1px solid #222222;
     margin-left: 10px;

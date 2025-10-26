@@ -2,6 +2,7 @@ import Image from "next/image";
 import {GlitchText} from "@/components/GlitchText";
 import {ReactNode} from "react";
 import TagsBadges from "@/components/page/TagsBadges";
+import Heading from "@/components/ui/Heading";
 
 interface HeroSectionProps {
     title: string;
@@ -23,9 +24,9 @@ export default function HeroSection({
                                         tags = [],
                                     }: HeroSectionProps) {
     const titleElement = (
-        <h1 className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-extrabold mt-10 lg:mb-4 text-center bg-gradient-to-r bg-clip-text dark:text-white">
+        <Heading level={1} className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-extrabold mt-10 lg:mb-4 text-center bg-gradient-to-r bg-clip-text">
             {title}
-        </h1>
+        </Heading>
     );
 
     return (
@@ -40,7 +41,7 @@ export default function HeroSection({
                 </GlitchText>
 
                 {description && (
-                    <p className="text-base sm:text-lg text-gray-400 dark:text-gray-100 text-center max-w-2xl leading-relaxed">
+                    <p className="text-base sm:text-lg text-center max-w-2xl leading-relaxed">
                         {description}
                     </p>
                 )}

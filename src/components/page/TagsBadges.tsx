@@ -23,7 +23,7 @@ export default function TagsBadges({
             {tags.slice(0, maxTags).map((tag) => (
                 <Badge
                     key={tag}
-                    className={`border-2 border-${moduleTheme} bg-white text-${moduleTheme} font-mono text-xs hover:bg-${moduleTheme} hover:text-white transition-colors`}
+                    className={`border-2 border-${moduleTheme} text-${moduleTheme} font-mono text-xs hover:bg-${moduleTheme} hover:text-white transition-colors`}
                 >
                     #{tag}
                 </Badge>

@@ -11,19 +11,19 @@ interface ModuleCardProps {
 export default function ModuleCard({currentModule}: ModuleCardProps) {
     const {title, description, path, iconName} = currentModule;
     const Icon = iconMap[iconName] || BookOpen;
-    
+
     const header = (
         <div className="group-hover:rotate-12 transition-transform duration-300" key={path}>
-            <Icon size={40} className="text-white"/>
+            <Icon size={40} className="text-white dark:text-gray-100"/>
         </div>
     );
 
     const content = (
         <>
-            <h2 className={`text-3xl font-bold mb-3 text-${path}`}>
+            <h2 className={`text-3xl font-bold mb-3 text-${path} dark:brightness-125`}>
                 {title}
             </h2>
-            <p className="text-gray-700 text-center leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-300 text-center leading-relaxed transition-colors duration-300">
                 {description}
             </p>
         </>

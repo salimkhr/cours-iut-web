@@ -1,33 +1,36 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": false,
-    "skipLibCheck": true,
+    /* 💡 Cible moderne et rapide */
+    "target": "ES2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
+
+    /* 💪 Sécurité et performance */
     "strict": true,
+    "skipLibCheck": true,
     "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
+    "allowJs": false,
     "isolatedModules": true,
+
+    /* ⚙️ Compatibilité ESM (Next.js 14+ et Tailwind 4) */
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+
+    /* ⚡️ JSX moderne pour React 18+ */
     "jsx": "preserve",
+
+    /* 🚀 Incrémental = builds plus rapides */
     "incremental": true,
+
+    /* 🧭 Base paths / alias */
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     },
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+
+    /* 🔌 Plugin Next.js (important pour autocomplétion et TS integration) */
+    "plugins": [{ "name": "next" }]
   },
   "include": [
     "next-env.d.ts",
@@ -35,7 +38,5 @@
     "**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
