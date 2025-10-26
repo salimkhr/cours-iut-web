@@ -30,6 +30,13 @@ svg p {
     --animation-duration-long: 3s;
 }
 
+/* Variables Dark Mode */
+.dark {
+    --color-html-css: #e34f26;       /* ou une nuance plus sombre si besoin */
+    --color-php: #777bb4;
+    --color-javascript: #f7df1e;
+}
+
 /* Réglage global */
 * {
     word-spacing: -0.3em;
@@ -358,4 +365,9 @@ svg p {
     padding: 0 10px;
     margin-bottom: 10px;
     width: 100%;
+}
+
+.bg-footer
+{
+    background-color: #121212;
 }

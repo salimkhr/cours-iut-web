@@ -12,7 +12,7 @@ export default function TP() {
             <section>
                 <Heading level={2} netflex>A - Initialisation du projet</Heading>
 
-                Récupérez le code source de départ depuis le dépôt Git : <CodeCard language="bash" showLineNumbers={false}>
+                <Text>Récupérez le code source de départ depuis le dépôt Git :  </Text><CodeCard language="bash" showLineNumbers={false}>
                 {`git clone https://gitlab.com/iut3334332/php/mvc.git
 cd mvc`}
             </CodeCard>
