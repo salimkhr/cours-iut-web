@@ -15,21 +15,9 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
     title: "Développement Web | Liste des cours",
     description: "",
-    manifest: '/manifest.json',
-    icons: {
-        icon: '/icons/icon-192x192.png',
-        apple: '/icons/icon-192x192.png'
-    },
-    other: {
-        'theme-color': '#317EFB'
-    }
 };
 
-export default function RootLayout({
-                                       children,
-                                   }: Readonly<{
-    children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="fr" className={jetbrainsMono.variable} suppressHydrationWarning>
         <body className="min-h-screen font-mono">
@@ -39,10 +27,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-            <NavBar/>
+            <NavBar />
             {children}
-            <Footer/>
-            <CsrfInitializer/>
+            <Footer />
+            <CsrfInitializer />
         </ThemeProvider>
         </body>
         </html>

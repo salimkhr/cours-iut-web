@@ -8,9 +8,15 @@ const config: Config = {
         "./pages/**/*.{js,ts,jsx,tsx}",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
-    darkMode: "class", // ✅ active le dark mode basé sur la classe "dark"
+    darkMode: "media",
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                javascript: '#F7DF1E', // jaune JS
+                php: '#53567d',        // violet PHP
+                html: '#E34F26',       // orange HTML
+            },
+        },
     },
     plugins: [],
 };
