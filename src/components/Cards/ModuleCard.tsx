@@ -23,7 +23,7 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
             <h2 className={`text-3xl font-bold mb-3 text-${path}`}>
                 {title}
             </h2>
-            <p className="text-gray-700 text-center leading-relaxed">
+            <p className="text-center leading-relaxed">
                 {description}
             </p>
         </>
