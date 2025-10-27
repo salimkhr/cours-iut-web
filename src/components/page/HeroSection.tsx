@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
 import Image from "next/image";
 import {GlitchText} from "@/components/GlitchText";
-import {ReactNode} from "react";
+import {ReactNode, useEffect, useState} from "react";
 import TagsBadges from "@/components/page/TagsBadges";
 import {useTheme} from "next-themes";
 
@@ -26,6 +26,11 @@ export default function HeroSection({
                                         tags = [],
                                     }: HeroSectionProps) {
     const { theme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => setMounted(true), []);
+    if (!mounted) return null; // SSR safe
+
     const isDark = theme === "dark";
 
     const titleElement = (

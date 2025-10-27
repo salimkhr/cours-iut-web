@@ -39,6 +39,8 @@ export default async function Content({params}: ContentPageProps) {
     const ComponentToRender = (await importFunc()).default;
     if (!ComponentToRender) notFound();
 
+    if(currentSection.isAvailable === false) notFound();
+
     return (
         <div>
             <BreadcrumbGenerator

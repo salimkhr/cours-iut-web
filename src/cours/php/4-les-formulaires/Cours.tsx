@@ -1,5 +1,5 @@
 import Heading from "@/components/ui/Heading";
-import Text from "@/components/ui/Text";
+import {Text} from "@/components/ui/Text";
 import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
 import Grid from "@/components/ui/Grid";

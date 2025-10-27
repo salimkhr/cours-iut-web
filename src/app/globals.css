@@ -32,9 +32,9 @@ svg p {
 
 /* Variables Dark Mode */
 .dark {
-    --color-html-css: #e34f26;       /* ou une nuance plus sombre si besoin */
+    /*--color-html-css: #e34f26;  */
     --color-php: #777bb4;
-    --color-javascript: #f7df1e;
+    /*--color-javascript: #f7df1e;*/
 }
 
 /* Réglage global */

@@ -47,9 +47,8 @@ export const contentImports: ContentImportsType = {
       'Cours': () => import('@/cours/php/1-introduction-au-php/Cours'),
       'TP': () => import('@/cours/php/1-introduction-au-php/TP'),
     },
-    '10-symfony': {
-      'Cours': () => import('@/cours/php/10-symfony/Cours'),
-      'TP': () => import('@/cours/php/10-symfony/TP'),
+    '10-examen': {
+      'Examen': () => import('@/cours/php/10-examen/Examen'),
     },
     '2-fonction-tableaux': {
       'Cours': () => import('@/cours/php/2-fonction-tableaux/Cours'),
@@ -79,8 +78,9 @@ export const contentImports: ContentImportsType = {
       'Cours': () => import('@/cours/php/8-les-sessions/Cours'),
       'TP': () => import('@/cours/php/8-les-sessions/TP'),
     },
-    '9-examen': {
-      'Examen': () => import('@/cours/php/9-examen/Examen'),
+    '9-symfony': {
+      'Cours': () => import('@/cours/php/9-symfony/Cours'),
+      'TP': () => import('@/cours/php/9-symfony/TP'),
     },
   },
 };

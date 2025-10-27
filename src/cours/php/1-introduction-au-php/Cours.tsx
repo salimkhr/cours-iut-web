@@ -1,6 +1,6 @@
 import Heading from "@/components/ui/Heading";
 import {List, ListItem} from "@/components/ui/List";
-import Text from "@/components/ui/Text";
+import {Text} from "@/components/ui/Text";
 import ImageCard from "@/components/Cards/ImageCard";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import CodeCard from "@/components/Cards/CodeCard";

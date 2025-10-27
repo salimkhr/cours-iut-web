@@ -3,7 +3,7 @@
 import {cn} from "@/lib/utils";
 import {JSX, useEffect, useState} from "react";
 import {Film} from "lucide-react";
-import Text from "./Text";
+import {Text} from "./Text";
 import {useTheme} from "next-themes";
 
 type HeadingProps = {
