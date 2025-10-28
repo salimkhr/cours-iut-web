@@ -47,10 +47,11 @@ export default async function Module({params}: ModulePageProps) {
             <HeroSection
                 title={currentModule.title}
                 description={currentModule.description}
-                imagePath={`/header_${currentModule.path}.svg`}
+                imagePath={`images/header/header_${currentModule.path}.svg`}
                 imageAlt={currentModule.title}
                 tags={allTags}
                 icon={<Icon size={70} className="mb-4"/>}
+                path={currentModule.path}
             >
 
                 <ModuleInfo currentModule={currentModule}/>

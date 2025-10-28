@@ -13,7 +13,7 @@ export default async function Home() {
             <HeroSection
                 title="Développement Web"
                 description="Maîtriser les bases du développement web front-end et back-end pour exploiter efficacement les frameworks modernes."
-                imagePath="/header.svg"
+                imagePath="images/header/header.svg"
                 imageAlt="Développement Web"
             />
 

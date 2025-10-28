@@ -37,8 +37,9 @@ export default async function SectionPage({params}: SectionPageProps) {
             <HeroSection
                 title={`${currentSection?.order}. ${currentSection?.title}`}
                 description={currentSection?.description}
-                imagePath={`/header_${currentModule.path}.svg`}
+                imagePath={`images/header/header_${currentModule.path}.svg`}
                 imageAlt={currentModule.title}
+                path={currentModule.path}
             />
 
             <TagsBadges

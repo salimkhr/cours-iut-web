@@ -1,10 +1,10 @@
 'use client';
 
-import Image from "next/image";
 import {GlitchText} from "@/components/GlitchText";
 import {ReactNode, useEffect, useState} from "react";
 import TagsBadges from "@/components/page/TagsBadges";
 import {useTheme} from "next-themes";
+import {HeaderSvg} from "@/components/HeaderSvg";
 
 interface HeroSectionProps {
     title: string;
@@ -14,22 +14,36 @@ interface HeroSectionProps {
     children?: ReactNode;
     tags?: string[];
     icon?: ReactNode;
+    path?: string;
 }
 
 export default function HeroSection({
                                         title,
                                         description,
-                                        imagePath,
-                                        imageAlt,
                                         children,
                                         icon,
                                         tags = [],
+                                        path=''
                                     }: HeroSectionProps) {
     const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => setMounted(true), []);
+
+    const variableName = `--color-${path}`;
+
+    const [color, setColor] = useState<string>("");
+
+    console.log(variableName,color);
+
+    useEffect(() => {
+        const root = getComputedStyle(document.documentElement);
+        const value = root.getPropertyValue(variableName).trim();
+        setColor(value);
+    }, [variableName]);
+
     if (!mounted) return null; // SSR safe
+
 
     const isDark = theme === "dark";
 
@@ -71,18 +85,7 @@ export default function HeroSection({
             </div>
 
             <div className="hidden lg:flex items-center justify-center w-full lg:w-1/3 opacity-0 animate-fade-in-right">
-                <Image
-                    src={imagePath}
-                    alt={imageAlt}
-                    width={1200}
-                    height={1200}
-                    className="w-full h-auto max-w-xs lg:max-w-sm hover:scale-105 transition-transform duration-300"
-                    style={{
-                        marginBottom: imagePath.includes("header.svg") ? "-20px" : "0",
-                        zIndex: 100,
-                    }}
-                    priority
-                />
+                <HeaderSvg size={500} color={color}/>
             </div>
         </section>
     );
