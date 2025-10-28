@@ -151,7 +151,7 @@ Theme "1" <-- "*" Card
                 <Text>
                     Téléchargez le projet{" "}
                     <Link
-                        href="exam_prenom_nom.zip"
+                        href="/download/php/exam_prenom_nom.zip"
                         download
                         className="font-medium"
                     >
