@@ -49,13 +49,6 @@ graph TD
     D --> D1[Les sous-classes peuvent<br/>remplacer les classes parentes]
     E --> E1[Interfaces spécifiques<br/>plutôt que générales]
     F --> F1[Dépendre d'abstractions<br/>pas d'implémentations]
-    
-    style A fill:#ff6b6b
-    style B fill:#4ecdc4
-    style C fill:#45b7d1
-    style D fill:#96ceb4
-    style E fill:#ffeaa7
-    style F fill:#dfe6e9
 `;
 
     return (

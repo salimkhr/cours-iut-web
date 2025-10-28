@@ -57,13 +57,13 @@ export default function BaseCard({
                     className={cn(
                         withMarge ? 'p-6' : '',
                         "flex-grow flex flex-col items-center justify-center",
-                        isDark ? 'bg-gray-800' : 'bg-white'
+                        isDark ? 'bg-footer' : 'bg-white'
                     )}
                 >
                     {content}
                 </CardContent>
 
-                {footer && <CardFooter className={cn("p-4", isDark ? 'bg-gray-800' : 'bg-white')}>
+                {footer && <CardFooter className={cn("p-4", isDark ? 'bg-footer' : 'bg-white')}>
                     {footer}
                 </CardFooter>}
             </Card>

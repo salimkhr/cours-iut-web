@@ -1,7 +1,8 @@
 'use client'
-import {useEffect, useRef} from "react";
-import mermaid, {RenderResult} from "mermaid";
+import {useEffect, useState} from "react";
+import mermaid from "mermaid";
 import BaseCard from "@/components/Cards/BaseCard";
+import {useTheme} from "next-themes"; // ou ton hook useTheme
 
 type DiagramCardProps = {
     header?: string;
@@ -9,40 +10,38 @@ type DiagramCardProps = {
 };
 
 export default function DiagramCard({ header, chart }: DiagramCardProps) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    // Générer un ID unique pour chaque instance du composant
-    const diagramId = useRef(`mermaid-diagram-${crypto.randomUUID()}`);
+    const [svg, setSvg] = useState<string>("");
+    const { theme } = useTheme(); // récupère 'light' ou 'dark'
 
     useEffect(() => {
-        if (containerRef.current) {
-            mermaid.initialize({ startOnLoad: true, theme: "default" });
-            try {
-                mermaid.render(diagramId.current, chart).then((result: RenderResult) => {
-                    if (containerRef.current) {
-                        containerRef.current.innerHTML = result.svg;
+        let isMounted = true;
+        const diagramId = `mermaid-diagram-${crypto.randomUUID()}`;
 
-                        // Si bindFunctions est défini, on l'appelle
-                        if (result.bindFunctions) {
-                            result.bindFunctions(containerRef.current);
-                        }
-                    }
-                });
-            } catch {
-                if (containerRef.current) {
-                    containerRef.current.innerHTML = `<pre>${chart}</pre>`;
-                }
-            }
-        }
-    }, [chart]);
+        // Définir le thème Mermaid en fonction du mode
+        const mermaidTheme = theme === "dark" ? "dark" : "default";
+
+        mermaid.initialize({ theme: mermaidTheme });
+
+        mermaid.render(diagramId, chart)
+            .then(result => {
+                if (isMounted) setSvg(result.svg);
+            })
+            .catch(err => {
+                console.error("Erreur Mermaid:", err);
+                if (isMounted) setSvg(`<pre>${chart}</pre>`);
+            });
+
+        return () => { isMounted = false };
+    }, [chart, theme]); // Re-render si le diagram ou le thème change
 
     return (
         <BaseCard
             header={header}
-            content={<div ref={containerRef} className="w-full mx-auto"/>}
+            content={<div dangerouslySetInnerHTML={{ __html: svg }} className="w-full mx-auto" />}
             withMarge={false}
             withHover={false}
             withLed={false}
-            className={"w-full"}
+            className="w-full"
         />
     );
 }

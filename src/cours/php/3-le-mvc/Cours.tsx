@@ -26,11 +26,6 @@ graph TD
     B -->|Instancie| C[Contrôleur<br/>ArticleController]
     C -->|Appelle| D[Vue<br/>article.php]
     D -->|Retourne HTML| A
-    
-    style A fill:#e1f5fe
-    style B fill:#fff3e0
-    style C fill:#f3e5f5
-    style D fill:#fce4ec
 `;
 
     return (
@@ -94,7 +89,7 @@ graph TD
                 <Heading level={3}>Flux d&apos;une requête MVC</Heading>
                 <div className="flex w-full space-x-8 mt-6">
                     <div className="flex-1 flex flex-col items-center space-y-4 w-full">
-                        <DiagramCard chart={chartMVCStructure} />
+                        <DiagramCard chart={chartMVCStructure} header="Structure MVC"/>
                         <Text className="text-center">
                             Le cycle typique d&apos;une requête : un utilisateur effectue une action,
                             celle-ci est transmise au contrôleur, qui prépare les données grâce au
@@ -103,7 +98,7 @@ graph TD
                     </div>
 
                     <div className="flex-1 flex flex-col items-center space-y-4 w-full">
-                        <DiagramCard chart={chartBasique} />
+                        <DiagramCard chart={chartBasique} header="Rôle du Contrôleur" />
                         <Text className="text-center">
                             Ce second schéma illustre le rôle de coordination du contrôleur dans une
                             interaction utilisateur basique.

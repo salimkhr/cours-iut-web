@@ -5,6 +5,7 @@ import Link from "next/link";
 import {List, ListItem} from "@/components/ui/List";
 import {Text} from "@/components/ui/Text";
 import {AlertCircleIcon, Award, Calculator, Clock} from "lucide-react";
+import DiagramCard from "@/components/Cards/DiagramCard";
 
 export default function Examen() {
     const chart = `classDiagram
@@ -227,6 +228,7 @@ Theme "1" <-- "*" Card
 
             <section>
                 <Heading level={2}>B - Sauvegarde en Base de Données</Heading>
+                <DiagramCard chart={chart} header={"Diagramme de classes"}/>
 
                 <Text className="mt-2">
                     Après avoir configuré la base de données en modifiant le fichier <Code>config/config.php</Code>
