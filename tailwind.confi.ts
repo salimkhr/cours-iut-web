@@ -32,8 +32,6 @@ export default {
                 newUtilities[`.border-${name}`] = {borderColor: color};
             });
 
-            console.log(newUtilities);
-
             addUtilities(newUtilities, ["responsive", "hover"]);
         },
     ],

@@ -34,8 +34,6 @@ export default function HeroSection({
 
     const [color, setColor] = useState<string>("");
 
-    console.log(variableName,color);
-
     useEffect(() => {
         const root = getComputedStyle(document.documentElement);
         const value = root.getPropertyValue(variableName).trim();
