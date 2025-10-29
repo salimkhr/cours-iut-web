@@ -47,11 +47,7 @@ export default function HeroSection({
 
     const titleElement = (
         <h1
-            className={`text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-extrabold mt-10 lg:mb-4 text-center bg-clip-text ${
-                isDark
-                    ? "text-gray-200 bg-gradient-to-r from-purple-400 via-pink-400 to-red-400"
-                    : "text-gray-800 bg-gradient-to-r from-blue-400 via-green-400 to-yellow-400"
-            }`}
+            className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-extrabold mt-10 lg:mb-4 text-center bg-clip-text"
         >
             {title}
         </h1>
