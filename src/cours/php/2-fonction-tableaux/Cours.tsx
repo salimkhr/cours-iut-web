@@ -8,7 +8,7 @@ export default function Cours() {
     return (
         <article>
             <section>
-                <Heading level={2}>A - Les tableaux indexés</Heading>
+                <Heading level={2}>A- Les tableaux indexés</Heading>
                 <Text>
                     Un tableau indexé est une collection ordonnée d&apos;éléments identifiés par un <strong>indice numérique</strong>
                     commençant toujours à <Code>0</Code>. C&apos;est la structure de données la plus simple pour stocker
@@ -91,7 +91,7 @@ array_unique([1,1,2,2,3]);   // [1,2,3] (supprime les doublons)
             </section>
 
             <section>
-                <Heading level={2}>B - Les tableaux associatifs</Heading>
+                <Heading level={2}>B- Les tableaux associatifs</Heading>
                 <Text>
                     Un tableau associatif utilise des <strong>clés nommées</strong> (chaînes de caractères ou nombres)
                     plutôt que des indices numériques. Il établit une relation <strong>clé → valeur</strong>,
@@ -156,7 +156,7 @@ arsort($notes);  // Tri par valeurs décroissant
             </section>
 
             <section>
-                <Heading level={2}>C - Les tableaux multidimensionnels</Heading>
+                <Heading level={2}>C- Les tableaux multidimensionnels</Heading>
                 <Text>
                     Un tableau multidimensionnel est un tableau qui contient d&apos;autres tableaux comme éléments.
                     Cette structure permet de représenter des données complexes et hiérarchiques.
@@ -233,7 +233,7 @@ count($equipes, COUNT_RECURSIVE); // Compte tous les éléments
             </section>
 
             <section>
-                <Heading level={2}>D - Les fonctions</Heading>
+                <Heading level={2}>D- Les fonctions</Heading>
                 <Text>
                     Depuis PHP 7, il est possible de <strong>typer les paramètres</strong> et le <strong>type de retour</strong>
                     d&apos;une fonction. Cela permet d&apos;éviter des erreurs et de rendre le code plus lisible et maintenable.
@@ -306,7 +306,7 @@ $double = fn($x) => $x * 2;
             </section>
 
             <section>
-                <Heading level={2}>E - Les générateurs</Heading>
+                <Heading level={2}>E- Les générateurs</Heading>
                 <Text>
                     Un générateur est une fonction spéciale qui utilise le mot-clé <code>yield</code>.
                     Il permet de créer des itérateurs sans stocker tous les éléments en mémoire,
@@ -362,7 +362,7 @@ for ($i = 0; $i < 10; $i++) {
             </section>
 
             <section>
-                <Heading level={2}>F - Les chaînes de caractères</Heading>
+                <Heading level={2}>F- Les chaînes de caractères</Heading>
                 <Text>
                     En PHP, les chaînes peuvent être déclarées de plusieurs façons, chacune ayant ses spécificités
                     en termes d&apos;interprétation des variables et des caractères spéciaux.

@@ -96,7 +96,7 @@ export default function TP() {
     return (
         <article>
             <section>
-                <Heading level={2}>A - Les chaînes de caractères</Heading>
+                <Heading level={2}>A- Les chaînes de caractères</Heading>
                 <List ordered>
                     <ListItem>
                         Crée un fichier <Code>0_strings.php</Code> et déclare deux variables :
@@ -144,7 +144,7 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>B - Tableau indexé</Heading>
+                <Heading level={2}>B- Tableau indexé</Heading>
                 <List ordered>
                     <ListItem>
                         Dans un fichier <Code>1_pilote.php</Code>, crée un tableau <Code>$pilots</Code> contenant tous les pilotes du GP Explorer :
@@ -181,7 +181,7 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>C - Tableau associatif</Heading>
+                <Heading level={2}>C- Tableau associatif</Heading>
                 <List ordered>
                     <ListItem>
                         Dans un fichier <Code>2_equipe.php</Code>, crée un tableau associatif <Code>$teams</Code> contenant les équipes du GP Explorer :
@@ -217,7 +217,7 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>D - Tableau à plusieurs dimensions</Heading>
+                <Heading level={2}>D- Tableau à plusieurs dimensions</Heading>
                 <List ordered>
                     <ListItem>
                         Dans un fichier <Code>3_teams_multidim.php</Code>, crée un tableau <Code>$teams</Code> contenant toutes les équipes et leurs membres. Chaque équipe doit être un tableau associatif avec :
@@ -275,7 +275,7 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>E - Les fonctions sans paramètre</Heading>
+                <Heading level={2}>E- Les fonctions sans paramètre</Heading>
                 <Alert>
                     <Info />
                     {/*<AlertTitle></AlertTitle>*/}
@@ -320,7 +320,7 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>F - Les fonctions avec paramètres</Heading>
+                <Heading level={2}>F- Les fonctions avec paramètres</Heading>
                 <List>
                     <ListItem>
                         Écris une fonction <Code>driverExist(string $driverName): bool</Code>
@@ -344,7 +344,7 @@ export default function TP() {
             </section>
 
             <section>
-                <Heading level={2}>G - Les fonctions avec paramètres par défaut</Heading>
+                <Heading level={2}>G- Les fonctions avec paramètres par défaut</Heading>
                 <Heading level={3}>1. Gestion de la course</Heading>
                 <List ordered>
                     <ListItem>

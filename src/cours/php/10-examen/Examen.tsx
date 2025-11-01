@@ -164,7 +164,7 @@ Theme "1" <-- "*" Card
 
             {/* Partie A */}
             <section>
-                <Heading level={2}>A - Création des Cartes</Heading>
+                <Heading level={2}>A- Création des Cartes</Heading>
 
                 <Text className="mt-2">
                     Dans cette partie, vous devez créer un formulaire pour permettre aux utilisateurs de saisir de nouvelles cartes pour le jeu &quot;Limite Limite&quot;.
@@ -227,7 +227,7 @@ Theme "1" <-- "*" Card
             </section>
 
             <section>
-                <Heading level={2}>B - Sauvegarde en Base de Données</Heading>
+                <Heading level={2}>B- Sauvegarde en Base de Données</Heading>
                 <DiagramCard chart={chart} header={"Diagramme de classes"}/>
 
                 <Text className="mt-2">
@@ -269,7 +269,7 @@ Theme "1" <-- "*" Card
             </section>
 
             <section>
-                <Heading level={2}>C - Gestion de la Partie</Heading>
+                <Heading level={2}>C- Gestion de la Partie</Heading>
 
                 <Text className="mt-2">
                     Dans cette dernière partie, vous devez implémenter la gestion d’une partie du jeu.

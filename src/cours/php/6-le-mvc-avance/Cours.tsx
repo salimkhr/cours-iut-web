@@ -56,13 +56,13 @@ graph TD
             {/* Introduction */}
             <section>
                 <Heading level={2}>Introduction</Heading>
-                <Text className="text-gray-700 leading-relaxed mb-4">
+                <Text className="leading-relaxed mb-4">
                     Dans ce cours, nous allons partir d&apos;un code <strong>réel et problématique</strong> que
                     l&apos;on rencontre souvent dans les projets : un contrôleur qui fait tout. Nous allons le
                     refactorer étape par étape en appliquant les principes SOLID et en nous rapprochant
                     d&apos;une Clean Architecture.
                 </Text>
-                <Text className="text-gray-700 leading-relaxed">
+                <Text className="leading-relaxed">
                     Chaque étape apportera une amélioration concrète : meilleure testabilité, réutilisabilité,
                     maintenabilité. Vous verrez comment transformer du &quot;spaghetti code&quot; en code professionnel.
                 </Text>
@@ -162,22 +162,22 @@ $controller->register();`}</CodeCard>
                 <List>
                     <ListItem>
                         <Text className="font-semibold text-gray-900">Violation du MVC</Text>
-                        <Text className="text-gray-700 text-sm">Le HTML est écrit directement dans le contrôleur</Text>
+                        <Text className="text-sm">Le HTML est écrit directement dans le contrôleur</Text>
                     </ListItem>
                     <ListItem>
                         <Text className="font-semibold text-gray-900">Violation du SRP (Single Responsibility)</Text>
-                        <Text className="text-gray-700 text-sm">Le contrôleur fait TOUT : validation, DB, email, logging...</Text>
+                        <Text className="text-sm">Le contrôleur fait TOUT : validation, DB, email, logging...</Text>
                     </ListItem>
                     <ListItem>
                         <Text className="font-semibold text-gray-900">Impossible à tester</Text>
                     </ListItem>
                     <ListItem>
                         <Text className="font-semibold text-gray-900">Couplage fort</Text>
-                        <Text className="text-gray-700 text-sm">PDO hardcodé, fonction mail() native, impossible de changer</Text>
+                        <Text className="text-sm">PDO hardcodé, fonction mail() native, impossible de changer</Text>
                     </ListItem>
                     <ListItem>
                         <Text className="font-semibold text-gray-900">Code non réutilisable</Text>
-                        <Text className="text-gray-700 text-sm">Impossible d&apos;utiliser cette logique dans une API ou un CLI</Text>
+                        <Text className="text-sm">Impossible d&apos;utiliser cette logique dans une API ou un CLI</Text>
                     </ListItem>
                 </List>
             </section>
@@ -1116,7 +1116,7 @@ class UserServiceTest extends TestCase
 
                     {/* D - Dependency Inversion */}
                     <div className="p-4 md:p-6 border-php border-2 rounded-lg">
-                        <Heading level={3}>D - Dependency Inversion</Heading>
+                        <Heading level={3}>D- Dependency Inversion</Heading>
                         <Text className="mb-3">
                             <strong>Appliqué</strong> : Dépendance sur abstractions, pas sur implémentations
                         </Text>

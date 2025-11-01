@@ -9,7 +9,7 @@ export default function TP() {
     return (
         <article>
             <section>
-                <Heading level={2} netflex>A - Initialisation de la base & configuration de la connexion</Heading>
+                <Heading level={2} netflex>A- Initialisation de la base & configuration de la connexion</Heading>
 
                 <List ordered>
                     <ListItem>
@@ -957,7 +957,7 @@ foreach ($episodesBySeason as $seasonNumber => $seasonEpisodes) {
                     les épisodes groupés par saison.
                 </Text>
             </section>
-            <section>
+            {/*<section>
                 <Heading level={2} netflex>
                     D - Administration des séries
                 </Heading>
@@ -1036,24 +1036,24 @@ foreach ($episodesBySeason as $seasonNumber => $seasonEpisodes) {
                 <Text>
                     Créez le fichier <Code>public/admin_series.php</Code> :
                 </Text>
-{/*                <CodeCard language="php" filename="admin_series.php">*/}
-{/*                    {`<?php*/}
-{/*require_once DIR . '/../app/controllers/AdminSeriesController.php';*/}
-{/*$controller = new AdminSeriesController();*/}
-{/*// Gestion des actions*/}
-{/*$action = $_GET['action'] ?? 'index';*/}
-{/*switch ($action) {*/}
-{/*case 'episodes':*/}
-{/*$controller->episodes();*/}
-{/*break;*/}
-{/*case 'delete':*/}
-{/*$controller->delete();*/}
-{/*break;*/}
-{/*default:*/}
-{/*$controller->index();*/}
-{/*break;*/}
-{/*}`}*/}
-{/*                </CodeCard>*/}
+                <CodeCard language="php" filename="admin_series.php">
+                    {`<?php
+require_once DIR . '/../app/controllers/AdminSeriesController.php';
+$controller = new AdminSeriesController();
+// Gestion des actions
+$action = $_GET['action'] ?? 'index';
+switch ($action) {
+case 'episodes':
+$controller->episodes();
+break;
+case 'delete':
+$controller->delete();
+break;
+default:
+$controller->index();
+break;
+}`}
+                </CodeCard>
                 <Heading level={3}>6/ Création de la vue <Code>admin/series_list.html.php</Code></Heading>
                 <Text>
                     Dans le dossier <Code>views/admin/</Code>, créez le fichier <Code>series_list.html.php</Code> :
@@ -1114,7 +1114,7 @@ foreach ($episodesBySeason as $seasonNumber => $seasonEpisodes) {
                         <td class="align-middle">
                             <div class="d-flex align-items-center">
                                 <?php if ($serie->getImage()): ?>
-                                <img src="img/<?= htmlspecialchars($serie->getImage()) ?>" 
+                                <img src="img/<?= htmlspecialchars($serie->getImage()) ?>"
                                      alt="<?= htmlspecialchars($serie->getTitle()) ?>"
                                      class="rounded me-3"
                                      style="width: 60px; height: 40px; object-fit: cover;">
@@ -1123,7 +1123,7 @@ foreach ($episodesBySeason as $seasonNumber => $seasonEpisodes) {
                             </div>
                         </td>
                         <td class="align-middle">
-                            <?= $serie->getReleaseYearStart() ?> - 
+                            <?= $serie->getReleaseYearStart() ?> -
                             <?= $serie->getReleaseYearEnd() ?? 'En cours' ?>
                         </td>
                         <td class="align-middle text-center">
@@ -1140,17 +1140,17 @@ foreach ($episodesBySeason as $seasonNumber => $seasonEpisodes) {
                         </td>
                         <td class="align-middle text-end">
                             <div class="btn-group btn-group-sm" role="group">
-                                <a href="admin_series.php?action=episodes&id=<?= $serie->getId() ?>" 
+                                <a href="admin_series.php?action=episodes&id=<?= $serie->getId() ?>"
                                    class="btn btn-outline-info"
                                    title="Voir les épisodes">
                                     <i class="fas fa-list"></i>
                                 </a>
-                                <a href="admin_series.php?action=edit&id=<?= $serie->getId() ?>" 
+                                <a href="admin_series.php?action=edit&id=<?= $serie->getId() ?>"
                                    class="btn btn-outline-warning"
                                    title="Modifier">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="admin_series.php?action=delete&id=<?= $serie->getId() ?>" 
+                                <a href="admin_series.php?action=delete&id=<?= $serie->getId() ?>"
                                    class="btn btn-outline-danger"
                                    title="Supprimer"
                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette série et tous ses épisodes ?')">
@@ -1197,18 +1197,18 @@ foreach ($episodesBySeason as $seasonNumber => $seasonEpisodes) {
                     Épisodes - <?= htmlspecialchars($series->getTitle()) ?>
                 </h2>
                 <div class="d-flex gap-3 text-muted">
-                    <span><i class="fas fa-calendar me-1"></i> 
+                    <span><i class="fas fa-calendar me-1"></i>
                         <?= $series->getReleaseYearStart() ?> - <?= $series->getReleaseYearEnd() ?? 'En cours' ?>
                     </span>
-                    <span><i class="fas fa-layer-group me-1"></i> 
+                    <span><i class="fas fa-layer-group me-1"></i>
                         <?= $series->getCurrentSeason() ?> saison(s)
                     </span>
-                    <span><i class="fas fa-film me-1"></i> 
+                    <span><i class="fas fa-film me-1"></i>
                         <?= count($episodes) ?> épisode(s)
                     </span>
                 </div>
             </div>
-            <a href="admin_series.php?action=create_episode&series_id=<?= $series->getId() ?>" 
+            <a href="admin_series.php?action=create_episode&series_id=<?= $series->getId() ?>"
                class="btn btn-danger">
                 <i class="fas fa-plus me-2"></i>
                 Ajouter un épisode
@@ -1259,12 +1259,12 @@ foreach ($episodesBySeason as $seasonNumber => $seasonEpisodes) {
                             </td>
                             <td class="align-middle text-end">
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <a href="admin_series.php?action=edit_episode&id=<?= $episode->getId() ?>" 
+                                    <a href="admin_series.php?action=edit_episode&id=<?= $episode->getId() ?>"
                                        class="btn btn-outline-warning"
                                        title="Modifier">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="admin_series.php?action=delete_episode&id=<?= $episode->getId() ?>&series_id=<?= $series->getId() ?>" 
+                                    <a href="admin_series.php?action=delete_episode&id=<?= $episode->getId() ?>&series_id=<?= $series->getId() ?>"
                                        class="btn btn-outline-danger"
                                        title="Supprimer"
                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet épisode ?')">
@@ -1331,7 +1331,7 @@ foreach ($episodesBySeason as $seasonNumber => $seasonEpisodes) {
                         </ListItem>
                     </List>
                 </div>
-            </section>
+            </section>*/}
         </article>
     );
 }
