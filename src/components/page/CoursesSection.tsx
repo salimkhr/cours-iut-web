@@ -16,9 +16,7 @@ export default function CoursesSection({
             <h2 className="text-4xl lg:text-6xl font-extrabold mb-4 lg:mb-8 text-center opacity-0 animate-fade-in-up">
                 {title}
             </h2>
-            <div className={containerClassName}>
-                {children}
-            </div>
+            <div className={containerClassName}>{children}</div>
         </section>
     );
 }

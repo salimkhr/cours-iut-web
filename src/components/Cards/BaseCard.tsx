@@ -2,9 +2,9 @@
 import {ReactNode, useEffect, useState} from 'react';
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import Module from "@/types/module";
-import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {useTheme} from "next-themes";
+import {Button} from "@/components/ui/button";
 
 interface BaseCardProps {
     href?: string;
@@ -36,11 +36,19 @@ export default function BaseCard({
     const isDark = theme === 'dark';
 
     return (
-        <div className={cn("group", withHover ? 'hover:shadow-xl transition-all duration-300 hover:scale-105' : '', className)}>
+        <div
+            className={cn(
+                "group h-full flex flex-col", // 🟢 Force la hauteur complète
+                withHover ? "hover:shadow-xl transition-all duration-300 hover:scale-105" : "",
+                className
+            )}
+        >
             <Card
                 className={cn(
-                    `w-full h-full text-center flex flex-col justify-between border-2 border-${currentModule ? currentModule.path : 'module'} rounded-lg shadow-lg overflow-hidden`,
-                    isDark ? 'bg-gray-800' : 'bg-white'
+                    // 🟢 Étend la carte sur toute la hauteur disponible
+                    "w-full h-full flex flex-col justify-between text-center border-2 rounded-lg shadow-lg overflow-hidden",
+                    `border-${currentModule ? currentModule.path : 'module'}`,
+                    isDark ? "bg-gray-800" : "bg-white"
                 )}
             >
                 <CardHeader
@@ -55,17 +63,21 @@ export default function BaseCard({
 
                 <CardContent
                     className={cn(
-                        withMarge ? 'p-6' : '',
-                        "flex-grow flex flex-col items-center justify-center",
-                        isDark ? 'bg-footer' : 'bg-white'
+                        withMarge ? "p-6" : "",
+                        "flex-grow flex flex-col items-center justify-center", // 🟢 permet à content de s’étirer et de centrer verticalement
+                        isDark ? "bg-footer" : "bg-white"
                     )}
                 >
                     {content}
                 </CardContent>
 
-                {footer && <CardFooter className={cn("p-4", isDark ? 'bg-footer' : 'bg-white')}>
-                    {footer}
-                </CardFooter>}
+                {footer && (
+                    <CardFooter
+                        className={cn("p-4 mt-auto", isDark ? "bg-footer" : "bg-white")}
+                    >
+                        {footer}
+                    </CardFooter>
+                )}
             </Card>
         </div>
     );

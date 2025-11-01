@@ -73,10 +73,10 @@ graph TD
                 <Heading level={2}>
                     Étape 0 : Le code problématique (God Class)
                 </Heading>
-                
-                   <Heading level={3} className="text-lg font-bold text-red-800 mb-3">Code initial : Tous les problèmes réunis</Heading>
-                    <CodeCard language="php">
-{`<?php
+
+                <Heading level={3} className="text-lg font-bold text-red-800 mb-3">Code initial : Tous les problèmes réunis</Heading>
+                <CodeCard language="php">
+                    {`<?php
 class UserController {
     public function register() {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -158,28 +158,28 @@ class UserController {
 $controller = new UserController();
 $controller->register();`}</CodeCard>
 
-                   <Heading level={3} className="text-xl font-bold text-gray-900 mb-4">Problèmes identifiés</Heading>
-                    <List>
-                       <ListItem>
-                                <Text className="font-semibold text-gray-900">Violation du MVC</Text>
-                                <Text className="text-gray-700 text-sm">Le HTML est écrit directement dans le contrôleur</Text>
-                       </ListItem>
-                        <ListItem>
-                                <Text className="font-semibold text-gray-900">Violation du SRP (Single Responsibility)</Text>
-                                <Text className="text-gray-700 text-sm">Le contrôleur fait TOUT : validation, DB, email, logging...</Text>
-                        </ListItem>
-                        <ListItem>
-                                <Text className="font-semibold text-gray-900">Impossible à tester</Text>
-                        </ListItem>
-                        <ListItem>
-                                <Text className="font-semibold text-gray-900">Couplage fort</Text>
-                                <Text className="text-gray-700 text-sm">PDO hardcodé, fonction mail() native, impossible de changer</Text>
-                        </ListItem>
-                        <ListItem>
-                                <Text className="font-semibold text-gray-900">Code non réutilisable</Text>
-                                <Text className="text-gray-700 text-sm">Impossible d&apos;utiliser cette logique dans une API ou un CLI</Text>
-                        </ListItem>
-                    </List>
+                <Heading level={3} className="text-xl font-bold text-gray-900 mb-4">Problèmes identifiés</Heading>
+                <List>
+                    <ListItem>
+                        <Text className="font-semibold text-gray-900">Violation du MVC</Text>
+                        <Text className="text-gray-700 text-sm">Le HTML est écrit directement dans le contrôleur</Text>
+                    </ListItem>
+                    <ListItem>
+                        <Text className="font-semibold text-gray-900">Violation du SRP (Single Responsibility)</Text>
+                        <Text className="text-gray-700 text-sm">Le contrôleur fait TOUT : validation, DB, email, logging...</Text>
+                    </ListItem>
+                    <ListItem>
+                        <Text className="font-semibold text-gray-900">Impossible à tester</Text>
+                    </ListItem>
+                    <ListItem>
+                        <Text className="font-semibold text-gray-900">Couplage fort</Text>
+                        <Text className="text-gray-700 text-sm">PDO hardcodé, fonction mail() native, impossible de changer</Text>
+                    </ListItem>
+                    <ListItem>
+                        <Text className="font-semibold text-gray-900">Code non réutilisable</Text>
+                        <Text className="text-gray-700 text-sm">Impossible d&apos;utiliser cette logique dans une API ou un CLI</Text>
+                    </ListItem>
+                </List>
             </section>
 
             {/* Étape 1 : Séparer la Vue */}
@@ -187,17 +187,17 @@ $controller->register();`}</CodeCard>
                 <Heading level={2}>
                     Étape 1 : Séparer la Vue du Contrôleur
                 </Heading>
-                
-                   <Heading level={3}>Objectif</Heading>
-                    <Text className="text-blue-800">
-                        Respecter le principe MVC de base : le contrôleur ne doit pas contenir de HTML.
-                    </Text>
+
+                <Heading level={3}>Objectif</Heading>
+                <Text className="text-blue-800">
+                    Respecter le principe MVC de base : le contrôleur ne doit pas contenir de HTML.
+                </Text>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
                         <Heading level={4}>Contrôleur simplifié</Heading>
                         <CodeCard language="php" className="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto text-xs">
-{`<?php
+                            {`<?php
 // app/controllers/UserController.php
 require_once '../app/core/Controller.php';
 
@@ -247,7 +247,7 @@ class UserController extends Controller
                     <div>
                         <Heading level={4}>Vue séparée</Heading>
                         <CodeCard language="php" className="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto text-xs">
-{`<!-- app/views/users/register.php -->
+                            {`<!-- app/views/users/register.php -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -283,13 +283,13 @@ class UserController extends Controller
                     </div>
                 </div>
 
-                   <Heading level={3}>Améliorations obtenues</Heading>
-                    <List>
-                        <ListItem>Séparation des responsabilités : le contrôleur coordonne, la vue affiche</ListItem>
-                        <ListItem>Le design peut être modifié sans toucher au contrôleur</ListItem>
-                        <ListItem>Réutilisation du template possible pour d&apos;autres pages</ListItem>
-                        <ListItem>Gestion des erreurs plus élégante</ListItem>
-                    </List>
+                <Heading level={3}>Améliorations obtenues</Heading>
+                <List>
+                    <ListItem>Séparation des responsabilités : le contrôleur coordonne, la vue affiche</ListItem>
+                    <ListItem>Le design peut être modifié sans toucher au contrôleur</ListItem>
+                    <ListItem>Réutilisation du template possible pour d&apos;autres pages</ListItem>
+                    <ListItem>Gestion des erreurs plus élégante</ListItem>
+                </List>
             </section>
 
             {/* Étape 2 : Extraire le Repository */}
@@ -298,7 +298,7 @@ class UserController extends Controller
                     Étape 2 : Créer un Repository pour l&apos;accès aux données
                 </Heading>
 
-               <Heading level={3}>Objectif</Heading>
+                <Heading level={3}>Objectif</Heading>
                 <Text>
                     Respecter le <strong>Single Responsibility Principle</strong> : séparer l&apos;accès aux données dans une classe dédiée.
                 </Text>
@@ -307,7 +307,7 @@ class UserController extends Controller
                     <div>
                         <Heading level={4}>Contrôleur simplifié</Heading>
                         <CodeCard language="php">
-{`<?php
+                            {`<?php
 // app/controllers/UserController.php
 
 class UserController extends Controller
@@ -419,15 +419,15 @@ class UserRepository
                     </div>
                 </div>
 
-               
-                   <Heading level={3}>Améliorations obtenues</Heading>
-                    <List>
-                        <ListItem><strong>Single Responsibility</strong> : le Repository gère UNIQUEMENT l&apos;accès aux données</ListItem>
-                        <ListItem>Requêtes SQL centralisées et réutilisables</ListItem>
-                        <ListItem>Facilite les tests : on peut mocker le repository</ListItem>
-                        <ListItem>Changement de DB plus facile (MySQL → PostgreSQL)</ListItem>
-                    </List>
-               
+
+                <Heading level={3}>Améliorations obtenues</Heading>
+                <List>
+                    <ListItem><strong>Single Responsibility</strong> : le Repository gère UNIQUEMENT l&apos;accès aux données</ListItem>
+                    <ListItem>Requêtes SQL centralisées et réutilisables</ListItem>
+                    <ListItem>Facilite les tests : on peut mocker le repository</ListItem>
+                    <ListItem>Changement de DB plus facile (MySQL → PostgreSQL)</ListItem>
+                </List>
+
             </section>
 
             {/* Étape 3 : Créer les Services */}
@@ -435,16 +435,16 @@ class UserRepository
                 <Heading level={2}>
                     Étape 3 : Extraire la logique métier dans des Services
                 </Heading>
-                
-                   <Heading level={3}>Objectif</Heading>
-                    <Text className="text-blue-800">
-                        Créer des services spécialisés pour chaque responsabilité : validation, email, audit.
-                        Cela respecte <strong>Single Responsibility</strong> et prépare
-                        l&apos;<strong>Inversion de Dépendances</strong>.
-                    </Text>
-                        <Heading level={4}>1. Service de validation</Heading>
-                        <CodeCard language="php">
-{`<?php
+
+                <Heading level={3}>Objectif</Heading>
+                <Text className="text-blue-800">
+                    Créer des services spécialisés pour chaque responsabilité : validation, email, audit.
+                    Cela respecte <strong>Single Responsibility</strong> et prépare
+                    l&apos;<strong>Inversion de Dépendances</strong>.
+                </Text>
+                <Heading level={4}>1. Service de validation</Heading>
+                <CodeCard language="php">
+                    {`<?php
 // app/services/ValidationService.php
 
 class ValidationService
@@ -493,9 +493,9 @@ class ValidationService
         }
     }
 }`}</CodeCard>
-                        <Heading level={4}>2. Service d&apos;email</Heading>
-                        <CodeCard language="php">
-{`<?php
+                <Heading level={4}>2. Service d&apos;email</Heading>
+                <CodeCard language="php">
+                    {`<?php
 // app/services/EmailService.php
 
 class EmailService
@@ -532,9 +532,9 @@ class EmailService
         mail($toEmail, $subject, $message, implode("\\r\\n", $headers));
     }
 }`}</CodeCard>
-                        <Heading level={4}>3. Service d&apos;audit</Heading>
-                        <CodeCard language="php">
-{`<?php
+                <Heading level={4}>3. Service d&apos;audit</Heading>
+                <CodeCard language="php">
+                    {`<?php
 // app/services/AuditService.php
 
 class AuditService
@@ -575,9 +575,9 @@ class AuditService
         ]);
     }
 }`}</CodeCard>
-                        <Heading level={4}>4. Service principal UserService</Heading>
-                        <CodeCard language="php">
-{`<?php
+                <Heading level={4}>4. Service principal UserService</Heading>
+                <CodeCard language="php">
+                    {`<?php
 // app/services/UserService.php
 
 class UserService
@@ -635,9 +635,9 @@ class UserService
         return $userId;
     }
 }`}</CodeCard>
-                        <Heading level={4}>5. Contrôleur ultra-simplifié</Heading>
-                        <CodeCard language="php">
-{`<?php
+                <Heading level={4}>5. Contrôleur ultra-simplifié</Heading>
+                <CodeCard language="php">
+                    {`<?php
 // app/controllers/UserController.php
 
 class UserController extends Controller
@@ -692,14 +692,14 @@ class UserController extends Controller
 }`}</CodeCard>
 
 
-                   <Heading level={3}>Améliorations massives obtenues</Heading>
-                    <List className="space-y-2 text-green-800">
-                        <ListItem><strong>Single Responsibility</strong> : chaque service a UNE responsabilité</ListItem>
-                        <ListItem><strong>Testabilité</strong> : chaque service peut être testé indépendamment</ListItem>
-                        <ListItem><strong>Réutilisabilité</strong> : ValidationService peut être utilisé partout</ListItem>
-                        <ListItem><strong>Contrôleur ultra-léger</strong> : seulement 40 lignes, facile à comprendre</ListItem>
-                        <ListItem><strong>Gestion d&apos;erreurs robuste</strong> : exceptions métier spécifiques</ListItem>
-                    </List>
+                <Heading level={3}>Améliorations massives obtenues</Heading>
+                <List className="space-y-2 text-green-800">
+                    <ListItem><strong>Single Responsibility</strong> : chaque service a UNE responsabilité</ListItem>
+                    <ListItem><strong>Testabilité</strong> : chaque service peut être testé indépendamment</ListItem>
+                    <ListItem><strong>Réutilisabilité</strong> : ValidationService peut être utilisé partout</ListItem>
+                    <ListItem><strong>Contrôleur ultra-léger</strong> : seulement 40 lignes, facile à comprendre</ListItem>
+                    <ListItem><strong>Gestion d&apos;erreurs robuste</strong> : exceptions métier spécifiques</ListItem>
+                </List>
             </section>
 
             {/* Étape 4 : Interfaces et Dependency Inversion */}
@@ -708,21 +708,21 @@ class UserController extends Controller
                     Étape 4 : Interfaces et Dependency Inversion (SOLID - D)
                 </Heading>
 
-                   <Heading level={3}>Objectif</Heading>
-                    <Text>
-                        Appliquer le principe <strong>Dependency Inversion</strong> : dépendre d&apos;abstractions
-                        (interfaces) plutôt que d&apos;implémentations concrètes. Cela rend le code flexible et
-                        facilite les tests.
-                    </Text>
-                    <Text className="text-blue-800 font-semibold">
-                        &quot;Les modules de haut niveau ne doivent pas dépendre des modules de bas niveau.
-                        Les deux doivent dépendre d&apos;abstractions.&quot;
-                    </Text>
+                <Heading level={3}>Objectif</Heading>
+                <Text>
+                    Appliquer le principe <strong>Dependency Inversion</strong> : dépendre d&apos;abstractions
+                    (interfaces) plutôt que d&apos;implémentations concrètes. Cela rend le code flexible et
+                    facilite les tests.
+                </Text>
+                <Text className="text-blue-800 font-semibold">
+                    &quot;Les modules de haut niveau ne doivent pas dépendre des modules de bas niveau.
+                    Les deux doivent dépendre d&apos;abstractions.&quot;
+                </Text>
 
 
-                        <Heading level={4}>1. Interface pour l&apos;envoi d&apos;emails</Heading>
-                        <CodeCard language="php">
-{`<?php
+                <Heading level={4}>1. Interface pour l&apos;envoi d&apos;emails</Heading>
+                <CodeCard language="php">
+                    {`<?php
 // app/interfaces/EmailSenderInterface.php
 
 interface EmailSenderInterface
@@ -738,9 +738,9 @@ interface EmailSenderInterface
     public function send(string $to, string $subject, string $message): void;
 }`}</CodeCard>
 
-                        <Heading level={4}>2. Implémentation SMTP réelle</Heading>
-                        <CodeCard language="php">
-{`<?php
+                <Heading level={4}>2. Implémentation SMTP réelle</Heading>
+                <CodeCard language="php">
+                    {`<?php
 // app/services/SmtpEmailService.php
 
 class SmtpEmailService implements EmailSenderInterface
@@ -775,9 +775,9 @@ class SmtpEmailService implements EmailSenderInterface
         mail($to, $subject, $message, implode("\\r\\n", $headers));
     }
 }`}</CodeCard>
-                        <Heading level={4}>3. Implémentation FAKE pour les tests</Heading>
-                        <CodeCard language="php">
-{`<?php
+                <Heading level={4}>3. Implémentation FAKE pour les tests</Heading>
+                <CodeCard language="php">
+                    {`<?php
 // app/services/FakeEmailService.php
 
 class FakeEmailService implements EmailSenderInterface
@@ -819,9 +819,9 @@ class FakeEmailService implements EmailSenderInterface
     }
 }`}</CodeCard>
 
-                        <Heading level={4}>4. UserService modifié pour utiliser l&apos;interface</Heading>
-                        <CodeCard language="php">
-{`<?php
+                <Heading level={4}>4. UserService modifié pour utiliser l&apos;interface</Heading>
+                <CodeCard language="php">
+                    {`<?php
 // app/services/UserService.php
 
 class UserService
@@ -867,9 +867,9 @@ class UserService
     }
 }`}</CodeCard>
 
-                        <Heading level={4}>5. Point d&apos;entrée avec choix d&apos;implémentation</Heading>
-                        <CodeCard language="php">
-{`<?php
+                <Heading level={4}>5. Point d&apos;entrée avec choix d&apos;implémentation</Heading>
+                <CodeCard language="php">
+                    {`<?php
 // public/register.php
 
 require_once '../config/database.php';
@@ -908,17 +908,17 @@ $controller->register();`}</CodeCard>
 
 
 
-                   <Heading level={3}>Avantages du Dependency Inversion</Heading>
-                    <List>
-                        <ListItem><strong>Flexibilité</strong> : on peut changer d&apos;implémentation sans toucher UserService</ListItem>
-                        <ListItem><strong>Tests facilités</strong> : on peut injecter FakeEmailService dans les tests</ListItem>
-                        <ListItem><strong>Découplage</strong> : UserService ne dépend plus d&apos;une classe concrète</ListItem>
-                        <ListItem><strong>Open/Closed</strong> : ouvert à l&apos;extension (nouvelles implémentations), fermé à la modification</ListItem>
-                    </List>
+                <Heading level={3}>Avantages du Dependency Inversion</Heading>
+                <List>
+                    <ListItem><strong>Flexibilité</strong> : on peut changer d&apos;implémentation sans toucher UserService</ListItem>
+                    <ListItem><strong>Tests facilités</strong> : on peut injecter FakeEmailService dans les tests</ListItem>
+                    <ListItem><strong>Découplage</strong> : UserService ne dépend plus d&apos;une classe concrète</ListItem>
+                    <ListItem><strong>Open/Closed</strong> : ouvert à l&apos;extension (nouvelles implémentations), fermé à la modification</ListItem>
+                </List>
 
-                    <Heading level={4}>Exemple de test unitaire</Heading>
-                    <CodeCard language="php" className="bg-gray-900 text-gray-100 p-3 rounded overflow-x-auto text-xs">
-{`<?php
+                <Heading level={4}>Exemple de test unitaire</Heading>
+                <CodeCard language="php" className="bg-gray-900 text-gray-100 p-3 rounded overflow-x-auto text-xs">
+                    {`<?php
 // tests/UserServiceTest.php
 
 class UserServiceTest extends TestCase
@@ -954,152 +954,169 @@ class UserServiceTest extends TestCase
             <section>
                 <Heading level={2}>Vision Clean Architecture</Heading>
 
-                   <Heading level={3}>Objectif</Heading>
-                    <Text className="text-blue-800">
-                        Comprendre comment notre refactoring s&apos;inscrit dans une <strong>Clean Architecture</strong> où les dépendances pointent toujours vers le cœur métier.
-                    </Text>
+                <Heading level={3}>Objectif</Heading>
+                <Text className="text-blue-800">
+                    Comprendre comment notre refactoring s&apos;inscrit dans une <strong>Clean Architecture</strong> où les dépendances pointent toujours vers le cœur métier.
+                </Text>
 
-                    <DiagramCard chart={chartMVCAvance}/>
+                <DiagramCard chart={chartMVCAvance}/>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
-                        <BaseCard
-                            header={<Text className="text-white">Couche Domaine (Cœur)</Text>}
-                            withLed={false}
-                            withHover={false}
-                            content={<> <Text className="text-sm">
-                                Contient la logique métier pure, indépendante de toute infrastructure
-                            </Text>
-                                <List>
-                                    <ListItem><Code>User</Code> (entité)</ListItem>
-                                    <ListItem><Code>ValidationService</Code></ListItem>
-                                    <ListItem><Code>UserService</Code></ListItem>
-                                    <ListItem>Exceptions métier</ListItem>
-                                </List>
-                                <Text className="text-xs text-yellow-700 mt-3 italic">
-                                    Aucune dépendance externe (DB, framework, etc.)
-                                </Text></>}/>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+                    <BaseCard
+                        header={<Text className="text-white">Couche Domaine (Cœur)</Text>}
+                        withLed={false}
+                        withHover={false}
+                        content={<> <Text className="text-sm">
+                            Contient la logique métier pure, indépendante de toute infrastructure
+                        </Text>
+                            <List>
+                                <ListItem><Code>User</Code> (entité)</ListItem>
+                                <ListItem><Code>ValidationService</Code></ListItem>
+                                <ListItem><Code>UserService</Code></ListItem>
+                                <ListItem>Exceptions métier</ListItem>
+                            </List>
+                            <Text className="text-xs text-yellow-700 mt-3 italic">
+                                Aucune dépendance externe (DB, framework, etc.)
+                            </Text></>}/>
 
-                        <BaseCard
-                            header={<Text className="text-white">Couche Application</Text>}
-                            withLed={false}
-                            withHover={false}
-                            content={<> <Text className="text-sm">
-                                Orchestre les cas d&apos;usage en coordonnant le domaine
-                            </Text>
-                                <List>
-                                    <ListItem><Code>UserService</Code></ListItem>
-                                    <ListItem>Interfaces (ports)</ListItem>
-                                    <ListItem>DTOs si nécessaire</ListItem>
-                                </List>
-                                <Text className="text-xs text-yellow-700 mt-3 italic">
-                                    Définit les interfaces, ne dépend pas des implémentations
-                                </Text></>}/>
+                    <BaseCard
+                        header={<Text className="text-white">Couche Application</Text>}
+                        withLed={false}
+                        withHover={false}
+                        content={<> <Text className="text-sm">
+                            Orchestre les cas d&apos;usage en coordonnant le domaine
+                        </Text>
+                            <List>
+                                <ListItem><Code>UserService</Code></ListItem>
+                                <ListItem>Interfaces (ports)</ListItem>
+                                <ListItem>DTOs si nécessaire</ListItem>
+                            </List>
+                            <Text className="text-xs text-yellow-700 mt-3 italic">
+                                Définit les interfaces, ne dépend pas des implémentations
+                            </Text></>}/>
 
-                        <BaseCard
-                            header={<Text className="text-white">Couche Infrastructure</Text>}
-                            withLed={false}
-                            withHover={false}
-                            content={<> <Text className="text-sm">
-                                Implémente les détails techniques (DB, email, logs)
-                            </Text>
-                                <List>
-                                    <ListItem><Code>UserRepository</Code></ListItem>
-                                    <ListItem><Code>SmtpEmailService</Code></ListItem>
-                                    <ListItem><Code>AuditService</Code></ListItem>
-                                    <ListItem>Configuration DB</ListItem>
-                                </List>
-                                <Text className="text-xs text-yellow-700 mt-3 italic">
-                                    Dépend des interfaces du domaine
-                                </Text></>}/>
+                    <BaseCard
+                        header={<Text className="text-white">Couche Infrastructure</Text>}
+                        withLed={false}
+                        withHover={false}
+                        content={<> <Text className="text-sm">
+                            Implémente les détails techniques (DB, email, logs)
+                        </Text>
+                            <List>
+                                <ListItem><Code>UserRepository</Code></ListItem>
+                                <ListItem><Code>SmtpEmailService</Code></ListItem>
+                                <ListItem><Code>AuditService</Code></ListItem>
+                                <ListItem>Configuration DB</ListItem>
+                            </List>
+                            <Text className="text-xs text-yellow-700 mt-3 italic">
+                                Dépend des interfaces du domaine
+                            </Text></>}/>
 
-                        <BaseCard
-                            header={<Text className="text-white"> Couche Présentation</Text>}
-                            withLed={false}
-                            withHover={false}
-                            content={<> <Text className="text-sm">
-                                Gère l&apos;interaction avec l&apos;utilisateur (HTTP, CLI, API)
-                            </Text>
-                                <List>
-                                    <ListItem><Code>UserController</Code></ListItem>
-                                    <ListItem>Vues (templates)</ListItem>
-                                    <ListItem>Routes</ListItem>
-                                    <ListItem>Validation formulaires</ListItem>
-                                </List>
-                                <Text className="text-xs text-yellow-700 mt-3 italic">
-                                    Dépend de la couche Application
-                                </Text></>}/>
-                    </div>
+                    <BaseCard
+                        header={<Text className="text-white"> Couche Présentation</Text>}
+                        withLed={false}
+                        withHover={false}
+                        content={<> <Text className="text-sm">
+                            Gère l&apos;interaction avec l&apos;utilisateur (HTTP, CLI, API)
+                        </Text>
+                            <List>
+                                <ListItem><Code>UserController</Code></ListItem>
+                                <ListItem>Vues (templates)</ListItem>
+                                <ListItem>Routes</ListItem>
+                                <ListItem>Validation formulaires</ListItem>
+                            </List>
+                            <Text className="text-xs text-yellow-700 mt-3 italic">
+                                Dépend de la couche Application
+                            </Text></>}/>
+                </div>
 
-                    <Heading level={4} className="mt-5">Principe fondamental de Clean Architecture</Heading>
-                    <List>
-                        <ListItem>
-                            <span>Les <strong>dépendances pointent toujours vers l&apos;intérieur</strong> (vers le domaine)</span>
-                        </ListItem>
-                        <ListItem>
-                            <span>Le <strong>cœur métier ne connaît RIEN</strong> de l&apos;infrastructure</span>
-                        </ListItem>
-                        <ListItem>
-                            <span>On peut <strong>changer la DB, le framework, l&apos;UI</strong> sans toucher au métier</span>
-                        </ListItem>
-                        <ListItem>
-                            <span>Les <strong>tests du domaine</strong> sont indépendants de toute infrastructure</span>
-                        </ListItem>
-                    </List>
+                <Heading level={4} className="mt-5">Principe fondamental de Clean Architecture</Heading>
+                <List>
+                    <ListItem>
+                        <span>Les <strong>dépendances pointent toujours vers l&apos;intérieur</strong> (vers le domaine)</span>
+                    </ListItem>
+                    <ListItem>
+                        <span>Le <strong>cœur métier ne connaît RIEN</strong> de l&apos;infrastructure</span>
+                    </ListItem>
+                    <ListItem>
+                        <span>On peut <strong>changer la DB, le framework, l&apos;UI</strong> sans toucher au métier</span>
+                    </ListItem>
+                    <ListItem>
+                        <span>Les <strong>tests du domaine</strong> sont indépendants de toute infrastructure</span>
+                    </ListItem>
+                </List>
             </section>
 
             {/* Récapitulatif SOLID */}
-            <section>
-                <Heading level={2}>
+            <section className="px-4 md:px-8 lg:px-16 py-8">
+                <Heading level={2} className="text-2xl md:text-3xl font-bold mb-6 text-center">
                     Récapitulatif : Application des principes SOLID
                 </Heading>
-                <DiagramCard chart={chartSOLID} />
 
-                <div className="space-y-6 mt-5">
-                   <Heading level={3}>S - Single Responsibility</Heading>
-                    <Text className="text-blue-800 mb-3">
-                        <strong>Appliqué</strong> : Chaque classe a une seule responsabilité
-                    </Text>
-                    <List className="text-sm space-y-1">
-                        <ListItem><Code>UserController</Code> : gère HTTP uniquement</ListItem>
-                        <ListItem><Code>UserService</Code> : logique métier d&apos;inscription</ListItem>
-                        <ListItem><Code>ValidationService</Code> : validation uniquement</ListItem>
-                        <ListItem><Code>UserRepository</Code> : accès données uniquement</ListItem>
-                        <ListItem><Code>EmailService</Code> : envoi emails uniquement</ListItem>
-                        <ListItem><Code>AuditService</Code> : logging uniquement</ListItem>
-                    </List>
+                <div className="mb-8">
+                    <DiagramCard chart={chartSOLID} />
+                </div>
 
-                   <Heading level={3}>O - Open/Closed</Heading>
-                    <Text className="mb-3">
-                        <strong>Appliqué</strong> : Ouvert à l&apos;extension, fermé à la modification
-                    </Text>
-                    <List className="text-sm space-y-1">
-                        <ListItem>On peut ajouter <Code>MailgunEmailService</Code> sans modifier le code existant</ListItem>
-                        <ListItem>On peut ajouter <Code>DatabaseAuditService</Code> sans toucher <Code>UserService</Code></ListItem>
-                        <ListItem>Les interfaces permettent l&apos;extensibilité</ListItem>
-                    </List>
+                {/* Conteneur responsive */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+                    {/* S - Single Responsibility */}
+                    <div className="p-4 md:p-6 border-php border-2 rounded-lg">
+                        <Heading level={3}>S - Single Responsibility</Heading>
+                        <Text className="mb-3">
+                            <strong>Appliqué</strong> : Chaque classe a une seule responsabilité
+                        </Text>
+                        <List className="text-sm space-y-1">
+                            <ListItem><Code>UserController</Code> : gère HTTP uniquement</ListItem>
+                            <ListItem><Code>UserService</Code> : logique métier d’inscription</ListItem>
+                            <ListItem><Code>ValidationService</Code> : validation uniquement</ListItem>
+                            <ListItem><Code>UserRepository</Code> : accès données uniquement</ListItem>
+                            <ListItem><Code>EmailService</Code> : envoi emails uniquement</ListItem>
+                            <ListItem><Code>AuditService</Code> : logging uniquement</ListItem>
+                        </List>
+                    </div>
 
-                       <Heading level={3} className="text-xl font-bold text-yellow-900 mb-2">L - Liskov Substitution</Heading>
+                    {/* O - Open/Closed */}
+                    <div className="p-4 md:p-6 border-php border-2 rounded-lg">
+                        <Heading level={3}>O - Open/Closed</Heading>
+                        <Text className="mb-3">
+                            <strong>Appliqué</strong> : Ouvert à l’extension, fermé à la modification
+                        </Text>
+                        <List className="text-sm space-y-1">
+                            <ListItem>On peut ajouter <Code>MailgunEmailService</Code> sans modifier le code existant</ListItem>
+                            <ListItem>On peut ajouter <Code>DatabaseAuditService</Code> sans toucher <Code>UserService</Code></ListItem>
+                            <ListItem>Les interfaces permettent l’extensibilité</ListItem>
+                        </List>
+                    </div>
+
+                    {/* L - Liskov Substitution */}
+                    <div className="p-4 md:p-6 border-php border-2 rounded-lg">
+                        <Heading level={3}>L - Liskov Substitution</Heading>
                         <Text className="mb-3">
                             <strong>Appliqué</strong> : Les implémentations sont interchangeables
                         </Text>
                         <List className="text-sm space-y-1">
                             <ListItem><Code>FakeEmailService</Code> peut remplacer <Code>SmtpEmailService</Code></ListItem>
-                            <ListItem>Le comportement respecte le contrat de l&apos;interface</ListItem>
+                            <ListItem>Le comportement respecte le contrat de l’interface</ListItem>
                             <ListItem>Aucune surprise lors du remplacement</ListItem>
                         </List>
+                    </div>
 
-
-                       <Heading level={3} className="text-xl font-bold mb-2">I - Interface Segregation</Heading>
+                    {/* I - Interface Segregation */}
+                    <div className="p-4 md:p-6 border-php border-2 rounded-lg">
+                        <Heading level={3}>I - Interface Segregation</Heading>
                         <Text className="mb-3">
                             <strong>Appliqué</strong> : Interfaces spécifiques et ciblées
                         </Text>
                         <List className="text-sm space-y-1">
-                            <ListItem><Code>EmailSenderInterface</Code> : uniquement l&apos;envoi d&apos;emails</ListItem>
-                            <ListItem>Pas d&apos;interface &quot;fourre-tout&quot; avec 20 méthodes</ListItem>
-                            <ListItem>Chaque implémentation n&apos;a que ce dont elle a besoin</ListItem>
+                            <ListItem><Code>EmailSenderInterface</Code> : uniquement l’envoi d’emails</ListItem>
+                            <ListItem>Pas d’interface &quot;fourre-tout&quot; avec 20 méthodes</ListItem>
+                            <ListItem>Chaque implémentation n’a que ce dont elle a besoin</ListItem>
                         </List>
+                    </div>
 
-                       <Heading level={3} className="text-xl font-bold mb-2">D - Dependency Inversion</Heading>
+                    {/* D - Dependency Inversion */}
+                    <div className="p-4 md:p-6 border-php border-2 rounded-lg">
+                        <Heading level={3}>D - Dependency Inversion</Heading>
                         <Text className="mb-3">
                             <strong>Appliqué</strong> : Dépendance sur abstractions, pas sur implémentations
                         </Text>
@@ -1108,6 +1125,8 @@ class UserServiceTest extends TestCase
                             <ListItem>Injection de dépendances dans les constructeurs</ListItem>
                             <ListItem>Couplage faible, flexibilité maximale</ListItem>
                         </List>
+                    </div>
+
                 </div>
             </section>
 
@@ -1119,7 +1138,7 @@ class UserServiceTest extends TestCase
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                       <Heading level={3} className="text-xl font-bold text-red-900 mb-4">AVANT (Code initial)</Heading>
+                        <Heading level={3} className="text-xl font-bold text-red-900 mb-4">AVANT (Code initial)</Heading>
                         <List className="space-y-3">
                             <ListItem className="flex items-start">
                                 <span className="mr-2">•</span>
@@ -1161,7 +1180,7 @@ class UserServiceTest extends TestCase
                     </div>
 
                     <div>
-                       <Heading level={3} className="text-xl font-bold text-green-900 mb-4">APRÈS (Architecture propre)</Heading>
+                        <Heading level={3} className="text-xl font-bold text-green-900 mb-4">APRÈS (Architecture propre)</Heading>
                         <List className="space-y-3">
                             <ListItem className="flex items-start">
                                 <span className="mr-2">•</span>
@@ -1211,7 +1230,7 @@ class UserServiceTest extends TestCase
                 </Heading>
 
                 <CodeCard language="php">
-{`project_tp/
+                    {`project_tp/
  │
  ├── public/                           ← Seul dossier accessible
  │   ├── register.php                  ← Point d'entrée
@@ -1261,7 +1280,7 @@ class UserServiceTest extends TestCase
      └── UserServiceTest.php`}</CodeCard>
 
                 <div>
-                   <Heading level={3} className="font-bold text-blue-900 mb-3">Avantages de cette structure</Heading>
+                    <Heading level={3} className="font-bold text-blue-900 mb-3">Avantages de cette structure</Heading>
                     <List>
                         <ListItem><strong>Séparation claire</strong> des responsabilités par dossier</ListItem>
                         <ListItem><strong>Navigabilité</strong> : on sait immédiatement où chercher</ListItem>
