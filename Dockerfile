@@ -13,7 +13,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Variables d'environnement pour le build (si nécessaire)
+# Variables d'environnement pour le build (NEXT_PUBLIC_* uniquement si nécessaire)
 # ARG NEXT_PUBLIC_API_URL
 # ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
