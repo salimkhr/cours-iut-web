@@ -40,7 +40,7 @@ jobs:
           tags: |
             type=ref,event=branch
             type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=latest
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -51,9 +51,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args: |
-            MONGODB_URI=${{ secrets.MONGODB_URI }}
-            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
 
   deploy:
     needs: build-and-push
@@ -86,7 +83,8 @@ jobs:
             # docker run -d \
             #   --name votre-app \
             #   -p 3000:3000 \
-            #   --env-file /path/to/.env \
+            #   -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
+            #   -e NODE_ENV=production \
             #   --restart unless-stopped \
             #   ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             
