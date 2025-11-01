@@ -1,13 +1,11 @@
 interface HeaderSvgProps {
     color?: string;
     size?: number;
-    className?: string;
 }
 
 export const HeaderSvg: React.FC<HeaderSvgProps> = ({
                                                         color,
-                                                        size = 200,
-                                                        className
+                                                        size = 200
                                                     }) => {
 
     console.log(color === "");
