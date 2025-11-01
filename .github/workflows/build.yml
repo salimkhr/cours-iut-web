@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - docker
   workflow_dispatch:
 
 env:
@@ -51,6 +50,9 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            MONGODB_URI=${{ secrets.MONGODB_URI }}
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
 
   deploy:
     needs: build-and-push
