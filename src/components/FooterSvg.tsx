@@ -7,8 +7,6 @@ export const FooterSvg: React.FC<FooterSvgProps> = ({
                                                         color,
                                                         size = 500
                                                     }) => {
-    console.log(color === "", color);
-
     return (
         <svg
             preserveAspectRatio="xMidYMid meet"

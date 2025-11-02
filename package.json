@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "postbuild_linux": "cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
+    "postbuild": "xcopy /E /I .next\\static .next\\standalone\\.next\\static && xcopy /E /I public .next\\standalone\\public",
     "start": "node .next/standalone/server.js",
+    "start_old": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "extract-cours": " node script/extractCours.js",
