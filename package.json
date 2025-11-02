@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "postbuild": "cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
+    "postbuild_linux": "cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
     "postbuild_win": "xcopy /E /I .next\\static .next\\standalone\\.next\\static && xcopy /E /I public .next\\standalone\\public",
     "start": "node .next/standalone/server.js",
     "start_old": "next start",
