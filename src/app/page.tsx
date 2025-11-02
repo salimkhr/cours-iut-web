@@ -30,7 +30,7 @@ export default async function Home() {
                 ))}
             </CoursesSection>
 
-            <PageFooter imagePath="/footer.svg"/>
+            <PageFooter/>
         </div>
     );
 }

@@ -66,7 +66,7 @@ export default async function SectionPage({params}: SectionPageProps) {
                 ))}
             </CoursesSection>
 
-            <PageFooter imagePath={`/footer_${currentModule.path}.svg`}/>
+            <PageFooter path={currentModule.path}/>
         </div>
     );
 }

@@ -78,7 +78,7 @@ export default async function Module({params}: ModulePageProps) {
                 hasAvailableContent={hasAvailableContent}
             />
 
-            <PageFooter imagePath={`/footer_${currentModule.path}.svg`}/>
+            <PageFooter path={currentModule.path}/>
         </div>
     );
 }

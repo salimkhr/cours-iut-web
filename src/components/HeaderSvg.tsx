@@ -7,8 +7,6 @@ export const HeaderSvg: React.FC<HeaderSvgProps> = ({
                                                         color,
                                                         size = 200
                                                     }) => {
-
-    console.log(color === "");
     return (
         <svg
             preserveAspectRatio="xMidYMid meet"

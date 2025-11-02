@@ -17,7 +17,7 @@ export default function Footer() {
 
     return (
         <div
-            className={`fixed bottom-0 left-0 w-full z-50 border-t transition-colors duration-300 ${
+            className={`fixed bottom-0 left-0 w-full z-200 border-t transition-colors duration-300 ${
                 isDark ? "bg-footer text-gray-200 border-white" : "bg-white text-black border-black"
             }`}
         >
