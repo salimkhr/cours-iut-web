@@ -1,10 +1,10 @@
 'use client';
 
-import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {XIcon} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {useTheme} from "next-themes";
+import {ComponentProps, useEffect, useState} from "react";
 
 function Dialog({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
     return <DialogPrimitive.Root data-slot="dialog" {...props} />;
@@ -40,11 +40,11 @@ function DialogContent({
                            children,
                            showCloseButton = true,
                            ...props
-                       }: React.ComponentProps<typeof DialogPrimitive.Content> & { showCloseButton?: boolean }) {
+                       }: ComponentProps<typeof DialogPrimitive.Content> & { showCloseButton?: boolean }) {
     const { theme } = useTheme();
-    const [mounted, setMounted] = React.useState(false);
+    const [mounted, setMounted] = useState(false);
 
-    React.useEffect(() => setMounted(true), []);
+    useEffect(() => setMounted(true), []);
     if (!mounted) return null; // SSR safe
 
     const isDark = theme === "dark";

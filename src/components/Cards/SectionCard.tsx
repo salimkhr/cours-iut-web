@@ -6,7 +6,7 @@ import Module from "@/types/module";
 import {Badge} from '@/components/ui/badge';
 import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
 import {BookOpen, CodeXml, FolderCode, Gitlab, GraduationCap} from "lucide-react";
-import React from "react";
+import {useEffect, useState} from "react";
 
 interface SectionCardProps {
     section: Section;
@@ -16,8 +16,8 @@ interface SectionCardProps {
 export default function SectionCard({ section, currentModule }: SectionCardProps) {
     const router = useRouter();
     const { theme } = useTheme();
-    const [mounted, setMounted] = React.useState(false);
-    React.useEffect(() => setMounted(true), []);
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
     if (!mounted) return null; // SSR-safe
 
     const isDark = theme === 'dark';
