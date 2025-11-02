@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: node:20-alpine
-      options: --user node
 
     permissions:
       contents: read
