@@ -3,16 +3,110 @@ import Code from "@/components/ui/Code";
 import {Text} from "@/components/ui/Text";
 import CodeCard from "@/components/Cards/CodeCard";
 import {List, ListItem} from "@/components/ui/List";
+import Link from "next/link";
 
 export default function TP() {
     return (
         <article>
             <section>
                 <Heading level={2} netflex>A- Utilisation des services</Heading>
+                <Heading level={3}>1. Correction des données</Heading>
+                <Text>Executer le script SQL suivant pour ajouter les données manquantes :</Text>
+                <CodeCard language="sql" collapsible>
+                    {`UPDATE series
+SET description = 'Chronique de la ville de Baltimore, explorant les relations entre police, trafiquants et habitants.',
+    quality = 'HD',
+    audio = 'EN',
+    image = 'the_wire.jpg',
+    updated_at = NOW()
+WHERE id = 1;
+
+UPDATE series
+SET description = 'Un politicien impitoyable use de manipulation et de trahison pour accéder au pouvoir à Washington.',
+    quality = 'HD',
+    audio = 'EN',
+    image = 'house_of_cards.jpg',
+    updated_at = NOW()
+WHERE id = 2;
+
+UPDATE series
+SET description = 'Reconstitution des événements de la catastrophe nucléaire de Tchernobyl en 1986.',
+    quality = '4K',
+    audio = 'EN',
+    image = 'chernobyl.jpg',
+    updated_at = NOW()
+WHERE id = 3;
+
+UPDATE series
+SET description = 'Un professeur de chimie atteint d’un cancer se lance dans la fabrication de méthamphétamine.',
+    quality = '4K',
+    audio = 'EN',
+    image = 'breaking_bad.jpg',
+    updated_at = NOW()
+WHERE id = 4;
+
+UPDATE series
+SET description = 'Comédie décrivant le quotidien absurde des employés d’une entreprise de papier en Pennsylvanie.',
+    quality = 'HD',
+    audio = 'EN',
+    image = 'the_office.jpg',
+    updated_at = NOW()
+WHERE id = 5;
+
+UPDATE series
+SET description = 'Une jeune prodige des échecs lutte contre la dépendance et la solitude dans les années 60.',
+    quality = '4K',
+    audio = 'EN',
+    image = 'the_queens_gambit.jpg',
+    updated_at = NOW()
+WHERE id = 6;
+
+UPDATE series
+SET description = 'Dans un futur totalitaire, une femme tente de survivre sous un régime patriarcal oppressif.',
+    quality = '4K',
+    audio = 'EN',
+    image = 'the_handmaids_tale.jpg',
+    updated_at = NOW()
+WHERE id = 7;
+
+UPDATE series
+SET description = 'Dans un monde divisé entre riches et pauvres, des jeunes tentent de rejoindre les 3% privilégiés.',
+    quality = 'HD',
+    audio = 'PT',
+    image = '3_percent.jpg',
+    updated_at = NOW()
+WHERE id = 8;
+
+UPDATE series
+SET description = 'La jeune Wednesday Addams est envoyée dans une école spéciale où elle explore ses pouvoirs psychiques.',
+    quality = '4K',
+    audio = 'EN',
+    image = 'wednesday.jpg',
+    updated_at = NOW()
+WHERE id = 9;
+
+UPDATE series
+SET description = 'Un homme obsessionnel et dangereux s’éprend de plusieurs femmes, menant à des drames meurtriers.',
+    quality = 'HD',
+    audio = 'EN',
+    image = 'you.jpg',
+    updated_at = NOW()
+WHERE id = 10;
+
+UPDATE series
+SET description = 'Un groupe d’enfants découvre des forces surnaturelles inquiétantes dans leur petite ville des années 80.',
+    quality = '4K',
+    audio = 'EN',
+    image = 'stranger_things.jpg',
+    updated_at = NOW()
+WHERE id = 11;`}
+                </CodeCard>
+                <Text>Ajouter <Link href="/download/php/uploads.zip" download>les images suivantes</Link> dans le dossier <Code>uploads/series/</Code> a la racine du projet</Text>
+                <Heading level={3}>2. Affichage des images</Heading>
                 <Text>
                     Créez le fichier <Code>ImageService.php</Code> dans le répertoire <Code>App/services</Code> avec le contenu suivant :
                 </Text>
-                <CodeCard language="php" filename="ImageService.php">
+                <CodeCard language="php" filename="ImageService.php" collapsible>
                     {`<?php
 
 /**
@@ -167,6 +261,7 @@ class ImageService
 `}
                 </CodeCard>
 
+
                 <Text>Implémentez ensuite les fonctionnalités suivantes :</Text>
 
                 <List ordered>
@@ -181,11 +276,89 @@ class ImageService
                     </ListItem>
                 </List>
             </section>
-
             <section>
                 <Heading level={2} netflex>B- Administration</Heading>
 
-                <Heading level={3}>1/ Templates d&apos;administration</Heading>
+                <Heading level={3}>1. Templates d&apos;administration</Heading>
+
+                <Heading level={4}>Création du header admin</Heading>
+                <Text>
+                    Dans le dossier <Code>views/_template/</Code>, créez le fichier <Code>header_admin.html.php</Code> :
+                </Text>
+                <CodeCard language="php" filename="header_admin.html.php" collapsible>
+                    {`<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title><?= $title ?? 'Administration' ?> - Netflex Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&family=Spline+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet"/>
+</head>
+<body class="bg-dark">
+    <!-- HEADER ADMIN -->
+    <header class="bg-black border-bottom border-danger px-4 py-3">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-4">
+                    <h1 class="logo m-0">
+                        <a href="index.php" class="text-decoration-none text-white">NETFLEX</a>
+                        <span class="badge bg-danger ms-2">ADMIN</span>
+                    </h1>
+                    <nav class="d-none d-md-flex gap-3">
+                        <a class="text-white text-decoration-none" href="admin_series.php">
+                            <i class="fas fa-tv me-1"></i> Séries
+                        </a>
+                        <a class="text-white text-decoration-none" href="#">
+                            <i class="fas fa-film me-1"></i> Films
+                        </a>
+                        <a class="text-white text-decoration-none" href="#">
+                            <i class="fas fa-users me-1"></i> Utilisateurs
+                        </a>
+                    </nav>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <a href="index.php" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i> Retour au site
+                    </a>
+                    <i class="fa-regular fa-circle-user fa-2xl text-white"></i>
+                </div>
+            </div>
+        </div>
+    </header>`}
+                </CodeCard>
+
+                <Heading level={4}>Création du footer admin</Heading>
+                <Text>
+                    Dans le dossier <Code>views/_template/</Code>, créez le fichier <Code>footer_admin.html.php</Code> :
+                </Text>
+                <CodeCard language="php" filename="footer_admin.html.php">
+                    {`    <footer class="bg-black text-white py-4 mt-5">
+        <div class="container-fluid text-center">
+            <p class="mb-0">
+                © 2025 Netflex Admin - 
+                <a href="#" class="text-danger text-decoration-none">Documentation</a> | 
+                <a href="#" class="text-danger text-decoration-none">Support</a>
+            </p>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>`}
+                </CodeCard>
+                <Text>Pourquoi header_admin.php et footer_admin.php ?
+                    Pour éviter de répéter le même code HTML sur chaque page d’administration (principe <strong>“Don’t Repeat Yourself”</strong> <em>(Ne te répète pas)</em>).
+                    Un seul fichier pour le header et le footer = maintenance plus simple et design cohérent, distinct du site public.</Text>
+
+                <Heading level={3}>2. Affichage des saisons / épisodes</Heading>
+            </section>
+
+            {/*<section>
+                <Heading level={2} netflex>B- Administration</Heading>
+
+                <Heading level={3}>1. Templates d&apos;administration</Heading>
 
                 <Heading level={4}>Création du header admin</Heading>
                 <Text>
@@ -255,110 +428,7 @@ class ImageService
 </html>`}
                 </CodeCard>
 
-                <Heading level={3}>2/ Affichage des comptes utilisateurs</Heading>
-                <Text>
-                    Créez une page d&apos;administration permettant de lister tous les comptes utilisateurs. Cette fonctionnalité utilisera l&apos;architecture Service/Repository pour accéder aux données.
-                </Text>
-
-                <Text>Structure de la table <Code>accounts</Code> déjà créée lors du dernier TP :</Text>
-                <CodeCard language="sql" filename="schema.sql">
-                    {`CREATE TABLE accounts
-(
-    id            SERIAL PRIMARY KEY,
-    username      VARCHAR(50)  NOT NULL UNIQUE,
-    email         VARCHAR(100) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    created_at    TIMESTAMP DEFAULT NOW(),
-    updated_at    TIMESTAMP DEFAULT NOW()
-);`}
-                </CodeCard>
-
-                <Text>Implémentez l&apos;architecture suivante :</Text>
-
-                <List ordered>
-                    <ListItem>
-                        Créez la classe <Code>Account</Code> dans <Code>App/models</Code> avec les propriétés correspondant aux colonnes de la table (id, username, email, password_hash, created_at, updated_at)
-                    </ListItem>
-                    <ListItem>
-                        Créez le fichier <Code>admin_user.php</Code> dans le dossier <Code>public</Code> qui appellera la méthode <Code>AdminUserController::list()</Code>
-                    </ListItem>
-                    <ListItem>
-                        Dans <Code>AdminUserController::list()</Code>, instanciez un <Code>AccountService</Code> et utilisez sa méthode <Code>getAll()</Code> pour récupérer tous les comptes
-                    </ListItem>
-                    <ListItem>
-                        Créez <Code>AccountService</Code> dans <Code>App/services</Code> avec une méthode <Code>getAll()</Code> qui délègue la récupération des données à <Code>AccountRepository</Code>
-                    </ListItem>
-                    <ListItem>
-                        Créez <Code>AccountRepository</Code> dans <Code>App/repositories</Code> avec une méthode <Code>findAll()</Code> qui exécute la requête SQL et retourne un tableau d&apos;objets <Code>Account</Code>
-                    </ListItem>
-                    <ListItem>
-                        Affichez les comptes dans une vue <Code>admin_users.html.php</Code> sous forme de tableau avec les colonnes : ID, Username, Email, Date de création.
-                        <CodeCard language="php" filename="admin_users.html.php" collapsible>
-                            {`<?php require_once __DIR__ . '/../_template/header_admin.html.php'; ?>
-<main class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h2 class="text-white mb-2">
-                        <i class="fas fa-users text-danger me-2"></i>
-                        Gestion des utilisateurs
-                    </h2>
-                    <p class="text-muted mb-0">
-                        <?= 0 ?> utilisateur(s) au total
-                    </p>
-                </div>
-                <a href="admin_user.php?action=create" class="btn btn-danger">
-                    <i class="fas fa-plus me-2"></i>
-                    Ajouter un utilisateur
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tableau des utilisateurs -->
-    <div class="card bg-dark text-white border-secondary">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-dark table-hover mb-0">
-                    <thead class="border-bottom border-danger">
-                        <tr>
-                            <th style="width: 60px;">ID</th>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th style="width: 180px;">Date de création</th>
-                            <th style="width: 180px;">Dernière mise à jour</th>
-                            <th style="width: 150px;" class="text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-<!-- Liste des utilisateurs 
-Ajouter <td class="align-middle text-end">
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a href="admin_user.php?action=edit&id=<?= ID ?>"
-                                       class="btn btn-outline-warning"
-                                       title="Modifier">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="admin_user.php?action=delete&id=<?= ID ?>"
-                                       class="btn btn-outline-danger"
-                                       title="Supprimer"
-                                       <i class="fas fa-trash"></i>
-                                    </a>
-                                </div>
-                            </td> à chaque ligne -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</main>
-<?php require_once __DIR__ . '/../_template/footer_admin.html.php'; ?>`}
-                        </CodeCard>
-                    </ListItem>
-                </List>
-
-                <Heading level={3}>3/ Affichage des saisons / épisodes</Heading>
+                <Heading level={3}>2. Affichage des saisons / épisodes</Heading>
 
                 <Text>
                     Créez une page d&apos;administration permettant d&apos;afficher toutes les séries avec leurs saisons et épisodes organisés dans des accordéons Bootstrap.
@@ -589,7 +659,7 @@ $totalEpisodes = array_sum(array_map('count', $episodesBySeason));
                     <ListItem><Code>App/views/admin/admin_series.html.php</Code></ListItem>
                     <ListItem><Code>public/admin_series.php</Code></ListItem>
                 </List>
-            </section>
+            </section>*/}
         </article>
     );
 }
