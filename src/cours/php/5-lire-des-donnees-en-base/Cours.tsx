@@ -134,11 +134,17 @@ class CategoryRepository
                         <CodeCard language={"php"}>
                             {`public function findAll(): array
 {
-    $stmt = $this->pdo->query("SELECT * FROM category");
+    $stmt = $this->pdo->query(<<<SQL
+        SELECT *
+        FROM category
+    SQL);
+
     $categories = [];
+
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $categories[] = $this->createCategoryFromRow($row);
     }
+
     return $categories;
 }`}
                         </CodeCard>
@@ -150,40 +156,48 @@ class CategoryRepository
                     Les requêtes préparées sont essentielles pour sécuriser les interactions avec la base de données.
                     Elles permettent de séparer la logique de la requête des valeurs des paramètres, empêchant ainsi les
                     attaques par injection SQL. Elles sont aussi plus efficaces, car la requête est analysée et compilée
-                    par la base de données une seule fois.
+                    une seule fois.
                 </Text>
                 <Text>
                     <strong>Le Binding de Paramètres :</strong> Le &quot;binding&quot; consiste à associer des valeurs spécifiques
                     aux paramètres d&apos;une requête préparée avant son exécution. Cela permet de s&apos;assurer que
-                    les données insérées ou sélectionnées sont traitées de manière sécurisée. Voici quelques exemples de
-                    binding de paramètres avec différents types de valeurs.
+                    les données insérées ou sélectionnées sont traitées de manière sécurisée.
                 </Text>
 
                 <Heading level={4}>Exemple avec un Entier (int)</Heading>
                 <Text>
-                    Cet exemple montre comment utiliser un entier comme paramètre pour sélectionner une catégorie par
-                    son ID.
+                    Cet exemple montre comment utiliser un entier comme paramètre pour sélectionner une catégorie par son ID.
                 </Text>
                 <CodeCard language={'php'}>
-                    {`$stmt = $this->pdo->prepare("SELECT * FROM category WHERE id = :id");
+                    {`$stmt = $this->pdo->prepare(<<<SQL
+    SELECT *
+    FROM category
+    WHERE id = :id
+SQL);
+
 $stmt->execute(['id' => $id]);`}
                 </CodeCard>
+
                 <Text>
                     Ici, le paramètre <Code>:id</Code> est directement lié à la valeur fournie.
                 </Text>
 
                 <Heading level={4}>Exemple avec une Chaîne de Caractères (string)</Heading>
                 <Text>
-                    Cet exemple montre comment utiliser une chaîne de caractères pour rechercher une catégorie par
-                    son nom.
+                    Cet exemple montre comment utiliser une chaîne de caractères pour rechercher une catégorie par son nom.
                 </Text>
                 <CodeCard language={'php'}>
-                    {`$stmt = $this->pdo->prepare("SELECT * FROM category WHERE name = :name");
+                    {`$stmt = $this->pdo->prepare(<<<SQL
+    SELECT *
+    FROM category
+    WHERE name = :name
+SQL);
+
 $stmt->execute(['name' => $categoryName]);`}
                 </CodeCard>
+
                 <Text>
-                    Dans cet exemple, le paramètre <Code>:name</Code> est lié directement à la valeur fournie
-                    pour <Code>$categoryName</Code>.
+                    Dans cet exemple, le paramètre <Code>:name</Code> est lié directement à la valeur fournie pour <Code>$categoryName</Code>.
                 </Text>
 
                 <Heading level={4}>Exemple avec Plusieurs Paramètres</Heading>
@@ -191,12 +205,13 @@ $stmt->execute(['name' => $categoryName]);`}
                     Lorsqu&apos;on doit passer plusieurs paramètres, on utilise un tableau associatif.
                 </Text>
                 <CodeCard language={'php'}>
-                    {`$stmt = $this->pdo->prepare(
-    "SELECT * FROM category 
-     WHERE name ILIKE :name 
-        AND is_active = :is_active 
-        AND created_at >= :created_after"
-);
+                    {`$stmt = $this->pdo->prepare(<<<SQL
+    SELECT *
+    FROM category
+    WHERE name ILIKE :name
+      AND is_active = :is_active
+      AND created_at >= :created_after
+SQL);
 
 $stmt->execute([
     'name' => '%' . $searchName . '%',
@@ -226,22 +241,35 @@ $stmt->execute([
                         <CodeCard language={"php"}>
                             {`public function findById(int $id): ?Category
 {
-    $stmt = $this->pdo->prepare("SELECT * FROM category WHERE id = :id");
+    $stmt = $this->pdo->prepare(<<<SQL
+        SELECT *
+        FROM category
+        WHERE id = :id
+    SQL);
+
     $stmt->execute(['id' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
     if ($row) {
         return $this->createCategoryFromRow($row);
     }
+
     return null;
 }`}
                         </CodeCard>
                     </ListItem>
+
                     <ListItem>
-                        <strong>findByName</strong> : Récupère les catégories par le name.
+                        <strong>findByName</strong> : Récupère les catégories par le nom.
                         <CodeCard language={"php"}>
                             {`public function findByName(string $name): array
 {
-    $stmt = $this->pdo->prepare("SELECT * FROM category WHERE name = :name");
+    $stmt = $this->pdo->prepare(<<<SQL
+        SELECT *
+        FROM category
+        WHERE name = :name
+    SQL);
+
     $stmt->execute(['name' => $name]);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -255,7 +283,7 @@ $stmt->execute([
                         </CodeCard>
                     </ListItem>
                 </List>
-               {/* <List>
+                {/* <List>
                     <ListItem>
                         <strong>create</strong> : Crée une nouvelle catégorie.
                         <CodeCard language={"php"}>
