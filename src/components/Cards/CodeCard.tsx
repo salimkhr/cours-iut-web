@@ -96,7 +96,7 @@ export default function CodeCard({
                         className="flex items-center gap-2 text-white"
                         title={isExpanded ? "Masquer" : "Afficher"}
                     >
-                        {isExpanded ? <><MinimizeIcon className="w-4 h-4"/> Masquer</> : <><MaximizeIcon className="w-4 h-4"/> Afficher</>}
+                        {isExpanded ? <><MinimizeIcon className="w-4 h-4"/> <span className="hidden sm:inline">Masquer</span></> : <><MaximizeIcon className="w-4 h-4"/> <span className="hidden sm:inline">Afficher</span></>}
                     </Button>
                 )}
                 {filename && (
@@ -107,7 +107,7 @@ export default function CodeCard({
                         className="flex items-center gap-2 text-white"
                         title="Télécharger le fichier"
                     >
-                        <DownloadIcon className="w-4 h-4"/> {filename}
+                        <DownloadIcon className="w-4 h-4"/> <span className="hidden sm:inline">{filename}</span>
                     </Button>
                 )}
                 <Button
@@ -116,7 +116,7 @@ export default function CodeCard({
                     onClick={handleCopy}
                     className="flex items-center gap-2 text-white"
                 >
-                    <ClipboardCopyIcon className="w-4 h-4"/> {copied ? 'Copié !' : 'Copier'}
+                    <ClipboardCopyIcon className="w-4 h-4"/> <span className="hidden sm:inline">{copied ? 'Copié !' : 'Copier'}</span>
                 </Button>
             </div>
         </div>
