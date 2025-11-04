@@ -11,11 +11,11 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-push:
+  # Job 1: Build l'image Docker
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
 
     steps:
       - name: Checkout code
@@ -26,7 +26,6 @@ jobs:
         with:
           node-version: 20
 
-      # Cache npm pour accélérer npm ci
       - name: Cache Node modules
         uses: actions/cache@v3
         with:
@@ -37,6 +36,60 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          outputs: type=docker,dest=/tmp/image.tar
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp/image.tar
+          retention-days: 1
+
+  # Job 2: Push l'image vers le registry
+  push:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp
+
+      - name: Load Docker image
+        run: docker load --input /tmp/image.tar
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -55,24 +108,32 @@ jobs:
             type=sha,prefix={{branch}}-
             type=raw,value=latest
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Push Docker image
+        run: |
+          for tag in $(echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n'); do
+            docker push $tag
+          done
 
+  # Job 3: Deploy sur Pelican
   deploy:
-    needs: build-and-push
+    needs: push
     runs-on: ubuntu-latest
+    environment: production
+
     steps:
-      - name: Notify Pelican (optionnel via API)
+      - name: Restart Pelican Server
         run: |
           curl -X POST "https://${{ secrets.PELICAN_DOMAIN }}/api/client/servers/${{ secrets.PELICAN_SERVER }}/power" \
           -H "Accept: application/json" \
           -H "Content-Type: application/json" \
           -H "Authorization: Bearer ${{ secrets.PELICAN_API_KEY }}" \
           -d '{"signal": "restart"}'
+
+      - name: Wait for server restart
+        run: sleep 15
+
+      - name: Verify deployment (optional)
+        run: |
+          echo "Deployment triggered successfully"
+          # Ajoutez un health check si vous avez un endpoint
+          # curl -f https://votre-app.com/health || exit 1
