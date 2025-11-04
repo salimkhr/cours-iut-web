@@ -19,7 +19,7 @@ export default function PageFooter({path}: PageFooterProps) {
     }, [variableName]);
 
     return (
-        <div className="opacity-0 animate-fade-in z-0" style={{animationDelay: '0.5s',marginBottom:'45px', marginTop:'-300px'}}>
+        <div className="hidden md:block opacity-0 animate-fade-in z-0" style={{animationDelay: '0.5s',marginBottom:'45px', marginTop:'-300px'}}>
             <FooterSvg size={700} color={color}/>
         </div>
     );

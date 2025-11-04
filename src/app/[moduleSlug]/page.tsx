@@ -27,12 +27,27 @@ export default async function Module({params}: ModulePageProps) {
     const {currentModule} = await getModuleData({moduleSlug});
 
     // Module statistics
-    const totalSections = currentModule.sections.length;
-    const totalAvailableSections = currentModule.sections.filter(
-        (section: Section) => section.isAvailable
+    const totalSections = currentModule.sections.filter(
+        (section: Section) => !section.contents.includes('examen')
     ).length;
+
+    const totalAvailableSections = currentModule.sections.filter(
+        (section: Section) => section.isAvailable && !section.contents.includes('examen')
+    ).length;
+
+    const totalSectionsProgress =  currentModule.sections.filter(
+        (section: Section) => !section.contents.includes('examen')
+    ).reduce(
+        (sum, section: Section) => sum + (section.totalDuration || 1),
+        0
+    );
+
+    const totalAvailableSectionsProgress = currentModule.sections
+        .filter((section: Section) => section.isAvailable && !section.contents.includes('examen'))
+        .reduce((sum, section: Section) => sum + (section.totalDuration || 1), 0);
+
     const progress = totalSections > 0
-        ? Math.round((totalAvailableSections / totalSections) * 100)
+        ? Math.round((totalAvailableSectionsProgress / totalSectionsProgress) * 100)
         : 0;
     const hasAvailableContent = totalAvailableSections > 0;
     const allTags = [...new Set(
