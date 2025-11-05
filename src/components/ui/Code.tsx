@@ -5,14 +5,29 @@ import {useTheme} from "next-themes";
 import {cn} from "@/lib/utils";
 
 export default function Code({ className = "", ...props }: React.HTMLAttributes<HTMLElement>) {
-    const { theme } = useTheme();
+    const { theme, systemTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => setMounted(true), []);
-    if (!mounted) return null;
 
-    const isDark = theme === "dark";
-    const bgColor = isDark ? "bg-gray-800 text-gray-200" : "bg-gray-100 text-gray-800";
+    const currentTheme = mounted ? (theme === "system" ? systemTheme : theme) : "light";
+    const isDark = currentTheme === "dark";
 
-    return <code className={cn("text-sm px-1 rounded font-mono", bgColor, className)} {...props} />;
+    const styles = isDark
+        ? "bg-gray-800 text-gray-100"
+        : "bg-gray-200 text-gray-900";
+
+    return (
+        <code
+            className={cn(
+                "text-sm px-1.5 py-0.5 rounded font-mono",
+                "inline-block",
+                "transition-colors duration-300",
+                "motion-reduce:transition-none",
+                styles,
+                className
+            )}
+            {...props}
+        />
+    );
 }

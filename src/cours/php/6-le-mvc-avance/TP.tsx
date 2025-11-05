@@ -278,33 +278,13 @@ class ImageService
                 </List>
             </section>
             <section>
-                <Heading level={2} netflex>B- Lien Serie &lt;-&gt; Episode</Heading>
-                {/* <List>
-                    <ListItem>Ajouter dans la class <Code>Serie</Code>, une nouvelle propriété : <Code>array $episodes</Code> avec son getter et setter</ListItem>
-                    <ListItem>Ajouter aussi une méthode <Code>getEpisodesBySeason</Code>
-                    <CodeCard language="php">
-                        {`public function getEpisodesBySeason(): array {
-    $episodesBySeason = [];
-    foreach ($this->episodes as $episode) {
-        $episodesBySeason[$episode->getSeason()][] = $episode;
-        
-    return $episodesBySeason;
-}`}
-                            </CodeCard>
-                    </ListItem>
-                    <ListItem>Dans le dossier <Code>app/services</Code>, créer une class <Code>SerieService</Code> possedant les méthodes public <Code>getServiceByIdWithEpisode(int $id):Serie</Code> et <Code>getAllServiceWithEpisode():array</Code>, que nous completerons ultérieurement</ListItem>
-                    <ListItem>Dans la class <Code>SerieService</Code> ajouter une méthode private <Code>AddEpisodeToSerie(Serie $serie)</Code> qui, utilisant la méthode <Code>EpisodeRepository::findBySeriesId</Code>, va ajouter les episode a la serie passé en paramére</ListItem>
-                    <ListItem>Dans la class <Code>SerieService</Code> complété la méthode <Code>getServiceByIdWithEpisode</Code>, pour, en utilisant <Code>SeriesRepository::findById()</Code> et <Code>SerieService::AddEpisodeToSerie</Code> retourner la serie et ces episodes en fonction de l&apos;id passé en paramètre</ListItem>
-                    <ListItem>Modifier le SeriesController::show pour utiliser <Code>SerieService::getServiceByIdWithEpisode</Code> a la place des repository</ListItem>
-                    <ListItem>Modifier la vue <Code>series.html.php</Code> pour utiliser <Code>Serie::getEpisodesBySeason</Code></ListItem>
-                </List>*/}
-                <Heading level={3}>1. Modification de la classe Serie</Heading>
+                <Heading level={2}>Gestion des épisodes dans les séries</Heading>
 
                 <Text>Enrichir la classe <Code>Serie</Code> avec la gestion des épisodes :</Text>
                 <List>
                     <ListItem>Ajouter une propriété `array $episodes`</ListItem>
-                    <ListItem>Créer les méthodes `getEpisodes()` et `setEpisodes(array $episodes)`</ListItem>
-                    <ListItem>Implémenter une méthode `getEpisodesBySeason(): array` qui retourne les épisodes organisés par saison</ListItem>
+                    <ListItem>Créer les méthodes <Code>getEpisodes()</Code> et <Code>setEpisodes(array $episodes)</Code></ListItem>
+                    <ListItem>Implémenter une méthode <Code>getEpisodesBySeason(): array</Code> qui retourne les épisodes organisés par saison</ListItem>
                 </List>
                 <CodeCard language="php">{`public function getEpisodesBySeason(): array {
     $episodesBySeason = [];
@@ -314,49 +294,39 @@ class ImageService
     return $episodesBySeason;
 }`}</CodeCard>
 
-                <Heading level={3}>2. Création du SerieService</Heading>
+                <Heading level={2}>Création et implémentation du SerieService</Heading>
 
                 <Text>Dans le dossier <Code>app/services</Code>, créer une nouvelle classe <Code>SerieService</Code> avec :</Text>
                 <List>
                     <ListItem>Une méthode publique <Code>getServiceByIdWithEpisode(int $id): Serie</Code></ListItem>
-                    <ListItem>Une méthode publique <Code>getAllServiceWithEpisode(): array`</Code></ListItem>
+                    <ListItem>Une méthode publique <Code>getAllServiceWithEpisode(): array</Code></ListItem>
                 </List>
                 <Text>Ces méthodes seront complétées dans les étapes suivantes.</Text>
 
-                <Heading level={3}>3. Ajout de la méthode privée addEpisodeToSerie</Heading>
-
-                <Text>Dans la classe <Code>SerieService</Code>, implémenter une méthode privée : <Code>addEpisodeToSerie(Serie $serie)</Code></Text>
-
-                <Text>Cette méthode doit :</Text>
+                <Text className="mt-5">Ajouter une méthode privée <Code>addEpisodeToSerie(Serie $serie)</Code> qui doit :</Text>
                 <List>
                     <ListItem>Utiliser <Code>EpisodeRepository::findBySeriesId()</Code> pour récupérer les épisodes</ListItem>
                     <ListItem>Associer ces épisodes à la série passée en paramètre</ListItem>
                 </List>
-                <Heading level={3}>4. Implémentation de getServiceByIdWithEpisode</Heading>
 
-                <Text>Compléter la méthode <Code>getServiceByIdWithEpisode</Code> du <Code>SerieService</Code> :</Text>
+                <Text className="mt-5">Compléter ensuite la méthode <Code>getServiceByIdWithEpisode</Code> :</Text>
                 <List>
                     <ListItem>Récupérer la série via <Code>SeriesRepository::findById()</Code></ListItem>
                     <ListItem>Enrichir cette série avec ses épisodes via <Code>SerieService::addEpisodeToSerie()</Code></ListItem>
                     <ListItem>Retourner la série complète avec ses épisodes</ListItem>
                 </List>
 
+                <Heading level={2}>Mise à jour du contrôleur et de la vue</Heading>
 
-                <Heading level={3}>5. Mise à jour du SeriesController</Heading>
-
-                <Text>Modifier la méthode <Code>show()</Code> du contrôleur <Code>SeriesController</Code> :</Text>
+                <Text className="mt-5">Modifier la méthode <Code>show()</Code> du contrôleur <Code>SeriesController</Code> :</Text>
                 <List>
-                    <ListItem>Remplacer l&apos;appel direct aux repositories</ListItem>
-                    <ListItem>Utiliser <Code>SerieService::getServiceByIdWithEpisode()</Code> à la place</ListItem>
+                    <ListItem>Remplacer l&apos;appel direct aux repositories par <Code>SerieService::getServiceByIdWithEpisode()</Code></ListItem>
                 </List>
 
-                <Heading level={3}>6. Adaptation de la vue</Heading>
-
-                <Text>Modifier le fichier <Code>series.html.php</Code> :</Text>
+                <Text className="mt-5">Modifier le fichier <Code>series.html.php</Code> :</Text>
                 <List>
                     <ListItem>Utiliser la méthode <Code>Serie::getEpisodesBySeason()</Code> pour afficher les épisodes</ListItem>
                 </List>
-
             </section>
             <section>
                 <Heading level={2} netflex>C- Administration</Heading>
@@ -430,7 +400,7 @@ class ImageService
 </body>
 </html>`}
                 </CodeCard>
-                <Text>Pourquoi header_admin.php et footer_admin.php ?
+                <Text>Pourquoi <Code>header_admin.php</Code> et <Code>footer_admin.php</Code> ?
                     Pour éviter de répéter le même code HTML sur chaque page d’administration (principe <strong>“Don’t Repeat Yourself”</strong> <em>(Ne te répète pas)</em>).
                     Un seul fichier pour le header et le footer = maintenance plus simple et design cohérent, distinct du site public.</Text>
 

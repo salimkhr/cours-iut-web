@@ -5,35 +5,80 @@ import {useTheme} from "next-themes";
 import {cn} from "@/lib/utils";
 
 type ListProps = React.HTMLAttributes<HTMLUListElement | HTMLOListElement> & {
-    ordered?: boolean; // true pour <ol>, false ou undefined pour <ul>
+    ordered?: boolean;
     className?: string;
-    type?: undefined | "square" | "decimal" | "disc";
+    type?: "square" | "decimal" | "disc";
     start?: number;
+    spacing?: "compact" | "default" | "relaxed";
 };
 
-export function List({ ordered = false, className = "", type, ...props }: ListProps) {
+export function List({
+                         ordered = false,
+                         className = "",
+                         type,
+                         spacing = "default",
+                         ...props
+                     }: ListProps) {
     const Component = ordered ? "ol" : "ul";
-    const baseClasses =
-        type !== undefined
-            ? `list-[${type}] pl-6`
-            : ordered
-                ? "list-decimal pl-6"
-                : "list-disc pl-6";
 
-    return <Component className={cn(baseClasses, className)} {...props} />;
+    const spacingClasses = {
+        compact: "space-y-1",
+        default: "space-y-2",
+        relaxed: "space-y-3"
+    };
+
+    const baseClasses = type !== undefined
+        ? `list-[${type}] pl-6 marker:text-current`
+        : ordered
+            ? "list-decimal pl-6 marker:text-current"
+            : "list-disc pl-6 marker:text-current";
+
+    return (
+        <Component
+            className={cn(
+                baseClasses,
+                spacingClasses[spacing],
+                "motion-reduce:transition-none",
+                className
+            )}
+            {...props}
+        />
+    );
 }
 
-type ListItemProps = React.LiHTMLAttributes<HTMLLIElement>;
+type ListItemProps = React.LiHTMLAttributes<HTMLLIElement> & {
+    variant?: "default" | "muted";
+};
 
-export function ListItem({ className = "", ...props }: ListItemProps) {
-    const { theme } = useTheme();
+export function ListItem({
+                             className = "",
+                             variant = "default",
+                             ...props
+                         }: ListItemProps) {
+    const { theme, systemTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => setMounted(true), []);
-    if (!mounted) return null; // SSR safe
 
-    const isDark = theme === "dark";
-    const textColor = isDark ? "text-gray-300" : "text-gray-700";
+    // Determine actual theme with fallback
+    const currentTheme = mounted ? (theme === "system" ? systemTheme : theme) : "light";
+    const isDark = currentTheme === "dark";
 
-    return <li className={cn("mb-2", textColor, className)} {...props} />;
+    const variants = {
+        default: isDark ? "text-gray-100" : "text-gray-900",
+        muted: isDark ? "text-gray-400" : "text-gray-600"
+    };
+
+    return (
+        <li
+            className={cn(
+                variants[variant],
+                "leading-relaxed", // Améliore la lisibilité
+                "transition-colors duration-300",
+                "motion-reduce:transition-none",
+                className
+            )}
+            {...props}
+        />
+    );
 }

@@ -6,24 +6,40 @@ import {cn} from "@/lib/utils";
 
 interface TextProps extends React.HTMLAttributes<HTMLParagraphElement> {
     variant?: "default" | "muted" | "light";
+    as?: "p" | "span" | "div";
 }
 
-export function Text({className = "", variant = "default", ...props}: TextProps) {
-    const {theme} = useTheme();
+export function Text({
+                         className = "",
+                         variant = "default",
+                         as: Component = "p",
+                         ...props
+                     }: TextProps) {
+    const {theme, systemTheme} = useTheme();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => setMounted(true), []);
-    if (!mounted) return null; // SSR safe
 
-    const isDark = theme === "dark";
+    // Determine actual theme (fallback to system theme)
+    const currentTheme = mounted ? (theme === "system" ? systemTheme : theme) : "light";
+    const isDark = currentTheme === "dark";
 
     const variants: Record<NonNullable<TextProps["variant"]>, string> = {
-        default: isDark ? "text-gray-200" : "text-gray-700",
-        muted: isDark ? "text-gray-400" : "text-gray-500",
-        light: isDark ? "text-gray-300" : "text-gray-600",
+        // Increased contrast ratios for WCAG AA compliance
+        default: isDark ? "text-gray-100" : "text-gray-900",
+        muted: isDark ? "text-gray-400" : "text-gray-600",
+        light: isDark ? "text-gray-300" : "text-gray-700",
     };
 
     return (
-        <p className={cn(variants[variant], "transition-colors duration-300", className)} {...props} />
+        <Component
+            className={cn(
+                variants[variant],
+                "transition-colors duration-300",
+                "motion-reduce:transition-none",
+                className
+            )}
+            {...props}
+        />
     );
 }

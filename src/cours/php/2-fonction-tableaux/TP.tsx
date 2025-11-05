@@ -138,7 +138,7 @@ export default function TP() {
 
                     <ListItem>
                         Le pilote dit : &quot;Je roule pour Durex&quot;.
-                        Affiche cette phrase en échappant correctement les guillemets avec <Code>des guillemets doubles</Code>.
+                        Affiche cette phrase en échappant correctement les guillemets avec des guillemets doubles.
                     </ListItem>
                 </List>
             </section>
