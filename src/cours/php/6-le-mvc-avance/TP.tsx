@@ -14,92 +14,92 @@ export default function TP() {
                 <Text>Executer le script SQL suivant pour ajouter les données manquantes :</Text>
                 <CodeCard language="sql" collapsible>
                     {`UPDATE series
-SET description = 'Chronique de la ville de Baltimore, explorant les relations entre police, trafiquants et habitants.',
-    quality = 'HD',
-    audio = 'EN',
-    image = 'the_wire.jpg',
-    updated_at = NOW()
-WHERE id = 1;
+                      SET description = 'Chronique de la ville de Baltimore, explorant les relations entre police, trafiquants et habitants.',
+                          quality = 'HD',
+                          audio = 'EN',
+                          image = 'the_wire.jpg',
+                          updated_at = NOW()
+                      WHERE id = 1;
 
-UPDATE series
-SET description = 'Un politicien impitoyable use de manipulation et de trahison pour accéder au pouvoir à Washington.',
-    quality = 'HD',
-    audio = 'EN',
-    image = 'house_of_cards.jpg',
-    updated_at = NOW()
-WHERE id = 2;
+                    UPDATE series
+                    SET description = 'Un politicien impitoyable use de manipulation et de trahison pour accéder au pouvoir à Washington.',
+                        quality = 'HD',
+                        audio = 'EN',
+                        image = 'house_of_cards.jpg',
+                        updated_at = NOW()
+                    WHERE id = 2;
 
-UPDATE series
-SET description = 'Reconstitution des événements de la catastrophe nucléaire de Tchernobyl en 1986.',
-    quality = '4K',
-    audio = 'EN',
-    image = 'chernobyl.jpg',
-    updated_at = NOW()
-WHERE id = 3;
+                    UPDATE series
+                    SET description = 'Reconstitution des événements de la catastrophe nucléaire de Tchernobyl en 1986.',
+                        quality = '4K',
+                        audio = 'EN',
+                        image = 'chernobyl.jpg',
+                        updated_at = NOW()
+                    WHERE id = 3;
 
-UPDATE series
-SET description = 'Un professeur de chimie atteint d’un cancer se lance dans la fabrication de méthamphétamine.',
-    quality = '4K',
-    audio = 'EN',
-    image = 'breaking_bad.jpg',
-    updated_at = NOW()
-WHERE id = 4;
+                    UPDATE series
+                    SET description = 'Un professeur de chimie atteint d’un cancer se lance dans la fabrication de méthamphétamine.',
+                        quality = '4K',
+                        audio = 'EN',
+                        image = 'breaking_bad.jpg',
+                        updated_at = NOW()
+                    WHERE id = 4;
 
-UPDATE series
-SET description = 'Comédie décrivant le quotidien absurde des employés d’une entreprise de papier en Pennsylvanie.',
-    quality = 'HD',
-    audio = 'EN',
-    image = 'the_office.jpg',
-    updated_at = NOW()
-WHERE id = 5;
+                    UPDATE series
+                    SET description = 'Comédie décrivant le quotidien absurde des employés d’une entreprise de papier en Pennsylvanie.',
+                        quality = 'HD',
+                        audio = 'EN',
+                        image = 'the_office.jpg',
+                        updated_at = NOW()
+                    WHERE id = 5;
 
-UPDATE series
-SET description = 'Une jeune prodige des échecs lutte contre la dépendance et la solitude dans les années 60.',
-    quality = '4K',
-    audio = 'EN',
-    image = 'the_queens_gambit.jpg',
-    updated_at = NOW()
-WHERE id = 6;
+                    UPDATE series
+                    SET description = 'Une jeune prodige des échecs lutte contre la dépendance et la solitude dans les années 60.',
+                        quality = '4K',
+                        audio = 'EN',
+                        image = 'the_queens_gambit.jpg',
+                        updated_at = NOW()
+                    WHERE id = 6;
 
-UPDATE series
-SET description = 'Dans un futur totalitaire, une femme tente de survivre sous un régime patriarcal oppressif.',
-    quality = '4K',
-    audio = 'EN',
-    image = 'the_handmaids_tale.jpg',
-    updated_at = NOW()
-WHERE id = 7;
+                    UPDATE series
+                    SET description = 'Dans un futur totalitaire, une femme tente de survivre sous un régime patriarcal oppressif.',
+                        quality = '4K',
+                        audio = 'EN',
+                        image = 'the_handmaids_tale.jpg',
+                        updated_at = NOW()
+                    WHERE id = 7;
 
-UPDATE series
-SET description = 'Dans un monde divisé entre riches et pauvres, des jeunes tentent de rejoindre les 3% privilégiés.',
-    quality = 'HD',
-    audio = 'PT',
-    image = '3_percent.jpg',
-    updated_at = NOW()
-WHERE id = 8;
+                    UPDATE series
+                    SET description = 'Dans un monde divisé entre riches et pauvres, des jeunes tentent de rejoindre les 3% privilégiés.',
+                        quality = 'HD',
+                        audio = 'PT',
+                        image = '3_percent.jpg',
+                        updated_at = NOW()
+                    WHERE id = 8;
 
-UPDATE series
-SET description = 'La jeune Wednesday Addams est envoyée dans une école spéciale où elle explore ses pouvoirs psychiques.',
-    quality = '4K',
-    audio = 'EN',
-    image = 'wednesday.jpg',
-    updated_at = NOW()
-WHERE id = 9;
+                    UPDATE series
+                    SET description = 'La jeune Wednesday Addams est envoyée dans une école spéciale où elle explore ses pouvoirs psychiques.',
+                        quality = '4K',
+                        audio = 'EN',
+                        image = 'wednesday.jpg',
+                        updated_at = NOW()
+                    WHERE id = 9;
 
-UPDATE series
-SET description = 'Un homme obsessionnel et dangereux s’éprend de plusieurs femmes, menant à des drames meurtriers.',
-    quality = 'HD',
-    audio = 'EN',
-    image = 'you.jpg',
-    updated_at = NOW()
-WHERE id = 10;
+                    UPDATE series
+                    SET description = 'Un homme obsessionnel et dangereux s’éprend de plusieurs femmes, menant à des drames meurtriers.',
+                        quality = 'HD',
+                        audio = 'EN',
+                        image = 'you.jpg',
+                        updated_at = NOW()
+                    WHERE id = 10;
 
-UPDATE series
-SET description = 'Un groupe d’enfants découvre des forces surnaturelles inquiétantes dans leur petite ville des années 80.',
-    quality = '4K',
-    audio = 'EN',
-    image = 'stranger_things.jpg',
-    updated_at = NOW()
-WHERE id = 11;`}
+                    UPDATE series
+                    SET description = 'Un groupe d’enfants découvre des forces surnaturelles inquiétantes dans leur petite ville des années 80.',
+                        quality = '4K',
+                        audio = 'EN',
+                        image = 'stranger_things.jpg',
+                        updated_at = NOW()
+                    WHERE id = 11;`}
                 </CodeCard>
                 <Text>Ajouter <Link href="/download/php/uploads.zip" download>les images suivantes</Link> dans le dossier <Code>uploads/series/</Code> a la racine du projet</Text>
                 <Heading level={3}>2. Affichage des images</Heading>
@@ -269,7 +269,8 @@ class ImageService
                         Créez la méthode <Code>SerieController::image()</Code> et son point d&apos;entrée public dans le fichier <Code>serie_image.php</Code>
                     </ListItem>
                     <ListItem>
-                        Dans ce contrôleur, récupérez l&apos;ID de la série depuis les paramètres GET et utilisez <Code>ImageService::getFile($name)</Code> pour retourner l&apos;image correspondante. Le paramètre <Code>$name</Code> correspond à l&apos;attribut <Code>$image</Code> de la classe <Code>Serie</Code>. <strong>Attention :</strong> pour cette méthode, retournez directement ce que renvoie le service, sans utiliser <Code>$this-&gt;view</Code>
+                        Dans ce contrôleur, récupérez l&apos;ID de la série depuis les paramètres GET et utilisez <Code>ImageService::getFile($name)</Code> pour retourner l&apos;image correspondante. Le paramètre <Code>$name</Code> correspond à l&apos;attribut <Code>$image</Code> de la classe <Code>Serie</Code>.
+                        <strong>Attention :</strong> pour cette méthode, retournez directement ce que renvoie le service, sans utiliser <Code>$this-&gt;view</Code>
                     </ListItem>
                     <ListItem>
                         Mettez à jour les attributs <Code>src</Code> des images dans les vues <Code>home.html.php</Code> et <Code>series.html.php</Code> pour pointer vers <Code>serie_image.php?id=...</Code>
@@ -277,7 +278,88 @@ class ImageService
                 </List>
             </section>
             <section>
-                <Heading level={2} netflex>B- Administration</Heading>
+                <Heading level={2} netflex>B- Lien Serie &lt;-&gt; Episode</Heading>
+                {/* <List>
+                    <ListItem>Ajouter dans la class <Code>Serie</Code>, une nouvelle propriété : <Code>array $episodes</Code> avec son getter et setter</ListItem>
+                    <ListItem>Ajouter aussi une méthode <Code>getEpisodesBySeason</Code>
+                    <CodeCard language="php">
+                        {`public function getEpisodesBySeason(): array {
+    $episodesBySeason = [];
+    foreach ($this->episodes as $episode) {
+        $episodesBySeason[$episode->getSeason()][] = $episode;
+        
+    return $episodesBySeason;
+}`}
+                            </CodeCard>
+                    </ListItem>
+                    <ListItem>Dans le dossier <Code>app/services</Code>, créer une class <Code>SerieService</Code> possedant les méthodes public <Code>getServiceByIdWithEpisode(int $id):Serie</Code> et <Code>getAllServiceWithEpisode():array</Code>, que nous completerons ultérieurement</ListItem>
+                    <ListItem>Dans la class <Code>SerieService</Code> ajouter une méthode private <Code>AddEpisodeToSerie(Serie $serie)</Code> qui, utilisant la méthode <Code>EpisodeRepository::findBySeriesId</Code>, va ajouter les episode a la serie passé en paramére</ListItem>
+                    <ListItem>Dans la class <Code>SerieService</Code> complété la méthode <Code>getServiceByIdWithEpisode</Code>, pour, en utilisant <Code>SeriesRepository::findById()</Code> et <Code>SerieService::AddEpisodeToSerie</Code> retourner la serie et ces episodes en fonction de l&apos;id passé en paramètre</ListItem>
+                    <ListItem>Modifier le SeriesController::show pour utiliser <Code>SerieService::getServiceByIdWithEpisode</Code> a la place des repository</ListItem>
+                    <ListItem>Modifier la vue <Code>series.html.php</Code> pour utiliser <Code>Serie::getEpisodesBySeason</Code></ListItem>
+                </List>*/}
+                <Heading level={3}>1. Modification de la classe Serie</Heading>
+
+                <Text>Enrichir la classe <Code>Serie</Code> avec la gestion des épisodes :</Text>
+                <List>
+                    <ListItem>Ajouter une propriété `array $episodes`</ListItem>
+                    <ListItem>Créer les méthodes `getEpisodes()` et `setEpisodes(array $episodes)`</ListItem>
+                    <ListItem>Implémenter une méthode `getEpisodesBySeason(): array` qui retourne les épisodes organisés par saison</ListItem>
+                </List>
+                <CodeCard language="php">{`public function getEpisodesBySeason(): array {
+    $episodesBySeason = [];
+    foreach ($this->episodes as $episode) {
+        $episodesBySeason[$episode->getSeason()][] = $episode;
+    }
+    return $episodesBySeason;
+}`}</CodeCard>
+
+                <Heading level={3}>2. Création du SerieService</Heading>
+
+                <Text>Dans le dossier <Code>app/services</Code>, créer une nouvelle classe <Code>SerieService</Code> avec :</Text>
+                <List>
+                    <ListItem>Une méthode publique <Code>getServiceByIdWithEpisode(int $id): Serie</Code></ListItem>
+                    <ListItem>Une méthode publique <Code>getAllServiceWithEpisode(): array`</Code></ListItem>
+                </List>
+                <Text>Ces méthodes seront complétées dans les étapes suivantes.</Text>
+
+                <Heading level={3}>3. Ajout de la méthode privée addEpisodeToSerie</Heading>
+
+                <Text>Dans la classe <Code>SerieService</Code>, implémenter une méthode privée : <Code>addEpisodeToSerie(Serie $serie)</Code></Text>
+
+                <Text>Cette méthode doit :</Text>
+                <List>
+                    <ListItem>Utiliser <Code>EpisodeRepository::findBySeriesId()</Code> pour récupérer les épisodes</ListItem>
+                    <ListItem>Associer ces épisodes à la série passée en paramètre</ListItem>
+                </List>
+                <Heading level={3}>4. Implémentation de getServiceByIdWithEpisode</Heading>
+
+                <Text>Compléter la méthode <Code>getServiceByIdWithEpisode</Code> du <Code>SerieService</Code> :</Text>
+                <List>
+                    <ListItem>Récupérer la série via <Code>SeriesRepository::findById()</Code></ListItem>
+                    <ListItem>Enrichir cette série avec ses épisodes via <Code>SerieService::addEpisodeToSerie()</Code></ListItem>
+                    <ListItem>Retourner la série complète avec ses épisodes</ListItem>
+                </List>
+
+
+                <Heading level={3}>5. Mise à jour du SeriesController</Heading>
+
+                <Text>Modifier la méthode <Code>show()</Code> du contrôleur <Code>SeriesController</Code> :</Text>
+                <List>
+                    <ListItem>Remplacer l&apos;appel direct aux repositories</ListItem>
+                    <ListItem>Utiliser <Code>SerieService::getServiceByIdWithEpisode()</Code> à la place</ListItem>
+                </List>
+
+                <Heading level={3}>6. Adaptation de la vue</Heading>
+
+                <Text>Modifier le fichier <Code>series.html.php</Code> :</Text>
+                <List>
+                    <ListItem>Utiliser la méthode <Code>Serie::getEpisodesBySeason()</Code> pour afficher les épisodes</ListItem>
+                </List>
+
+            </section>
+            <section>
+                <Heading level={2} netflex>C- Administration</Heading>
 
                 <Heading level={3}>1. Templates d&apos;administration</Heading>
 
@@ -334,7 +416,7 @@ class ImageService
                 <Text>
                     Dans le dossier <Code>views/_template/</Code>, créez le fichier <Code>footer_admin.html.php</Code> :
                 </Text>
-                <CodeCard language="php" filename="footer_admin.html.php">
+                <CodeCard language="php" filename="footer_admin.html.php" collapsible>
                     {`    <footer class="bg-black text-white py-4 mt-5">
         <div class="container-fluid text-center">
             <p class="mb-0">
