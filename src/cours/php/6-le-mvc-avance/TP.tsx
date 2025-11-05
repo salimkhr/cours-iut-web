@@ -404,314 +404,141 @@ class ImageService
                     Pour éviter de répéter le même code HTML sur chaque page d’administration (principe <strong>“Don’t Repeat Yourself”</strong> <em>(Ne te répète pas)</em>).
                     Un seul fichier pour le header et le footer = maintenance plus simple et design cohérent, distinct du site public.</Text>
 
-                <Heading level={3}>2. Affichage des saisons / épisodes</Heading>
+                <Heading level={3}>2. Liste des saisons</Heading>
+
+                <Text>
+                    Dans cette partie, nous allons créer un panneau d'administration pour les <strong>Saisons</strong>.
+                    Ce panneau permettra, dans un prochain TP, de créer, modifier et supprimer des saisons.
+                </Text>
+
+                <List ordered>
+                    <ListItem>
+                        Créer la méthode <Code>AdminSaisonController::list()</Code>, son appel dans <Code>admin.php</Code>,
+                        et la vue correspondante <Code>saison_list.html.php</Code>.
+                        <br />
+                        <CodeCard language="php" filename="saison_list.html.php" collapsible>
+                            {`<?php require_once __DIR__ . '/../_template/header_admin.html.php'; ?>
+
+<main class="container-fluid py-4">
+    <h2 class="text-white mb-3"><i class="fas fa-calendar-alt text-danger me-2"></i>Liste des saisons</h2>
+
+    <div class="card bg-dark text-white border-secondary">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead class="border-bottom border-danger">
+                        <tr>
+                            <th style="width: 60px;">ID</th>
+                            <th>Titre</th>
+                            <th>Description</th>
+                            <th style="width: 120px;">Année début</th>
+                            <th style="width: 120px;">Année fin</th>
+                            <th style="width: 100px;">Saison actuelle</th>
+                            <th style="width: 100px;">Qualité</th>
+                            <th style="width: 100px;">Audio</th>
+                            <th>Tags</th>
+                            <th style="width: 150px;">Nombre de saisons</th>
+                            <th style="width: 150px;" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($saisons as $saison): ?>
+                        <tr>
+                            
+                            <td class="align-middle text-end">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="admin.php?action=edit&id="
+                                       class="btn btn-outline-warning"
+                                       title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="admin.php?action=delete&id="
+                                       class="btn btn-outline-danger"
+                                       title="Supprimer">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<?php require_once __DIR__ . '/../_template/footer_admin.html.php'; ?>`}
+                        </CodeCard>
+                    </ListItem>
+
+                    <ListItem>
+                        Compléter la méthode <Code>getAllServiceWithEpisode(): array</Code> afin de récupérer l'ensemble des saisons avec leurs épisodes associés.
+                    </ListItem>
+
+                    <ListItem>
+                        Utiliser la méthode <Code>getAllServiceWithEpisode(): array</Code> dans <Code>AdminSaisonController::list()</Code>
+                        pour transmettre la liste des saisons à la vue.
+                    </ListItem>
+
+                    <ListItem>
+                        Compléter la vue <Code>saison_list.html.php</Code> afin que le tableau affiche la liste des saisons,
+                        et que les boutons d'action redirigent vers les pages appropriées en incluant l'identifiant (<Code>id</Code>) dans l'URL.
+                    </ListItem>
+                </List>
+                <Heading level={3}>2. Liste des épisodes</Heading>
+
+                <Text>
+                    En reprenant la logique présentée ci-dessus, créez une liste des épisodes de la série passée en paramètre.
+                    Le point d'entrée devra être le fichier <Code>admin_episode.php</Code>.
+                    Dans cette vue, le tableau affichera la liste des épisodes, et ne comportera que les boutons d'action <strong>Modifier</strong> et <strong>Supprimer</strong>.
+                    La vue affichera les colonnes suivantes :</Text>
+                    <CodeCard language="html">
+                        {`<thead class="border-bottom border-secondary">
+    <tr>
+        <th style="width: 60px;">ID</th>
+        <th>Titre</th>
+        <th style="width: 80px;">Saison</th>
+        <th style="width: 80px;">Épisode N°</th>
+        <th style="width: 120px;">Durée</th>
+        <th style="width: 150px;">Date de sortie</th>
+        <th style="width: 150px;">Créé le</th>
+        <th style="width: 150px;">Mis à jour</th>
+        <th style="width: 150px;" class="text-end">Actions</th>
+    </tr>
+</thead>`}
+                    </CodeCard>
             </section>
 
-            {/*<section>
-                <Heading level={2} netflex>B- Administration</Heading>
-
-                <Heading level={3}>1. Templates d&apos;administration</Heading>
-
-                <Heading level={4}>Création du header admin</Heading>
-                <Text>
-                    Dans le dossier <Code>views/_template/</Code>, créez le fichier <Code>header_admin.html.php</Code> :
-                </Text>
-                <CodeCard language="php" filename="header_admin.html.php" collapsible>
-                    {`<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title><?= $title ?? 'Administration' ?> - Netflex Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&family=Spline+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet"/>
-</head>
-<body class="bg-dark">
-    <!-- HEADER ADMIN -->
-    <header class="bg-black border-bottom border-danger px-4 py-3">
-        <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center gap-4">
-                    <h1 class="logo m-0">
-                        <a href="index.php" class="text-decoration-none text-white">NETFLEX</a>
-                        <span class="badge bg-danger ms-2">ADMIN</span>
-                    </h1>
-                    <nav class="d-none d-md-flex gap-3">
-                        <a class="text-white text-decoration-none" href="admin_series.php">
-                            <i class="fas fa-tv me-1"></i> Séries
-                        </a>
-                        <a class="text-white text-decoration-none" href="#">
-                            <i class="fas fa-film me-1"></i> Films
-                        </a>
-                        <a class="text-white text-decoration-none" href="#">
-                            <i class="fas fa-users me-1"></i> Utilisateurs
-                        </a>
-                    </nav>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <a href="index.php" class="btn btn-outline-light btn-sm">
-                        <i class="fas fa-arrow-left me-1"></i> Retour au site
-                    </a>
-                    <i class="fa-regular fa-circle-user fa-2xl text-white"></i>
-                </div>
-            </div>
-        </div>
-    </header>`}
-                </CodeCard>
-
-                <Heading level={4}>Création du footer admin</Heading>
-                <Text>
-                    Dans le dossier <Code>views/_template/</Code>, créez le fichier <Code>footer_admin.html.php</Code> :
-                </Text>
-                <CodeCard language="php" filename="footer_admin.html.php">
-                    {`    <footer class="bg-black text-white py-4 mt-5">
-        <div class="container-fluid text-center">
-            <p class="mb-0">
-                © 2025 Netflex Admin - 
-                <a href="#" class="text-danger text-decoration-none">Documentation</a> | 
-                <a href="#" class="text-danger text-decoration-none">Support</a>
-            </p>
-        </div>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>`}
-                </CodeCard>
-
-                <Heading level={3}>2. Affichage des saisons / épisodes</Heading>
+            <section>
+                <Heading level={2}>C- API (optionnel)</Heading>
 
                 <Text>
-                    Créez une page d&apos;administration permettant d&apos;afficher toutes les séries avec leurs saisons et épisodes organisés dans des accordéons Bootstrap.
+                    Dans cette partie, nous allons créer une première route d’API permettant de récupérer les séries ainsi que leurs saisons et épisodes associés.
                 </Text>
 
-                <Text>
-                    <strong>Note :</strong> Les Repository et classes <Code>Episode</Code> / <Code>Serie</Code> existent déjà.
-                </Text>
-
-                <Heading level={4}>Étape 1 : Préparer la classe Serie</Heading>
-
-                <Text>
-                    Ajoutez à la classe <Code>Serie</Code> (<Code>App/models/Serie.php</Code>) :
-                </Text>
-
-                <List>
-                    <ListItem>Une propriété publique : <Code>public array $episodes = [];</Code></ListItem>
+                <List ordered>
                     <ListItem>
-                        Une méthode <Code>getEpisodesBySeason(): array</Code> qui :
-                        <List>
-                            <ListItem>Parcourt le tableau <Code>$this-&gt;episodes</Code></ListItem>
-                            <ListItem>Regroupe les épisodes par saison : <Code>$episodesBySeason[$episode-&gt;getSeason()][] = $episode;</Code></ListItem>
-                            <ListItem>Trie les saisons avec <Code>ksort($episodesBySeason)</Code></ListItem>
-                            <ListItem>Trie les épisodes de chaque saison par numéro avec <Code>usort()</Code></ListItem>
-                            <ListItem>Retourne le tableau <Code>$episodesBySeason</Code></ListItem>
-                        </List>
+                        Créer un contrôleur <Code>ApiController</Code> contenant une méthode <Code>index()</Code>.
+                        Cette méthode aura pour rôle d’appeler le service <Code>SerieService::getAllServiceWithEpisode()</Code>
+                        afin de récupérer l’ensemble des données nécessaires.
+                    </ListItem>
+
+                    <ListItem>
+                        Créer un point d’entrée <Code>api.php</Code> qui appellera la méthode <Code>ApiController::index()</Code>.
+                        Ce fichier jouera le même rôle que <Code>admin.php</Code> ou <Code>index.php</Code>, mais dédié aux appels API.
+                    </ListItem>
+
+                    <ListItem>
+                        Dans la méthode <Code>index()</Code>, au lieu d’utiliser une vue  avec <Code>view()</Code>, vous utiliserez la méthode <Code>json($data)</Code> permettant d’envoyer les données au format JSON.
                     </ListItem>
                 </List>
 
-                <Text><strong>Test de l&apos;étape 1 :</strong></Text>
-                <Text>Créez un fichier de test pour vérifier que la méthode fonctionne correctement :</Text>
-                <CodeCard language="php">
-                    {`// Créer une série avec des épisodes
-$serie = new Serie();
-$serie->episodes = [
-    new Episode(1, 1, 2, 'Episode 2'),
-    new Episode(1, 1, 1, 'Episode 1'),
-    new Episode(1, 2, 1, 'Episode S2'),
-];
-
-// Tester le regroupement
-$grouped = $serie->getEpisodesBySeason();
-var_dump($grouped); // Doit afficher les épisodes groupés par saison et triés`}
-                </CodeCard>
-
-                <Heading level={4}>Étape 2 : Créer EpisodeService</Heading>
-
                 <Text>
-                    Créez le service <Code>EpisodeService</Code> (<Code>App/services/EpisodeService.php</Code>) avec les méthodes suivantes :
+                    L’objectif est de fournir une interface de données JSON qui pourra être consommée par d’autres parties de l’application,
+                    ou par un futur client JavaScript (React, Vue, etc.). Ce point d’entrée ne doit donc produire aucun affichage HTML.
                 </Text>
-
-                <List>
-                    <ListItem><Code>getBySerieId(int $serieId): array</Code> - Retourne tous les épisodes d&apos;une série via <Code>EpisodeRepository::findBySerieId()</Code></ListItem>
-                    <ListItem><Code>getById(int $id): ?Episode</Code> - Retourne un épisode spécifique</ListItem>
-                    <ListItem><Code>getAll(): array</Code> - Retourne tous les épisodes</ListItem>
-                </List>
-
-                <Text><strong>Test de l&apos;étape 2 :</strong></Text>
-                <Text>Testez le service en récupérant les épisodes d&apos;une série existante :</Text>
-                <CodeCard language="php">
-                    {`$episodeService = new EpisodeService();
-$episodes = $episodeService->getBySerieId(1);
-var_dump(count($episodes)); // Doit afficher le nombre d'épisodes de la série 1`}
-                </CodeCard>
-
-                <Heading level={4}>Étape 3 : Créer SerieService avec getAllWithEpisodes()</Heading>
-
-                <Text>
-                    Créez le service <Code>SerieService</Code> (<Code>App/services/SerieService.php</Code>) avec une méthode <Code>getAllWithEpisodes()</Code> qui :
-                </Text>
-
-                <List ordered>
-                    <ListItem>Récupère toutes les séries via <Code>SerieRepository::findAll()</Code></ListItem>
-                    <ListItem>Pour chaque série, récupère ses épisodes via <Code>EpisodeService::getBySerieId()</Code></ListItem>
-                    <ListItem>Stocke les épisodes dans <Code>$serie-&gt;episodes</Code></ListItem>
-                    <ListItem>Retourne le tableau de séries</ListItem>
-                </List>
-
-                <Text><strong>Test de l&apos;étape 3 :</strong></Text>
-                <Text>Testez que les séries contiennent bien leurs épisodes :</Text>
-                <CodeCard language="php">
-                    {`$serieService = new SerieService();
-$series = $serieService->getAllWithEpisodes();
-
-foreach ($series as $serie) {
-    echo $serie->getTitle() . ' : ' . count($serie->episodes) . ' épisodes<br>';
-    $episodesBySeason = $serie->getEpisodesBySeason();
-    echo 'Nombre de saisons : ' . count($episodesBySeason) . '<br>';
-}`}
-                </CodeCard>
-
-                <Heading level={4}>Étape 4 : Créer AdminSerieController</Heading>
-
-                <Text>
-                    Créez le contrôleur <Code>AdminSerieController</Code> (<Code>App/controllers/AdminSerieController.php</Code>) avec :
-                </Text>
-
-                <List>
-                    <ListItem>Une méthode <Code>list()</Code> qui instancie <Code>SerieService</Code></ListItem>
-                    <ListItem>Appelle <Code>getAllWithEpisodes()</Code></ListItem>
-                    <ListItem>Passe les séries à la vue <Code>admin/admin_series</Code> dans une variable <Code>$series</Code></ListItem>
-                    <ListItem>Une méthode privée <Code>view()</Code> pour afficher les vues</ListItem>
-                </List>
-
-                <Text>
-                    Créez également le point d&apos;entrée <Code>public/admin_series.php</Code> qui instancie le contrôleur et appelle <Code>list()</Code>.
-                </Text>
-
-                <Text><strong>Test de l&apos;étape 4 :</strong></Text>
-                <Text>
-                    Créez une vue temporaire simple pour tester que les données arrivent bien :
-                </Text>
-                <CodeCard language="php" filename="App/views/admin/admin_series.html.php">
-                    {`<?php require_once __DIR__ . '/../_template/header_admin.html.php'; ?>
-<main class="container-fluid py-4">
-    <h2 class="text-white">Test - Séries avec épisodes</h2>
-    <?php foreach ($series as $serie): ?>
-        <div class="text-white mb-3">
-            <h3><?= $serie->getTitle() ?></h3>
-            <p>Nombre d'épisodes : <?= count($serie->episodes) ?></p>
-            <?php
-            $episodesBySeason = $serie->getEpisodesBySeason();
-            foreach ($episodesBySeason as $season => $episodes) {
-                echo "<p>Saison $season : " . count($episodes) . " épisodes</p>";
-            }
-            ?>
-        </div>
-    <?php endforeach; ?>
-</main>
-<?php require_once __DIR__ . '/../_template/footer_admin.html.php'; ?>`}
-                </CodeCard>
-
-                <Text>Accédez à <Code>http://localhost/admin_series.php</Code> pour vérifier que les données s&apos;affichent correctement.</Text>
-
-                <Heading level={4}>Étape 5 : Créer la vue avec accordéons</Heading>
-
-                <Text>
-                    Maintenant que tout fonctionne, créez la vue finale <Code>App/views/admin/admin_series.html.php</Code> avec :
-                </Text>
-
-                <List>
-                    <ListItem>Un en-tête affichant le nombre de séries</ListItem>
-                    <ListItem>Un accordéon Bootstrap pour chaque série avec :
-                        <List>
-                            <ListItem>L&apos;image de la série (<Code>serie_image.php?id=...</Code>)</ListItem>
-                            <ListItem>Le titre, nombre de saisons/épisodes, année</ListItem>
-                            <ListItem>Dans le corps : description, boutons d&apos;action</ListItem>
-                        </List>
-                    </ListItem>
-                    <ListItem>Un accordéon imbriqué pour les saisons avec :
-                        <List>
-                            <ListItem>Un en-tête "Saison X" avec le nombre d&apos;épisodes</ListItem>
-                            <ListItem>Un tableau des épisodes (numéro S01E01, titre, durée, actions)</ListItem>
-                        </List>
-                    </ListItem>
-                </List>
-
-                <Heading level={4}>Indications pour la vue</Heading>
-
-                <Text>Pour récupérer les épisodes groupés par saison :</Text>
-                <CodeCard language="php">
-                    {`<?php
-$episodesBySeason = $serie->getEpisodesBySeason();
-$totalEpisodes = array_sum(array_map('count', $episodesBySeason));
-?>`}
-                </CodeCard>
-
-                <Text>Pour le formatage des numéros d&apos;épisodes (S01E01) :</Text>
-                <CodeCard language="php">
-                    {`S<?= str_pad($seasonNumber, 2, '0', STR_PAD_LEFT) ?>E<?= str_pad($episode->getEpisodeNumber(), 2, '0', STR_PAD_LEFT) ?>`}
-                </CodeCard>
-
-                <Text>Structure de base des accordéons :</Text>
-                <CodeCard language="html" collapsible>
-                    {`<!-- Accordéon parent (séries) -->
-<div class="accordion" id="seriesAccordion">
-    <?php foreach ($series as $index => $serie): ?>
-        <?php $episodesBySeason = $serie->getEpisodesBySeason(); ?>
-        
-        <div class="accordion-item bg-dark border-secondary mb-3">
-            <h2 class="accordion-header">
-                <button class="accordion-button <?= $index !== 0 ? 'collapsed' : '' ?>" 
-                        data-bs-toggle="collapse" 
-                        data-bs-target="#collapse<?= $serie->getId() ?>">
-                    <!-- Contenu du bouton : image, titre, infos -->
-                </button>
-            </h2>
-            
-            <div id="collapse<?= $serie->getId() ?>" 
-                 class="accordion-collapse collapse <?= $index === 0 ? 'show' : '' ?>">
-                <div class="accordion-body">
-                    <!-- Description et boutons -->
-                    
-                    <!-- Accordéon des saisons -->
-                    <div class="accordion" id="seasonsAccordion<?= $serie->getId() ?>">
-                        <?php foreach ($episodesBySeason as $seasonNumber => $episodes): ?>
-                            <div class="accordion-item bg-dark border-secondary mb-2">
-                                <h3 class="accordion-header">
-                                    <button class="accordion-button collapsed" 
-                                            data-bs-toggle="collapse" 
-                                            data-bs-target="#season<?= $serie->getId() ?>-<?= $seasonNumber ?>">
-                                        Saison <?= $seasonNumber ?>
-                                    </button>
-                                </h3>
-                                <div id="season<?= $serie->getId() ?>-<?= $seasonNumber ?>" 
-                                     class="accordion-collapse collapse">
-                                    <div class="accordion-body">
-                                        <!-- Tableau des épisodes -->
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <?php endforeach; ?>
-</div>`}
-                </CodeCard>
-
-                <Heading level={4}>Résumé des fichiers créés</Heading>
-
-                <List ordered>
-                    <ListItem><Code>App/models/Serie.php</Code> - Ajout de la propriété <Code>episodes</Code> et de la méthode <Code>getEpisodesBySeason()</Code></ListItem>
-                    <ListItem><Code>App/services/EpisodeService.php</Code></ListItem>
-                    <ListItem><Code>App/services/SerieService.php</Code></ListItem>
-                    <ListItem><Code>App/controllers/AdminSerieController.php</Code></ListItem>
-                    <ListItem><Code>App/views/admin/admin_series.html.php</Code></ListItem>
-                    <ListItem><Code>public/admin_series.php</Code></ListItem>
-                </List>
-            </section>*/}
+            </section>
         </article>
     );
 }
