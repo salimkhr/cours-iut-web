@@ -133,11 +133,11 @@ class ImageService
      *
      * @param string $uploadDir Répertoire d’upload (par défaut : "uploads/series/").
      */
-    public function __construct(string $uploadDir = 'uploads/series/')
+    public function __construct(string $uploadDir = '../uploads/series/')
     {
         // Nettoie le chemin et ajoute un slash final
         $this->uploadDir = rtrim($uploadDir, '/') . '/';
-        
+
         // Crée le dossier s'il n'existe pas
         if (!is_dir($this->uploadDir)) {
             mkdir($this->uploadDir, 0755, true);
@@ -148,7 +148,7 @@ class ImageService
      * Upload un fichier directement depuis $_FILES.
      *
      * @param array $file Le tableau issu de $_FILES['nom_du_champ'].
-     * 
+     *
      * @return string|false Le nom unique du fichier sauvegardé, ou false en cas d’échec.
      *
      * Étapes :
@@ -198,9 +198,9 @@ class ImageService
      * Sert une image au navigateur en envoyant les bons headers HTTP.
      *
      * @param string $name Le nom du fichier à récupérer (ex : "img_123abc.jpg").
-     * 
+     *
      * @return void
-     * 
+     *
      * @throws RuntimeException Si le fichier n’existe pas ou n’est pas accessible.
      *
      * Fonctionnement :
@@ -221,14 +221,25 @@ class ImageService
         // Vérifie que le fichier existe
         if (!file_exists($filePath)) {
             http_response_code(404);
-            echo "Image non trouvée";
+            echo "Image " . $filePath . " non trouvée";
             return;
         }
 
-        // Détermine le type MIME du fichier
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimeType = finfo_file($finfo, $filePath);
-        finfo_close($finfo);
+        // Détermine le type MIME du fichier manuellement
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        $mimeTypes = [
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',
+            'gif'  => 'image/gif',
+            'webp' => 'image/webp',
+            'svg'  => 'image/svg+xml',
+            'bmp'  => 'image/bmp',
+            'ico'  => 'image/x-icon',
+        ];
+
+        $mimeType = $mimeTypes[$extension] ?? 'application/octet-stream';
 
         // Envoie les en-têtes HTTP appropriés
         header('Content-Type: ' . $mimeType);
@@ -238,11 +249,13 @@ class ImageService
         readfile($filePath);
     }
 
+
+
     /**
      * Supprime un fichier du dossier d’upload.
      *
      * @param string $name Nom du fichier à supprimer.
-     * 
+     *
      * @return bool True si le fichier a été supprimé, sinon false.
      *
      * Exemple :
@@ -257,8 +270,7 @@ class ImageService
         // Vérifie que le fichier existe avant de tenter la suppression
         return file_exists($filePath) ? unlink($filePath) : false;
     }
-}
-`}
+}`}
                 </CodeCard>
 
 
@@ -266,7 +278,7 @@ class ImageService
 
                 <List ordered>
                     <ListItem>
-                        Créez la méthode <Code>SerieController::image()</Code> et son point d&apos;entrée public dans le fichier <Code>serie_image.php</Code>
+                        Créez la méthode <Code>SeriesController::image()</Code> et son point d&apos;entrée public dans le fichier <Code>serie_image.php</Code>
                     </ListItem>
                     <ListItem>
                         Dans ce contrôleur, récupérez l&apos;ID de la série depuis les paramètres GET et utilisez <Code>ImageService::getFile($name)</Code> pour retourner l&apos;image correspondante. Le paramètre <Code>$name</Code> correspond à l&apos;attribut <Code>$image</Code> de la classe <Code>Serie</Code>.
@@ -530,15 +542,66 @@ class ImageService
                     </ListItem>
 
                     <ListItem>
-                        Dans la méthode <Code>index()</Code>, au lieu d’utiliser une vue  avec <Code>view()</Code>, vous utiliserez la méthode <Code>json($data)</Code> permettant d’envoyer les données au format JSON.
+                        Dans la méthode <Code>index()</Code>, au lieu d’utiliser une vue avec <Code>view()</Code>, vous utiliserez la méthode <Code>json($data)</Code> permettant d’envoyer les données au format JSON.
+                    </ListItem>
+
+                    <ListItem>
+                        <Text>
+                            Pour que vos objets <Code>Series</Code> et <Code>Episode</Code> soient sérialisables en JSON, vous devez soit :
+                        </Text>
+                        <List>
+                            <ListItem>
+                                Implémenter l’interface <Code>JsonSerializable</Code> dans les classes <Code>Series</Code> et <Code>Episode</Code>.
+                                Par exemple :
+                                <CodeCard language="php">
+                                    {`class Series implements JsonSerializable {
+    public function jsonSerialize(): array {
+        return [
+            'id' => $this->getId(),
+            'title' => $this->getTitle(),
+            'description' => $this->getDescription(),
+            'releaseYearStart' => $this->getReleaseYearStart(),
+            'releaseYearEnd' => $this->getReleaseYearEnd(),
+            'currentSeason' => $this->getCurrentSeason(),
+            'quality' => $this->getQuality(),
+            'audio' => $this->getAudio(),
+            'image' => $this->getImage(),
+            'tags' => $this->getTags(),
+            'createdAt' => $this->getCreatedAt()->format(DATE_ATOM),
+            'updatedAt' => $this->getUpdatedAt()->format(DATE_ATOM),
+            'episodes' => array_map(fn($ep) => $ep->jsonSerialize(), $this->getEpisodes() ?? []),
+        ];
+    }
+}`}
+                                </CodeCard>
+                            </ListItem>
+
+                            <ListItem>
+                                De la même manière, dans <Code>Episode</Code> :
+                                <CodeCard language="php">
+                                    {`class Episode implements JsonSerializable {
+    public function jsonSerialize(): array {
+        return [
+            'id' => $this->getId(),
+            'seriesId' => $this->getSeriesId(),
+            'title' => $this->getTitle(),
+            'season' => $this->getSeason(),
+            'episodeNumber' => $this->getEpisodeNumber(),
+            'duration' => $this->getDuration(),
+            'releaseDate' => $this->getReleaseDate()?->format(DATE_ATOM),
+            'createdAt' => $this->getCreatedAt()->format(DATE_ATOM),
+            'updatedAt' => $this->getUpdatedAt()->format(DATE_ATOM),
+        ];
+    }
+}`}
+                                </CodeCard>
+                            </ListItem>
+                        </List>
                     </ListItem>
                 </List>
-
-                <Text>
-                    L’objectif est de fournir une interface de données JSON qui pourra être consommée par d’autres parties de l’application,
-                    ou par un futur client JavaScript (React, Vue, etc.). Ce point d’entrée ne doit donc produire aucun affichage HTML.
-                </Text>
+                <Text>Vous pourrez tester via <Link href="localhost:8000/api.php" target="_blank">localhost:8000/api.php</Link></Text>
             </section>
+
         </article>
     );
 }

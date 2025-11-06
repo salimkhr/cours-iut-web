@@ -791,7 +791,7 @@ catch (PDOException $e) {
 
                 <Heading level={3}>5/ Création de la vue <Code>series.html.php</Code></Heading>
                 <Text>
-                    Copiez le HTML suinant dans un nouveau fichier <Code>views/series.html.php</Code>.
+                    Copiez le HTML suinant dans un nouveau fichier <Code>views/series.html.php</Code>.</Text>
                     <CodeCard language="html" filename={"series.html.php"} collapsible>{`
                         <!DOCTYPE html>
 <html lang="fr">
@@ -903,7 +903,6 @@ catch (PDOException $e) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>`}</CodeCard>
-                </Text>
 
                 <Text>
                     Modifiez la section HERO pour afficher les informations de la série (titre, image, description,
