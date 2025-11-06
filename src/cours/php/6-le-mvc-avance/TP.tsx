@@ -278,7 +278,7 @@ class ImageService
 
                 <List ordered>
                     <ListItem>
-                        Créez la méthode <Code>SeriesController::image()</Code> et son point d&apos;entrée public dans le fichier <Code>serie_image.php</Code>
+                        Créez la méthode <Code>SeriesController::image()</Code> et son point d&apos;entrée public dans le fichier <Code>series_image.php</Code>
                     </ListItem>
                     <ListItem>
                         Dans ce contrôleur, récupérez l&apos;ID de la série depuis les paramètres GET et utilisez <Code>ImageService::getFile($name)</Code> pour retourner l&apos;image correspondante. Le paramètre <Code>$name</Code> correspond à l&apos;attribut <Code>$image</Code> de la classe <Code>Serie</Code>.

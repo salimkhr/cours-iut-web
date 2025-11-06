@@ -53,11 +53,98 @@ graph TD
 
     return (
         <article>
-            {/* Introduction */}
+           <section>
+               <Heading level={2}>Ajout des Services à notre Architecture MVC</Heading>
+               <Text>
+                   Les services sont un des principes de l&apos;architecture MVC (Modèle - Vue - Contrôleur).
+                   Dans notre architecture, les <strong>services</strong> représentent une couche supplémentaire entre les contrôleurs et les modèles (ou repositories).
+                   Ils permettent d&apos;extraire la<strong> logique métier </strong> complexe des contrôleurs pour les rendre plus clairs, plus testables et plus
+                   faciles à maintenir.
+               </Text>
+               <Text className="mt-2">
+                   Le but est donc de ne plus laisser les contrôleurs exécuter directement des opérations métiers, mais de déléguer cette responsabilité aux services. Les contrôleurs orchestrent, les services exécutent.
+               </Text>
+
+               <Heading level={3}>Étapes pour ajouter un Service</Heading>
+               <List ordered>
+                   <ListItem>
+                       <strong>Créer un dossier <code>/app/services</code></strong> s&apos;il n&apos;existe pas déjà.
+                       Ce dossier contiendra tous les services de ton application (un par entité ou par fonctionnalité).
+                   </ListItem>
+                   <ListItem>
+                       <strong>Créer ton premier service</strong> — par exemple,
+                       <code>HelloService.php</code> — et y placer la logique métier spécifique.
+                   </ListItem>
+                   <ListItem>
+                       <strong>le service dans ton contrôleur</strong> en l&apos;important via un
+                       <code>require_once</code> et en le stockant dans une propriété du contrôleur.
+                   </ListItem>
+                   <ListItem>
+                       <strong>Utiliser le service</strong> dans tes méthodes de contrôleur pour récupérer les données ou
+                       exécuter des opérations métiers, puis les transmettre à la vue.
+                   </ListItem>
+               </List>
+
+               <Text className="mt-3">
+                   Ce découpage renforce la séparation des responsabilités :
+                   <ul className="list-disc ml-6 mt-2">
+                       <li>Les <strong>Contrôleurs</strong> gèrent les requêtes et les réponses.</li>
+                       <li>Les <strong>Services</strong> contiennent la logique métier.</li>
+                       <li>Les <strong>Repositories</strong> s&apos;occupent de la communication avec la base de données.</li>
+                       <li>Les <strong>Vues</strong> affichent les résultats à l&apos;utilisateur.</li>
+                   </ul>
+               </Text>
+
+                <Heading level={3}>Rappel de l'arborescence des dossier</Heading>
+                <List>
+                    <ListItem><strong>/app/controllers</strong> : Contient les contrôleurs. Chaque contrôleur gère une partie spécifique de l&apos;application (par exemple, <code>ArticleController.php</code> pour gérer les articles).</ListItem>
+                    <ListItem><strong>/app/entities</strong> : Contient les entités, représentant les objets métier (comme <code>Article.php</code> pour un article).</ListItem>
+                    <ListItem><strong>/app/repositories</strong> : Contient les repositories, responsables des requêtes SQL pour chaque entité (comme <code>ArticleRepository.php</code>).</ListItem>
+                    <ListItem><strong>/app/services</strong> : Contient les services qui encapsulent la logique métier complexe (comme <code>ArticleService.php</code> pour les articles).</ListItem>
+                    <ListItem><strong>/app/views</strong> : Contient les vues (ex. <code>article.php</code>) qui affichent les données à l&apos;utilisateur.</ListItem>
+                    <ListItem><strong>/app/core</strong> : Contient les classes de base partagées, comme <code>Controller.php</code>.</ListItem>
+                    <ListItem><strong>/config</strong> : Contient les fichiers de configuration (ex. connexion à la base dans <code>config.php</code>).</ListItem>
+                    <ListItem><strong>/public</strong> : Contient les fichiers accessibles publiquement (<code>index.php</code>, CSS, JS, etc.).</ListItem>
+                </List>
+
+               <Heading level={3}>Exemple</Heading>
+               <CodeCard language="php" filename={"app/services/UserController.php"}>
+                   {`<?php
+class HelloService
+{
+    public function hello()
+    {
+        return 'Hello World!';
+    }
+}`}
+               </CodeCard>
+
+               <CodeCard language="php" filename={"app/controllers/HelloWorldController.php"}>
+                   {`<?php
+
+use services\\HelloService;
+
+require_once '../app/core/Controller.php';
+require_once '../app/services/HelloService.php';
+
+class HelloWorldController extends Controller
+{
+    private HelloService $helloService;
+    public function __construct()
+    {
+        $this->helloService  = new HelloService();
+    }
+    public function index():void
+    {
+      $this->view('hello_world', $this->helloService->hello(), ['name' => 'Salim']);
+    }
+}`}
+               </CodeCard>
+           </section>
             <section>
-                <Heading level={2}>Introduction</Heading>
+                <Heading level={2}>Introduction à la Clean Architecture et aux principes SOLID</Heading>
                 <Text className="leading-relaxed mb-4">
-                    Dans ce cours, nous allons partir d&apos;un code <strong>réel et problématique</strong> que
+                    Nous allons partir d&apos;un code <strong>réel et problématique</strong> que
                     l&apos;on rencontre souvent dans les projets : un contrôleur qui fait tout. Nous allons le
                     refactorer étape par étape en appliquant les principes SOLID et en nous rapprochant
                     d&apos;une Clean Architecture.
