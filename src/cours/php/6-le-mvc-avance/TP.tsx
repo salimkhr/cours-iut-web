@@ -246,6 +246,8 @@ class ImageService
         header('Content-Length: ' . filesize($filePath));
 
         // Envoie le contenu binaire du fichier
+        ob_clean();
+        flush();
         readfile($filePath);
     }
 
