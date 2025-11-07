@@ -14,7 +14,7 @@ export default function TP() {
                 <Text>Executer le script SQL suivant pour ajouter les données manquantes :</Text>
                 <CodeCard language="sql" collapsible>
                     {`UPDATE series
-                      SET description = 'Chronique de la ville de Baltimore, explorant les relations entre police, trafiquants et habitants.',
+                      SET description = 'À Baltimore, policiers, trafiquants, journalistes et habitants se croisent dans une fresque réaliste et percutante. Chaque saison explore un pan de la ville, dévoilant un système corrompu, des destins brisés et une humanité en quête de justice et de rédemption.',
                           quality = 'HD',
                           audio = 'EN',
                           image = 'the_wire.jpg',
@@ -22,7 +22,7 @@ export default function TP() {
                       WHERE id = 1;
 
                     UPDATE series
-                    SET description = 'Un politicien impitoyable use de manipulation et de trahison pour accéder au pouvoir à Washington.',
+                    SET description = 'Frank Underwood, politicien manipulateur et ambitieux, déploie un plan machiavélique pour conquérir le pouvoir à Washington. Avec sa femme Claire, il tisse un réseau de trahisons et de mensonges dans une lutte froide pour la domination politique.',
                         quality = 'HD',
                         audio = 'EN',
                         image = 'house_of_cards.jpg',
@@ -30,7 +30,7 @@ export default function TP() {
                     WHERE id = 2;
 
                     UPDATE series
-                    SET description = 'Reconstitution des événements de la catastrophe nucléaire de Tchernobyl en 1986.',
+                    SET description = 'Reconstitution poignante de la catastrophe nucléaire de Tchernobyl. Des scientifiques et des civils se battent contre le mensonge d’État et le danger invisible, au péril de leur vie. Une œuvre saisissante sur le courage, la vérité et le prix de la responsabilité.',
                         quality = '4K',
                         audio = 'EN',
                         image = 'chernobyl.jpg',
@@ -38,7 +38,7 @@ export default function TP() {
                     WHERE id = 3;
 
                     UPDATE series
-                    SET description = 'Un professeur de chimie atteint d’un cancer se lance dans la fabrication de méthamphétamine.',
+                    SET description = 'Walter White, professeur de chimie atteint d’un cancer, décide de fabriquer de la méthamphétamine pour subvenir aux besoins de sa famille. De victime en héros sombre, il plonge dans un monde de violence, de pouvoir et de destruction morale.',
                         quality = '4K',
                         audio = 'EN',
                         image = 'breaking_bad.jpg',
@@ -46,7 +46,7 @@ export default function TP() {
                     WHERE id = 4;
 
                     UPDATE series
-                    SET description = 'Comédie décrivant le quotidien absurde des employés d’une entreprise de papier en Pennsylvanie.',
+                    SET description = 'Bienvenue chez Dunder Mifflin, une entreprise de papier en Pennsylvanie où le quotidien se transforme en comédie absurde. Entre un patron maladroit, des employés déjantés et des moments touchants, The Office mêle humour, ironie et humanité avec brio.',
                         quality = 'HD',
                         audio = 'EN',
                         image = 'the_office.jpg',
@@ -54,7 +54,7 @@ export default function TP() {
                     WHERE id = 5;
 
                     UPDATE series
-                    SET description = 'Une jeune prodige des échecs lutte contre la dépendance et la solitude dans les années 60.',
+                    SET description = 'Beth Harmon, orpheline et prodige des échecs, gravit les échelons d’un monde masculin dans l’Amérique des années 60. Entre génie, addiction et solitude, elle tente de trouver un équilibre entre sa passion et sa santé mentale.',
                         quality = '4K',
                         audio = 'EN',
                         image = 'the_queens_gambit.jpg',
@@ -62,7 +62,7 @@ export default function TP() {
                     WHERE id = 6;
 
                     UPDATE series
-                    SET description = 'Dans un futur totalitaire, une femme tente de survivre sous un régime patriarcal oppressif.',
+                    SET description = 'Dans un futur totalitaire, les femmes fertiles sont réduites à la servitude sous le régime de Gilead. Offred, prisonnière d’un système patriarcal brutal, lutte pour survivre et retrouver sa liberté. Un récit de résistance et d’espoir face à l’oppression.',
                         quality = '4K',
                         audio = 'EN',
                         image = 'the_handmaids_tale.jpg',
@@ -70,7 +70,7 @@ export default function TP() {
                     WHERE id = 7;
 
                     UPDATE series
-                    SET description = 'Dans un monde divisé entre riches et pauvres, des jeunes tentent de rejoindre les 3% privilégiés.',
+                    SET description = 'Dans un monde divisé entre riches et pauvres, des jeunes affrontent une série d’épreuves pour rejoindre les 3% privilégiés vivant dans une société utopique. Chaque test révèle la vraie nature des candidats et le prix du mérite dans une société inégale.',
                         quality = 'HD',
                         audio = 'PT',
                         image = '3_percent.jpg',
@@ -78,7 +78,7 @@ export default function TP() {
                     WHERE id = 8;
 
                     UPDATE series
-                    SET description = 'La jeune Wednesday Addams est envoyée dans une école spéciale où elle explore ses pouvoirs psychiques.',
+                    SET description = 'Wednesday Addams, jeune fille brillante et sombre, rejoint la Nevermore Academy, une école pour marginaux dotés de pouvoirs. Entre mystères, meurtres et humour noir, elle explore son héritage familial et découvre sa véritable identité.',
                         quality = '4K',
                         audio = 'EN',
                         image = 'wednesday.jpg',
@@ -86,7 +86,7 @@ export default function TP() {
                     WHERE id = 9;
 
                     UPDATE series
-                    SET description = 'Un homme obsessionnel et dangereux s’éprend de plusieurs femmes, menant à des drames meurtriers.',
+                    SET description = 'Joe Goldberg, libraire cultivé et charmant, cache une obsession dangereuse. Derrière ses histoires d’amour se dissimule une spirale de manipulation, de jalousie et de meurtres. Une exploration troublante de la passion toxique et du contrôle.',
                         quality = 'HD',
                         audio = 'EN',
                         image = 'you.jpg',
@@ -94,7 +94,7 @@ export default function TP() {
                     WHERE id = 10;
 
                     UPDATE series
-                    SET description = 'Un groupe d’enfants découvre des forces surnaturelles inquiétantes dans leur petite ville des années 80.',
+                    SET description = 'Dans une petite ville des années 80, un garçon disparaît mystérieusement. Ses amis, aidés d’une fillette aux pouvoirs psychiques, découvrent un monde parallèle terrifiant appelé l’Envers. Aventure, amitié et mystère dans un hommage vibrant à la pop culture.',
                         quality = '4K',
                         audio = 'EN',
                         image = 'stranger_things.jpg',
