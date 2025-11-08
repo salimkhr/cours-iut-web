@@ -310,8 +310,8 @@ class ImageService
 
                 <Text>Dans le dossier <Code>app/services</Code>, créer une nouvelle classe <Code>SerieService</Code> avec :</Text>
                 <List>
-                    <ListItem>Une méthode publique <Code>getServiceByIdWithEpisode(int $id): Serie</Code></ListItem>
-                    <ListItem>Une méthode publique <Code>getAllServiceWithEpisode(): array</Code></ListItem>
+                    <ListItem>Une méthode publique <Code>getSeriesByIdWithEpisode(int $id): Serie</Code></ListItem>
+                    <ListItem>Une méthode publique <Code>getAllSeriesWithEpisode(): array</Code></ListItem>
                 </List>
                 <Text>Ces méthodes seront complétées dans les étapes suivantes.</Text>
 
@@ -332,7 +332,7 @@ class ImageService
 
                 <Text className="mt-5">Modifier la méthode <Code>show()</Code> du contrôleur <Code>SeriesController</Code> :</Text>
                 <List>
-                    <ListItem>Remplacer l&apos;appel direct aux repositories par <Code>SerieService::getServiceByIdWithEpisode()</Code></ListItem>
+                    <ListItem>Remplacer l&apos;appel direct aux repositories par <Code>SerieService::getSeriesByIdWithEpisode()</Code></ListItem>
                 </List>
 
                 <Text className="mt-5">Modifier le fichier <Code>series.html.php</Code> :</Text>
@@ -425,10 +425,10 @@ class ImageService
 
                 <List ordered>
                     <ListItem>
-                        Créer la méthode <Code>AdminSaisonController::list()</Code>, son appel dans <Code>admin.php</Code>,
-                        et la vue correspondante <Code>saison_list.html.php</Code>.
+                        Créer la méthode <Code>AdminSeriesController::list()</Code>, son appel dans <Code>admin.php</Code>,
+                        et la vue correspondante <Code>series_list.html.php</Code>.
                         <br />
-                        <CodeCard language="php" filename="saison_list.html.php" collapsible>
+                        <CodeCard language="php" filename="series_list.html.php" collapsible>
                             {`<?php require_once __DIR__ . '/../_template/header_admin.html.php'; ?>
 
 <main class="container-fluid py-4">
