@@ -451,7 +451,7 @@ class ImageService
                             <th style="width: 100px;">Qualité</th>
                             <th style="width: 100px;">Audio</th>
                             <th>Tags</th>
-                            <th style="width: 150px;">Nombre de saisons</th>
+                            <th style="width: 150px;">Nombre d'episode</th>
                             <th style="width: 150px;" class="text-end">Actions</th>
                         </tr>
                         </thead>
