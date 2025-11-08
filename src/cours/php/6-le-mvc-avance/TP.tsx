@@ -431,16 +431,16 @@ class ImageService
                         et la vue correspondante <Code>series_list.html.php</Code>.
                         <br />
                         <CodeCard language="php" filename="series_list.html.php" collapsible>
-                            {`<?php require_once __DIR__ . '/../_template/header_admin.html.php'; ?>
+                            {`<?php require_once '_template/header_admin.html.php'; ?>
 
-<main class="container-fluid py-4">
-    <h2 class="text-white mb-3"><i class="fas fa-calendar-alt text-danger me-2"></i>Liste des saisons</h2>
+    <main class="container-fluid py-4">
+        <h2 class="text-white mb-3"><i class="fas fa-calendar-alt text-danger me-2"></i>Liste des Series</h2>
 
-    <div class="card bg-dark text-white border-secondary">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-dark table-hover mb-0">
-                    <thead class="border-bottom border-danger">
+        <div class="card bg-dark text-white border-secondary">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead class="border-bottom border-danger">
                         <tr>
                             <th style="width: 60px;">ID</th>
                             <th>Titre</th>
@@ -454,35 +454,35 @@ class ImageService
                             <th style="width: 150px;">Nombre de saisons</th>
                             <th style="width: 150px;" class="text-end">Actions</th>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($saisons as $saison): ?>
-                        <tr>
-                            
-                            <td class="align-middle text-end">
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a href="admin.php?action=edit&id="
-                                       class="btn btn-outline-warning"
-                                       title="Modifier">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="admin.php?action=delete&id="
-                                       class="btn btn-outline-danger"
-                                       title="Supprimer">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($tabSeries as $series): ?>
+                            <tr>
+
+                                <td class="align-middle text-end">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="admin.php?action=edit&id="
+                                           class="btn btn-outline-warning"
+                                           title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="admin.php?action=delete&id="
+                                           class="btn btn-outline-danger"
+                                           title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<?php require_once __DIR__ . '/../_template/footer_admin.html.php'; ?>`}
+<?php require_once '_template/footer_admin.html.php'; ?>`}
                         </CodeCard>
                     </ListItem>
 
