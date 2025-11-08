@@ -487,11 +487,11 @@ class ImageService
                     </ListItem>
 
                     <ListItem>
-                        Compléter la méthode <Code>getAllServiceWithEpisode(): array</Code> afin de récupérer l'ensemble des saisons avec leurs épisodes associés.
+                        Compléter la méthode <Code>getAllSeriesWithEpisode(): array</Code> afin de récupérer l'ensemble des saisons avec leurs épisodes associés.
                     </ListItem>
 
                     <ListItem>
-                        Utiliser la méthode <Code>getAllServiceWithEpisode(): array</Code> dans <Code>AdminSaisonController::list()</Code>
+                        Utiliser la méthode <Code>getAllSeriesWithEpisode(): array</Code> dans <Code>AdminSaisonController::list()</Code>
                         pour transmettre la liste des saisons à la vue.
                     </ListItem>
 
@@ -534,7 +534,7 @@ class ImageService
                 <List ordered>
                     <ListItem>
                         Créer un contrôleur <Code>ApiController</Code> contenant une méthode <Code>index()</Code>.
-                        Cette méthode aura pour rôle d’appeler le service <Code>SerieService::getAllServiceWithEpisode()</Code>
+                        Cette méthode aura pour rôle d’appeler le service <Code>SerieService::getAllSeriesWithEpisode()</Code>
                         afin de récupérer l’ensemble des données nécessaires.
                     </ListItem>
 
