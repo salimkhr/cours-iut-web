@@ -54,11 +54,7 @@ export default function SectionCard({ section, currentModule }: SectionCardProps
                     key={index}
                     currentModule={currentModule}
                     className="w-1/3"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        router.push(`/${currentModule.path}/${section.path}/${item}`);
-                    }}
+                    href={`/${currentModule.path}/${section.path}/${item}`}
                     disabled={!section.isAvailable}
                 >
                     <span className="hidden md:inline">{item.charAt(0).toUpperCase() + item.slice(1)}</span>
@@ -72,11 +68,8 @@ export default function SectionCard({ section, currentModule }: SectionCardProps
                 <ActionButton
                     currentModule={currentModule}
                     className="w-1/3"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        window.open(`https://gitlab.com/iut3334332/${currentModule.path}/${section.path}`, '_blank');
-                    }}
+                    href={`https://gitlab.com/iut3334332/${currentModule.path}/${section.path}`}
+                    target="_blank"
                     disabled={!section.correctionIsAvailable}
                 >
                     <span className="hidden md:inline">Correction</span> <Gitlab />

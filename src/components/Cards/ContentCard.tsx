@@ -30,11 +30,7 @@ export default function ContentCard({content, section, currentModule}: SectionCa
             <ActionButton
                 currentModule={currentModule}
                 className="w-1/2"
-                onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    router.push(`/${currentModule.path}/${section.path}/${content}`);
-                }}
+                href={`/${currentModule.path}/${section.path}/${content}`}
                 disabled={!section.isAvailable}
             >
                 {content}

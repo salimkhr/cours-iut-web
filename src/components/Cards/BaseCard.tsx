@@ -4,7 +4,7 @@ import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import Module from "@/types/module";
 import {cn} from "@/lib/utils";
 import {useTheme} from "next-themes";
-import {Button} from "@/components/ui/button";
+import Link from "next/link";
 
 interface BaseCardProps {
     href?: string;
@@ -95,13 +95,14 @@ export function LEDIndicator() {
 
 interface ActionButtonProps {
     currentModule?: Module;
-    onClick?: (e: React.MouseEvent) => void;
+    href:string;
     children: React.ReactNode;
     className?: string;
     disabled?: boolean;
+    target?: string;
 }
 
-export function ActionButton({ currentModule, onClick, children, className = '', disabled = false }: ActionButtonProps) {
+export function ActionButton({ currentModule, href, children, className = '', disabled = false , target= '_self'}: ActionButtonProps) {
     const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
@@ -110,17 +111,35 @@ export function ActionButton({ currentModule, onClick, children, className = '',
     const isDark = theme === 'dark';
 
     return (
-        <Button
-            variant="destructive"
+        <Link
+            href={disabled ? '#' : href}
+            target={target}
+            onClick={e => disabled && e.preventDefault()}
             className={cn(
-                `font-semibold hover:brightness-110 transition-all duration-300 border-2 border-${currentModule ? currentModule.path : 'module'} text-${currentModule ? currentModule.path : 'module'}`,
+                `inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm 
+     [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 
+     outline-none cursor-pointer transition-all duration-300
+     h-9 px-4 py-2 font-semibold border-2 w-1/3
+     has-[>svg]:px-3
+     focus-visible:ring-[3px]
+     focus-visible:border-ring 
+     shadow-xs
+     disabled:pointer-events-none disabled:opacity-50
+     aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive`,
+                // Couleurs dynamiques selon le module
+                `bg-destructive hover:bg-destructive/90 dark:bg-destructive/60 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40
+     border-${currentModule ? currentModule.path : 'module'} 
+     text-${currentModule ? currentModule.path : 'module'}`,
+                // Thème sombre / clair
                 isDark ? 'text-white' : 'text-black',
+                // États désactivés
+                disabled
+                    ? 'pointer-events-none opacity-50 cursor-not-allowed brightness-75'
+                    : 'hover:brightness-110',
                 className
             )}
-            onClick={onClick}
-            disabled={disabled}
         >
             {children}
-        </Button>
+        </Link>
     );
 }

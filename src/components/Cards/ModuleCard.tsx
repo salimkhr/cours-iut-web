@@ -1,7 +1,9 @@
 import {BookOpen} from 'lucide-react';
 import Module from "@/types/module";
-import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
+import BaseCard from "@/components/Cards/BaseCard";
 import iconMap from "@/lib/iconMap";
+import {Button} from "@/components/ui/button";
+import {cn} from "@/lib/utils";
 
 
 interface ModuleCardProps {
@@ -30,9 +32,9 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
     );
 
     const footer = (
-        <ActionButton currentModule={currentModule} className="w-full">
+        <Button  className={cn(`w-full border-2`, `border-${currentModule.path}`)} variant="outline" >
             Voir les cours
-        </ActionButton>
+        </Button>
     );
 
     return (

@@ -461,6 +461,11 @@ class ImageService
 
                                 <td class="align-middle text-end">
                                     <div class="btn-group btn-group-sm" role="group">
+                                        <a href="admin_episode.php?id="
+                                           class="btn btn-outline-secondary"
+                                           title="Modifier">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                         <a href="admin.php?action=edit&id="
                                            class="btn btn-outline-warning"
                                            title="Modifier">
