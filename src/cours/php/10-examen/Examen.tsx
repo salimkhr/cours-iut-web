@@ -36,7 +36,7 @@ Theme "1" <-- "*" Card
 `;
 
     const sections = [
-        { title: "A - Création des Cartes", points: 8, time: "1h30" },
+        { title: "A - Création des Cartes", points: 8, time: "1h" },
         { title: "B - Sauvegarde en Base de Données", points: 8, time: "1h" },
         { title: "C - Gestion de la Partie", points: 4, time: "0h30" },
     ];
