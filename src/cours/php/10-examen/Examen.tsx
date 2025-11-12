@@ -54,9 +54,9 @@ Responsable "1" <-- "*" Matiere
     return (
         <article>
             {/* Entête */}
-            <section className="pb-4">
-                <h2 className="text-2xl font-bold text-gray-800">Département Informatique - BUT Info 2 - 2024/2025</h2>
-                <h4 className="text-lg text-gray-600 mt-1">Applications Web - Gestion des Matières</h4>
+            <section>
+                <Heading level={2}>Département Informatique - BUT Info 2 - 2023/2024</Heading>
+                <Heading level={4}>Applications Web - Khraimeche Salim</Heading>
             </section>
 
             {/* Rendu de l'examen */}
@@ -85,51 +85,58 @@ Responsable "1" <-- "*" Matiere
             <section>
                 <Heading level={2}>Barème :</Heading>
 
-                <div className="grid md:grid-cols-3 gap-4 mb-6">
-                    {sections.map((item, index) => (
-                        <div
-                            key={index}
-                            className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow bg-white"
-                        >
-                            <div className="flex items-start space-x-3 mb-3">
-                                <Award className="text-yellow-500 flex-shrink-0 mt-1" size={22} />
-                                <div>
-                                    <div className="font-semibold text-gray-800">{item.title}</div>
-                                    <div className="text-sm text-gray-600">{item.points} points</div>
+                <div className="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0 mt-6">
+                    {/* Liste des sections */}
+                    <ul className="flex-1 space-y-3">
+                        {sections.map((item, index) => (
+                            <li
+                                key={index}
+                                className="flex items-center justify-between rounded-lg border p-4 shadow-sm hover:shadow-md transition-shadow"
+                            >
+                                <div className="flex items-center space-x-3">
+                                    <Award className="text-yellow-500" size={22} />
+                                    <div className="flex flex-col">
+                                        <span className="font-semibold">{item.title}</span>
+                                        <span className="text-sm">{item.points} points</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                <Clock size={16} className="text-blue-500" />
-                                <span>Temps estimé : {item.time}</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
 
-                {/* Bloc de notation */}
-                <Alert className="border-gray-300 bg-gray-50">
-                    <div className="flex items-center mb-2">
-                        <Calculator className="mr-2 text-gray-700" />
-                        <AlertTitle className="font-semibold text-gray-800">Notation</AlertTitle>
+                                <div className="flex items-center space-x-2 text-sm">
+                                    <Clock size={18} className="text-blue-500" />
+                                    <span>Temps estimé : {item.time}</span>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+
+                    {/* Bloc de notation */}
+                    <div className="md:w-1/3">
+                        <Alert className="h-full flex flex-col justify-center mt-0 md:mt-0">
+                            <div className="flex items-center mb-2">
+                                <Calculator className="mr-2" />
+                                <AlertTitle className="font-semibold">Notation</AlertTitle>
+                            </div>
+                            <AlertDescription className="leading-relaxed space-y-2">
+                                <Text>
+                                    La notation portera principalement sur la <strong>qualité du code</strong> et le
+                                    <strong> respect des bonnes pratiques</strong> abordées durant le cours.
+                                </Text>
+
+                                <Text className="font-medium">
+                                    Le <strong>CSS</strong> et l’aspect visuel de l’interface ne seront pas pris en compte dans la note finale.
+                                </Text>
+                            </AlertDescription>
+                        </Alert>
                     </div>
-                    <AlertDescription className="space-y-3 text-gray-700">
-                        <Text>
-                            La notation portera principalement sur la <strong>qualité du code</strong> et le
-                            <strong> respect des bonnes pratiques</strong> abordées durant le cours.
-                        </Text>
-                        <Text>
-                            Le <strong>CSS</strong> et l'aspect visuel de l'interface ne seront pas pris en compte dans la note finale.
-                        </Text>
-                    </AlertDescription>
-                </Alert>
+                </div>
             </section>
 
             {/* Résumé */}
             <section>
                 <Heading level={2}>Résumé du sujet :</Heading>
-                <Text>
-                    L'objectif de cet exercice est de créer une application de gestion des matières et de leurs responsables
-                    pour un département universitaire. Le projet comporte trois grandes parties :
+                <Text className="mt-2">
+                    L’objectif de cet exercice est de créer un jeu inspiré de &quot;Limite Limite&quot; en utilisant un système de gestion de cartes et de parties.
+                    Le projet comporte trois grandes parties :
                 </Text>
                 <List ordered>
                     <ListItem>
@@ -277,7 +284,7 @@ Responsable "1" <-- "*" Matiere
             </section>
 
             {/* Partie C */}
-            <section className="border-t pt-6">
+            <section className="pt-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-3">C - Gestion des Brouillons</h2>
 
                 <Text>
