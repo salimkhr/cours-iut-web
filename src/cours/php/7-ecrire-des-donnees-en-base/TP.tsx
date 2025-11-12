@@ -13,7 +13,8 @@ export default function TP() {
 
                 <Heading level={3}>1. Correction des données</Heading>
                 <CodeCard language="sql">
-                    {`ALTER TABLE accounts ADD COLUMN birthdate DATE;`}
+                    {`ALTER TABLE accounts
+                        ADD COLUMN birthdate DATE;`}
                 </CodeCard>
 
                 <Heading level={3}>2. Le FormTrait</Heading>
@@ -98,19 +99,19 @@ export default function TP() {
                 <List ordered>
                     <ListItem>
                         Modifier le fichier <Code>public/admin.php</Code> pour y ajouter un{" "}
-                        <Code>switch</Code> sur <Code>$_GET['action']</Code> :
+                        <Code>switch</Code> sur <Code>$_GET[&apos;action&apos;]</Code> :
                         <List>
                             <ListItem>
-                                &apos;create&apos; =&gt; <Code>AdminController::create()</Code>
+                                &apos;create&apos; =&gt; <Code>AdminSessionController::create()</Code>
                             </ListItem>
                             <ListItem>
-                                default =&gt; <Code>AdminController::list()</Code>
+                                default =&gt; <Code>AdminSessionController::list()</Code>
                             </ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
-                        Ajouter la méthode <Code>create()</Code> au <Code>AdminController</Code>,
+                        Ajouter la méthode <Code>create()</Code> au <Code>AdminSessionController</Code>,
                         appelant uniquement la vue <Code>series_form</Code>.
                     </ListItem>
 
@@ -125,11 +126,12 @@ export default function TP() {
                             <ListItem>releaseYearEnd (number, optionnel, ≥ releaseYearStart)</ListItem>
                             <ListItem>currentSeason (number)</ListItem>
                             <ListItem>quality (select &qout;HD&qout;, &qout;4K&qout; optionnel)</ListItem>
-                            <ListItem>audio (select,&qout;EN&qout;,&qout;FR&qout;,&qout;PT&qout;,&qout;DZ&qout; optionnel)</ListItem>
+                            <ListItem>audio
+                                (select,&qout;EN&qout;,&qout;FR&qout;,&qout;PT&qout;,&qout;DZ&qout; optionnel)</ListItem>
                             <ListItem>
                                 image (file, optionnel, type image) — ⚠️ nécessite{" "}
-                                <Code>enctype="multipart/form-data"</Code> dans la balise{" "}
-                                <Code>&lt;form&gt;</Code> et <Code>accept="image/*" dans l&apos;input</Code>.
+                                <Code>enctype=&quot;multipart/form-data&quot;</Code> dans la balise{" "}
+                                <Code>&lt;form&gt;</Code> et <Code>accept=&quot;image/*&quot; dans l&apos;input</Code>.
                             </ListItem>
                         </List>
                     </ListItem>
@@ -144,7 +146,7 @@ export default function TP() {
                         Gérer l&apos;upload d&apos;image grâce au service{" "}
                         <Code>ImageService</Code> :
                         <CodeCard language="php">
-                            {`// Exemple dans AdminController::create()
+                            {`// Exemple dans AdminSessionController::create()
 $imageService = new ImageService();
 
 // Si un fichier image a été envoyé
@@ -184,16 +186,16 @@ if (!empty($_FILES['image']['name'])) {
                         <Code>switch</Code> :
                         <List>
                             <ListItem>
-                                &apos;edit&apos; =&gt; <Code>AdminController::edit()</Code>
+                                &apos;edit&apos; =&gt; <Code>AdminSessionController::edit()</Code>
                             </ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
-                        Ajouter la méthode <Code>edit()</Code> au <Code>AdminController</Code> :
+                        Ajouter la méthode <Code>edit()</Code> au <Code>AdminSessionController</Code> :
                         <List>
                             <ListItem>
-                                Récupérer l&apos;ID de la série depuis <Code>$_GET['id']</Code>.
+                                Récupérer l&apos;ID de la série depuis <Code>$_GET[&apos;id&apos;]</Code>.
                             </ListItem>
                             <ListItem>
                                 Utiliser le <Code>SeriesRepository</Code> pour récupérer la série existante.
@@ -229,7 +231,7 @@ if (!empty($_FILES['image']['name'])) {
                     </ListItem>
 
                     <ListItem>
-                        Compléter la méthode <Code>edit()</Code> du <Code>AdminController</Code> pour
+                        Compléter la méthode <Code>edit()</Code> du <Code>AdminSessionController</Code> pour
                         traiter la soumission du formulaire :
                         <List>
                             <ListItem>
@@ -245,7 +247,8 @@ if (!empty($_FILES['image']['name'])) {
                                 Mettre à jour les propriétés de la série avec les nouvelles valeurs.
                             </ListItem>
                             <ListItem>
-                                Le champs <Code>updatedAt</Code> doivent être initialisés automatiquement dans le repository
+                                Le champs <Code>updatedAt</Code> doivent être initialisés automatiquement dans le
+                                repository
                             </ListItem>
                             <ListItem>
                                 Pour l&apos;image : si une nouvelle image est uploadée, supprimer l&apos;ancienne
@@ -268,78 +271,81 @@ if (!empty($_FILES['image']['name'])) {
 
             </section>
             <section>
-                    <Heading level={2} netflex>C – Les épisodes</Heading>
+                <Heading level={2} netflex>C – Les épisodes</Heading>
 
-                    <p>
-                        Reproduire la même logique que pour les séries (création et modification) pour gérer
-                        les épisodes. La classe <Code>Episode</Code> possède les attributs suivants :
-                    </p>
+                <p>
+                    Reproduire la même logique que pour les séries (création et modification) pour gérer
+                    les épisodes. La classe <Code>Episode</Code> possède les attributs suivants :
+                </p>
 
-                    <List>
-                        <ListItem><Code>seriesId</Code> (int) – référence vers la série parente</ListItem>
-                        <ListItem><Code>title</Code> (string)</ListItem>
-                        <ListItem><Code>season</Code> (int)</ListItem>
-                        <ListItem><Code>episodeNumber</Code> (int)</ListItem>
-                        <ListItem><Code>duration</Code> (string, optionnel) – format recommandé : "HH:MM:SS"</ListItem>
-                        <ListItem><Code>releaseDate</Code> (DateTime, optionnel)</ListItem>
-                        <ListItem><Code>createdAt</Code> (DateTime)</ListItem>
-                        <ListItem><Code>updatedAt</Code> (DateTime)</ListItem>
-                    </List>
+                <List>
+                    <ListItem><Code>seriesId</Code> (int) – référence vers la série parente</ListItem>
+                    <ListItem><Code>title</Code> (string)</ListItem>
+                    <ListItem><Code>season</Code> (int)</ListItem>
+                    <ListItem><Code>episodeNumber</Code> (int)</ListItem>
+                    <ListItem><Code>duration</Code> (string, optionnel) – format recommandé : &quot;HH:MM:SS&quot;
+                    </ListItem>
+                    <ListItem><Code>releaseDate</Code> (DateTime, optionnel)</ListItem>
+                    <ListItem><Code>createdAt</Code> (DateTime)</ListItem>
+                    <ListItem><Code>updatedAt</Code> (DateTime)</ListItem>
+                </List>
 
                 <Heading level={3}>1. Création</Heading>
-                    <List ordered>
-                        <ListItem>
-                            Créer la vue <Code>episode_form.html.php</Code> avec un formulaire contenant :
-                            <List>
-                                <ListItem>
-                                    <Code>seriesId</Code> (select) – récupérer toutes les séries via{" "}
-                                    <Code>SeriesRepository::findAll()</Code>
-                                </ListItem>
-                                <ListItem>title (text, requis)</ListItem>
-                                <ListItem>season (number, requis)</ListItem>
-                                <ListItem>episodeNumber (number, requis)</ListItem>
-                                <ListItem>duration (text, optionnel, placeholder "HH:MM:SS")</ListItem>
-                                <ListItem>releaseDate (date, optionnel)</ListItem>
-                            </List>
-                        </ListItem>
+                <List ordered>
+                    <ListItem>
+                        Créer la vue <Code>episode_form.html.php</Code> avec un formulaire contenant :
+                        <List>
+                            <ListItem>
+                                <Code>seriesId</Code> (select) – récupérer toutes les séries via{" "}
+                                <Code>SeriesRepository::findAll()</Code>
+                            </ListItem>
+                            <ListItem>title (text, requis)</ListItem>
+                            <ListItem>season (number, requis)</ListItem>
+                            <ListItem>episodeNumber (number, requis)</ListItem>
+                            <ListItem>duration (text, optionnel, placeholder &quot;HH:MM:SS&quot;)</ListItem>
+                            <ListItem>releaseDate (date, optionnel)</ListItem>
+                        </List>
+                    </ListItem>
 
-                        <ListItem>
-                            Implémenter la logique de création dans <Code>AdminEpisodesController::create()</Code> :
-                            <List>
-                                <ListItem>Valider les champs requis</ListItem>
-                                <ListItem>
-                                    Créer une instance d'<Code>Episode</Code> et la passer au{" "}
-                                    <Code>EpisodeRepository::create()</Code>
-                                </ListItem>
-                                <ListItem>
-                                    Les champs <Code>createdAt</Code> et{" "}<Code>updatedAt</Code> doivent être initialisés automatiquement dans le repository
-                                </ListItem>
-                            </List>
-                        </ListItem>
-                    </List>
+                    <ListItem>
+                        Implémenter la logique de création dans <Code>AdminEpisodesController::create()</Code> :
+                        <List>
+                            <ListItem>Valider les champs requis</ListItem>
+                            <ListItem>
+                                Créer une instance d&apos;<Code>Episode</Code> et la passer au{" "}
+                                <Code>EpisodeRepository::create()</Code>
+                            </ListItem>
+                            <ListItem>
+                                Les champs <Code>createdAt</Code> et{" "}<Code>updatedAt</Code> doivent être initialisés
+                                automatiquement dans le repository
+                            </ListItem>
+                        </List>
+                    </ListItem>
+                </List>
 
-                    <Heading level={3}>2. Mise à jour</Heading>
-                    <List ordered>
-                        <ListItem>Reprendre la même logique que pour les séries avec le paramètre <Code>$edit</Code>.</ListItem>
+                <Heading level={3}>2. Mise à jour</Heading>
+                <List ordered>
+                    <ListItem>Reprendre la même logique que pour les séries avec le
+                        paramètre <Code>$edit</Code>.</ListItem>
 
-                        <ListItem>
-                            Adapter l'action du formulaire selon le mode :
-                            <CodeCard language="php">
-{`<form action="admin.php?action=<?= $edit ? 'editEpisode&id=' . $episode->getId() : 'createEpisode' ?>" method="post">`}
-                    </CodeCard>
-                        </ListItem>
+                    <ListItem>
+                        Adapter l&apos;action du formulaire selon le mode :
+                        <CodeCard language="php">
+                            {`<form action="admin.php?action=<?= $edit ? 'editEpisode&id=' . $episode->getId() : 'createEpisode' ?>" method="post">`}
+                        </CodeCard>
+                    </ListItem>
 
-                        <ListItem>
-                            Implémenter <Code>AdminEpisodesController::edit()</Code> et{" "}
-                            <Code>EpisodeRepository::update(Episode $episode)</Code>.
-                        </ListItem>
+                    <ListItem>
+                        Implémenter <Code>AdminEpisodesController::edit()</Code> et{" "}
+                        <Code>EpisodeRepository::update(Episode $episode)</Code>.
+                    </ListItem>
 
-                        <ListItem>
-                            Le champ <Code>updatedAt</Code> doit être automatiquement mis à jour lors de la
-                            modification (dans le repository, avant l'UPDATE).
-                        </ListItem>
-                    </List>
-                </section>
+                    <ListItem>
+                        Le champ <Code>updatedAt</Code> doit être automatiquement mis à jour lors de la
+                        modification (dans le repository, avant l&apos;UPDATE).
+                    </ListItem>
+                </List>
+            </section>
         </article>
     );
 }
