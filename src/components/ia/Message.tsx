@@ -7,7 +7,6 @@ import {Bot, User} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {Message as MessageType} from "@/lib/store/useChatStore";
 import Module from "@/types/module";
-import React from "react";
 import Code from "@/components/ui/Code";
 import CodeCard from "@/components/Cards/CodeCard";
 

@@ -79,11 +79,11 @@ export default function ${currentContent.charAt(0).toUpperCase() + currentConten
 
 export async function PUT(
     req: Request,
-    context: { params: Promise<{ moduleId: string; sectionId: string }> }
+    context: { params: Promise<{ moduleId: string }> }
 ) {
     try {
-        const {moduleId, sectionId} = await context.params;
-        const updatedSection: Section = await req.json();
+        const {moduleId} = await context.params;
+        const {sectionId, ...updatedSection} = await req.json();
 
         const db = await connectToDB();
 

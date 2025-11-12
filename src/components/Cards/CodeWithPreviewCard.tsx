@@ -1,10 +1,11 @@
 'use client'
-import React, {ReactNode, useState} from 'react';
+import React, {ReactNode, useEffect, useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
 import {ClipboardCopyIcon} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {Button} from "@/components/ui/button";
-import {oneLight} from "react-syntax-highlighter/dist/esm/styles/prism";
+import {oneDark, oneLight} from "react-syntax-highlighter/dist/esm/styles/prism";
+import {useTheme} from "next-themes";
 
 interface CodeWithPreviewCardProps {
     language: string;
@@ -39,6 +40,14 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
     let previewContent: ReactNode = null;
 
     const [copied, setCopied] = useState(false);
+    const { theme } = useTheme();
+
+    useEffect(() => setMounted(true), []);
+    const [mounted, setMounted] = useState(false);
+
+    if (!mounted) return null; // SSR-safe
+
+    const isDark = theme === 'dark';
 
     const handleCopy = () => {
         navigator.clipboard.writeText(codeContent).then(() => {
@@ -79,7 +88,7 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
     );
 
     const content = (
-        <div className="w-full h-full rounded-lg overflow-hidden">
+        <div className="w-full h-full overflow-hidden">
             {/* Layout responsive : côte à côte sur desktop, empilé sur mobile */}
             <div className="flex flex-col lg:flex-row h-full">
                 {/* Panel Code */}
@@ -87,7 +96,7 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
                     <div className="h-full overflow-hidden lg:border-r-2 border-b-2 lg:border-b-0 border-module">
                         <SyntaxHighlighter
                             language={language}
-                            style={oneLight}
+                            style={isDark ? oneDark : oneLight}
                             customStyle={{
                                 margin: 0,
                                 fontSize: '0.875rem',
@@ -105,7 +114,7 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
                 {/* Panel Preview */}
                 <div className="flex-1 min-h-0">
                     <div className="h-full overflow-hidden">
-                        <div className="bg-white h-full text-left p-4">
+                        <div className="h-full text-left p-4">
                             {previewContent}
                         </div>
                     </div>

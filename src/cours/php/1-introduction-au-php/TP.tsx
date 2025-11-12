@@ -1,10 +1,9 @@
 import Heading from "@/components/ui/Heading";
 import Code from "@/components/ui/Code";
-import Box from "@/components/ui/Box";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import CodeCard from "@/components/Cards/CodeCard";
 import {List, ListItem} from "@/components/ui/List";
-import Text from "@/components/ui/Text";
+import {Text} from "@/components/ui/Text";
 import Link from "next/link";
 
 function formatNumberToFrench(value: number): string {
@@ -930,8 +929,8 @@ const minAmount = Math.min(...amounts);
 
 export default function TP() {
     return (
-        <section>
-            <Box>
+        <article>
+            <section>
                 <Heading level={2}>A- Rappel de HTML</Heading>
                 <Heading level={3}>Woody</Heading>
                 <Text>
@@ -1010,19 +1009,31 @@ export default function TP() {
                 </Table>
 
                 <small>Source : ChatGPT (les montants ne sont pas factuels)</small>
-            </Box>
+            </section>
 
-            <Box>
+            <section>
                 <Heading level={2}>B- Hello World en PHP</Heading>
                 <Text>
                     Dans un fichier <Code>~/public_html/TP1/helloWorld.php</Code>, écrire une page contenant :
                 </Text>
-                <CodeCard language="php">
-                    {`<?php
-  echo 'Hello World!';
-  echo '<br/>';
-  echo 'Nous sommes le ' . date('d/m/Y');
-?>`}
+                <CodeCard language="php" filename="helloWorld.php">
+                    {`<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hello World PHP</title>
+</head>
+<body>
+    <h1>Ma première page PHP</h1>
+    
+    <?php
+        echo "<p>Hello World!</p>";
+        echo "<p>Nous sommes le " . date('d/m/Y') . "</p>";
+    ?>
+    
+</body>
+</html>`}
                 </CodeCard>
                 <List ordered>
                     <ListItem>Déterminer à quelle heure correspond la date affichée : celle du serveur ou celle du
@@ -1042,14 +1053,13 @@ export default function TP() {
                     <ListItem>
                         <strong>Formatage :</strong> Utiliser la fonction <Link
                         href="https://www.php.net/manual/fr/function.number-format.php" target="_blank"><Code>{`number_format($amount,
-                        0, ',', '
-                        ')`}</Code></Link>
+                        0, ',', ' ')`}</Code></Link>
                         pour afficher le montant avec des espaces comme séparateurs de milliers.
                     </ListItem>
                 </List>
-            </Box>
+            </section>
 
-            <Box>
+            <section>
                 <Heading level={2}>C- Le debug</Heading>
                 <Text>
                     Dans un fichier <Code>~/public_html/TP1/debug.php</Code>, écrire une page contenant :
@@ -1073,9 +1083,9 @@ var_dump($age, $price, $isStudent, $lastname, $firstname);
                 </List>
                 <Text>Utiliser les fonctions <Code>var_dump()</Code> et <Code>die()</Code> pour ajouter des
                     traces dans le code afin d&apos;aider au débogage.</Text>
-            </Box>
+            </section>
 
-            <Box>
+            <section>
                 <Heading level={2}>D- Introduction aux objets</Heading>
 
                 <Text>Dans un fichier <Code>~/public_html/TP1/streamer.php</Code>, vous devez créer une
@@ -1110,7 +1120,7 @@ echo $streamer1;
                         qui retourne le montant formaté avec des espaces comme séparateurs de milliers et le symbole €.
                         Utilisez la fonction <Link
                         href="https://www.php.net/manual/fr/function.number-format.php" target="_blank"><Code>
-                        {`number_format($amount,0,',', '')`}</Code></Link>.
+                        {`number_format($amount,0,',', ' ')`}</Code></Link>.
                     </ListItem>
                     <ListItem>
                         <strong>Méthode de comparaison :</strong> Créez une
@@ -1140,9 +1150,9 @@ echo $streamer1;
                     </ListItem>
                 </List>
 
-            </Box>
+            </section>
 
-            <Box>
+            <section>
                 <Heading level={2}>E- Utilisation des objets dans le tableau</Heading>
                 <Text>Dans un fichier <Code>~/public_html/TP1/zevent.php</Code>, vous allez maintenant utiliser votre
                     classe Streamer :</Text>
@@ -1220,9 +1230,9 @@ ${streamersData.map((streamer) => `\tnew Streamer("${streamer.name}","${streamer
                         </TableRow>
                     </TableBody>
                 </Table>
-            </Box>
-            <Box>
-                <Heading level={2}>F- Héritage - Streamers Remote vs Physiques</Heading>
+            </section>
+            <section>
+                <Heading level={2}>F- Héritage - Streamers Remote vs Physiques (optionnel)</Heading>
                 <List ordered>
                     <ListItem><strong>Class mére :</strong> Modifiez la class <Code>Streamer</Code> pour y ajouter la
                         méthode
@@ -1248,8 +1258,7 @@ ${streamersData.map((streamer) => `\tnew Streamer("${streamer.name}","${streamer
 ]`}
                     </CodeCard>
                 </List>
-            </Box>
-
-        </section>
+            </section>
+        </article>
     );
 }

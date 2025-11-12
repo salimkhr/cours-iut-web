@@ -13,7 +13,7 @@ import {
 import getModules from "@/lib/getModules";
 import iconMap from "@/lib/iconMap";
 import {verifyToken} from "@/lib/token";
-// import iconMap from "@/lib/iconMap";
+import {ThemeToggle} from "@/components/ThemeToggle";
 
 
 export default async function NavBar() {
@@ -109,6 +109,13 @@ export default async function NavBar() {
                         })}
                     </NavigationMenuList>
                 </div>
+
+                {/* Bouton Theme Toggle */}
+                <NavigationMenuList className="flex items-center ml-auto">
+                    <NavigationMenuItem>
+                        <ThemeToggle />
+                    </NavigationMenuItem>
+                </NavigationMenuList>
             </NavigationMenu>
         </header>
     )

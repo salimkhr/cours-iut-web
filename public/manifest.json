@@ -24,7 +24,7 @@
     {
       "name": "Cours HTML/CSS",
       "short_name": "HTML/CSS",
-      "url": "/cours/html-css",
+      "url": "/html-css",
       "icons": [
         {
           "src": "/icons/icon-192x192.png",
@@ -36,7 +36,7 @@
     {
       "name": "Cours PHP",
       "short_name": "PHP",
-      "url": "/cours/php",
+      "url": "/php",
       "icons": [
         {
           "src": "/icons/icon-192x192.png",
@@ -48,7 +48,7 @@
     {
       "name": "Cours JavaScript",
       "short_name": "JS",
-      "url": "/cours/javascript",
+      "url": "/javascript",
       "icons": [
         {
           "src": "/icons/icon-192x192.png",

@@ -37,8 +37,9 @@ export default async function SectionPage({params}: SectionPageProps) {
             <HeroSection
                 title={`${currentSection?.order}. ${currentSection?.title}`}
                 description={currentSection?.description}
-                imagePath={`/header_${currentModule.path}.svg`}
+                imagePath={`images/header/header_${currentModule.path}.svg`}
                 imageAlt={currentModule.title}
+                path={currentModule.path}
             />
 
             <TagsBadges
@@ -48,7 +49,10 @@ export default async function SectionPage({params}: SectionPageProps) {
 
             <CoursesSection
                 title="Les cours"
-                containerClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full max-w-7xl mx-auto"
+                containerClassName="
+  grid gap-6 lg:gap-8 w-full max-w-7xl mx-auto
+  grid-cols-[repeat(auto-fit,minmax(300px,1fr))]
+"
             >
                 {currentSection?.contents.map((content, index) => (
                     <div
@@ -65,7 +69,7 @@ export default async function SectionPage({params}: SectionPageProps) {
                 ))}
             </CoursesSection>
 
-            <PageFooter imagePath={`/footer_${currentModule.path}.svg`}/>
+            <PageFooter path={currentModule.path}/>
         </div>
     );
 }

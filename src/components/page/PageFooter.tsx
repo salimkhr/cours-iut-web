@@ -1,20 +1,26 @@
-import Image from "next/image";
+'use client'
+import {FooterSvg} from "@/components/FooterSvg";
+import {useEffect, useState} from "react";
 
 interface PageFooterProps {
-    imagePath: string;
+    path?: string;
 }
 
-export default function PageFooter({imagePath}: PageFooterProps) {
+export default function PageFooter({path}: PageFooterProps) {
+
+    const variableName = `--color-${path}`;
+
+    const [color, setColor] = useState<string>("");
+
+    useEffect(() => {
+        const root = getComputedStyle(document.documentElement);
+        const value = root.getPropertyValue(variableName).trim();
+        setColor(value);
+    }, [variableName]);
+
     return (
-        <div className="opacity-0 animate-fade-in">
-            <Image
-                src={imagePath}
-                alt=""
-                width={1000}
-                height={1000}
-                className="hidden md:flex h-100"
-                style={{paddingBottom: '40px', zIndex: 100}}
-            />
+        <div className="hidden md:block opacity-0 animate-fade-in z-0" style={{animationDelay: '0.5s',marginBottom:'45px', marginTop:'-300px'}}>
+            <FooterSvg size={700} color={color}/>
         </div>
     );
 }

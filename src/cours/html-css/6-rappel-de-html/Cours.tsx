@@ -5,7 +5,6 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import Code from "@/components/ui/Code";
 import CodeWithPreviewCard, {CodePanel, PreviewPanel} from "@/components/Cards/CodeWithPreviewCard";
 import Link from "next/link";
-import React from "react";
 import Image from "next/image";
 
 export default function Cours() {

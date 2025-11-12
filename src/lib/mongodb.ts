@@ -1,30 +1,37 @@
 import {Db, MongoClient} from "mongodb";
 
-const uri = process.env.MONGODB_URI;
-if (!uri) throw new Error("Please define the MONGODB_URI environment variable");
-
-let client: MongoClient;
-let clientPromise: Promise<MongoClient>;
+let client: MongoClient | null = null;
+let clientPromise: Promise<MongoClient> | null = null;
 
 declare global {
-    // Pour éviter les warnings sur global dans TS (en dev)
     var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
-if (process.env.NODE_ENV === "development") {
-    // En dev, utiliser global pour le singleton
-    if (!global._mongoClientPromise) {
-        client = new MongoClient(uri);
-        global._mongoClientPromise = client.connect();
+function getClientPromise(): Promise<MongoClient> {
+    const uri = process.env.MONGODB_URI;
+
+    if (!uri) {
+        throw new Error("Please define the MONGODB_URI environment variable");
     }
-    clientPromise = global._mongoClientPromise;
-} else {
-    // En prod, crée un nouveau client pour chaque build
-    client = new MongoClient(uri);
-    clientPromise = client.connect();
+
+    if (process.env.NODE_ENV === "development") {
+        // En dev, utiliser global pour le singleton
+        if (!global._mongoClientPromise) {
+            client = new MongoClient(uri);
+            global._mongoClientPromise = client.connect();
+        }
+        return global._mongoClientPromise;
+    } else {
+        // En prod, créer le client une seule fois
+        if (!clientPromise) {
+            client = new MongoClient(uri);
+            clientPromise = client.connect();
+        }
+        return clientPromise;
+    }
 }
 
 export async function connectToDB(): Promise<Db> {
-    const client = await clientPromise;
+    const client = await getClientPromise();
     return client.db("cours-iut-web");
 }

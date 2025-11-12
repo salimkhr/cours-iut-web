@@ -1,7 +1,6 @@
 import Heading from "@/components/ui/Heading";
-import Box from "@/components/ui/Box";
 import {List, ListItem} from "@/components/ui/List";
-import Text from "@/components/ui/Text";
+import {Text} from "@/components/ui/Text";
 import ImageCard from "@/components/Cards/ImageCard";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import CodeCard from "@/components/Cards/CodeCard";
@@ -9,9 +8,9 @@ import Code from "@/components/ui/Code";
 
 export default function Cours() {
     return (
-        <section>
+        <article>
             {/* Contenu du cours */}
-            <Box>
+            <section>
                 <Heading level={2}>A- Protocole HTTP, URL, et architecture des applications web</Heading>
 
                 {/* Introduction au protocole HTTP */}
@@ -76,11 +75,17 @@ export default function Cours() {
                             <TableCell>:80</TableCell>
                             <TableCell>pedago/info2/PHP/s1/s1.html</TableCell>
                         </TableRow>
+                        <TableRow>
+                            <TableCell>https://</TableCell>
+                            <TableCell>salimkhraimeche.dev</TableCell>
+                            <TableCell></TableCell>
+                            <TableCell>/php/</TableCell>
+                        </TableRow>
                     </TableBody>
                 </Table>
 
                 {/* Requête HTTP */}
-                <Heading level={4}>
+                <Heading level={3}>
                     2.2 Requête HTTP
                 </Heading>
                 <Text>
@@ -99,11 +104,11 @@ export default function Cours() {
                     En fonction de la méthode utilisée, des données peuvent être ajoutées à la requête, soit dans
                     l&apos;URL (pour GET), soit dans le corps de la requête (pour POST / PUT).
                 </Text>
-            </Box>
+            </section>
 
             {/* Documents PHP */
             }
-            <Box>
+            <section>
                 <Heading level={2}>B- Présentation de PHP</Heading>
                 <Text> PHP est un langage de script associé à HTML. Son but est de générer du contenu HTML à partir de
                     données.</Text>
@@ -111,10 +116,10 @@ export default function Cours() {
                 <Heading level={3}>1. Syntaxe de base</Heading>
                 <CodeCard language="php">
                     {`<?php
-$message = "Hello, World!"; // Chaîne de caractères
-$age = 25;                  // Entier
-$price = 19.99;             // Float
-$isStudent = true;          // Booléen
+    $message = "Hello, World!"; // Chaîne de caractères
+    $age = 25;                  // Entier
+    $price = 19.99;             // Float
+    $isStudent = true;          // Booléen
 ?>`}
                 </CodeCard>
                 <Text>
@@ -124,9 +129,9 @@ $isStudent = true;          // Booléen
                     caractères, <Code>$age</Code> est un entier, <Code>$price</Code> est un flottant,
                     et <Code>$isStudent</Code> est un booléen.
                 </Text>
-            </Box>
+            </section>
 
-            <Box>
+            <section>
                 <Heading level={3}>2. Affichage de Texte</Heading>
                 <CodeCard language="php">
                     {`<?php
@@ -136,22 +141,22 @@ echo "Hello, World!";
                 <Text>
                     Pour afficher du texte, utilisez les fonctions <Code>echo</Code> ou <Code>print</Code>.
                 </Text>
-            </Box>
+            </section>
 
-            <Box>
+            <section>
                 <Heading level={3}>3. Les structures de contrôle</Heading>
                 <Heading level={4}>Conditionnel</Heading>
                 <Heading level={5}>Conditions avec <Code>if</Code> :</Heading>
                 <CodeCard language="php">
                     {`<?php
-$humeur = 'triste';
-if ($humeur === 'heureux') {
-    echo 'Je suis de bonne humeur';
-} elseif ($humeur === 'triste') {
-    echo 'bof!!';
-} else {
-    echo $humeur;
-}
+    $humeur = 'triste';
+    if ($humeur === 'heureux') {
+        echo 'Je suis de bonne humeur';
+    } elseif ($humeur === 'triste') {
+        echo 'bof!!';
+    } else {
+        echo $humeur;
+    }
 ?>`}
                 </CodeCard>
 
@@ -182,17 +187,17 @@ if ($humeur === 'heureux') {
 
                 <CodeCard language="php">
                     {`<?php
-if (5 == '5') {
-    echo "5 == '5' : vrai";
-} else {
-    echo "5 == '5' : faux";
-}
-
-if (5 === '5') {
-    echo "5 === '5' : vrai";
-} else {
-    echo "5 === '5' : faux";
-}
+    if (5 == '5') {
+        echo "5 == '5' : vrai";
+    } else {
+        echo "5 == '5' : faux";
+    }
+    
+    if (5 === '5') {
+        echo "5 === '5' : vrai";
+    } else {
+        echo "5 === '5' : faux";
+    }
 ?>`}
                 </CodeCard>
 
@@ -215,29 +220,29 @@ echo $humeur !== 'heureux' ? 'Je suis de bonne humeur' : 'bof!!';
                 <Heading level={5}>Conditions avec <Code>switch</Code> :</Heading>
                 <CodeCard language="php">
                     {`<?php
-$humeur = 'triste';
-switch($humeur) {
-    case 'heureux':
-        echo 'Je suis de bonne humeur';
-        break;
-    case 'triste':
-        echo 'bof!!';
-        break;
-    default:
-        echo $humeur;
-}
+    $humeur = 'triste';
+    switch($humeur) {
+        case 'heureux':
+            echo 'Je suis de bonne humeur';
+            break;
+        case 'triste':
+            echo 'bof!!';
+            break;
+        default:
+            echo $humeur;
+    }
 ?>`}
                 </CodeCard>
 
                 <Heading level={5}>Conditions avec <Code>match</Code> :</Heading>
                 <CodeCard language="php">
                     {`<?php
-$humeur = 'triste';
-echo match ($humeur) {
-    'heureux' => 'Je suis de bonne humeur',
-    'triste' => 'bof!!',
-    default => $humeur,
-};
+    $humeur = 'triste';
+    echo match ($humeur) {
+        'heureux' => 'Je suis de bonne humeur',
+        'triste' => 'bof!!',
+        default => $humeur,
+    };
 ?>`}
                 </CodeCard>
 
@@ -247,69 +252,69 @@ echo match ($humeur) {
                 <Heading level={5}>La boucle <Code>while</Code> :</Heading>
                 <CodeCard language="php">
                     {`<?php
-$compteur = 1;
-while($compteur < 12) {
-    echo "compteur: $compteur <br>\\n";
-    $compteur++;
-}
+    $compteur = 1;
+    while($compteur < 12) {
+        echo "compteur: $compteur <br>\\n";
+        $compteur++;
+    }
 ?>`}
                 </CodeCard>
 
                 <Heading level={5}>La boucle <Code>do ... while</Code> :</Heading>
                 <CodeCard language="php">
                     {`<?php
-$num = 1;
-do {
-    echo "Nombre d&apos;exécution: $num <br>\\n";
-    $num++;
-} while($num > 200 && $num < 400);
+    $num = 1;
+    do {
+        echo "Nombre d&apos;exécution: $num <br>\\n";
+        $num++;
+    } while($num > 200 && $num < 400);
 ?>`}
                 </CodeCard>
 
                 <Heading level={5}>La boucle <Code>for</Code> :</Heading>
                 <CodeCard language="php">
                     {`<?php
-for($compteur = 1; $compteur < 12; $compteur++) {
-    echo "compteur: $compteur <br>\\n";
-}
+    for($compteur = 1; $compteur < 12; $compteur++) {
+        echo "compteur: $compteur <br>\\n";
+    }
 ?>`}
                 </CodeCard>
 
                 <Heading level={5}>La boucle <Code>foreach</Code> :</Heading>
                 <CodeCard language="php">
                     {`<?php
-// Définition d'un tableau de valeurs
-$fruits = array("pomme", "banane", "orange");
+    // Définition d'un tableau de valeurs
+    $fruits = array("pomme", "banane", "orange");
 
-// Utilisation de foreach pour parcourir le tableau
-foreach ($fruits as $fruit) {
-    echo 'J\\'aime les '.$fruit.'<br>';
-}
-
-/*---------------------------------------*/
-
-// Définition d'un tableau associatif
-$fruits = array(
-    "pomme" => "rouge",
-    "banane" => "jaune",
-    "orange" => "orange"
-);
-
-// Utilisation de foreach pour parcourir le tableau
-
-foreach ($fruits as $couleur) {
-    echo 'J\\'aime les fruits '.$couleur.'<br/>';
-}
-
-// Utilisation de foreach pour parcourir le tableau avec les clés
-foreach ($fruits as $fruit => $couleur) {
-    echo 'Le fruit '.$fruit.' est de couleur '.$couleur.'<br/>';
-}
+    // Utilisation de foreach pour parcourir le tableau
+    foreach ($fruits as $fruit) {
+        echo 'J\\'aime les '.$fruit.'<br>';
+    }
+    
+    /*---------------------------------------*/
+    
+    // Définition d'un tableau associatif
+    $fruits = array(
+        "pomme" => "rouge",
+        "banane" => "jaune",
+        "orange" => "orange"
+    );
+    
+    // Utilisation de foreach pour parcourir le tableau
+    
+    foreach ($fruits as $couleur) {
+        echo 'J\\'aime les fruits '.$couleur.'<br/>';
+    }
+    
+    // Utilisation de foreach pour parcourir le tableau avec les clés
+    foreach ($fruits as $fruit => $couleur) {
+        echo 'Le fruit '.$fruit.' est de couleur '.$couleur.'<br/>';
+    }
 ?>`}
                 </CodeCard>
-            </Box>
-            <Box>
-                <Heading level={2}>D- Programmation Orienté Objet</Heading>
+            </section>
+            <section>
+                <Heading level={2}>C- Programmation Orienté Objet</Heading>
 
                 <Heading level={3}>1. Définition d&lsquo;une classe</Heading>
                 <Text>
@@ -384,8 +389,8 @@ class Person {
                 </Text>
                 <CodeCard language="php">
                     {`<?php
-$person1 = new Person('Alice', 30);
-echo $person1; // Outputs "Name: Alice, Age: 30"
+    $person1 = new Person('Alice', 30);
+    echo $person1; // Outputs "Name: Alice, Age: 30"
 ?>`}
                 </CodeCard>
                 <Text>
@@ -469,8 +474,8 @@ class Employee extends Person {
                     relation hiérarchique. Les Traits permettent la réutilisation du code dans différentes classes sans
                     avoir besoin d&lsquo;utiliser l&lsquo;héritage.
                 </Text>
-            </Box>
-        </section>
+            </section>
+        </article>
     )
 
 }

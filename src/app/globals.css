@@ -1,6 +1,20 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
+.nextjs__container_errors_desc {
+    word-spacing: 1em;
+}
+
+.messageText
+{
+    word-spacing: .1em;
+}
+
+svg p {
+    word-spacing:.1em;
+}
+
 /* Variables CSS */
 :root {
     /* Couleurs principales par langage */
@@ -9,6 +23,7 @@
     --color-javascript: #D4A017;
     --color-login: #0000b3;
     --color-brainfuck: #8A2BE2;
+    --color-scroll: #121212;
 
     /* Durées animations */
     --animation-duration-short: 0.6s;
@@ -16,7 +31,15 @@
     --animation-duration-long: 3s;
 }
 
+/* Variables Dark Mode */
+.dark {
+    /*--color-html-css: #e34f26;  */
+    --color-php: #777bb4;
+    --color-scroll: #ffffff;
+    /*--color-javascript: #f7df1e;*/
+}
 
+/* Réglage global */
 h1, h2, h3, h4, h5, h6, .header, .text-sm {
     word-spacing: -0.3em;
 }
@@ -318,4 +341,65 @@ h1, h2, h3, h4, h5, h6, .header, .text-sm {
     color: var(--color-brainfuck);
     text-decoration: underline;
     cursor: pointer;
+}
+
+.input{
+    border: 1px solid #222222;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 0 10px;
+}
+
+.input > option
+{
+    color: #222222;
+}
+
+.input::placeholder {
+    color: #aaaaaa; /* couleur du texte placeholder */
+}
+
+.button{
+    color: #222222;
+    border: 1px solid #222222;
+    margin-left: 10px;
+    padding: 0 10px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.bg-footer
+{
+    background-color: #121212;
+}
+
+/* === 🌐 Scrollbar globale stylisée === */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+/* Fond de la barre : transparent */
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Pouce (la partie que l’on déplace) */
+::-webkit-scrollbar-thumb {
+    background-color: var(--color-scroll); /* Noir (mode clair) */
+    border-radius: 6px;
+    border: 2px solid transparent; /* Fait un effet "bordure" */
+    transition: background-color 0.3s ease;
+}
+
+/* Effet au survol */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #000;
+}
+
+/* === Firefox === */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-scroll) transparent;
 }

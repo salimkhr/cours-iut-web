@@ -27,12 +27,27 @@ export default async function Module({params}: ModulePageProps) {
     const {currentModule} = await getModuleData({moduleSlug});
 
     // Module statistics
-    const totalSections = currentModule.sections.length;
-    const totalAvailableSections = currentModule.sections.filter(
-        (section: Section) => section.isAvailable
+    const totalSections = currentModule.sections.filter(
+        (section: Section) => !section.contents.includes('examen')
     ).length;
+
+    const totalAvailableSections = currentModule.sections.filter(
+        (section: Section) => section.isAvailable && !section.contents.includes('examen')
+    ).length;
+
+    const totalSectionsProgress =  currentModule.sections.filter(
+        (section: Section) => !section.contents.includes('examen')
+    ).reduce(
+        (sum, section: Section) => sum + (section.totalDuration || 1),
+        0
+    );
+
+    const totalAvailableSectionsProgress = currentModule.sections
+        .filter((section: Section) => section.isAvailable && !section.contents.includes('examen'))
+        .reduce((sum, section: Section) => sum + (section.totalDuration || 1), 0);
+
     const progress = totalSections > 0
-        ? Math.round((totalAvailableSections / totalSections) * 100)
+        ? Math.round((totalAvailableSectionsProgress / totalSectionsProgress) * 100)
         : 0;
     const hasAvailableContent = totalAvailableSections > 0;
     const allTags = [...new Set(
@@ -47,10 +62,11 @@ export default async function Module({params}: ModulePageProps) {
             <HeroSection
                 title={currentModule.title}
                 description={currentModule.description}
-                imagePath={`/header_${currentModule.path}.svg`}
+                imagePath={`images/header/header_${currentModule.path}.svg`}
                 imageAlt={currentModule.title}
                 tags={allTags}
                 icon={<Icon size={70} className="mb-4"/>}
+                path={currentModule.path}
             >
 
                 <ModuleInfo currentModule={currentModule}/>
@@ -58,7 +74,7 @@ export default async function Module({params}: ModulePageProps) {
 
 
             <CoursesSection title="Les cours">
-                {currentModule.sections.map((section, index) => (
+                {currentModule.sections.sort((s1,s2) => s1.order - s2.order).map((section, index) => (
                     <div
                         key={section.path}
                         className="opacity-0 animate-fade-in-up"
@@ -77,7 +93,7 @@ export default async function Module({params}: ModulePageProps) {
                 hasAvailableContent={hasAvailableContent}
             />
 
-            <PageFooter imagePath={`/footer_${currentModule.path}.svg`}/>
+            <PageFooter path={currentModule.path}/>
         </div>
     );
 }
