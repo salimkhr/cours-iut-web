@@ -46,7 +46,7 @@ Responsable "1" <-- "*" Matiere
 `;
 
     const sections = [
-        { title: "A - Création des Matières", points: 8, time: "1h30" },
+        { title: "A - Création des Matières", points: 8, time: "1h" },
         { title: "B - Sauvegarde en Base de Données", points: 8, time: "1h" },
         { title: "C - Gestion des Brouillons", points: 4, time: "0h30" },
     ];
