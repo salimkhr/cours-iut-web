@@ -102,16 +102,16 @@ export default function TP() {
                         <Code>switch</Code> sur <Code>$_GET[&apos;action&apos;]</Code> :
                         <List>
                             <ListItem>
-                                &apos;create&apos; =&gt; <Code>AdminSessionController::create()</Code>
+                                &apos;create&apos; =&gt; <Code>AdminSeriesController::create()</Code>
                             </ListItem>
                             <ListItem>
-                                default =&gt; <Code>AdminSessionController::list()</Code>
+                                default =&gt; <Code>AdminSeriesController::list()</Code>
                             </ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
-                        Ajouter la méthode <Code>create()</Code> au <Code>AdminSessionController</Code>,
+                        Ajouter la méthode <Code>create()</Code> au <Code>AdminSeriesController</Code>,
                         appelant uniquement la vue <Code>series_form</Code>.
                     </ListItem>
 
@@ -146,7 +146,7 @@ export default function TP() {
                         Gérer l&apos;upload d&apos;image grâce au service{" "}
                         <Code>ImageService</Code> :
                         <CodeCard language="php">
-                            {`// Exemple dans AdminSessionController::create()
+                            {`// Exemple dans AdminSeriesController::create()
 $imageService = new ImageService();
 
 // Si un fichier image a été envoyé
@@ -186,13 +186,13 @@ if (!empty($_FILES['image']['name'])) {
                         <Code>switch</Code> :
                         <List>
                             <ListItem>
-                                &apos;edit&apos; =&gt; <Code>AdminSessionController::edit()</Code>
+                                &apos;edit&apos; =&gt; <Code>AdminSeriesController::edit()</Code>
                             </ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
-                        Ajouter la méthode <Code>edit()</Code> au <Code>AdminSessionController</Code> :
+                        Ajouter la méthode <Code>edit()</Code> au <Code>AdminSeriesController</Code> :
                         <List>
                             <ListItem>
                                 Récupérer l&apos;ID de la série depuis <Code>$_GET[&apos;id&apos;]</Code>.
@@ -231,7 +231,7 @@ if (!empty($_FILES['image']['name'])) {
                     </ListItem>
 
                     <ListItem>
-                        Compléter la méthode <Code>edit()</Code> du <Code>AdminSessionController</Code> pour
+                        Compléter la méthode <Code>edit()</Code> du <Code>AdminSeriesController</Code> pour
                         traiter la soumission du formulaire :
                         <List>
                             <ListItem>
