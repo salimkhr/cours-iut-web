@@ -125,9 +125,9 @@ export default function TP() {
                             <ListItem>releaseYearStart (number)</ListItem>
                             <ListItem>releaseYearEnd (number, optionnel, ≥ releaseYearStart)</ListItem>
                             <ListItem>currentSeason (number)</ListItem>
-                            <ListItem>quality (select &qout;HD&qout;, &qout;4K&qout; optionnel)</ListItem>
+                            <ListItem>quality (select &quot;HD&quot;, &quot;4K&quot; optionnel)</ListItem>
                             <ListItem>audio
-                                (select,&qout;EN&qout;,&qout;FR&qout;,&qout;PT&qout;,&qout;DZ&qout; optionnel)</ListItem>
+                                (select,&quot;EN&quot;,&quot;FR&quot;,&quot;PT&quot;,&quot;DZ&quot; optionnel)</ListItem>
                             <ListItem>
                                 image (file, optionnel, type image) — ⚠️ nécessite{" "}
                                 <Code>enctype=&quot;multipart/form-data&quot;</Code> dans la balise{" "}
