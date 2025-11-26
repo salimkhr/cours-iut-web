@@ -66,7 +66,7 @@ export default function TP() {
                 <Heading level={3}>3. Le formulaire</Heading>
                 <List ordered>
                     <ListItem>
-                        Modifier le formulaire d&apos;inscription pour utiliser le <Code>FormTrait</Code>{" "}
+                        Modifier le formulaire d&apos;inscription (<Code>RegisterController</Code>) pour utiliser le <Code>FormTrait</Code>{" "}
                         à la place de <Code>$_POST</Code>.
                     </ListItem>
                     <ListItem>
