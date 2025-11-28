@@ -152,7 +152,7 @@ export default function TP() {
 
                 <List ordered>
                     <ListItem>
-                        Dans le <Code>SerieController</Code>, méthode <Code>show(int $id)</Code>, après avoir récupéré
+                        Dans le <Code>SerieController</Code>, méthode <Code>show()</Code>, après avoir récupéré
                         la série depuis la base de données :
                         <List>
                             <ListItem>Vérifier qu&apos;un utilisateur est connecté
