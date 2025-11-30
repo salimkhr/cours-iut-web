@@ -125,7 +125,7 @@ ADD COLUMN is_admin BOOLEAN DEFAULT FALSE NOT NULL;`}
                         </List>
                     </ListItem>
                     <ListItem>
-                        Appeler la méthode <Code>checkAdminAccess()</Code> au début de chaque méthode du contrôleur : <Code>list()</Code>, <Code>create()</Code>, <Code>edit()</Code> et <Code>delete()</Code>.
+                        Appeler la méthode <Code>checkAdminAccess()</Code> au début de chaque méthode du contrôleur : <Code>list()</Code>, <Code>create()</Code> et <Code>edit()</Code>.
                     </ListItem>
                 </List>
             </section>
