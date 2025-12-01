@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+### Résumé du projet
 
-## Getting Started
+📦 Nom du projet, version et description
+- Nom: `cours-iut-web`
+- Version: `0.1.0`
+- Description: non renseignée dans `package.json`
 
-First, run the development server:
+⚙️ Versions clés
+- Next.js: `^16.0.1`
+- React: `^19.2.0` (`react-dom`: `^19.2.0`)
+- Node.js: image Docker `node:20.18-alpine` (donc Node 20.18 en production)
+- TailwindCSS: `^4.1.16` (avec `@tailwindcss/postcss` ^4 et `postcss` ^8)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+📁 Structure principale du dépôt
+- `src/app/`
+    - App Router Next 13+ (Next 16) avec pages et routes dynamiques:
+        - `page.tsx` (page d’accueil)
+        - `admin/page.tsx`, `login/page.tsx`, `chat/page.tsx`
+        - `[moduleSlug]/[sectionSlug]/[contentSlug]/page.tsx` (routing dynamique)
+        - `mdx-components.tsx` (mapping de composants pour MDX)
+- `src/components/`
+    - `ui/` (composants shadcn/ui: `button`, `card`, `dialog`, `tabs`, `table`, etc.)
+    - `page/` (sections de page: `HeroSection`, `CoursesGrid`, etc.)
+    - `admin/` (UI d’administration)
+    - `Cards/` (cartes de contenu, code, diagrammes, images…)
+    - `ia/` (composants de chat IA)
+    - Autres utilitaires: `ThemeProvider`, `ThemeToggle`, `AntiCopyProtector`, etc.
+- `src/lib/`
+    - Utilitaires de contenu (`contentImports.ts`) et alias `@lib` (cf. config)
+- `src/types/`
+    - Types TypeScript: `Section`, `SectionState`, etc.
+- `src/context/`
+    - Contexte applicatif (`AuthContext.tsx`)
+- `rag/markdown/`
+    - Contenus pédagogiques en Markdown/MDX (ex. `php/…`, `html-css/…`) + scripts d’extraction dans `script/`
+- `public/`
+    - Assets statiques et destination PWA (`next-pwa` → `dest: 'public'`)
+- Fichiers de configuration principaux
+    - `next.config.ts` (PWA + MDX + images + Turbopack + standalone)
+    - `tailwind.confi.ts` (TailwindCSS)
+    - `postcss.config.mjs`, `eslint.config.mjs`, `tsconfig.json`
+    - `Dockerfile`, `docker-compose.yml`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+💡 Fonctionnalités clés détectées
+- PWA
+    - Plugin: `next-pwa` configuré (`register: true`, `skipWaiting: true`, `dest: 'public'`)
+    - Sortie Next en mode `standalone` (optimisée pour déploiement/Docker)
+- MDX
+    - Support via `@next/mdx` et `@mdx-js/loader`; extensions de page `['js','jsx','ts','tsx','md','mdx']`
+    - Composants MDX personnalisés via `src/app/mdx-components.tsx`
+- App Router (Next 16)
+    - Routes dynamiques et segments imbriqués pour modules/sections/contenus
+- Thème & UI
+    - shadcn/ui (via composants `ui/*`), Radix UI primitives, `lucide-react`
+    - Thème sombre/claire avec `next-themes`
+    - TailwindCSS v4 + `tailwind-merge`
+- Contenu pédagogique enrichi
+    - Rendu Markdown/MDX (`react-markdown`, `remark-gfm`, `rehype-raw`)
+    - Syntax highlighting (`highlight.js`), diagrammes `mermaid`
+- Animations
+    - `framer-motion` / `motion` et `tw-animate-css`
+- Images externes optimisées
+    - `next/image` avec `remotePatterns` (Giphy, MDN, Picsum, Placehold, etc.) et formats `avif/webp`
+- Sécurité & Auth
+    - `csrf`, `cookies`, `rate-limiter-flexible`, `jose` (JWT/JOSE)
+    - Contexte d’authentification (`src/context/AuthContext.tsx`)
+- Données & persistance
+    - `mongodb` + `drizzle-orm`
+- Scripts de maintenance
+    - Extraction/ génération de contenus (`script/extractCours.js`, `extractToMarkdown.js`, `generateContentImports.js`)
+- Outils dev & qualité
+    - ESLint (`eslint`, `eslint-config-next`), `typescript` 5, Turbopack (dev), Yarn 4 (PnP)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+🔧 Scripts npm utiles (`package.json`)
+- `dev`: `next dev --turbopack`
+- `build`: `next build`
+- `start`: `node .next/standalone/server.js` (exécution standalone)
+- `lint` / `lint:fix`: linting Next
+- `extract-cours`, `extract-coursmd`, `generate-imports`: gestion du contenu
+- `audit`: `npm audit --production`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+🐳 Déploiement Docker
+- Image base: `node:20.18-alpine`
+- Build multi-étapes (deps → build → runner)
+- Copie de `.next/standalone` et `.next/static`; lancement via `node server.js`
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Si vous souhaitez, je peux transformer ce résumé en un `README.md` complet avec badges, instructions d’installation et sections d’usage/tests/déploiement.
