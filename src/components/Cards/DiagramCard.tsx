@@ -1,8 +1,9 @@
 'use client'
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import mermaid from "mermaid";
 import BaseCard from "@/components/Cards/BaseCard";
-import {useTheme} from "next-themes"; // ou ton hook useTheme
+import {useTheme} from "next-themes";
+import {Text} from "@/components/ui/Text"; // ou ton hook useTheme
 
 type DiagramCardProps = {
     header?: string;
@@ -36,7 +37,7 @@ export default function DiagramCard({ header, chart }: DiagramCardProps) {
 
     return (
         <BaseCard
-            header={header}
+            header={<Text className="text-white">{header}</Text>}
             content={<div dangerouslySetInnerHTML={{ __html: svg }} className="w-full mx-auto" />}
             withMarge={false}
             withHover={false}
