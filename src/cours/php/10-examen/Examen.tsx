@@ -1,6 +1,6 @@
 import React from 'react';
 import {Alert, AlertDescription, AlertTitle} from '@/components/ui/alert';
-import {AlertCircle, Award, Calculator, Clock} from 'lucide-react';
+import {AlertCircle, Award, Calculator, Clock, Settings} from 'lucide-react';
 import Heading from "@/components/ui/Heading";
 import {Text} from "@/components/ui/Text";
 import Code from "@/components/ui/Code";
@@ -169,9 +169,12 @@ Responsable "1" <-- "*" Matiere`;
                     Le formulaire doit permettre de renseigner toutes les informations nécessaires pour chaque matière et assurer la cohérence des données.
                 </Text>
 
-                <Text>
-                    Chaque matière doit contenir les champs suivants, <strong>tous obligatoires</strong> :
+                <Text className="mt-4">
+                    Après avoir créé un <Code>AdminController</Code> ainsi que son point d’accès <Code>public/admin.php</Code>, et en utilisant la vue <Code>admin.html.php</Code>, créez le formulaire avec les champs suivants, <strong>tous obligatoires</strong>.
+                    Cette page est accessible depuis l’icône <Link href="http://localhost:8000/admin.php" className="text-php" target={"_blank"}><Settings className="inline w-4 h-4 mx-1 mb-0.5" /></Link> dans l’interface de l’intranet.
                 </Text>
+
+
 
                 <ol className="list-decimal list-inside ml-6 space-y-4 text-gray-700">
                     <ListItem>
@@ -388,7 +391,7 @@ INSERT INTO matiere (code, nom, heures_td, heures_tp, responsable_id, semestre) 
                 </List>
 
                 <Text className="mt-4">
-                    Dans le dossier <Code>app/entites</Code>, complétez la classe <Code>Matiere.php</Code> avec les propriétés suivantes :
+                    Dans le dossier <Code>app/entites</Code>, Créez la classe <Code>Matiere.php</Code> avec les propriétés suivantes :
                 </Text>
 
                 <List>
@@ -399,6 +402,17 @@ INSERT INTO matiere (code, nom, heures_td, heures_tp, responsable_id, semestre) 
                     <ListItem><Code>heuresTP</Code> (int) : nombre d'heures de travaux pratiques.</ListItem>
                     <ListItem><Code>responsable</Code> (Responsable) : objet représentant le responsable de la matière.</ListItem>
                     <ListItem><Code>semestre</Code> (int) : numéro du semestre (1 à 6).</ListItem>
+                </List>
+
+                <Text className="mt-4">
+                    Dans le dossier <Code>app/entites</Code>, Créez la classe <Code>Responsable.php</Code> avec les propriétés suivantes :
+                </Text>
+
+                <List>
+                    <ListItem><Code>id</Code> (?int) : identifiant unique du responsable.</ListItem>
+                    <ListItem><Code>nom</Code> (string) : nom de famille du responsable.</ListItem>
+                    <ListItem><Code>prenom</Code> (string) : prénom du responsable.</ListItem>
+                    <ListItem><Code>email</Code> (string) : adresse e-mail du responsable.</ListItem>
                 </List>
 
                 <Heading level={3}>Options dynamiques pour les responsables :</Heading>
