@@ -7,6 +7,7 @@ import Code from "@/components/ui/Code";
 import {List, ListItem} from "@/components/ui/List";
 import DiagramCard from "@/components/Cards/DiagramCard";
 import CodeCard from "@/components/Cards/CodeCard";
+import Link from "next/link";
 
 export default function ExamenMatiere() {
     const chart = `classDiagram
@@ -62,14 +63,18 @@ Responsable "1" <-- "*" Matiere`;
                     <AlertDescription className="text-blue-800">
                         <Text>À la fin du contrôle, vous devrez déposer l'ensemble de vos fichiers dans une archive ZIP
                             nommée <Code className="bg-blue-100 px-2 py-1 rounded text-sm">Exam_prenom_nom.zip</Code>, puis la soumettre sur{" "}
-                            <a
-                                href="https://eureka.univ-lehavre.fr"
+                            <Link
+                                href="https://eureka.univ-lehavre.fr/mod/assign/view.php?id=176564"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-700 hover:underline font-medium"
                             >
-                                Eureka
-                            </a>.</Text>
+                                Eurêka
+                            </Link>dans les délais indiqués.
+                        </Text>
+                        <Text>
+                            Tout projet qui ne sera pas déposé sur la plateforme dans les délais <strong>ne sera pas pris en compte lors de la correction.</strong>
+                        </Text>
                     </AlertDescription>
                 </Alert>
             </section>
