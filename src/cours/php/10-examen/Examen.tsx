@@ -52,7 +52,7 @@ Responsable "1" <-- "*" Matiere`;
             {/* Entête */}
             <section className="flex flex-col items-center justify-center py-16 space-y-4">
                 <Heading level={2}>Département Informatique - BUT Info 2 - 2024/2025</Heading>
-                <Heading level={3}>Applications Web - Khraimeche Salim</Heading>
+                <Heading level={3}>R3.01 Développement WEB - Khraimeche Salim</Heading>
             </section>
 
             {/* Rendu de l'examen */}
@@ -255,26 +255,25 @@ DROP TABLE IF EXISTS responsable CASCADE;
 
 -- Création de la table responsable
 CREATE TABLE responsable (
-    id SERIAL PRIMARY KEY,
-    nom VARCHAR(50) NOT NULL,
-    prenom VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE
+                             id SERIAL PRIMARY KEY,
+                             nom VARCHAR(50) NOT NULL,
+                             prenom VARCHAR(50) NOT NULL,
+                             email VARCHAR(100) NOT NULL UNIQUE
 );
 
 -- Création de la table matiere
 CREATE TABLE matiere (
-    id SERIAL PRIMARY KEY,
-    code VARCHAR(6) NOT NULL UNIQUE,
-    nom VARCHAR(100) NOT NULL,
-    heures_cours INTEGER NOT NULL DEFAULT 0,
-    heures_td INTEGER NOT NULL DEFAULT 0,
-    heures_tp INTEGER NOT NULL DEFAULT 0,
-    responsable_id INTEGER NOT NULL,
-    semestre INTEGER NOT NULL CHECK (semestre BETWEEN 1 AND 6),
-    CONSTRAINT fk_responsable FOREIGN KEY (responsable_id) 
-        REFERENCES responsable(id) 
-        ON DELETE RESTRICT 
-        ON UPDATE CASCADE
+                         id SERIAL PRIMARY KEY,
+                         code VARCHAR(6) NOT NULL UNIQUE,
+                         nom VARCHAR(100) NOT NULL,
+                         heures_td INTEGER NOT NULL DEFAULT 0,
+                         heures_tp INTEGER NOT NULL DEFAULT 0,
+                         responsable_id INTEGER NOT NULL,
+                         semestre INTEGER NOT NULL CHECK (semestre BETWEEN 1 AND 6),
+                         CONSTRAINT fk_responsable FOREIGN KEY (responsable_id)
+                             REFERENCES responsable(id)
+                             ON DELETE RESTRICT
+                             ON UPDATE CASCADE
 );
 
 -- Insertion de responsables de test
@@ -289,96 +288,96 @@ INSERT INTO responsable (nom, prenom, email) VALUES
 ('MOREAU', 'Anne', 'anne.moreau@univ-lehavre.fr');
 
 -- Insertion de matières du BUT Informatique (Semestres 1 à 6)
-INSERT INTO matiere (code, nom, heures_cours, heures_td, heures_tp, responsable_id, semestre) VALUES
+INSERT INTO matiere (code, nom, heures_td, heures_tp, responsable_id, semestre) VALUES
 -- Semestre 1
-('R1.01', 'Initiation au développement', 15, 10, 20, 1, 1),
-('R1.02', 'Développement interfaces Web', 10, 15, 20, 2, 1),
-('R1.03', 'Introduction Architecture', 20, 10, 10, 3, 1),
-('R1.04', 'Introduction Système', 15, 10, 15, 3, 1),
-('R1.05', 'Introduction Base de données', 15, 15, 15, 4, 1),
-('R1.06', 'Mathématiques discrètes', 20, 15, 0, 5, 1),
-('R1.07', 'Outils mathématiques fondamentaux', 20, 15, 0, 5, 1),
-('R1.08', 'Gestion de projet et des organisations', 15, 10, 0, 6, 1),
-('R1.09', 'Économie durable et numérique', 15, 10, 0, 7, 1),
-('R1.10', 'Anglais Technique', 0, 20, 0, 8, 1),
-('R1.11', 'Bases de la communication', 10, 15, 0, 8, 1),
-('R1.12', 'Projet Professionnel et Personnel', 0, 15, 0, 6, 1),
-('P1.01', 'Portfolio', 0, 0, 20, 6, 1),
+('R1.01', 'Initiation au développement',  10, 20, 1, 1),
+('R1.02', 'Développement interfaces Web', 15, 20, 2, 1),
+('R1.03', 'Introduction Architecture',  10, 10, 3, 1),
+('R1.04', 'Introduction Système', 10, 15, 3, 1),
+('R1.05', 'Introduction Base de données',  15, 15, 4, 1),
+('R1.06', 'Mathématiques discrètes', 15, 0, 5, 1),
+('R1.07', 'Outils mathématiques fondamentaux', 15, 0, 5, 1),
+('R1.08', 'Gestion de projet et des organisations', 10, 0, 6, 1),
+('R1.09', 'Économie durable et numérique', 10, 0, 7, 1),
+('R1.10', 'Anglais Technique', 20, 0, 8, 1),
+('R1.11', 'Bases de la communication',  15, 0, 8, 1),
+('R1.12', 'Projet Professionnel et Personnel', 15, 0, 6, 1),
+('P1.01', 'Portfolio', 0,  20, 6, 1),
 
 -- Semestre 2
-('R2.01', 'Développement orienté objets', 15, 10, 25, 1, 2),
-('R2.02', 'Développement d''applications avec IHM', 10, 10, 20, 2, 2),
-('R2.03', 'Qualité de développement', 15, 10, 15, 1, 2),
-('R2.04', 'Communication et fonctionnement bas niveau', 15, 10, 10, 3, 2),
-('R2.05', 'Introduction aux services réseaux', 10, 10, 15, 3, 2),
-('R2.06', 'Exploitation d''une base de données', 10, 15, 15, 4, 2),
-('R2.07', 'Graphes', 20, 15, 0, 5, 2),
-('R2.08', 'Outils numériques pour les statistiques', 15, 10, 10, 5, 2),
-('R2.09', 'Méthodes Numériques', 15, 15, 0, 5, 2),
-('R2.10', 'Gestion de projet et des organisations', 10, 15, 0, 6, 2),
-('R2.11', 'Droit', 15, 10, 0, 7, 2),
-('R2.12', 'Anglais d''entreprise', 0, 20, 0, 8, 2),
-('R2.13', 'Communication Technique', 10, 15, 0, 8, 2),
-('R2.14', 'Projet Professionnel et Personnel', 0, 15, 0, 6, 2),
-('P2.01', 'Portfolio', 0, 0, 20, 6, 2),
+('R2.01', 'Développement orienté objets', 10, 25, 1, 2),
+('R2.02', 'Développement d''applications avec IHM', 10, 20, 2, 2),
+('R2.03', 'Qualité de développement', 15, 15, 1, 2),
+('R2.04', 'Communication et fonctionnement bas niveau', 10, 10, 3, 2),
+('R2.05', 'Introduction aux services réseaux',  10, 15, 3, 2),
+('R2.06', 'Exploitation d''une base de données',  15, 15, 4, 2),
+('R2.07', 'Graphes',  15, 0, 5, 2),
+('R2.08', 'Outils numériques pour les statistiques', 10, 10, 5, 2),
+('R2.09', 'Méthodes Numériques',  15, 0, 5, 2),
+('R2.10', 'Gestion de projet et des organisations',  15, 0, 6, 2),
+('R2.11', 'Droit',  10, 0, 7, 2),
+('R2.12', 'Anglais d''entreprise',  20, 0, 8, 2),
+('R2.13', 'Communication Technique', 15, 0, 8, 2),
+('R2.14', 'Projet Professionnel et Personnel', 15, 0, 6, 2),
+('P2.01', 'Portfolio',  0, 20, 6, 2),
 
 -- Semestre 3
-('R3.01', 'Développement WEB', 10, 10, 25, 2, 3),
-('R3.02', 'Développement Efficace', 15, 10, 20, 1, 3),
-('R3.03', 'Analyse', 20, 15, 0, 5, 3),
-('R3.04', 'Qualité de développement 3', 10, 10, 15, 1, 3),
-('R3.05', 'Programmation Système', 15, 10, 15, 3, 3),
-('R3.06', 'Architecture des réseaux', 15, 10, 10, 3, 3),
-('R3.07', 'SQL dans un langage de programmation', 10, 10, 15, 4, 3),
-('R3.08', 'Probabilités', 20, 15, 0, 5, 3),
-('R3.09', 'Cryptographie et sécurité', 15, 10, 10, 3, 3),
-('R3.10', 'Management des systèmes d''information', 15, 10, 0, 6, 3),
-('R3.11', 'Droits des contrats et du numérique', 15, 10, 0, 7, 3),
-('R3.12', 'Anglais 3', 0, 20, 0, 8, 3),
-('R3.13', 'Communication professionnelle', 10, 15, 0, 8, 3),
-('R3.14', 'PPP 3', 0, 15, 0, 6, 3),
-('P3.01', 'Portfolio', 0, 0, 20, 6, 3),
+('R3.01', 'Développement WEB',  10, 25, 2, 3),
+('R3.02', 'Développement Efficace',  10, 20, 1, 3),
+('R3.03', 'Analyse',  15, 0, 5, 3),
+('R3.04', 'Qualité de développement 3', 10, 15, 1, 3),
+('R3.05', 'Programmation Système',  10, 15, 3, 3),
+('R3.06', 'Architecture des réseaux', 10, 10, 3, 3),
+('R3.07', 'SQL dans un langage de programmation', 10, 15, 4, 3),
+('R3.08', 'Probabilités',  15, 0, 5, 3),
+('R3.09', 'Cryptographie et sécurité',  10, 10, 3, 3),
+('R3.10', 'Management des systèmes d''information',  10, 0, 6, 3),
+('R3.11', 'Droits des contrats et du numérique',  10, 0, 7, 3),
+('R3.12', 'Anglais 3', 20, 0, 8, 3),
+('R3.13', 'Communication professionnelle', 15, 0, 8, 3),
+('R3.14', 'PPP 3', 15, 0, 6, 3),
+('P3.01', 'Portfolio', 0, 20, 6, 3),
 
 -- Semestre 4
-('R4.01', 'Architecture logicielle', 15, 10, 20, 1, 4),
-('R4.02', 'Qualité de développement 4', 10, 10, 15, 1, 4),
-('R4.03', 'Qualité et au delà du relationnel', 15, 10, 15, 4, 4),
-('R4.04', 'Méthodes d''optimisation', 20, 15, 0, 5, 4),
-('R4.05', 'Anglais 4', 0, 20, 0, 8, 4),
-('R4.06', 'Communication interne', 10, 15, 0, 8, 4),
-('R4.07', 'PPP 4', 0, 15, 0, 6, 4),
-('R4.08', 'Virtualisation', 10, 10, 20, 3, 4),
-('R4.09', 'Management avancé des SI', 15, 10, 0, 6, 4),
-('R4.10', 'Complément web', 10, 10, 20, 2, 4),
-('R4.11', 'Développement mobile', 10, 10, 25, 2, 4),
-('R4.12', 'Automates', 20, 15, 0, 5, 4),
-('S4.ST', 'Stages', 0, 0, 0, 6, 4),
-('P4.01', 'Portfolio', 0, 0, 20, 6, 4),
+('R4.01', 'Architecture logicielle', 10, 20, 1, 4),
+('R4.02', 'Qualité de développement 4', 10, 15, 1, 4),
+('R4.03', 'Qualité et au delà du relationnel', 10, 15, 4, 4),
+('R4.04', 'Méthodes d''optimisation', 15, 0, 5, 4),
+('R4.05', 'Anglais 4', 0, 0, 8, 4),
+('R4.06', 'Communication interne',15, 0, 8, 4),
+('R4.07', 'PPP 4',  15, 0, 6, 4),
+('R4.08', 'Virtualisation',  10, 20, 3, 4),
+('R4.09', 'Management avancé des SI', 10, 0, 6, 4),
+('R4.10', 'Complément web',  10, 20, 2, 4),
+('R4.11', 'Développement mobile', 10, 25, 2, 4),
+('R4.12', 'Automates', 15, 0, 5, 4),
+('S4.ST', 'Stages',  0, 0, 6, 4),
+('P4.01', 'Portfolio', 0, 20, 6, 4),
 
 -- Semestre 5
-('R5.01', 'Initiation au management équipe projet', 15, 10, 0, 6, 5),
-('R5.02', 'Projet Personnel et Professionnel', 0, 15, 0, 6, 5),
-('R5.03', 'Politique de communication', 10, 15, 0, 8, 5),
-('R5.04', 'Qualité algorithmique', 15, 15, 15, 1, 5),
-('R5.05', 'Programmation avancée', 10, 10, 25, 1, 5),
-('R5.06', 'Programmation multimédia', 10, 10, 20, 2, 5),
-('R5.07', 'Automatisation chaîne de production', 10, 10, 20, 3, 5),
-('R5.08', 'Qualité de développement', 10, 10, 15, 1, 5),
-('R5.09', 'Virtualisation avancée', 10, 10, 20, 3, 5),
-('R5.10', 'Nouveaux paradigmes BDD', 15, 10, 15, 4, 5),
-('R5.11', 'Optimisation pour aide à la décision', 15, 15, 0, 5, 5),
-('R5.12', 'Modélisations mathématiques', 20, 15, 0, 5, 5),
-('R5.13', 'Économie durable et numérique', 15, 10, 0, 7, 5),
-('R5.14', 'Anglais', 0, 20, 0, 8, 5),
+('R5.01', 'Initiation au management équipe projet',  10, 0, 6, 5),
+('R5.02', 'Projet Personnel et Professionnel',  15, 0, 6, 5),
+('R5.03', 'Politique de communication',  15, 0, 8, 5),
+('R5.04', 'Qualité algorithmique',  15, 15, 1, 5),
+('R5.05', 'Programmation avancée',  10, 25, 1, 5),
+('R5.06', 'Programmation multimédia',  10, 20, 2, 5),
+('R5.07', 'Automatisation chaîne de production', 10, 20, 3, 5),
+('R5.08', 'Qualité de développement', 10, 15, 1, 5),
+('R5.09', 'Virtualisation avancée',  10, 20, 3, 5),
+('R5.10', 'Nouveaux paradigmes BDD',  10, 15, 4, 5),
+('R5.11', 'Optimisation pour aide à la décision', 15, 0, 5, 5),
+('R5.12', 'Modélisations mathématiques',  15, 0, 5, 5),
+('R5.13', 'Économie durable et numérique',10, 0, 7, 5),
+('R5.14', 'Anglais',  20, 0, 8, 5),
 
 -- Semestre 6
-('R6.01', 'Initiation à l''entrepreneuriat', 15, 10, 0, 7, 6),
-('R6.02', 'Droit numérique propriété intellectuelle', 15, 10, 0, 7, 6),
-('R6.03', 'Communication diffusion information', 10, 15, 0, 8, 6),
-('R6.04', 'Projet Personnel et Professionnel', 0, 15, 0, 6, 6),
-('R6.05', 'Développement avancé', 10, 10, 25, 1, 6),
-('R6.06', 'Maintenance applicative', 10, 10, 20, 1, 6),
-('S6.ST', 'Stage', 0, 0, 0, 6, 6);`}
+('R6.01', 'Initiation à l''entrepreneuriat',  10, 0, 7, 6),
+('R6.02', 'Droit numérique propriété intellectuelle',  10, 0, 7, 6),
+('R6.03', 'Communication diffusion information',  15, 0, 8, 6),
+('R6.04', 'Projet Personnel et Professionnel',  15, 0, 6, 6),
+('R6.05', 'Développement avancé',  10, 25, 1, 6),
+('R6.06', 'Maintenance applicative',  10, 20, 1, 6),
+('S6.ST', 'Stage',  0, 0, 6, 6);`}
                 </CodeCard>
 
                 <Text className="mt-4">vous devez implémenter la logique permettant :</Text>
