@@ -170,18 +170,20 @@ Responsable "1" <-- "*" Matiere`;
                 </Text>
 
                 <Text className="mt-4">
-                    Après avoir créé un <Code>AdminController</Code> ainsi que son point d’accès <Code>public/admin.php</Code>, et en utilisant la vue <Code>admin.html.php</Code>, créez le formulaire avec les champs suivants, <strong>tous obligatoires</strong>.
-                    Cette page est accessible depuis l’icône <Link href="http://localhost:8000/admin.php" className="text-php" target={"_blank"}><Settings className="inline w-4 h-4 mx-1 mb-0.5" /></Link> dans l’interface de l’intranet.
+                    Créez le fichier <Code>public/admin.php</Code> afin qu’il appelle la méthode <Code>index()</Code> de la classe <Code>AdminController</Code>.
+                    Modifiez ensuite cette méthode <Code>index()</Code> pour qu’elle charge la vue <Code>admin.html.php</Code>.
+                    La page est accessible depuis l’interface via l’icône
+                    <Link href="http://localhost:8000/admin.php" className="text-php" target={"_blank"}>
+                        <Settings className="inline w-4 h-4 mx-1 mb-0.5" />
+                    </Link>.
                 </Text>
-
-
 
                 <ol className="list-decimal list-inside ml-6 space-y-4 text-gray-700">
                     <ListItem>
                         <strong>Code de la matière :</strong>
                         <List>
                             <ListItem>Champ de saisie libre.</ListItem>
-                            <ListItem>Format : exactement 5 caractères alphanumériques (ex: "R3.01", "R4.10").</ListItem>
+                            <ListItem>Format : exactement 5 caractères (ex: "R3.01", "R4.10").</ListItem>
                             <ListItem>Validation PHP : vérifier la longueur.</ListItem>
                         </List>
                     </ListItem>
