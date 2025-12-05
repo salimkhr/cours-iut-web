@@ -72,9 +72,17 @@ Responsable "1" <-- "*" Matiere`;
                                 Eurêka
                             </Link> dans les délais indiqués.
                         </Text>
+
                         <Text>
-                            Tout projet qui ne sera pas déposé sur la plateforme dans les délais <strong>ne sera pas pris en compte lors de la correction.</strong>
+                            Tout projet qui ne sera pas déposé sur la plateforme dans les délais
+                            <strong> ne sera pas pris en compte lors de la correction.</strong>
                         </Text>
+
+                        <Text className="mt-2">
+                            L’usage du téléphone, des montres connectées ainsi que de toute forme d’IA (y compris locale) est strictement interdit pendant toute la durée de l’épreuve.
+                            L’autocomplétion intégrée à votre IDE est en revanche autorisée.
+                        </Text>
+
                     </AlertDescription>
                 </Alert>
             </section>
@@ -241,7 +249,7 @@ Responsable "1" <-- "*" Matiere`;
 
                 <List>
                     <ListItem>Vérifiez que tous les champs sont remplis et respectent les contraintes définies ci-dessus.</ListItem>
-                    <ListItem>Si le formulaire est valide (sans tenir compte de la case "brouillon" à cette étape), redirigez vers <Code>index.php</Code>.</ListItem>
+                    <ListItem>Si le formulaire est valide redirigez vers <Code>index.php</Code>.</ListItem>
                     <ListItem>Si le formulaire contient des erreurs, réaffichez-le avec les valeurs saisies et les messages d'erreur associés pour chaque champ incorrect.</ListItem>
                 </List>
             </section>
@@ -385,12 +393,7 @@ INSERT INTO matiere (code, nom, heures_td, heures_tp, responsable_id, semestre) 
 ('S6.ST', 'Stage',  0, 0, 6, 6);`}
                 </CodeCard>
 
-                <Text className="mt-4">vous devez implémenter la logique permettant :</Text>
-
-                <List>
-                    <ListItem>d'afficher la liste des matières existantes avec leurs responsables,</ListItem>
-                    <ListItem>d'enregistrer les nouvelles matières créées via le formulaire de la partie A dans la base de données.</ListItem>
-                </List>
+                <Text className="mt-4">Vous devez implémenter la logique permettant d'enregistrer les nouvelles matières créées via le formulaire de la partie A dans la base de données.</Text>
 
                 <Text className="mt-4">
                     Dans le dossier <Code>app/entites</Code>, Créez la classe <Code>Matiere.php</Code> avec les propriétés suivantes :
