@@ -70,7 +70,7 @@ Responsable "1" <-- "*" Matiere`;
                                 className="text-blue-700 hover:underline font-medium"
                             >
                                 Eurêka
-                            </Link>dans les délais indiqués.
+                            </Link> dans les délais indiqués.
                         </Text>
                         <Text>
                             Tout projet qui ne sera pas déposé sur la plateforme dans les délais <strong>ne sera pas pris en compte lors de la correction.</strong>
@@ -154,7 +154,7 @@ Responsable "1" <-- "*" Matiere`;
                 <Heading level={2}>Initialisation du projet :</Heading>
                 <Text>
                     Téléchargez le projet{" "}
-                    <span className="font-medium text-blue-600">exam_prenom_nom.zip</span>{" "}
+                    <Link download href={"/download/php/exam_prenom_nom.zip"}><span className="font-medium text-blue-600">exam_prenom_nom.zip</span></Link>{" "}
                     et décompressez-le dans un dossier situé en dehors de <Code>public_html</Code>.
                     Ensuite, lancez le serveur en exécutant le script <Code>start.sh</Code>.
                 </Text>
