@@ -1,71 +1,88 @@
-import Code from "@/components/ui/Code";
+import React from 'react';
+import {Alert, AlertDescription, AlertTitle} from '@/components/ui/alert';
+import {AlertCircle, Award, Calculator, Clock, Settings} from 'lucide-react';
 import Heading from "@/components/ui/Heading";
-import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
-import Link from "next/link";
-import {List, ListItem} from "@/components/ui/List";
 import {Text} from "@/components/ui/Text";
-import {AlertCircleIcon, Award, Calculator, Clock} from "lucide-react";
+import Code from "@/components/ui/Code";
+import {List, ListItem} from "@/components/ui/List";
 import DiagramCard from "@/components/Cards/DiagramCard";
+import CodeCard from "@/components/Cards/CodeCard";
+import Link from "next/link";
 
-export default function Examen() {
+export default function ExamenMatiere() {
     const chart = `classDiagram
-
-class Card {
+class Matiere {
     +id: ?INT
-    +text: STRING
-    +theme: ?Theme
-    +type: STRING
-    +responseCount: INT
-    +status: BOOL
+    +code: STRING
+    +nom: STRING
+    +heuresTD: INT
+    +heuresTP: INT
+    +responsable: ?Responsable
+    +semestre: INT
     +getId(): ?INT
-    +getText(): STRING
-    +getTheme(): ?Theme
-    +getType(): STRING
-    +getResponseCount(): INT
-    +getStatus(): BOOL
+    +getCode(): STRING
+    +getNom(): STRING
+    +getHeuresTD(): INT
+    +getHeuresTP(): INT
+    +getResponsable(): ?Responsable
+    +getSemestre(): INT
 }
 
-class Theme {
+class Responsable {
     +id: ?INT
-    +name: STRING
+    +nom: STRING
+    +prenom: STRING
+    +email: STRING
     +getId(): ?INT
-    +getName(): STRING
+    +getNom(): STRING
+    +getPrenom(): STRING
+    +getEmail(): STRING
 }
 
-Theme "1" <-- "*" Card
-`;
+Responsable "1" <-- "*" Matiere`;
 
     const sections = [
-        { title: "A - Création des Cartes", points: 8, time: "1h" },
+        { title: "A - Création des Matières", points: 8, time: "1h" },
         { title: "B - Sauvegarde en Base de Données", points: 8, time: "1h" },
-        { title: "C - Gestion de la Partie", points: 4, time: "0h30" },
+        { title: "C - Gestion des Brouillons en Session", points: 4, time: "0h30" },
     ];
 
     return (
-        <article className="space-y-8">
+        <article>
             {/* Entête */}
-            <section>
-                <Heading level={2}>Département Informatique - BUT Info 2 - 2023/2024</Heading>
-                <Heading level={4}>Applications Web - Khraimeche Salim</Heading>
+            <section className="flex flex-col items-center justify-center py-16 space-y-4">
+                <Heading level={2}>Département Informatique - BUT Info 2 - 2024/2025</Heading>
+                <Heading level={3}>R3.01 Développement WEB - Khraimeche Salim</Heading>
             </section>
 
             {/* Rendu de l'examen */}
             <section>
-                <Alert className="mt-4">
-                    <AlertCircleIcon />
-                    <AlertTitle>Rendu de l&apos;examen</AlertTitle>
-                    <AlertDescription>
-                        <Text>
-                            À la fin du contrôle, vous devrez déposer l’ensemble de vos fichiers dans une archive ZIP
-                            nommée <Code>Exam_prenom_nom.zip</Code>, puis la soumettre sur{" "}
+                <Alert className="border-blue-300 bg-blue-50">
+                    <AlertCircle className="h-5 w-5 text-blue-600" />
+                    <AlertTitle className="text-blue-900 font-semibold">Rendu de l'examen</AlertTitle>
+                    <AlertDescription className="text-blue-800">
+                        <Text>À la fin du contrôle, vous devrez déposer l'ensemble de vos fichiers dans une archive ZIP
+                            nommée <Code className="bg-blue-100 px-2 py-1 rounded text-sm">Exam_prenom_nom.zip</Code>, puis la soumettre sur{" "}
                             <Link
-                                href="https://eureka.univ-lehavre.fr/mod/assign/view.php?id=132709"
+                                href="https://eureka.univ-lehavre.fr/mod/assign/view.php?id=176564"
                                 target="_blank"
-                                className="text-red-700 hover:underline"
+                                rel="noopener noreferrer"
+                                className="text-blue-700 hover:underline font-medium"
                             >
-                                Eureka
-                            </Link>.
+                                Eurêka
+                            </Link> dans les délais indiqués.
                         </Text>
+
+                        <Text>
+                            Tout projet qui ne sera pas déposé sur la plateforme dans les délais
+                            <strong> ne sera pas pris en compte lors de la correction.</strong>
+                        </Text>
+
+                        <Text className="mt-2">
+                            L’usage du téléphone, des montres connectées ainsi que de toute forme d’IA (y compris locale) est strictement interdit pendant toute la durée de l’épreuve.
+                            L’autocomplétion intégrée à votre IDE est en revanche autorisée.
+                        </Text>
+
                     </AlertDescription>
                 </Alert>
             </section>
@@ -76,9 +93,9 @@ Theme "1" <-- "*" Card
 
                 <div className="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0 mt-6">
                     {/* Liste des sections */}
-                    <ul className="flex-1 space-y-3">
+                    <List className="flex-1 space-y-3">
                         {sections.map((item, index) => (
-                            <li
+                            <ListItem
                                 key={index}
                                 className="flex items-center justify-between rounded-lg border p-4 shadow-sm hover:shadow-md transition-shadow"
                             >
@@ -94,9 +111,9 @@ Theme "1" <-- "*" Card
                                     <Clock size={18} className="text-blue-500" />
                                     <span>Temps estimé : {item.time}</span>
                                 </div>
-                            </li>
+                            </ListItem>
                         ))}
-                    </ul>
+                    </List>
 
                     {/* Bloc de notation */}
                     <div className="md:w-1/3">
@@ -108,12 +125,7 @@ Theme "1" <-- "*" Card
                             <AlertDescription className="leading-relaxed space-y-2">
                                 <Text>
                                     La notation portera principalement sur la <strong>qualité du code</strong> et le
-                                    <strong> respect des bonnes pratiques</strong> abordées durant le cours.
-                                </Text>
-
-                                <Text>
-                                    Vous devrez respecter la <strong>structure MVC</strong> présentée en cours.
-                                    L’implémentation d’un <strong>service</strong> est <em>optionnelle</em>, mais sa bonne utilisation sera <strong>valorisée</strong>.
+                                    <strong> respect des bonnes pratiques</strong> ainsi que des <strong>règles de sécurités</strong> abordées durant le cours.
                                 </Text>
 
                                 <Text className="font-medium">
@@ -128,19 +140,19 @@ Theme "1" <-- "*" Card
             {/* Résumé */}
             <section>
                 <Heading level={2}>Résumé du sujet :</Heading>
-                <Text className="mt-2">
-                    L’objectif de cet exercice est de créer un jeu inspiré de &quot;Limite Limite&quot; en utilisant un système de gestion de cartes et de parties.
+                <Text>
+                    L'objectif de cet exercice est de créer un système de gestion des matières pour l'intranet du département.
                     Le projet comporte trois grandes parties :
                 </Text>
-                <List className="list-decimal list-inside ml-6 mt-2 space-y-1">
+                <List ordered>
                     <ListItem>
-                        <strong>Création des cartes :</strong> formulaire permettant de saisir le texte, le type, le nombre de réponses et le thème d’une carte, avec validation côté client et serveur.
+                        <strong>Création des matières :</strong> formulaire permettant de saisir le code, le nom, les volumes horaires, le responsable et le semestre d'une matière, avec validation côté client et serveur.
                     </ListItem>
                     <ListItem>
-                        <strong>Sauvegarde en base de données :</strong> affichage et enregistrement des cartes créées en respectant la structure des classes <Code>Card</Code> et <Code>Theme</Code>.
+                        <strong>Sauvegarde en base de données :</strong> affichage et enregistrement des matières créées en respectant la structure des classes <Code>Matiere</Code> et <Code>Responsable</Code>.
                     </ListItem>
                     <ListItem>
-                        <strong>Gestion de la partie :</strong> initialisation et suivi d’une partie avec plusieurs joueurs, stockage des cartes et des joueurs en session, et test via les pages locales.
+                        <strong>Gestion des brouillons en session :</strong> sauvegarde temporaire des données du formulaire en session lorsque l'utilisateur coche la case "brouillon", permettant de reprendre la saisie ultérieurement.
                     </ListItem>
                 </List>
             </section>
@@ -150,187 +162,342 @@ Theme "1" <-- "*" Card
                 <Heading level={2}>Initialisation du projet :</Heading>
                 <Text>
                     Téléchargez le projet{" "}
-                    <Link
-                        href="/download/php/exam_prenom_nom.zip"
-                        download
-                        className="font-medium"
-                    >
-                        <span>exam_prenom_nom.zip</span>
-                    </Link>{" "}
+                    <Link download href={"/download/php/exam_prenom_nom.zip"}><span className="font-medium text-blue-600">exam_prenom_nom.zip</span></Link>{" "}
                     et décompressez-le dans un dossier situé en dehors de <Code>public_html</Code>.
                     Ensuite, lancez le serveur en exécutant le script <Code>start.sh</Code>.
                 </Text>
             </section>
 
             {/* Partie A */}
-            <section>
-                <Heading level={2}>A- Création des Cartes</Heading>
+            <section className="pt-6">
+                <Heading level={2}>A - Création des Matières</Heading>
 
-                <Text className="mt-2">
-                    Dans cette partie, vous devez créer un formulaire pour permettre aux utilisateurs de saisir de nouvelles cartes pour le jeu &quot;Limite Limite&quot;.
-                    Le formulaire doit permettre de renseigner toutes les informations nécessaires pour chaque carte et assurer la cohérence des données.
+                <Text>
+                    Dans cette partie, vous devez créer un formulaire pour permettre aux administrateurs de saisir de nouvelles matières dans l'intranet.
+                    Le formulaire doit permettre de renseigner toutes les informations nécessaires pour chaque matière et assurer la cohérence des données.
                 </Text>
 
-                <Text className="mt-2">
-                    Chaque carte doit contenir les champs suivants, <strong>tous obligatoires</strong> :
+                <Text className="mt-4">
+                    Créez le fichier <Code>public/admin.php</Code> afin qu’il appelle la méthode <Code>index()</Code> de la classe <Code>AdminController</Code>.
+                    Modifiez ensuite cette méthode <Code>index()</Code> pour qu’elle charge la vue <Code>admin.html.php</Code>.
+                    La page est accessible depuis l’interface via l’icône
+                    <Link href="http://localhost:8000/admin.php" className="text-php" target={"_blank"}>
+                        <Settings className="inline w-4 h-4 mx-1 mb-0.5" />
+                    </Link>.
                 </Text>
 
-                <List ordered className="ml-6 mt-2 space-y-2">
+                <ol className="list-decimal list-inside ml-6 space-y-4 text-gray-700">
                     <ListItem>
-                        <strong>Texte de la carte :</strong>
-                        <List className="list-disc ml-4 space-y-1">
+                        <strong>Code de la matière :</strong>
+                        <List>
                             <ListItem>Champ de saisie libre.</ListItem>
-                            <ListItem>Limite : 200 caractères maximum.</ListItem>
+                            <ListItem>Format : exactement 5 caractères (ex: "R3.01", "R4.10").</ListItem>
+                            <ListItem>Validation PHP : vérifier la longueur.</ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
-                        <strong>Type de carte :</strong>
-                        <List className="list-disc ml-4 space-y-1">
-                            <ListItem>Boutons radio avec deux options : &quot;question&quot; ou &quot;réponse&quot;.</ListItem>
-                            <ListItem>Seules ces valeurs sont considérées comme valides côté PHP.</ListItem>
+                        <strong>Nom de la matière :</strong>
+                        <List>
+                            <ListItem>Champ de saisie libre.</ListItem>
+                            <ListItem>Limite : 100 caractères maximum.</ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
-                        <strong>Nombre de réponses :</strong>
-                        <List className="list-disc ml-4 space-y-1">
-                            <ListItem>Champ numérique.</ListItem>
-                            <ListItem>En HTML : valeur ≥ 0.</ListItem>
-                            <ListItem>En PHP :
-                                <List className="list-disc ml-4 space-y-1">
-                                    <ListItem>Si type = &quot;question&quot;, la valeur doit être strictement supérieure à 0.</ListItem>
-                                    <ListItem>Si type = &quot;réponse&quot;, la valeur doit être égale à 0.</ListItem>
-                                </List>
-                            </ListItem>
+                        <strong>Volumes horaires :</strong>
+                        <List>
+                            <ListItem>Deux champs numériques distincts : Heures de TD, Heures de TP.</ListItem>
+                            <ListItem>En HTML : valeurs ≥ 0 pour chaque champ.</ListItem>
+                            <ListItem>En PHP : chaque valeur doit être un entier positif ou nul.</ListItem>
+                            <ListItem>La somme totale (TD + TP) doit être strictement supérieure à 0.</ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
-                        <strong>Thème :</strong>
-                        <List className="list-disc ml-4 space-y-1">
-                            <ListItem>Liste déroulante : &quot;Humour&quot;, &quot;Humour noir&quot;, &quot;Humour très noir&quot;.</ListItem>
+                        <strong>Responsable :</strong>
+                        <List>
+                            <ListItem>Liste déroulante affichant les responsables disponibles.</ListItem>
+                            <ListItem>Format d'affichage : "NOM Prénom" (ex: "DUPONT Jean", "MARTIN Sophie", "BERNARD Lucas").</ListItem>
+                            <ListItem>Valeur soumise : l'ID du responsable.</ListItem>
+                            <ListItem>Ajoutez une option par défaut "-- Sélectionner un responsable --" avec une valeur vide.</ListItem>
                             <ListItem>Pas de vérification PHP à cette étape (sera traitée dans la partie B).</ListItem>
                         </List>
                     </ListItem>
-                </List>
 
-                <Text className="mt-2">
-                    Lorsqu’un utilisateur soumet le formulaire :
-                </Text>
+                    <ListItem>
+                        <strong>Semestre :</strong>
+                        <List>
+                            <ListItem>Boutons radio avec six options : S1, S2, S3, S4, S5, S6.</ListItem>
+                            <ListItem>Validation PHP : valeur entre 1 et 6 uniquement.</ListItem>
+                        </List>
+                    </ListItem>
 
-                <List className="list-disc list-inside ml-6 space-y-1">
-                    <ListItem>Vérifiez que tous les champs sont remplis et respectent les contraintes.</ListItem>
-                    <ListItem>Si le formulaire est valide, créez un objet <Code>Card</Code> correspondant aux données saisies et redirigez vers <Code>index.php</Code>.</ListItem>
-                    <ListItem>Si le formulaire contient des erreurs, réaffichez-le avec les valeurs saisies et les messages d’erreur associés pour chaque champ incorrect.</ListItem>
+                    <ListItem>
+                        <strong>Brouillon :</strong>
+                        <List>
+                            <ListItem>Case à cocher permettant d'indiquer si la saisie est un brouillon.</ListItem>
+                            <ListItem>Si cochée, les données sont sauvegardées en session sans être insérées en base.</ListItem>
+                            <ListItem>Valeur par défaut : non cochée.</ListItem>
+                        </List>
+                    </ListItem>
+                </ol>
+
+                <p className="text-gray-700 font-semibold mt-6 mb-3">
+                    Lorsqu'un utilisateur soumet le formulaire :
+                </p>
+
+                <List>
+                    <ListItem>Vérifiez que tous les champs sont remplis et respectent les contraintes définies ci-dessus.</ListItem>
+                    <ListItem>Si le formulaire est valide redirigez vers <Code>index.php</Code>.</ListItem>
+                    <ListItem>Si le formulaire contient des erreurs, réaffichez-le avec les valeurs saisies et les messages d'erreur associés pour chaque champ incorrect.</ListItem>
                 </List>
             </section>
 
-            <section>
-                <Heading level={2}>B- Sauvegarde en Base de Données</Heading>
-                <DiagramCard chart={chart} header={"Diagramme de classes"}/>
+            {/* Partie B */}
+            <section className="pt-6">
+                <Heading level={2}>B - Sauvegarde en Base de Données</Heading>
+                <DiagramCard chart={chart} header="Diagramme de classes"/>
+                <Text className="mt-4">
+                    Après avoir configuré la base de données en modifiant le fichier <Code>config/config.php</Code> et exécuté le script :</Text>
 
-                <Text className="mt-2">
-                    Après avoir configuré la base de données en modifiant le fichier <Code>config/config.php</Code>
-                    et exécuté le script <Code>db/init.sql</Code>, vous devez implémenter la logique permettant :
+                <CodeCard language="sql" filename={"init.sql"} collapsible>
+                    {`-- Suppression des tables si elles existent
+DROP TABLE IF EXISTS matiere CASCADE;
+DROP TABLE IF EXISTS responsable CASCADE;
+
+-- Création de la table responsable
+CREATE TABLE responsable (
+                             id SERIAL PRIMARY KEY,
+                             nom VARCHAR(50) NOT NULL,
+                             prenom VARCHAR(50) NOT NULL,
+                             email VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- Création de la table matiere
+CREATE TABLE matiere (
+                         id SERIAL PRIMARY KEY,
+                         code VARCHAR(6) NOT NULL UNIQUE,
+                         nom VARCHAR(100) NOT NULL,
+                         heures_td INTEGER NOT NULL DEFAULT 0,
+                         heures_tp INTEGER NOT NULL DEFAULT 0,
+                         responsable_id INTEGER NOT NULL,
+                         semestre INTEGER NOT NULL CHECK (semestre BETWEEN 1 AND 6),
+                         CONSTRAINT fk_responsable FOREIGN KEY (responsable_id)
+                             REFERENCES responsable(id)
+                             ON DELETE RESTRICT
+                             ON UPDATE CASCADE
+);
+
+-- Insertion de responsables de test
+INSERT INTO responsable (nom, prenom, email) VALUES
+('DUPONT', 'Jean', 'jean.dupont@univ-lehavre.fr'),
+('MARTIN', 'Sophie', 'sophie.martin@univ-lehavre.fr'),
+('BERNARD', 'Lucas', 'lucas.bernard@univ-lehavre.fr'),
+('PETIT', 'Marie', 'marie.petit@univ-lehavre.fr'),
+('DURAND', 'Pierre', 'pierre.durand@univ-lehavre.fr'),
+('LAMBERT', 'Claire', 'claire.lambert@univ-lehavre.fr'),
+('ROUSSEAU', 'Marc', 'marc.rousseau@univ-lehavre.fr'),
+('MOREAU', 'Anne', 'anne.moreau@univ-lehavre.fr');
+
+-- Insertion de matières du BUT Informatique (Semestres 1 à 6)
+INSERT INTO matiere (code, nom, heures_td, heures_tp, responsable_id, semestre) VALUES
+-- Semestre 1
+('R1.01', 'Initiation au développement',  10, 20, 1, 1),
+('R1.02', 'Développement interfaces Web', 15, 20, 2, 1),
+('R1.03', 'Introduction Architecture',  10, 10, 3, 1),
+('R1.04', 'Introduction Système', 10, 15, 3, 1),
+('R1.05', 'Introduction Base de données',  15, 15, 4, 1),
+('R1.06', 'Mathématiques discrètes', 15, 0, 5, 1),
+('R1.07', 'Outils mathématiques fondamentaux', 15, 0, 5, 1),
+('R1.08', 'Gestion de projet et des organisations', 10, 0, 6, 1),
+('R1.09', 'Économie durable et numérique', 10, 0, 7, 1),
+('R1.10', 'Anglais Technique', 20, 0, 8, 1),
+('R1.11', 'Bases de la communication',  15, 0, 8, 1),
+('R1.12', 'Projet Professionnel et Personnel', 15, 0, 6, 1),
+('P1.01', 'Portfolio', 0,  20, 6, 1),
+
+-- Semestre 2
+('R2.01', 'Développement orienté objets', 10, 25, 1, 2),
+('R2.02', 'Développement d''applications avec IHM', 10, 20, 2, 2),
+('R2.03', 'Qualité de développement', 15, 15, 1, 2),
+('R2.04', 'Communication et fonctionnement bas niveau', 10, 10, 3, 2),
+('R2.05', 'Introduction aux services réseaux',  10, 15, 3, 2),
+('R2.06', 'Exploitation d''une base de données',  15, 15, 4, 2),
+('R2.07', 'Graphes',  15, 0, 5, 2),
+('R2.08', 'Outils numériques pour les statistiques', 10, 10, 5, 2),
+('R2.09', 'Méthodes Numériques',  15, 0, 5, 2),
+('R2.10', 'Gestion de projet et des organisations',  15, 0, 6, 2),
+('R2.11', 'Droit',  10, 0, 7, 2),
+('R2.12', 'Anglais d''entreprise',  20, 0, 8, 2),
+('R2.13', 'Communication Technique', 15, 0, 8, 2),
+('R2.14', 'Projet Professionnel et Personnel', 15, 0, 6, 2),
+('P2.01', 'Portfolio',  0, 20, 6, 2),
+
+-- Semestre 3
+('R3.01', 'Développement WEB',  10, 25, 2, 3),
+('R3.02', 'Développement Efficace',  10, 20, 1, 3),
+('R3.03', 'Analyse',  15, 0, 5, 3),
+('R3.04', 'Qualité de développement 3', 10, 15, 1, 3),
+('R3.05', 'Programmation Système',  10, 15, 3, 3),
+('R3.06', 'Architecture des réseaux', 10, 10, 3, 3),
+('R3.07', 'SQL dans un langage de programmation', 10, 15, 4, 3),
+('R3.08', 'Probabilités',  15, 0, 5, 3),
+('R3.09', 'Cryptographie et sécurité',  10, 10, 3, 3),
+('R3.10', 'Management des systèmes d''information',  10, 0, 6, 3),
+('R3.11', 'Droits des contrats et du numérique',  10, 0, 7, 3),
+('R3.12', 'Anglais 3', 20, 0, 8, 3),
+('R3.13', 'Communication professionnelle', 15, 0, 8, 3),
+('R3.14', 'PPP 3', 15, 0, 6, 3),
+('P3.01', 'Portfolio', 0, 20, 6, 3),
+
+-- Semestre 4
+('R4.01', 'Architecture logicielle', 10, 20, 1, 4),
+('R4.02', 'Qualité de développement 4', 10, 15, 1, 4),
+('R4.03', 'Qualité et au delà du relationnel', 10, 15, 4, 4),
+('R4.04', 'Méthodes d''optimisation', 15, 0, 5, 4),
+('R4.05', 'Anglais 4', 0, 0, 8, 4),
+('R4.06', 'Communication interne',15, 0, 8, 4),
+('R4.07', 'PPP 4',  15, 0, 6, 4),
+('R4.08', 'Virtualisation',  10, 20, 3, 4),
+('R4.09', 'Management avancé des SI', 10, 0, 6, 4),
+('R4.10', 'Complément web',  10, 20, 2, 4),
+('R4.11', 'Développement mobile', 10, 25, 2, 4),
+('R4.12', 'Automates', 15, 0, 5, 4),
+('S4.ST', 'Stages',  0, 0, 6, 4),
+('P4.01', 'Portfolio', 0, 20, 6, 4),
+
+-- Semestre 5
+('R5.01', 'Initiation au management équipe projet',  10, 0, 6, 5),
+('R5.02', 'Projet Personnel et Professionnel',  15, 0, 6, 5),
+('R5.03', 'Politique de communication',  15, 0, 8, 5),
+('R5.04', 'Qualité algorithmique',  15, 15, 1, 5),
+('R5.05', 'Programmation avancée',  10, 25, 1, 5),
+('R5.06', 'Programmation multimédia',  10, 20, 2, 5),
+('R5.07', 'Automatisation chaîne de production', 10, 20, 3, 5),
+('R5.08', 'Qualité de développement', 10, 15, 1, 5),
+('R5.09', 'Virtualisation avancée',  10, 20, 3, 5),
+('R5.10', 'Nouveaux paradigmes BDD',  10, 15, 4, 5),
+('R5.11', 'Optimisation pour aide à la décision', 15, 0, 5, 5),
+('R5.12', 'Modélisations mathématiques',  15, 0, 5, 5),
+('R5.13', 'Économie durable et numérique',10, 0, 7, 5),
+('R5.14', 'Anglais',  20, 0, 8, 5),
+
+-- Semestre 6
+('R6.01', 'Initiation à l''entrepreneuriat',  10, 0, 7, 6),
+('R6.02', 'Droit numérique propriété intellectuelle',  10, 0, 7, 6),
+('R6.03', 'Communication diffusion information',  15, 0, 8, 6),
+('R6.04', 'Projet Personnel et Professionnel',  15, 0, 6, 6),
+('R6.05', 'Développement avancé',  10, 25, 1, 6),
+('R6.06', 'Maintenance applicative',  10, 20, 1, 6),
+('S6.ST', 'Stage',  0, 0, 6, 6);`}
+                </CodeCard>
+
+                <Text className="mt-4">Vous devez implémenter la logique permettant d'enregistrer les nouvelles matières créées via le formulaire de la partie A dans la base de données.</Text>
+
+                <Text className="mt-4">
+                    Dans le dossier <Code>app/entites</Code>, Créez la classe <Code>Matiere.php</Code> avec les propriétés suivantes :
                 </Text>
 
-                <List className="list-disc list-inside ml-6 mt-2 space-y-1">
-                    <ListItem>d’afficher la liste des cartes existantes,</ListItem>
-                    <ListItem>d’enregistrer les nouvelles cartes créées via le formulaire de la partie A dans la base de données.</ListItem>
+                <List>
+                    <ListItem><Code>id</Code> (int) : identifiant unique de la matière.</ListItem>
+                    <ListItem><Code>code</Code> (string) : code unique de la matière.</ListItem>
+                    <ListItem><Code>nom</Code> (string) : nom de la matière.</ListItem>
+                    <ListItem><Code>heuresTD</Code> (int) : nombre d'heures de travaux dirigés.</ListItem>
+                    <ListItem><Code>heuresTP</Code> (int) : nombre d'heures de travaux pratiques.</ListItem>
+                    <ListItem><Code>responsable</Code> (Responsable) : objet représentant le responsable de la matière.</ListItem>
+                    <ListItem><Code>semestre</Code> (int) : numéro du semestre (1 à 6).</ListItem>
                 </List>
 
-                <Text className="mt-2">
-                    Dans le dossier <Code>app/entites</Code>, complétez la classe <Code>Card.php</Code> avec les propriétés suivantes :
+                <Text className="mt-4">
+                    Dans le dossier <Code>app/entites</Code>, Créez la classe <Code>Responsable.php</Code> avec les propriétés suivantes :
                 </Text>
 
-                <List className="list-disc list-inside ml-6 mt-2 space-y-1">
-                    <ListItem><Code>id</Code> (int) : identifiant unique de la carte.</ListItem>
-                    <ListItem><Code>text</Code> (string) : contenu textuel de la carte, limité à 200 caractères.</ListItem>
-                    <ListItem><Code>theme</Code> (<Code>Theme</Code>) : thème associé à la carte, représenté par un objet <Code>Theme</Code>.</ListItem>
-                    <ListItem><Code>type</Code> (string) : type de la carte, limité aux valeurs &quot;Question&quot; ou &quot;Réponse&quot;.</ListItem>
-                    <ListItem><Code>responseCount</Code> (int) : nombre de réponses associées à la carte.</ListItem>
+                <List>
+                    <ListItem><Code>id</Code> (?int) : identifiant unique du responsable.</ListItem>
+                    <ListItem><Code>nom</Code> (string) : nom de famille du responsable.</ListItem>
+                    <ListItem><Code>prenom</Code> (string) : prénom du responsable.</ListItem>
+                    <ListItem><Code>email</Code> (string) : adresse e-mail du responsable.</ListItem>
                 </List>
 
-                <Heading level={3} className="mt-4">Options dynamiques pour les thèmes :</Heading>
-                <Text className="mt-2">
-                    Après avoir complété la méthode <Code>ThemeRepository#findAll()</Code>, utilisez-la pour afficher dynamiquement les thèmes dans la liste déroulante du formulaire.
+                <Heading level={3}>Options dynamiques pour les responsables :</Heading>
+                <Text>
+                    Après avoir complété la méthode <Code>ResponsableRepository#findAll()</Code>, utilisez-la pour afficher dynamiquement les responsables dans la liste déroulante du formulaire.
                 </Text>
 
-                <Heading level={3} className="mt-4">Validation du formulaire :</Heading>
-                <Text className="mt-2">
-                    Lorsqu’un utilisateur soumet le formulaire :
+                <Heading level={3}>Validation du formulaire :</Heading>
+                <Text>
+                    Lorsqu'un utilisateur soumet le formulaire :
                 </Text>
 
-                <List className="list-disc list-inside ml-6 mt-2 space-y-1">
-                    <ListItem>Si toutes les données sont valides, insérez la nouvelle <Code>Card</Code> dans la base de données et redirigez vers <Code>index.php</Code>.</ListItem>
-                    <ListItem>En cas d’erreur, réaffichez le formulaire avec les valeurs saisies et les messages d’erreur correspondants pour permettre à l’utilisateur de corriger sa saisie.</ListItem>
+                <List>
+                    <ListItem>Créer une instance de la classe <Code>Matiere</Code> avec les données du formulaire</ListItem>
+                    <ListItem>Si toutes les données sont valides, insérez la nouvelle <Code>Matiere</Code> dans la base de données et redirigez vers <Code>index.php</Code>.</ListItem>
+                    <ListItem>En cas d'erreur, réaffichez le formulaire avec les valeurs saisies et les messages d'erreur correspondants pour permettre à l'utilisateur de corriger sa saisie.</ListItem>
                 </List>
             </section>
 
-            <section>
-                <Heading level={2}>C- Gestion de la Partie</Heading>
+            {/* Partie C */}
+            <section className="pt-6">
+                <Heading level={2}>C - Gestion des Brouillons en Session</Heading>
 
-                <Text className="mt-2">
-                    Dans cette dernière partie, vous devez implémenter la gestion d’une partie du jeu.
-                    Chaque partie comprendra plusieurs étapes principales :
+                <Text>
+                    Dans cette dernière partie, vous devez implémenter la gestion des brouillons pour permettre aux utilisateurs de sauvegarder temporairement leurs saisies.
                 </Text>
 
-                <List className="list-disc list-inside ml-6 mt-2 space-y-1">
-                    <ListItem>Initialisation de la partie avec quatre joueurs et trois cartes attribuées à chaque joueur.</ListItem>
-                    <ListItem>Gestion des cartes noires et des cartes des joueurs en utilisant des sessions PHP.</ListItem>
-                    <ListItem>Mise à jour des informations de la partie, comme l’état des joueurs et le suivi des cartes jouées.</ListItem>
-                </List>
+                <Heading level={4}>
+                    Fonctionnement attendu :
+                </Heading>
 
-                <Text className="mt-2">
-                    Après avoir réinitialisé la table <Code>card</Code> avec les données de la partie, vous devez :
-                </Text>
-
-                <List className="list-disc list-inside ml-6 mt-2 space-y-1">
-                    <ListItem>Modifier la méthode <Code>GameService#init()</Code> et <Code>GameService#finish()</Code> pour stocker dans la clé <Code>&quot;card&quot;</Code> le contenu de la carte noire : <Code>$questionCards-&gt;getText();</Code></ListItem>
-                    <ListItem>Modifier la méthode <Code>GameService#maJplayers()</Code> pour stocker dans la clé <Code>&quot;players&quot;</Code> un tableau contenant les instances de <Code>User</Code> créées.</ListItem>
-                </List>
-
-                <Text className="mt-2">
-                    Vous pourrez tester ces étapes via la page :{" "}
-                    <Link href="http://localhost:8000/init.php" className="text-teal-600 hover:underline" target="_blank">
-                        localhost:8000/init.php
-                    </Link>
-                </Text>
-
-                <Text className="mt-2">
-                    Ensuite, modifiez la méthode <Code>GameService#players()</Code> pour récupérer les <Code>User</Code> stockés en session sous la clé <Code>&quot;players&quot;</Code>.
-                </Text>
-
-                <Text className="mt-2">
-                    Les tests peuvent être réalisés via les pages :
-                </Text>
-
-                <List className="list-disc list-inside ml-6 mt-2 space-y-1">
+                <List ordered>
                     <ListItem>
-                        <Link href="http://localhost:8000/players.php" className="text-teal-600 hover:underline" target="_blank">
-                            localhost:8000/players.php
-                        </Link> – cette route sera appelée en API pour récupérer les joueurs.
+                        <strong>Sauvegarde du brouillon :</strong>
+                        <List>
+                            <ListItem>Lorsque l'utilisateur coche la case "brouillon" et soumet le formulaire valide, toutes les données doivent être stockées en session sous la clé <Code>$_SESSION['draft_matiere']</Code>.</ListItem>
+                            <ListItem>Stockez cet objet <code className="bg-gray-100 px-2 py-1 rounded text-sm">Matiere</code> en session sous la clé <code className="bg-gray-100 px-2 py-1 rounded text-sm">$_SESSION['draft_matiere']</code>.</ListItem>
+                        </List>
                     </ListItem>
+
                     <ListItem>
-                        <Link href="http://localhost:8000/cards.php" className="text-teal-600 hover:underline" target="_blank">
-                            localhost:8000/cards.php
-                        </Link> – cette route sera appelée en API pour récupérer les cartes.
+                        <strong>Chargement du brouillon :</strong>
+                        <List>
+                            <ListItem>Au chargement du formulaire, vérifiez si un brouillon existe en session.</ListItem>
+                            <ListItem>Si un brouillon existe, récupérez l'objet <code className="bg-gray-100 px-2 py-1 rounded text-sm">Matiere</code> et utilisez ses getters pour pré-remplir automatiquement tous les champs du formulaire.</ListItem>
+                        </List>
+                    </ListItem>
+
+                    <ListItem>
+                        <strong>Validation et suppression du brouillon :</strong>
+                        <List>
+                            <ListItem>Si l'utilisateur soumet le formulaire sans cocher "brouillon" et que les données sont valides, insérez la matière en base et supprimez le brouillon de la session.</ListItem>
+                        </List>
+                    </ListItem>
+
+                    <ListItem>
+                        <strong>Gestion des erreurs :</strong>
+                        <List>
+                            <ListItem>Si le formulaire contient des erreurs (même avec "brouillon" coché), ne sauvegardez PAS le brouillon et affichez les erreurs.</ListItem>
+                            <ListItem>L'utilisateur doit corriger les erreurs avant de pouvoir sauvegarder un brouillon.</ListItem>
+                        </List>
                     </ListItem>
                 </List>
 
-                <Alert className="mt-4">
-                    <AlertTitle>⚠️ Attention</AlertTitle>
-                    <AlertDescription>
-                        <Text>Si le navigateur affiche : <Code>Firefox a détecté que le serveur redirige la demande pour cette adresse d’une manière qui n’aboutira pas.</Code>,
-                        cela signifie que <Code>$_SESSION[&apos;players&apos;]</Code> est mal géré. Utilisez <Code>session_destroy()</Code> pour réinitialiser les sessions.
-                        </Text>
+                <Alert className="mt-6 border-yellow-300 bg-yellow-50">
+                    <AlertCircle className="h-5 w-5 text-yellow-600" />
+                    <AlertTitle className="text-yellow-900 font-semibold">⚠️ Attention</AlertTitle>
+                    <AlertDescription className="text-yellow-800">
+                        <p>
+                            Si vous rencontrez des problèmes de redirection infinie ou si les données en session ne se comportent pas comme prévu,
+                            vérifiez que vous utilisez correctement <Code>session_start()</Code> au début de chaque fichier PHP
+                            et que vous testez l'existence des clés avec <Code>isset()</Code> avant d'y accéder.
+                        </p>
                     </AlertDescription>
                 </Alert>
             </section>
 
-
-            <Text className="mt-6 text-lg font-semibold text-center">Bonne chance !</Text>
+            <p className="mt-8 text-xl font-semibold text-center text-gray-800 border-t pt-6">
+                Bonne chance ! 🎓
+            </p>
         </article>
     );
 }
