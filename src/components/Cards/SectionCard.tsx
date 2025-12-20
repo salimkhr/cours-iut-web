@@ -1,11 +1,10 @@
 'use client';
-import {useRouter} from "next/navigation";
 import {useTheme} from "next-themes";
 import Section from "@/types/Section";
 import Module from "@/types/module";
 import {Badge} from '@/components/ui/badge';
 import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
-import {BookOpen, CodeXml, FolderCode, Gitlab, GraduationCap} from "lucide-react";
+import {BookOpen, CodeXml, FolderCode, Gitlab, GraduationCap, Presentation} from "lucide-react";
 import {useEffect, useState} from "react";
 
 interface SectionCardProps {
@@ -14,7 +13,6 @@ interface SectionCardProps {
 }
 
 export default function SectionCard({ section, currentModule }: SectionCardProps) {
-    const router = useRouter();
     const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
@@ -46,37 +44,45 @@ export default function SectionCard({ section, currentModule }: SectionCardProps
             </div>
         </>
     );
-
+    const order = ['cours', 'TP', 'slide', 'projet', 'examen'];
     const footer = (
-        <div className="flex flex-row gap-2 justify-center w-full">
-            {section.contents.sort((a, b) => a.localeCompare(b)).map((item, index) => (
+    <div className="flex flex-row gap-2 justify-center w-full">
+        {section.contents
+            .sort((a, b) => order.indexOf(a) - order.indexOf(b))
+            .map((item, index) => (
                 <ActionButton
                     key={index}
                     currentModule={currentModule}
-                    className="w-1/3"
+                    className={`w-1/${section.contents.length + 2}`}
                     href={`/${currentModule.path}/${section.path}/${item}`}
                     disabled={!section.isAvailable}
                 >
-                    <span className="hidden md:inline">{item.charAt(0).toUpperCase() + item.slice(1)}</span>
+                <span className="hidden md:inline">
+                    {item.charAt(0).toUpperCase() + item.slice(1)}
+                </span>
+
                     {item === 'cours' && <BookOpen />}
                     {item === 'TP' && <CodeXml />}
+                    {item === 'slide' && <Presentation />}
                     {item === 'projet' && <FolderCode />}
                     {item === 'examen' && <GraduationCap />}
                 </ActionButton>
             ))}
-            {section.hasCorrection && (
-                <ActionButton
-                    currentModule={currentModule}
-                    className="w-1/3"
-                    href={`https://gitlab.com/iut3334332/${currentModule.path}/${section.path}`}
-                    target="_blank"
-                    disabled={!section.correctionIsAvailable}
-                >
-                    <span className="hidden md:inline">Correction</span> <Gitlab />
-                </ActionButton>
-            )}
-        </div>
-    );
+
+        {section.hasCorrection && (
+            <ActionButton
+                currentModule={currentModule}
+                className="w-1/3"
+                href={`https://gitlab.com/iut3334332/${currentModule.path}/${section.path}`}
+                target="_blank"
+                disabled={!section.correctionIsAvailable}
+            >
+                <span className="hidden md:inline">Correction</span> <Gitlab />
+            </ActionButton>
+        )}
+    </div>
+
+);
 
     return (
         <BaseCard

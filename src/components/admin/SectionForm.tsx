@@ -112,7 +112,7 @@ export default function SectionForm({
         onOpenChange(false);
     };
 
-    const availableContents = ['cours', 'TP', 'projet', 'examen'];
+    const availableContents = ['cours', 'TP', 'slide', 'projet', 'examen'];
     const contents = watch('contents') || [];
 
     // Fonction pour toggle les contenus dans le tableau
@@ -174,7 +174,7 @@ export default function SectionForm({
 
                     <div>
                         <Label>Contenu</Label>
-                        <div className="grid grid-cols-4 gap-2 mt-2">
+                        <div className="grid grid-cols-5 gap-2 mt-2">
                             {availableContents.map((content) => (
                                 <label
                                     key={content}
