@@ -4,19 +4,31 @@ import {cn} from "@/lib/utils";
 import {SlidesProgress} from "./SlidesProgress";
 import {SlidesActions} from "./SlidesActions";
 import {SlidesContext} from "./SlidesContext";
+import {SlideTitle} from "./ui/SlideTitle";
+
+import Module from "@/types/module";
+import Section from "@/types/Section";
 
 interface SlidesScreenProps {
   children: React.ReactNode;
+  module?: Module;
+  section?: Section;
 }
 
-export const SlidesScreen: React.FC<SlidesScreenProps> = ({ children }) => {
+export const SlidesScreen: React.FC<SlidesScreenProps> = ({ children, module, section }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const [slideSteps, setSlideSteps] = useState<Record<number, number>>({});
   const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const slides = React.Children.toArray(children);
+  const slides = React.useMemo(() => {
+    const childrenArray = React.Children.toArray(children);
+    if (module && section) {
+      return [<SlideTitle key="title-slide" module={module} section={section} />, ...childrenArray];
+    }
+    return childrenArray;
+  }, [children, module, section]);
 
   const registerSteps = useCallback((slideIndex: number, steps: number) => {
     setSlideSteps(prev => {

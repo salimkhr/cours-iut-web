@@ -8,9 +8,24 @@ import {SlideList, SlideListItem} from "@/components/Slides/ui/SlideList";
 
 
 export default function Slide() {
+  const mockModule = {
+    title: "JavaScript",
+    path: "javascript",
+    iconName: "Braces",
+    description: "Apprendre les bases de JavaScript pour le web interactif",
+    sections: [],
+    associatedSae: []
+  } as any;
+
+  const mockSection = {
+    title: "Le DOM en JavaScript",
+    description: "Comprendre et manipuler le Document Object Model pour dynamiser vos pages web.",
+    tags: ["DOM", "Events", "Selectors", "Manipulation"],
+  } as any;
+
   return (
     <div className="w-full py-10">
-      <SlidesScreen>
+      <SlidesScreen module={mockModule} section={mockSection}>
         {/* Introduction */}
         <SlideScreen title="JavaScript - Introduction">
           <SlideText>
