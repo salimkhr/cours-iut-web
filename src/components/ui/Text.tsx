@@ -9,7 +9,7 @@ interface TextProps extends React.HTMLAttributes<HTMLParagraphElement> {
     as?: "p" | "span" | "div";
 }
 
-export function Text({
+export default function Text({
                          className = "",
                          variant = "default",
                          as: Component = "p",

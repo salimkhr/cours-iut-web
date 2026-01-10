@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import mermaid from "mermaid";
 import BaseCard from "@/components/Cards/BaseCard";
 import {useTheme} from "next-themes";
-import {Text} from "@/components/ui/Text"; // ou ton hook useTheme
+import Text from "@/components/ui/Text";
 
 type DiagramCardProps = {
     header?: string;

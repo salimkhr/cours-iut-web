@@ -1,5 +1,5 @@
 import CodeCard from "@/components/Cards/CodeCard";
-import {Text} from "@/components/ui/Text"
+import Text from "@/components/ui/Text"
 import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
 import Heading from "@/components/ui/Heading";
@@ -7,7 +7,8 @@ import Heading from "@/components/ui/Heading";
 export default function Cours() {
     return (
         <article>
-            <Text>
+            <section>
+                <Text>
                 JavaScript est un langage de programmation utilisé pour rendre les pages
                 web interactives. C&apos;est l&apos;un des trois piliers du développement web :
             </Text>
@@ -17,7 +18,10 @@ export default function Cours() {
                 <ListItem><strong>JavaScript</strong> : interactions et logique</ListItem>
             </List>
 
-            <Heading level={2}>A- Introduction au JavaScript</Heading>
+            </section>
+
+            <section>
+<Heading level={2}>A- Introduction au JavaScript</Heading>
 
             <Heading level={3}>1. Inclure JavaScript dans un fichier HTML</Heading>
 
@@ -47,7 +51,10 @@ export default function Cours() {
 </html>`}
             </CodeCard>
 
-            <Heading level={2}>B- Les variables et types de données</Heading>
+            </section>
+
+            <section>
+<Heading level={2}>B- Les variables et types de données</Heading>
 
             <Heading level={3}>1. Les variables en JavaScript</Heading>
 
@@ -121,7 +128,10 @@ const personne = {
 };`}
             </CodeCard>
 
-            <Heading level={2}>C- Opérateurs et conditions</Heading>
+            </section>
+
+            <section>
+<Heading level={2}>C- Opérateurs et conditions</Heading>
 
             <Heading level={3}>1. Opérateurs de comparaison</Heading>
             <Text>
@@ -268,7 +278,10 @@ const statut = age >= 18 ? "majeur" : "mineur";
 console.log(statut); // "majeur"`}
             </CodeCard>
 
-            <Heading level={2}>D- Parcourir et manipuler des tableaux</Heading>
+            </section>
+
+            <section>
+<Heading level={2}>D- Parcourir et manipuler des tableaux</Heading>
 
             <Text>
                 Les tableaux sont des structures de données fondamentales en JavaScript.
@@ -474,7 +487,10 @@ console.log(totalAge); // 55`}
             </CodeCard>
 
 
-            <Heading level={2}>E- Les fonctions</Heading>
+            </section>
+
+            <section>
+<Heading level={2}>E- Les fonctions</Heading>
 
             <Text>
                 Les fonctions sont des blocs de code réutilisables qui effectuent une tâche spécifique.
@@ -586,7 +602,10 @@ function multiplier(a, b) {
                 <ListItem>Les paramètres de fonction sont des variables locales.</ListItem>
             </List>
 
-            <Heading level={2}>F- Template literals (chaînes de caractères)</Heading>
+            </section>
+
+            <section>
+<Heading level={2}>F- Template literals (chaînes de caractères)</Heading>
 
             <Text>
                 Les template literals (ou littéraux de gabarit) permettent de créer des chaînes de caractères
@@ -643,7 +662,7 @@ console.log(texte2);`}
             <Heading level={3}>3. Utilisation avec le DOM</Heading>
 
             <CodeCard language="javascript">
-                {`// Créer du HTML dynamique
+                {`// Créer du HTML dynamique 
 const utilisateur = {
   nom: "Dupont",
   prenom: "Marie",
@@ -669,7 +688,10 @@ element.textContent = \`Bienvenue \${utilisateur.prenom} !\`;`}
                 de manière lisible et maintenable.
             </Text>
 
-            <Heading level={2}>G- Afficher des messages</Heading>
+            </section>
+
+            <section>
+<Heading level={2}>G- Afficher des messages</Heading>
 
             <Text>
                 La fonction <code>console.log()</code> permet d&apos;afficher des messages dans la console du
@@ -683,7 +705,10 @@ console.error("/!\\\\ Une erreur est survenue /!\\\\");
 console.table(fruits)`}
             </CodeCard>
 
-            <Heading level={2}>H- Le DOM</Heading>
+            </section>
+
+            <section>
+<Heading level={2}>H- Le DOM</Heading>
 
             <Text>
                 Le DOM (Document Object Model) est une interface de programmation qui permet de manipuler dynamiquement
@@ -842,6 +867,7 @@ element.remove(); // Supprime l'élément sélectionné du DOM`}
                     du
                     navigateur.</ListItem>
             </List>
+            </section>
         </article>
     );
 }
