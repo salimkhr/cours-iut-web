@@ -9,7 +9,7 @@ import {Button} from "@/components/ui/button";
 import Module from "@/types/module";
 import {useTheme} from "next-themes";
 
-interface CodeCardProps {
+export interface CodeCardProps {
     language: string;
     children: string;
     className?: string;
@@ -17,6 +17,7 @@ interface CodeCardProps {
     filename?: string;
     currentModule?: Module;
     collapsible?: boolean;
+    highlightLines?: string; // Nouvelle prop pour la mise en avant
 }
 
 export default function CodeCard({
@@ -26,6 +27,7 @@ export default function CodeCard({
                                      filename,
                                      currentModule,
                                      collapsible = false,
+                                     highlightLines,
                                  }: CodeCardProps) {
     const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
@@ -122,8 +124,24 @@ export default function CodeCard({
         </div>
     );
 
+    const parseHighlightLines = (highlightString: string) => {
+        const ranges = highlightString.split(',').map(r => r.trim());
+        const highlighted: number[] = [];
+        ranges.forEach(range => {
+            if (range.includes('-')) {
+                const [start, end] = range.split('-').map(Number);
+                for (let i = start; i <= end; i++) highlighted.push(i);
+            } else {
+                highlighted.push(Number(range));
+            }
+        });
+        return highlighted;
+    };
+
+    const highlightedLines = highlightLines ? parseHighlightLines(highlightLines) : [];
+
     const content = (
-        <div className="w-full h-full overflow-hidden">
+        <div className="w-full h-full overflow-visible">
             {collapsible && isLongFile && !isExpanded ? (
                 <div className="p-8 text-center text-gray-500">
                     <p className="text-sm">Code masqué ({lineCount} lignes)</p>
@@ -137,8 +155,21 @@ export default function CodeCard({
                         margin: 0,
                         fontSize: '0.875rem',
                         lineHeight: '1.25rem',
-                        height: '100%',
+                        height: 'auto',
                         borderRadius: '0',
+                    }}
+                    wrapLines={true}
+                    lineProps={(lineNumber) => {
+                        const style: React.CSSProperties = { display: 'block', width: '100%' };
+                        const isHighlighted = highlightedLines.includes(lineNumber);
+                        
+                        if (highlightedLines.length > 0) {
+                            if (!isHighlighted) {
+                                style.opacity = 0.5;
+                                style.filter = 'grayscale(0.5)';
+                            }
+                        }
+                        return { style };
                     }}
                     wrapLongLines
                     showLineNumbers={showLineNumbers}
