@@ -2,7 +2,7 @@ import React from 'react';
 import {Alert, AlertDescription, AlertTitle} from '@/components/ui/alert';
 import {AlertCircle, Award, Calculator, Clock, Settings} from 'lucide-react';
 import Heading from "@/components/ui/Heading";
-import {Text} from "@/components/ui/Text";
+import Text from "@/components/ui/Text";
 import Code from "@/components/ui/Code";
 import {List, ListItem} from "@/components/ui/List";
 import DiagramCard from "@/components/Cards/DiagramCard";

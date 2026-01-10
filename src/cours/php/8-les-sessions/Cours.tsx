@@ -1,5 +1,5 @@
 import Heading from "@/components/ui/Heading";
-import {Text} from "@/components/ui/Text"
+import Text from "@/components/ui/Text"
 import Code from "@/components/ui/Code";
 import CodeCard from "@/components/Cards/CodeCard";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";

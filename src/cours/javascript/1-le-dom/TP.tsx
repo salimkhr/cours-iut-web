@@ -167,7 +167,7 @@ export default function TP() {
                     Dans un fichier <Code>~/public_html/TP1/debug.html</Code>, écrire une page contenant dans des
                     balises script :
                 </Text>
-                <CodeCard language="javascript">
+                <CodeCard language="javascript" filename={"debug.html"}>
                     {`const lastname = 'Medical';             // Chaîne de caractères
 const firstname = ['Anne','Lyse'];          // Tableau de chaîne de caractères
 const age = 25;                             // Entier

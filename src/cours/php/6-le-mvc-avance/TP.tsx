@@ -1,6 +1,6 @@
 import Heading from "@/components/ui/Heading";
 import Code from "@/components/ui/Code";
-import {Text} from "@/components/ui/Text";
+import Text from "@/components/ui/Text";
 import CodeCard from "@/components/Cards/CodeCard";
 import {List, ListItem} from "@/components/ui/List";
 import Link from "next/link";

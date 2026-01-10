@@ -1,4 +1,4 @@
-import {Text} from "@/components/ui/Text";
+import Text from "@/components/ui/Text";
 import {List, ListItem} from "@/components/ui/List";
 import Heading from "@/components/ui/Heading";
 import CodeCard from "@/components/Cards/CodeCard";

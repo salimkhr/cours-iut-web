@@ -1,7 +1,7 @@
 import Heading from "@/components/ui/Heading";
 import CodeCard from "@/components/Cards/CodeCard";
 import Code from "@/components/ui/Code";
-import {Text} from "@/components/ui/Text";
+import Text from "@/components/ui/Text";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import DiagramCard from "@/components/Cards/DiagramCard";
 

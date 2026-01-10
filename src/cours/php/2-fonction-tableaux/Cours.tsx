@@ -1,7 +1,7 @@
 import Heading from "@/components/ui/Heading";
 import {List, ListItem} from "@/components/ui/List";
 import CodeCard from "@/components/Cards/CodeCard";
-import {Text} from "@/components/ui/Text";
+import Text from "@/components/ui/Text";
 import Code from "@/components/ui/Code";
 
 export default function Cours() {
