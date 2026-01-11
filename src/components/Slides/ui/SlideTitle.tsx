@@ -24,16 +24,18 @@ export const SlideTitle: React.FC<SlideTitleProps> = ({ module, section }) => {
 
     useEffect(() => {
         setMounted(true);
-        const root = getComputedStyle(document.documentElement);
+        // Only run window-dependent code if mounted
+        if (typeof window !== 'undefined') {
+            const root = getComputedStyle(document.documentElement);
+            const variableName = `--color-${module.path}`;
+            const value = root.getPropertyValue(variableName).trim();
 
-        const variableName = `--color-${module.path}`;
-        const value = root.getPropertyValue(variableName).trim();
-
-        if (value) {
-            if (value.startsWith('#') || value.startsWith('rgb') || value.startsWith('hsl')) {
-                setColor(value);
-            } else {
-                setColor(`hsl(${value})`);
+            if (value) {
+                if (value.startsWith('#') || value.startsWith('rgb') || value.startsWith('hsl')) {
+                    setColor(value);
+                } else {
+                    setColor(`hsl(${value})`);
+                }
             }
         }
     }, [module.path]);

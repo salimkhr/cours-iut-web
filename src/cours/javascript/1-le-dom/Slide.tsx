@@ -5,7 +5,7 @@ import {SlideScreen} from "@/components/Slides/SlideScreen";
 import {SlideText} from "@/components/Slides/ui/SlideText";
 import {SlideCode} from "@/components/Slides/ui/SlideCode";
 import {SlideList, SlideListItem} from "@/components/Slides/ui/SlideList";
-
+import {SlideNote} from "@/components/Slides/ui/SlideNote";
 
 export default function Slide() {
   const mockModule = {
@@ -28,6 +28,11 @@ export default function Slide() {
       <SlidesScreen module={mockModule} section={mockSection}>
         {/* Introduction */}
         <SlideScreen title="JavaScript - Introduction">
+          <SlideNote>
+            {`-Bienvenue dans le cours JavaScript !
+              - Rappeler que JS est indispensable aujourd'hui.
+              - Expliquer la différence entre structure (HTML), style (CSS) et comportement (JS).`}
+          </SlideNote>
           <SlideText>
             JavaScript est un langage de programmation utilisé pour rendre les pages web interactives. C'est l'un des trois piliers du développement web :
           </SlideText>
@@ -60,6 +65,11 @@ export default function Slide() {
 
         {/* B - Variables et types */}
         <SlideScreen title="B.1 - Les variables en JavaScript">
+          <SlideNote>
+            - Expliquer que `const` est la règle par défaut.
+            - `let` seulement si on change la valeur.
+            - Mentionner que `var` pose des problèmes de portée (scope) et de remontée (hoisting).
+          </SlideNote>
           <SlideText>
             Trois mots-clés pour déclarer des variables :
           </SlideText>
@@ -482,6 +492,11 @@ console.table(fruits);`}
         </SlideScreen>
 
         <SlideScreen title="H.1 - Sélectionner des éléments">
+          <SlideNote>
+            - `getElementById` est le plus rapide.
+            - `querySelector` est le plus polyvalent car il utilise la syntaxe CSS.
+            - Rappeler que `querySelectorAll` retourne une NodeList (similaire à un tableau mais pas identique).
+          </SlideNote>
           <SlideText>
             Méthodes pour sélectionner des éléments :
           </SlideText>
