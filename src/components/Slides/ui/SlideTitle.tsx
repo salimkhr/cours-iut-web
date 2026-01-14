@@ -68,7 +68,7 @@ export const SlideTitle: React.FC<SlideTitleProps> = ({ module, section }) => {
                 <div className="space-y-6 text-center max-w-5xl">
                     <GlitchText>
                         <SlideHeading level={2}>
-                            {section.order}/ {section.title}
+                            {section.order ?? 1 }/ {section.title}
                         </SlideHeading>
                     </GlitchText>
 
