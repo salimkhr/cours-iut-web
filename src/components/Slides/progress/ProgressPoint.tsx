@@ -11,23 +11,16 @@ export const ProgressPoint = forwardRef<HTMLDivElement, ProgressPointProps>(({ i
     <div
         ref={ref}
         className={cn(
-            "relative w-2 h-2 rounded-full transition-all duration-300",
+            "relative w-1.5 h-1.5 rounded-full",
             isActive
                 ? cn(
-                    "scale-150 shadow-[0_0_8px_rgba(var(--primary),0.8)] z-10",
+                    "scale-125",
                     isDark ? "bg-gray-100" : "bg-gray-900"
                 )
                 : isPast
-                    ? "bg-primary/60"
-                    : "bg-muted-foreground/30"
+                    ? "bg-primary/50"
+                    : "bg-muted-foreground/25"
         )}
-    >
-        {isActive && (
-            <span className={cn(
-                "absolute inset-0 rounded-full animate-ping opacity-75",
-                isDark ? "bg-gray-100" : "bg-gray-900"
-            )} />
-        )}
-    </div>
+    />
 ));
 ProgressPoint.displayName = "ProgressPoint";

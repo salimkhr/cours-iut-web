@@ -301,8 +301,8 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({ children, module, se
 
             {/* Contenu de la slide */}
             <div className={cn(
-              "w-full h-full flex items-center justify-center transition-all duration-300 pr-12",
-              isFullscreen ? "p-10 md:p-16 lg:p-20 lg:pr-32" : ""
+              "w-full h-full flex items-center justify-center transition-all duration-300",
+              isFullscreen ? "p-5" : ""
             )}>
               {slides[currentSlide] || <div className="p-8 text-center">Slide non trouvée.</div>}
             </div>

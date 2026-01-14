@@ -154,7 +154,7 @@ console.log(!hasPermission);              // false`}
           <SlideText>
             Exécuter du code selon une condition :
           </SlideText>
-          <SlideCode language="javascript">
+          <SlideCode language="javascript" highlight="1-6 | 9-14">
             {`const age = 20;
 
 // if simple
@@ -176,7 +176,7 @@ if (temperature > 25) {
           <SlideText>
             Comparer une même valeur à plusieurs cas :
           </SlideText>
-          <SlideCode language="javascript">
+          <SlideCode language="javascript" highlight={"1-3 | 4-9"}>
             {`const day = 3;
 
 switch (day) {
@@ -583,18 +583,7 @@ document.body.insertBefore(newElement, referenceElement);`}
 element.remove();`}
           </SlideCode>
         </SlideScreen>
-
-        <SlideScreen title="Récapitulatif">
-          <SlideList>
-            <SlideListItem>Variables : const, let</SlideListItem>
-            <SlideListItem>Opérateurs : ===, !==, &&, ||, !</SlideListItem>
-            <SlideListItem>Conditions : if/else, switch, ternaire</SlideListItem>
-            <SlideListItem>Tableaux : map, filter, reduce</SlideListItem>
-            <SlideListItem>Fonctions : classiques et fléchées</SlideListItem>
-            <SlideListItem>Template literals : interpolation avec backticks</SlideListItem>
-            <SlideListItem>DOM : sélectionner, manipuler, ajouter, supprimer</SlideListItem>
-          </SlideList>
-        </SlideScreen>
+        
       </SlidesScreen>
     </div>
   );

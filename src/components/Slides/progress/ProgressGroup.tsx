@@ -13,19 +13,19 @@ interface ProgressGroupProps {
 }
 
 export const ProgressGroup: React.FC<ProgressGroupProps> = ({
-                                                         isCurrentSlide,
-                                                         steps,
-                                                         sIdx,
-                                                         currentSlide,
-                                                         currentStep,
-                                                         isDark,
-                                                         activeRef
-                                                     }) => (
+                                                                isCurrentSlide,
+                                                                steps,
+                                                                sIdx,
+                                                                currentSlide,
+                                                                currentStep,
+                                                                isDark,
+                                                                activeRef
+                                                            }) => (
     <div
         className={cn(
-            "flex flex-col items-center gap-1.5 p-1.5 rounded-full border transition-colors duration-300",
+            "flex flex-col items-center gap-1 p-0.5 rounded-full border",
             isCurrentSlide
-                ? "border-primary/40 bg-primary/5"
+                ? "border-primary/30 bg-primary/5"
                 : "border-transparent"
         )}
     >
