@@ -500,40 +500,75 @@ console.table(fruits);`}
           <SlideText>
             Méthodes pour sélectionner des éléments :
           </SlideText>
-          <SlideCode language="javascript" highlight="1-2 | 4-5 | 7-8 | 10-11 | 13-14">
-            {`// Par ID (unique)
-const element = document.getElementById("monId");
+
+          <div className="grid grid-cols-2 gap-6">
+            <SlideCode language="html" highlight="1-6">
+              {`<!-- HTML de base -->
+<h1 id="titre">Bienvenue</h1>
+<p class="texte">Premier paragraphe</p>
+<p class="texte">Deuxième paragraphe</p>
+<div>Un div</div>
+<div>Un autre div</div>`}
+            </SlideCode>
+
+            <SlideCode language="javascript" highlight="1-2 | 4-6 | 8-10 | 12-14 | 17-18">
+              {`// Par ID (unique)
+const titre = document.getElementById("titre");
 
 // Par classe (plusieurs)
-const elements = document.getElementsByClassName("maClasse");
+const paragraphes = 
+document.getElementsByClassName("texte");
 
 // Par tag (plusieurs)
-const divs = document.getElementsByTagName("div");
+const divs = 
+document.getElementsByTagName("div");
 
 // Premier élément CSS
-const firstElement = document.querySelector(".maClasse");
+const firstParagraphe = 
+document.querySelector(".texte");
 
 // Tous les éléments CSS
-const allElements = document.querySelectorAll(".maClasse");`}
-          </SlideCode>
+const allParagraphes = 
+document.querySelectorAll(".texte");`}
+            </SlideCode>
+          </div>
         </SlideScreen>
 
         <SlideScreen title="H.2 - Manipuler le contenu">
           <SlideText>
             Modifier le contenu et les attributs :
           </SlideText>
-          <SlideCode language="javascript" highlight="1-2 | 4-5 | 7-8 | 10-11">
+
+          <div className="grid grid-cols-2 gap-6 mb-6">
+            <SlideCode language="html" highlight="1-3">
+              {`<!-- HTML de départ -->
+<p id="message">Texte original</p>
+<input id="email" type="text">`}
+            </SlideCode>
+
+            <SlideCode language="html" highlight="1-3">
+              {`<!-- HTML après modifications -->
+<p id="message"><strong>Texte en gras</strong></p>
+<input id="email" type="text" required="true">`}
+            </SlideCode>
+          </div>
+
+          <SlideCode language="javascript" highlight="1-3 | 5-7 | 9-11 | 13-15">
             {`// Modifier le texte
-element.textContent = "Nouveau contenu";
+const message = document.getElementById("message");
+message.textContent = "Nouveau contenu";
 
 // Modifier le HTML
-element.innerHTML = "<strong>Texte en gras</strong>";
+const message = document.getElementById("message");
+message.innerHTML = "<strong>Texte en gras</strong>";
 
 // Modifier un attribut
-element.setAttribute("required", true);
+const email = document.getElementById("email");
+email.setAttribute("required", true);
 
 // Récupérer un attribut
-const valeur = element.getAttribute("required");`}
+const email = document.getElementById("email");
+const estRequis = email.getAttribute("required");`}
           </SlideCode>
         </SlideScreen>
 
@@ -541,15 +576,31 @@ const valeur = element.getAttribute("required");`}
           <SlideText>
             Modifier les styles et classes CSS :
           </SlideText>
-          <SlideCode language="javascript" highlight="1-3 | 5-8">
+
+          <div className="grid grid-cols-2 gap-6 mb-6">
+            <SlideCode language="html" highlight="1-2">
+              {`<!-- HTML de départ -->
+<div id="box" class="visible">Contenu</div>`}
+            </SlideCode>
+
+            <SlideCode language="html" highlight="1-3">
+              {`<!-- Résultat après manipulation -->
+<div id="box" class="highlight active" 
+     style="color: red; font-size: 20px;">Contenu</div>`}
+            </SlideCode>
+          </div>
+
+          <SlideCode language="javascript" highlight="1-4 | 6-10">
             {`// Ajouter du style en ligne
-element.style.color = "red";
-element.style.fontSize = "20px";
+const box = document.getElementById("box");
+box.style.color = "red";
+box.style.fontSize = "20px";
 
 // Manipuler les classes
-element.classList.add("nouvelleClasse");
-element.classList.remove("ancienneClasse");
-element.classList.toggle("active"); // Bascule`}
+const box = document.getElementById("box");
+box.classList.add("highlight");
+box.classList.remove("visible");
+box.classList.toggle("active"); // Bascule`}
           </SlideCode>
         </SlideScreen>
 
@@ -557,20 +608,45 @@ element.classList.toggle("active"); // Bascule`}
           <SlideText>
             Créer et ajouter des éléments dans le DOM :
           </SlideText>
-          <SlideCode language="javascript" highlight="1-6 | 8-9 | 11-13">
+
+          <div className="grid grid-cols-2 gap-6 mb-6">
+            <SlideCode language="html" highlight="1-4">
+              {`<!-- HTML de départ -->
+<div id="container">
+  <p id="premier">Premier paragraphe</p>
+</div>`}
+            </SlideCode>
+
+            <SlideCode language="html" highlight="1-5">
+              {`<!-- HTML après appendChild -->
+<div id="container">
+  <p id="premier">Premier paragraphe</p>
+  <p>Nouveau paragraphe</p>
+</div>`}
+            </SlideCode>
+          </div>
+
+          <SlideCode language="javascript" highlight="1-6 | 8-10 | 12-14 | 16-19">
             {`// Créer un nouvel élément
-const newElement = document.createElement("p");
-newElement.textContent = "Ceci est un paragraphe.";
+const nouveauP = document.createElement("p");
+nouveauP.textContent = "Nouveau paragraphe";
 
-// Ajouter à la fin
-document.body.appendChild(newElement);
+// Ajouter à la fin du container
+document.getElementById("container").appendChild(nouveauP);
 
-// Ajouter au début
-document.body.prepend(newElement);
+// Ajouter au début du container
+const container = document.getElementById("container");
+container.prepend(nouveauP);
 
 // Ajouter avant un élément existant
-const referenceElement = document.getElementById("someId");
-document.body.insertBefore(newElement, referenceElement);`}
+const premier = document.getElementById("premier");
+container.insertBefore(nouveauP, premier);
+
+// Créer un élément plus complexe
+const card = document.createElement("div");
+card.className = "card";
+card.innerHTML = "<h3>Titre</h3><p>Description</p>";
+document.body.appendChild(card);`}
           </SlideCode>
         </SlideScreen>
 
@@ -578,10 +654,65 @@ document.body.insertBefore(newElement, referenceElement);`}
           <SlideText>
             Supprimer des éléments du DOM :
           </SlideText>
-          <SlideCode language="javascript">
+
+          <div className="grid grid-cols-2 gap-6 mb-6">
+            <SlideCode language="html" highlight="1-5">
+              {`<!-- HTML de départ -->
+<div id="container">
+  <p id="aSupprimer">Ce paragraphe sera supprimé</p>
+  <p>Ce paragraphe reste</p>
+</div>`}
+            </SlideCode>
+
+            <SlideCode language="html" highlight="1-4">
+              {`<!-- HTML après suppression -->
+<div id="container">
+  <p>Ce paragraphe reste</p>
+</div>`}
+            </SlideCode>
+          </div>
+
+          <SlideCode language="javascript" highlight="1-3">
             {`// Supprimer un élément
+const element = document.getElementById("aSupprimer");
 element.remove();`}
           </SlideCode>
+        </SlideScreen>
+
+        <SlideScreen title="H.4 - Exemple pratique complet">
+          <SlideText>
+            Créer une liste de tâches dynamique :
+          </SlideText>
+
+          <div className="grid grid-cols-2 gap-6">
+            <SlideCode language="html" highlight="1-6">
+              {`<!-- HTML de départ -->
+<div id="app">
+  <input id="taskInput" type="text" 
+         placeholder="Nouvelle tâche">
+  <button id="addBtn">Ajouter</button>
+  <ul id="taskList"></ul>
+</div>`}
+            </SlideCode>
+
+            <SlideCode language="javascript">
+              {`const input = document.getElementById("taskInput");
+const btn = document.getElementById("addBtn");
+const list = document.getElementById("taskList");
+
+btn.addEventListener("click", () => {
+  // Créer un élément de liste
+  const li = document.createElement("li");
+  li.textContent = input.value;
+  
+  // Ajouter à la liste
+  list.appendChild(li);
+  
+  // Vider l'input
+  input.value = "";
+});`}
+            </SlideCode>
+          </div>
         </SlideScreen>
         
       </SlidesScreen>
