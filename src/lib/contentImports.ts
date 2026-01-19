@@ -46,6 +46,11 @@ export const contentImports: ContentImportsType = {
       'Slide': () => import('@/cours/javascript/1-le-dom/Slide'),
       'TP': () => import('@/cours/javascript/1-le-dom/TP'),
     },
+    '2-les-evenements': {
+      'Cours': () => import('@/cours/javascript/2-les-evenements/Cours'),
+      'Slide': () => import('@/cours/javascript/2-les-evenements/Slide'),
+      'TP': () => import('@/cours/javascript/2-les-evenements/TP'),
+    },
   },
   'php': {
     '1-introduction-au-php': {
