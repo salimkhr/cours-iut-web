@@ -14,11 +14,11 @@ interface CodeWithPreviewCardProps {
 }
 
 interface CodePanelProps {
-    children: string;
+    children?: string;
 }
 
 interface PreviewPanelProps {
-    children: React.ReactNode;
+    children?: React.ReactNode;
 }
 
 interface PanelProps {
@@ -40,7 +40,7 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
     let previewContent: ReactNode = null;
 
     const [copied, setCopied] = useState(false);
-    const { theme } = useTheme();
+    const {theme} = useTheme();
 
     useEffect(() => setMounted(true), []);
     const [mounted, setMounted] = useState(false);

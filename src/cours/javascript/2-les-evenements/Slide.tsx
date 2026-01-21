@@ -1,721 +1,554 @@
 'use client';
 import {SlidesScreen} from "@/components/Slides/SlidesScreen";
-import React from 'react';
+import React, {useState} from 'react';
 import {SlideScreen} from "@/components/Slides/SlideScreen";
 import {SlideText} from "@/components/Slides/ui/SlideText";
-import {SlideCode} from "@/components/Slides/ui/SlideCode";
 import {SlideList, SlideListItem} from "@/components/Slides/ui/SlideList";
+import {SlideCode} from "@/components/Slides/ui/SlideCode";
 import {SlideNote} from "@/components/Slides/ui/SlideNote";
+import {Button} from "@/components/ui/button";
 
 export default function Slide() {
-  const mockModule = {
-    title: "JavaScript",
-    path: "javascript",
-    iconName: "Braces",
-    description: "Apprendre les bases de JavaScript pour le web interactif",
-    sections: [],
-    associatedSae: []
-  } as any;
+    const mockModule = {
+        title: "JavaScript",
+        path: "javascript",
+        iconName: "Braces",
+        description: "Apprendre les bases de JavaScript pour le web interactif",
+        sections: [],
+        associatedSae: []
+    } as any;
 
-  const mockSection = {
-    title: "Le DOM en JavaScript",
-    description: "Comprendre et manipuler le Document Object Model pour dynamiser vos pages web.",
-    tags: ["DOM", "Events", "Selectors", "Manipulation"],
-  } as any;
+    const mockSection = {
+        title: "Les événements",
+        description: "Gestion des événements en JavaScript",
+        tags: ["Events", "JS", "addEventListener", "handlers", "interactions"],
+        order: 2
+    } as any;
 
-  return (
-    <div className="w-full py-10">
-      <SlidesScreen module={mockModule} section={mockSection}>
-        {/* Introduction */}
-        <SlideScreen title="JavaScript - Introduction">
-          <SlideNote>
-            {`-Bienvenue dans le cours JavaScript !
-              - Rappeler que JS est indispensable aujourd'hui.
-              - Expliquer la différence entre structure (HTML), style (CSS) et comportement (JS).`}
-          </SlideNote>
-          <SlideText>
-            JavaScript est un langage de programmation utilisé pour rendre les pages web interactives. C'est l'un des trois piliers du développement web :
-          </SlideText>
-          <SlideList>
-            <SlideListItem>HTML : structure du contenu</SlideListItem>
-            <SlideListItem>CSS : mise en forme</SlideListItem>
-            <SlideListItem>JavaScript : interactions et logique</SlideListItem>
-          </SlideList>
-        </SlideScreen>
+    return (
+        <div className="w-full py-10">
+            <SlidesScreen module={mockModule} section={mockSection}>
 
-        {/* A - Introduction au JavaScript */}
-        <SlideScreen title="A - Inclure JavaScript dans HTML">
-          <SlideText>
-            Deux méthodes pour inclure du JavaScript :
-          </SlideText>
-          <SlideList>
-            <SlideListItem>Directement dans la page HTML avec la balise &lt;script&gt;</SlideListItem>
-            <SlideListItem>Dans un fichier séparé (meilleure organisation)</SlideListItem>
-          </SlideList>
-          <SlideCode language="html">
-            {`<!-- JavaScript intégré -->
-<script>
-  console.log("Bonjour depuis le script intégré !");
-</script>
+                {/* Slide 1: Qu'est-ce qu'un événement ? */}
+                <SlideScreen title="Qu'est-ce qu'un événement ?">
+                    <SlideText>
+                        Un événement est une action ou une occurrence qui se produit dans le navigateur.
+                    </SlideText>
+                    <SlideList>
+                        <SlideListItem>Clic de souris</SlideListItem>
+                        <SlideListItem>Frappe au clavier</SlideListItem>
+                        <SlideListItem>Chargement d'une page</SlideListItem>
+                        <SlideListItem>Défilement d'un élément</SlideListItem>
+                    </SlideList>
+                    <SlideNote>
+                        {`Les événements permettent de rendre vos pages web interactives.
+JavaScript détecte ces événements et exécute du code en réponse.`}
+                    </SlideNote>
+                </SlideScreen>
 
-<!-- Fichier externe -->
-<script src="script.js"></script>`}
-          </SlideCode>
-        </SlideScreen>
+                {/* Slide 2: addEventListener */}
+                <SlideScreen title="Ajouter un écouteur d'événement">
+                    <div className="flex gap-8 items-start">
+                        <div className="flex-1">
+                            <SlideCode language="javascript" highlight="1-2 | 4-6 | 8-12">
+                                {`// Sélectionner un élément
+const button = document.getElementById("myButton");
 
-        {/* B - Variables et types */}
-        <SlideScreen title="B.1 - Les variables en JavaScript">
-          <SlideNote>
-            - Expliquer que `const` est la règle par défaut.
-            - `let` seulement si on change la valeur.
-            - Mentionner que `var` pose des problèmes de portée (scope) et de remontée (hoisting).
-          </SlideNote>
-          <SlideText>
-            Trois mots-clés pour déclarer des variables :
-          </SlideText>
-          <SlideList>
-            <SlideListItem>const : valeur constante (référence immuable)</SlideListItem>
-            <SlideListItem>let : variable modifiable</SlideListItem>
-            <SlideListItem>var : ancien mot-clé (à ne plus utiliser)</SlideListItem>
-          </SlideList>
-          <SlideCode language="javascript">
-            {`const pi = 3.14;
-let age = 25;
-age = 26; // OK
-
-const arr = [1, 2, 3];
-arr.push(4); // OK - modification du contenu`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="B.2 - Types de données">
-          <SlideText>
-            JavaScript détermine automatiquement le type à l'exécution :
-          </SlideText>
-          <SlideCode language="javascript" highlight="1-2 | 4-5 | 7-8 | 10-11 | 13-16">
-            {`// Chaîne de caractères
-const message = "Bonjour !";
-
-// Nombre
-const age = 30;
-
-// Booléen
-const isStudent = true;
-
-// Tableau
-const fruits = ["pomme", "banane", "cerise"];
-
-// Objet
-const personne = {
-  nom: "Alice",
-  age: 25
-};`}
-          </SlideCode>
-        </SlideScreen>
-
-        {/* C - Opérateurs et conditions */}
-        <SlideScreen title="C.1 - Opérateurs de comparaison">
-          <SlideText>
-            Les opérateurs retournent true ou false :
-          </SlideText>
-          <SlideList>
-            <SlideListItem>=== : Égalité stricte (valeur ET type)</SlideListItem>
-            <SlideListItem>!== : Inégalité stricte</SlideListItem>
-            <SlideListItem>&gt;, &lt;, &gt;=, &lt;= : Comparaisons numériques</SlideListItem>
-          </SlideList>
-          <SlideCode language="javascript">
-            {`console.log(5 === 5);        // true
-console.log(5 === "5");      // false
-console.log(10 > 5);         // true
-console.log(10 >= 10);       // true`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="C.2 - Opérateurs logiques">
-          <SlideText>
-            Combiner plusieurs conditions :
-          </SlideText>
-          <SlideList>
-            <SlideListItem>&& (ET) : les deux conditions doivent être vraies</SlideListItem>
-            <SlideListItem>|| (OU) : au moins une condition doit être vraie</SlideListItem>
-            <SlideListItem>! (NON) : inverse la valeur booléenne</SlideListItem>
-          </SlideList>
-          <SlideCode language="javascript">
-            {`const age = 20;
-const hasPermission = true;
-
-console.log(age >= 18 && hasPermission);  // true
-console.log(age < 18 || hasPermission);   // true
-console.log(!hasPermission);              // false`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="C.3 - Structure if / else">
-          <SlideText>
-            Exécuter du code selon une condition :
-          </SlideText>
-          <SlideCode language="javascript" highlight="1-6 | 9-14">
-            {`const age = 20;
-
-// if simple
-if (age >= 18) {
-  console.log("Vous êtes majeur");
-}
-
-// if / else
-const temperature = 15;
-if (temperature > 25) {
-  console.log("Il fait chaud");
-} else {
-  console.log("Il fait frais");
-}`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="C.3 - Structure switch">
-          <SlideText>
-            Comparer une même valeur à plusieurs cas :
-          </SlideText>
-          <SlideCode language="javascript" highlight={"1-3 | 4-9"}>
-            {`const day = 3;
-
-switch (day) {
-  case 1:
-    console.log("Lundi");
-    break;
-  case 2:
-    console.log("Mardi");
-    break;
-  case 3:
-    console.log("Mercredi");
-    break;
-  default:
-    console.log("Jour invalide");
-}`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="C.4 - Opérateur ternaire">
-          <SlideText>
-            Forme condensée de if...else pour conditions simples :
-          </SlideText>
-          <SlideCode language="javascript">
-            {`const age = 20;
-const statut = age >= 18 ? "majeur" : "mineur";
-
-console.log(statut); // "majeur"`}
-          </SlideCode>
-        </SlideScreen>
-
-        {/* D - Tableaux */}
-        <SlideScreen title="D.1 - Parcourir un tableau">
-          <SlideText>
-            Trois méthodes principales :
-          </SlideText>
-          <SlideCode language="javascript" highlight="1 | 3-6 | 8-11 | 13-16">
-            {`const fruits = ["pomme", "banane", "cerise"];
-
-// Boucle for classique
-for (let i = 0; i < fruits.length; i++) {
-  console.log(fruits[i]);
-}
-
-// forEach
-fruits.forEach((fruit) => {
-  console.log(fruit);
+// Ajouter un écouteur avec fonction anonyme
+button.addEventListener("click", () => {
+  console.log("Bouton cliqué !");
 });
 
-// for...of
-for (let fruit of fruits) {
-  console.log(fruit);
-}`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="D.2 - Transformer avec map">
-          <SlideText>
-            Transformer chaque élément et créer un nouveau tableau :
-          </SlideText>
-          <SlideCode language="javascript" highlight="1-8 | 10-16">
-            {`const prices = [10, 20, 30];
-
-// Ajouter 20% de TVA
-const pricesWithTax = prices.map((price) => {
-  return price * 1.2;
-});
-
-console.log(pricesWithTax); // [12, 24, 36]
-
-// Extraire les noms
-const users = [
-  { name: "Alice", age: 25 },
-  { name: "Bob", age: 17 }
-];
-const names = users.map((user) => user.name);
-// ["Alice", "Bob"]`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="D.3 - Filtrer avec filter">
-          <SlideText>
-            Créer un nouveau tableau avec les éléments respectant une condition :
-          </SlideText>
-          <SlideCode language="javascript" highlight="1-6 | 8-14">
-            {`const ages = [12, 18, 25, 30, 15];
-
-// Conserver uniquement les majeurs
-const adults = ages.filter((age) => age >= 18);
-
-console.log(adults); // [18, 25, 30]
-
-// Filtrer des objets
-const users = [
-  { name: "Alice", age: 25 },
-  { name: "Bob", age: 17 },
-  { name: "Charlie", age: 30 }
-];
-const adultUsers = users.filter((user) => user.age >= 18);`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="D.4 - Réduire avec reduce">
-          <SlideText>
-            Combiner toutes les valeurs en une seule :
-          </SlideText>
-          <SlideCode language="javascript" highlight="1-8 | 10-18">
-            {`const numbers = [1, 2, 3, 4, 5];
-
-// Calculer la somme
-const sum = numbers.reduce((accumulator, current) => {
-  return accumulator + current;
-}, 0);
-
-console.log(sum); // 15
-
-// Calculer un total de panier
-const cart = [
-  { name: "Laptop", price: 1000, quantity: 1 },
-  { name: "Mouse", price: 25, quantity: 2 }
-];
-const total = cart.reduce((acc, product) => {
-  return acc + product.price * product.quantity;
-}, 0);
-console.log(total); // 1050`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="D.5 - Chaînage des méthodes">
-          <SlideText>
-            Combiner map, filter et reduce pour des traitements complexes :
-          </SlideText>
-          <SlideCode language="javascript" highlight="1-5 | 7-13">
-            {`const users = [
-  { name: "Alice", age: 25 },
-  { name: "Bob", age: 17 },
-  { name: "Charlie", age: 30 }
-];
-
-// Calculer la somme des âges des majeurs
-const totalAge = users
-  .filter((user) => user.age >= 18)  // Garder les majeurs
-  .map((user) => user.age)           // Extraire les âges
-  .reduce((acc, age) => acc + age, 0); // Sommer
-
-console.log(totalAge); // 55`}
-          </SlideCode>
-        </SlideScreen>
-
-        {/* E - Fonctions */}
-        <SlideScreen title="E.1 - Déclaration de fonction">
-          <SlideText>
-            Créer des blocs de code réutilisables :
-          </SlideText>
-          <SlideCode language="javascript" highlight="1-5 | 7-11 | 13-17">
-            {`// Fonction sans paramètre
-function direBonjour() {
-  console.log("Bonjour !");
+// Avec une fonction nommée
+function handleClick() {
+  console.log("Clic détecté");
 }
-direBonjour();
+button.addEventListener("click", handleClick);`}
+                            </SlideCode>
+                        </div>
+                        <div className="flex-1">
+                            <InteractiveClickDemo/>
+                        </div>
+                    </div>
+                    <SlideNote>
+                        {`addEventListener(type, fonction) attache un gestionnaire d'événement.
+- Premier paramètre : type d'événement ("click", "keydown", etc.)
+- Deuxième paramètre : fonction à exécuter`}
+                    </SlideNote>
+                </SlideScreen>
 
-// Fonction avec paramètres
-function saluer(nom) {
-  console.log("Bonjour " + nom + " !");
-}
-saluer("Alice");
+                {/* Slide 3: removeEventListener */}
+                <SlideScreen title="Supprimer un écouteur">
+                    <SlideCode language="javascript" highlight="4-7 | 9-10 | 13-15">
+                        {`const button = document.getElementById("myButton");
 
-// Fonction avec retour
-function additionner(a, b) {
-  return a + b;
-}
-const resultat = additionner(5, 3); // 8`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="E.2 - Fonctions fléchées">
-          <SlideText>
-            Syntaxe concise introduite en ES6 :
-          </SlideText>
-          <SlideCode language="javascript" highlight="1-4 | 6-7 | 9-10 | 12-13">
-            {`// Syntaxe complète
-const multiplier = (a, b) => {
-  return a * b;
+// Définir la fonction séparément
+const logClick = () => {
+  console.log("Clic détecté");
 };
 
-// Syntaxe courte (return implicite)
-const carre = (x) => x * x;
+// Ajouter l'écouteur
+button.addEventListener("click", logClick);
 
-// Un seul paramètre (parenthèses optionnelles)
-const doubler = x => x * 2;
+// Supprimer l'écouteur
+button.removeEventListener("click", logClick);
 
-// Aucun paramètre (parenthèses obligatoires)
-const direHello = () => console.log("Hello!");`}
-          </SlideCode>
-        </SlideScreen>
+// ⚠️ Ceci ne fonctionnera PAS
+button.addEventListener("click", () => console.log("Test"));
+button.removeEventListener("click", () => console.log("Test"));`}
+                    </SlideCode>
+                    <SlideText>
+                        Pour supprimer un écouteur, vous devez utiliser la <strong>même référence de fonction</strong>.
+                    </SlideText>
+                    <SlideNote>
+                        {`Pour supprimer un écouteur, vous devez utiliser la même référence de fonction.
+Les fonctions anonymes créent une nouvelle référence à chaque fois.`}
+                    </SlideNote>
+                </SlideScreen>
 
-        <SlideScreen title="E.3 - Portée des variables (scope)">
-          <SlideText>
-            La portée détermine où une variable est accessible :
-          </SlideText>
-          <SlideList>
-            <SlideListItem>Variables globales : accessibles partout</SlideListItem>
-            <SlideListItem>Variables locales : uniquement dans la fonction</SlideListItem>
-            <SlideListItem>Paramètres : variables locales de la fonction</SlideListItem>
-          </SlideList>
-          <SlideCode language="javascript" highlight="1-5 | 7-11">
-            {`const nom = "Alice"; // Variable globale
+                {/* Slide 4: Événements de souris */}
+                <SlideScreen title="Événements de souris">
+                    <div className="flex gap-8 items-start">
+                        <div className="flex-1">
+                            <SlideList>
+                                <SlideListItem><strong>click</strong> : Clic simple</SlideListItem>
+                                <SlideListItem><strong>dblclick</strong> : Double clic</SlideListItem>
+                                <SlideListItem><strong>mouseenter / mouseleave</strong> : Survol et
+                                    sortie</SlideListItem>
+                                <SlideListItem><strong>mousemove</strong> : Déplacement de la souris</SlideListItem>
+                                <SlideListItem><strong>mousedown / mouseup</strong> : Appui et
+                                    relâchement</SlideListItem>
+                            </SlideList>
+                        </div>
+                        <div className="flex-1">
+                            <InteractiveMouseDemo/>
+                        </div>
+                    </div>
+                    <SlideNote>
+                        {`Les événements de souris sont les plus utilisés pour l'interactivité.
+contextmenu permet de détecter le clic droit.`}
+                    </SlideNote>
+                </SlideScreen>
 
-function afficherNom() {
-  console.log(nom); // Accès possible
-}
-
-function calculer() {
-  const resultat = 10 + 5; // Variable locale
-  console.log(resultat);
-}
-// console.log(resultat); // Erreur !`}
-          </SlideCode>
-        </SlideScreen>
-
-        {/* F - Template literals */}
-        <SlideScreen title="F.1 - Template literals : Interpolation">
-          <SlideText>
-            Créer des chaînes avec des variables (backticks) :
-          </SlideText>
-          <SlideCode language="javascript" highlight="1-5 | 7-8 | 10-13">
-            {`const prenom = "Alice";
-const age = 25;
-
-// Méthode classique (concaténation)
-const message1 = "Bonjour, je m'appelle " + prenom + " et j'ai " + age + " ans.";
-
-// Template literals (plus lisible)
-const message2 = \`Bonjour, je m'appelle \${prenom} et j'ai \${age} ans.\`;
-
-// Avec expressions
-const a = 10;
-const b = 5;
-console.log(\`La somme de \${a} et \${b} est \${a + b}\`);`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="F.2 - Template literals : Multi-lignes">
-          <SlideText>
-            Les template literals conservent les retours à la ligne :
-          </SlideText>
-          <SlideCode language="javascript" highlight="1-4 | 6-11">
-            {`// Méthode classique (compliqué)
-const texte1 = "Première ligne\\n" +
-               "Deuxième ligne\\n" +
-               "Troisième ligne";
-
-// Template literals (simple)
-const texte2 = \`Première ligne
-Deuxième ligne
-Troisième ligne\`;
-
-console.log(texte2);`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="F.3 - Template literals : HTML dynamique">
-          <SlideText>
-            Très utile pour créer du contenu HTML :
-          </SlideText>
-          <SlideCode language="javascript">
-            {`const utilisateur = {
-  nom: "Dupont",
-  prenom: "Marie",
-  age: 30
-};
-
-const carte = \`
-  <div class="user-card">
-    <h2>\${utilisateur.prenom} \${utilisateur.nom}</h2>
-    <p>Age: \${utilisateur.age} ans</p>
-  </div>
-\`;
-
-document.body.innerHTML += carte;`}
-          </SlideCode>
-        </SlideScreen>
-
-        {/* G - Console */}
-        <SlideScreen title="G - Afficher des messages">
-          <SlideText>
-            Utiliser la console pour déboguer :
-          </SlideText>
-          <SlideCode language="javascript" highlight="1-2 | 4-5 | 7-8 | 10-11">
-            {`// Afficher un message simple
-console.log("Bonjour, monde !");
-
-// Afficher une variable
-console.log("Age :", age);
-
-// Afficher une erreur
-console.error("/!\\\\ Une erreur est survenue /!\\\\");
-
-// Afficher un tableau formaté
-console.table(fruits);`}
-          </SlideCode>
-        </SlideScreen>
-
-        {/* H - DOM */}
-        <SlideScreen title="H - Le DOM (Document Object Model)">
-          <SlideText>
-            Interface pour manipuler dynamiquement le contenu, la structure et le style des pages web.
-          </SlideText>
-          <SlideList>
-            <SlideListItem>Représente la page sous forme d'arbre d'objets</SlideListItem>
-            <SlideListItem>Permet d'accéder, modifier, ajouter ou supprimer des éléments HTML</SlideListItem>
-            <SlideListItem>Rend les pages web interactives</SlideListItem>
-          </SlideList>
-        </SlideScreen>
-
-        <SlideScreen title="H.1 - Sélectionner des éléments">
-          <SlideNote>
-            - `getElementById` est le plus rapide.
-            - `querySelector` est le plus polyvalent car il utilise la syntaxe CSS.
-            - Rappeler que `querySelectorAll` retourne une NodeList (similaire à un tableau mais pas identique).
-          </SlideNote>
-          <SlideText>
-            Méthodes pour sélectionner des éléments :
-          </SlideText>
-
-          <div className="grid grid-cols-2 gap-6">
-            <SlideCode language="html" highlight="1-6">
-              {`<!-- HTML de base -->
-<h1 id="titre">Bienvenue</h1>
-<p class="texte">Premier paragraphe</p>
-<p class="texte">Deuxième paragraphe</p>
-<div>Un div</div>
-<div>Un autre div</div>`}
-            </SlideCode>
-
-            <SlideCode language="javascript" highlight="1-2 | 4-6 | 8-10 | 12-14 | 17-18">
-              {`// Par ID (unique)
-const titre = document.getElementById("titre");
-
-// Par classe (plusieurs)
-const paragraphes = 
-document.getElementsByClassName("texte");
-
-// Par tag (plusieurs)
-const divs = 
-document.getElementsByTagName("div");
-
-// Premier élément CSS
-const firstParagraphe = 
-document.querySelector(".texte");
-
-// Tous les éléments CSS
-const allParagraphes = 
-document.querySelectorAll(".texte");`}
-            </SlideCode>
-          </div>
-        </SlideScreen>
-
-        <SlideScreen title="H.2 - Manipuler le contenu">
-          <SlideText>
-            Modifier le contenu et les attributs :
-          </SlideText>
-
-          <div className="grid grid-cols-2 gap-6 mb-6">
-            <SlideCode language="html" highlight="1-3">
-              {`<!-- HTML de départ -->
-<p id="message">Texte original</p>
-<input id="email" type="text">`}
-            </SlideCode>
-
-            <SlideCode language="html" highlight="1-3">
-              {`<!-- HTML après modifications -->
-<p id="message"><strong>Texte en gras</strong></p>
-<input id="email" type="text" required="true">`}
-            </SlideCode>
-          </div>
-
-          <SlideCode language="javascript" highlight="1-3 | 5-7 | 9-11 | 13-15">
-            {`// Modifier le texte
-const message = document.getElementById("message");
-message.textContent = "Nouveau contenu";
-
-// Modifier le HTML
-const message = document.getElementById("message");
-message.innerHTML = "<strong>Texte en gras</strong>";
-
-// Modifier un attribut
-const email = document.getElementById("email");
-email.setAttribute("required", true);
-
-// Récupérer un attribut
-const email = document.getElementById("email");
-const estRequis = email.getAttribute("required");`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="H.2 - Manipuler le style">
-          <SlideText>
-            Modifier les styles et classes CSS :
-          </SlideText>
-
-          <div className="grid grid-cols-2 gap-6 mb-6">
-            <SlideCode language="html" highlight="1-2">
-              {`<!-- HTML de départ -->
-<div id="box" class="visible">Contenu</div>`}
-            </SlideCode>
-
-            <SlideCode language="html" highlight="1-3">
-              {`<!-- Résultat après manipulation -->
-<div id="box" class="highlight active" 
-     style="color: red; font-size: 20px;">Contenu</div>`}
-            </SlideCode>
-          </div>
-
-          <SlideCode language="javascript" highlight="1-4 | 6-10">
-            {`// Ajouter du style en ligne
-const box = document.getElementById("box");
-box.style.color = "red";
-box.style.fontSize = "20px";
-
-// Manipuler les classes
-const box = document.getElementById("box");
-box.classList.add("highlight");
-box.classList.remove("visible");
-box.classList.toggle("active"); // Bascule`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="H.3 - Ajouter des éléments">
-          <SlideText>
-            Créer et ajouter des éléments dans le DOM :
-          </SlideText>
-
-          <div className="grid grid-cols-2 gap-6 mb-6">
-            <SlideCode language="html" highlight="1-4">
-              {`<!-- HTML de départ -->
-<div id="container">
-  <p id="premier">Premier paragraphe</p>
-</div>`}
-            </SlideCode>
-
-            <SlideCode language="html" highlight="1-5">
-              {`<!-- HTML après appendChild -->
-<div id="container">
-  <p id="premier">Premier paragraphe</p>
-  <p>Nouveau paragraphe</p>
-</div>`}
-            </SlideCode>
-          </div>
-
-          <SlideCode language="javascript" highlight="1-6 | 8-10 | 12-14 | 16-19">
-            {`// Créer un nouvel élément
-const nouveauP = document.createElement("p");
-nouveauP.textContent = "Nouveau paragraphe";
-
-// Ajouter à la fin du container
-document.getElementById("container").appendChild(nouveauP);
-
-// Ajouter au début du container
-const container = document.getElementById("container");
-container.prepend(nouveauP);
-
-// Ajouter avant un élément existant
-const premier = document.getElementById("premier");
-container.insertBefore(nouveauP, premier);
-
-// Créer un élément plus complexe
-const card = document.createElement("div");
-card.className = "card";
-card.innerHTML = "<h3>Titre</h3><p>Description</p>";
-document.body.appendChild(card);`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="H.3 - Supprimer des éléments">
-          <SlideText>
-            Supprimer des éléments du DOM :
-          </SlideText>
-
-          <div className="grid grid-cols-2 gap-6 mb-6">
-            <SlideCode language="html" highlight="1-5">
-              {`<!-- HTML de départ -->
-<div id="container">
-  <p id="aSupprimer">Ce paragraphe sera supprimé</p>
-  <p>Ce paragraphe reste</p>
-</div>`}
-            </SlideCode>
-
-            <SlideCode language="html" highlight="1-4">
-              {`<!-- HTML après suppression -->
-<div id="container">
-  <p>Ce paragraphe reste</p>
-</div>`}
-            </SlideCode>
-          </div>
-
-          <SlideCode language="javascript" highlight="1-3">
-            {`// Supprimer un élément
-const element = document.getElementById("aSupprimer");
-element.remove();`}
-          </SlideCode>
-        </SlideScreen>
-
-        <SlideScreen title="H.4 - Exemple pratique complet">
-          <SlideText>
-            Créer une liste de tâches dynamique :
-          </SlideText>
-
-          <div className="grid grid-cols-2 gap-6">
-            <SlideCode language="html" highlight="1-6">
-              {`<!-- HTML de départ -->
-<div id="app">
-  <input id="taskInput" type="text" 
-         placeholder="Nouvelle tâche">
-  <button id="addBtn">Ajouter</button>
-  <ul id="taskList"></ul>
-</div>`}
-            </SlideCode>
-
-            <SlideCode language="javascript">
-              {`const input = document.getElementById("taskInput");
-const btn = document.getElementById("addBtn");
-const list = document.getElementById("taskList");
-
-btn.addEventListener("click", () => {
-  // Créer un élément de liste
-  const li = document.createElement("li");
-  li.textContent = input.value;
+                {/* Slide 5: Événements de clavier */}
+                <SlideScreen title="Événements de clavier">
+                    <div className="flex gap-8 items-start">
+                        <div className="flex-1">
+                            <SlideCode language="javascript" highlight="1-8">
+                                {`document.addEventListener("keydown", (event) => {
+  console.log("Touche pressée :", event.key);
   
-  // Ajouter à la liste
-  list.appendChild(li);
-  
-  // Vider l'input
-  input.value = "";
+  if (event.key === "Enter") {
+    console.log("Touche Entrée détectée !");
+  }
 });`}
-            </SlideCode>
-          </div>
-        </SlideScreen>
-        
-      </SlidesScreen>
-    </div>
-  );
+                            </SlideCode>
+                            <SlideList>
+                                <SlideListItem><strong>keydown</strong> : Touche pressée</SlideListItem>
+                                <SlideListItem><strong>keyup</strong> : Touche relâchée</SlideListItem>
+                                <SlideListItem><strong>input</strong> : Saisie dans un champ</SlideListItem>
+                            </SlideList>
+                        </div>
+                        <div className="flex-1">
+                            <InteractiveKeyboardDemo/>
+                        </div>
+                    </div>
+                    <SlideNote>
+                        {`event.key contient la valeur de la touche ("a", "Enter", "Escape"...).
+Utilisez keydown pour détecter les touches spéciales.`}
+                    </SlideNote>
+                </SlideScreen>
+
+                {/* Slide 6: Événements de formulaire */}
+                <SlideScreen title="Événements de formulaire">
+                    <div className="flex gap-8 items-start">
+                        <div className="flex-1">
+                            <SlideCode language="javascript" highlight="4-5 | 7-11">
+                                {`const form = document.querySelector("form");
+const input = document.querySelector("#username");
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault(); // Empêche la soumission
+  
+  if (input.value.length < 3) {
+    alert("Minimum 3 caractères");
+  } else {
+    console.log("Formulaire valide !");
+  }
+});`}
+                            </SlideCode>
+                        </div>
+                        <div className="flex-1">
+                            <InteractiveFormDemo/>
+                        </div>
+                    </div>
+                    <SlideNote>
+                        {`Événements importants :
+- submit : Soumission du formulaire
+- change : Modification de valeur
+- focus / blur : Gain/perte de focus
+event.preventDefault() empêche le comportement par défaut.`}
+                    </SlideNote>
+                </SlideScreen>
+
+                {/* Slide 7: L'objet Event */}
+                <SlideScreen title="L'objet Event">
+                    <div className="flex gap-8 items-start">
+                        <div className="flex-1">
+                            <SlideCode language="javascript" highlight="2-5">
+                                {`document.addEventListener("click", (event) => {
+  console.log("Type :", event.type);
+  console.log("Cible :", event.target);
+  console.log("Position X :", event.clientX);
+  console.log("Position Y :", event.clientY);
+});`}
+                            </SlideCode>
+                            <SlideList>
+                                <SlideListItem><strong>type</strong> : Type d'événement</SlideListItem>
+                                <SlideListItem><strong>target</strong> : Élément déclencheur</SlideListItem>
+                                <SlideListItem><strong>clientX / clientY</strong> : Position de la
+                                    souris</SlideListItem>
+                            </SlideList>
+                        </div>
+                        <div className="flex-1">
+                            <InteractiveEventObject/>
+                        </div>
+                    </div>
+                    <SlideNote>
+                        {`L'objet event est automatiquement passé à la fonction gestionnaire.
+Il contient toutes les informations sur l'événement déclenché.`}
+                    </SlideNote>
+                </SlideScreen>
+
+                {/* Slide 8: Propriétés clavier */}
+                <SlideScreen title="Propriétés pour les événements clavier">
+                    <SlideCode language="javascript" highlight="2 | 3-6">
+                        {`document.addEventListener("keydown", (event) => {
+  console.log("Touche :", event.key);
+  console.log("Ctrl ?", event.ctrlKey);
+  console.log("Shift ?", event.shiftKey);
+  console.log("Alt ?", event.altKey);
+  console.log("Meta ?", event.metaKey);
+});`}
+                    </SlideCode>
+                    <SlideList>
+                        <SlideListItem><strong>key</strong> : Touche pressée ("a", "Enter"...)</SlideListItem>
+                        <SlideListItem><strong>ctrlKey, shiftKey, altKey, metaKey</strong> : Touches modificatrices
+                            (booléens)</SlideListItem>
+                    </SlideList>
+                    <SlideNote>
+                        {`Propriétés utiles :
+- key : Touche pressée ("a", "Enter"...)
+- ctrlKey, shiftKey, altKey, metaKey : Touches modificatrices (booléens)`}
+                    </SlideNote>
+                </SlideScreen>
+
+                {/* Slide 9: Exemple - Changer la couleur */}
+                <SlideScreen title="Exemple : Changer la couleur au clic">
+                    <div className="flex gap-8 items-start">
+                        <div className="flex-1">
+                            <SlideCode language="javascript" highlight="1 | 3-5">
+                                {`const box = document.querySelector(".box");
+
+box.addEventListener("click", () => {
+  box.style.backgroundColor = "lightblue";
+});`}
+                            </SlideCode>
+                        </div>
+                        <div className="flex-1">
+                            <InteractiveColorDemo/>
+                        </div>
+                    </div>
+                    <SlideNote>
+                        {`Exemple simple : modifier le style CSS d'un élément au clic.
+Vous pouvez modifier n'importe quelle propriété CSS via JavaScript.`}
+                    </SlideNote>
+                </SlideScreen>
+
+                {/* Slide 10: Exemple - Position de la souris */}
+                <SlideScreen title="Exemple : Afficher la position de la souris">
+                    <div className="flex gap-8 items-start">
+                        <div className="flex-1">
+                            <SlideCode language="javascript" highlight="1 | 3-5">
+                                {`const display = document.querySelector("#position");
+
+document.addEventListener("mousemove", (event) => {
+  display.textContent = \`X: \${event.clientX}, Y: \${event.clientY}\`;
+});`}
+                            </SlideCode>
+                        </div>
+                        <div className="flex-1">
+                            <InteractivePositionDemo/>
+                        </div>
+                    </div>
+                    <SlideNote>
+                        {`mousemove se déclenche à chaque mouvement de souris.
+event.clientX et event.clientY donnent les coordonnées dans la fenêtre.`}
+                    </SlideNote>
+                </SlideScreen>
+
+                {/* Slide 11: Exemple - Compteur de clics */}
+                <SlideScreen title="Exemple : Compteur de clics">
+                    <div className="flex gap-8 items-start">
+                        <div className="flex-1">
+                            <SlideCode language="javascript" highlight="1-2 | 4-7">
+                                {`const button = document.querySelector("#counter");
+let count = 0;
+
+button.addEventListener("click", () => {
+  count++;
+  button.textContent = \`Cliqué \${count} fois\`;
+});`}
+                            </SlideCode>
+                        </div>
+                        <div className="flex-1">
+                            <InteractiveCounterDemo/>
+                        </div>
+                    </div>
+                    <SlideNote>
+                        {`Exemple classique : utiliser une variable pour compter les clics.
+La valeur est mise à jour à chaque événement click.`}
+                    </SlideNote>
+                </SlideScreen>
+
+                {/* Slide 12: Événements de chargement */}
+                <SlideScreen title="Événements de chargement">
+                    <SlideCode language="javascript" highlight="2-4 | 7-9">
+                        {`// DOMContentLoaded : HTML chargé et analysé
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM prêt !");
+});
+
+// load : Page entièrement chargée (images, styles...)
+window.addEventListener("load", () => {
+  console.log("Tout est chargé !");
+});`}
+                    </SlideCode>
+                    <SlideList>
+                        <SlideListItem><strong>DOMContentLoaded</strong> : HTML chargé et analysé (idéal pour le
+                            DOM)</SlideListItem>
+                        <SlideListItem><strong>load</strong> : Tout est chargé (images, CSS, scripts)</SlideListItem>
+                    </SlideList>
+                    <SlideNote>
+                        {`DOMContentLoaded : idéal pour commencer à manipuler le DOM
+load : tout est chargé (images, CSS, scripts)
+Utilisez DOMContentLoaded pour éviter d'attendre les ressources externes.`}
+                    </SlideNote>
+                </SlideScreen>
+
+                {/* Slide 13: Récapitulatif */}
+                <SlideScreen title="Récapitulatif">
+                    <SlideList>
+                        <SlideListItem>Les événements rendent les pages interactives</SlideListItem>
+                        <SlideListItem>addEventListener() pour écouter les événements</SlideListItem>
+                        <SlideListItem>L'objet event contient toutes les infos</SlideListItem>
+                        <SlideListItem>De nombreux types : souris, clavier, formulaire...</SlideListItem>
+                        <SlideListItem>event.preventDefault() pour annuler le comportement par défaut</SlideListItem>
+                    </SlideList>
+                    <SlideNote>
+                        {`Les événements sont au cœur de l'interactivité web.
+Maîtriser addEventListener et l'objet event est essentiel en JavaScript.`}
+                    </SlideNote>
+                </SlideScreen>
+
+            </SlidesScreen>
+        </div>
+    );
+}
+
+// Composant interactif pour addEventListener
+function InteractiveClickDemo() {
+    const [clicked, setClicked] = useState(false);
+
+    return (
+        <div className="flex flex-col items-center justify-center gap-6 p-8 bg-muted/30 rounded-xl border h-full">
+            <div className="text-xl font-semibold text-muted-foreground">✨ Démo interactive</div>
+            <Button
+                size="lg"
+                onClick={() => setClicked(!clicked)}
+                className="text-xl px-8 py-6 h-auto"
+            >
+                {clicked ? "✓ Cliqué !" : "Cliquez-moi !"}
+            </Button>
+        </div>
+    );
+}
+
+// Composant interactif pour les événements de souris
+function InteractiveMouseDemo() {
+    const [event, setEvent] = useState<string>("Survolez ou cliquez...");
+
+    return (
+        <div className="flex flex-col gap-4">
+            <div className="text-lg font-semibold text-muted-foreground text-center">✨ Démo interactive</div>
+            <div
+                className="w-full h-48 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl font-bold cursor-pointer transition-all hover:shadow-2xl"
+                onMouseEnter={() => setEvent("mouseenter 🖱️")}
+                onMouseLeave={() => setEvent("mouseleave 👋")}
+                onClick={() => setEvent("click 👆")}
+                onDoubleClick={() => setEvent("dblclick 👆👆")}
+            >
+                {event}
+            </div>
+        </div>
+    );
+}
+
+// Composant interactif pour le clavier
+function InteractiveKeyboardDemo() {
+    const [key, setKey] = useState<string>("");
+    const [modifiers, setModifiers] = useState<string[]>([]);
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        setKey(e.key);
+        const mods = [];
+        if (e.ctrlKey) mods.push("Ctrl");
+        if (e.shiftKey) mods.push("Shift");
+        if (e.altKey) mods.push("Alt");
+        setModifiers(mods);
+    };
+
+    return (
+        <div className="flex flex-col gap-4">
+            <div className="text-lg font-semibold text-muted-foreground text-center">✨ Démo interactive</div>
+            <input
+                type="text"
+                placeholder="Tapez quelque chose..."
+                onKeyDown={handleKeyDown}
+                className="w-full px-6 py-4 text-xl border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary bg-background"
+            />
+            <div className="bg-secondary/50 text-foreground p-6 rounded-xl font-mono space-y-2">
+                <div><strong>Touche :</strong> {key || "..."}</div>
+                <div><strong>Modificateurs :</strong> {modifiers.length > 0 ? modifiers.join(" + ") : "Aucun"}</div>
+            </div>
+        </div>
+    );
+}
+
+// Composant interactif pour les formulaires
+function InteractiveFormDemo() {
+    const [username, setUsername] = useState("");
+    const [message, setMessage] = useState("");
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (username.length < 3) {
+            setMessage("❌ Le nom doit contenir au moins 3 caractères");
+        } else {
+            setMessage("✅ Formulaire valide !");
+        }
+    };
+
+    return (
+        <div className="flex flex-col gap-4">
+            <div className="text-lg font-semibold text-muted-foreground text-center">✨ Démo interactive</div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Nom d'utilisateur"
+                    className="w-full px-6 py-4 text-xl border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary bg-background"
+                />
+                <Button type="submit" size="lg" className="text-xl py-6">
+                    Valider
+                </Button>
+            </form>
+            {message && (
+                <div
+                    className={`p-4 rounded-xl text-lg font-semibold ${message.includes("✅") ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"}`}>
+                    {message}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// Composant interactif pour l'objet Event
+function InteractiveEventObject() {
+    const [position, setPosition] = useState({x: 0, y: 0});
+    const [isInside, setIsInside] = useState(false);
+
+    return (
+        <div className="flex flex-col gap-4">
+            <div className="text-lg font-semibold text-muted-foreground text-center">✨ Démo interactive</div>
+            <div
+                className="w-full h-48 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex flex-col items-center justify-center text-white transition-all"
+                onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    setPosition({x: e.clientX - rect.left, y: e.clientY - rect.top});
+                }}
+                onMouseEnter={() => setIsInside(true)}
+                onMouseLeave={() => setIsInside(false)}
+            >
+                <div className="text-3xl font-bold mb-2">
+                    {isInside ? "🖱️" : "Survolez"}
+                </div>
+                {isInside && (
+                    <div className="text-xl font-mono">
+                        X: {Math.round(position.x)} | Y: {Math.round(position.y)}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// Composant interactif pour changer la couleur
+function InteractiveColorDemo() {
+    const colors = ["bg-red-500", "bg-blue-500", "bg-green-500", "bg-yellow-500", "bg-purple-500", "bg-pink-500"];
+    const [colorIndex, setColorIndex] = useState(0);
+
+    return (
+        <div className="flex flex-col gap-4">
+            <div className="text-lg font-semibold text-muted-foreground text-center">✨ Démo interactive</div>
+            <div
+                onClick={() => setColorIndex((colorIndex + 1) % colors.length)}
+                className={`w-full h-48 ${colors[colorIndex]} rounded-xl flex items-center justify-center text-white text-2xl font-bold cursor-pointer transition-all transform hover:scale-105 active:scale-95 shadow-xl`}
+            >
+                Cliquez pour changer !
+            </div>
+        </div>
+    );
+}
+
+// Composant interactif pour la position de la souris
+function InteractivePositionDemo() {
+    const [position, setPosition] = useState({x: 0, y: 0});
+
+    return (
+        <div className="flex flex-col gap-4">
+            <div className="text-lg font-semibold text-muted-foreground text-center">✨ Démo interactive</div>
+            <div
+                className="w-full h-48 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center text-white transition-all cursor-crosshair"
+                onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    setPosition({x: Math.round(e.clientX - rect.left), y: Math.round(e.clientY - rect.top)});
+                }}
+            >
+                <div className="text-3xl font-mono font-bold">
+                    X: {position.x} | Y: {position.y}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Composant interactif pour le compteur
+function InteractiveCounterDemo() {
+    const [count, setCount] = useState(0);
+
+    return (
+        <div className="flex flex-col items-center justify-center gap-6 p-8 bg-muted/30 rounded-xl border h-full">
+            <div className="text-xl font-semibold text-muted-foreground">✨ Démo interactive</div>
+            <Button
+                size="lg"
+                onClick={() => setCount(count + 1)}
+                className="text-2xl px-12 py-8 h-auto"
+                variant="default"
+            >
+                Cliqué {count} fois
+            </Button>
+        </div>
+    );
 }

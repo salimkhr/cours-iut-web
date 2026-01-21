@@ -189,12 +189,18 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({children, module, sec
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
+            // Navigation
             if (event.key === 'ArrowRight' || event.key === 'ArrowDown' || event.key === ' ') {
                 event.preventDefault();
                 nextSlide();
             } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
                 event.preventDefault();
                 prevSlide();
+            }
+            // Plein écran avec F ou F11
+            else if (event.key === 'f' || event.key === 'F' || event.key === 'F11') {
+                event.preventDefault();
+                toggleFullscreen();
             }
         };
 
@@ -209,7 +215,7 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({children, module, sec
             window.removeEventListener('keydown', handleKeyDown);
             document.removeEventListener('fullscreenchange', handleFullscreenChange);
         };
-    }, [nextSlide, prevSlide]);
+    }, [nextSlide, prevSlide, toggleFullscreen]);
 
     if (!mounted) {
         return (

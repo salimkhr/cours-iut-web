@@ -1,9 +1,16 @@
-import CodeCard from "@/components/Cards/CodeCard";
 import Text from "@/components/ui/Text"
 import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
 import Heading from "@/components/ui/Heading";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import CodeWithPreviewCard, {CodePanel, PreviewPanel} from "@/components/Cards/CodeWithPreviewCard";
+import ClickableBox from "@/cours/javascript/2-les-evenements/Exemple/ClickableBox";
+import CodeCard from "@/components/Cards/CodeCard";
+import ColorClickableBox from "@/cours/javascript/2-les-evenements/Exemple/ColorClickableBox";
+import MouseTrackerBox from "@/cours/javascript/2-les-evenements/Exemple/MouseTrackerBox";
+import ClickCounterBox from "@/cours/javascript/2-les-evenements/Exemple/ClickCounterBox";
+import KeyPressBox from "@/cours/javascript/2-les-evenements/Exemple/KeyPressBox";
+import FormBox from "@/cours/javascript/2-les-evenements/Exemple/FormBox";
 
 export default function Cours() {
     return (
@@ -12,7 +19,8 @@ export default function Cours() {
 
                 <Heading level={2}>1. Qu'est-ce qu'un événement ?</Heading>
                 <Text>
-                    Un événement est une action ou une occurrence qui se produit dans le navigateur, comme un clic de souris,
+                    Un événement est une action ou une occurrence qui se produit dans le navigateur, comme un clic de
+                    souris,
                     une frappe au clavier, le chargement d'une page, ou le défilement d'un élément. JavaScript permet de
                     détecter ces événements et d'y réagir en exécutant du code spécifique.
                 </Text>
@@ -28,26 +36,35 @@ export default function Cours() {
 
                 <Heading level={3}>2.1. Ajouter un écouteur avec addEventListener</Heading>
 
-                <CodeCard language="javascript">
-                    {`// Sélectionner un élément et lui ajouter un écouteur
+                <CodeWithPreviewCard language="javascript">
+                    <CodePanel>
+                        {`// Sélectionner un élément et lui ajouter un écouteur
 const button = document.getElementById("myButton");
 
 button.addEventListener("click", () => {
-  console.log("Bouton cliqué !");
+  alert("Bouton cliqué !");
 });
 
 // Avec une fonction nommée
 function handleClick() {
-  console.log("Clic détecté");
+  alert("Clic détecté");
 }
 
 button.addEventListener("click", handleClick);`}
-                </CodeCard>
+                    </CodePanel>
+
+                    <PreviewPanel>
+                        <ClickableBox/>
+                    </PreviewPanel>
+                </CodeWithPreviewCard>
 
                 <List>
-                    <ListItem><Code>addEventListener(type, fonction)</Code> : Attache un gestionnaire d'événement à un élément.</ListItem>
-                    <ListItem><strong>Premier paramètre</strong> : Le type d'événement (ex. "click", "keydown").</ListItem>
-                    <ListItem><strong>Deuxième paramètre</strong> : La fonction à exécuter lorsque l'événement se produit.</ListItem>
+                    <ListItem><Code>addEventListener(type, fonction)</Code> : Attache un gestionnaire d'événement à un
+                        élément.</ListItem>
+                    <ListItem><strong>Premier paramètre</strong> : Le type d'événement (ex. "click",
+                        "keydown").</ListItem>
+                    <ListItem><strong>Deuxième paramètre</strong> : La fonction à exécuter lorsque l'événement se
+                        produit.</ListItem>
                 </List>
 
                 <Heading level={3}>2.2. Supprimer un écouteur avec removeEventListener</Heading>
@@ -75,33 +92,13 @@ button.removeEventListener("click", () => console.log("Test"));
                     utilisée lors de l'ajout. C'est pourquoi il faut définir la fonction dans une variable ou
                     utiliser une fonction nommée.
                 </Text>
-
-                <Heading level={3}>2.3. Options avancées d'addEventListener</Heading>
-
-                <CodeCard language="javascript">
-                    {`const button = document.getElementById("myButton");
-
-// Écouteur qui ne s'exécute qu'une seule fois
-button.addEventListener("click", () => {
-  console.log("Premier clic uniquement");
-}, { once: true });
-
-// Écouteur passif (améliore les performances pour le scroll)
-document.addEventListener("scroll", () => {
-  console.log("Défilement détecté");
-}, { passive: true });`}
-                </CodeCard>
-
-                <List>
-                    <ListItem><Code>once: true</Code> : L'écouteur est automatiquement supprimé après la première exécution.</ListItem>
-                    <ListItem><Code>passive: true</Code> : Indique que la fonction ne bloquera pas le défilement (utile pour les performances).</ListItem>
-                </List>
             </section>
             <section>
                 <Heading level={2}>3. Types d'événements courants</Heading>
 
                 <Text>
-                    JavaScript supporte une large variété d'événements organisés par catégories selon leur contexte d'utilisation.
+                    JavaScript supporte une large variété d'événements organisés par catégories selon leur contexte
+                    d'utilisation.
                 </Text>
 
                 <Table>
@@ -117,13 +114,16 @@ document.addEventListener("scroll", () => {
                         <TableRow>
                             <TableCell rowSpan={2}><strong>Chargement</strong></TableCell>
                             <TableCell><Code>DOMContentLoaded</Code></TableCell>
-                            <TableCell>Déclenché lorsque le HTML de la page est entièrement chargé et analysé, mais avant
-                                que les ressources externes (images, styles) soient complètement chargées. Idéal pour commencer
+                            <TableCell>Déclenché lorsque le HTML de la page est entièrement chargé et analysé, mais
+                                avant
+                                que les ressources externes (images, styles) soient complètement chargées. Idéal pour
+                                commencer
                                 à manipuler le DOM.</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell><Code>load</Code></TableCell>
-                            <TableCell>Déclenché lorsque la page entière, y compris toutes les ressources (images, feuilles
+                            <TableCell>Déclenché lorsque la page entière, y compris toutes les ressources (images,
+                                feuilles
                                 de style, scripts), est complètement chargée.</TableCell>
                         </TableRow>
 
@@ -162,7 +162,8 @@ document.addEventListener("scroll", () => {
                         </TableRow>
                         <TableRow>
                             <TableCell><Code>input</Code></TableCell>
-                            <TableCell>Déclenché lorsque l'utilisateur saisit une valeur dans un champ de texte.</TableCell>
+                            <TableCell>Déclenché lorsque l'utilisateur saisit une valeur dans un champ de
+                                texte.</TableCell>
                         </TableRow>
 
                         {/* Événements de formulaire */}
@@ -192,11 +193,13 @@ document.addEventListener("scroll", () => {
                         </TableRow>
                         <TableRow>
                             <TableCell><Code>load</Code></TableCell>
-                            <TableCell>Déclenché lorsque la page ou une ressource (image, script) est entièrement chargée.</TableCell>
+                            <TableCell>Déclenché lorsque la page ou une ressource (image, script) est entièrement
+                                chargée.</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell><Code>error</Code></TableCell>
-                            <TableCell>Déclenché lorsqu'une erreur survient lors du chargement d'une ressource.</TableCell>
+                            <TableCell>Déclenché lorsqu'une erreur survient lors du chargement d'une
+                                ressource.</TableCell>
                         </TableRow>
 
                         {/* Événements de glisser-déposer */}
@@ -220,7 +223,8 @@ document.addEventListener("scroll", () => {
                 <Heading level={2}>4. L'objet Event et ses propriétés</Heading>
 
                 <Text>
-                    Lorsqu'un événement est déclenché, JavaScript crée automatiquement un objet contenant des informations
+                    Lorsqu'un événement est déclenché, JavaScript crée automatiquement un objet contenant des
+                    informations
                     détaillées sur cet événement. Cet objet est passé en paramètre à la fonction gestionnaire.
                 </Text>
 
@@ -245,7 +249,8 @@ document.addEventListener("click", (event) => {
                     <TableBody>
                         <TableRow>
                             <TableCell><Code>type</Code></TableCell>
-                            <TableCell>Le type de l'événement déclenché (par exemple : <Code>"click"</Code>, <Code>"keydown"</Code>).</TableCell>
+                            <TableCell>Le type de l'événement déclenché (par exemple
+                                : <Code>"click"</Code>, <Code>"keydown"</Code>).</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell><Code>target</Code></TableCell>
@@ -274,11 +279,13 @@ document.addEventListener("click", (event) => {
                     <TableBody>
                         <TableRow>
                             <TableCell><Code>clientX</Code> / <Code>clientY</Code></TableCell>
-                            <TableCell>Position horizontale et verticale de la souris dans la fenêtre lors d'un événement de souris.</TableCell>
+                            <TableCell>Position horizontale et verticale de la souris dans la fenêtre lors d'un
+                                événement de souris.</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell><Code>button</Code></TableCell>
-                            <TableCell>Indique quel bouton de la souris a été utilisé (0 = gauche, 1 = milieu, 2 = droit).</TableCell>
+                            <TableCell>Indique quel bouton de la souris a été utilisé (0 = gauche, 1 = milieu, 2 =
+                                droit).</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -295,11 +302,14 @@ document.addEventListener("click", (event) => {
                     <TableBody>
                         <TableRow>
                             <TableCell><Code>key</Code></TableCell>
-                            <TableCell>La touche appuyée, pour un événement de clavier (par exemple : <Code>"a"</Code>, <Code>"Enter"</Code>).</TableCell>
+                            <TableCell>La touche appuyée, pour un événement de clavier (par exemple
+                                : <Code>"a"</Code>, <Code>"Enter"</Code>).</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell><Code>ctrlKey</Code>, <Code>shiftKey</Code>, <Code>altKey</Code>, <Code>metaKey</Code></TableCell>
-                            <TableCell>Valeurs booléennes qui indiquent si des touches spéciales (comme <Code>Ctrl</Code> ou <Code>Shift</Code>) étaient pressées au moment de l'événement.</TableCell>
+                            <TableCell>Valeurs booléennes qui indiquent si des touches spéciales
+                                (comme <Code>Ctrl</Code> ou <Code>Shift</Code>) étaient pressées au moment de
+                                l'événement.</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -324,64 +334,119 @@ document.addEventListener("keydown", (event) => {
 
                 <Heading level={3}>5.1. Changer la couleur d'un élément au clic</Heading>
 
-                <CodeCard language="javascript">
-                    {`const box = document.querySelector(".box");
+                <CodeWithPreviewCard language="javascript">
+                    <CodePanel>
+                        {`const box = document.querySelector(".box");
 
 box.addEventListener("click", () => {
   box.style.backgroundColor = "lightblue";
 });`}
-                </CodeCard>
+                    </CodePanel>
+
+                    <PreviewPanel>
+                        <ColorClickableBox/>
+                    </PreviewPanel>
+                </CodeWithPreviewCard>
+
 
                 <Heading level={3}>5.2. Afficher la position de la souris</Heading>
 
-                <CodeCard language="javascript">
-                    {`const display = document.querySelector("#position");
+                <CodeWithPreviewCard language="javascript">
+                    <CodePanel>
+                        {`const display = document.querySelector("#position");
 
 document.addEventListener("mousemove", (event) => {
   display.textContent = \`X: \${event.clientX}, Y: \${event.clientY}\`;
 });`}
-                </CodeCard>
+                    </CodePanel>
+
+                    <PreviewPanel>
+                        <MouseTrackerBox/>
+                    </PreviewPanel>
+                </CodeWithPreviewCard>
 
                 <Heading level={3}>5.3. Détecter quelle touche est pressée</Heading>
 
-                <CodeCard language="javascript">
-                    {`document.addEventListener("keydown", (event) => {
-  console.log("Vous avez pressé :", event.key);
-  
-  if (event.key === "Enter") {
-    console.log("Touche Entrée détectée !");
-  }
-});`}
-                </CodeCard>
+                <CodeWithPreviewCard language="javascript">
+                    <CodePanel>
+                        {`const pressedKeysP = document.getElementById("pressedKeys");
+
+    window.addEventListener("keydown", (event) => {
+      let keys = [];
+
+      if (event.ctrlKey) keys.push("Ctrl");
+      if (event.shiftKey) keys.push("Shift");
+      if (event.altKey) keys.push("Alt");
+      if (event.metaKey) keys.push("Meta"); // Command sur Mac
+
+      if (!["Control", "Shift", "Alt", "Meta"].includes(event.key)) {
+        keys.push(event.key);
+      }
+
+      if (keys.length > 0) {
+        pressedKeysP.textContent = "Touche(s) pressée(s) : " + keys.join(" + ");
+      }
+    });`}
+                    </CodePanel>
+
+                    <PreviewPanel>
+                        <KeyPressBox/>
+                    </PreviewPanel>
+                </CodeWithPreviewCard>
 
                 <Heading level={3}>5.4. Validation simple d'un formulaire</Heading>
 
-                <CodeCard language="javascript">
-                    {`const form = document.querySelector("form");
-const input = document.querySelector("#username");
+                <CodeWithPreviewCard language="html">
+                    <CodePanel>
+                        {`<form>
+    <label for="username">Nom d'utilisateur :</label>
+    <input type="text" id="username" />
+    <button type="submit">Valider</button>
+  </form>
 
-form.addEventListener("submit", (event) => {
-  event.preventDefault(); // Empêche la soumission par défaut
-  
-  if (input.value.length < 3) {
-    alert("Le nom d'utilisateur doit contenir au moins 3 caractères");
-  } else {
-    console.log("Formulaire valide !");
-  }
-});`}
-                </CodeCard>
+  <p id="message"></p>
+
+  <script>
+    const form = document.querySelector("form");
+    const input = document.querySelector("#username");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault(); // Empêche la soumission par défaut
+
+      if (input.value.length < 3) {
+        message.textContent = "Le nom d'utilisateur doit contenir au moins 3 caractères";
+        message.classList.add("error");
+      } else {
+        message.textContent = "Formulaire valide !";
+        message.classList.remove("error");
+      }
+    });
+  </script>`}
+                    </CodePanel>
+
+                    <PreviewPanel>
+                        <FormBox/>
+                    </PreviewPanel>
+                </CodeWithPreviewCard>
 
                 <Heading level={3}>5.5. Compteur de clics</Heading>
 
-                <CodeCard language="javascript">
-                    {`const button = document.querySelector("#counter");
+                <CodeWithPreviewCard language="javascript">
+                    <CodePanel>
+                        {`const button = document.querySelector("#counter");
 let count = 0;
 
 button.addEventListener("click", () => {
   count++;
   button.textContent = \`Cliqué \${count} fois\`;
 });`}
-                </CodeCard>
+                    </CodePanel>
+
+                    <PreviewPanel>
+                        <ClickCounterBox/>
+                    </PreviewPanel>
+                </CodeWithPreviewCard>
             </section>
         </article>
     );
