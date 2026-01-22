@@ -10,7 +10,6 @@ export default function ClickableBox() {
             size="sm"
             onClick={() => {
                 alert("Bouton cliqué !");
-                alert("Clic détecté");
             }}
         >
             Clique ici
