@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "concurrently \"next dev --turbopack\" \"node ws-server.js\"",
     "build": "next build",
+    "start": "concurrently \"node .next/standalone/server.js\" \"NODE_ENV=production node ws-server.js\"",
     "postbuild_linux": "cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
     "postbuild_win": "xcopy /E /I .next\\static .next\\standalone\\.next\\static && xcopy /E /I public .next\\standalone\\public",
-    "start": "node .next/standalone/server.js",
     "start_old": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
@@ -45,6 +45,7 @@
     "cheerio": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "concurrently": "^9.2.1",
     "cookies": "^0.9.1",
     "csrf": "^3.1.0",
     "drizzle-orm": "^0.44.7",
@@ -66,8 +67,11 @@
     "react-syntax-highlighter": "^16.1.0",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "tailwind-merge": "^3.3.1",
     "vaul": "^1.1.2",
+    "ws": "^8.19.0",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
