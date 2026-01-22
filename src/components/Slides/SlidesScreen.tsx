@@ -13,7 +13,7 @@ import {useSlideNotes} from "./hooks/useSlideNotes";
 import {SlideTitle} from "./ui/SlideTitle";
 import Module from "@/types/module";
 import Section from "@/types/Section";
-import {useSlidesNavigation} from "@/components/Slides/hooks/context";
+import {useSlidesNavigation} from "@/components/Slides/hooks/useSlidesNavigation";
 import {SlidesMobileView} from "@/components/Slides/SlidesMobileView";
 import {SlidesProgress} from "@/components/Slides/SlidesProgress";
 import {SlidesActions} from "@/components/Slides/SlidesActions";
