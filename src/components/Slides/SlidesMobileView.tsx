@@ -5,7 +5,6 @@ import {ChevronLeft, ChevronRight, Maximize, Minimize} from "lucide-react";
 import {useSlides} from "@/components/Slides/context/SlidesContext";
 import {NotesRenderer} from "@/components/Slides/ui/NotesRenderer";
 
-
 export const SlidesMobileView = () => {
     const {
         currentSlide,
@@ -19,15 +18,18 @@ export const SlidesMobileView = () => {
         isFullscreen,
     } = useSlides();
 
+    const maxStep = slideSteps[currentSlide] || 0;
+
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full relative bg-gray-50">
             {/* Header */}
-            <div className="px-6 py-4 border-b text-sm font-bold uppercase">
+            <div
+                className="px-6 py-3 border-b text-sm font-bold uppercase bg-white/80 backdrop-blur-sm sticky top-0 z-10">
                 Slide {currentSlide + 1} / {slidesCount}
             </div>
 
             {/* Notes */}
-            <div className="flex-1 overflow-y-auto p-6 pb-40">
+            <div className="flex-1 overflow-y-auto p-6">
                 {currentNotes ? (
                     <NotesRenderer notes={currentNotes} variant="mobile"/>
                 ) : (
@@ -38,23 +40,37 @@ export const SlidesMobileView = () => {
             </div>
 
             {/* Controls */}
-            <div className="fixed bottom-0 left-0 right-0 p-6 bg-background border-t flex gap-4">
-                <Button onClick={prevSlide} disabled={currentSlide === 0 && currentStep === 0}>
-                    <ChevronLeft/>
-                </Button>
+            <div
+                className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-sm border-t z-20 flex flex-col gap-3">
+                {/* Ligne du haut : Précédent + Fullscreen */}
+                <div className="flex gap-3">
+                    <Button
+                        onClick={prevSlide}
+                        disabled={currentSlide === 0 && currentStep === 0}
+                        className="flex-1 flex items-center justify-center gap-2"
+                        variant="outline"
+                    >
+                        <ChevronLeft/> Précédent
+                    </Button>
 
-                <Button onClick={toggleFullscreen}>
-                    {isFullscreen ? <Minimize/> : <Maximize/>}
-                </Button>
+                    <Button
+                        onClick={toggleFullscreen}
+                        className="flex-1 flex items-center justify-center gap-2"
+                        variant="outline"
+                    >
+                        {isFullscreen ? <Minimize/> : <Maximize/>}
+                        {isFullscreen ? "Réduire" : "Fullscreen"}
+                    </Button>
+                </div>
 
+                {/* Gros bouton en dessous : Suivant */}
                 <Button
                     onClick={nextSlide}
-                    disabled={
-                        currentSlide === slidesCount - 1 &&
-                        currentStep === (slideSteps[currentSlide] || 0)
-                    }
+                    disabled={currentSlide === slidesCount - 1 && currentStep === maxStep}
+                    variant="outline"
+                    className="w-full flex items-center justify-center gap-2 text-lg font-bold py-6"
                 >
-                    <ChevronRight/>
+                    Suivant<ChevronRight/>
                 </Button>
             </div>
         </div>
