@@ -1,15 +1,15 @@
 'use client';
 
-import React, {useMemo, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {cn} from "@/lib/utils";
 
-import {SlidesContext} from "./context/SlidesContext";
+import {SlideMode, SlidesContext} from "./context/SlidesContext";
 import {NotesRenderer} from "./ui/NotesRenderer";
 import {useMediaQuery} from "@/hook/useMediaQuery";
 import {useFullscreen} from "./hooks/useFullscreen";
 import {useKeyboardNav} from "./hooks/useKeyboardNav";
 import {useSlideNotes} from "./hooks/useSlideNotes";
-
+import {useSlideSync} from "./hooks/useSlideSync";
 import {SlideTitle} from "./ui/SlideTitle";
 import Module from "@/types/module";
 import Section from "@/types/Section";
@@ -17,6 +17,7 @@ import {useSlidesNavigation} from "@/components/Slides/hooks/useSlidesNavigation
 import {SlidesMobileView} from "@/components/Slides/SlidesMobileView";
 import {SlidesProgress} from "@/components/Slides/SlidesProgress";
 import {SlidesActions} from "@/components/Slides/SlidesActions";
+import {useSearchParams} from "next/dist/client/components/navigation";
 
 interface SlidesScreenProps {
     children: React.ReactNode;
@@ -31,6 +32,9 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                                                           }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const isMobile = useMediaQuery("(max-width: 768px)");
+
+    const searchParams = useSearchParams();
+    const mode = searchParams.get('mode') as SlideMode || 'standalone';
 
     /* ---------- Slides ---------- */
     const slides = useMemo(() => {
@@ -54,10 +58,48 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
     /* ---------- Fullscreen ---------- */
     const {isFullscreen, toggleFullscreen} = useFullscreen(containerRef);
 
+    /* ---------- WebSocket Sync ---------- */
+    const goToSlideRef = useRef(navigation.goToSlide);
+
+    useEffect(() => {
+        goToSlideRef.current = navigation.goToSlide;
+    }, [navigation.goToSlide]);
+
+    const handleRemoteSlideChange = useCallback(
+        (slide: number, step: number) => {
+            if (mode === 'viewer') {
+                goToSlideRef.current(slide);
+            }
+        },
+        [mode]
+    );
+
+    const {isConnected, viewersCount, broadcastSlideChange} = useSlideSync({
+        mode,
+        onSlideChange: handleRemoteSlideChange,
+    });
+
+    // Broadcast seulement en mode presenter
+    const prevSlideRef = useRef(navigation.currentSlide);
+    const prevStepRef = useRef(navigation.currentStep);
+
+    useEffect(() => {
+        if (mode === 'presenter') {
+            if (prevSlideRef.current !== navigation.currentSlide ||
+                prevStepRef.current !== navigation.currentStep) {
+                broadcastSlideChange(navigation.currentSlide, navigation.currentStep);
+                prevSlideRef.current = navigation.currentSlide;
+                prevStepRef.current = navigation.currentStep;
+            }
+        }
+    }, [mode, navigation.currentSlide, navigation.currentStep, broadcastSlideChange]);
+
     /* ---------- Keyboard ---------- */
     useKeyboardNav({
-        next: navigation.nextSlide,
-        prev: navigation.prevSlide,
+        next: mode === 'viewer' ? () => {
+        } : navigation.nextSlide,
+        prev: mode === 'viewer' ? () => {
+        } : navigation.prevSlide,
         toggleFullscreen,
     });
 
@@ -68,20 +110,18 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
     return (
         <SlidesContext.Provider
             value={{
-                /* Navigation */
                 ...navigation,
                 registerSteps: (steps) =>
                     navigation.registerSteps(navigation.currentSlide, steps),
-
-                /* Notes */
                 currentNotes,
                 showNotes,
                 setShowNotes,
-
-                /* UI */
                 isFullscreen,
                 toggleFullscreen,
                 isMobile,
+                mode,
+                isConnected: mode !== 'standalone' ? isConnected : true,
+                viewersCount: mode === 'presenter' ? viewersCount : 0,
             }}
         >
             <div
@@ -93,6 +133,24 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                         : "bg-muted/30 rounded-2xl border"
                 )}
             >
+                {/* Badge de statut */}
+                {mode !== 'standalone' && (
+                    <div className="absolute top-4 right-4 z-50">
+                        <div
+                            className="bg-black/80 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-sm flex items-center gap-2 shadow-lg">
+                            <span className={isConnected ? 'text-green-400' : 'text-red-400'}>
+                                {isConnected ? '🟢' : '🔴'}
+                            </span>
+                            <span>{mode === 'presenter' ? 'Présentateur' : 'Spectateur'}</span>
+                            {mode === 'presenter' && (
+                                <span className="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded">
+                                    {viewersCount} 👥
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                )}
+
                 {isMobile ? (
                     <SlidesMobileView/>
                 ) : (

@@ -1,5 +1,7 @@
 import {createContext, useContext} from "react";
 
+export type SlideMode = 'presenter' | 'viewer' | 'standalone';
+
 export interface SlidesContextType {
     // Navigation
     currentSlide: number;
@@ -20,6 +22,11 @@ export interface SlidesContextType {
     isFullscreen: boolean;
     toggleFullscreen: () => void;
     isMobile: boolean;
+
+    // WebSocket
+    mode: SlideMode;
+    isConnected: boolean;
+    viewersCount: number;
 }
 
 export const SlidesContext = createContext<SlidesContextType | null>(null);

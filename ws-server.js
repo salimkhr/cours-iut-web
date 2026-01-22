@@ -12,16 +12,64 @@ const io = new Server(httpServer, {
     }
 });
 
+let presenter = null;
+let currentSlide = 0;
+let currentStep = 0;
+const viewers = new Set();
+
 io.on('connection', (socket) => {
     console.log('✅ Client connecté:', socket.id);
 
-    socket.on('message', (data) => {
-        console.log('📨 Message:', data);
-        io.emit('message', data);
+    socket.on('join-presenter', () => {
+        if (presenter) {
+            io.to(presenter).emit('presenter-replaced');
+        }
+        presenter = socket.id;
+        console.log('👨‍🏫 Nouveau présentateur');
+
+        // Informer du nombre de viewers
+        socket.emit('viewers-count', viewers.size);
+    });
+
+    socket.on('join-viewer', () => {
+        viewers.add(socket.id);
+        console.log(`👥 Nouveau viewer (${viewers.size} total)`);
+
+        // Envoyer l'état actuel
+        socket.emit('slide-update', {currentSlide, currentStep});
+
+        // Informer le présentateur
+        if (presenter) {
+            io.to(presenter).emit('viewers-count', viewers.size);
+        }
+    });
+
+    socket.on('slide-change', ({slide, step}) => {
+        if (socket.id !== presenter) return;
+
+        currentSlide = slide;
+        currentStep = step;
+
+        console.log(`📊 Slide ${slide}, step ${step}`);
+
+        // Diffuser aux viewers
+        viewers.forEach(viewerId => {
+            io.to(viewerId).emit('slide-update', {currentSlide, currentStep});
+        });
     });
 
     socket.on('disconnect', () => {
         console.log('❌ Client déconnecté:', socket.id);
+
+        if (socket.id === presenter) {
+            presenter = null;
+            console.log('Présentateur déconnecté');
+        } else if (viewers.has(socket.id)) {
+            viewers.delete(socket.id);
+            if (presenter) {
+                io.to(presenter).emit('viewers-count', viewers.size);
+            }
+        }
     });
 });
 
