@@ -1,69 +1,32 @@
-import {useEffect, useRef, useState} from "react";
-import {useTheme} from "next-themes";
+'use client';
+
+import {useEffect, useRef} from "react";
 import {ProgressGroup} from "./progress/ProgressGroup";
-import {useSlides} from "./SlidesContext";
+import {useSlides} from "@/components/Slides/context/SlidesContext";
 
-export const SlidesProgress: React.FC = () => {
-  const {
-    slidesCount,
-    currentSlide,
-    currentStep,
-    slideSteps
-  } = useSlides();
+export const SlidesProgress = () => {
+    const {slidesCount, currentSlide, currentStep, slideSteps} = useSlides();
+    const activeRef = useRef<HTMLDivElement>(null);
 
-  const activeRef = useRef<HTMLDivElement>(null);
-  const { theme, systemTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+    useEffect(() => {
+        activeRef.current?.scrollIntoView({block: "center", behavior: "smooth"});
+    }, [currentSlide, currentStep]);
 
-  useEffect(() => {
-    if (activeRef.current) {
-      activeRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  }, [currentSlide, currentStep]);
-
-  const currentTheme = mounted
-      ? theme === "system"
-          ? systemTheme
-          : theme
-      : "light";
-
-  const isDark = currentTheme === "dark";
-
-  return (
-      <div className="absolute right-2 top-0 bottom-0 flex items-center z-[60] pointer-events-none">
-        <div className="flex flex-col gap-2 max-h-[90vh] overflow-y-auto scrollbar-hide items-center p-1 pointer-events-auto bg-background/80 backdrop-blur-md rounded-full border border-border/50 shadow-lg">
-          {Array.from({ length: slidesCount }).map((_, sIdx) => {
-            const steps = (slideSteps[sIdx] || 0) + 1;
-            const isCurrentSlide = currentSlide === sIdx;
-
-            return (
-                <ProgressGroup
-                    key={sIdx}
-                    sIdx={sIdx}
-                    steps={steps}
-                    isCurrentSlide={isCurrentSlide}
-                    currentSlide={currentSlide}
-                    currentStep={currentStep}
-                    isDark={isDark}
-                    activeRef={activeRef}
-                />
-            );
-          })}
+    return (
+        <div className="absolute right-2 top-0 bottom-0 flex items-center z-50">
+            <div className="flex flex-col gap-2 max-h-[90vh] overflow-y-auto p-1 bg-background/80 rounded-full border">
+                {Array.from({length: slidesCount}).map((_, sIdx) => (
+                    <ProgressGroup
+                        key={sIdx}
+                        sIdx={sIdx}
+                        steps={(slideSteps[sIdx] || 0) + 1}
+                        currentSlide={currentSlide}
+                        currentStep={currentStep}
+                        activeRef={currentSlide === sIdx ? activeRef : undefined}
+                        isCurrentSlide={sIdx === currentSlide} // ✅ add this
+                    />
+                ))}
+            </div>
         </div>
-
-        <style jsx>{`
-          .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-          }
-          .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-          }
-        `}</style>
-      </div>
-  );
+    );
 };

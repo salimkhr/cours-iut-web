@@ -1,102 +1,85 @@
-'use client'
-import React, {useState} from 'react';
-import {ChevronLeft, ChevronRight, Maximize, MessageSquare, Minimize} from 'lucide-react';
+'use client';
+
+import {ChevronLeft, ChevronRight, Maximize, MessageSquare, Minimize} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
-import {useSlides} from "./SlidesContext";
+import {useState} from "react";
+import {useSlides} from "@/components/Slides/context/SlidesContext";
 
-interface SlidesActionsProps {
-  className?: string;
-}
+export const SlidesActions = ({className}: { className?: string }) => {
+    const {
+        currentSlide,
+        currentStep,
+        slidesCount,
+        slideSteps,
+        isFullscreen,
+        toggleFullscreen,
+        prevSlide,
+        nextSlide,
+        showNotes,
+        setShowNotes,
+        currentNotes,
+        isMobile,
+    } = useSlides();
 
-export const SlidesActions: React.FC<SlidesActionsProps> = ({ className }) => {
-  const {
-    currentSlide,
-    currentStep,
-    slidesCount,
-    isFullscreen,
-    slideSteps,
-    showNotes,
-    currentNotes,
-    prevSlide,
-    nextSlide,
-    toggleFullscreen,
-    setShowNotes,
-    isMobile
-  } = useSlides();
+    const [hovered, setHovered] = useState(false);
+    const hasNotes = !!currentNotes;
 
-  const [isHovered, setIsHovered] = useState(false);
-  const hasNotes = !!currentNotes;
+    if (isMobile) return null;
 
-  return (
-      <div
-          className={cn(
-              "absolute bottom-4 left-0 flex items-center justify-end px-8 z-10 gap-4",
-              isMobile && "relative bottom-auto left-auto right-auto px-0 justify-center",
-              className
-          )}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-      >
-        <div className={cn(
-            "flex items-center gap-2 p-1 rounded-lg border shadow-lg transition-opacity duration-300",
-            isMobile
-                ? "bg-transparent backdrop-blur-none border-none shadow-none gap-4 opacity-100"
-                : isHovered
-                    ? "bg-background/50 backdrop-blur-sm border-border/20 opacity-100"
-                    : "bg-background/30 backdrop-blur-sm border-border/10 opacity-0"
-        )}>
-          {!isMobile && (
-              <>
+    return (
+        <div
+            className={cn(
+                "absolute bottom-4 left-0 w-full flex justify-center z-50",
+                className
+            )}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+        >
+            <div
+                className={cn(
+                    "flex items-center gap-2 p-2 rounded-xl border backdrop-blur-md transition-opacity",
+                    hovered ? "opacity-100 bg-background/70" : "opacity-0 bg-background/40"
+                )}
+            >
                 <Button
-                    variant="ghost"
                     size="icon"
-                    onClick={() => setShowNotes(!showNotes)}
+                    variant="ghost"
                     disabled={!hasNotes}
-                    title={showNotes ? "Masquer les notes" : "Afficher les notes"}
-                    className={cn(
-                        "h-9 w-9",
-                        showNotes && "text-primary bg-primary/10 hover:bg-primary/20"
-                    )}
+                    onClick={() => setShowNotes(!showNotes)}
                 >
-                  <MessageSquare className="h-4 w-4" />
+                    <MessageSquare/>
                 </Button>
 
-                <div className="w-px h-6 bg-border/50 mx-1" />
+                <div className="w-px h-6 bg-border/50"/>
+
+                <Button size="icon" variant="ghost" onClick={toggleFullscreen}>
+                    {isFullscreen ? <Minimize/> : <Maximize/>}
+                </Button>
+
+                <div className="w-px h-6 bg-border/50"/>
 
                 <Button
-                    variant="ghost"
                     size="icon"
-                    onClick={toggleFullscreen}
-                    title="Plein écran (F11)"
-                    className="h-9 w-9"
+                    variant="ghost"
+                    onClick={prevSlide}
+                    disabled={currentSlide === 0 && currentStep === 0}
                 >
-                  {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+                    <ChevronLeft/>
                 </Button>
 
-                <div className="w-px h-6 bg-border/50 mx-1" />
-              </>
-          )}
-
-          <Button
-              variant={isMobile ? "outline" : "ghost"}
-              size="icon"
-              onClick={prevSlide}
-              disabled={currentSlide === 0 && currentStep === 0}
-              className={cn("h-9 w-9", isMobile && "rounded-full bg-background")}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-              variant={isMobile ? "outline" : "ghost"}
-              size="icon"
-              onClick={nextSlide}
-              disabled={currentSlide === slidesCount - 1 && currentStep === (slideSteps[currentSlide] || 0)}
-              className={cn("h-9 w-9", isMobile && "rounded-full bg-background")}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+                <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={nextSlide}
+                    disabled={
+                        currentSlide === slidesCount - 1 &&
+                        currentStep === (slideSteps[currentSlide] || 0)
+                    }
+                >
+                    <ChevronRight/>
+                </Button>
+            </div>
         </div>
-      </div>
-  );
+    );
 };
