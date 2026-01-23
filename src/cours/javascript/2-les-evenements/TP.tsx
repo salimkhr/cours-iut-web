@@ -646,7 +646,7 @@ const quiz = [
 
                     <ListItem>
                         Créer une fonction <Code>updateAnswers(question)</Code> mettant à jour le texte des
-                        éléments <Code>.answer</Code> en se basant sur <Code>question.options</Code>. Cette fonction
+                        éléments <Code>.answer</Code> en se basant sur <Code>quiz.options</Code>. Cette fonction
                         sera appelée par la fonction <Code>displayQuestion</Code>.
                     </ListItem>
 
