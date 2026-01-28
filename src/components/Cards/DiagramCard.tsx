@@ -10,35 +10,94 @@ type DiagramCardProps = {
     chart: string;
 };
 
-export default function DiagramCard({ header, chart }: DiagramCardProps) {
+export default function DiagramCard({header, chart}: DiagramCardProps) {
     const [svg, setSvg] = useState<string>("");
-    const { theme } = useTheme(); // récupère 'light' ou 'dark'
+    const {theme, systemTheme} = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    // Fix hydration
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
+        if (!mounted) {
+            console.log("⏳ Attente du montage du composant...");
+            return;
+        }
+
+        if (!chart || chart.trim() === "") {
+            console.error("⚠️ Chart vide ou invalide");
+            setSvg("<p>Aucun diagramme fourni</p>");
+            return;
+        }
+
         let isMounted = true;
-        const diagramId = `mermaid-diagram-${crypto.randomUUID()}`;
+        const diagramId = `mermaid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-        // Définir le thème Mermaid en fonction du mode
-        const mermaidTheme = theme === "dark" ? "dark" : "default";
+        // Déterminer le thème effectif
+        const currentTheme = theme === "system" ? systemTheme : theme;
+        const mermaidTheme = currentTheme === "dark" ? "dark" : "default";
 
-        mermaid.initialize({ theme: mermaidTheme });
+        console.log("🎨 Render avec thème:", mermaidTheme);
 
-        mermaid.render(diagramId, chart)
-            .then(result => {
-                if (isMounted) setSvg(result.svg);
-            })
-            .catch(err => {
-                console.error("Erreur Mermaid:", err);
-                if (isMounted) setSvg(`<pre>${chart}</pre>`);
-            });
+        // Configuration Mermaid
+        mermaid.initialize({
+            theme: mermaidTheme,
+            startOnLoad: false,
+            securityLevel: 'loose',
+            fontFamily: 'inherit'
+        });
 
-        return () => { isMounted = false };
-    }, [chart, theme]); // Re-render si le diagram ou le thème change
+        // Render async
+        const renderDiagram = async () => {
+            try {
+                const result = await mermaid.render(diagramId, chart);
+                if (isMounted) {
+                    console.log("✅ Diagramme rendu");
+                    setSvg(result.svg);
+                }
+            } catch (err: any) {
+                console.error("❌ Erreur Mermaid:", err);
+                if (isMounted) {
+                    setSvg(`<pre style="color: red; white-space: pre-wrap;">${err.message || err}\n\n${chart}</pre>`);
+                }
+            }
+        };
+
+        renderDiagram();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [chart, theme, systemTheme, mounted]);
+
+    // Skeleton pendant le chargement
+    if (!mounted) {
+        return (
+            <BaseCard
+                header={<Text className="text-white">{header}</Text>}
+                content={<div className="h-48 animate-pulse bg-gray-200 dark:bg-gray-700 rounded"/>}
+                withMarge={false}
+                withHover={false}
+                withLed={false}
+                className="w-full"
+            />
+        );
+    }
 
     return (
         <BaseCard
             header={<Text className="text-white">{header}</Text>}
-            content={<div dangerouslySetInnerHTML={{ __html: svg }} className="w-full mx-auto" />}
+            content={
+                svg ? (
+                    <div dangerouslySetInnerHTML={{__html: svg}} className="w-full mx-auto"/>
+                ) : (
+                    <div className="h-48 flex items-center justify-center text-gray-500">
+                        Chargement du diagramme...
+                    </div>
+                )
+            }
             withMarge={false}
             withHover={false}
             withLed={false}
