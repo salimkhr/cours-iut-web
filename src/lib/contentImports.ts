@@ -53,6 +53,7 @@ export const contentImports: ContentImportsType = {
     },
     '3-les-evenements-avances': {
       'Cours': () => import('@/cours/javascript/3-les-evenements-avances/Cours'),
+      'Slide': () => import('@/cours/javascript/3-les-evenements-avances/Slide'),
       'TP': () => import('@/cours/javascript/3-les-evenements-avances/TP'),
     },
   },
