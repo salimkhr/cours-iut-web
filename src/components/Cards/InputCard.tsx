@@ -5,7 +5,7 @@ import BaseCard from "@/components/Cards/BaseCard";
 import {CheckIcon, ClipboardCopyIcon, DownloadIcon} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {Button} from "@/components/ui/button";
-import Module from "@/types/module";
+import Module from "@/types/Module";
 import {oneLight} from "react-syntax-highlighter/dist/esm/styles/prism";
 
 interface CodeCardProps {
@@ -23,7 +23,7 @@ interface CodeCardProps {
 export default function InputCard({
                                       title,
                                       description,
-                                      language="html",
+                                      language = "html",
                                       code,
                                       showLineNumbers = true,
                                       filename,
@@ -97,7 +97,7 @@ export default function InputCard({
                     onClick={handleCopy}
                     className="flex items-center gap-2 text-white hover:bg-white/10"
                 >
-                    {copied ? <CheckIcon className="w-4 h-4" /> : <ClipboardCopyIcon className="w-4 h-4"/>}
+                    {copied ? <CheckIcon className="w-4 h-4"/> : <ClipboardCopyIcon className="w-4 h-4"/>}
                     {copied ? 'Copié' : 'Copier'}
                 </Button>
             </div>

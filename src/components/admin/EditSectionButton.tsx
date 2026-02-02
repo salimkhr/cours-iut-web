@@ -1,7 +1,7 @@
 'use client'
 
 // Composant wrapper pour l'ajout (pour garder la compatibilité)
-import Module from "@/types/module";
+import Module from "@/types/Module";
 import {useState} from "react";
 import {Button} from "@/components/ui/button";
 import SectionForm, {Section} from "@/components/admin/SectionForm";

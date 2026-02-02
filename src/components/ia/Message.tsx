@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 import {Bot, User} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {Message as MessageType} from "@/lib/store/useChatStore";
-import Module from "@/types/module";
+import Module from "@/types/Module";
 import Code from "@/components/ui/Code";
 import CodeCard from "@/components/Cards/CodeCard";
 

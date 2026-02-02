@@ -5,7 +5,7 @@ import {Button} from "@/components/ui/button";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet";
 import {MessageSquare} from "lucide-react";
 import ChatBox from "@/components/ia/ChatBox";
-import Module from "@/types/module";
+import Module from "@/types/Module";
 
 interface ChatWidgetProps {
     currentModule?: Module;

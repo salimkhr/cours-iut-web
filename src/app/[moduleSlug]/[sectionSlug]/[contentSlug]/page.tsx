@@ -1,9 +1,10 @@
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import Heading from "@/components/ui/Heading";
-import {contentImports} from '@/lib/contentImports';
 import {notFound} from "next/navigation";
 import {getModuleData} from "@/hook/getModuleData";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
+import {getContentComponent} from "@/lib/getContentComponent";
+import ExamenWrapper from "@/components/ExamenWrapper";
 
 interface ContentPageProps {
     params: Promise<{
@@ -17,29 +18,32 @@ export async function generateMetadata({params}: ContentPageProps) {
     const {moduleSlug, sectionSlug} = await params;
     const {currentModule, currentSection} = await getModuleData({
         moduleSlug,
-        sectionSlug
+        sectionSlug,
     });
-    return currentSection !== null ? generatePageMetadata({currentModule, currentSection}) : {};
+
+    return currentSection
+        ? generatePageMetadata({currentModule, currentSection})
+        : {};
 }
 
 export default async function Content({params}: ContentPageProps) {
     const {moduleSlug, sectionSlug, contentSlug} = await params;
-    const {currentModule, currentSection, currentContent} = await getModuleData({
-        moduleSlug,
-        sectionSlug,
-        contentSlug
+
+    const {currentModule, currentSection, currentContent} =
+        await getModuleData({
+            moduleSlug,
+            sectionSlug,
+            contentSlug,
+        });
+
+    if (!currentContent || !currentSection) notFound();
+    if (currentSection.isAvailable === false) notFound();
+
+    const ComponentToRender = await getContentComponent({
+        currentModule,
+        currentSection,
+        currentContent,
     });
-
-    if (currentContent === null) notFound();
-    if (currentSection === null) notFound();
-    
-    const importFunc = contentImports?.[moduleSlug]?.[sectionSlug]?.[contentSlug.charAt(0).toUpperCase() + contentSlug.slice(1)] ?? [];
-    if (!importFunc) notFound();
-
-    const ComponentToRender = (await importFunc()).default;
-    if (!ComponentToRender) notFound();
-
-    if(currentSection.isAvailable === false) notFound();
 
     return (
         <div>
@@ -55,7 +59,13 @@ export default async function Content({params}: ContentPageProps) {
                 </Heading>
 
                 {/*<AntiCopyProtector>*/}
-                <ComponentToRender/>
+                {currentContent === "examen" && currentSection.examenIsLock ? (
+                    <ExamenWrapper currentModule={currentModule}>
+                        <ComponentToRender/>
+                    </ExamenWrapper>
+                ) : (
+                    <ComponentToRender/>
+                )}
                 {/*</AntiCopyProtector>*/}
 
                 {/*<ChatWidget currentModule={currentModule}/>*/}

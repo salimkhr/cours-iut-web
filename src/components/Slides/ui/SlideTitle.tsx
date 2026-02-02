@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react';
 import {GlitchText} from "@/components/GlitchText";
 import {FooterSvg} from "@/components/FooterSvg";
 import {useTheme} from "next-themes";
-import Module from "@/types/module";
+import Module from "@/types/Module";
 import Section from "@/types/Section";
 import TagsBadges from "@/components/page/TagsBadges";
 import {SlideHeading} from "@/components/Slides/ui/SlideHeading";

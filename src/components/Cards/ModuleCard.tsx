@@ -1,5 +1,5 @@
 import {BookOpen} from 'lucide-react';
-import Module from "@/types/module";
+import Module from "@/types/Module";
 import BaseCard from "@/components/Cards/BaseCard";
 import iconMap from "@/lib/iconMap";
 import {Button} from "@/components/ui/button";
@@ -13,7 +13,7 @@ interface ModuleCardProps {
 export default function ModuleCard({currentModule}: ModuleCardProps) {
     const {title, description, path, iconName} = currentModule;
     const Icon = iconMap[iconName] || BookOpen;
-    
+
     const header = (
         <div className="group-hover:rotate-12 transition-transform duration-300" key={path}>
             <Icon size={40} className="text-white"/>
@@ -32,7 +32,7 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
     );
 
     const footer = (
-        <Button  className={cn(`w-full border-2`, `border-${currentModule.path}`)} variant="outline" >
+        <Button className={cn(`w-full border-2`, `border-${currentModule.path}`)} variant="outline">
             Voir les cours
         </Button>
     );

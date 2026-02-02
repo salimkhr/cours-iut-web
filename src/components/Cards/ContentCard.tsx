@@ -1,6 +1,6 @@
 'use client';
 import {useRouter} from "next/navigation";
-import Module from "@/types/module";
+import Module from "@/types/Module";
 import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
 import Section from "@/types/Section";
 

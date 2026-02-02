@@ -11,7 +11,7 @@ import {useKeyboardNav} from "./hooks/useKeyboardNav";
 import {useSlideNotes} from "./hooks/useSlideNotes";
 
 import {SlideTitle} from "./ui/SlideTitle";
-import Module from "@/types/module";
+import Module from "@/types/Module";
 import Section from "@/types/Section";
 import {useSlidesNavigation} from "@/components/Slides/hooks/useSlidesNavigation";
 import {SlidesMobileView} from "@/components/Slides/SlidesMobileView";

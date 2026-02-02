@@ -1,4 +1,4 @@
-import Module from "@/types/module";
+import Module from "@/types/Module";
 import Section from "@/types/Section";
 import {Metadata} from "next";
 

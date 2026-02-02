@@ -6,7 +6,7 @@ import {Switch} from "@/components/ui/switch";
 import {useEffect, useState} from "react";
 import updateSectionState from "@/hook/admin/updateSectionState";
 import EditSectionButton from "@/components/admin/EditSectionButton";
-import Module from "@/types/module";
+import Module from "@/types/Module";
 import {Section as SectionFrom} from "@/components/admin/SectionForm";
 import useAdminApi from "@/hook/admin/useAdminApi";
 
@@ -28,7 +28,7 @@ export default function AdminSection({
 
     const [currentSection, setCurrentSection] = useState<Section>(section)
 
-    const { editSection: editSectionApi } = useAdminApi();
+    const {editSection: editSectionApi} = useAdminApi();
 
     const editSection = async (updatedSection: SectionFrom) => {
         const saved = await editSectionApi(modData._id as unknown as string, updatedSection);

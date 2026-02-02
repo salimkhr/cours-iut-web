@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Heading from "@/components/ui/Heading";
 import {List, ListItem} from "@/components/ui/List";
-import Module from "@/types/module";
+import Module from "@/types/Module";
 import {Button} from "@/components/ui/button";
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog";
 

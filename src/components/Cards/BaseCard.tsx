@@ -1,7 +1,7 @@
 'use client';
 import {ReactNode, useEffect, useState} from 'react';
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
-import Module from "@/types/module";
+import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
 import {useTheme} from "next-themes";
 import Link from "next/link";
@@ -28,7 +28,7 @@ export default function BaseCard({
                                      withLed = true,
                                      className = ""
                                  }: BaseCardProps) {
-    const { theme } = useTheme();
+    const {theme} = useTheme();
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
     if (!mounted) return null; // SSR safe
@@ -57,7 +57,7 @@ export default function BaseCard({
                         `bg-${currentModule ? currentModule.path : 'module'}`
                     )}
                 >
-                    {withLed && <LEDIndicator />}
+                    {withLed && <LEDIndicator/>}
                     {header}
                 </CardHeader>
 
@@ -87,23 +87,32 @@ export function LEDIndicator() {
     return (
         <div className="flex gap-2">
             <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse"></div>
-            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse"
+                 style={{animationDelay: '0.2s'}}></div>
+            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse"
+                 style={{animationDelay: '0.4s'}}></div>
         </div>
     );
 }
 
 interface ActionButtonProps {
     currentModule?: Module;
-    href:string;
+    href: string;
     children: React.ReactNode;
     className?: string;
     disabled?: boolean;
     target?: string;
 }
 
-export function ActionButton({ currentModule, href, children, className = '', disabled = false , target= '_self'}: ActionButtonProps) {
-    const { theme } = useTheme();
+export function ActionButton({
+                                 currentModule,
+                                 href,
+                                 children,
+                                 className = '',
+                                 disabled = false,
+                                 target = '_self'
+                             }: ActionButtonProps) {
+    const {theme} = useTheme();
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
     if (!mounted) return null;

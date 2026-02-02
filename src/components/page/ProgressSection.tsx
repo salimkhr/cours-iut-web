@@ -1,4 +1,4 @@
-import Module from "@/types/module";
+import Module from "@/types/Module";
 
 interface ProgressSectionProps {
     currentModule: Module;

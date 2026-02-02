@@ -2,7 +2,7 @@
 
 import {useState} from 'react';
 import {AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion';
-import Module from "@/types/module";
+import Module from "@/types/Module";
 import AdminSection from "@/components/admin/AdminSection";
 import {BookOpen} from "lucide-react";
 import AddSectionButton from "@/components/admin/AddSectionButton";
@@ -21,7 +21,7 @@ export default function AdminModule({module}: AdminModuleProps) {
 
     const Icon = iconMap[modData.iconName] || BookOpen;
 
-    const { addSection: addSectionApi } = useAdminApi();
+    const {addSection: addSectionApi} = useAdminApi();
 
     // Exemple : fonction pour ajouter une section
     const addSection = async (section: Section) => {
@@ -44,7 +44,7 @@ export default function AdminModule({module}: AdminModuleProps) {
                 <AddSectionButton onAdd={addSection} modData={modData}/>
                 {modData.sections.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 mb-4">
-                        {modData.sections.sort((s1,s2) => s1.order - s2.order).map(sec => (
+                        {modData.sections.sort((s1, s2) => s1.order - s2.order).map(sec => (
                             <AdminSection
                                 modData={modData}
                                 key={sec.path}

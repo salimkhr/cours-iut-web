@@ -6,7 +6,7 @@ import {ClipboardCopyIcon, DownloadIcon, MaximizeIcon, MinimizeIcon} from "lucid
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {oneDark, oneLight} from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {Button} from "@/components/ui/button";
-import Module from "@/types/module";
+import Module from "@/types/Module";
 import {useTheme} from "next-themes";
 
 export interface CodeCardProps {
@@ -29,7 +29,7 @@ export default function CodeCard({
                                      collapsible = false,
                                      highlightLines,
                                  }: CodeCardProps) {
-    const { theme } = useTheme();
+    const {theme} = useTheme();
     const [mounted, setMounted] = useState(false);
     const [copied, setCopied] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -51,26 +51,36 @@ export default function CodeCard({
 
     const getMimeType = (lang: string) => {
         switch (lang.toLowerCase()) {
-            case "html": return "text/html";
-            case "css": return "text/css";
+            case "html":
+                return "text/html";
+            case "css":
+                return "text/css";
             case "js":
-            case "javascript": return "application/javascript";
-            case "json": return "application/json";
+            case "javascript":
+                return "application/javascript";
+            case "json":
+                return "application/json";
             case "ts":
-            case "typescript": return "application/typescript";
-            case "php": return "application/x-httpd-php";
-            case "sql": return "application/sql";
-            case "xml": return "application/xml";
+            case "typescript":
+                return "application/typescript";
+            case "php":
+                return "application/x-httpd-php";
+            case "sql":
+                return "application/sql";
+            case "xml":
+                return "application/xml";
             case "yaml":
-            case "yml": return "application/x-yaml";
+            case "yml":
+                return "application/x-yaml";
             case "txt":
-            default: return "text/plain";
+            default:
+                return "text/plain";
         }
     };
 
     const handleDownload = () => {
         const mimeType = getMimeType(language);
-        const blob = new Blob([children], { type: `${mimeType};charset=utf-8` });
+        const blob = new Blob([children], {type: `${mimeType};charset=utf-8`});
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
@@ -98,7 +108,9 @@ export default function CodeCard({
                         className="flex items-center gap-2 text-white"
                         title={isExpanded ? "Masquer" : "Afficher"}
                     >
-                        {isExpanded ? <><MinimizeIcon className="w-4 h-4"/> <span className="hidden sm:inline">Masquer</span></> : <><MaximizeIcon className="w-4 h-4"/> <span className="hidden sm:inline">Afficher</span></>}
+                        {isExpanded ? <><MinimizeIcon className="w-4 h-4"/> <span
+                            className="hidden sm:inline">Masquer</span></> : <><MaximizeIcon className="w-4 h-4"/> <span
+                            className="hidden sm:inline">Afficher</span></>}
                     </Button>
                 )}
                 {filename && (
@@ -118,7 +130,8 @@ export default function CodeCard({
                     onClick={handleCopy}
                     className="flex items-center gap-2 text-white"
                 >
-                    <ClipboardCopyIcon className="w-4 h-4"/> <span className="hidden sm:inline">{copied ? 'Copié !' : 'Copier'}</span>
+                    <ClipboardCopyIcon className="w-4 h-4"/> <span
+                    className="hidden sm:inline">{copied ? 'Copié !' : 'Copier'}</span>
                 </Button>
             </div>
         </div>
@@ -160,16 +173,16 @@ export default function CodeCard({
                     }}
                     wrapLines={true}
                     lineProps={(lineNumber) => {
-                        const style: React.CSSProperties = { display: 'block', width: '100%' };
+                        const style: React.CSSProperties = {display: 'block', width: '100%'};
                         const isHighlighted = highlightedLines.includes(lineNumber);
-                        
+
                         if (highlightedLines.length > 0) {
                             if (!isHighlighted) {
                                 style.opacity = 0.5;
                                 style.filter = 'grayscale(0.5)';
                             }
                         }
-                        return { style };
+                        return {style};
                     }}
                     wrapLongLines
                     showLineNumbers={showLineNumbers}

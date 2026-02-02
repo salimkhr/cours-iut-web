@@ -5,7 +5,7 @@ import AdminModule from "@/components/admin/AdminModule";
 import AddModuleButton from "./AddModuleButton";
 import {Accordion} from "@/components/ui/accordion";
 import useAdminApi from "@/hook/admin/useAdminApi";
-import Module from "@/types/module";
+import Module from "@/types/Module";
 
 interface ModulesListProps {
     initialModules: Module[];
@@ -13,7 +13,7 @@ interface ModulesListProps {
 
 export default function ModulesList({initialModules}: ModulesListProps) {
     const [modules, setModules] = useState(initialModules);
-    const { addModule } = useAdminApi();
+    const {addModule} = useAdminApi();
 
     const handleAddModule = async (newMod: Omit<Module, '_id'>) => {
         try {
