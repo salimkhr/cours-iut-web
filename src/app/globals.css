@@ -6,13 +6,12 @@
     word-spacing: 1em;
 }
 
-.messageText
-{
+.messageText {
     word-spacing: .1em;
 }
 
 svg p {
-    word-spacing:.1em;
+    word-spacing: .1em;
 }
 
 /* Variables CSS */
@@ -343,7 +342,7 @@ svg p {
     cursor: pointer;
 }
 
-.input{
+.input {
     border: 1px solid #222222;
     margin-left: 10px;
     margin-bottom: 10px;
@@ -351,8 +350,7 @@ svg p {
     padding: 0 10px;
 }
 
-.input > option
-{
+.input > option {
     color: #222222;
 }
 
@@ -360,7 +358,7 @@ svg p {
     color: #aaaaaa; /* couleur du texte placeholder */
 }
 
-.button{
+.button {
     color: #222222;
     border: 1px solid #222222;
     margin-left: 10px;
@@ -369,8 +367,7 @@ svg p {
     width: 100%;
 }
 
-.bg-footer
-{
+.bg-footer {
     background-color: #121212;
 }
 
@@ -402,4 +399,15 @@ svg p {
 * {
     scrollbar-width: thin;
     scrollbar-color: var(--color-scroll) transparent;
+}
+
+input:-webkit-autofill {
+    height: 90%;
+    -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+    -webkit-text-fill-color: #111 !important;
+}
+
+.dark input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #000 inset !important;
+    -webkit-text-fill-color: #f9fafb !important;
 }
