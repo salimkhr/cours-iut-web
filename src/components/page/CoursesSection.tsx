@@ -9,7 +9,7 @@ interface CoursesSectionProps {
 export default function CoursesSection({
                                            title,
                                            children,
-                                           containerClassName="grid gap-6 lg:gap-8 w-full p-4 lg:px-40 mx-auto grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(400px,1fr))]"
+                                           containerClassName = "grid gap-6 lg:gap-8 w-full p-4 lg:px-40 mx-auto grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(400px,1fr))] mb-12 lg:mb-16"
                                        }: CoursesSectionProps) {
     return (
         <section className="w-full px-4 lg:px-8 z-100 overflow-x-hidden">

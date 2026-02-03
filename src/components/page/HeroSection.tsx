@@ -23,9 +23,9 @@ export default function HeroSection({
                                         children,
                                         icon,
                                         tags = [],
-                                        path=''
+                                        path = ''
                                     }: HeroSectionProps) {
-    const { theme } = useTheme();
+    const {theme} = useTheme();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => setMounted(true), []);
@@ -54,7 +54,8 @@ export default function HeroSection({
     );
 
     return (
-        <section className="w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between p-4 lg:px-6 gap-4 lg:gap-6 lg:min-h-[45vh]">
+        <section
+            className="w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between lg:px-6 gap-4 lg:gap-6 lg:min-h-[45vh]">
             <div className="flex flex-col items-center justify-center w-full lg:w-2/3 opacity-0 animate-fade-in">
                 <GlitchText>
                     <div className="flex flex-col items-center justify-center w-full mt-10">
@@ -75,7 +76,7 @@ export default function HeroSection({
 
                 <div className="my-4">{children}</div>
 
-                <TagsBadges tags={tags} moduleTheme={title} />
+                <TagsBadges tags={tags} moduleTheme={title}/>
             </div>
 
             <div className="hidden lg:flex items-center justify-center w-full lg:w-1/3 opacity-0 animate-fade-in-right">

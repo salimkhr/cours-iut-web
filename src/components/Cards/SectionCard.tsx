@@ -72,7 +72,7 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
             {section.hasCorrection && (
                 <ActionButton
                     currentModule={currentModule}
-                    className="w-1/3"
+                    className={`w-1/${section.contents.length + 2}`}
                     href={`https://gitlab.com/iut3334332/${currentModule.path}/${section.path}`}
                     target="_blank"
                     disabled={!section.correctionIsAvailable}
