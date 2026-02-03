@@ -1,7 +1,7 @@
 import {NextResponse} from 'next/server';
 import {connectToDB} from '@/lib/mongodb';
 import {ObjectId} from 'bson';
-import Module from '@/types/module';
+import Module from '@/types/Module';
 
 export async function PUT(
     req: Request,
