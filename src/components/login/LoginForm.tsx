@@ -58,14 +58,14 @@ export default function LoginForm() {
                             </div>
 
                             {/* Titre */}
-                            <strong className="text-3xl font-bold text-gray-900 dark:text-white">
-                                Connexion aux cours
-                            </strong>
+                            <p
+                                className="text-3xl font-bold text-gray-900 dark:text-white text-center">
+                                Connexion
+                            </p>
 
                             {/* Sous-titre explicatif */}
-                            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                                Connectez-vous avec le même compte que votre intranet pour accéder à vos cours,
-                                exercices et contenus pédagogiques.
+                            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 text-center">
+                                Connectez-vous avec le même compte que l'intranet.
                             </p>
                         </div>
 
