@@ -59,7 +59,7 @@ export default function LoginForm() {
 
                             {/* Titre */}
                             <p
-                                className="text-3xl font-bold text-gray-900 dark:text-white text-center">
+                                className="text-3xl font-bold text-center">
                                 Connexion
                             </p>
 
