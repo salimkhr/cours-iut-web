@@ -73,7 +73,7 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
                 <ActionButton
                     currentModule={currentModule}
                     className={`w-1/${section.contents.length + 2}`}
-                    href={`https://gitlab.com/iut3334332/${currentModule.path}/${section.path}`}
+                    href={`${process.env.NEXT_PUBLIC_GIT_URL}/${currentModule.path}/${section.path}`}
                     target="_blank"
                     disabled={!section.correctionIsAvailable}
                 >
