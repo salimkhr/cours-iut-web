@@ -37,7 +37,7 @@ export default function LoginForm() {
             <main className="flex-1 flex">
                 {/* LEFT — HEADER */}
                 <section
-                    className="relative w-1/2 hidden lg:flex flex-col justify-center px-16 text-white overflow-hidden">
+                    className="relative w-1/2 hidden lg:flex flex-col justify-center px-16 text-white">
                     <div className="absolute inset-0 pointer-events-none">
                         <HeaderSvg size={500} color=""/>
                     </div>
