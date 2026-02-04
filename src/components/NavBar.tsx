@@ -1,6 +1,6 @@
-import {BookOpen, Home, UserCheck, UserLockIcon} from 'lucide-react'
+import {BookOpen, Home, UserCheck, UserLockIcon, UserPlus} from 'lucide-react'
 import Link from 'next/link'
-import {cookies, headers} from 'next/headers'
+import {headers} from 'next/headers'
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/navigation-menu";
 import getModules from "@/lib/getModules";
 import iconMap from "@/lib/iconMap";
-import {verifyToken} from "@/lib/token";
 import {ThemeToggle} from "@/components/ThemeToggle";
+import {auth} from "@/lib/auth";
+import LogoutButton from "@/components/login/LogoutButton";
 
 
 export default async function NavBar() {
@@ -25,10 +26,9 @@ export default async function NavBar() {
         return pathname === '/' + href || pathname?.startsWith(href + '/')
     }
 
-    const cookie = await cookies();
-
-    const session = cookie.get('session')?.value;
-    const isAdmin = session !== undefined && await verifyToken(session);
+    const sessionRes = await auth.api.getSession({headers: await headers()});
+    const isLoggedIn = !!sessionRes?.session;
+    const isAdmin = sessionRes?.user?.role === 'admin';
 
     return (
         <header>
@@ -41,31 +41,51 @@ export default async function NavBar() {
                             </Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
-                    {isAdmin ? <NavigationMenuItem key="admin">
-                        <NavigationMenuLink asChild active={isActive('admin')}>
-                            <Link
-                                href={`/admin`}
-                                className={`${navigationMenuTriggerStyle()} gap-2`}
-                            >
-                                <div className="flex flex-row gap-2">
-                                    <UserCheck className="size-7 shrink-0"/>
-                                    <span className="text-lg hidden md:inline">Admin</span>
-                                </div>
-                            </Link>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem> : <NavigationMenuItem key="login">
-                        <NavigationMenuLink asChild active={isActive('admin')}>
-                            <Link
-                                href={`/admin`}
-                                className={`${navigationMenuTriggerStyle()} gap-2`}
-                            >
-                                <div className="flex flex-row gap-2">
-                                    <UserLockIcon className="size-7 shrink-0"/>
-                                    <span className="text-lg hidden md:inline">Login</span>
-                                </div>
-                            </Link>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem>}
+                    {isLoggedIn && isAdmin && (
+                        <>
+                            <NavigationMenuItem key="admin">
+                                <NavigationMenuLink asChild active={isActive('admin')}>
+                                    <Link
+                                        href={`/admin`}
+                                        className={`${navigationMenuTriggerStyle()} gap-2`}
+                                    >
+                                        <div className="flex flex-row gap-2">
+                                            <UserCheck className="size-7 shrink-0"/>
+                                            <span className="text-lg hidden md:inline">{sessionRes?.user.name}</span>
+                                        </div>
+                                    </Link>
+                                </NavigationMenuLink>
+                            </NavigationMenuItem>
+                            <NavigationMenuItem key="register">
+                                <NavigationMenuLink asChild active={isActive('register')}>
+                                    <Link
+                                        href={`/register`}
+                                        className={`${navigationMenuTriggerStyle()} gap-2`}
+                                    >
+                                        <div className="flex flex-row gap-2">
+                                            <UserPlus className="size-7 shrink-0"/>
+                                            <span className="text-lg hidden md:inline">Inscription</span>
+                                        </div>
+                                    </Link>
+                                </NavigationMenuLink>
+                            </NavigationMenuItem>
+                        </>
+                    )}
+                    {!isLoggedIn && (
+                        <NavigationMenuItem key="login">
+                            <NavigationMenuLink asChild active={isActive('admin')}>
+                                <Link
+                                    href={`/admin`}
+                                    className={`${navigationMenuTriggerStyle()} gap-2`}
+                                >
+                                    <div className="flex flex-row gap-2">
+                                        <UserLockIcon className="size-7 shrink-0"/>
+                                        <span className="text-lg hidden md:inline">Login</span>
+                                    </div>
+                                </Link>
+                            </NavigationMenuLink>
+                        </NavigationMenuItem>
+                    )}
                 </NavigationMenuList>
 
                 {/* Groupe Modules */}
@@ -95,7 +115,10 @@ export default async function NavBar() {
                 {/* Bouton Theme Toggle */}
                 <NavigationMenuList className="flex items-center ml-auto">
                     <NavigationMenuItem>
-                        <ThemeToggle />
+                        <ThemeToggle/>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem key="logout">
+                        <LogoutButton/>
                     </NavigationMenuItem>
                 </NavigationMenuList>
             </NavigationMenu>
