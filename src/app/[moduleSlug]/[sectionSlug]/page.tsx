@@ -6,6 +6,7 @@ import ContentCard from "@/components/Cards/ContentCard";
 import PageFooter from "@/components/page/PageFooter";
 import {getModuleData} from "@/hook/getModuleData";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
+import {Metadata} from "next";
 
 interface SectionPageProps {
     params: Promise<{
@@ -14,7 +15,7 @@ interface SectionPageProps {
     }>;
 }
 
-export async function generateMetadata({params}: SectionPageProps) {
+export async function generateMetadata({params,}: SectionPageProps): Promise<Metadata> {
     const {moduleSlug, sectionSlug} = await params;
     const {currentModule, currentSection} = await getModuleData({
         moduleSlug,

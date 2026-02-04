@@ -10,15 +10,17 @@ import CoursesSection from "@/components/page/CoursesSection";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getModuleData} from "@/hook/getModuleData";
 import ModuleInfo from "@/components/page/ModuleInfo";
+import {Metadata} from "next";
 
 
 interface ModulePageProps {
     params: Promise<{ moduleSlug: string; }>;
 }
 
-export async function generateMetadata({params}: ModulePageProps) {
+export async function generateMetadata({params,}: ModulePageProps): Promise<Metadata> {
     const {moduleSlug} = await params;
     const {currentModule} = await getModuleData({moduleSlug});
+
     return generatePageMetadata({currentModule});
 }
 
@@ -35,7 +37,7 @@ export default async function Module({params}: ModulePageProps) {
         (section: Section) => section.isAvailable && !section.contents.includes('examen')
     ).length;
 
-    const totalSectionsProgress =  currentModule.sections.filter(
+    const totalSectionsProgress = currentModule.sections.filter(
         (section: Section) => !section.contents.includes('examen')
     ).reduce(
         (sum, section: Section) => sum + (section.totalDuration || 1),
@@ -74,7 +76,7 @@ export default async function Module({params}: ModulePageProps) {
 
 
             <CoursesSection title="Les cours">
-                {currentModule.sections.sort((s1,s2) => s1.order - s2.order).map((section, index) => (
+                {currentModule.sections.sort((s1, s2) => s1.order - s2.order).map((section, index) => (
                     <div
                         key={section.path}
                         className="opacity-0 animate-fade-in-up"

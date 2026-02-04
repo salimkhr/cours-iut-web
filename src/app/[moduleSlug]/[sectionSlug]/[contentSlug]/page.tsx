@@ -5,6 +5,7 @@ import {getModuleData} from "@/hook/getModuleData";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getContentComponent} from "@/lib/getContentComponent";
 import ExamenWrapper from "@/components/ExamenWrapper";
+import {Metadata} from "next";
 
 interface ContentPageProps {
     params: Promise<{
@@ -14,16 +15,14 @@ interface ContentPageProps {
     }>;
 }
 
-export async function generateMetadata({params}: ContentPageProps) {
+export async function generateMetadata({params}: ContentPageProps): Promise<Metadata> {
     const {moduleSlug, sectionSlug} = await params;
     const {currentModule, currentSection} = await getModuleData({
         moduleSlug,
         sectionSlug,
     });
 
-    return currentSection
-        ? generatePageMetadata({currentModule, currentSection})
-        : {};
+    return currentSection ? generatePageMetadata({currentModule, currentSection}) : {};
 }
 
 export default async function Content({params}: ContentPageProps) {
