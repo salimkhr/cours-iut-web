@@ -16,7 +16,7 @@ export const metadata: Metadata = {
         siteName: "Salim Khraimeche",
         images: [
             {
-                url: "https://salimkhraimeche.dev/images/header.svg",
+                url: "https://salimkhraimeche.dev/images/header.png",
                 width: 1200,
                 height: 630,
                 alt: "Développement Web",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         title: "Développement Web | Apprenez le front-end et le back-end",
         description: "Maîtrisez les bases du développement web front-end et back-end avec nos cours interactifs et complets.",
-        images: ["https://salimkhraimeche.dev/images/header.svg"],
+        images: ["https://salimkhraimeche.dev/images/header.png"],
     },
 };
 
