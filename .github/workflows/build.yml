@@ -3,7 +3,7 @@ name: Build Docker and Deploy to Pelican
 on:
   push:
     branches:
-      - main
+      - mai
   workflow_dispatch:
 
 env:
