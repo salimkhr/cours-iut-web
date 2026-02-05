@@ -8,7 +8,6 @@ import {Label} from "@/components/ui/label";
 import {HeaderSvg} from "@/components/HeaderSvg";
 import {AlertCircle, Lock, LogIn, Mail, ShieldCheck,} from "lucide-react";
 import {FooterSvg} from "@/components/FooterSvg";
-import Link from "next/link";
 
 export default function LoginForm() {
     const {login} = useAuth();
@@ -137,12 +136,12 @@ export default function LoginForm() {
                             </Button>
                         </form>
 
-                        <div className="text-center text-sm">
+                        {/* <div className="text-center text-sm">
                             Pas encore de compte ?{" "}
                             <Link href="/register" className="font-bold hover:underline text-primary">
                                 S'inscrire
                             </Link>
-                        </div>
+                        </div>*/}
                     </div>
                 </section>
             </main>

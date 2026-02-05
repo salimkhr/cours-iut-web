@@ -11,8 +11,6 @@ export const auth = betterAuth({
         minPasswordLength: 1,
     },
     plugins: [
-        admin({
-            allowUserToSetRole: true
-        })
+        admin()
     ]
 });

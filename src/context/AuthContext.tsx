@@ -8,7 +8,7 @@ import {authClient} from "@/lib/auth-client";
 type AuthContextType = {
     isLoggedIn: boolean;
     login: (email: string, password: string) => Promise<{ success?: boolean; error?: string }>;
-    register: (name: string, email: string, password: string, role?: string) => Promise<{
+    register: (name: string, email: string, password: string, role?: "user" | "admin") => Promise<{
         success?: boolean;
         error?: string
     }>;
@@ -44,12 +44,25 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         return {success: true};
     };
 
-    const register = async (name: string, email: string, password: string, role?: string) => {
-        const payload = {email, password, name, role} as unknown as Parameters<typeof authClient.signUp.email>[0];
+    const register = async (name: string, email: string, password: string, role?: "user" | "admin") => {
+        const payload = {email, password, name, role} as any;
         const {data, error} = await authClient.signUp.email(payload);
 
         if (error) {
             throw new Error(error.message || "Erreur lors de l'inscription");
+        }
+
+        if (role && role !== 'user') {
+            try {
+                await authClient.admin.setRole({
+                    userId: data.user.id,
+                    role: role
+                });
+            } catch (roleError: any) {
+                console.error("Erreur lors de l'assignation du rôle:", roleError);
+                // On ne bloque pas tout le processus si juste le rôle échoue, 
+                // mais on pourrait choisir de le faire.
+            }
         }
 
         return {success: true};

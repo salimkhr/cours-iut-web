@@ -16,7 +16,7 @@ export default function RegisterForm() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [role, setRole] = useState("user");
+    const [role, setRole] = useState<"user" | "admin">("user");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
@@ -148,7 +148,7 @@ export default function RegisterForm() {
                             {/* ROLE */}
                             <div className="space-y-2">
                                 <Label htmlFor="role">Rôle</Label>
-                                <Select value={role} onValueChange={setRole}>
+                                <Select value={role} onValueChange={(value) => setRole(value as "user" | "admin")}>
                                     <SelectTrigger className="w-full h-12">
                                         <div className="flex items-center gap-2">
                                             <UserCog className="h-5 w-5 text-gray-400"/>

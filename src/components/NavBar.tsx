@@ -41,7 +41,7 @@ export default async function NavBar() {
                             </Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
-                    {(isLoggedIn && isAdmin || true) && (
+                    {(isLoggedIn && isAdmin) && (
                         <>
                             <NavigationMenuItem key="admin">
                                 <NavigationMenuLink asChild active={isActive('admin')}>
@@ -118,9 +118,9 @@ export default async function NavBar() {
                     <NavigationMenuItem>
                         <ThemeToggle/>
                     </NavigationMenuItem>
-                    <NavigationMenuItem key="logout">
+                    {isLoggedIn ? <NavigationMenuItem key="logout">
                         <LogoutButton/>
-                    </NavigationMenuItem>
+                    </NavigationMenuItem> : null}
                 </NavigationMenuList>
             </NavigationMenu>
         </header>
