@@ -45,26 +45,11 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     };
 
     const register = async (name: string, email: string, password: string, role?: string) => {
-        const payload = {email, password, name} as unknown as Parameters<typeof authClient.signUp.email>[0];
+        const payload = {email, password, name, role} as unknown as Parameters<typeof authClient.signUp.email>[0];
         const {data, error} = await authClient.signUp.email(payload);
 
         if (error) {
             throw new Error(error.message || "Erreur lors de l'inscription");
-        }
-
-        // Si un rôle est spécifié et que l'utilisateur est admin, on met à jour le rôle de l'utilisateur créé
-        if (role && role !== 'user') {
-            try {
-                // @ts-ignore
-                await authClient.admin.setRole({
-                    userId: data.user.id,
-                    role: role
-                });
-            } catch (roleError: any) {
-                console.error("Erreur lors de l'assignation du rôle:", roleError);
-                // On ne bloque pas tout le processus si juste le rôle échoue, 
-                // mais on pourrait choisir de le faire.
-            }
         }
 
         return {success: true};

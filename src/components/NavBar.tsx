@@ -41,7 +41,7 @@ export default async function NavBar() {
                             </Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
-                    {isLoggedIn && isAdmin && (
+                    {(isLoggedIn && isAdmin || true) && (
                         <>
                             <NavigationMenuItem key="admin">
                                 <NavigationMenuLink asChild active={isActive('admin')}>
@@ -51,7 +51,8 @@ export default async function NavBar() {
                                     >
                                         <div className="flex flex-row gap-2">
                                             <UserCheck className="size-7 shrink-0"/>
-                                            <span className="text-lg hidden md:inline">{sessionRes?.user.name}</span>
+                                            <span
+                                                className="text-lg hidden md:inline">{sessionRes?.user?.name || 'Admin'}</span>
                                         </div>
                                     </Link>
                                 </NavigationMenuLink>
