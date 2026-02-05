@@ -6,16 +6,20 @@ import {Button} from "@/components/ui/button";
 import {InputGroup, InputGroupAddon, InputGroupInput,} from "@/components/ui/input-group";
 import {Label} from "@/components/ui/label";
 import {HeaderSvg} from "@/components/HeaderSvg";
-import {AlertCircle, Lock, LogIn, Mail, ShieldCheck,} from "lucide-react";
+import {AlertCircle, CheckCircle2, Lock, Mail, ShieldCheck, User, UserCog,} from "lucide-react";
 import {FooterSvg} from "@/components/FooterSvg";
 import Link from "next/link";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
-export default function LoginForm() {
-    const {login} = useAuth();
+export default function RegisterForm() {
+    const {register} = useAuth();
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [role, setRole] = useState("user");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -24,8 +28,12 @@ export default function LoginForm() {
 
         try {
             const fullEmail = email.includes('@') ? email : `${email}@salimkhraimeche.dev`;
-            await login(fullEmail, password);
-
+            await register(name, fullEmail, password, role);
+            setSuccess(true);
+            setLoading(false);
+            setName("");
+            setEmail("");
+            setPassword("");
         } catch (err: any) {
             setError(err.message);
             setLoading(false);
@@ -60,16 +68,45 @@ export default function LoginForm() {
                             {/* Titre */}
                             <p
                                 className="text-3xl font-bold text-center">
-                                Connexion
+                                Inscription
                             </p>
 
                             {/* Sous-titre explicatif */}
                             <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 text-center">
-                                Connectez-vous avec le même compte que l'intranet.
+                                Créez un nouveau compte utilisateur.
                             </p>
                         </div>
 
+                        {success && (
+                            <div
+                                className="flex gap-2 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-300 mb-6">
+                                <CheckCircle2 className="h-5 w-5 text-green-500"/>
+                                <p className="text-sm text-green-600 dark:text-green-400">
+                                    Compte créé avec succès !
+                                </p>
+                            </div>
+                        )}
+
                         <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* NAME */}
+                            <div className="space-y-2">
+                                <Label htmlFor="name">Nom</Label>
+                                <InputGroup>
+                                    <InputGroupInput
+                                        id="name"
+                                        type="text"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        placeholder="Votre nom"
+                                        autoComplete="name"
+                                        required
+                                    />
+                                    <InputGroupAddon>
+                                        <User className="h-5 w-5 text-gray-400"/>
+                                    </InputGroupAddon>
+                                </InputGroup>
+                            </div>
+
                             {/* IDENTIFIANT (EMAIL) */}
                             <div className="space-y-2">
                                 <Label htmlFor="email">Identifiant</Label>
@@ -99,13 +136,30 @@ export default function LoginForm() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         placeholder="••••••••"
-                                        autoComplete="current-password"
+                                        autoComplete="new-password"
                                         required
                                     />
                                     <InputGroupAddon>
                                         <Lock className="h-5 w-5 text-gray-400"/>
                                     </InputGroupAddon>
                                 </InputGroup>
+                            </div>
+
+                            {/* ROLE */}
+                            <div className="space-y-2">
+                                <Label htmlFor="role">Rôle</Label>
+                                <Select value={role} onValueChange={setRole}>
+                                    <SelectTrigger className="w-full h-12">
+                                        <div className="flex items-center gap-2">
+                                            <UserCog className="h-5 w-5 text-gray-400"/>
+                                            <SelectValue placeholder="Choisir un rôle"/>
+                                        </div>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="user">Utilisateur</SelectItem>
+                                        <SelectItem value="admin">Administrateur</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
 
                             {/* ERROR */}
@@ -127,20 +181,20 @@ export default function LoginForm() {
                                 className="w-full py-3 flex items-center justify-center gap-2"
                             >
                                 {loading ? (
-                                    "Connexion…"
+                                    "Inscription…"
                                 ) : (
                                     <>
-                                        <LogIn className="h-4 w-4"/>
-                                        Se connecter
+                                        <User className="h-4 w-4"/>
+                                        S'inscrire
                                     </>
                                 )}
                             </Button>
                         </form>
 
                         <div className="text-center text-sm">
-                            Pas encore de compte ?{" "}
-                            <Link href="/register" className="font-bold hover:underline text-primary">
-                                S'inscrire
+                            Déjà un compte ?{" "}
+                            <Link href="/login" className="font-bold hover:underline text-primary">
+                                Se connecter
                             </Link>
                         </div>
                     </div>

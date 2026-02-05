@@ -5,6 +5,7 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import CsrfInitializer from "@/components/CsrfInitializer";
 import {ThemeProvider} from "@/components/ThemeProvider";
+import {AuthProvider} from "@/context/AuthContext";
 
 const jetbrainsMono = JetBrains_Mono({
     subsets: ['latin'],
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
     }
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({children}: { children: React.ReactNode }) {
     return (
         <html lang="fr" className={jetbrainsMono.variable} suppressHydrationWarning>
         <body className="min-h-screen font-mono">
@@ -35,10 +36,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             enableSystem
             disableTransitionOnChange
         >
-            <NavBar />
-            {children}
-            <Footer />
-            <CsrfInitializer />
+            <AuthProvider>
+                <NavBar/>
+                {children}
+                <Footer/>
+                <CsrfInitializer/>
+            </AuthProvider>
         </ThemeProvider>
         </body>
         </html>

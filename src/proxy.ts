@@ -1,28 +1,45 @@
 // proxy.ts
 import {NextRequest, NextResponse} from 'next/server';
-import {verifyToken} from '@/lib/token';
+import {auth} from '@/lib/auth';
 
 export default async function proxy(req: NextRequest) {
-    // 🧩 Vérification CSRF sur toutes les requêtes non GET vers /api/*
-    if (req.nextUrl.pathname.startsWith('/api') && req.method !== 'GET') {
+    // 🧩 Vérification CSRF sur toutes les requêtes non GET vers /api/* (sauf Better Auth)
+    if (req.nextUrl.pathname.startsWith('/api') &&
+        !req.nextUrl.pathname.startsWith('/api/auth') &&
+        req.method !== 'GET') {
         const cookieToken = req.cookies.get('csrfToken')?.value;
         const headerToken = req.headers.get('x-csrf-token');
 
         if (!cookieToken || !headerToken || cookieToken !== headerToken) {
-            return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
+            return NextResponse.json({error: 'Invalid CSRF token'}, {status: 403});
         }
     }
 
-    // 🔒 Protection de l’espace admin
-    if (req.nextUrl.pathname.startsWith('/admin')) {
-        const session = req.cookies.get('session')?.value;
+    // 🔒 Protection de l’espace admin et de l'inscription
+    if (req.nextUrl.pathname.startsWith('/admin') || req.nextUrl.pathname.startsWith('/register')) {
+        const sessionRes = await auth.api.getSession({headers: req.headers});
 
-        if (!session) {
+        // Temporairement commenté pour permettre la création du premier compte admin
+        /*
+        if (!sessionRes?.session) {
             return NextResponse.redirect(new URL('/login', req.url));
         }
 
-        const verif = await verifyToken(session);
-        if (!verif) {
+        // Vérification du rôle admin
+        if (sessionRes.user.role !== 'admin') {
+            return NextResponse.redirect(new URL('/', req.url));
+        }
+        */
+    }
+
+    // 🔒 Protection des autres pages pour les comptes classiques (connectés)
+    // On exclut la page de login, les assets publics et les routes d'auth
+    const publicPaths = ['/login', '/api/auth', '/images', '/icons', '/manifest.json', '/favicon.ico'];
+    const isPublicPath = publicPaths.some(path => req.nextUrl.pathname.startsWith(path)) || req.nextUrl.pathname === '/';
+
+    if (!isPublicPath) {
+        const sessionRes = await auth.api.getSession({headers: req.headers});
+        if (!sessionRes?.session) {
             return NextResponse.redirect(new URL('/login', req.url));
         }
     }
@@ -32,14 +49,27 @@ export default async function proxy(req: NextRequest) {
     res.headers.set('X-Frame-Options', 'DENY');
     res.headers.set('X-Content-Type-Options', 'nosniff');
     res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-    res.headers.set(
-        'Content-Security-Policy',
-        "default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self';"
-    );
+
+    // CSP plus souple pour permettre les styles inline (Lucide icons, etc.) et le fonctionnement de Next.js
+    const cspHeader = [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: https: blob:",
+        "font-src 'self' data:",
+        "connect-src 'self' " + (process.env.NEXT_PUBLIC_WS_URL || ""),
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+        "upgrade-insecure-requests"
+    ].join('; ');
+
+    res.headers.set('Content-Security-Policy', cspHeader);
 
     return res;
 }
 
 export const config = {
-    matcher: ['/api/:path*', '/admin/:path*'],
+    matcher: ['/((?!api/auth|_next/static|_next/image|favicon.ico|manifest.json).*)'],
 };
