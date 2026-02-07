@@ -41,8 +41,6 @@ export const SlideTitle: React.FC<SlideTitleProps> = ({module, section}) => {
 
     const isDark = theme === "dark";
 
-    console.log(section);
-
     return (
         <div
             className="relative flex flex-col w-full h-screen bg-gradient-to-br from-background via-background to-background overflow-hidden">

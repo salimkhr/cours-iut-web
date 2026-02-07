@@ -10,7 +10,26 @@ declare global {
 function getClientPromise(): Promise<MongoClient> {
     const uri = process.env.MONGODB_URI;
 
-    if (!uri) {
+    if (!uri || process.env.NEXT_PHASE === 'phase-production-build') {
+        if (process.env.NEXT_PHASE === 'phase-production-build') {
+            // Mock pendant le build pour éviter les erreurs de connexion
+            return Promise.resolve({
+                db: () => ({
+                    collection: () => ({
+                        find: () => ({toArray: () => Promise.resolve([])}),
+                        findOne: () => Promise.resolve(null),
+                        insertOne: () => Promise.resolve({}),
+                        createIndex: () => Promise.resolve({}),
+                    }),
+                    databaseName: "mock-db"
+                }),
+                connect: () => Promise.resolve(),
+                on: () => {
+                },
+                once: () => {
+                },
+            } as unknown as MongoClient);
+        }
         throw new Error("Please define the MONGODB_URI environment variable");
     }
 

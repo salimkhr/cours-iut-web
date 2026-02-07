@@ -19,8 +19,6 @@ export default function PageCodeExamen({currentModule, onSuccess, examKey}: Page
     const [isValid, setIsValid] = useState<boolean | null>(null);
     const [error, setError] = useState<string>('');
 
-    console.log(examKey);
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
         setCode(value);

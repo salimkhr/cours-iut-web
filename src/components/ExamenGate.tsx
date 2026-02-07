@@ -15,8 +15,6 @@ export default function ExamenGate({currentModule, children}: ExamenGateProps) {
     const examKey = `exam_unlocked_${currentModule._id?.toString()}_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}`;
 
 
-    console.log(examKey);
-
     useEffect(() => {
         const unlocked = sessionStorage.getItem(examKey) === 'true';
         setIsUnlocked(unlocked);

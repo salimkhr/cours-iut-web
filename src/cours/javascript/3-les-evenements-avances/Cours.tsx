@@ -60,8 +60,6 @@ export default function Cours() {
     style B fill:#4caf50,stroke:#2e7d32,color:#fff
     style A fill:#2196f3,stroke:#1565c0,color:#fff`;
 
-    console.log("📊 Chart propagationDiagram:", propagationDiagram);
-
     return (
         <article>
             <section>

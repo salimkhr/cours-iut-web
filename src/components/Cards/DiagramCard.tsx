@@ -22,7 +22,6 @@ export default function DiagramCard({header, chart}: DiagramCardProps) {
 
     useEffect(() => {
         if (!mounted) {
-            console.log("⏳ Attente du montage du composant...");
             return;
         }
 
@@ -39,8 +38,6 @@ export default function DiagramCard({header, chart}: DiagramCardProps) {
         const currentTheme = theme === "system" ? systemTheme : theme;
         const mermaidTheme = currentTheme === "dark" ? "dark" : "default";
 
-        console.log("🎨 Render avec thème:", mermaidTheme);
-
         // Configuration Mermaid
         mermaid.initialize({
             theme: mermaidTheme,
@@ -54,7 +51,6 @@ export default function DiagramCard({header, chart}: DiagramCardProps) {
             try {
                 const result = await mermaid.render(diagramId, chart);
                 if (isMounted) {
-                    console.log("✅ Diagramme rendu");
                     setSvg(result.svg);
                 }
             } catch (err: any) {
