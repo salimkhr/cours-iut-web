@@ -1,6 +1,6 @@
 "use client";
 
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useAuth} from "@/context/AuthContext";
 import {Button} from "@/components/ui/button";
 import {InputGroup, InputGroupAddon, InputGroupInput,} from "@/components/ui/input-group";
@@ -10,6 +10,14 @@ import {AlertCircle, CheckCircle2, Lock, Mail, ShieldCheck, User, UserCog,} from
 import {FooterSvg} from "@/components/FooterSvg";
 import Link from "next/link";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import Script from "next/script";
+
+declare global {
+    interface Window {
+        turnstile: any;
+        onTurnstileSuccess: (token: string) => void;
+    }
+}
 
 export default function RegisterForm() {
     const {register} = useAuth();
@@ -17,31 +25,80 @@ export default function RegisterForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [role, setRole] = useState<"user" | "admin">("user");
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+
+    useEffect(() => {
+        let widgetId: string | null = null;
+        const checkTurnstile = () => {
+            if (window.turnstile) {
+                const container = document.querySelector(".captcha-container");
+                if (container && container.innerHTML === "") {
+                    widgetId = window.turnstile.render(".captcha-container", {
+                        sitekey: process.env.NEXT_PUBLIC_TURNSTILE_TOKEN,
+                        callback: (token: string) => {
+                            setCaptchaToken(token);
+                        },
+                    });
+                }
+            } else {
+                setTimeout(checkTurnstile, 100);
+            }
+        };
+
+        checkTurnstile();
+
+        return () => {
+            if (widgetId && window.turnstile) {
+                window.turnstile.remove(widgetId);
+            }
+        };
+    }, []);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
+        if (!captchaToken) {
+            setError("Veuillez valider le captcha");
+            setLoading(false);
+            return;
+        }
+
         try {
             const fullEmail = email.includes('@') ? email : `${email}@salimkhraimeche.dev`;
-            await register(name, fullEmail, password, role);
+            await register(name, fullEmail, password, role, captchaToken);
             setSuccess(true);
             setLoading(false);
             setName("");
             setEmail("");
             setPassword("");
+            // Reset captcha after success
+            if (window.turnstile) {
+                window.turnstile.reset();
+                setCaptchaToken(null);
+            }
         } catch (err: any) {
             setError(err.message);
             setLoading(false);
+            // Reset captcha on error
+            if (window.turnstile) {
+                window.turnstile.reset();
+                setCaptchaToken(null);
+            }
         }
     }
 
     return (
         <div className="min-h-screen flex flex-col w-full max-w-7xl mx-auto">
+            <Script
+                src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+                async
+                defer
+            />
             <main className="flex-1 flex">
                 {/* LEFT — HEADER */}
                 <section
@@ -160,6 +217,11 @@ export default function RegisterForm() {
                                         <SelectItem value="admin">Administrateur</SelectItem>
                                     </SelectContent>
                                 </Select>
+                            </div>
+
+                            {/* CAPTCHA */}
+                            <div className="flex justify-center min-h-[65px]">
+                                <div className="captcha-container"/>
                             </div>
 
                             {/* ERROR */}

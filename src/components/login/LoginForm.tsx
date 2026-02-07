@@ -1,6 +1,6 @@
 "use client";
 
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useAuth} from "@/context/AuthContext";
 import {Button} from "@/components/ui/button";
 import {InputGroup, InputGroupAddon, InputGroupInput,} from "@/components/ui/input-group";
@@ -8,31 +8,83 @@ import {Label} from "@/components/ui/label";
 import {HeaderSvg} from "@/components/HeaderSvg";
 import {AlertCircle, Lock, LogIn, Mail, ShieldCheck,} from "lucide-react";
 import {FooterSvg} from "@/components/FooterSvg";
+import Script from "next/script";
+
+declare global {
+    interface Window {
+        turnstile: any;
+        onTurnstileSuccess: (token: string) => void;
+    }
+}
 
 export default function LoginForm() {
     const {login} = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let widgetId: string | null = null;
+        const checkTurnstile = () => {
+            if (window.turnstile) {
+                const container = document.querySelector(".captcha-container");
+                if (container && container.innerHTML === "") {
+                    widgetId = window.turnstile.render(".captcha-container", {
+                        sitekey: process.env.NEXT_PUBLIC_TURNSTILE_TOKEN,
+                        callback: (token: string) => {
+                            setCaptchaToken(token);
+                        },
+                    });
+                }
+            } else {
+                setTimeout(checkTurnstile, 100);
+            }
+        };
+
+        checkTurnstile();
+
+        return () => {
+            if (widgetId && window.turnstile) {
+                window.turnstile.remove(widgetId);
+            }
+        };
+    }, []);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
+        if (!captchaToken) {
+            setError("Veuillez valider le captcha");
+            setLoading(false);
+            return;
+        }
+
         try {
             const fullEmail = email.includes('@') ? email : `${email}@salimkhraimeche.dev`;
-            await login(fullEmail, password);
+            await login(fullEmail, password, captchaToken);
 
         } catch (err: any) {
             setError(err.message);
             setLoading(false);
+            // Reset captcha on error
+            if (window.turnstile) {
+                window.turnstile.reset();
+                setCaptchaToken(null);
+            }
         }
     }
 
     return (
         <div className="min-h-screen flex flex-col w-full max-w-7xl mx-auto">
+            <Script
+                src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+                async
+                defer
+            />
             <main className="flex-1 flex">
                 {/* LEFT — HEADER */}
                 <section
@@ -67,6 +119,17 @@ export default function LoginForm() {
                                 Connectez-vous avec le même compte que l'intranet.
                             </p>
                         </div>
+
+                        {/* ERROR */}
+                        {error && (
+                            <div
+                                className="flex gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-300">
+                                <AlertCircle className="h-5 w-5 text-red-500"/>
+                                <p className="text-sm text-red-600 dark:text-red-400">
+                                    {error}
+                                </p>
+                            </div>
+                        )}
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {/* IDENTIFIANT (EMAIL) */}
@@ -107,16 +170,10 @@ export default function LoginForm() {
                                 </InputGroup>
                             </div>
 
-                            {/* ERROR */}
-                            {error && (
-                                <div
-                                    className="flex gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-300">
-                                    <AlertCircle className="h-5 w-5 text-red-500"/>
-                                    <p className="text-sm text-red-600 dark:text-red-400">
-                                        {error}
-                                    </p>
-                                </div>
-                            )}
+                            {/* CAPTCHA */}
+                            <div className="flex justify-center min-h-[65px]">
+                                <div className="captcha-container"/>
+                            </div>
 
                             {/* SUBMIT */}
                             <Button

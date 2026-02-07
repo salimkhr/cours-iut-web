@@ -7,8 +7,8 @@ import {authClient} from "@/lib/auth-client";
 
 type AuthContextType = {
     isLoggedIn: boolean;
-    login: (email: string, password: string) => Promise<{ success?: boolean; error?: string }>;
-    register: (name: string, email: string, password: string, role?: "user" | "admin") => Promise<{
+    login: (email: string, password: string, captchaToken?: string) => Promise<{ success?: boolean; error?: string }>;
+    register: (name: string, email: string, password: string, role?: "user" | "admin", captchaToken?: string) => Promise<{
         success?: boolean;
         error?: string
     }>;
@@ -25,10 +25,16 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
 
     const router = useRouter();
 
-    const login = async (email: string, password: string) => {
+
+    const login = async (email: string, password: string, captchaToken?: string) => {
         const {data, error} = await authClient.signIn.email({
             email,
             password,
+            fetchOptions: {
+                headers: captchaToken ? {
+                    "x-captcha-response": captchaToken,
+                } : {},
+            },
         });
 
         if (error) {
@@ -44,9 +50,16 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         return {success: true};
     };
 
-    const register = async (name: string, email: string, password: string, role?: "user" | "admin") => {
+    const register = async (name: string, email: string, password: string, role?: "user" | "admin", captchaToken?: string) => {
         const payload = {email, password, name, role} as any;
-        const {data, error} = await authClient.signUp.email(payload);
+        const {data, error} = await authClient.signUp.email({
+            ...payload,
+            fetchOptions: {
+                headers: captchaToken ? {
+                    "x-captcha-response": captchaToken,
+                } : {},
+            },
+        });
 
         if (error) {
             throw new Error(error.message || "Erreur lors de l'inscription");

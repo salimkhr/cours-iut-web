@@ -53,11 +53,12 @@ export default async function proxy(req: NextRequest) {
     // CSP plus souple pour permettre les styles inline (Lucide icons, etc.) et le fonctionnement de Next.js
     const cspHeader = [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+        "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://challenges.cloudflare.com",
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: https: blob:",
         "font-src 'self' data:",
-        "connect-src 'self' " + (process.env.NEXT_PUBLIC_WS_URL || ""),
+        "connect-src 'self' https://challenges.cloudflare.com " + (process.env.NEXT_PUBLIC_WS_URL || ""),
+        "frame-src 'self' https://challenges.cloudflare.com",
         "object-src 'none'",
         "base-uri 'self'",
         "form-action 'self'",

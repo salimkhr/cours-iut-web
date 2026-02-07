@@ -1,7 +1,7 @@
 import {betterAuth} from "better-auth";
 import {mongodbAdapter} from "better-auth/adapters/mongodb";
 import {connectToDB} from "./mongodb";
-import {admin} from "better-auth/plugins";
+import {admin, captcha} from "better-auth/plugins";
 
 export const auth = betterAuth({
     database: mongodbAdapter(await connectToDB()),
@@ -10,6 +10,10 @@ export const auth = betterAuth({
         minPasswordLength: 1,
     },
     plugins: [
-        admin()
+        admin(),
+        captcha({
+            provider: "cloudflare-turnstile",
+            secretKey: process.env.TURNSTILE_SECRET_KEY ?? '',
+        }),
     ]
 });
