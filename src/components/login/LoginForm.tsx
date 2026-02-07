@@ -3,6 +3,8 @@
 import {useEffect, useState} from "react";
 import {useAuth} from "@/context/AuthContext";
 import {Button} from "@/components/ui/button";
+import {Checkbox} from "@/components/ui/checkbox";
+import {Field, FieldContent, FieldDescription, FieldLabel, FieldTitle} from "@/components/ui/field";
 import {InputGroup, InputGroupAddon, InputGroupInput,} from "@/components/ui/input-group";
 import {Label} from "@/components/ui/label";
 import {HeaderSvg} from "@/components/HeaderSvg";
@@ -25,6 +27,7 @@ export default function LoginForm() {
     const {login} = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [rememberMe, setRememberMe] = useState(true);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -69,7 +72,7 @@ export default function LoginForm() {
 
         try {
             const fullEmail = email.includes('@') ? email : `${email}@salimkhraimeche.dev`;
-            await login(fullEmail, password, captchaToken);
+            await login(fullEmail, password, captchaToken, rememberMe);
 
         } catch (err) {
             setError(err instanceof Error ? err.message : String(err));
@@ -173,6 +176,23 @@ export default function LoginForm() {
                                     </InputGroupAddon>
                                 </InputGroup>
                             </div>
+
+                            {/* REMEMBER ME */}
+                            <FieldLabel>
+                                <Field orientation="horizontal">
+                                    <Checkbox
+                                        id="rememberMe"
+                                        checked={rememberMe}
+                                        onCheckedChange={(checked) => setRememberMe(!!checked)}
+                                    />
+                                    <FieldContent>
+                                        <FieldTitle>Rester connecté</FieldTitle>
+                                        <FieldDescription>
+                                            Conserver ma session active sur cet appareil.
+                                        </FieldDescription>
+                                    </FieldContent>
+                                </Field>
+                            </FieldLabel>
 
                             {/* CAPTCHA */}
                             <div className="flex justify-center min-h-[65px]">

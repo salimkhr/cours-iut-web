@@ -8,7 +8,10 @@ type User = typeof authClient.$Infer.Session.user;
 
 type AuthContextType = {
     isLoggedIn: boolean;
-    login: (email: string, password: string, captchaToken?: string) => Promise<{ success?: boolean; error?: string }>;
+    login: (email: string, password: string, captchaToken?: string, rememberMe?: boolean) => Promise<{
+        success?: boolean;
+        error?: string
+    }>;
     register: (name: string, email: string, password: string, role?: "user" | "admin", captchaToken?: string) => Promise<{
         success?: boolean;
         error?: string
@@ -27,10 +30,11 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     const router = useRouter();
 
 
-    const login = async (email: string, password: string, captchaToken?: string) => {
+    const login = async (email: string, password: string, captchaToken?: string, rememberMe?: boolean) => {
         const {data, error} = await authClient.signIn.email({
             email,
             password,
+            rememberMe,
             fetchOptions: {
                 headers: captchaToken ? {
                     "x-captcha-response": captchaToken,
