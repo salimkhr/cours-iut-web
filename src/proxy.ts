@@ -19,8 +19,6 @@ export default async function proxy(req: NextRequest) {
     if (req.nextUrl.pathname.startsWith('/admin') || req.nextUrl.pathname.startsWith('/register')) {
         const sessionRes = await auth.api.getSession({headers: req.headers});
 
-        // Temporairement commenté pour permettre la création du premier compte admin
-        /*
         if (!sessionRes?.session) {
             return NextResponse.redirect(new URL('/login', req.url));
         }
@@ -29,7 +27,6 @@ export default async function proxy(req: NextRequest) {
         if (sessionRes.user.role !== 'admin') {
             return NextResponse.redirect(new URL('/', req.url));
         }
-        */
     }
 
     // 🔒 Protection des autres pages pour les comptes classiques (connectés)
