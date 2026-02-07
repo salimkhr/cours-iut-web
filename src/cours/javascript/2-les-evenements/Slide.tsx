@@ -13,22 +13,30 @@ import ColorClickableBox from "@/cours/javascript/2-les-evenements/Exemple/Color
 import FormBox from "@/cours/javascript/2-les-evenements/Exemple/FormBox";
 import ClickCounterBox from "@/cours/javascript/2-les-evenements/Exemple/ClickCounterBox";
 
+import Module from "@/types/Module";
+import Section from "@/types/Section";
+
 export default function Slide() {
-    const mockModule = {
+    const mockModule: Module = {
+        _id: "javascript",
         title: "JavaScript",
         path: "javascript",
         iconName: "Braces",
         description: "Apprendre les bases de JavaScript pour le web interactif",
         sections: [],
         associatedSae: []
-    } as any;
+    };
 
-    const mockSection = {
+    const mockSection: Section = {
         title: "Les événements",
+        path: "les-evenements",
+        contents: [],
         description: "Gestion des événements en JavaScript",
         tags: ["Events", "JS", "addEventListener", "handlers", "interactions"],
+        totalDuration: 0,
+        hasCorrection: false,
         order: 2
-    } as any;
+    };
 
     interface DemoBoxProps {
         children: React.ReactNode;

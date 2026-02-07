@@ -12,7 +12,11 @@ import Script from "next/script";
 
 declare global {
     interface Window {
-        turnstile: any;
+        turnstile: {
+            render: (container: string | HTMLElement, options: any) => string;
+            reset: (widgetId?: string) => void;
+            remove: (widgetId: string) => void;
+        };
         onTurnstileSuccess: (token: string) => void;
     }
 }
@@ -67,8 +71,8 @@ export default function LoginForm() {
             const fullEmail = email.includes('@') ? email : `${email}@salimkhraimeche.dev`;
             await login(fullEmail, password, captchaToken);
 
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : String(err));
             setLoading(false);
             // Reset captcha on error
             if (window.turnstile) {

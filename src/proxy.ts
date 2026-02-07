@@ -34,7 +34,7 @@ export default async function proxy(req: NextRequest) {
 
     // 🔒 Protection des autres pages pour les comptes classiques (connectés)
     // On exclut la page de login, les assets publics et les routes d'auth
-    const publicPaths = ['/login', '/api/auth', '/images', '/icons', '/manifest.json', '/favicon.ico'];
+    const publicPaths = ['/login', '/register', '/api/auth', '/images', '/icons', '/manifest.json', '/favicon.ico'];
     const isPublicPath = publicPaths.some(path => req.nextUrl.pathname.startsWith(path)) || req.nextUrl.pathname === '/';
 
     if (!isPublicPath) {

@@ -53,10 +53,11 @@ export default function DiagramCard({header, chart}: DiagramCardProps) {
                 if (isMounted) {
                     setSvg(result.svg);
                 }
-            } catch (err: any) {
+            } catch (err) {
                 console.error("❌ Erreur Mermaid:", err);
                 if (isMounted) {
-                    setSvg(`<pre style="color: red; white-space: pre-wrap;">${err.message || err}\n\n${chart}</pre>`);
+                    const message = err instanceof Error ? err.message : String(err);
+                    setSvg(`<pre style="color: red; white-space: pre-wrap;">${message}\n\n${chart}</pre>`);
                 }
             }
         };

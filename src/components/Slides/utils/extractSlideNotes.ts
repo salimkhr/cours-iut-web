@@ -12,11 +12,10 @@ export function extractSlideNotes(slide: React.ReactNode): string | null {
     const isSlideNote = (child: React.ReactNode): child is ElementWithChildren => {
         if (!React.isValidElement(child)) return false;
 
-        const type: any = child.type;
+        const type = child.type;
         return (
             type === SlideNote ||
-            type?.displayName === "SlideNote" ||
-            type?.name === "SlideNote"
+            (typeof type === 'function' && ('displayName' in type && type.displayName === 'SlideNote' || 'name' in type && type.name === 'SlideNote'))
         );
     };
 

@@ -7,22 +7,30 @@ import {SlideCode} from "@/components/Slides/ui/SlideCode";
 import {SlideList, SlideListItem} from "@/components/Slides/ui/SlideList";
 import {SlideNote} from "@/components/Slides/ui/SlideNote";
 
+import Module from "@/types/Module";
+import Section from "@/types/Section";
+
 export default function Slide() {
-    const mockModule = {
+    const mockModule: Module = {
+        _id: "javascript",
         title: "JavaScript",
         path: "javascript",
         iconName: "Braces",
         description: "Apprendre les bases de JavaScript pour le web interactif",
         sections: [],
         associatedSae: []
-    } as any;
+    };
 
-    const mockSection = {
+    const mockSection: Section = {
         title: "Le DOM",
+        path: "le-dom",
+        contents: [],
         description: "Comprendre et manipuler le Document Object Model pour dynamiser vos pages web.",
         tags: ["DOM", "Events", "Selectors", "Manipulation"],
+        totalDuration: 0,
+        hasCorrection: false,
         order: 1
-    } as any;
+    };
 
     return (
         <div className="w-full py-10">

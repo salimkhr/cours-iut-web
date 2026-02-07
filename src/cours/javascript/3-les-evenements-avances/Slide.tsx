@@ -8,22 +8,30 @@ import {SlideList, SlideListItem} from "@/components/Slides/ui/SlideList";
 import {SlideNote} from "@/components/Slides/ui/SlideNote";
 import {SlideDiagram} from "@/components/Slides/ui/SlideDiagram";
 
+import Module from "@/types/Module";
+import Section from "@/types/Section";
+
 export default function PropagationSlides() {
-    const mockModule = {
+    const mockModule: Module = {
+        _id: "javascript",
         title: "JavaScript",
         path: "javascript",
         iconName: "Braces",
         description: "Apprendre les bases de JavaScript pour le web interactif",
         sections: [],
         associatedSae: []
-    } as any;
+    };
 
-    const mockSection = {
+    const mockSection: Section = {
         title: "Propagation et Délégation",
+        path: "propagation-et-delegation",
+        contents: [],
         description: "Propagation des événements et délégation en JavaScript",
         tags: ["Events", "Propagation", "Delegation", "Bubbling", "Capture"],
+        totalDuration: 0,
+        hasCorrection: false,
         order: 3
-    } as any;
+    };
 
     // Diagrams
     const propagationDiagram = `graph TD

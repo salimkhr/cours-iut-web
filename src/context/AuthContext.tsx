@@ -4,6 +4,7 @@ import {createContext, useContext} from 'react'
 import {useRouter} from "next/navigation";
 import {authClient} from "@/lib/auth-client";
 
+type User = typeof authClient.$Infer.Session.user;
 
 type AuthContextType = {
     isLoggedIn: boolean;
@@ -13,7 +14,7 @@ type AuthContextType = {
         error?: string
     }>;
     logout: () => void;
-    user: any;
+    user: User | null | undefined;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -51,9 +52,10 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     };
 
     const register = async (name: string, email: string, password: string, role?: "user" | "admin", captchaToken?: string) => {
-        const payload = {email, password, name, role} as any;
         const {data, error} = await authClient.signUp.email({
-            ...payload,
+            email,
+            password,
+            name,
             fetchOptions: {
                 headers: captchaToken ? {
                     "x-captcha-response": captchaToken,
@@ -65,16 +67,23 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
             throw new Error(error.message || "Erreur lors de l'inscription");
         }
 
+        // Si un rôle est spécifié, on l'assigne via l'API admin
+        // Note: Cela nécessite soit que l'utilisateur soit connecté en tant qu'admin (après le premier compte)
+        // soit que nous ayons temporairement levé les restrictions dans le plugin admin (via AC).
         if (role && role !== 'user') {
             try {
-                await authClient.admin.setRole({
+                // On attend un peu pour laisser le temps à la session d'être établie si nécessaire, 
+                // bien que setRole devrait fonctionner si les permissions AC le permettent même sans session 
+                // (ou avec la session fraîchement créée du nouvel utilisateur).
+                const {error: roleError} = await authClient.admin.setRole({
                     userId: data.user.id,
                     role: role
                 });
-            } catch (roleError: any) {
-                console.error("Erreur lors de l'assignation du rôle:", roleError);
-                // On ne bloque pas tout le processus si juste le rôle échoue, 
-                // mais on pourrait choisir de le faire.
+                if (roleError) {
+                    console.error("Erreur lors de l'assignation du rôle (via API):", roleError.message);
+                }
+            } catch (roleError) {
+                console.error("Erreur lors de l'assignation du rôle (catch):", roleError);
             }
         }
 
