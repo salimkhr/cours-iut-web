@@ -56,6 +56,11 @@ export const contentImports: ContentImportsType = {
       'Slide': () => import('@/cours/javascript/3-les-evenements-avances/Slide'),
       'TP': () => import('@/cours/javascript/3-les-evenements-avances/TP'),
     },
+    '4-fetch': {
+      'Cours': () => import('@/cours/javascript/4-fetch/Cours'),
+      'Slide': () => import('@/cours/javascript/4-fetch/Slide'),
+      'TP': () => import('@/cours/javascript/4-fetch/TP'),
+    },
     '6-examen': {
       'Examen': () => import('@/cours/javascript/6-examen/Examen'),
     },
