@@ -13,7 +13,7 @@ interface SectionCardProps {
     isAdmin: boolean;
 }
 
-export default async function SectionCard({section, currentModule, isAdmin}: SectionCardProps) {
+export default function SectionCard({section, currentModule, isAdmin}: SectionCardProps) {
     const {theme} = useTheme();
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
