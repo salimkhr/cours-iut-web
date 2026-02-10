@@ -6,19 +6,25 @@ import {Badge} from '@/components/ui/badge';
 import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
 import {BookOpen, CodeXml, FolderCode, Gitlab, GraduationCap, Presentation} from "lucide-react";
 import {useEffect, useState} from "react";
+import {auth} from "@/lib/auth";
+import {headers} from "next/headers";
 
 interface SectionCardProps {
     section: Section;
     currentModule: Module;
 }
 
-export default function SectionCard({section, currentModule}: SectionCardProps) {
+export default async function SectionCard({section, currentModule}: SectionCardProps) {
     const {theme} = useTheme();
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
     if (!mounted) return null; // SSR-safe
 
     const isDark = theme === 'dark';
+
+    const sessionRes = await auth.api.getSession({headers: await headers()});
+    const isLoggedIn = !!sessionRes?.session;
+    const isAdmin = sessionRes?.user?.role === 'admin';
 
     const header = (
         <span className={`text-xs font-mono ${isDark ? 'text-gray-200' : 'text-white'}`}>
@@ -55,7 +61,7 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
                         currentModule={currentModule}
                         className={`w-1/${section.contents.length + 2}`}
                         href={`/${currentModule.path}/${section.path}/${item}`}
-                        disabled={!section.isAvailable}
+                        disabled={!isAdmin && !section.isAvailable}
                     >
                 <span className="hidden md:inline">
                     {item.charAt(0).toUpperCase() + item.slice(1)}
@@ -75,7 +81,7 @@ export default function SectionCard({section, currentModule}: SectionCardProps) 
                     className={`w-1/${section.contents.length + 2}`}
                     href={`${process.env.NEXT_PUBLIC_GIT_URL}/${currentModule.path}/${section.path}`}
                     target="_blank"
-                    disabled={!section.correctionIsAvailable}
+                    disabled={!isAdmin && !section.correctionIsAvailable}
                 >
                     <span className="hidden md:inline">Correction</span> <Gitlab/>
                 </ActionButton>
