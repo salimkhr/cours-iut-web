@@ -47,6 +47,8 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         }
 
         const user = data?.user as { role?: string } | undefined;
+
+        router.refresh()
         if (user?.role === 'admin') {
             router.push('/admin');
         } else {
@@ -96,6 +98,7 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
 
     const logout = async () => {
         await authClient.signOut();
+        router.refresh()
         router.push('/login');
     };
 
