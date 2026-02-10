@@ -1,4 +1,4 @@
-import {BookOpen, Home, UserCheck, UserLockIcon, UserPlus} from 'lucide-react'
+import {BookOpen, Home, UserCheck, UserLockIcon} from 'lucide-react'
 import Link from 'next/link'
 import {headers} from 'next/headers'
 import {
@@ -52,12 +52,12 @@ export default async function NavBar() {
                                         <div className="flex flex-row gap-2">
                                             <UserCheck className="size-7 shrink-0"/>
                                             <span
-                                                className="text-lg hidden md:inline">{sessionRes?.user?.name || 'Admin'}</span>
+                                                className="text-lg hidden md:inline">Admin</span>
                                         </div>
                                     </Link>
                                 </NavigationMenuLink>
                             </NavigationMenuItem>
-                            <NavigationMenuItem key="register">
+                            {/*<NavigationMenuItem key="register">
                                 <NavigationMenuLink asChild active={isActive('register')}>
                                     <Link
                                         href={`/register`}
@@ -69,7 +69,7 @@ export default async function NavBar() {
                                         </div>
                                     </Link>
                                 </NavigationMenuLink>
-                            </NavigationMenuItem>
+                            </NavigationMenuItem>*/}
                         </>
                     )}
                     {!isLoggedIn && (
@@ -90,28 +90,29 @@ export default async function NavBar() {
                 </NavigationMenuList>
 
                 {/* Groupe Modules */}
-                <div className="flex w-full overflow-x-auto whitespace-nowrap justify-end md:justify-center">
-                    <NavigationMenuList className="flex items-center gap-2">
-                        {modules.map((module) => {
-                            const Icon = iconMap[module.iconName] || BookOpen;
-                            return (
-                                <NavigationMenuItem key={module._id}>
-                                    <NavigationMenuLink asChild active={isActive(module.path)}>
-                                        <Link
-                                            href={`/${module.path}`}
-                                            className={`${navigationMenuTriggerStyle()} gap-2`}
-                                        >
-                                            <div className="flex flex-row gap-2">
-                                                <Icon className="size-7 shrink-0"/>
-                                                <span className="text-lg hidden md:inline">{module.title}</span>
-                                            </div>
-                                        </Link>
-                                    </NavigationMenuLink>
-                                </NavigationMenuItem>
-                            );
-                        })}
-                    </NavigationMenuList>
-                </div>
+                {isLoggedIn ? (
+                    <div className="flex w-full overflow-x-auto whitespace-nowrap justify-end md:justify-center">
+                        <NavigationMenuList className="flex items-center gap-2">
+                            {modules.map((module) => {
+                                const Icon = iconMap[module.iconName] || BookOpen;
+                                return (
+                                    <NavigationMenuItem key={module._id}>
+                                        <NavigationMenuLink asChild active={isActive(module.path)}>
+                                            <Link
+                                                href={`/${module.path}`}
+                                                className={`${navigationMenuTriggerStyle()} gap-2`}
+                                            >
+                                                <div className="flex flex-row gap-2">
+                                                    <Icon className="size-7 shrink-0"/>
+                                                    <span className="text-lg hidden md:inline">{module.title}</span>
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuLink>
+                                    </NavigationMenuItem>
+                                );
+                            })}
+                        </NavigationMenuList>
+                    </div>) : null}
 
                 {/* Bouton Theme Toggle */}
                 <NavigationMenuList className="flex items-center ml-auto">
