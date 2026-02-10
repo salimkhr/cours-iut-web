@@ -11,6 +11,8 @@ import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getModuleData} from "@/hook/getModuleData";
 import ModuleInfo from "@/components/page/ModuleInfo";
 import {Metadata} from "next";
+import {auth} from "@/lib/auth";
+import {headers} from "next/headers";
 
 
 interface ModulePageProps {
@@ -43,6 +45,10 @@ export default async function Module({params}: ModulePageProps) {
         (sum, section: Section) => sum + (section.totalDuration || 1),
         0
     );
+
+    const sessionRes = await auth.api.getSession({headers: await headers()});
+
+    const isAdmin = sessionRes?.user?.role === 'admin';
 
     const totalAvailableSectionsProgress = currentModule.sections
         .filter((section: Section) => section.isAvailable && !section.contents.includes('examen'))
@@ -82,7 +88,7 @@ export default async function Module({params}: ModulePageProps) {
                         className="opacity-0 animate-fade-in-up"
                         style={{animationDelay: `${index * 0.1}s`}}
                     >
-                        <SectionCard currentModule={currentModule} section={section}/>
+                        <SectionCard currentModule={currentModule} section={section} isAdmin={isAdmin}/>
                     </div>
                 ))}
             </CoursesSection>

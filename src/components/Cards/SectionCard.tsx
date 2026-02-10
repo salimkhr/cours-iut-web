@@ -6,25 +6,20 @@ import {Badge} from '@/components/ui/badge';
 import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
 import {BookOpen, CodeXml, FolderCode, Gitlab, GraduationCap, Presentation} from "lucide-react";
 import {useEffect, useState} from "react";
-import {auth} from "@/lib/auth";
-import {headers} from "next/headers";
 
 interface SectionCardProps {
     section: Section;
     currentModule: Module;
+    isAdmin: boolean;
 }
 
-export default async function SectionCard({section, currentModule}: SectionCardProps) {
+export default async function SectionCard({section, currentModule, isAdmin}: SectionCardProps) {
     const {theme} = useTheme();
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
     if (!mounted) return null; // SSR-safe
 
     const isDark = theme === 'dark';
-
-    const sessionRes = await auth.api.getSession({headers: await headers()});
-    const isLoggedIn = !!sessionRes?.session;
-    const isAdmin = sessionRes?.user?.role === 'admin';
 
     const header = (
         <span className={`text-xs font-mono ${isDark ? 'text-gray-200' : 'text-white'}`}>
