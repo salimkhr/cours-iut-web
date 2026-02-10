@@ -100,9 +100,17 @@ export default function SectionForm({
         }
     }, [title, setValue, modData.sections.length, isEditMode]);
 
+    const availableContents = ['cours', 'TP', 'slide', 'projet', 'examen'];
+
     const handleFormSubmit = (data: Section) => {
+        // Filtrer pour ne garder que les contenus valides
+        const cleanedContents = (data.contents || []).filter(content =>
+            availableContents.includes(content)
+        );
+
         onSubmit({
             ...data,
+            contents: cleanedContents,
             tags: isString(data.tags) ? data.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : data.tags,
         });
 
@@ -112,7 +120,6 @@ export default function SectionForm({
         onOpenChange(false);
     };
 
-    const availableContents = ['cours', 'TP', 'slide', 'projet', 'examen'];
     const contents = watch('contents') || [];
 
     // Fonction pour toggle les contenus dans le tableau
