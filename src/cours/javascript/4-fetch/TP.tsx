@@ -23,7 +23,7 @@ export default function TP() {
             <section className="space-y-4">
                 <Heading level={2}>A- L'expérience de Milgram</Heading>
                 <Text>
-                    Ce TP est inspiré de{" "}
+                    Ce TP est inspiré de{" "} 
                     <Dialog>
                         <DialogTrigger asChild>
                             <a href="#" className="text-blue-600 hover:underline">
