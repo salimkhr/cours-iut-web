@@ -1,4 +1,3 @@
-// components/MilgramCharts.tsx
 'use client';
 
 import {
