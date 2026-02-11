@@ -158,14 +158,6 @@ npm start
 
                 <List ordered>
                     <ListItem>
-                        Ajouter un <strong>événement délégué</strong> sur <Code>switch-container</Code> :
-                        <List>
-                            <ListItem>Récupérer le voltage avec <Code>event.target.closest('button').dataset.voltage</Code>.</ListItem>
-                            <ListItem>Appeler une fonction <Code>handleShock(voltage)</Code> à compléter par vous.</ListItem>
-                        </List>
-                    </ListItem>
-
-                    <ListItem>
                         Dans <Code>handleShock(voltage)</Code>, votre objectif est :
                         <List>
                             <ListItem>

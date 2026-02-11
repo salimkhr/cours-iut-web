@@ -3,6 +3,7 @@
 import {createContext, useContext} from 'react'
 import {useRouter} from "next/navigation";
 import {authClient} from "@/lib/auth-client";
+import {revalidateAuth} from "@/app/actions/auth-actions";
 
 type User = typeof authClient.$Infer.Session.user;
 
@@ -29,7 +30,6 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
 
     const router = useRouter();
 
-
     const login = async (email: string, password: string, captchaToken?: string, rememberMe?: boolean) => {
         const {data, error} = await authClient.signIn.email({
             email,
@@ -48,12 +48,19 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
 
         const user = data?.user as { role?: string } | undefined;
 
-        router.refresh()
+        // 🔑 Revalider côté serveur + refresh client
+        await revalidateAuth();
+        router.refresh();
+
+        // Petit délai pour s'assurer que la revalidation est terminée
+        await new Promise(resolve => setTimeout(resolve, 150));
+
         if (user?.role === 'admin') {
             router.push('/admin');
         } else {
             router.push('/');
         }
+
         return {success: true};
     };
 
@@ -73,14 +80,8 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
             throw new Error(error.message || "Erreur lors de l'inscription");
         }
 
-        // Si un rôle est spécifié, on l'assigne via l'API admin
-        // Note: Cela nécessite soit que l'utilisateur soit connecté en tant qu'admin (après le premier compte)
-        // soit que nous ayons temporairement levé les restrictions dans le plugin admin (via AC).
         if (role && role !== 'user') {
             try {
-                // On attend un peu pour laisser le temps à la session d'être établie si nécessaire, 
-                // bien que setRole devrait fonctionner si les permissions AC le permettent même sans session 
-                // (ou avec la session fraîchement créée du nouvel utilisateur).
                 const {error: roleError} = await authClient.admin.setRole({
                     userId: data.user.id,
                     role: role
@@ -98,8 +99,15 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
 
     const logout = async () => {
         await authClient.signOut();
-        router.refresh()
-        router.push('/login');
+
+        // 🔑 Revalider côté serveur + refresh client
+        await revalidateAuth();
+        router.refresh();
+
+        // Petit délai pour s'assurer que la revalidation est terminée
+        await new Promise(resolve => setTimeout(resolve, 150));
+
+        router.push('/');
     };
 
     return (
@@ -109,7 +117,6 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     );
 };
 
-// Hook personnalisé pour consommer facilement le contexte
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
@@ -117,4 +124,3 @@ export const useAuth = () => {
     }
     return context;
 };
-
