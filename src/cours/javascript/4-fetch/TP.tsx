@@ -112,14 +112,14 @@ npm run start
             <section className="space-y-4">
                 <Heading level={3}>2/ Création de la session</Heading>
                 <Text>
-                    Dans le fichier <Code>milgram.js</Code>, lors de l'événement <Code>load</Code> de la page, votre script devra appeler l'API pour créer une nouvelle session.
+                    Dans le fichier <Code>milgram.js</Code>, lors de l'événement <Code>load</Code> de la page, votre script devra appeler l'API pour créer une nouvelle session (<Code> POST /api/sessions</Code>.
                     L'identifiant de la session retourné par l'API devra être stocké dans le <Code>sessionStorage</Code> afin de pouvoir l'utiliser pour toutes les requêtes suivantes (questions, réponses, chocs simulés, statistiques).
                 </Text>
                 <List ordered>
                     <ListItem>Modifier le <Code>#stimulus</Code> pour afficher le premier stimulus.</ListItem>
                     <ListItem>Modifier le <Code>#status</Code> pour afficher le statut de la session.</ListItem>
                     <ListItem>Modifier le <Code>#NextVoltage</Code> pour afficher le voltage actuel.</ListItem>
-                    <ListItem>Modifier la fonction <Code>generateSwitches()</Code> pour générer les boutons de réponse selon le voltage.</ListItem>
+                    <ListItem>Appeller la fonction <Code>generateSwitches()</Code> pour générer les boutons de réponse selon le voltage.</ListItem>
                 </List>
             </section>
 
