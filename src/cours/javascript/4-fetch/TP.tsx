@@ -56,7 +56,7 @@ export default function TP() {
                 </Text>
                 <CodeCard language="bash">
                     {`# Cloner le dépôt
-git clone git@gitlab.com:iut3334332/javascript/milgram.git
+git clone https://gitlab.com/iut3334332/javascript/milgram.git
 cd milgram/backend
 
 # Installer les dépendances
