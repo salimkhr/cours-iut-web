@@ -56,11 +56,14 @@ export default function TP() {
                 </Text>
                 <CodeCard language="bash">
                     {`# Cloner le dépôt
-git clone git@gitlab.com:iut3334332/javascript/4-fetch-back.git milgram-backend
-cd milgram-backend
+git clone git@gitlab.com:iut3334332/javascript/milgram.git
+cd milgram/backend
 
 # Installer les dépendances
 npm install
+
+# Lancer le build
+npm build
 
 # Lancer le serveur
 npm start
@@ -124,12 +127,8 @@ npm start
             <section className="space-y-4">
                 <Heading level={3}>3/ Gestion des réponses</Heading>
                 <Text>
-                    Chaque réponse de l'utilisateur doit être envoyée au backend via la route{" "}
-                    <Code>POST /api/sessions/:sessionId</Code>.
-                    Le serveur retournera un objet contenant la propriété <Code>correct</Code>.
-                    Vous devez adapter l’interface en conséquence.
+                    Implémentez un gestionnaire d’événement sur le bouton <Code>#validateResponse</Code> afin d’appeler la route <Code>POST /api/sessions/:id</Code> en lui transmettant la valeur saisie dans l’input <Code>#response</Code>.
                 </Text>
-
                 <List ordered>
                     <ListItem>
                         Selon la valeur de <Code>correct</Code>, utiliser{" "}
