@@ -13,6 +13,7 @@ const baseConfig: NextConfig = {
         remotePatterns: [
             { protocol: 'https', hostname: 'picsum.photos' },
             { protocol: 'https', hostname: 'placehold.co' },
+            { protocol: 'https', hostname: 'lesjoiesducode.fr' },
             { protocol: 'https', hostname: 'developer.mozilla.org' },
             { protocol: 'https', hostname: 'media0.giphy.com' },
             { protocol: 'https', hostname: 'media1.giphy.com' },

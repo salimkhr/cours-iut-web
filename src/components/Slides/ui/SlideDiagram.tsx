@@ -97,11 +97,11 @@ export const SlideDiagram: React.FC<SlideDiagramProps> = ({
     }
 
     return (
-        <div className={cn("flex items-start justify-center w-full h-full my-4", className)}>
+        <div className={cn("flex items-start justify-center max-w-full max-h-full my-4", className)}>
             {svg ? (
                 <div
                     dangerouslySetInnerHTML={{__html: svg}}
-                    className="w-full max-w-full flex items-start justify-center slide-diagram-container"
+                    className="max-w-full flex items-start justify-center slide-diagram-container"
                 />
             ) : (
                 <div className="h-[600px] flex items-start justify-center text-gray-500">
