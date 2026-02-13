@@ -63,10 +63,10 @@ cd milgram/backend
 npm install
 
 # Lancer le build
-npm build
+npm run build
 
 # Lancer le serveur
-npm start
+npm run start
 
 # Le serveur démarre sur http://localhost:3000`}
                 </CodeCard>
