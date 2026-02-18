@@ -49,6 +49,9 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            NEXT_PUBLIC_TURNSTILE_TOKEN=${{ secrets.NEXT_PUBLIC_TURNSTILE_TOKEN }}
+            NEXT_PUBLIC_GIT_URL=${{ secrets.NEXT_PUBLIC_GIT_URL }}
 
       - name: Create deploy tag
         run: |
