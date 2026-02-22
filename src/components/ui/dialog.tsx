@@ -54,8 +54,7 @@ function DialogContent({
             <DialogOverlay />
             <DialogPrimitive.Content
                 data-slot="dialog-content"
-                className={cn(
-                    `bg-white ${isDark ? "bg-gray-800 text-gray-200" : "bg-white text-gray-700"} 
+                className={cn(`${isDark ? "bg-gray-800 text-gray-200" : "bg-white text-gray-700"}
           data-[state=open]:animate-in data-[state=closed]:animate-out 
           data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 
           data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 
