@@ -61,6 +61,10 @@ export const contentImports: ContentImportsType = {
       'Slide': () => import('@/cours/javascript/4-fetch/Slide'),
       'TP': () => import('@/cours/javascript/4-fetch/TP'),
     },
+    '5-react-js': {
+      'Cours': () => import('@/cours/javascript/5-react-js/Cours'),
+      'TP': () => import('@/cours/javascript/5-react-js/TP'),
+    },
     '6-examen': {
       'Examen': () => import('@/cours/javascript/6-examen/Examen'),
     },
