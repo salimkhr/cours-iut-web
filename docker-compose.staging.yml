@@ -1,9 +1,9 @@
 services:
   app:
-    image: ghcr.io/salimkhr/cours-iut-web:latest
+    image: ghcr.io/salimkhr/cours-iut-web:staging
     pull_policy: always
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=staging
       - PORT=3000
     env_file:
       - .env

@@ -10,7 +10,7 @@ export default function Cours() {
                 <p>
                     <strong>Brainfuck</strong> est un langage minimaliste et ésotérique créé par Urban Müller en
                     1993. Il se compose uniquement de <strong>8 commandes</strong>, mais permet de réaliser des
-                    programmes complets.
+                    programmes complets.    
                 </p>
                 <p>Objectifs du cours :</p>
                 <ul className="list-disc list-inside">
