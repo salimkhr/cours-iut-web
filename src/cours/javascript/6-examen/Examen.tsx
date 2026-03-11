@@ -7,7 +7,7 @@ import Code from "@/components/ui/Code";
 import {List, ListItem} from "@/components/ui/List";
 import CodeCard from "@/components/Cards/CodeCard";
 
-export default function ExamenG1() {
+export default function Examen() {
 
     const sections = [
         {title: "A - Fetch & Boutons", points: 8, time: "0h45"},
@@ -77,49 +77,8 @@ export default function ExamenG1() {
             <section>
                 <Heading level={2}>Fichiers fournis</Heading>
                 <Text>
-                    Les fichiers <Code>index.html</Code> et <Code>css/style.css</Code> vous sont fournis.
-                    Tout le travail se fait dans <Code>js/index.js</Code>.
+                    Le fichier <Code>index.html</Code> vous est fournis. Tout le travail se fait dans <Code>js/index.js</Code>.
                 </Text>
-
-                <CodeCard language="css" filename="css/style.css" collapsible>
-                    {`/* Classes de carte */
-.card                  { /* carte agent, glassmorphisme */ }
-.card.open             { /* carte dépliée, .card-expand devient visible */ }
-.card.agent-ba         { /* bordure couleur Business Analyst */ }
-.card.agent-pm         { /* bordure couleur Product Manager */ }
-.card.agent-arch       { /* bordure couleur Architect */ }
-.card.agent-dev        { /* bordure couleur Developer */ }
-
-/* Éléments internes d'une carte */
-.card-top              { /* ligne emoji + numéro */ }
-.card-emoji            { /* emoji de l'agent */ }
-.card-num              { /* numéro de session ex: 01 */ }
-.card-agent            { /* nom de l'agent en majuscules */ }
-.card-action           { /* titre de l'action */ }
-.card-expand           { /* zone masquée par défaut, visible quand .card.open */ }
-.card-desc             { /* description de la session */ }
-.card-produit          { /* fichier produit ex: 📤 brief.md */ }
-
-/* Badges statut */
-.badge-statut          { /* badge générique */ }
-.badge-statut.termine  { /* fond vert */ }
-.badge-statut.en-cours { /* fond orange */ }
-.badge-statut.en-attente { /* fond rouge */ }
-
-/* Flèche entre cartes */
-.arrow-wrap            { /* conteneur flèche */ }
-.arrow-wrap.done       { /* flèche verte, animation arrêtée */ }
-.arrow-dots            { /* conteneur des 3 points animés */ }
-.adot                  { /* point animé */ }
-.arrow-tip             { /* › */ }
-.arrow-label           { /* nom du fichier transmis */ }
-
-/* Modales */
-#modal-overlay         { /* fond flouté, display:none par défaut */ }
-#modal-overlay.show    { /* display:flex, modale visible */ }
-#modal-form-overlay    { /* fond flouté, display:none par défaut */ }
-#modal-form-overlay.show { /* display:flex, modale visible */ }`}
-                </CodeCard>
 
                 <CodeCard language="js" filename="js/index.js">
                     {`// Fonctions disponibles — NE PAS MODIFIER
