@@ -23,6 +23,7 @@ export type Section = {
     correctionIsAvailable?: boolean;
     order: number;
     contents: string[];
+    examenIsLock?: boolean;
 };
 
 interface SectionFormProps {
@@ -60,6 +61,7 @@ export default function SectionForm({
                 correctionIsAvailable: section.correctionIsAvailable,
                 contents: section.contents,
                 order: section.order,
+                examenIsLock: section.examenIsLock || false,
             };
         }
 
@@ -70,6 +72,7 @@ export default function SectionForm({
             contents: ['cours', 'TP'],
             order: (modData.sections?.length ?? 0) + 1,
             totalDuration: 1,
+            examenIsLock: false,
         };
     }, [isEditMode, modData.sections?.length, section?.contents, section?.correctionIsAvailable, section?.description, section?.hasCorrection, section?.isAvailable, section?.order, section?.path, section?.tags, section?.title, section?.totalDuration]);
 
@@ -294,6 +297,22 @@ export default function SectionForm({
                                     )}
                                 />
                                 <span>Correction Disponible</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                                <Controller
+                                    name="examenIsLock"
+                                    control={control}
+                                    render={({field}) => (
+                                        <Checkbox
+                                            id="examenIsLock"
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                    )}
+                                />
+                                <span>Examen verrouillé</span>
                             </label>
                         </div>
                     </div>
