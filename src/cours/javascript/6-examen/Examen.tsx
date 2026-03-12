@@ -77,7 +77,26 @@ export default function Examen() {
             <section>
                 <Heading level={2}>Fichiers fournis</Heading>
                 <Text>
-                    Le fichier <Code>index.html</Code> vous est fourni. Tout le travail se fait dans <Code>js/index.js</Code>.
+                    Trois fichiers vous sont fournis. Tout le travail se fait dans <Code>js/index.js</Code>.
+                </Text>
+                <CodeCard language="text" filename="Arborescence">
+                    {`projet/
+├── index.html
+├── index.php      ← serveur backend
+└── js/
+    └── index.js   ← votre travail`}
+                </CodeCard>
+
+                <Heading level={3}>Lancer le backend</Heading>
+                <Text>
+                    Le backend est un serveur PHP à démarrer dans le dossier du projet avant d'ouvrir la page :
+                </Text>
+                <CodeCard language="bash">
+                    {`php -S localhost:8000`}
+                </CodeCard>
+                <Text>
+                    Une fois lancé, ouvrir <Code>http://localhost:8000</Code> dans le navigateur.
+                    Le endpoint <Code>GET /agents</Code> est alors accessible à <Code>http://localhost:8000/agents</Code>.
                 </Text>
 
                 <CodeCard language="js" filename="js/index.js">
