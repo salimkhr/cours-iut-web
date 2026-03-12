@@ -525,7 +525,7 @@ const AGENTS_DATA = [
                     <ListItem><Code>#input-description</Code> — la description</ListItem>
                 </List>
                 <Text>
-                    Appeler <Code>ajouterCarteAuPipeline()</Code> avec l'agent courant et les trois valeurs,
+                    Appeler <Code>ajouterCarteAuPipeline()</Code> avec <Code>agentCourant</Code> et les trois valeurs,
                     puis retirer la classe <Code>show</Code> de <Code>#modal-form-overlay</Code> et réinitialiser le formulaire avec <Code>reset()</Code>.
                 </Text>
             </section>
