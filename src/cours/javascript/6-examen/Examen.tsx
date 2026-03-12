@@ -7,12 +7,12 @@ import Code from "@/components/ui/Code";
 import {List, ListItem} from "@/components/ui/List";
 import CodeCard from "@/components/Cards/CodeCard";
 
-export default function ExamenG2() {
+export default function Examen() {
 
     const sections = [
-        {title: "A - Fetch & Boutons",     points: 6, time: "0h25"},
-        {title: "B - DOM & Cartes",        points: 10, time: "0h50"},
-        {title: "C - Events & Formulaire", points: 4, time: "0h15"},
+        {title: "A - Boutons",             points: 6, time: "0h25"},
+        {title: "B - DOM & Cartes",        points: 8, time: "0h45"},
+        {title: "C - Events & Formulaire", points: 6, time: "0h20"},
     ];
 
     const agents = [
@@ -96,11 +96,41 @@ export default function ExamenG2() {
                 </CodeCard>
                 <Text>
                     Une fois lancé, ouvrir <Code>http://localhost:8000</Code> dans le navigateur.
-                    Le endpoint <Code>GET /agents</Code> est alors accessible à <Code>http://localhost:8000/agents</Code>.
                 </Text>
 
+                <CodeCard language="php" filename="index.php" collapsible>
+                    {`<?php
+
+header("Content-Type: application/json");
+
+$path   = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+$method = $_SERVER["REQUEST_METHOD"];
+
+if ($path === "/agents" && $method === "GET") {
+    $agents = [
+        ["id" => "ba",   "nom" => "Business Analyst", "emoji" => "🔍"],
+        ["id" => "pm",   "nom" => "Product Manager",  "emoji" => "📋"],
+        ["id" => "arch", "nom" => "Architect",         "emoji" => "🏗️"],
+        ["id" => "dev",  "nom" => "Developer",         "emoji" => "💻"],
+    ];
+    echo json_encode($agents);
+
+} elseif ($path === "/pipeline/template" && $method === "GET") {
+    $template = [
+        ["id" => "ba",   "nom" => "Business Analyst", "emoji" => "🔍", "action" => "Analyse du besoin client",      "produit" => "brief.md",   "description" => "Reformule le besoin en brief structuré."],
+        ["id" => "pm",   "nom" => "Product Manager",  "emoji" => "📋", "action" => "Découpage en User Stories",     "produit" => "stories.md", "description" => "Liste des stories priorisées."],
+        ["id" => "arch", "nom" => "Architect",         "emoji" => "🏗️", "action" => "Conception de l'architecture", "produit" => "archi.md",   "description" => "Schéma technique du projet."],
+    ];
+    echo json_encode($template);
+
+} else {
+    http_response_code(404);
+    echo json_encode(["error" => "Route introuvable"]);
+}`}
+                </CodeCard>
+
                 <CodeCard language="js" filename="js/index.js">
-                    {`// Fonctions disponibles — NE PAS MODIFIER
+                    {`// Données disponibles — NE PAS MODIFIER
 
 const AGENTS_DATA = [
   { id: "ba",   nom: "Business Analyst", emoji: "🔍" },
@@ -142,8 +172,6 @@ const AGENTS_DATA = [
       background-image: linear-gradient(rgba(100,120,180,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(100,120,180,0.07) 1px, transparent 1px);
       background-size: 40px 40px;
     }
-
-    /* HEADER */
     header {
       position: relative; z-index: 10;
       padding: 1.8rem 2rem;
@@ -161,29 +189,15 @@ const AGENTS_DATA = [
     .header-right { display: flex; align-items: center; gap: 1.5rem; }
     #loading { font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--muted); display: none; }
     #error   { font-family: 'Space Mono', monospace; font-size: 0.72rem; color: #c03030; background: rgba(200,60,60,0.08); border: 1px solid rgba(200,60,60,0.2); padding: 0.3rem 0.8rem; border-radius: 6px; display: none; }
-
-    /* PROGRESS */
     .progress-bar-outer { position: relative; z-index: 9; height: 3px; background: rgba(0,0,0,0.06); }
     .progress-bar-inner { height: 100%; background: linear-gradient(90deg, var(--ba), var(--pm), var(--arch), var(--dev)); width: 0%; transition: width 1.2s ease; }
-
-    /* MAIN */
     main { position: relative; z-index: 1; padding: 3rem 0 8rem; display: flex; flex-direction: column; align-items: center; overflow-x: auto; }
-
-    /* PIPELINE */
     #pipeline { display: flex; align-items: center; min-width: max-content; padding: 0 2rem 1rem; }
-
-    /* CARDS */
     .card {
-      position: relative;
-      background: var(--glass);
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1rem 0.9rem;
-      width: 148px; flex-shrink: 0;
-      cursor: pointer;
-      transition: all 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
-      overflow: hidden;
+      position: relative; background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border); border-radius: 14px; padding: 1rem 0.9rem;
+      width: 148px; flex-shrink: 0; cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.34, 1.4, 0.64, 1); overflow: hidden;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 0 rgba(255,255,255,0.9) inset;
     }
     .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: rgba(255,255,255,0.9); border-radius: 14px 14px 0 0; }
@@ -220,8 +234,6 @@ const AGENTS_DATA = [
     .card.open .card-expand { max-height: 200px; opacity: 1; }
     .card-desc    { font-size: 0.72rem; color: var(--muted); line-height: 1.6; border-top: 1px solid rgba(0,0,0,0.07); padding-top: 0.7rem; margin-top: 0.7rem; }
     .card-produit { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--muted); margin-top: 0.45rem; }
-
-    /* ARROWS */
     .arrow-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2.2rem 0.2rem 0; cursor: pointer; flex-shrink: 0; gap: 0.2rem; transition: transform 0.2s; }
     .arrow-wrap:hover { transform: scale(1.15); }
     .arrow-dots { display: flex; align-items: center; gap: 3px; }
@@ -229,13 +241,8 @@ const AGENTS_DATA = [
     .adot:nth-child(2) { animation-delay: 0.25s; }
     .adot:nth-child(3) { animation-delay: 0.5s; }
     @keyframes dotflow { 0%,100% { opacity: 0.18; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.3); } }
-    .arrow-wrap.done .adot { animation: none; opacity: 1; background: var(--dev); }
-    .arrow-wrap.done .arrow-tip   { color: var(--dev); }
-    .arrow-wrap.done .arrow-label { color: var(--dev); opacity: 0.7; }
     .arrow-tip  { color: var(--muted); font-size: 1.1rem; }
     .arrow-label { font-family: 'Space Mono', monospace; font-size: 0.52rem; color: var(--muted); text-align: center; max-width: 72px; word-break: break-all; line-height: 1.3; }
-
-    /* MODAL HANDOFF */
     #modal-overlay { position: fixed; inset: 0; background: rgba(180,200,230,0.35); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; z-index: 200; }
     #modal-overlay.show { display: flex; }
     #modal { background: rgba(255,255,255,0.82); border: 1px solid var(--border); border-radius: 20px; padding: 2.2rem; max-width: 380px; width: 90%; backdrop-filter: blur(24px); box-shadow: 0 24px 60px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.9) inset; animation: pop 0.3s cubic-bezier(0.34,1.56,0.64,1); }
@@ -248,8 +255,6 @@ const AGENTS_DATA = [
     .modal-file    { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--ba); background: rgba(0,150,180,0.08); padding: 0.15rem 0.45rem; border-radius: 4px; }
     #modal-close   { width: 100%; background: rgba(255,255,255,0.5); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; padding: 0.7rem; border-radius: 8px; cursor: pointer; }
     #modal-close:hover { background: rgba(255,255,255,0.85); }
-
-    /* MODAL FORMULAIRE */
     #modal-form-overlay { position: fixed; inset: 0; background: rgba(180,200,230,0.35); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; z-index: 200; }
     #modal-form-overlay.show { display: flex; }
     #modal-form { background: rgba(255,255,255,0.82); border: 1px solid var(--border); border-radius: 20px; padding: 2.2rem; max-width: 400px; width: 90%; backdrop-filter: blur(24px); box-shadow: 0 24px 60px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.9) inset; animation: pop 0.3s cubic-bezier(0.34,1.56,0.64,1); }
@@ -264,14 +269,10 @@ const AGENTS_DATA = [
     .form-actions { display: flex; gap: 0.7rem; margin-top: 1.4rem; }
     #btn-submit-session { flex: 1; background: linear-gradient(135deg, var(--ba), var(--pm)); color: white; border: none; border-radius: 8px; padding: 0.75rem; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; }
     #btn-fermer-modal { background: rgba(255,255,255,0.5); border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 0.75rem 1.2rem; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; }
-
-    /* FOOTER BOUTONS */
     footer {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
-      background: var(--glass);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid var(--border);
-      padding: 1rem 2rem;
+      background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border); padding: 1rem 2rem;
       display: flex; align-items: center; justify-content: space-between;
       box-shadow: 0 -1px 0 rgba(255,255,255,0.8) inset;
     }
@@ -299,28 +300,24 @@ const AGENTS_DATA = [
   </header>
   <div class="progress-bar-outer"><div class="progress-bar-inner" id="pbar"></div></div>
 
-<main>
-  <div id="pipeline"></div>  <!-- les cartes et flèches s'insèrent ici -->
-</main>
+  <main>
+    <div id="pipeline"></div>
+  </main>
 
-<footer>
-  <div id="boutons-agents"></div>          <!-- les boutons agents s'insèrent ici -->
-  <button id="btn-lancer" disabled>        <!-- à activer quand le pipeline n'est pas vide -->
-    ▶ Lancer le pipeline
-  </button>
-</footer>
+  <footer>
+    <div id="boutons-agents"></div>
+    <button id="btn-lancer" disabled>▶ Lancer le pipeline</button>
+  </footer>
 
-<!-- Modale handoff — s'ouvre au clic sur une flèche -->
-<div id="modal-overlay">
-  <div id="modal">
-    <h3 id="modal-title">Handoff entre agents</h3>
-    <p id="modal-p"></p>
-    <div class="modal-flow" id="modal-flow"></div>
-    <button id="modal-close">Fermer</button>
+  <div id="modal-overlay">
+    <div id="modal">
+      <h3 id="modal-title">Handoff entre agents</h3>
+      <p id="modal-p"></p>
+      <div class="modal-flow" id="modal-flow"></div>
+      <button id="modal-close">Fermer</button>
+    </div>
   </div>
-</div>
 
-  <!-- Modale formulaire (clic bouton agent) -->
   <div id="modal-form-overlay">
     <div id="modal-form">
       <h3>Ajouter une session</h3>
@@ -328,13 +325,10 @@ const AGENTS_DATA = [
       <form id="form-session">
         <label for="input-action">Action (prompt)</label>
         <textarea id="input-action" placeholder="Décrivez le prompt exécuté par l'agent..." required></textarea>
-
         <label for="input-produit">Fichier produit</label>
         <input type="text" id="input-produit" placeholder="ex: brief.md" required/>
-
         <label for="input-description">Description</label>
         <input type="text" id="input-description" placeholder="Résumé de la session" required/>
-
         <div class="form-actions">
           <button type="button" id="btn-fermer-modal">Annuler</button>
           <button type="submit" id="btn-submit-session">Ajouter au pipeline</button>
@@ -351,25 +345,23 @@ const AGENTS_DATA = [
 
             {/* Partie A */}
             <section className="pt-6">
-                <Heading level={2}>A - Fetch & Boutons</Heading>
+                <Heading level={2}>A - Boutons — 6 pts — 0h25</Heading>
 
                 <Heading level={3}>Initialisation</Heading>
                 <Text>
                     Dans <Code>js/index.js</Code>, créer une fonction <Code>startApp</Code> appelée lors de l'événement <Code>load</Code> de la page.
+                    Dans <Code>startApp</Code>, appeler <Code>afficherBoutons(AGENTS_DATA)</Code> — les données sont déjà disponibles dans la constante, aucun appel réseau n'est nécessaire.
                 </Text>
 
                 <Heading level={3}>Génération des boutons</Heading>
                 <Text>
-                    Dans <Code>startApp</Code>, appeler directement <Code>afficherBoutons(AGENTS_DATA)</Code> — les données sont déjà disponibles dans la constante, aucun appel réseau n'est nécessaire.
-                </Text>
-                <Text>
                     Implémenter <Code>afficherBoutons(agents)</Code>.
-                    Pour chaque agent du tableau, construire le HTML du bouton avec <Code>innerHTML +=</Code> sur <Code>#boutons-agents</Code>.
+                    Pour chaque agent du tableau, créer un bouton avec <Code>document.createElement</Code> et l'insérer dans <Code>#boutons-agents</Code> avec <Code>appendChild</Code>.
                 </Text>
                 <List>
-                    <ListItem>Chaque bouton doit avoir la classe <Code>btn-agent</Code></ListItem>
-                    <ListItem>Stocker l'identifiant de l'agent dans l'attribut <Code>data-agent-id</Code></ListItem>
-                    <ListItem>Le contenu du bouton affiche l'emoji et le nom de l'agent</ListItem>
+                    <ListItem>Définir le <Code>textContent</Code> avec l'emoji et le nom de l'agent</ListItem>
+                    <ListItem>Ajouter la classe <Code>btn-agent</Code></ListItem>
+                    <ListItem>Stocker l'identifiant de l'agent dans <Code>dataset.agentId</Code></ListItem>
                 </List>
                 <Text>Structure HTML attendue pour un bouton :</Text>
                 <CodeCard language="html" filename="button.html">
@@ -379,16 +371,17 @@ const AGENTS_DATA = [
 
             {/* Partie B */}
             <section className="pt-6">
-                <Heading level={2}>B - DOM & Cartes</Heading>
+                <Heading level={2}>B - DOM & Cartes — 8 pts — 0h45</Heading>
 
                 <Heading level={3}>Tableau des sessions</Heading>
                 <Text>
                     Déclarer un tableau vide <Code>sessions</Code> en dehors de toute fonction.
-                    Il contiendra un objet par carte ajoutée au pipeline, et sera passé à <Code>lancerPipeline()</Code> en partie B.
+                    Il contiendra un objet par carte ajoutée au pipeline.
+                    Voici la structure d'un objet session :
                 </Text>
                 <CodeCard language="js" filename="Structure d'un objet session">
                     {`{
-  id: 1,               // numéro d'ordre dans le pipeline
+  id: 1,               // numéro d'ordre dans le pipeline (1, 2, 3…)
   agentId: "ba",       // identifiant de l'agent
   agent: "Business Analyst",
   emoji: "🔍",
@@ -401,22 +394,34 @@ const AGENTS_DATA = [
                 <Heading level={3}>Ajout d'une carte</Heading>
                 <Text>
                     Implémenter <Code>ajouterCarteAuPipeline(agent, action, produit, description)</Code>.
-                    Cette fonction est appelée à chaque soumission du formulaire (partie C).
+                    Cette fonction sera appelée à chaque soumission du formulaire (partie C) ainsi qu'au chargement de la page.
                 </Text>
                 <Text>
-                    À chaque appel, ajouter un objet au tableau <Code>sessions</Code>.
-                    Le champ <Code>id</Code> correspond à la longueur du tableau après ajout.
+                    La fonction doit exécuter les étapes suivantes <strong>dans cet ordre</strong> :
                 </Text>
+                <List>
+                    <ListItem>
+                        Construire l'objet session avec <Code>id</Code> égal à <Code>sessions.length + 1</Code>,
+                        puis l'ajouter au tableau <Code>sessions</Code> avec <Code>push</Code>
+                    </ListItem>
+                    <ListItem>
+                        Si <Code>sessions</Code> contient <strong>au moins deux éléments</strong> après le push,
+                        créer une flèche et l'insérer dans <Code>#pipeline</Code>.
+                        La flèche affiche le <Code>produit</Code> de l'avant-dernier élément,
+                        soit <Code>sessions[sessions.length - 2].produit</Code> — le fichier transmis par l'agent précédent.
+                        Créer un <Code>div</Code> avec <Code>document.createElement</Code>, définir sa <Code>className</Code> et son <Code>innerHTML</Code>
+                    </ListItem>
+                    <ListItem>
+                        Créer la carte avec <Code>document.createElement</Code> + <Code>innerHTML</Code> et l'insérer dans <Code>#pipeline</Code>.
+                        La carte doit porter l'attribut <Code>data-id</Code> égal à son <Code>id</Code>
+                    </ListItem>
+                    <ListItem>
+                        Activer le bouton <Code>#btn-lancer</Code> en retirant son attribut <Code>disabled</Code>
+                    </ListItem>
+                </List>
                 <Text>
-                    Si <Code>sessions</Code> contient déjà au moins un élément avant l'ajout,
-                    créer une flèche avec <Code>document.createElement</Code> et l'insérer dans <Code>#pipeline</Code> avant la carte.
-                    La flèche affiche le <Code>produit</Code> du dernier élément de <Code>sessions</Code>
-                    — c'est le fichier transmis par l'agent précédent.
-                    Pour construire la flèche, créer un <Code>div</Code> et définir sa <Code>className</Code> et son <Code>innerHTML</Code>.
-                </Text>
-                <Text>
-                    Créer ensuite la carte avec <Code>innerHTML</Code> et l'insérer dans <Code>#pipeline</Code>.
-                    La carte doit porter l'attribut <Code>data-id</Code> égal à son <Code>id</Code> dans <Code>sessions</Code>.
+                    Le numéro affiché dans <Code>.card-num</Code> est l'<Code>id</Code> formaté sur deux chiffres :
+                    utiliser <Code>String(id).padStart(2, "0")</Code> pour obtenir <Code>"01"</Code>, <Code>"02"</Code>, etc.
                 </Text>
                 <Text>Structure HTML attendue pour une flèche :</Text>
                 <CodeCard language="html" filename="arrow.html">
@@ -450,7 +455,7 @@ const AGENTS_DATA = [
                 <Heading level={3}>Test</Heading>
                 <Text>
                     À la fin de <Code>js/index.js</Code>, ajouter un appel direct à <Code>ajouterCarteAuPipeline()</Code>
-                    avec des données en dur pour vérifier que la carte s'affiche correctement avant de passer à la partie C.
+                    avec des données en dur pour vérifier que la carte s'affiche correctement avant de passer à la suite.
                     Cet appel devra être supprimé une fois la vérification effectuée.
                 </Text>
                 <CodeCard language="js" filename="Exemple de test — à supprimer après vérification">
@@ -464,13 +469,13 @@ const AGENTS_DATA = [
 
                 <Heading level={3}>Chargement d'un pipeline modèle</Heading>
                 <Text>
-                    Dans <Code>startApp</Code>, après l'appel à <Code>afficherBoutons</Code>, effectuer un <Code>fetch</Code> en méthode <Code>GET</Code> vers l'URL suivante :
+                    Dans <Code>startApp</Code>, après l'appel à <Code>afficherBoutons</Code>, effectuer un <Code>fetch</Code> en <Code>GET</Code> vers :
                 </Text>
                 <CodeCard language="text" filename="URL de l'API">
                     {`http://localhost:8000/pipeline/template`}
                 </CodeCard>
                 <Text>
-                    L'API retourne un tableau de sessions pré-remplies à afficher dans le pipeline au chargement de la page :
+                    L'API retourne un tableau de sessions pré-remplies à afficher dans le pipeline au chargement :
                 </Text>
                 <CodeCard language="json" filename="Réponse de l'API">
                     {`[
@@ -481,17 +486,31 @@ const AGENTS_DATA = [
                 </CodeCard>
                 <List>
                     <ListItem>Passer <Code>#loading</Code> à <Code>display: block</Code> avant le fetch, puis à <Code>display: none</Code> une fois les données reçues</ListItem>
-                    <ListItem>Pour chaque session du tableau retourné, appeler <Code>ajouterCarteAuPipeline()</Code> afin d'afficher la carte dans le pipeline</ListItem>
+                    <ListItem>Pour chaque élément du tableau retourné, appeler <Code>ajouterCarteAuPipeline()</Code> afin d'afficher la carte dans le pipeline</ListItem>
                 </List>
             </section>
 
             {/* Partie C */}
             <section className="pt-6">
-                <Heading level={2}>C - Events & Formulaire</Heading>
+                <Heading level={2}>C - Events & Formulaire — 6 pts — 0h20</Heading>
 
                 <Heading level={3}>Clic sur un bouton agent</Heading>
                 <Text>
-                    Ajouter un événement <Code>click</Code> sur le bouton <Code>#btn-fermer-modal</Code>
+                    Dans <Code>afficherBoutons</Code>, ajouter un événement <Code>click</Code> sur chaque bouton agent.
+                    Au clic :
+                </Text>
+                <List>
+                    <ListItem>Ajouter la classe <Code>show</Code> sur <Code>#modal-form-overlay</Code> pour afficher la modale</ListItem>
+                    <ListItem>Écrire l'emoji et le nom de l'agent dans <Code>#modal-agent-label</Code></ListItem>
+                    <ListItem>
+                        Stocker l'agent courant dans une variable <Code>agentCourant</Code> déclarée en dehors de toute fonction
+                        (comme <Code>sessions</Code>), pour qu'elle soit accessible lors de la soumission du formulaire
+                    </ListItem>
+                </List>
+
+                <Heading level={3}>Fermeture de la modale</Heading>
+                <Text>
+                    Ajouter un événement <Code>click</Code> sur <Code>#btn-fermer-modal</Code>
                     qui retire la classe <Code>show</Code> de <Code>#modal-form-overlay</Code>.
                 </Text>
 
