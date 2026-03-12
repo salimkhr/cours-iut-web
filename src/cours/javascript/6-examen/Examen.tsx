@@ -10,9 +10,9 @@ import CodeCard from "@/components/Cards/CodeCard";
 export default function Examen() {
 
     const sections = [
-        {title: "A - Fetch & Boutons", points: 8, time: "0h45"},
-        {title: "B - DOM & Cartes", points: 8, time: "0h45"},
-        {title: "C - Events & Formulaire", points: 4, time: "0h30"},
+        {title: "A - Fetch & Boutons", points: 6, time: "0h30"},
+        {title: "B - DOM & Cartes",    points: 8, time: "0h40"},
+        {title: "C - Events & Formulaire", points: 6, time: "0h20"},
     ];
 
     const agents = [
@@ -63,7 +63,7 @@ export default function Examen() {
 
             {/* Barème */}
             <section>
-                <Heading level={2}>Barème</Heading>
+                <Heading level={2}>Barème — durée totale : 1h30</Heading>
                 <List>
                     {sections.map((item, index) => (
                         <ListItem key={index}>
@@ -77,7 +77,7 @@ export default function Examen() {
             <section>
                 <Heading level={2}>Fichiers fournis</Heading>
                 <Text>
-                    Le fichier <Code>index.html</Code> vous est fournis. Tout le travail se fait dans <Code>js/index.js</Code>.
+                    Le fichier <Code>index.html</Code> vous est fourni. Tout le travail se fait dans <Code>js/index.js</Code>.
                 </Text>
 
                 <CodeCard language="js" filename="js/index.js">
@@ -90,9 +90,25 @@ const AGENTS_DATA = [
   { id: "dev",  nom: "Developer",        emoji: "💻" },
 ];
 
+// Simule un appel réseau — retourne une Promise qui résout avec AGENTS_DATA après 900ms
 function fetchAgents() {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     setTimeout(() => resolve(AGENTS_DATA), 900);
+  });
+}
+
+// Simule l'exécution du pipeline — retourne une Promise qui résout avec un tableau de statuts
+// Chaque objet contient : { id: Number, statut: String }
+// Les valeurs possibles de statut sont : "terminé", "en cours", "en attente"
+function lancerPipeline(sessions) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const resultats = sessions.map((s, i) => ({
+        id: s.id,
+        statut: i < sessions.length - 1 ? "terminé" : "en cours",
+      }));
+      resolve(resultats);
+    }, 1200);
   });
 }
 
@@ -336,7 +352,7 @@ function fetchAgents() {
 
             {/* Partie A */}
             <section className="pt-6">
-                <Heading level={2}>A - Fetch & Boutons</Heading>
+                <Heading level={2}>A - Fetch & Boutons — 6 pts — 0h30</Heading>
 
                 <Heading level={3}>Initialisation</Heading>
                 <Text>
@@ -381,16 +397,17 @@ function fetchAgents() {
 
             {/* Partie B */}
             <section className="pt-6">
-                <Heading level={2}>B - DOM & Cartes</Heading>
+                <Heading level={2}>B - DOM & Cartes — 8 pts — 0h40</Heading>
 
                 <Heading level={3}>Tableau des sessions</Heading>
                 <Text>
                     Déclarer un tableau vide <Code>sessions</Code> en dehors de toute fonction.
-                    Il contiendra un objet par carte ajoutée au pipeline, et sera passé à <Code>lancerPipeline()</Code> en partie B.
+                    Il contiendra un objet par carte ajoutée au pipeline.
+                    Voici la structure d'un objet session :
                 </Text>
                 <CodeCard language="js">
                     {`{
-  id: 1,               // numéro d'ordre dans le pipeline
+  id: 1,               // numéro d'ordre dans le pipeline (1, 2, 3…)
   agentId: "ba",       // identifiant de l'agent
   agent: "Business Analyst",
   emoji: "🔍",
@@ -418,20 +435,35 @@ ajouterCarteAuPipeline(
   "Reformule le besoin en brief structuré."
 );`}
                 </CodeCard>
+
                 <Text>
-                    À chaque appel, ajouter un objet au tableau <Code>sessions</Code>.
-                    Le champ <Code>id</Code> correspond à la longueur du tableau après ajout.
+                    La fonction doit exécuter les étapes suivantes <strong>dans cet ordre</strong> :
                 </Text>
+                <List>
+                    <ListItem>
+                        Construire l'objet session avec <Code>id</Code> égal à <Code>sessions.length + 1</Code>,
+                        puis l'ajouter au tableau <Code>sessions</Code> avec <Code>push</Code>
+                    </ListItem>
+                    <ListItem>
+                        Si <Code>sessions</Code> contient <strong>au moins deux éléments</strong> après le push,
+                        créer une flèche et l'insérer dans <Code>#pipeline</Code> avant la nouvelle carte.
+                        La flèche affiche le <Code>produit</Code> de l'avant-dernier élément de <Code>sessions</Code>
+                        (c'est-à-dire <Code>sessions[sessions.length - 2].produit</Code>), qui représente le fichier transmis par l'agent précédent
+                    </ListItem>
+                    <ListItem>
+                        Créer la carte avec <Code>innerHTML</Code> et l'insérer dans <Code>#pipeline</Code>.
+                        La carte doit porter l'attribut <Code>data-id</Code> égal à son <Code>id</Code>
+                    </ListItem>
+                    <ListItem>
+                        Activer le bouton <Code>#btn-lancer</Code> en retirant l'attribut <Code>disabled</Code>
+                    </ListItem>
+                </List>
+
                 <Text>
-                    Si <Code>sessions</Code> contient déjà au moins un élément avant l'ajout,
-                    créer une flèche et l'insérer dans <Code>#pipeline</Code> avant la carte.
-                    La flèche affiche le <Code>produit</Code> du dernier élément de <Code>sessions</Code>
-                    — c'est le fichier transmis par l'agent précédent.
+                    Le numéro affiché dans <Code>.card-num</Code> est l'<Code>id</Code> de la session formaté sur deux chiffres.
+                    Utiliser <Code>String(id).padStart(2, "0")</Code> pour obtenir <Code>"01"</Code>, <Code>"02"</Code>, etc.
                 </Text>
-                <Text>
-                    Créer ensuite la carte avec <Code>innerHTML</Code> et l'insérer dans <Code>#pipeline</Code>.
-                    La carte doit porter l'attribut <Code>data-id</Code> égal à son <Code>id</Code> dans <Code>sessions</Code>.
-                </Text>
+
                 <Text>Structure HTML attendue pour une flèche :</Text>
                 <CodeCard language="html" filename="arrow.html">
                     {`<div class="arrow-wrap">
@@ -464,7 +496,7 @@ ajouterCarteAuPipeline(
                 <Heading level={3}>Mise à jour des statuts</Heading>
                 <Text>
                     Ajouter dans <Code>startApp</Code> un événement <Code>click</Code> sur <Code>#btn-lancer</Code>.
-                    Au clic, appeler <Code>lancerPipeline(sessions)</Code> en lui passant le tableau <Code>sessions</Code>.
+                    Au clic, appeler <Code>lancerPipeline(sessions)</Code> — cette fonction est fournie dans <Code>js/index.js</Code>.
                     Elle retourne une Promise qui résout avec le tableau suivant :
                 </Text>
                 <CodeCard language="json" filename="Retour de lancerPipeline()">
@@ -482,12 +514,26 @@ ajouterCarteAuPipeline(
 
             {/* Partie C */}
             <section className="pt-6">
-                <Heading level={2}>C - Events & Formulaire</Heading>
+                <Heading level={2}>C - Events & Formulaire — 6 pts — 0h20</Heading>
 
                 <Heading level={3}>Clic sur un bouton agent</Heading>
                 <Text>
-                    Au clic sur un bouton agent, ajouter la classe <Code>show</Code> sur <Code>#modal-form-overlay</Code>.
-                    Écrire le nom et l'emoji de l'agent dans <Code>#modal-agent-label</Code>.
+                    Dans <Code>afficherBoutons</Code>, ajouter un événement <Code>click</Code> sur chaque bouton agent.
+                    Au clic :
+                </Text>
+                <List>
+                    <ListItem>Ajouter la classe <Code>show</Code> sur <Code>#modal-form-overlay</Code> pour afficher la modale</ListItem>
+                    <ListItem>Écrire l'emoji et le nom de l'agent dans <Code>#modal-agent-label</Code></ListItem>
+                    <ListItem>
+                        Stocker l'agent courant dans une variable accessible par le gestionnaire de soumission du formulaire
+                        (déclarer cette variable en dehors de toute fonction, comme <Code>sessions</Code>)
+                    </ListItem>
+                </List>
+
+                <Heading level={3}>Fermeture de la modale</Heading>
+                <Text>
+                    Ajouter un événement <Code>click</Code> sur le bouton <Code>#btn-fermer-modal</Code>
+                    qui retire la classe <Code>show</Code> de <Code>#modal-form-overlay</Code>.
                 </Text>
 
                 <Heading level={3}>Soumission du formulaire</Heading>
@@ -501,8 +547,8 @@ ajouterCarteAuPipeline(
                     <ListItem><Code>#input-description</Code> — la description</ListItem>
                 </List>
                 <Text>
-                    Appeler <Code>ajouterCarteAuPipeline()</Code> avec ces valeurs,
-                    puis retirer la classe <Code>show</Code> de <Code>#modal-form-overlay</Code> et réinitialiser le formulaire.
+                    Appeler <Code>ajouterCarteAuPipeline()</Code> avec l'agent courant et les trois valeurs,
+                    puis retirer la classe <Code>show</Code> de <Code>#modal-form-overlay</Code> et réinitialiser le formulaire avec <Code>reset()</Code>.
                 </Text>
             </section>
 
