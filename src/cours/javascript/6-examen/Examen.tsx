@@ -116,6 +116,14 @@ if ($path === "/agents" && $method === "GET") {
     ];
     echo json_encode($agents);
 
+} elseif ($path === "/pipeline/template" && $method === "GET") {
+    $template = [
+        ["id" => "ba",   "nom" => "Business Analyst", "emoji" => "🔍", "action" => "Analyse du besoin client",      "produit" => "brief.md",   "description" => "Reformule le besoin en brief structuré."],
+        ["id" => "pm",   "nom" => "Product Manager",  "emoji" => "📋", "action" => "Découpage en User Stories",     "produit" => "stories.md", "description" => "Liste des stories priorisées."],
+        ["id" => "arch", "nom" => "Architect",         "emoji" => "🏗️", "action" => "Conception de l'architecture", "produit" => "archi.md",   "description" => "Schéma technique du projet."],
+    ];
+    echo json_encode($template);
+
 } else {
     http_response_code(404);
     echo json_encode(["error" => "Route introuvable"]);
