@@ -11,7 +11,7 @@ export async function PUT(
         const {moduleId, order} = await params;
         const {key, value} = await req.json();
 
-        if (!['isAvailable', 'correctionIsAvailable'].includes(key)) {
+        if (!['isAvailable', 'correctionIsAvailable', 'examenIsLock'].includes(key)) {
             return NextResponse.json({error: 'Clé invalide'}, {status: 400});
         }
 

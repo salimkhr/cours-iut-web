@@ -23,6 +23,7 @@ export default function AdminSection({
 
     const [isAvailable, setIsAvailable] = useState(!!section.isAvailable);
     const [correctionIsAvailable, setIscorrectionIsAvailable] = useState(!!section.correctionIsAvailable);
+    const [examenIsLock, setExamenIsLock] = useState(!!section.examenIsLock);
 
     const moduleId = modData._id;
 
@@ -36,12 +37,13 @@ export default function AdminSection({
     };
 
     const handleToggle = (
-        key: keyof Pick<Section, "correctionIsAvailable" | "isAvailable">,
+        key: keyof Pick<Section, "correctionIsAvailable" | "isAvailable" | "examenIsLock">,
         value: boolean
     ) => {
         if (key === "isAvailable") setIsAvailable(value);
 
         if (key === "correctionIsAvailable") setIscorrectionIsAvailable(value);
+        if (key === "examenIsLock") setExamenIsLock(value);
         updateSectionState(moduleId, section.order, key, value);
     };
 
@@ -53,6 +55,10 @@ export default function AdminSection({
     useEffect(() => {
         setIscorrectionIsAvailable(!!currentSection.correctionIsAvailable);
     }, [currentSection.correctionIsAvailable]);
+
+    useEffect(() => {
+        setExamenIsLock(!!currentSection.examenIsLock);
+    }, [currentSection.examenIsLock]);
 
     return (
         <div className="rounded-lg border p-3 space-y-3 bg-muted/40">
@@ -82,6 +88,15 @@ export default function AdminSection({
                         disabled={!currentSection.hasCorrection}
                     />
                 </div>
+                {currentSection.contents.includes('examen') && (
+                    <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t mt-2">
+                        <span>Code d'accès :</span>
+                        <code
+                            className="bg-muted px-1.5 py-0.5 rounded font-mono font-bold text-primary">
+                            {modData._id?.toString().slice(-6).toUpperCase()}
+                        </code>
+                    </div>
+                )}
             </div>
         </div>
     );
