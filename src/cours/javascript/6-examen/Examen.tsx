@@ -95,14 +95,14 @@ export default function Examen() {
                     {`php -S localhost:8000`}
                 </CodeCard>
                 <Text>
-                    Une fois lancé, ouvrir <Code>http://localhost:8000</Code> dans le navigateur.
-                    Le endpoint <Code>GET /agents</Code> est alors accessible à <Code>http://localhost:8000/agents</Code>.
+                    Une fois lancé, le endpoint <Code>GET /agents</Code> est alors accessible à <Code>http://localhost:8000/agents</Code>.
                 </Text>
 
                 <CodeCard language="php" filename="index.php" collapsible>
                     {`<?php
 
 header("Content-Type: application/json");
+header("Access-Control-Allow-Origin: *");
 
 $path   = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $method = $_SERVER["REQUEST_METHOD"];
@@ -323,6 +323,31 @@ function lancerPipeline(sessions) {
     #boutons-agents { display: flex; gap: 0.6rem; flex-wrap: wrap; }
     #btn-lancer { font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; background: linear-gradient(135deg, var(--arch), var(--dev)); color: white; border: none; border-radius: 10px; padding: 0.7rem 1.6rem; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; }
     #btn-lancer:not(:disabled) { opacity: 1; }
+    #boutons-agents .btn-agent {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text);
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+}
+
+#boutons-agents .btn-agent:hover {
+  background: rgba(255,255,255,0.85);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.9) inset;
+}
+
+#boutons-agents .btn-agent:active {
+  transform: translateY(0);
+}
   </style>
 </head>
 <body>
