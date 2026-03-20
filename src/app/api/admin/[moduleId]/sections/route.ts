@@ -123,6 +123,7 @@ export async function PUT(
                     [`sections.${oldSectionIndex}.correctionIsAvailable`]: updatedSection.correctionIsAvailable,
                     [`sections.${oldSectionIndex}.order`]: updatedSection.order,
                     [`sections.${oldSectionIndex}.contents`]: updatedSection.contents,
+                    [`sections.${oldSectionIndex}.examenIsLock`]: updatedSection.examenIsLock,
                 }
             }
         );

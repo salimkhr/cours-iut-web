@@ -4,7 +4,7 @@ import axios from "axios";
 export default async function updateSectionState(
     moduleId: string | ObjectId,
     order: number,
-    key: 'isAvailable' | 'correctionIsAvailable',
+    key: 'isAvailable' | 'correctionIsAvailable' | 'examenIsLock',
     value: boolean
 ) {
 
