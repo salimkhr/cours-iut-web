@@ -63,9 +63,8 @@ export const contentImports: ContentImportsType = {
     },
     '5-react-js': {
       'Cours': () => import('@/cours/javascript/5-react-js/Cours'),
-      'TP': () => import('@/cours/javascript/5-react-js/TP'),
       'Slide': () => import('@/cours/javascript/5-react-js/Slide'),
-
+      'TP': () => import('@/cours/javascript/5-react-js/TP'),
     },
     '6-examen': {
       'Examen': () => import('@/cours/javascript/6-examen/Examen'),
@@ -109,6 +108,7 @@ export const contentImports: ContentImportsType = {
     },
     '9-symfony': {
       'Cours': () => import('@/cours/php/9-symfony/Cours'),
+      'Slide': () => import('@/cours/php/9-symfony/Slide'),
       'TP': () => import('@/cours/php/9-symfony/TP'),
     },
   },
