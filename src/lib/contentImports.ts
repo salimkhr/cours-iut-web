@@ -78,6 +78,9 @@ export const contentImports: ContentImportsType = {
     '10-examen': {
       'Examen': () => import('@/cours/php/10-examen/Examen'),
     },
+    '11-twig': {
+      'Cours': () => import('@/cours/php/11-twig/Cours'),
+    },
     '2-fonction-tableaux': {
       'Cours': () => import('@/cours/php/2-fonction-tableaux/Cours'),
       'TP': () => import('@/cours/php/2-fonction-tableaux/TP'),
