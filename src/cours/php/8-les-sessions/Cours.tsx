@@ -1,7 +1,8 @@
 import Heading from "@/components/ui/Heading";
-import Text from "@/components/ui/Text"
+import Text from "@/components/ui/Text";
 import Code from "@/components/ui/Code";
 import CodeCard from "@/components/Cards/CodeCard";
+import {List, ListItem} from "@/components/ui/List";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 
 export default function Cours() {
@@ -9,10 +10,10 @@ export default function Cours() {
         <article>
             {/* SECTION 1 : INTRODUCTION */}
             <section>
-                <Heading level={2}>Introduction aux Sessions</Heading>
+                <Heading level={2}>Introduction aux sessions</Heading>
                 <Text>
                     Les <strong>sessions</strong> sont un mécanisme permettant de conserver des données
-                    d'un utilisateur entre plusieurs requêtes HTTP. Contrairement au protocole HTTP qui est
+                    d&apos;un utilisateur entre plusieurs requêtes HTTP. Contrairement au protocole HTTP qui est
                     <strong> sans état</strong> (stateless), les sessions permettent de maintenir un état
                     pour chaque utilisateur.
                 </Text>
@@ -25,20 +26,20 @@ export default function Cours() {
                 <Text>
                     Les sessions sont particulièrement utiles pour :
                 </Text>
-                <ul className="list-disc pl-6 my-3 space-y-1 text-gray-700">
-                    <li>Gérer l'authentification des utilisateurs</li>
-                    <li>Conserver un panier d'achat</li>
-                    <li>Maintenir des préférences utilisateur temporaires</li>
-                    <li>Stocker des messages flash (notifications temporaires)</li>
-                </ul>
+                <List>
+                    <ListItem>Gérer l&apos;authentification des utilisateurs.</ListItem>
+                    <ListItem>Conserver un panier d&apos;achat.</ListItem>
+                    <ListItem>Maintenir des préférences utilisateur temporaires.</ListItem>
+                    <ListItem>Stocker des messages flash (notifications temporaires).</ListItem>
+                </List>
             </section>
 
             {/* SECTION 2 : INITIALISATION */}
             <section>
-                <Heading level={2}>Initialisation d'une Session</Heading>
+                <Heading level={2}>A- Initialisation d&apos;une session</Heading>
 
                 <Text>
-                    Pour utiliser les sessions en PHP, il est <strong>obligatoire</strong> d'appeler la
+                    Pour utiliser les sessions en PHP, il est <strong>obligatoire</strong> d&apos;appeler la
                     fonction <Code>session_start()</Code> au début de chaque page qui utilise les sessions.
                     Cette fonction doit être appelée <strong>avant tout envoi de contenu HTML</strong>.
                 </Text>
@@ -57,8 +58,8 @@ session_start();
                     <AlertDescription>
                         <Text className="mt-5">
                             <Code>session_start()</Code> doit être appelé <strong>avant tout output</strong>
-                            (HTML, echo, espaces, sauts de ligne). Sinon, PHP génère l'erreur :
-                            <Code>"Cannot modify header information - headers already sent"</Code>.
+                            (HTML, echo, espaces, sauts de ligne). Sinon, PHP génère l&apos;erreur :
+                            <Code>&quot;Cannot modify header information - headers already sent&quot;</Code>.
                         </Text>
                     </AlertDescription>
                 </Alert>
@@ -66,12 +67,12 @@ session_start();
                 <Text className="mt-5">
                     Lorsque <Code>session_start()</Code> est appelée, PHP effectue les opérations suivantes :
                 </Text>
-                <ul className="list-disc pl-6 my-3 space-y-1 text-gray-700">
-                    <li>Vérifie si un cookie de session existe</li>
-                    <li>Si oui, charge les données de session existantes</li>
-                    <li>Si non, crée une nouvelle session avec un ID unique</li>
-                    <li>Envoie le cookie de session au navigateur</li>
-                </ul>
+                <List>
+                    <ListItem>Vérifie si un cookie de session existe.</ListItem>
+                    <ListItem>Si oui, charge les données de session existantes.</ListItem>
+                    <ListItem>Si non, crée une nouvelle session avec un ID unique.</ListItem>
+                    <ListItem>Envoie le cookie de session au navigateur.</ListItem>
+                </List>
 
                 <CodeCard language="php">
                     {`<?php
@@ -90,14 +91,14 @@ if (session_status() === PHP_SESSION_ACTIVE) {
 
             {/* SECTION 3 : STOCKAGE */}
             <section>
-                <Heading level={2}>Stockage de Données dans la Session</Heading>
+                <Heading level={2}>B- Stockage de données dans la session</Heading>
 
                 <Text>
                     Les données de session sont stockées dans le tableau superglobal <Code>$_SESSION</Code>.
-                    Ce tableau associatif peut contenir n'importe quel type de données sérialisable.
+                    Ce tableau associatif peut contenir n&apos;importe quel type de données sérialisable.
                 </Text>
 
-                <Heading level={3}>Stockage des types primitifs</Heading>
+                <Heading level={3}>1. Stockage des types primitifs</Heading>
 
                 <Text>
                     Les types primitifs (entiers, chaînes, booléens, flottants) et les tableaux simples
@@ -147,7 +148,7 @@ $_SESSION['cart'] = [
 ?>`}
                 </CodeCard>
 
-                <Heading level={3}>Sérialisation et Stockage d'Objets en Session</Heading>
+                <Heading level={3}>2. Sérialisation et stockage d&apos;objets en session</Heading>
 
                 <Text>
                     PHP permet également de stocker des objets dans la session. Ces objets sont
@@ -201,9 +202,9 @@ $_SESSION['user'] = $user;
                     <AlertTitle>⚠️ Attention avec les objets :</AlertTitle>
                     <AlertDescription>
                         <Text>
-                            La classe de l'objet doit être <strong>définie ou chargée AVANT</strong>
-                            l'appel à <Code>session_start()</Code> pour que la désérialisation fonctionne
-                            correctement. Sinon, l'objet sera converti en instance de la classe
+                            La classe de l&apos;objet doit être <strong>définie ou chargée AVANT</strong>
+                            l&apos;appel à <Code>session_start()</Code> pour que la désérialisation fonctionne
+                            correctement. Sinon, l&apos;objet sera converti en instance de la classe
                             <Code>__PHP_Incomplete_Class</Code>.
                         </Text>
                     </AlertDescription>
@@ -212,10 +213,10 @@ $_SESSION['user'] = $user;
 
             {/* SECTION 4 : SÉRIALISATION */}
             <section>
-                <Heading level={2}>Sérialisation des objets</Heading>
+                <Heading level={2}>C- Sérialisation des objets</Heading>
 
                 <Text>
-                    La <strong>sérialisation</strong> est le processus de conversion d'un objet en une
+                    La <strong>sérialisation</strong> est le processus de conversion d&apos;un objet en une
                     chaîne de caractères qui peut être stockée ou transmise. PHP gère automatiquement
                     la sérialisation des objets stockés en session, mais il est important de comprendre
                     ce mécanisme.
@@ -284,7 +285,7 @@ echo $product->getInfo();
 ?>`}
                 </CodeCard>
 
-                <Heading level={3}>Méthodes magiques de sérialisation</Heading>
+                <Heading level={3}>1. Méthodes magiques de sérialisation</Heading>
 
                 <Text>
                     PHP offre des méthodes magiques pour contrôler le processus de sérialisation :
@@ -326,25 +327,25 @@ class User
                 <Alert>
                     <AlertTitle>⚠️ Propriétés à ne jamais sérialiser :</AlertTitle>
                     <AlertDescription>
-                        <ul className="list-disc pl-5 space-y-1">
-                            <li>Ressources fichiers ouvertes</li>
-                            <li>Mots de passe en clair</li>
-                            <li>Données sensibles non chiffrées</li>
-                        </ul>
+                        <List>
+                            <ListItem>Ressources fichiers ouvertes.</ListItem>
+                            <ListItem>Mots de passe en clair.</ListItem>
+                            <ListItem>Données sensibles non chiffrées.</ListItem>
+                        </List>
                     </AlertDescription>
                 </Alert>
             </section>
 
             {/* SECTION 5 : RÉCUPÉRATION */}
             <section>
-                <Heading level={2}>Récupération de Données de la Session</Heading>
+                <Heading level={2}>D- Récupération de données de la session</Heading>
 
                 <Text>
-                    Pour récupérer des données de session, il suffit d'accéder au tableau
+                    Pour récupérer des données de session, il suffit d&apos;accéder au tableau
                     <Code>$_SESSION</Code> après avoir appelé <Code>session_start()</Code>.
                 </Text>
 
-                <Heading level={3}>Récupération des types primitifs</Heading>
+                <Heading level={3}>1. Récupération des types primitifs</Heading>
 
                 <CodeCard language="php">
                     {`<?php
@@ -391,16 +392,16 @@ if ($username && $email) {
                     <AlertTitle>💡 Bonne pratique :</AlertTitle>
                     <AlertDescription>
                         <Text>
-                            Utilisez toujours <Code>isset()</Code> ou l'opérateur <Code>??</Code> avant
-                            d'accéder à une variable de session pour éviter les erreurs si elle n'existe pas.
+                            Utilisez toujours <Code>isset()</Code> ou l&apos;opérateur <Code>??</Code> avant
+                            d&apos;accéder à une variable de session pour éviter les erreurs si elle n&apos;existe pas.
                         </Text>
                     </AlertDescription>
                 </Alert>
 
-                <Heading level={3}>Récupération et désérialisation d'Objets en Session</Heading>
+                <Heading level={3}>2. Récupération et désérialisation d&apos;objets en session</Heading>
 
                 <Text>
-                    Lorsqu'on récupère un objet stocké en session, PHP le désérialise automatiquement.
+                    Lorsqu&apos;on récupère un objet stocké en session, PHP le désérialise automatiquement.
                     Il est crucial que la <strong>classe soit chargée avant</strong>
                     <Code>session_start()</Code>.
                 </Text>
@@ -454,7 +455,7 @@ if (isset($_SESSION['cart_items'])) {
                     <AlertTitle>⚠️ Erreur fréquente :</AlertTitle>
                     <AlertDescription>
                         <Text>
-                            Si la classe n'est pas chargée avant <Code>session_start()</Code>, l'objet
+                            Si la classe n&apos;est pas chargée avant <Code>session_start()</Code>, l&apos;objet
                             sera converti en <Code>__PHP_Incomplete_Class</Code> et sera inutilisable.
                         </Text>
                     </AlertDescription>
@@ -463,15 +464,15 @@ if (isset($_SESSION['cart_items'])) {
 
             {/* SECTION 6 : DESTRUCTION */}
             <section>
-                <Heading level={2}>Destruction d'une Session</Heading>
+                <Heading level={2}>E- Destruction d&apos;une session</Heading>
 
                 <Text>
-                    La destruction d'une session est essentielle lors de la déconnexion d'un utilisateur.
-                    Il faut suivre un processus complet pour s'assurer que toutes les données sont
+                    La destruction d&apos;une session est essentielle lors de la déconnexion d&apos;un utilisateur.
+                    Il faut suivre un processus complet pour s&apos;assurer que toutes les données sont
                     correctement supprimées.
                 </Text>
 
-                <Heading level={3}>Destruction complète</Heading>
+                <Heading level={3}>1. Destruction complète</Heading>
 
                 <CodeCard language="php">
                     {`<?php
@@ -512,7 +513,7 @@ exit;
                     </AlertDescription>
                 </Alert>
 
-                <Heading level={3}>Suppression de variables spécifiques</Heading>
+                <Heading level={3}>2. Suppression de variables spécifiques</Heading>
 
                 <Text>
                     Pour supprimer uniquement certaines variables sans détruire toute la session :

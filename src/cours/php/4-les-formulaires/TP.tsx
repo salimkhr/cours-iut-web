@@ -324,7 +324,7 @@ export default function TP() {
                 <Heading level={3}>1. Affichage de la page d&apos;inscription</Heading>
                 <List ordered>
                     <ListItem>
-                        Créez la vue <Code>register.html.php</Code> dans le dossier <Code>view</Code> ayant comme base le même HTML que la page login. modifier le titre de la page en <Code>Inscription</Code> et ajouter un lien vers la page de connexion :/
+                        Créez la vue <Code>register.html.php</Code> dans le dossier <Code>view</Code> ayant comme base le même HTML que la page login. Modifiez le titre de la page en <Code>Inscription</Code> et ajoutez un lien vers la page de connexion.
                     </ListItem>
                     <ListItem>
                         Créez une classe <Code>RegisterController</Code> dans le fichier <Code>app/controllers/RegisterController.php</Code> qui, dans sa méthode <Code>register</Code>, affiche la vue <Code>register.html.php</Code>.

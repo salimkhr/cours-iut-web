@@ -54,7 +54,19 @@ graph TD
     return (
         <article>
             <section>
-                <Heading level={2}>Ajout des Services à notre Architecture MVC</Heading>
+                <Heading level={2}>Introduction</Heading>
+                <Text>
+                    Dans ce cours, vous allez approfondir l&apos;architecture MVC en y ajoutant une couche de services
+                    et en appliquant les principes SOLID pour obtenir un code professionnel, testable et maintenable.
+                </Text>
+                <List>
+                    <ListItem>Comprendre le rôle de la couche service dans l&apos;architecture MVC</ListItem>
+                    <ListItem>Appliquer les principes SOLID (Single Responsibility, Open/Closed, Liskov, Interface Segregation, Dependency Inversion)</ListItem>
+                    <ListItem>Refactorer un code monolithique vers une Clean Architecture</ListItem>
+                </List>
+            </section>
+            <section>
+                <Heading level={2}>A- Ajout des services à notre architecture MVC</Heading>
                 <Text>
                     Les services sont un des principes de l&apos;architecture MVC (Modèle - Vue - Contrôleur).
                     Dans notre architecture, les <strong>services</strong> représentent une couche supplémentaire entre
@@ -68,23 +80,23 @@ graph TD
                     de déléguer cette responsabilité aux services. Les contrôleurs orchestrent, les services exécutent.
                 </Text>
 
-                <Heading level={3}>Étapes pour ajouter un Service</Heading>
+                <Heading level={3}>1. Étapes pour ajouter un service</Heading>
                 <List ordered>
                     <ListItem>
-                        <strong>Créer un dossier <code>/app/services</code></strong> s&apos;il n&apos;existe pas déjà.
-                        Ce dossier contiendra tous les services de ton application (un par entité ou par
+                        <strong>Créer un dossier <Code>/app/services</Code></strong> s&apos;il n&apos;existe pas déjà.
+                        Ce dossier contiendra tous les services de votre application (un par entité ou par
                         fonctionnalité).
                     </ListItem>
                     <ListItem>
-                        <strong>Créer ton premier service</strong> — par exemple,
-                        <code>HelloService.php</code> — et y placer la logique métier spécifique.
+                        <strong>Créer votre premier service</strong> — par exemple,
+                        <Code>HelloService.php</Code> — et y placer la logique métier spécifique.
                     </ListItem>
                     <ListItem>
-                        <strong>le service dans ton contrôleur</strong> en l&apos;important via un
-                        <code>require_once</code> et en le stockant dans une propriété du contrôleur.
+                        <strong>Importer le service dans votre contrôleur</strong> via un
+                        <Code>require_once</Code> et le stocker dans une propriété du contrôleur.
                     </ListItem>
                     <ListItem>
-                        <strong>Utiliser le service</strong> dans tes méthodes de contrôleur pour récupérer les données
+                        <strong>Utiliser le service</strong> dans vos méthodes de contrôleur pour récupérer les données
                         ou
                         exécuter des opérations métiers, puis les transmettre à la vue.
                     </ListItem>
@@ -102,28 +114,28 @@ graph TD
                     </ul>
                 </Text>
 
-                <Heading level={3}>Rappel de l'arborescence des dossier</Heading>
+                <Heading level={3}>2. Rappel de l&apos;arborescence des dossiers</Heading>
                 <List>
                     <ListItem><strong>/app/controllers</strong> : Contient les contrôleurs. Chaque contrôleur gère une
-                        partie spécifique de l&apos;application (par exemple, <code>ArticleController.php</code> pour
+                        partie spécifique de l&apos;application (par exemple, <Code>ArticleController.php</Code> pour
                         gérer les articles).</ListItem>
                     <ListItem><strong>/app/entities</strong> : Contient les entités, représentant les objets métier
-                        (comme <code>Article.php</code> pour un article).</ListItem>
+                        (comme <Code>Article.php</Code> pour un article).</ListItem>
                     <ListItem><strong>/app/repositories</strong> : Contient les repositories, responsables des requêtes
-                        SQL pour chaque entité (comme <code>ArticleRepository.php</code>).</ListItem>
+                        SQL pour chaque entité (comme <Code>ArticleRepository.php</Code>).</ListItem>
                     <ListItem><strong>/app/services</strong> : Contient les services qui encapsulent la logique métier
-                        complexe (comme <code>ArticleService.php</code> pour les articles).</ListItem>
-                    <ListItem><strong>/app/views</strong> : Contient les vues (ex. <code>article.php</code>) qui
+                        complexe (comme <Code>ArticleService.php</Code> pour les articles).</ListItem>
+                    <ListItem><strong>/app/views</strong> : Contient les vues (ex. <Code>article.php</Code>) qui
                         affichent les données à l&apos;utilisateur.</ListItem>
                     <ListItem><strong>/app/core</strong> : Contient les classes de base partagées,
-                        comme <code>Controller.php</code>.</ListItem>
+                        comme <Code>Controller.php</Code>.</ListItem>
                     <ListItem><strong>/config</strong> : Contient les fichiers de configuration (ex. connexion à la base
-                        dans <code>config.php</code>).</ListItem>
+                        dans <Code>config.php</Code>).</ListItem>
                     <ListItem><strong>/public</strong> : Contient les fichiers accessibles publiquement
-                        (<code>index.php</code>, CSS, JS, etc.).</ListItem>
+                        (<Code>index.php</Code>, CSS, JS, etc.).</ListItem>
                 </List>
 
-                <Heading level={3}>Exemple</Heading>
+                <Heading level={3}>3. Exemple</Heading>
                 <CodeCard language="php" filename={"app/services/UserController.php"}>
                     {`<?php
 class HelloService
@@ -158,7 +170,7 @@ class HelloWorldController extends Controller
                 </CodeCard>
             </section>
             <section>
-                <Heading level={2}>Introduction à la Clean Architecture et aux principes SOLID</Heading>
+                <Heading level={2}>B- Introduction à la Clean Architecture et aux principes SOLID</Heading>
                 <Text className="leading-relaxed mb-4">
                     Nous allons partir d&apos;un code <strong>réel et problématique</strong> que
                     l&apos;on rencontre souvent dans les projets : un contrôleur qui fait tout. Nous allons le
@@ -174,10 +186,10 @@ class HelloWorldController extends Controller
             {/* Étape 0 : Le code problématique */}
             <section>
                 <Heading level={2}>
-                    Étape 0 : Le code problématique (God Class)
+                    C- Étape 0 : Le code problématique (God Class)
                 </Heading>
 
-                <Heading level={3} className="text-lg font-bold text-red-800 mb-3">Code initial : Tous les problèmes
+                <Heading level={3} className="text-lg font-bold text-red-800 mb-3">1. Code initial : tous les problèmes
                     réunis</Heading>
                 <CodeCard language="php">
                     {`<?php
@@ -262,7 +274,7 @@ class UserController {
 $controller = new UserController();
 $controller->register();`}</CodeCard>
 
-                <Heading level={3} className="text-xl font-bold mb-4">Problèmes identifiés</Heading>
+                <Heading level={3} className="text-xl font-bold mb-4">2. Problèmes identifiés</Heading>
                 <List>
                     <ListItem>
                         <Text className="font-semibold">Violation du MVC</Text>
@@ -289,10 +301,10 @@ $controller->register();`}</CodeCard>
             {/* Étape 1 : Séparer la Vue */}
             <section>
                 <Heading level={2}>
-                    Étape 1 : Séparer la Vue du Contrôleur
+                    D- Étape 1 : Séparer la vue du contrôleur
                 </Heading>
 
-                <Heading level={3}>Objectif</Heading>
+                <Heading level={3}>1. Objectif</Heading>
                 <Text className="text-blue-800">
                     Respecter le principe MVC de base : le contrôleur ne doit pas contenir de HTML.
                 </Text>
@@ -389,7 +401,7 @@ class UserController extends Controller
                     </div>
                 </div>
 
-                <Heading level={3}>Améliorations obtenues</Heading>
+                <Heading level={3}>2. Améliorations obtenues</Heading>
                 <List>
                     <ListItem>Séparation des responsabilités : le contrôleur coordonne, la vue affiche</ListItem>
                     <ListItem>Le design peut être modifié sans toucher au contrôleur</ListItem>
@@ -401,10 +413,10 @@ class UserController extends Controller
             {/* Étape 2 : Extraire le Repository */}
             <section>
                 <Heading level={2}>
-                    Étape 2 : Créer un Repository pour l&apos;accès aux données
+                    E- Étape 2 : Créer un repository pour l&apos;accès aux données
                 </Heading>
 
-                <Heading level={3}>Objectif</Heading>
+                <Heading level={3}>1. Objectif</Heading>
                 <Text>
                     Respecter le <strong>Single Responsibility Principle</strong> : séparer l&apos;accès aux données
                     dans une classe dédiée.
@@ -527,7 +539,7 @@ class UserRepository
                 </div>
 
 
-                <Heading level={3}>Améliorations obtenues</Heading>
+                <Heading level={3}>2. Améliorations obtenues</Heading>
                 <List>
                     <ListItem><strong>Single Responsibility</strong> : le Repository gère UNIQUEMENT l&apos;accès aux
                         données</ListItem>
@@ -541,10 +553,10 @@ class UserRepository
             {/* Étape 3 : Créer les Services */}
             <section>
                 <Heading level={2}>
-                    Étape 3 : Extraire la logique métier dans des Services
+                    F- Étape 3 : Extraire la logique métier dans des services
                 </Heading>
 
-                <Heading level={3}>Objectif</Heading>
+                <Heading level={3}>1. Objectif</Heading>
                 <Text className="text-blue-800">
                     Créer des services spécialisés pour chaque responsabilité : validation, email, audit.
                     Cela respecte <strong>Single Responsibility</strong> et prépare
@@ -800,7 +812,7 @@ class UserController extends Controller
 }`}</CodeCard>
 
 
-                <Heading level={3}>Améliorations massives obtenues</Heading>
+                <Heading level={3}>2. Améliorations massives obtenues</Heading>
                 <List className="space-y-2 text-green-800">
                     <ListItem><strong>Single Responsibility</strong> : chaque service a UNE responsabilité</ListItem>
                     <ListItem><strong>Testabilité</strong> : chaque service peut être testé indépendamment</ListItem>
@@ -814,10 +826,10 @@ class UserController extends Controller
             {/* Étape 4 : Interfaces et Dependency Inversion */}
             <section>
                 <Heading level={2}>
-                    Étape 4 : Interfaces et Dependency Inversion (SOLID - D)
+                    G- Étape 4 : Interfaces et Dependency Inversion (SOLID - D)
                 </Heading>
 
-                <Heading level={3}>Objectif</Heading>
+                <Heading level={3}>1. Objectif</Heading>
                 <Text>
                     Appliquer le principe <strong>Dependency Inversion</strong> : dépendre d&apos;abstractions
                     (interfaces) plutôt que d&apos;implémentations concrètes. Cela rend le code flexible et
@@ -1016,7 +1028,7 @@ $controller = new UserController($userService);
 $controller->register();`}</CodeCard>
 
 
-                <Heading level={3}>Avantages du Dependency Inversion</Heading>
+                <Heading level={3}>2. Avantages du Dependency Inversion</Heading>
                 <List>
                     <ListItem><strong>Flexibilité</strong> : on peut changer d&apos;implémentation sans toucher
                         UserService</ListItem>
@@ -1064,9 +1076,9 @@ class UserServiceTest extends TestCase
 
             {/* Étape 5 : Architecture en couches */}
             <section>
-                <Heading level={2}>Vision Clean Architecture</Heading>
+                <Heading level={2}>H- Vision Clean Architecture</Heading>
 
-                <Heading level={3}>Objectif</Heading>
+                <Heading level={3}>1. Objectif</Heading>
                 <Text className="text-blue-800">
                     Comprendre comment notre refactoring s&apos;inscrit dans une <strong>Clean Architecture</strong> où
                     les dépendances pointent toujours vers le cœur métier.
@@ -1163,7 +1175,7 @@ class UserServiceTest extends TestCase
             {/* Récapitulatif SOLID */}
             <section className="px-4 md:px-8 lg:px-16 py-8">
                 <Heading level={2} className="text-2xl md:text-3xl font-bold mb-6 text-center">
-                    Récapitulatif : Application des principes SOLID
+                    I- Récapitulatif : Application des principes SOLID
                 </Heading>
 
                 <div className="mb-8">
@@ -1250,7 +1262,7 @@ class UserServiceTest extends TestCase
             {/* Comparaison avant/après */}
             <section>
                 <Heading level={2}>
-                    Comparaison : Avant vs Après
+                    J- Comparaison : Avant vs Après
                 </Heading>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1345,7 +1357,7 @@ class UserServiceTest extends TestCase
             {/* Organisation finale */}
             <section>
                 <Heading level={2}>
-                    Organisation finale du projet
+                    K- Organisation finale du projet
                 </Heading>
 
                 <CodeCard language="php">
@@ -1399,7 +1411,7 @@ class UserServiceTest extends TestCase
      └── UserServiceTest.php`}</CodeCard>
 
                 <div>
-                    <Heading level={3} className="font-bold text-blue-900 mb-3">Avantages de cette structure</Heading>
+                    <Heading level={3} className="font-bold text-blue-900 mb-3">1. Avantages de cette structure</Heading>
                     <List>
                         <ListItem><strong>Séparation claire</strong> des responsabilités par dossier</ListItem>
                         <ListItem><strong>Navigabilité</strong> : on sait immédiatement où chercher</ListItem>

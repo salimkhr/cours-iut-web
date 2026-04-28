@@ -78,20 +78,20 @@ export default function Cours() {
             <section>
                 <Heading level={2}>Introduction</Heading>
                 <Text>
-                    Dans ce cours, nous allons voir comment <strong>créer</strong> et <strong>modifier</strong> des
-                    données en base de données via des formulaires HTML. Nous travaillerons avec l'entité <Code>Category</Code>
-                    pour illustrer les opérations d'insertion (<Code>INSERT</Code>) et de mise à jour (<Code>UPDATE</Code>).
+                    Dans ce cours, vous allez voir comment <strong>créer</strong> et <strong>modifier</strong> des
+                    données en base de données via des formulaires HTML. Vous travaillerez avec l&apos;entité <Code>Category</Code>
+                    pour illustrer les opérations d&apos;insertion (<Code>INSERT</Code>) et de mise à jour (<Code>UPDATE</Code>).
                 </Text>
             </section>
 
             {/* SECTION 2 : REPOSITORY */}
             <section>
-                <Heading level={2}>Les méthodes du Repository</Heading>
+                <Heading level={2}>A- Les méthodes du repository</Heading>
 
-                <Heading level={3}>Méthode create()</Heading>
+                <Heading level={3}>1. Méthode create()</Heading>
                 <Text>
                     La méthode <Code>create()</Code> insère une nouvelle catégorie en base de données et
-                    retourne l'<strong>ID généré automatiquement</strong> par PostgreSQL grâce à la clause <Code>RETURNING</Code>.
+                    retourne l&apos;<strong>ID généré automatiquement</strong> par PostgreSQL grâce à la clause <Code>RETURNING</Code>.
                     Elle prend en paramètre un objet <Code>Category</Code>.
                 </Text>
 
@@ -120,10 +120,10 @@ public function create(Category $category): ?Category
 }`}
                 </CodeCard>
 
-                <Heading level={3}>Méthode update()</Heading>
+                <Heading level={3}>2. Méthode update()</Heading>
                 <Text>
                     La méthode <Code>update()</Code> modifie une catégorie existante. Elle prend en paramètre
-                    un objet <Code>Category</Code> contenant l'ID et les nouvelles valeurs.
+                    un objet <Code>Category</Code> contenant l&apos;ID et les nouvelles valeurs.
                 </Text>
 
                 <CodeCard language="php">
@@ -154,10 +154,10 @@ public function update(Category $category): bool
 
             {/* SECTION 3 : VUE COMMUNE */}
             <section>
-                <Heading level={2}>Vue unique pour créer et modifier</Heading>
+                <Heading level={2}>B- Vue unique pour créer et modifier</Heading>
 
                 <Text>
-                    Nous utilisons une seule vue <Code>categories_form.php</Code> qui s'adapte selon le contexte
+                    Nous utilisons une seule vue <Code>categories_form.php</Code> qui s&apos;adapte selon le contexte
                     (création ou modification). La variable <Code>$category</Code> permet de distinguer les deux cas.
                 </Text>
 
@@ -199,8 +199,8 @@ public function update(Category $category): bool
                     <AlertTitle>Explication :</AlertTitle>
                    <AlertDescription>
                        <Text>La condition <Code>isset($category)</Code> permet de savoir si on est
-                    en mode modification (la variable existe) ou en mode création (la variable n'existe pas).
-                    L'opérateur <Code>?-&gt;</Code> (nullsafe operator) évite les erreurs si <Code>$category</Code> est <Code>null</Code>.
+                    en mode modification (la variable existe) ou en mode création (la variable n&apos;existe pas).
+                    L&apos;opérateur <Code>?-&gt;</Code> (nullsafe operator) évite les erreurs si <Code>$category</Code> est <Code>null</Code>.
                        </Text>
                    </AlertDescription>
                 </Alert>
@@ -208,7 +208,7 @@ public function update(Category $category): bool
 
             {/* SECTION 4 : CONTRÔLEUR CREATE */}
             <section>
-                <Heading level={2}>Contrôleur : Créer une catégorie</Heading>
+                <Heading level={2}>C- Contrôleur : créer une catégorie</Heading>
 
                 <CodeCard language="php">
                     {`<?php
@@ -281,7 +281,7 @@ public function create(): void
 
             {/* SECTION 5 : CONTRÔLEUR UPDATE */}
             <section>
-                <Heading level={2}>Contrôleur : Modifier une catégorie</Heading>
+                <Heading level={2}>D- Contrôleur : modifier une catégorie</Heading>
 
                 <CodeCard language="php">
                     {`<?php
@@ -366,13 +366,13 @@ public function update(): void
 
             {/* SECTION 6 : FLUX COMPLET */}
             <section>
-                <Heading level={2}>Flux complet d'une opération d'écriture</Heading>
+                <Heading level={2}>E- Flux complet d&apos;une opération d&apos;écriture</Heading>
 
-                <Heading level={3}>Création d'une catégorie</Heading>
+                <Heading level={3}>1. Création d&apos;une catégorie</Heading>
 
                 <DiagramCard chart={chartCreateCategory} />
 
-                <Heading level={3}>Modification d'une catégorie</Heading>
+                <Heading level={3}>2. Modification d&apos;une catégorie</Heading>
 
                 <DiagramCard chart={chartUpdateCategory} />
             </section>

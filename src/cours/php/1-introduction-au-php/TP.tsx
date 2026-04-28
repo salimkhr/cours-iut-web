@@ -932,7 +932,8 @@ export default function TP() {
         <article>
             <section>
                 <Heading level={2}>A- Rappel de HTML</Heading>
-                <Heading level={3}>Woody</Heading>
+
+                <Heading level={3}>1. Woody</Heading>
                 <Text>
                     Le serveur <strong>woody</strong> est un serveur web de l&apos;IUT configuré
                     avec <strong>Apache</strong>.
@@ -940,14 +941,14 @@ export default function TP() {
                     HTML et PHP que vous placez dans votre dossier personnel <Code>~/public_html</Code>.
                     Par exemple, si vous ajoutez un fichier
                     nommé <Code>index.php</Code> dans <Code>~/public_html/TP1/</Code>, il sera accessible à
-                    l&apos;adresse :<Link href="http://woody.iut.univ-lehavre.fr/~loginLDAP/TP1/index.php"
-                                          target="_blank"><Code>http://woody.iut.univ-lehavre.fr/~<strong>loginLDAP</strong>/TP1/index.php</Code></Link> ou <Link
+                    l&apos;adresse : <Link href="http://woody.iut.univ-lehavre.fr/~loginLDAP/TP1/index.php"
+                                           target="_blank"><Code>http://woody.iut.univ-lehavre.fr/~<strong>loginLDAP</strong>/TP1/index.php</Code></Link> ou <Link
                     href="http://localhost/~loginLDAP/TP1/index.php"
                     target="_blank"><Code>http://localhost/~<strong>loginLDAP</strong>/TP1/index.php</Code></Link>.
                 </Text>
 
-                <Heading level={3}>Rappel de HTML</Heading>
-                <Text className="mt-4">
+                <Heading level={3}>2. Rappel de HTML</Heading>
+                <Text>
                     Dans le fichier <Code>~/public_html/TP1/rappel.html</Code>, créez une page HTML contenant la
                     structure de base d&apos;un document HTML, ainsi qu&apos;un tableau.</Text>
                 <CodeCard language="html" filename="rappel.html">
@@ -1008,13 +1009,13 @@ export default function TP() {
                     </TableBody>
                 </Table>
 
-                <small>Source : ChatGPT (les montants ne sont pas factuels)</small>
+                <Text><small>Source : ChatGPT (les montants ne sont pas factuels)</small></Text>
             </section>
 
             <section>
                 <Heading level={2}>B- Hello World en PHP</Heading>
                 <Text>
-                    Dans un fichier <Code>~/public_html/TP1/helloWorld.php</Code>, écrire une page contenant :
+                    Dans le fichier <Code>~/public_html/TP1/helloWorld.php</Code>, créez une page contenant le code suivant :
                 </Text>
                 <CodeCard language="php" filename="helloWorld.php">
                     {`<!DOCTYPE html>
@@ -1036,25 +1037,24 @@ export default function TP() {
 </html>`}
                 </CodeCard>
                 <List ordered>
-                    <ListItem>Déterminer à quelle heure correspond la date affichée : celle du serveur ou celle du
+                    <ListItem>Déterminez à quelle heure correspond la date affichée : est-ce celle du serveur ou celle du
                         navigateur ?</ListItem>
-                    <ListItem>Modifier le script pour ajouter une
-                        variable <Code>$pseudo</Code> contenant &apos;ZeratoR&apos; et afficher Hello $pseudo!
-                        à la place de Hello World!</ListItem>
+                    <ListItem>Modifiez le script pour ajouter une
+                        variable <Code>$pseudo</Code> contenant <Code>&apos;ZeratoR&apos;</Code> et affichez <Code>Hello $pseudo!</Code> à
+                        la place de <Code>Hello World!</Code>.</ListItem>
                     <ListItem>
-                        <strong>Variables et concaténation :</strong> Créer les variables suivantes et les afficher :
+                        Créez les variables suivantes et affichez-les (variables et concaténation) :
                         <List>
-                            <ListItem><Code>$amount</Code> contenant 1200000</ListItem>
-                            <ListItem><Code>$rank</Code> contenant 1</ListItem>
-                            <ListItem>Afficher : &quot;Le streamer $pseudo est classé $rank avec $amount
+                            <ListItem><Code>$amount</Code> contenant <Code>1200000</Code></ListItem>
+                            <ListItem><Code>$rank</Code> contenant <Code>1</Code></ListItem>
+                            <ListItem>Affichez la phrase : &quot;Le streamer $pseudo est classé $rank avec $amount
                                 euros&quot;</ListItem>
                         </List>
                     </ListItem>
                     <ListItem>
-                        <strong>Formatage :</strong> Utiliser la fonction <Link
-                        href="https://www.php.net/manual/fr/function.number-format.php" target="_blank"><Code>{`number_format($amount,
-                        0, ',', ' ')`}</Code></Link>
-                        pour afficher le montant avec des espaces comme séparateurs de milliers.
+                        Utilisez la fonction <Link
+                        href="https://www.php.net/manual/fr/function.number-format.php" target="_blank"><Code>{`number_format($amount, 0, ',', ' ')`}</Code></Link> pour
+                        afficher le montant avec des espaces comme séparateurs de milliers.
                     </ListItem>
                 </List>
             </section>
@@ -1062,7 +1062,7 @@ export default function TP() {
             <section>
                 <Heading level={2}>C- Le debug</Heading>
                 <Text>
-                    Dans un fichier <Code>~/public_html/TP1/debug.php</Code>, écrire une page contenant :
+                    Dans le fichier <Code>~/public_html/TP1/debug.php</Code>, créez une page contenant le code suivant :
                 </Text>
                 <CodeCard language="php">
                     {`<?php
@@ -1076,19 +1076,19 @@ var_dump($age, $price, $isStudent, $lastname, $firstname);
 ?>`}
                 </CodeCard>
                 <List ordered>
-                    <ListItem>Expliquer ce que fait la fonction <Code>var_dump()</Code>.</ListItem>
-                    <ListItem>Ajouter au script un appel à la fonction <Code>die();</Code> ainsi que l&apos;affichage
-                        du lastname avec <Code>echo $lastname;</Code>. Vérifier si le texte du <Code>echo</Code> est
-                        affiché.</ListItem>
+                    <ListItem>Expliquez ce que fait la fonction <Code>var_dump()</Code> en observant le résultat affiché dans le navigateur.</ListItem>
+                    <ListItem>Ajoutez au script un appel à la fonction <Code>die();</Code> avant
+                        la ligne <Code>echo $lastname;</Code>. Vérifiez si le texte du <Code>echo</Code> est
+                        affiché et expliquez pourquoi.</ListItem>
                 </List>
-                <Text>Utiliser les fonctions <Code>var_dump()</Code> et <Code>die()</Code> pour ajouter des
+                <Text>Utilisez les fonctions <Code>var_dump()</Code> et <Code>die()</Code> pour ajouter des
                     traces dans le code afin d&apos;aider au débogage.</Text>
             </section>
 
             <section>
                 <Heading level={2}>D- Introduction aux objets</Heading>
 
-                <Text>Dans un fichier <Code>~/public_html/TP1/streamer.php</Code>, vous devez créer une
+                <Text>Dans le fichier <Code>~/public_html/TP1/streamer.php</Code>, créez une
                     classe <Code>Streamer</Code> :</Text>
                 <CodeCard language="php" filename="streamer.php">
                     {`<?php
@@ -1108,45 +1108,44 @@ echo $streamer1;
 
                 <List ordered>
                     <ListItem>
-                        avec les propriétés privées suivantes :
-                        <Code>$name</Code>, <Code>$pseudo</Code>, <Code>$amount</Code>, <Code>$rank</Code>
+                        Définissez les propriétés privées suivantes dans la classe, ainsi qu&apos;un constructeur
+                        pour les initialiser :
+                        <Code>$name</Code>, <Code>$pseudo</Code>, <Code>$amount</Code>, <Code>$rank</Code>.
                     </ListItem>
                     <ListItem>
-                        <strong>Getters :</strong> Créez les méthodes getter pour chaque propriété :
-                        <Code>getName()</Code>, <Code>getPseudo()</Code>, <Code>getAmount()</Code>, <Code>getRank()</Code>
+                        Créez les méthodes getter pour chaque propriété :
+                        <Code>getName()</Code>, <Code>getPseudo()</Code>, <Code>getAmount()</Code>, <Code>getRank()</Code>.
                     </ListItem>
                     <ListItem>
-                        <strong>Méthode de formatage :</strong> Ajoutez une méthode <Code>getFormattedAmount()</Code>
+                        Ajoutez une méthode <Code>getFormattedAmount()</Code>
                         qui retourne le montant formaté avec des espaces comme séparateurs de milliers et le symbole €.
                         Utilisez la fonction <Link
                         href="https://www.php.net/manual/fr/function.number-format.php" target="_blank"><Code>
-                        {`number_format($amount,0,',', ' ')`}</Code></Link>.
+                        {`number_format($amount, 0, ',', ' ')`}</Code></Link>.
                     </ListItem>
                     <ListItem>
-                        <strong>Méthode de comparaison :</strong> Créez une
-                        méthode <Code>isAboveAverage($average)</Code>
+                        Créez une méthode <Code>isAboveAverage($average)</Code>
                         qui retourne <Code>true</Code> si le montant du streamer est supérieur à la moyenne passée en
                         paramètre.
                     </ListItem>
                     <ListItem>
-                        <strong>Méthode de couleur :</strong> Implémentez une méthode <Code>getRankColor()</Code>
-                        qui retourne &apos;gold&apos; pour le rang 1, &apos;silver&apos; pour le rang
-                        2, &apos;bronze&apos; pour le rang 3,
+                        Implémentez une méthode <Code>getRankColor()</Code>
+                        qui retourne <Code>&apos;gold&apos;</Code> pour le rang 1, <Code>&apos;silver&apos;</Code> pour le rang
+                        2, <Code>&apos;bronze&apos;</Code> pour le rang 3,
                         et une chaîne vide pour les autres rangs. Utilisez un <Code>switch</Code>.
                     </ListItem>
                     <ListItem>
-                        <strong>Méthode toString :</strong> Ajoutez une méthode <Code>__toString()</Code>
+                        Ajoutez une méthode <Code>__toString()</Code>
                         qui retourne une représentation textuelle du streamer : &quot;Le streamer $pseudo ($name) est
-                        classé
-                        $rank avec $amount euros&quot;.
+                        classé $rank avec $amount euros&quot;.
                     </ListItem>
                     <ListItem>
-                        <strong>Test :</strong> Créez quelques instances de votre classe et testez les méthodes
-                        en affichant les informations des streamers.
+                        Créez quelques instances de votre classe et testez toutes les méthodes
+                        en affichant les informations des streamers dans le navigateur.
                     </ListItem>
                     <ListItem>
-                        <strong>Méthode de couleur :</strong> modifiez la méthode <Code>getRankColor()</Code> pour
-                        utiliser un <Code>match</Code>.
+                        Modifiez la méthode <Code>getRankColor()</Code> pour
+                        utiliser un <Code>match</Code> au lieu du <Code>switch</Code>.
                     </ListItem>
                 </List>
 
@@ -1154,16 +1153,16 @@ echo $streamer1;
 
             <section>
                 <Heading level={2}>E- Utilisation des objets dans le tableau</Heading>
-                <Text>Dans un fichier <Code>~/public_html/TP1/zevent.php</Code>, vous allez maintenant utiliser votre
-                    classe Streamer :</Text>
+                <Text>Dans le fichier <Code>~/public_html/TP1/zevent.php</Code>, utilisez maintenant votre
+                    classe <Code>Streamer</Code> :</Text>
 
                 <List ordered>
                     <ListItem>
-                        <strong>Création du tableau :</strong> Créez le même tableau que rappel.html, mais en affichant
-                        les données de <Code>$Streamers</Code>.
+                        Créez le même tableau HTML que dans <Code>rappel.html</Code>, mais en parcourant
+                        le tableau <Code>$streamers</Code> avec une boucle <Code>foreach</Code> pour afficher les données dynamiquement.
                     </ListItem>
                     <ListItem>
-                        <strong>Calculs statistiques :</strong> Implémentez le calcul des statistiques suivantes en
+                        Implémentez le calcul des statistiques suivantes en
                         utilisant les méthodes des objets :
                         <List>
                             <ListItem>Total collecté (somme de tous les montants)</ListItem>
@@ -1171,17 +1170,17 @@ echo $streamer1;
                             <ListItem>Montant minimum et maximum</ListItem>
                             <ListItem>Nombre de streamers</ListItem>
                         </List>
+                        Affichez ces statistiques sous le tableau dans un second tableau récapitulatif.
                     </ListItem>
                     <ListItem>
-                        <strong>Affichage du podium :</strong>
-                        Créez un fichier CSS avec les classes suivantes et ajoutez-le dans la
+                        Créez un fichier CSS contenant les classes suivantes et ajoutez-le dans la
                         balise <Code>{`<head>`}</Code> de <Code>zevent.php</Code> :
                         <List ordered>
-                            <ListItem><Code>{`.gold {background-color:#FFD700;}`}</Code></ListItem>
-                            <ListItem><Code>{`.silver {background-color:#C0C0C0;}`}</Code></ListItem>
-                            <ListItem><Code>{`.bronze{background-color:#CD7F32;}`}</Code></ListItem>
+                            <ListItem><Code>{`.gold { background-color: #FFD700; }`}</Code></ListItem>
+                            <ListItem><Code>{`.silver { background-color: #C0C0C0; }`}</Code></ListItem>
+                            <ListItem><Code>{`.bronze { background-color: #CD7F32; }`}</Code></ListItem>
                         </List>
-                        Ensuite, utilisez la fonction <Code>getRankColor()</Code> de la
+                        Utilisez ensuite la méthode <Code>getRankColor()</Code> de la
                         classe <Code>Streamer</Code> pour
                         déterminer la classe CSS à appliquer à chaque <Code>&lt;tr&gt;</Code> selon le rang du streamer
                         et affichez le rang dans la ligne correspondante.
@@ -1234,23 +1233,19 @@ ${streamersData.map((streamer) => `\tnew Streamer("${streamer.name}","${streamer
             <section>
                 <Heading level={2}>F- Héritage - Streamers Remote vs Physiques (optionnel)</Heading>
                 <List ordered>
-                    <ListItem><strong>Class mére :</strong> Modifiez la class <Code>Streamer</Code> pour y ajouter la
-                        méthode
-                        abstraite <Code>getLocationInfo()</Code></ListItem>
-                    <ListItem><strong>Class Remote :</strong> Créer la class <Code>RemoteStreamer</Code> héritant
-                        de <Code>Streamer</Code> avec
-                        la propriété
-                        <Code>location</Code>, et ajouter y un Getter ainsi que la définition de la
-                        méthode <Code>getLocationInfo()</Code> <Code>{`"À distance depuis {$this->location}"`}</Code>
+                    <ListItem>Modifiez la classe <Code>Streamer</Code> pour la rendre abstraite et y ajouter la
+                        méthode abstraite <Code>getLocationInfo()</Code>.</ListItem>
+                    <ListItem>Créez la classe <Code>RemoteStreamer</Code> héritant
+                        de <Code>Streamer</Code>, avec
+                        la propriété <Code>$location</Code>. Ajoutez-y un getter ainsi que la définition de la
+                        méthode <Code>getLocationInfo()</Code> qui retourne <Code>{`"À distance depuis {$this->location}"`}</Code>.
                     </ListItem>
-
-                    <ListItem><strong>Class Physical :</strong> Créer la class <Code>PhysicalStreamer </Code> héritant
-                        de <Code>Streamer</Code> avec
-                        la propriété
-                        <Code>setupNumber </Code>, et ajouter y un Getter ainsi que la définition de la
-                        méthode <Code>getLocationInfo()</Code> : <Code>{`"Sur site au setup #{$this->setupNumber}"`}</Code>
+                    <ListItem>Créez la classe <Code>PhysicalStreamer</Code> héritant
+                        de <Code>Streamer</Code>, avec
+                        la propriété <Code>$setupNumber</Code>. Ajoutez-y un getter ainsi que la définition de la
+                        méthode <Code>getLocationInfo()</Code> qui retourne <Code>{`"Sur site au setup #{$this->setupNumber}"`}</Code>.
                     </ListItem>
-                    <ListItem><strong>Test</strong> remplacez le tableau <Code>streamers</Code> par :</ListItem>
+                    <ListItem>Remplacez le tableau <Code>$streamers</Code> par le code suivant et vérifiez que le tableau s&apos;affiche correctement :</ListItem>
 
                     <CodeCard language="php">
                         {`$streamers = [

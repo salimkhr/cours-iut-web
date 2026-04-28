@@ -74,14 +74,14 @@ export default function Cours() {
 
             {/* 1. Syntaxe de base */}
             <section>
-                <Heading level={2}>Syntaxe de base : les 3 blocs Twig</Heading>
+                <Heading level={2}>A- Syntaxe de base : les 3 blocs Twig</Heading>
                 <Text>
                     Twig repose sur trois constructions syntaxiques. Elles correspondent chacune à un
                     usage précis :
                 </Text>
 
                 <Heading level={3}>
-                    <Code>{`{{ }}`}</Code> — Afficher une valeur
+                    1. <Code>{`{{ }}`}</Code> — Afficher une valeur
                 </Heading>
                 <Text>
                     Les doubles accolades affichent la valeur d&apos;une variable ou d&apos;une expression,
@@ -97,7 +97,7 @@ export default function Cours() {
                 </CodeCard>
 
                 <Heading level={3}>
-                    <Code>{`{% %}`}</Code> — Instructions et structures de contrôle
+                    2. <Code>{`{% %}`}</Code> — Instructions et structures de contrôle
                 </Heading>
                 <Text>
                     Les balises à pourcentage servent pour tout ce qui est logique : conditions, boucles,
@@ -121,7 +121,7 @@ export default function Cours() {
                 </Text>
 
                 <Heading level={3}>
-                    <Code>{`{# #}`}</Code> — Commentaires
+                    3. <Code>{`{# #}`}</Code> — Commentaires
                 </Heading>
                 <Text>
                     Les commentaires Twig ne sont jamais envoyés au navigateur, contrairement aux
@@ -137,9 +137,9 @@ export default function Cours() {
 
             {/* 2. Variables et expressions */}
             <section>
-                <Heading level={2}>Variables et expressions</Heading>
+                <Heading level={2}>B- Variables et expressions</Heading>
 
-                <Heading level={3}>Afficher une variable simple</Heading>
+                <Heading level={3}>1. Afficher une variable simple</Heading>
                 <CodeCard language="php" filename="PHP natif">
                     {`<h1><?= $title ?></h1>`}
                 </CodeCard>
@@ -147,7 +147,7 @@ export default function Cours() {
                     {`<h1>{{ title }}</h1>`}
                 </CodeCard>
 
-                <Heading level={3}>Accéder à une propriété d&apos;objet</Heading>
+                <Heading level={3}>2. Accéder à une propriété d&apos;objet</Heading>
                 <Text>
                     En PHP natif, accéder à la propriété d&apos;un objet nécessite d&apos;appeler le getter
                     explicitement. Twig le fait pour vous : <Code>category.name</Code> appelle
@@ -168,7 +168,7 @@ export default function Cours() {
                     Twig trouve toujours le bon accès.
                 </Text>
 
-                <Heading level={3}>Accéder à une clé de tableau</Heading>
+                <Heading level={3}>3. Accéder à une clé de tableau</Heading>
                 <Text>
                     Twig unifie l&apos;accès aux tableaux et aux objets avec le point. Les deux syntaxes
                     fonctionnent indifféremment.
@@ -187,7 +187,7 @@ export default function Cours() {
                     manipulez.
                 </Text>
 
-                <Heading level={3}>Valeur par défaut avec <Code>|default()</Code></Heading>
+                <Heading level={3}>4. Valeur par défaut avec <Code>|default()</Code></Heading>
                 <Text>
                     Si une variable n&apos;est pas définie ou est <Code>null</Code>, Twig peut afficher une
                     valeur de secours grâce au filtre <Code>default</Code>.
@@ -202,9 +202,9 @@ export default function Cours() {
 
             {/* 3. Structures de contrôle */}
             <section>
-                <Heading level={2}>Structures de contrôle</Heading>
+                <Heading level={2}>C- Structures de contrôle</Heading>
 
-                <Heading level={3}>Condition : if / elseif / else</Heading>
+                <Heading level={3}>1. Condition : if / elseif / else</Heading>
                 <CodeCard language="php" filename="PHP natif">
                     {`<?php if ($isAdmin): ?>
     <a href="admin.php">Tableau de bord</a>
@@ -229,7 +229,7 @@ export default function Cours() {
                     provoquer des comportements inattendus difficiles à localiser.
                 </Text>
 
-                <Heading level={3}>Boucle : for...in</Heading>
+                <Heading level={3}>2. Boucle : for...in</Heading>
                 <CodeCard language="php" filename="PHP natif">
                     {`<ul>
     <?php foreach ($categories as $category): ?>
@@ -249,7 +249,7 @@ export default function Cours() {
                     fréquente chez les débutants Twig.
                 </Text>
 
-                <Heading level={3}>Le bloc <Code>else</Code> du <Code>for</Code> (liste vide)</Heading>
+                <Heading level={3}>3. Le bloc <Code>else</Code> du <Code>for</Code> (liste vide)</Heading>
                 <Text>
                     Twig propose une fonctionnalité absente de PHP natif : un bloc <Code>else</Code>
                     directement dans la boucle, exécuté quand le tableau est vide.
@@ -275,7 +275,7 @@ export default function Cours() {
 </ul>`}
                 </CodeCard>
 
-                <Heading level={3}>Variables de boucle : <Code>loop</Code></Heading>
+                <Heading level={3}>4. Variables de boucle : <Code>loop</Code></Heading>
                 <Text>
                     À l&apos;intérieur d&apos;une boucle <Code>for</Code>, Twig expose automatiquement la variable
                     spéciale <Code>loop</Code> qui donne des informations sur l&apos;itération en cours.
@@ -298,13 +298,13 @@ export default function Cours() {
 
             {/* 4. Filtres */}
             <section>
-                <Heading level={2}>Filtres</Heading>
+                <Heading level={2}>D- Filtres</Heading>
                 <Text>
                     Les filtres transforment une valeur avant de l&apos;afficher. On les applique avec le
                     caractère <Code>|</Code> (pipe) juste après la variable.
                 </Text>
 
-                <Heading level={3}>Filtres courants</Heading>
+                <Heading level={3}>1. Filtres courants</Heading>
                 <CodeCard language="twig">
                     {`{# Casse #}
 {{ category.name|upper }}          {# → "CATÉGORIE" #}
@@ -323,7 +323,7 @@ export default function Cours() {
 {{ price|number_format(2, ',', ' ') }}         {# → "19 990,00" #}`}
                 </CodeCard>
 
-                <Heading level={3}>Filtres d&apos;échappement : <Code>escape</Code> et <Code>raw</Code></Heading>
+                <Heading level={3}>2. Filtres d&apos;échappement : <Code>escape</Code> et <Code>raw</Code></Heading>
                 <Text>
                     Par défaut, Twig échappe automatiquement toutes les variables affichées avec{" "}
                     <Code>{`{{ }}`}</Code>. Cela signifie que si une variable contient{" "}
@@ -343,7 +343,7 @@ export default function Cours() {
                     saisie par un utilisateur — vous désactiveriez la protection XSS.
                 </Text>
 
-                <Heading level={3}>Chaîner plusieurs filtres</Heading>
+                <Heading level={3}>3. Chaîner plusieurs filtres</Heading>
                 <Text>
                     Les filtres s&apos;appliquent de gauche à droite. Vous pouvez en enchaîner autant que nécessaire.
                 </Text>
@@ -358,14 +358,14 @@ export default function Cours() {
 
             {/* 5. Include */}
             <section>
-                <Heading level={2}>Include : réutiliser des fragments de template</Heading>
+                <Heading level={2}>E- Include : réutiliser des fragments de template</Heading>
                 <Text>
                     Vous avez créé des fichiers <Code>header.html.php</Code> et{" "}
                     <Code>footer.html.php</Code> dans le TP MVC (étape E). Twig propose la même
                     fonctionnalité avec <Code>{'{% include %}'}</Code>.
                 </Text>
 
-                <Heading level={3}>Include simple</Heading>
+                <Heading level={3}>1. Include simple</Heading>
                 <CodeCard language="php" filename="PHP natif">
                     {`<?php include '_template/header.html.php'; ?>
 <main>
@@ -385,7 +385,7 @@ export default function Cours() {
                     parent. La variable <Code>title</Code> sera donc accessible dans <Code>header.html.twig</Code>.
                 </Text>
 
-                <Heading level={3}>Passer des variables supplémentaires avec <Code>with</Code></Heading>
+                <Heading level={3}>2. Passer des variables supplémentaires avec <Code>with</Code></Heading>
                 <Text>
                     Il est possible de passer des variables spécifiques au fichier inclus, en plus de
                     celles déjà disponibles.
@@ -398,7 +398,7 @@ export default function Cours() {
                     <Code>type</Code> sont disponibles, ainsi que toutes celles du template parent.
                 </Text>
 
-                <Heading level={3}>Isoler le contexte avec <Code>only</Code></Heading>
+                <Heading level={3}>3. Isoler le contexte avec <Code>only</Code></Heading>
                 <Text>
                     Le mot-clé <Code>only</Code> restreint les variables disponibles dans le fichier
                     inclus aux seules variables passées avec <Code>with</Code>. Cela évite les effets
@@ -412,14 +412,14 @@ export default function Cours() {
 
             {/* 6. Héritage de templates */}
             <section>
-                <Heading level={2}>Héritage de templates</Heading>
+                <Heading level={2}>F- Héritage de templates</Heading>
                 <Text>
                     L&apos;héritage est la fonctionnalité la plus puissante de Twig. Elle va au-delà de
                     l&apos;<Code>include</Code> : au lieu de copier-coller des fragments, une vue{" "}
                     <em>hérite</em> d&apos;un template parent et remplace uniquement des zones prédéfinies.
                 </Text>
 
-                <Heading level={3}>Le template parent : <Code>base.html.twig</Code></Heading>
+                <Heading level={3}>1. Le template parent : <Code>base.html.twig</Code></Heading>
                 <Text>
                     Le template de base définit la structure commune à toutes les pages (balises{" "}
                     <Code>html</Code>, <Code>head</Code>, navigation, footer). Les zones variables sont
@@ -449,7 +449,7 @@ export default function Cours() {
 </html>`}
                 </CodeCard>
 
-                <Heading level={3}>La vue enfant : <Code>extends</Code> et <Code>block</Code></Heading>
+                <Heading level={3}>2. La vue enfant : <Code>extends</Code> et <Code>block</Code></Heading>
                 <Text>
                     Une vue enfant déclare qu&apos;elle hérite du template parent avec{" "}
                     <Code>{'{% extends %}'}</Code>, puis remplace uniquement les blocs qu&apos;elle veut
@@ -477,7 +477,7 @@ export default function Cours() {
                     <Code>content</Code> remplace le bloc vide du parent.
                 </Text>
 
-                <Heading level={3}>Include vs Extends : quand choisir l&apos;un ou l&apos;autre ?</Heading>
+                <Heading level={3}>3. Include vs Extends : quand choisir l&apos;un ou l&apos;autre ?</Heading>
                 <List>
                     <ListItem>
                         <strong>Extends</strong> — pour la structure globale d&apos;une page (layout).
@@ -494,14 +494,14 @@ export default function Cours() {
 
             {/* 7. Passage de paramètres PHP → Twig */}
             <section>
-                <Heading level={2}>Passage de paramètres PHP vers Twig</Heading>
+                <Heading level={2}>G- Passage de paramètres PHP vers Twig</Heading>
                 <Text>
                     C&apos;est la section la plus importante : comprendre exactement comment les données
                     transitent du contrôleur vers la vue Twig, en utilisant la méthode{" "}
                     <Code>$this-&gt;view()</Code> que vous connaissez déjà.
                 </Text>
 
-                <Heading level={3}>Rappel : la méthode <Code>view()</Code></Heading>
+                <Heading level={3}>1. Rappel : la méthode <Code>view()</Code></Heading>
                 <Text>
                     La signature de la méthode héritée de la classe <Code>Controller</Code> est
                     identique à ce que vous avez utilisé jusqu&apos;ici :
@@ -525,13 +525,13 @@ export default function Cours() {
                     </ListItem>
                 </List>
 
-                <Heading level={3}>Exemple bout en bout complet</Heading>
+                <Heading level={3}>2. Exemple bout en bout complet</Heading>
                 <Text>
                     Reprenons les classes <Code>Category</Code> et <Code>CategoryRepository</Code>
                     du cours sur les bases de données.
                 </Text>
 
-                <Heading level={4}>1. L&apos;entité</Heading>
+                <Heading level={4}>2.1 L&apos;entité</Heading>
                 <CodeCard language="php" filename="app/entities/Category.php">
                     {`<?php
 // app/entities/Category.php
@@ -553,7 +553,7 @@ class Category
 }`}
                 </CodeCard>
 
-                <Heading level={4}>2. Le repository</Heading>
+                <Heading level={4}>2.2 Le repository</Heading>
                 <CodeCard language="php" filename="app/repositories/CategoryRepository.php">
                     {`<?php
 // app/repositories/CategoryRepository.php
@@ -579,7 +579,7 @@ class CategoryRepository
 }`}
                 </CodeCard>
 
-                <Heading level={4}>3. Le contrôleur</Heading>
+                <Heading level={4}>2.3 Le contrôleur</Heading>
                 <CodeCard language="php" filename="app/controllers/CategoryController.php">
                     {`<?php
 
@@ -609,7 +609,7 @@ class CategoryController extends Controller
 }`}
                 </CodeCard>
 
-                <Heading level={4}>4. La vue Twig</Heading>
+                <Heading level={4}>2.4 La vue Twig</Heading>
                 <CodeCard language="twig" filename="app/views/categories/list.html.twig">
                     {`{% extends 'base.html.twig' %}
 
@@ -632,7 +632,7 @@ class CategoryController extends Controller
 {% endblock %}`}
                 </CodeCard>
 
-                <Heading level={3}>Passer des scalaires (string, int, bool)</Heading>
+                <Heading level={3}>3. Passer des scalaires (string, int, bool)</Heading>
                 <Text>
                     Le tableau <Code>$data</Code> peut contenir n&apos;importe quel type de valeur, pas
                     seulement des objets.
@@ -659,7 +659,7 @@ class CategoryController extends Controller
 </ul>`}
                 </CodeCard>
 
-                <Heading level={3}>Piège classique : clé absente du tableau <Code>$data</Code></Heading>
+                <Heading level={3}>4. Piège classique : clé absente du tableau <Code>$data</Code></Heading>
                 <Text>
                     L&apos;erreur la plus fréquente est d&apos;utiliser dans la vue une variable qui n&apos;a pas été
                     transmise dans <Code>$data</Code>.

@@ -8,6 +8,19 @@ export default function Cours() {
     return (
         <article>
             <section>
+                <Text>
+                    Ce cours vous présente les structures de données fondamentales en PHP : les tableaux
+                    (indexés, associatifs, multidimensionnels), les fonctions, les générateurs et la manipulation
+                    des chaînes de caractères.
+                </Text>
+                <List>
+                    <ListItem><strong>Objectif 1</strong> : maîtriser les différents types de tableaux en PHP et leurs fonctions associées.</ListItem>
+                    <ListItem><strong>Objectif 2</strong> : savoir déclarer et utiliser des fonctions avec typage, paramètres par défaut et closures.</ListItem>
+                    <ListItem><strong>Objectif 3</strong> : comprendre les générateurs et la manipulation avancée des chaînes de caractères.</ListItem>
+                </List>
+            </section>
+
+            <section>
                 <Heading level={2}>A- Les tableaux indexés</Heading>
                 <Text>
                     Un tableau indexé est une collection ordonnée d&apos;éléments identifiés par un <strong>indice numérique</strong>
@@ -15,7 +28,7 @@ export default function Cours() {
                     plusieurs valeurs sous un seul nom de variable.
                 </Text>
 
-                <Heading level={3}>Création et manipulation</Heading>
+                <Heading level={3}>1. Création et manipulation</Heading>
                 <CodeCard language="php">
                     {`<?php
 // 1. Création d'un tableau indexé
@@ -42,7 +55,7 @@ array_shift($fruits); // Supprime le premier élément
 ?>`}
                 </CodeCard>
 
-                <Heading level={3}>Parcours des tableaux</Heading>
+                <Heading level={3}>2. Parcours des tableaux</Heading>
                 <CodeCard language="php">
                     {`<?php
 $nombres = [10, 20, 30, 40, 50];
@@ -64,7 +77,7 @@ for ($i = 0; $i < count($nombres); $i++) {
 ?>`}
                 </CodeCard>
 
-                <Heading level={3}>Fonctions utiles</Heading>
+                <Heading level={3}>3. Fonctions utiles</Heading>
                 <CodeCard language="php">
                     {`<?php
 $tab = [1, 2, 3, 4, 5];
@@ -98,7 +111,7 @@ array_unique([1,1,2,2,3]);   // [1,2,3] (supprime les doublons)
                     idéale pour représenter des données structurées.
                 </Text>
 
-                <Heading level={3}>Syntaxe et utilisation</Heading>
+                <Heading level={3}>1. Syntaxe et utilisation</Heading>
                 <CodeCard language="php">
                     {`<?php
 // 1. Création d'un tableau associatif
@@ -127,7 +140,7 @@ if (isset($personne["email"])) {
 ?>`}
                 </CodeCard>
 
-                <Heading level={3}>Parcours et fonctions spécialisées</Heading>
+                <Heading level={3}>2. Parcours et fonctions spécialisées</Heading>
                 <CodeCard language="php">
                     {`<?php
 $notes = [
@@ -162,7 +175,7 @@ arsort($notes);  // Tri par valeurs décroissant
                     Cette structure permet de représenter des données complexes et hiérarchiques.
                 </Text>
 
-                <Heading level={3}>Types de structures</Heading>
+                <Heading level={3}>1. Types de structures</Heading>
                 <CodeCard language="php">
                     {`<?php
 // 1. Tableau 2D indexé (matrice)
@@ -201,7 +214,7 @@ $entreprise = [
 ?>`}
                 </CodeCard>
 
-                <Heading level={3}>Manipulation et parcours</Heading>
+                <Heading level={3}>2. Manipulation et parcours</Heading>
                 <CodeCard language="php">
                     {`<?php
 $equipes = [
@@ -239,7 +252,7 @@ count($equipes, COUNT_RECURSIVE); // Compte tous les éléments
                     d&apos;une fonction. Cela permet d&apos;éviter des erreurs et de rendre le code plus lisible et maintenable.
                 </Text>
 
-                <Heading level={3}>Syntaxe de base et typage</Heading>
+                <Heading level={3}>1. Syntaxe de base et typage</Heading>
                 <CodeCard language="php">
                     {`<?php
 // Fonction simple sans paramètres
@@ -271,7 +284,7 @@ function exampleTypes(
 ?>`}
                 </CodeCard>
 
-                <Heading level={3}>Portée des variables et fonctions avancées</Heading>
+                <Heading level={3}>2. Portée des variables et fonctions avancées</Heading>
                 <CodeCard language="php">
                     {`<?php
 $globale = "Variable globale";
@@ -308,7 +321,7 @@ $double = fn($x) => $x * 2;
             <section>
                 <Heading level={2}>E- Les générateurs</Heading>
                 <Text>
-                    Un générateur est une fonction spéciale qui utilise le mot-clé <code>yield</code>.
+                    Un générateur est une fonction spéciale qui utilise le mot-clé <Code>yield</Code>.
                     Il permet de créer des itérateurs sans stocker tous les éléments en mémoire,
                     très utile pour parcourir de grandes quantités de données ou créer des séquences infinies.
                 </Text>
@@ -368,7 +381,7 @@ for ($i = 0; $i < 10; $i++) {
                     en termes d&apos;interprétation des variables et des caractères spéciaux.
                 </Text>
 
-                <Heading level={3}>Types de chaînes et syntaxes</Heading>
+                <Heading level={3}>1. Types de chaînes et syntaxes</Heading>
                 <List>
                     <ListItem>
                         <strong>Simple quotes (&apos;&apos;)</strong> : le contenu est pris littéralement.
@@ -422,7 +435,7 @@ EOT;
 ?>`}
                 </CodeCard>
 
-                <Heading level={3}>Caractères d&apos;échappement et manipulation</Heading>
+                <Heading level={3}>2. Caractères d&apos;échappement et manipulation</Heading>
                 <CodeCard language="php">
                     {`<?php
 // Caractères d'échappement dans les doubles quotes

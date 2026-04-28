@@ -30,9 +30,21 @@ graph TD
 
     return (
         <article>
+            <section>
+                <Text>
+                    Ce cours vous présente le pattern MVC (Modèle-Vue-Contrôleur), une architecture
+                    fondamentale pour organiser vos applications web PHP de manière structurée et maintenable.
+                </Text>
+                <List>
+                    <ListItem><strong>Objectif 1</strong> : comprendre le principe de séparation des responsabilités du pattern MVC.</ListItem>
+                    <ListItem><strong>Objectif 2</strong> : savoir créer et organiser contrôleurs, vues et modèles dans un projet PHP.</ListItem>
+                    <ListItem><strong>Objectif 3</strong> : maîtriser le flux d&apos;une requête HTTP dans une architecture MVC.</ListItem>
+                </List>
+            </section>
+
             {/* 1. Introduction */}
             <section>
-                <Heading level={2}>Introduction</Heading>
+                <Heading level={2}>A- Introduction</Heading>
                 <Text>
                     Lorsqu&apos;on développe une application web sans méthode particulière, le code a
                     tendance à se transformer en un mélange hétéroclite de logique, de requêtes SQL
@@ -49,7 +61,7 @@ graph TD
 
             {/* 2. Vue d'ensemble du MVC */}
             <section>
-                <Heading level={2}>Vue d&apos;ensemble : le pattern MVC</Heading>
+                <Heading level={2}>B- Vue d&apos;ensemble : le pattern MVC</Heading>
                 <Text>
                     Le principe fondamental du MVC repose sur une répartition claire des rôles :
                 </Text>
@@ -70,7 +82,7 @@ graph TD
                 </List>
 
 
-                <Heading level={3}>Principe de séparation des responsabilités</Heading>
+                <Heading level={3}>1. Principe de séparation des responsabilités</Heading>
                 <Text>
                     Pour bien comprendre MVC, imaginons une conversation entre les trois composants
                     lors de l&apos;affichage d&apos;un article :
@@ -86,7 +98,7 @@ graph TD
                     discipline architecturale facilite la maintenance, les tests et l&apos;évolution de l&apos;application.
                 </Text>
 
-                <Heading level={3}>Flux d&apos;une requête MVC</Heading>
+                <Heading level={3}>2. Flux d&apos;une requête MVC</Heading>
                 <div className="flex w-full space-x-8 mt-6">
                     <div className="flex-1 flex flex-col items-center space-y-4 w-full">
                         <DiagramCard chart={chartMVCStructure} header="Structure MVC"/>
@@ -109,7 +121,7 @@ graph TD
 
             {/* 3. Organisation du projet */}
             <section>
-                <Heading level={2}>Organisation d&apos;un projet MVC</Heading>
+                <Heading level={2}>C- Organisation d&apos;un projet MVC</Heading>
                 <Text>
                     Pour mettre en œuvre MVC, il est essentiel d&apos;adopter une structure de fichiers . Cette organisation facilite la maintenance
                     et permet aux développeurs de collaborer efficacement.
@@ -173,14 +185,14 @@ graph TD
 
                 <Text>
                     <strong>Note :</strong> Le Modèle (entités, repositories, logique métier) sera
-                    développé en détail dans un prochain TP. Pour l&apos;instant, concentrons-nous sur
+                    développé en détail dans un prochain TP. Pour l&apos;instant, concentrez-vous sur
                     la coordination entre Contrôleur et Vue.
                 </Text>
             </section>
 
             {/* 4. Point d'entrée et appel du contrôleur */}
             <section>
-                <Heading level={2}>Point d&apos;entrée : appeler le contrôleur</Heading>
+                <Heading level={2}>D- Point d&apos;entrée : appeler le contrôleur</Heading>
                 <Text>
                     Dans le dossier <Code>public/</Code>, chaque page PHP constitue un point d&apos;entrée
                     qui instancie et appelle le contrôleur approprié. Voici comment procéder :
@@ -207,7 +219,7 @@ $controller->index();
 
             {/* 5. Rôle du contrôleur */}
             <section>
-                <Heading level={2}>Le Contrôleur : chef d&apos;orchestre</Heading>
+                <Heading level={2}>E- Le Contrôleur : chef d&apos;orchestre</Heading>
                 <Text>
                     Le contrôleur est la première couche sollicitée lorsqu&apos;une requête HTTP arrive.
                     Sa responsabilité est double :</Text>
@@ -222,7 +234,7 @@ $controller->index();
                     complexe (qui relève du Modèle) ni de code HTML (qui appartient à la Vue).
                 </Text>
 
-                <Heading level={3}>Méthodes héritées de la classe Controller</Heading>
+                <Heading level={3}>1. Méthodes héritées de la classe Controller</Heading>
                 <Text className={"mb-4"}>
                     La classe <Code>Controller</Code> fournit des méthodes utilitaires
                     qui évitent de réécrire des opérations courantes comme l&apos;affichage d’une vue, l’envoi de données au format JSON
@@ -258,7 +270,7 @@ $controller->index();
                     </ListItem>
                 </List>
 
-                <Heading level={3}>Exemple : ArticleController</Heading>
+                <Heading level={3}>2. Exemple : ArticleController</Heading>
                 <Text>
                     Voici un exemple montrant comment un contrôleur transmet des données à une vue,
                     fournit un endpoint JSON et effectue une redirection.
@@ -317,12 +329,12 @@ class ArticleController extends Controller
                 <List>
                     <ListItem>
                         <strong>Héritage de Controller</strong> : le contrôleur bénéficie des méthodes
-                        <Code>view()</Code>, <Code>json()</Code> et <Code>redirectTo()</Code>, définit dans la class mére <Code>Controller</Code>.
+                        <Code>view()</Code>, <Code>json()</Code> et <Code>redirectTo()</Code>, définies dans la classe mère <Code>Controller</Code>.
                     </ListItem>
                     <ListItem>
                         <strong>Passage de données à la vue</strong> : la méthode <Code>index()</Code> transmet
                         un tableau <Code>[&apos;articles&apos; =&gt; $articles]</Code> à la vue <Code>articles/list.php</Code>.
-                        La méthode <Code>view()</Code> va créer une variable par cléf du tableau
+                        La méthode <Code>view()</Code> va créer une variable par clé du tableau
                         <Code>$data</Code> et l&apos;injecter dans la vue.
                         La Vue peut donc les utiliser <Code>&lt;?php foreach($articles as $article): ?&gt;</Code>
                         pour afficher la liste.
@@ -340,7 +352,7 @@ class ArticleController extends Controller
 
             {/* 6. Le Modèle : aperçu rapide */}
             <section>
-                <Heading level={2}>Le Modèle : aperçu rapide</Heading>
+                <Heading level={2}>F- Le Modèle : aperçu rapide</Heading>
                 <Text>
                     Le <strong>Modèle</strong> représente la couche métier de l&apos;application. Il gère
                     les données, applique les règles de validation et contient la logique spécifique
@@ -359,7 +371,7 @@ class ArticleController extends Controller
 
             {/* 7. Rôle de la vue */}
             <section>
-                <Heading level={2}>La Vue : génération du HTML</Heading>
+                <Heading level={2}>G- La Vue : génération du HTML</Heading>
                 <Text>
                     Les vues se concentrent exclusivement sur la présentation des données transmises
                     par le contrôleur. Dans un projet bien conçu, les vues s&apos;appuient sur des templates réutilisables
@@ -367,13 +379,13 @@ class ArticleController extends Controller
                     cohérence visuelle et simplifie l&apos;évolution.
                 </Text>
 
-                <Heading level={3}>Syntaxes PHP usuelles dans une Vue</Heading>
+                <Heading level={3}>1. Syntaxes PHP usuelles dans une vue</Heading>
                 <Text>
                     Une vue peut contenir du HTML enrichi de structures PHP simples comme
                     l&apos;affichage, les conditions ou les boucles. Voici quelques exemples typiques :
                 </Text>
 
-                <Heading level={4}>Affichage simple (echo)</Heading>
+                <Heading level={4}>1.1 Affichage simple (echo)</Heading>
                 <Text>
                     Reprenons l&apos;exemple du contrôleur qui passe <Code>[&apos;article&apos; =&gt; $article]</Code> :
                 </Text>
@@ -385,7 +397,7 @@ class ArticleController extends Controller
 </p>`}
                 </CodeCard>
 
-                <Heading level={4}>Condition (if)</Heading>
+                <Heading level={4}>1.2 Condition (if)</Heading>
                 <Text>
                     Si le contrôleur passe <Code>[&apos;articles&apos; =&gt; $articles, &apos;isAuthor&apos; =&gt; true]</Code> :
                 </Text>
@@ -397,7 +409,7 @@ class ArticleController extends Controller
 <?php endif; ?>`}
                 </CodeCard>
 
-                <Heading level={4}>Boucle (foreach)</Heading>
+                <Heading level={4}>1.3 Boucle (foreach)</Heading>
                 <Text>
                     Si le contrôleur passe <Code>[&apos;articles&apos; =&gt; $articles]</Code> :
                 </Text>
@@ -417,7 +429,7 @@ class ArticleController extends Controller
 </ul>`}
                 </CodeCard>
 
-                <Heading level={4}>Combinaison logique</Heading>
+                <Heading level={4}>1.4 Combinaison logique</Heading>
                 <CodeCard language="php" showLineNumbers={false}>
                     {`<h1>Gestion des articles</h1>
 

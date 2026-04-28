@@ -11,6 +11,19 @@ import CodeCard from "@/components/Cards/CodeCard";
 export default function Cours() {
     return (
         <article>
+            <section>
+                <Text>
+                    Ce cours vous présente la gestion des formulaires HTML en PHP : création,
+                    transmission des données via GET et POST, validation côté serveur et protection
+                    contre les attaques XSS.
+                </Text>
+                <List>
+                    <ListItem><strong>Objectif 1</strong> : savoir créer un formulaire HTML avec les différents types de champs disponibles.</ListItem>
+                    <ListItem><strong>Objectif 2</strong> : maîtriser la récupération et la validation des données en PHP avec <Code>$_GET</Code> et <Code>$_POST</Code>.</ListItem>
+                    <ListItem><strong>Objectif 3</strong> : comprendre et appliquer les bonnes pratiques de sécurisation contre les failles XSS.</ListItem>
+                </List>
+            </section>
+
             {/* PARTIE A : HTML */}
             <section>
                 <Heading level={2}>A- Création d&apos;un formulaire HTML</Heading>
@@ -44,7 +57,7 @@ export default function Cours() {
 
                 <Heading level={3}>2. Types de champs</Heading>
 
-                <Heading level={4}>Champs texte</Heading>
+                <Heading level={4}>2.1 Champs texte</Heading>
                 <Grid templateColumns={{base: "1fr", md: "repeat(2, 1fr)"}} gap={6} width="100%">
                     <InputCard
                         title="Text"
@@ -72,7 +85,7 @@ export default function Cours() {
                     />
                 </Grid>
 
-                <Heading level={4}>Sélections</Heading>
+                <Heading level={4}>2.2 Sélections</Heading>
                 <Grid templateColumns={{base: "1fr", md: "repeat(2, 1fr)"}} gap={6} width="100%">
                     <InputCard
                         title="Checkbox"
@@ -120,7 +133,7 @@ export default function Cours() {
                     />
                 </Grid>
 
-                <Heading level={4}>Date et nombre</Heading>
+                <Heading level={4}>2.3 Date et nombre</Heading>
                 <Grid templateColumns={{base: "1fr", md: "repeat(2, 1fr)"}} gap={6} width="100%">
                     <InputCard
                         title="Date"
@@ -194,7 +207,7 @@ export default function Cours() {
 
                 <Heading level={3}>4. Autocomplete intelligent</Heading>
                 <Text>
-                    L&quot;attribut <Code>autocomplete</Code> permet au navigateur de suggérer des valeurs sauvegardées.
+                    L&apos;attribut <Code>autocomplete</Code> permet au navigateur de suggérer des valeurs sauvegardées.
                     Valeurs courantes
                     : <Code>name</Code>, <Code>email</Code>, <Code>tel</Code>, <Code>street-address</Code>,
                     <Code>postal-code</Code>, <Code>cc-number</Code>, <Code>new-password</Code>, <Code>current-password</Code>.
@@ -245,7 +258,7 @@ export default function Cours() {
                         <TableRow>
                             <TableCell><Code>GET</Code></TableCell>
                             <TableCell>
-                                • Données visibles dans l&quot;URL<br/>
+                                • Données visibles dans l&apos;URL<br/>
                                 • Limité à ~2000 caractères<br/>
                                 • Peut être bookmarké<br/>
                                 • Mise en cache possible
@@ -267,8 +280,8 @@ export default function Cours() {
 
                 <Heading level={3}>2. Récupération avec $_GET</Heading>
                 <Text>
-                    La superglobale <Code>$_GET</Code> récupère les données envoyées via l&quot;URL.
-                    Le nom du paramètre correspond à l&quot;attribut <Code>name</Code> du champ HTML.
+                    La superglobale <Code>$_GET</Code> récupère les données envoyées via l&apos;URL.
+                    Le nom du paramètre correspond à l&apos;attribut <Code>name</Code> du champ HTML.
                 </Text>
 
                 <CodeCard language="html">
@@ -315,7 +328,7 @@ if (!empty($query)) {
                 <Heading level={3}>3. Récupération avec $_POST</Heading>
                 <Text>
                     La superglobale <Code>$_POST</Code> récupère les données du corps de la requête HTTP.
-                    Les données ne sont pas visibles dans l&quot;URL.
+                    Les données ne sont pas visibles dans l&apos;URL.
                 </Text>
 
                 <CodeCard language="html">
@@ -362,7 +375,7 @@ if ($username === 'admin' && $password === 'secret') {
                 <Heading level={3}>4. $_SERVER[&quot;REQUEST_METHOD&quot;] : Détection de la méthode</Heading>
                 <Text>
                     <Code>$_SERVER[&quot;REQUEST_METHOD&quot;]</Code> permet de connaître la méthode HTTP utilisée.
-                    C&quot;est utile pour créer un fichier qui affiche le formulaire ET traite les données.
+                    C&apos;est utile pour créer un fichier qui affiche le formulaire ET traite les données.
                 </Text>
 
                 <CodeCard language="php">
@@ -468,7 +481,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <List>
                     <ListItem>Un seul fichier pour le formulaire et le traitement</ListItem>
                     <ListItem>Les erreurs sont affichées directement</ListItem>
-                    <ListItem>Les valeurs saisies sont conservées en cas d&quot;erreur</ListItem>
+                    <ListItem>Les valeurs saisies sont conservées en cas d&apos;erreur</ListItem>
                     <ListItem>Meilleure expérience utilisateur</ListItem>
                 </List>
 
@@ -559,7 +572,7 @@ if (in_array($gender, $valid_genders)) {
                 <Text>
                     <Code>$_REQUEST</Code> contient les données
                     de <Code>$_GET</Code>, <Code>$_POST</Code> et <Code>$_COOKIE</Code>.
-                    Son utilisation n&quot;est pas recommandée car elle ne permet pas de distinguer la source des
+                    Son utilisation n&apos;est pas recommandée car elle ne permet pas de distinguer la source des
                     données
                     et peut créer des conflits.
                 </Text>
@@ -581,9 +594,9 @@ $username = $_GET['username'] ?? '';
             <section>
                 <Heading level={2}>C- Sécurisation des données : Protection XSS</Heading>
 
-                <Heading level={3}>Qu&quot;est-ce qu&quot;une attaque XSS ?</Heading>
+                <Heading level={3}>1. Qu&apos;est-ce qu&apos;une attaque XSS ?</Heading>
                 <Text>
-                    XSS (Cross-Site Scripting) est une vulnérabilité qui permet d&quot;injecter du code JavaScript
+                    XSS (Cross-Site Scripting) est une vulnérabilité qui permet d&apos;injecter du code JavaScript
                     malveillant.
                     Sans protection, un attaquant peut voler des cookies, des sessions, ou manipuler le contenu de la
                     page.
@@ -603,7 +616,7 @@ echo "Bonjour " . $name;
 ?>`}
                 </CodeCard>
 
-                <Heading level={3}>Règle d&quot;or : TOUJOURS utiliser htmlspecialchars()</Heading>
+                <Heading level={3}>2. Règle d&apos;or : TOUJOURS utiliser htmlspecialchars()</Heading>
                 <Text>
                     Cette fonction convertit les caractères dangereux (<Code>&lt;</Code>, <Code>&gt;</Code>,
                     <Code>&quot;</Code>, <Code>&apos;</Code>) en entités HTML inoffensives.
@@ -657,18 +670,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <section className="p-6 bg-gray-50 rounded">
                 <Heading level={2}>D- Récapitulatif et bonnes pratiques</Heading>
 
-                <Heading level={3}>HTML</Heading>
+                <Heading level={3}>1. HTML</Heading>
                 <List>
                     <ListItem>Attribut <Code>name</Code> obligatoire sur chaque input (utilisé en PHP)</ListItem>
                     <ListItem>Attribut <Code>id</Code> pour lier au <Code>&lt;label&gt;</Code></ListItem>
                     <ListItem>Validation HTML5
                         : <Code>required</Code>, <Code>pattern</Code>, <Code>min/max</Code></ListItem>
-                    <ListItem>Autocomplete pour améliorer l&quot;expérience utilisateur</ListItem>
+                    <ListItem>Autocomplete pour améliorer l&apos;expérience utilisateur</ListItem>
                 </List>
 
-                <Heading level={3}>PHP</Heading>
+                <Heading level={3}>2. PHP</Heading>
                 <List>
-                    <ListItem><Code>GET</Code> : pour recherches, filtres (données dans l&quot;URL)</ListItem>
+                    <ListItem><Code>GET</Code> : pour recherches, filtres (données dans l&apos;URL)</ListItem>
                     <ListItem><Code>POST</Code> : pour inscriptions, connexions (données cachées)</ListItem>
                     <ListItem>Utiliser <Code>$_SERVER[&quot;REQUEST_METHOD&quot;]</Code> pour détecter la
                         méthode</ListItem>
@@ -677,16 +690,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ?? &quot;&quot;</Code></ListItem>
                 </List>
 
-                <Heading level={3}>Sécurité</Heading>
+                <Heading level={3}>3. Sécurité</Heading>
                 <List>
                     <ListItem><strong>TOUJOURS</strong> utiliser <Code>htmlspecialchars($data,
                         ENT_QUOTES, &quot;UTF-8&quot;)</Code></ListItem>
                     <ListItem>Validation email : <Code>filter_var($email, FILTER_VALIDATE_EMAIL)</Code></ListItem>
                     <ListItem>Validation des données : longueur, format, valeurs autorisées</ListItem>
-                    <ListItem>Messages d&quot;erreur clairs et utiles pour l&quot;utilisateur</ListItem>
+                    <ListItem>Messages d&apos;erreur clairs et utiles pour l&apos;utilisateur</ListItem>
                 </List>
 
-                <Heading level={3}>Structure recommandée</Heading>
+                <Heading level={3}>4. Structure recommandée</Heading>
                 <CodeCard language="php">
                     {`<?php
 // 1. Initialisation des variables

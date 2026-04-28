@@ -8,7 +8,20 @@ export default function Cours() {
     return (
         <article>
             <section>
-                <Heading level={2}>Rappel du MVC</Heading>
+                <Text>
+                    Ce cours vous présente la couche Modèle du pattern MVC : les entités pour représenter
+                    vos données métier, les repositories pour interagir avec la base de données via PDO,
+                    et les requêtes préparées pour sécuriser vos requêtes SQL.
+                </Text>
+                <List>
+                    <ListItem><strong>Objectif 1</strong> : comprendre le rôle des entités et des repositories dans une architecture MVC.</ListItem>
+                    <ListItem><strong>Objectif 2</strong> : maîtriser les requêtes préparées avec PDO pour sécuriser les accès à la base de données.</ListItem>
+                    <ListItem><strong>Objectif 3</strong> : savoir intégrer les repositories dans les contrôleurs pour afficher des données dynamiques.</ListItem>
+                </List>
+            </section>
+
+            <section>
+                <Heading level={2}>A- Rappel du MVC</Heading>
                 <Text>
                     Le pattern <strong>MVC (Modèle-Vue-Contrôleur)</strong> est une architecture logicielle
                     qui sépare une application en trois composants distincts :
@@ -30,7 +43,7 @@ export default function Cours() {
             </section>
 
             <section>
-                <Heading level={2}>Le Modèle</Heading>
+                <Heading level={2}>B- Le Modèle</Heading>
                 <Text>
                     Le Modèle représente la couche métier de l&apos;application. Il se compose de deux types
                     de classes complémentaires :
@@ -45,7 +58,7 @@ export default function Cours() {
                     </ListItem>
                 </List>
 
-                <Heading level={3}>Les Entités</Heading>
+                <Heading level={3}>1. Les entités</Heading>
                 <Text>
                     Une entité est une classe qui représente un objet métier avec ses propriétés et
                     ses méthodes. Elle encapsule les données et fournit des getters/setters pour y accéder.
@@ -77,14 +90,14 @@ class Category
 }`}
                 </CodeCard>
                 
-                <Heading level={3}>Les Repositories</Heading>
+                <Heading level={3}>2. Les repositories</Heading>
                 <Text>
                     La classe <Code>Repository</Code> sert de base pour gérer la connexion à la base de données. Elle
                     utilise le design pattern Singleton pour garantir qu&apos;une seule connexion est établie tout au
                     long de l&apos;exécution de l&apos;application.
                 </Text>
 
-                <Heading level={4}>Le Design Pattern Singleton</Heading>
+                <Heading level={4}>2.1 Le design pattern Singleton</Heading>
                 <Text>
                     Le Singleton est un design pattern qui garantit qu&apos;une classe ne peut avoir qu&apos;une seule
                     instance. Cela permet de centraliser la gestion de certaines ressources, comme la connexion à la
@@ -93,7 +106,7 @@ class Category
                     de <Code>Repository</Code> et la réutilise tout au long de l&apos;exécution.
                 </Text>
 
-                <Heading level={4}>Exemple de Repository : CategoryRepository</Heading>
+                <Heading level={4}>2.2 Exemple de repository : CategoryRepository</Heading>
                 <Text>
                     La classe <Code>CategoryRepository</Code> permet de gérer les opérations CRUD (Create / Read / Update / Delete) pour les catégories.
                     Elle utilise la classe <Code>Repository</Code> pour obtenir la connexion à la base de données via PDO.
@@ -115,7 +128,7 @@ class CategoryRepository
 }`}
                 </CodeCard>
 
-                <Heading level={3}>Méthodes de la Classe Repository</Heading>
+                <Heading level={3}>3. Méthodes de lecture</Heading>
                 <List>
                     <ListItem>
                         <strong>createCategoryFromRow</strong> : Convertit une ligne de la base de données en objet <Code>Category</Code>.
@@ -151,7 +164,7 @@ class CategoryRepository
                     </ListItem>
                 </List>
 
-                <Heading level={3}>Les Requêtes Préparées</Heading>
+                <Heading level={3}>4. Les requêtes préparées</Heading>
                 <Text>
                     Les requêtes préparées sont essentielles pour sécuriser les interactions avec la base de données.
                     Elles permettent de séparer la logique de la requête des valeurs des paramètres, empêchant ainsi les
@@ -164,7 +177,7 @@ class CategoryRepository
                     les données insérées ou sélectionnées sont traitées de manière sécurisée.
                 </Text>
 
-                <Heading level={4}>Exemple avec un Entier (int)</Heading>
+                <Heading level={4}>4.1 Exemple avec un entier (int)</Heading>
                 <Text>
                     Cet exemple montre comment utiliser un entier comme paramètre pour sélectionner une catégorie par son ID.
                 </Text>
@@ -182,7 +195,7 @@ $stmt->execute(['id' => $id]);`}
                     Ici, le paramètre <Code>:id</Code> est directement lié à la valeur fournie.
                 </Text>
 
-                <Heading level={4}>Exemple avec une Chaîne de Caractères (string)</Heading>
+                <Heading level={4}>4.2 Exemple avec une chaîne de caractères (string)</Heading>
                 <Text>
                     Cet exemple montre comment utiliser une chaîne de caractères pour rechercher une catégorie par son nom.
                 </Text>
@@ -200,7 +213,7 @@ $stmt->execute(['name' => $categoryName]);`}
                     Dans cet exemple, le paramètre <Code>:name</Code> est lié directement à la valeur fournie pour <Code>$categoryName</Code>.
                 </Text>
 
-                <Heading level={4}>Exemple avec Plusieurs Paramètres</Heading>
+                <Heading level={4}>4.3 Exemple avec plusieurs paramètres</Heading>
                 <Text>
                     Lorsqu&apos;on doit passer plusieurs paramètres, on utilise un tableau associatif.
                 </Text>
@@ -234,7 +247,7 @@ $stmt->execute([
                         L&apos;utilisation de requêtes préparées avec ces paramètres assure une <strong>protection contre les injections SQL</strong> et une exécution plus sécurisée et optimisée de la requête.
                     </ListItem>
                 </List>
-                <Heading level={3}>Méthodes de la Classe Repository</Heading>
+                <Heading level={3}>5. Méthodes de recherche</Heading>
                 <List>
                     <ListItem>
                         <strong>findById</strong> : Récupère une catégorie par son ID.
@@ -350,13 +363,13 @@ $stmt->execute([
                 </List>*/}
 
 
-                <Heading level={3}>Utilisation des Repositories dans les Contrôleurs</Heading>
+                <Heading level={3}>6. Utilisation des repositories dans les contrôleurs</Heading>
                 <Text>
                     Le Contrôleur utilise les Repositories pour accéder aux données. Il ne contient jamais
                     de requêtes SQL directes. Voici comment intégrer les Repositories dans un Contrôleur.
                 </Text>
 
-                <Heading level={4}>Exemple : CategoryController</Heading>
+                <Heading level={4}>6.1 Exemple : CategoryController</Heading>
                 <CodeCard language="php">
                     {`<?php
 require_once '../app/core/Controller.php';
@@ -529,7 +542,7 @@ class CategoryController extends Controller
                     $this->json(['categories' => $categoriesData]);
                 }*/}
                 
-                <Heading level={4}>Exemple de Vue utilisant les Entités</Heading>
+                <Heading level={4}>6.2 Exemple de vue utilisant les entités</Heading>
                 <Text>
                     Voici comment la Vue affiche les catégories reçues du Contrôleur :
                 </Text>

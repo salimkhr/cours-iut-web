@@ -655,7 +655,7 @@ catch (PDOException $e) {
                     B - Les séries
                 </Heading>
 
-                <Heading level={3}>1/ Classe <Code>Series</Code></Heading>
+                <Heading level={3}>1. Classe <Code>Series</Code></Heading>
                 <Text>
                     Dans le dossier <Code>app/entities</Code>, créez la classe <Code>Series</Code> avec les
                     propriétés suivantes :
@@ -683,7 +683,7 @@ catch (PDOException $e) {
                         colonne <Code>updated_at</Code></Text></ListItem>
                 </List>
 
-                <Heading level={3}>2/ Classe <Code>SeriesRepository</Code></Heading>
+                <Heading level={3}>2. Classe <Code>SeriesRepository</Code></Heading>
                 <Text>
                     Dans le dossier <Code>app/repositories</Code>, créez la
                     classe <Code>SeriesRepository</Code> contenant les méthodes :
@@ -699,13 +699,13 @@ catch (PDOException $e) {
                     </ListItem>
                 </List>
 
-                <Heading level={3}>3/ Modification du <Code>HomeController</Code></Heading>
+                <Heading level={3}>3. Modification du <Code>HomeController</Code></Heading>
                 <Text>
                     Modifiez la classe <Code>HomeController</Code> pour remplacer le tableau de films par un appel
                     à <Code>findAll()</Code> du repository.
                 </Text>
 
-                <Heading level={3}>4/ Mise à jour de la vue <Code>home.html.php</Code></Heading>
+                <Heading level={3}>4. Mise à jour de la vue <Code>home.html.php</Code></Heading>
                 <Text>
                     Modifiez la vue <Code>home.html.php</Code> pour :
                 </Text>
@@ -715,7 +715,7 @@ catch (PDOException $e) {
                             l&apos;affichage.</Text>
                     </ListItem>
                     <ListItem>
-                        <Text>Ajouter un lien vers la page de détail de chaque série : <Code>&lt;a
+                        <Text>Ajoutez un lien vers la page de détail de chaque série : <Code>&lt;a
                             href=&quot;series.php?id=&lt;?=$serie-&gt;getId() ?&gt;&quot;&gt;</Code></Text>
                     </ListItem>
                 </List>
@@ -725,7 +725,7 @@ catch (PDOException $e) {
                     C - Page de détail d&apos;une série
                 </Heading>
 
-                <Heading level={3}>1/ Classe <Code>Episode</Code></Heading>
+                <Heading level={3}>1. Classe <Code>Episode</Code></Heading>
                 <Text>
                     Dans le dossier <Code>app/entities</Code>, créez la classe <Code>Episode</Code> avec les
                     propriétés suivantes :
@@ -748,7 +748,7 @@ catch (PDOException $e) {
                         colonne <Code>updated_at</Code></Text></ListItem>
                 </List>
 
-                <Heading level={3}>2/ Modification de <Code>SeriesRepository</Code></Heading>
+                <Heading level={3}>2. Modification de <Code>SeriesRepository</Code></Heading>
                 <Text>
                     Ajoutez la méthode suivante dans la classe <Code>SeriesRepository</Code> :
                 </Text>
@@ -761,7 +761,7 @@ catch (PDOException $e) {
                     </ListItem>
                 </List>
 
-                <Heading level={3}>3/ Création du <Code>SeriesController</Code></Heading>
+                <Heading level={3}>3. Création du <Code>SeriesController</Code></Heading>
                 <Text>
                     Dans le dossier <Code>app/controllers</Code>, créez la classe <Code>SeriesController</Code> avec une
                     méthode <Code>show()</Code> qui :
@@ -772,7 +772,7 @@ catch (PDOException $e) {
                         <Text>Récupère l&apos;<Code>id</Code> depuis <Code>$_GET[&apos;id&apos;]</Code>.</Text>
                     </ListItem>
                     <ListItem>
-                        <Text>Utilise <Code>SeriesRepository::findById()</Code> pour récupérer la série.</Text>
+                        <Text>Utilisez <Code>SeriesRepository::findById()</Code> pour récupérer la série.</Text>
                     </ListItem>
                     <ListItem>
                         <Text>Si la série n&apos;existe pas, redirige vers la page d&apos;accueil.</Text>
@@ -783,15 +783,15 @@ catch (PDOException $e) {
                     </ListItem>
                 </List>
 
-                <Heading level={3}>4/ Création de la page <Code>series.php</Code></Heading>
+                <Heading level={3}>4. Création de la page <Code>series.php</Code></Heading>
                 <Text>
                     Créez le fichier <Code>public/series.php</Code> qui instancie <Code>SeriesController</Code> et
                     appelle la méthode <Code>show()</Code>.
                 </Text>
 
-                <Heading level={3}>5/ Création de la vue <Code>series.html.php</Code></Heading>
+                <Heading level={3}>5. Création de la vue <Code>series.html.php</Code></Heading>
                 <Text>
-                    Copiez le HTML suinant dans un nouveau fichier <Code>views/series.html.php</Code>.</Text>
+                    Copiez le HTML suivant dans un nouveau fichier <Code>views/series.html.php</Code>.</Text>
                     <CodeCard language="html" filename={"series.html.php"} collapsible>{`
                         <!DOCTYPE html>
 <html lang="fr">
@@ -909,7 +909,7 @@ catch (PDOException $e) {
                     années, saison actuelle, qualité, audio, tags) en utilisant l&apos;objet <Code>$series</Code>.
                 </Text>
 
-                <Heading level={3}>6/ Classe <Code>EpisodeRepository</Code></Heading>
+                <Heading level={3}>6. Classe <Code>EpisodeRepository</Code></Heading>
                 <Text>
                     Dans le dossier <Code>app/repositories</Code>, créez la
                     classe <Code>EpisodeRepository</Code> contenant les méthodes :
@@ -927,7 +927,7 @@ catch (PDOException $e) {
                     </ListItem>
                 </List>
 
-                <Heading level={3}>7/ Affichage des épisodes</Heading>
+                <Heading level={3}>7. Affichage des épisodes</Heading>
                 <Text>
                     Modifiez le <Code>SeriesController</Code> pour récupérer les épisodes
                     avec <Code>EpisodeRepository::findBySeriesId()</Code> et les passer à la vue.
@@ -937,8 +937,8 @@ catch (PDOException $e) {
                     Il aurait été plus propre d&apos;avoir une table <Code>seasons</Code> en plus
                     de <Code>series</Code> et <Code>episodes</Code> pour stocker les informations de chaque saison.
                     Cependant, cela ajouterait de la complexité lors de la réalisation de la partie Administration
-                    (gestion des relations entre trois tables au lieu de deux). nous allons donc, dans le controller,
-                    ajouter ce code pour recréer le tableau de saisons :
+                    (gestion des relations entre trois tables au lieu de deux). Nous allons donc, dans le contrôleur,
+                    ajouter le code suivant pour recréer le tableau de saisons :
                 </Text>
 
                 <CodeCard language="php">{`// Grouper les épisodes par saison
@@ -952,7 +952,7 @@ foreach ($episodesBySeason as $seasonNumber => $seasonEpisodes) {
                 </CodeCard>
 
                 <Text>
-                    Dans la vue <Code>series.html.php</Code>, modifié le main <Code>&lt;main&gt;</Code> pour afficher
+                    Dans la vue <Code>series.html.php</Code>, modifiez le main <Code>&lt;main&gt;</Code> pour afficher
                     les épisodes groupés par saison.
                 </Text>
             </section>
@@ -960,7 +960,7 @@ foreach ($episodesBySeason as $seasonNumber => $seasonEpisodes) {
                 <Heading level={2} netflex>
                     D - Administration des séries
                 </Heading>
-                <Heading level={3}>1/ Templates d&apos;administration</Heading>
+                <Heading level={3}>1.Templates d&apos;administration</Heading>
 
                 <Heading level={4}>Création du header admin</Heading>
                 <Text>
@@ -1029,9 +1029,9 @@ foreach ($episodesBySeason as $seasonNumber => $seasonEpisodes) {
 </html>`}
                 </CodeCard>
 
-                <Heading level={3}>4/ Création du <Code>AdminSeriesController</Code></Heading>
+                <Heading level={3}>4.Création du <Code>AdminSeriesController</Code></Heading>
 
-                <Heading level={3}>5/ Création de la page <Code>admin_series.php</Code></Heading>
+                <Heading level={3}>5.Création de la page <Code>admin_series.php</Code></Heading>
                 <Text>
                     Créez le fichier <Code>public/admin_series.php</Code> :
                 </Text>
@@ -1053,7 +1053,7 @@ $controller->index();
 break;
 }`}
                 </CodeCard>
-                <Heading level={3}>6/ Création de la vue <Code>admin/series_list.html.php</Code></Heading>
+                <Heading level={3}>6.Création de la vue <Code>admin/series_list.html.php</Code></Heading>
                 <Text>
                     Dans le dossier <Code>views/admin/</Code>, créez le fichier <Code>series_list.html.php</Code> :
                 </Text>
@@ -1168,7 +1168,7 @@ break;
 <?php require_once __DIR__ . '/../_template/footer_admin.html.php'; ?>`}
                 </CodeCard>
 
-                <Heading level={3}>7/ Création de la vue <Code>admin/episodes_list.html.php</Code></Heading>
+                <Heading level={3}>7.Création de la vue <Code>admin/episodes_list.html.php</Code></Heading>
                 <Text>
                     Dans le dossier <Code>views/admin/</Code>, créez le fichier <Code>episodes_list.html.php</Code> :
                 </Text>
@@ -1291,7 +1291,7 @@ break;
 <?php require_once __DIR__ . '/../_template/footer_admin.html.php'; ?>`}
                 </CodeCard>
 
-                <Heading level={3}>8/ Ajout du lien d&apos;administration</Heading>
+                <Heading level={3}>8.Ajout du lien d&apos;administration</Heading>
                 <Text>
                     Dans le header principal (<Code>header.html.php</Code> ou directement
                     dans <Code>home.html.php</Code>), ajoutez un lien vers l&apos;administration :

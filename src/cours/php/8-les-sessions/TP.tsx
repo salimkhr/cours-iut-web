@@ -9,39 +9,39 @@ export default function TP() {
     return (
         <article>
             <section>
-                <Heading level={2} netflex>A – Préparation de la base de données</Heading>
+                <Heading level={2}>A- Préparation de la base de données</Heading>
                 <Text>
-                    Avant de commencer, nous devons ajouter la colonne <Code>is_admin</Code> à la
+                    Avant de commencer, vous devez ajouter la colonne <Code>is_admin</Code> à la
                     table <Code>accounts</Code> pour gérer les droits d&apos;administration.
                 </Text>
 
                 <List ordered>
                     <ListItem>
-                        Exécuter le script SQL suivant pour ajouter la colonne <Code>is_admin</Code> :
+                        Exécutez le script SQL suivant pour ajouter la colonne <Code>is_admin</Code> :
                         <CodeCard language="sql">
                             {`ALTER TABLE accounts
 ADD COLUMN is_admin BOOLEAN DEFAULT FALSE NOT NULL;`}
                         </CodeCard>
                     </ListItem>
                     <ListItem>
-                        Modifier la classe <Code>Account</Code> pour ajouter l&apos;attribut <Code>isAdmin</Code>
+                        Modifiez la classe <Code>Account</Code> pour ajouter l&apos;attribut <Code>isAdmin</Code>.
                     </ListItem>
                 </List>
             </section>
 
             <section className="mt-8">
-                <Heading level={2} netflex>B – Formulaire de login</Heading>
+                <Heading level={2}>B- Formulaire de login</Heading>
                 <Heading level={3}>1. Vérification du mot de passe</Heading>
                 <Text>
-                    Lorsqu&apos;un utilisateur soumet le formulaire de connexion, nous vérifions si le
-                    login et le mot de passe sont valides en les comparant aux données en base. En cas de succès, nous
-                    créons une session en stockant l&apos;objet utilisateur sérialisé dans <Code>$_SESSION</Code>.
+                    Lorsqu&apos;un utilisateur soumet le formulaire de connexion, vous vérifiez si le
+                    login et le mot de passe sont valides en les comparant aux données en base. En cas de succès, vous
+                    créez une session en stockant l&apos;objet utilisateur sérialisé dans <Code>$_SESSION</Code>.
                 </Text>
 
                 <List ordered>
                     <ListItem>
-                        Ajouter au <Code>AccountRepository</Code> une méthode <Code>findByEmail(string
-                        $email):?Account</Code> permettant de récupérer les informations d&apos;un utilisateur à partir de
+                        Ajoutez au <Code>AccountRepository</Code> une méthode <Code>findByEmail(string
+                        $email): ?Account</Code> permettant de récupérer les informations d&apos;un utilisateur à partir de
                         son email.
                         <CodeCard language="php">
                             {`/**
@@ -99,53 +99,69 @@ ADD COLUMN is_admin BOOLEAN DEFAULT FALSE NOT NULL;`}
                         </CodeCard>
                     </ListItem>
                     <ListItem>
-                        Modifier le <Code>LoginController()</Code> pour faire en sorte qu&apos;il
-                        appelle <Code>AccountRepository#findByEmail</Code> avec l&apos;email saisi pour
+                        Modifiez le <Code>LoginController</Code> pour qu&apos;il appelle{" "}
+                        <Code>AccountRepository#findByEmail</Code> avec l&apos;email saisi par
                         l&apos;utilisateur.
                     </ListItem>
                     <ListItem>
-                        Si un <Code>Accounts</Code> est retourné utiliser la fonction <Link
-                        href="https://www.php.net/manual/fr/function.password-verify.php"><Code
-                        className="text-php">password_verify</Code></Link> pour verifier si le mot de passe est valide.
+                        Si un <Code>Account</Code> est retourné, utilisez la fonction{" "}
+                        <Link href="https://www.php.net/manual/fr/function.password-verify.php" target="_blank">
+                            <Code className="text-php">password_verify</Code>
+                        </Link>{" "}
+                        pour vérifier que le mot de passe est valide.
                     </ListItem>
                     <ListItem>
-                        Si le formulaire est valide, ajouter
-                        dans <Code>$_SESSION['account']</Code> l'objet <Code>Account</Code> créer precedent
+                        Si le formulaire est valide, ajoutez dans{" "}
+                        <Code>$_SESSION[&apos;account&apos;]</Code> l&apos;objet <Code>Account</Code> créé
+                        précédemment.
                     </ListItem>
-                    <ListItem>En implementant les fonctions <Link target="_blank"
-                                                                  href="https://www.php.net/manual/fr/language.oop5.serialization.php"><Code>serialize()</Code> et <Code>unserialize()</Code></Link> faite
-                        en sorte que l'objet Account sois
-                        sérialisé sans stocker le mot de passe</ListItem>
+                    <ListItem>
+                        En implémentant les méthodes{" "}
+                        <Link href="https://www.php.net/manual/fr/language.oop5.serialization.php" target="_blank">
+                            <Code>__serialize()</Code> et <Code>__unserialize()</Code>
+                        </Link>
+                        , faites en sorte que l&apos;objet <Code>Account</Code> soit sérialisé sans stocker le
+                        mot de passe.
+                    </ListItem>
                 </List>
 
                 <Heading level={3} className="mt-4">2. Sécurisation de l&apos;AdminSeriesController</Heading>
 
                 <List ordered>
                     <ListItem>
-                        Dans le <Code>AdminSeriesController</Code>, créer une méthode privée <Code>checkAdminAccess():
-                        void</Code> qui :
+                        Dans le <Code>AdminSeriesController</Code>, créez une méthode privée{" "}
+                        <Code>checkAdminAccess(): void</Code> qui :
                         <List>
-                            <ListItem>Vérifie si un utilisateur est présent
-                                dans <Code>$_SESSION['account']</Code></ListItem>
-                            <ListItem>Si aucun utilisateur n&apos;est connecté, redirige
-                                vers <Code>login.php</Code></ListItem>
-                            <ListItem>Récupère l&apos;objet <Code>Account</Code> depuis la session</ListItem>
-                            <ListItem>Vérifie si l&apos;utilisateur est administrateur avec la
-                                méthode <Code>isAdmin()</Code></ListItem>
-                            <ListItem>Si l&apos;utilisateur n&apos;est pas admin, redirige
-                                vers <Code>home.php</Code></ListItem>
+                            <ListItem>
+                                Vérifie si un utilisateur est présent dans{" "}
+                                <Code>$_SESSION[&apos;account&apos;]</Code>.
+                            </ListItem>
+                            <ListItem>
+                                Si aucun utilisateur n&apos;est connecté, redirige vers <Code>login.php</Code>.
+                            </ListItem>
+                            <ListItem>
+                                Récupère l&apos;objet <Code>Account</Code> depuis la session.
+                            </ListItem>
+                            <ListItem>
+                                Vérifie si l&apos;utilisateur est administrateur avec la méthode{" "}
+                                <Code>isAdmin()</Code>.
+                            </ListItem>
+                            <ListItem>
+                                Si l&apos;utilisateur n&apos;est pas administrateur, redirige vers{" "}
+                                <Code>home.php</Code>.
+                            </ListItem>
                         </List>
                     </ListItem>
                     <ListItem>
-                        Appeler la méthode <Code>checkAdminAccess()</Code> au début de chaque méthode du contrôleur
-                        : <Code>list()</Code>, <Code>create()</Code> et <Code>edit()</Code>.
+                        Appelez la méthode <Code>checkAdminAccess()</Code> au début de chaque méthode du
+                        contrôleur : <Code>list()</Code>, <Code>create()</Code> et <Code>edit()</Code>.
                     </ListItem>
                 </List>
             </section>
             <section className="mt-8">
-                <Heading level={2} netflex>C – Historique de navigation</Heading>
+                <Heading level={2}>C- Historique de navigation</Heading>
                 <Text>
-                    Nous allons implémenter un système d&apos;historique pour tracer les séries consultées par
+                    Vous allez implémenter un système d&apos;historique pour tracer les séries consultées par
                     l&apos;utilisateur.
                 </Text>
 
@@ -154,33 +170,49 @@ ADD COLUMN is_admin BOOLEAN DEFAULT FALSE NOT NULL;`}
                         Dans le <Code>SerieController</Code>, méthode <Code>show()</Code>, après avoir récupéré
                         la série depuis la base de données :
                         <List>
-                            <ListItem>Vérifier qu&apos;un utilisateur est connecté
-                                (<Code>$_SESSION['account']</Code>)</ListItem>
-                            <ListItem>Initialiser <Code>$_SESSION['history']</Code> comme un tableau vide s&apos;il
-                                n&apos;existe pas</ListItem>
-                            <ListItem>Créer un tableau associatif <Code>$historyItem</Code> contenant :
+                            <ListItem>
+                                Vérifiez qu&apos;un utilisateur est connecté
+                                (<Code>$_SESSION[&apos;account&apos;]</Code>).
+                            </ListItem>
+                            <ListItem>
+                                Initialisez <Code>$_SESSION[&apos;history&apos;]</Code> comme un tableau vide
+                                s&apos;il n&apos;existe pas.
+                            </ListItem>
+                            <ListItem>
+                                Créez un tableau associatif <Code>$historyItem</Code> contenant :
                                 <List>
-                                    <ListItem><Code>id</Code> : récupérer
-                                        via <Code>$series-&gt;getId()</Code></ListItem>
-                                    <ListItem><Code>title</Code> : récupérer
-                                        via <Code>$series-&gt;getTitle()</Code></ListItem>
-                                    <ListItem><Code>image</Code> : récupérer
-                                        via <Code>$series-&gt;getImage()</Code></ListItem>
-                                    <ListItem><Code>viewed_at</Code> : la date et heure actuelles (format <Code>Y-m-d
-                                        H:i:s</Code>)</ListItem>
+                                    <ListItem>
+                                        <Code>id</Code> : récupéré via <Code>$series-&gt;getId()</Code>.
+                                    </ListItem>
+                                    <ListItem>
+                                        <Code>title</Code> : récupéré via <Code>$series-&gt;getTitle()</Code>.
+                                    </ListItem>
+                                    <ListItem>
+                                        <Code>image</Code> : récupéré via <Code>$series-&gt;getImage()</Code>.
+                                    </ListItem>
+                                    <ListItem>
+                                        <Code>viewed_at</Code> : la date et heure actuelles (format{" "}
+                                        <Code>Y-m-d H:i:s</Code>).
+                                    </ListItem>
                                 </List>
                             </ListItem>
-                            <ListItem>Supprimer de <Code>$_SESSION['history']</Code> les entrées ayant le
-                                même <Code>id</Code> que la série actuelle (pour éviter les doublons)</ListItem>
-                            <ListItem>Ajouter <Code>$historyItem</Code> au début du tableau
-                                avec <Code>array_unshift()</Code></ListItem>
-                            <ListItem>Limiter l&apos;historique aux 20 dernières consultations
-                                avec <Code>array_slice()</Code></ListItem>
+                            <ListItem>
+                                Supprimez de <Code>$_SESSION[&apos;history&apos;]</Code> les entrées ayant le
+                                même <Code>id</Code> que la série actuelle (pour éviter les doublons).
+                            </ListItem>
+                            <ListItem>
+                                Ajoutez <Code>$historyItem</Code> au début du tableau avec{" "}
+                                <Code>array_unshift()</Code>.
+                            </ListItem>
+                            <ListItem>
+                                Limitez l&apos;historique aux 20 dernières consultations avec{" "}
+                                <Code>array_slice()</Code>.
+                            </ListItem>
                         </List>
                     </ListItem>
                     <ListItem>
-                        Créer un fichier <Code>views/partials/history-modal.php</Code> pour afficher la modal Bootstrap
-                        :
+                        Créez un fichier <Code>views/partials/history-modal.php</Code> pour afficher la modal
+                        Bootstrap :
                         <CodeCard language="php">
                             {`<!-- Modal Historique -->
 <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
@@ -244,7 +276,7 @@ ADD COLUMN is_admin BOOLEAN DEFAULT FALSE NOT NULL;`}
                         </CodeCard>
                     </ListItem>
                     <ListItem>
-                        Dans <Code>views/home.html.php</Code>, modifier la navbar pour ajouter le bouton
+                        Dans <Code>views/home.html.php</Code>, modifiez la navbar pour ajouter le bouton
                         d&apos;historique :
                         <CodeCard language="php">
                             {`<div class="d-flex align-items-center gap-3">
@@ -276,8 +308,8 @@ ADD COLUMN is_admin BOOLEAN DEFAULT FALSE NOT NULL;`}
                         </CodeCard>
                     </ListItem>
                     <ListItem>
-                        Inclure la modal avant la fermeture
-                        du <Code>&lt;body&gt;</Code> dans <Code>views/home.html.php</Code> :
+                        Incluez la modal avant la fermeture du <Code>&lt;body&gt;</Code> dans{" "}
+                        <Code>views/home.html.php</Code> :
                         <CodeCard language="php">
                             {`<!-- Avant la fermeture du body -->
 <?php 
@@ -290,12 +322,16 @@ ADD COLUMN is_admin BOOLEAN DEFAULT FALSE NOT NULL;`}
                         </CodeCard>
                     </ListItem>
                     <ListItem>
-                        Créer un <Code>HistoryController</Code> avec une méthode <Code>clear()</Code> qui :
+                        Créez un <Code>HistoryController</Code> avec une méthode <Code>clear()</Code> qui :
                         <List>
-                            <ListItem>Vérifie qu&apos;un utilisateur est connecté, sinon redirige
-                                vers <Code>login.php</Code></ListItem>
-                            <ListItem>Réinitialise <Code>$_SESSION['history']</Code> à un tableau vide</ListItem>
-                            <ListItem>Redirige vers <Code>home.php</Code> par défaut</ListItem>
+                            <ListItem>
+                                Vérifie qu&apos;un utilisateur est connecté, sinon redirige vers{" "}
+                                <Code>login.php</Code>.
+                            </ListItem>
+                            <ListItem>
+                                Réinitialise <Code>$_SESSION[&apos;history&apos;]</Code> à un tableau vide.
+                            </ListItem>
+                            <ListItem>Redirige vers <Code>home.php</Code> par défaut.</ListItem>
                         </List>
                     </ListItem>
                 </List>

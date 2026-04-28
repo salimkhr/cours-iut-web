@@ -66,20 +66,20 @@ export default function TP() {
                 <Heading level={3}>3. Le formulaire</Heading>
                 <List ordered>
                     <ListItem>
-                        Modifier le formulaire d&apos;inscription (<Code>RegisterController</Code>) pour utiliser le <Code>FormTrait</Code>{" "}
+                        Modifiez le formulaire d&apos;inscription (<Code>RegisterController</Code>) pour utiliser le <Code>FormTrait</Code>{" "}
                         à la place de <Code>$_POST</Code>.
                     </ListItem>
                     <ListItem>
-                        Dans le dossier <Code>app/entities</Code>, créer une classe <Code>Account</Code>{" "}
+                        Dans le dossier <Code>app/entities</Code>, créez une classe <Code>Account</Code>{" "}
                         représentant la table <Code>accounts</Code>.
                     </ListItem>
                     <ListItem>
-                        Dans le dossier <Code>app/repositories</Code>, créer une classe{" "}
+                        Dans le dossier <Code>app/repositories</Code>, créez une classe{" "}
                         <Code>AccountRepository</Code> contenant une méthode{" "}
                         <Code>create(Account $account)</Code>.
                     </ListItem>
                     <ListItem>
-                        Si le formulaire est valide, utiliser le repository pour insérer une nouvelle
+                        Si le formulaire est valide, utilisez le repository pour insérer une nouvelle
                         ligne dans la table <Code>accounts</Code>.
                         Le hachage du mot de passe se fera grâce à la fonction{" "}
                         <Link
@@ -98,7 +98,7 @@ export default function TP() {
                 <Heading level={3}>1. Création</Heading>
                 <List ordered>
                     <ListItem>
-                        Modifier le fichier <Code>public/admin.php</Code> pour y ajouter un{" "}
+                        Modifiez le fichier <Code>public/admin.php</Code> pour y ajouter un{" "}
                         <Code>switch</Code> sur <Code>$_GET[&apos;action&apos;]</Code> :
                         <List>
                             <ListItem>
@@ -111,12 +111,12 @@ export default function TP() {
                     </ListItem>
 
                     <ListItem>
-                        Ajouter la méthode <Code>create()</Code> au <Code>AdminSeriesController</Code>,
+                        Ajoutez la méthode <Code>create()</Code> au <Code>AdminSeriesController</Code>,
                         appelant uniquement la vue <Code>series_form</Code>.
                     </ListItem>
 
                     <ListItem>
-                        Créer la vue <Code>series_form.html.php</Code> reprenant les inclusions du header et du footer
+                        Créez la vue <Code>series_form.html.php</Code> reprenant les inclusions du header et du footer
                         de <Code>series_list</Code>, et affichant un formulaire correspondant aux attributs
                         de la classe <Code>Series</Code> :
                         <List>
@@ -168,13 +168,13 @@ if (!empty($_FILES['image']['name'])) {
                     </ListItem>
 
                     <ListItem>
-                        Ajouter une méthode <Code>create(Series $series)</Code> dans le{" "}
+                        Ajoutez une méthode <Code>create(Series $series)</Code> dans le{" "}
                         <Code>SeriesRepository</Code> permettant l&apos;insertion dans la table{" "}
                         <Code>series</Code>.
                     </ListItem>
 
                     <ListItem>
-                        Si le formulaire est valide, appeler le repository pour insérer la nouvelle série
+                        Si le formulaire est valide, appelez le repository pour insérer la nouvelle série
                         dans la base de données.
                     </ListItem>
                 </List>
@@ -182,7 +182,7 @@ if (!empty($_FILES['image']['name'])) {
                 <Heading level={3}>2. Mise à jour</Heading>
                 <List ordered>
                     <ListItem>
-                        Dans le fichier <Code>public/admin.php</Code>, ajouter un nouveau cas dans le{" "}
+                        Dans le fichier <Code>public/admin.php</Code>, ajoutez un nouveau cas dans le{" "}
                         <Code>switch</Code> :
                         <List>
                             <ListItem>
@@ -192,13 +192,13 @@ if (!empty($_FILES['image']['name'])) {
                     </ListItem>
 
                     <ListItem>
-                        Ajouter la méthode <Code>edit()</Code> au <Code>AdminSeriesController</Code> :
+                        Ajoutez la méthode <Code>edit()</Code> au <Code>AdminSeriesController</Code> :
                         <List>
                             <ListItem>
-                                Récupérer l&apos;ID de la série depuis <Code>$_GET[&apos;id&apos;]</Code>.
+                                Récupérez l&apos;ID de la série depuis <Code>$_GET[&apos;id&apos;]</Code>.
                             </ListItem>
                             <ListItem>
-                                Utiliser le <Code>SeriesRepository</Code> pour récupérer la série existante.
+                                Utilisez le <Code>SeriesRepository</Code> pour récupérer la série existante.
                             </ListItem>
                             <ListItem>
                                 Si la série n&apos;existe pas, rediriger vers la liste.
@@ -210,17 +210,17 @@ if (!empty($_FILES['image']['name'])) {
                     </ListItem>
 
                     <ListItem>
-                        Modifier la vue <Code>series_form.html.php</Code> pour accepter un paramètre{" "}
+                        Modifiez la vue <Code>series_form.html.php</Code> pour accepter un paramètre{" "}
                         <Code>$edit</Code> (booléen) permettant de gérer les deux modes :
                         <List>
                             <ListItem>
-                                Adapter l&apos;attribut <Code>action</Code> du formulaire :
+                                Adaptez l&apos;attribut <Code>action</Code> du formulaire :
                                 <CodeCard language="php">
                                     {`<form action="admin.php?action=<?= $edit ? 'edit&id=' . $series->getId() : 'create' ?>" method="post" enctype="multipart/form-data">`}
                                 </CodeCard>
                             </ListItem>
                             <ListItem>
-                                Adapter le titre du formulaire (&quot;Créer une série&quot; ou &quot;Modifier
+                                Adaptez le titre du formulaire (&quot;Créer une série&quot; ou &quot;Modifier
                                 une série&quot;) selon la valeur de <Code>$edit</Code>.
                             </ListItem>
                             <ListItem>
@@ -231,23 +231,23 @@ if (!empty($_FILES['image']['name'])) {
                     </ListItem>
 
                     <ListItem>
-                        Compléter la méthode <Code>edit()</Code> du <Code>AdminSeriesController</Code> pour
+                        Complétez la méthode <Code>edit()</Code> du <Code>AdminSeriesController</Code> pour
                         traiter la soumission du formulaire :
                         <List>
                             <ListItem>
-                                Vérifier si le formulaire a été soumis (méthode POST).
+                                Vérifiez si le formulaire a été soumis (méthode POST).
                             </ListItem>
                             <ListItem>
-                                Récupérer la série existante depuis la base de données via son ID.
+                                Récupérez la série existante depuis la base de données via son ID.
                             </ListItem>
                             <ListItem>
-                                Valider les données du formulaire (mêmes règles que pour la création).
+                                Validez les données du formulaire (mêmes règles que pour la création).
                             </ListItem>
                             <ListItem>
-                                Mettre à jour les propriétés de la série avec les nouvelles valeurs.
+                                Mettez à jour les propriétés de la série avec les nouvelles valeurs.
                             </ListItem>
                             <ListItem>
-                                Le champs <Code>updatedAt</Code> doivent être initialisés automatiquement dans le
+                                Le champ <Code>updatedAt</Code> doit être initialisé automatiquement dans le
                                 repository
                             </ListItem>
                             <ListItem>
@@ -263,7 +263,7 @@ if (!empty($_FILES['image']['name'])) {
                     </ListItem>
 
                     <ListItem>
-                        Ajouter une méthode <Code>update(Series $series)</Code> dans le{" "}
+                        Ajoutez une méthode <Code>update(Series $series)</Code> dans le{" "}
                         <Code>SeriesRepository</Code> permettant la mise à jour dans la table{" "}
                         <Code>series</Code>.
                     </ListItem>
@@ -273,10 +273,10 @@ if (!empty($_FILES['image']['name'])) {
             <section>
                 <Heading level={2} netflex>C – Les épisodes</Heading>
 
-                <p>
-                    Reproduire la même logique que pour les séries (création et modification) pour gérer
+                <Text>
+                    Reproduisez la même logique que pour les séries (création et modification) pour gérer
                     les épisodes. La classe <Code>Episode</Code> possède les attributs suivants :
-                </p>
+                </Text>
 
                 <List>
                     <ListItem><Code>seriesId</Code> (int) – référence vers la série parente</ListItem>
@@ -293,7 +293,7 @@ if (!empty($_FILES['image']['name'])) {
                 <Heading level={3}>1. Création</Heading>
                 <List ordered>
                     <ListItem>
-                        Créer la vue <Code>episode_form.html.php</Code> avec un formulaire contenant :
+                        Créez la vue <Code>episode_form.html.php</Code> avec un formulaire contenant :
                         <List>
                             <ListItem>
                                 <Code>seriesId</Code> (select) – récupérer toutes les séries via{" "}

@@ -1,4 +1,3 @@
-import React from 'react';
 import {Alert, AlertDescription, AlertTitle} from '@/components/ui/alert';
 import {AlertCircle, Award, Calculator, Clock, Settings} from 'lucide-react';
 import Heading from "@/components/ui/Heading";
@@ -42,9 +41,9 @@ class Responsable {
 Responsable "1" <-- "*" Matiere`;
 
     const sections = [
-        {title: "A - Création des Matières", points: 8, time: "1h"},
-        {title: "B - Sauvegarde en Base de Données", points: 8, time: "1h"},
-        {title: "C - Gestion des Brouillons en Session", points: 4, time: "0h30"},
+        {title: "A- Création des matières", points: 8, time: "1h"},
+        {title: "B- Sauvegarde en base de données", points: 8, time: "1h"},
+        {title: "C- Gestion des brouillons en session", points: 4, time: "0h30"},
     ];
 
     return (
@@ -59,10 +58,12 @@ Responsable "1" <-- "*" Matiere`;
             <section>
                 <Alert className="border-blue-300 bg-blue-50">
                     <AlertCircle className="h-5 w-5 text-blue-600"/>
-                    <AlertTitle className="text-blue-900 font-semibold">Rendu de l'examen</AlertTitle>
+                    <AlertTitle className="text-blue-900 font-semibold">Rendu de l&apos;examen</AlertTitle>
                     <AlertDescription className="text-blue-800">
-                        <Text>À la fin du contrôle, vous devrez déposer l'ensemble de vos fichiers dans une archive ZIP
-                            nommée <Code className="bg-blue-100 px-2 py-1 rounded text-sm">Exam_prenom_nom.zip</Code>,
+                        <Text>
+                            À la fin du contrôle, vous devrez déposer l&apos;ensemble de vos fichiers dans une
+                            archive ZIP nommée{" "}
+                            <Code className="bg-blue-100 px-2 py-1 rounded text-sm">Exam_prenom_nom.zip</Code>,
                             puis la soumettre sur{" "}
                             <Link
                                 href="https://eureka.univ-lehavre.fr/mod/assign/view.php?id=176564"
@@ -71,7 +72,8 @@ Responsable "1" <-- "*" Matiere`;
                                 className="text-blue-700 hover:underline font-medium"
                             >
                                 Eurêka
-                            </Link> dans les délais indiqués.
+                            </Link>{" "}
+                            dans les délais indiqués.
                         </Text>
 
                         <Text>
@@ -80,18 +82,18 @@ Responsable "1" <-- "*" Matiere`;
                         </Text>
 
                         <Text className="mt-2">
-                            L’usage du téléphone, des montres connectées ainsi que de toute forme d’IA (y compris
-                            locale) est strictement interdit pendant toute la durée de l’épreuve.
-                            L’autocomplétion intégrée à votre IDE est en revanche autorisée.
+                            L&rsquo;usage du téléphone, des montres connectées ainsi que de toute forme
+                            d&rsquo;IA (y compris locale) est strictement interdit pendant toute la durée de
+                            l&rsquo;épreuve. L&rsquo;autocomplétion intégrée à votre IDE est en revanche
+                            autorisée.
                         </Text>
-
                     </AlertDescription>
                 </Alert>
             </section>
 
             {/* Barème */}
             <section>
-                <Heading level={2}>Barème :</Heading>
+                <Heading level={2}>Barème</Heading>
 
                 <div className="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0 mt-6">
                     {/* Liste des sections */}
@@ -132,8 +134,8 @@ Responsable "1" <-- "*" Matiere`;
                                 </Text>
 
                                 <Text className="font-medium">
-                                    Le <strong>CSS</strong> et l’aspect visuel de l’interface ne seront pas pris en
-                                    compte dans la note finale.
+                                    Le <strong>CSS</strong> et l&rsquo;aspect visuel de l&rsquo;interface ne
+                                    seront pas pris en compte dans la note finale.
                                 </Text>
                             </AlertDescription>
                         </Alert>
@@ -143,71 +145,70 @@ Responsable "1" <-- "*" Matiere`;
 
             {/* Résumé */}
             <section>
-                <Heading level={2}>Résumé du sujet :</Heading>
+                <Heading level={2}>Résumé du sujet</Heading>
                 <Text>
-                    L'objectif de cet exercice est de créer un système de gestion des matières pour l'intranet du
-                    département.
-                    Le projet comporte trois grandes parties :
+                    L&apos;objectif de cet exercice est de créer un système de gestion des matières pour
+                    l&apos;intranet du département. Le projet comporte trois grandes parties :
                 </Text>
                 <List ordered>
                     <ListItem>
-                        <strong>Création des matières :</strong> formulaire permettant de saisir le code, le nom, les
-                        volumes horaires, le responsable et le semestre d'une matière, avec validation côté client et
-                        serveur.
+                        <strong>Création des matières :</strong> formulaire permettant de saisir le code, le
+                        nom, les volumes horaires, le responsable et le semestre d&apos;une matière, avec
+                        validation côté client et serveur.
                     </ListItem>
                     <ListItem>
-                        <strong>Sauvegarde en base de données :</strong> affichage et enregistrement des matières créées
-                        en respectant la structure des classes <Code>Matiere</Code> et <Code>Responsable</Code>.
+                        <strong>Sauvegarde en base de données :</strong> affichage et enregistrement des
+                        matières créées en respectant la structure des classes <Code>Matiere</Code> et{" "}
+                        <Code>Responsable</Code>.
                     </ListItem>
                     <ListItem>
-                        <strong>Gestion des brouillons en session :</strong> sauvegarde temporaire des données du
-                        formulaire en session lorsque l'utilisateur coche la case "brouillon", permettant de reprendre
-                        la saisie ultérieurement.
+                        <strong>Gestion des brouillons en session :</strong> sauvegarde temporaire des données
+                        du formulaire en session lorsque l&apos;utilisateur coche la case &quot;brouillon&quot;,
+                        permettant de reprendre la saisie ultérieurement.
                     </ListItem>
                 </List>
             </section>
 
             {/* Initialisation */}
             <section>
-                <Heading level={2}>Initialisation du projet :</Heading>
+                <Heading level={2}>Initialisation du projet</Heading>
                 <Text>
                     Téléchargez le projet{" "}
-                    <Link download href={"/download/php/exam_prenom_nom.zip"}><span
-                        className="font-medium text-blue-600">exam_prenom_nom.zip</span></Link>{" "}
-                    et décompressez-le dans un dossier situé en dehors de <Code>public_html</Code>.
-                    Ensuite, lancez le serveur en exécutant le script <Code>start.sh</Code>.
+                    <Link download href="/download/php/exam_prenom_nom.zip">
+                        <span className="font-medium text-blue-600">exam_prenom_nom.zip</span>
+                    </Link>{" "}
+                    et décompressez-le dans un dossier situé en dehors de <Code>public_html</Code>. Ensuite,
+                    lancez le serveur en exécutant le script <Code>start.sh</Code>.
                 </Text>
             </section>
 
             {/* Partie A */}
             <section className="pt-6">
-                <Heading level={2}>A - Création des Matières</Heading>
+                <Heading level={2}>A- Création des matières</Heading>
 
                 <Text>
-                    Dans cette partie, vous devez créer un formulaire pour permettre aux administrateurs de saisir de
-                    nouvelles matières dans l'intranet.
-                    Le formulaire doit permettre de renseigner toutes les informations nécessaires pour chaque matière
-                    et assurer la cohérence des données.
+                    Dans cette partie, vous devez créer un formulaire permettant aux administrateurs de saisir
+                    de nouvelles matières dans l&apos;intranet. Le formulaire doit permettre de renseigner
+                    toutes les informations nécessaires pour chaque matière et assurer la cohérence des données.
                 </Text>
 
                 <Text className="mt-4">
-                    Créez le fichier <Code>public/admin.php</Code> afin qu’il appelle la méthode <Code>index()</Code> de
-                    la classe <Code>AdminController</Code>.
-                    Modifiez ensuite cette méthode <Code>index()</Code> pour qu’elle charge la
-                    vue <Code>admin.html.php</Code>.
-                    La page est accessible depuis l’interface via l’icône
-                    <Link href="http://localhost:8000/admin.php" className="text-php" target={"_blank"}>
+                    Créez le fichier <Code>public/admin.php</Code> afin qu&rsquo;il appelle la méthode{" "}
+                    <Code>index()</Code> de la classe <Code>AdminController</Code>. Modifiez ensuite cette
+                    méthode <Code>index()</Code> pour qu&rsquo;elle charge la vue <Code>admin.html.php</Code>.
+                    La page est accessible depuis l&rsquo;interface via l&rsquo;icône{" "}
+                    <Link href="http://localhost:8000/admin.php" className="text-php" target="_blank">
                         <Settings className="inline w-4 h-4 mx-1 mb-0.5"/>
                     </Link>.
                 </Text>
 
-                <ol className="list-decimal list-inside ml-6 space-y-4 text-gray-700">
+                <List ordered>
                     <ListItem>
                         <strong>Code de la matière :</strong>
                         <List>
                             <ListItem>Champ de saisie libre.</ListItem>
-                            <ListItem>Format : exactement 5 caractères (ex: "R3.01", "R4.10").</ListItem>
-                            <ListItem>Validation PHP : vérifier la longueur.</ListItem>
+                            <ListItem>Format : exactement 5 caractères (ex : &quot;R3.01&quot;, &quot;R4.10&quot;).</ListItem>
+                            <ListItem>Validation PHP : vérifiez la longueur.</ListItem>
                         </List>
                     </ListItem>
 
@@ -233,12 +234,18 @@ Responsable "1" <-- "*" Matiere`;
                         <strong>Responsable :</strong>
                         <List>
                             <ListItem>Liste déroulante affichant les responsables disponibles.</ListItem>
-                            <ListItem>Format d'affichage : "NOM Prénom" (ex: "DUPONT Jean", "MARTIN Sophie", "BERNARD
-                                Lucas").</ListItem>
-                            <ListItem>Valeur soumise : l'ID du responsable.</ListItem>
-                            <ListItem>Ajoutez une option par défaut "-- Sélectionner un responsable --" avec une valeur
-                                vide.</ListItem>
-                            <ListItem>Pas de vérification PHP à cette étape (sera traitée dans la partie B).</ListItem>
+                            <ListItem>
+                                Format d&apos;affichage : &quot;NOM Prénom&quot; (ex : &quot;DUPONT Jean&quot;,
+                                &quot;MARTIN Sophie&quot;, &quot;BERNARD Lucas&quot;).
+                            </ListItem>
+                            <ListItem>Valeur soumise : l&apos;ID du responsable.</ListItem>
+                            <ListItem>
+                                Ajoutez une option par défaut &quot;-- Sélectionner un responsable --&quot;
+                                avec une valeur vide.
+                            </ListItem>
+                            <ListItem>
+                                Pas de vérification PHP à cette étape (sera traitée dans la partie B).
+                            </ListItem>
                         </List>
                     </ListItem>
 
@@ -253,34 +260,44 @@ Responsable "1" <-- "*" Matiere`;
                     <ListItem>
                         <strong>Brouillon :</strong>
                         <List>
-                            <ListItem>Case à cocher permettant d'indiquer si la saisie est un brouillon.</ListItem>
-                            <ListItem>Si cochée, les données sont sauvegardées en session sans être insérées en
-                                base.</ListItem>
+                            <ListItem>
+                                Case à cocher permettant d&apos;indiquer si la saisie est un brouillon.
+                            </ListItem>
+                            <ListItem>
+                                Si cochée, les données sont sauvegardées en session sans être insérées en base.
+                            </ListItem>
                             <ListItem>Valeur par défaut : non cochée.</ListItem>
                         </List>
                     </ListItem>
-                </ol>
+                </List>
 
-                <p className="text-gray-700 font-semibold mt-6 mb-3">
-                    Lorsqu'un utilisateur soumet le formulaire :
-                </p>
+                <Text className="font-semibold mt-6 mb-3">
+                    Lorsqu&apos;un utilisateur soumet le formulaire :
+                </Text>
 
                 <List>
-                    <ListItem>Vérifiez que tous les champs sont remplis et respectent les contraintes définies
-                        ci-dessus.</ListItem>
-                    <ListItem>Si le formulaire est valide redirigez vers <Code>index.php</Code>.</ListItem>
-                    <ListItem>Si le formulaire contient des erreurs, réaffichez-le avec les valeurs saisies et les
-                        messages d'erreur associés pour chaque champ incorrect.</ListItem>
+                    <ListItem>
+                        Vérifiez que tous les champs sont remplis et respectent les contraintes définies
+                        ci-dessus.
+                    </ListItem>
+                    <ListItem>
+                        Si le formulaire est valide, redirigez vers <Code>index.php</Code>.
+                    </ListItem>
+                    <ListItem>
+                        Si le formulaire contient des erreurs, réaffichez-le avec les valeurs saisies et les
+                        messages d&apos;erreur associés pour chaque champ incorrect.
+                    </ListItem>
                 </List>
             </section>
 
             {/* Partie B */}
             <section className="pt-6">
-                <Heading level={2}>B - Sauvegarde en Base de Données</Heading>
+                <Heading level={2}>B- Sauvegarde en base de données</Heading>
                 <DiagramCard chart={chart} header="Diagramme de classes"/>
                 <Text className="mt-4">
-                    Après avoir configuré la base de données en modifiant le fichier <Code>config/config.php</Code> et
-                    exécuté le script :</Text>
+                    Après avoir configuré la base de données en modifiant le fichier{" "}
+                    <Code>config/config.php</Code> et exécuté le script :
+                </Text>
 
                 <CodeCard language="sql" filename={"init.sql"} collapsible>
                     {`-- Suppression des tables si elles existent
@@ -414,27 +431,32 @@ INSERT INTO matiere (code, nom, heures_td, heures_tp, responsable_id, semestre) 
 ('S6.ST', 'Stage',  0, 0, 6, 6);`}
                 </CodeCard>
 
-                <Text className="mt-4">Vous devez implémenter la logique permettant d'enregistrer les nouvelles matières
-                    créées via le formulaire de la partie A dans la base de données.</Text>
+                <Text className="mt-4">
+                    Vous devez implémenter la logique permettant d&apos;enregistrer les nouvelles matières
+                    créées via le formulaire de la partie A dans la base de données.
+                </Text>
 
                 <Text className="mt-4">
-                    Dans le dossier <Code>app/entites</Code>, Créez la classe <Code>Matiere.php</Code> avec les
-                    propriétés suivantes :
+                    Dans le dossier <Code>app/entites</Code>, créez la classe <Code>Matiere.php</Code> avec
+                    les propriétés suivantes :
                 </Text>
 
                 <List>
                     <ListItem><Code>id</Code> (int) : identifiant unique de la matière.</ListItem>
                     <ListItem><Code>code</Code> (string) : code unique de la matière.</ListItem>
                     <ListItem><Code>nom</Code> (string) : nom de la matière.</ListItem>
-                    <ListItem><Code>heuresTD</Code> (int) : nombre d'heures de travaux dirigés.</ListItem>
-                    <ListItem><Code>heuresTP</Code> (int) : nombre d'heures de travaux pratiques.</ListItem>
-                    <ListItem><Code>responsable</Code> (Responsable) : objet représentant le responsable de la matière.</ListItem>
+                    <ListItem><Code>heuresTD</Code> (int) : nombre d&apos;heures de travaux dirigés.</ListItem>
+                    <ListItem><Code>heuresTP</Code> (int) : nombre d&apos;heures de travaux pratiques.</ListItem>
+                    <ListItem>
+                        <Code>responsable</Code> (Responsable) : objet représentant le responsable de la
+                        matière.
+                    </ListItem>
                     <ListItem><Code>semestre</Code> (int) : numéro du semestre (1 à 6).</ListItem>
                 </List>
 
                 <Text className="mt-4">
-                    Dans le dossier <Code>app/entites</Code>, Créez la classe <Code>Responsable.php</Code> avec les
-                    propriétés suivantes :
+                    Dans le dossier <Code>app/entites</Code>, créez la classe <Code>Responsable.php</Code>{" "}
+                    avec les propriétés suivantes :
                 </Text>
 
                 <List>
@@ -444,81 +466,95 @@ INSERT INTO matiere (code, nom, heures_td, heures_tp, responsable_id, semestre) 
                     <ListItem><Code>email</Code> (string) : adresse e-mail du responsable.</ListItem>
                 </List>
 
-                <Heading level={3}>Options dynamiques pour les responsables :</Heading>
+                <Heading level={3}>1. Options dynamiques pour les responsables</Heading>
                 <Text>
-                    Après avoir complété la méthode <Code>ResponsableRepository#findAll()</Code>, utilisez-la pour
-                    afficher dynamiquement les responsables dans la liste déroulante du formulaire.
+                    Après avoir complété la méthode <Code>ResponsableRepository#findAll()</Code>, utilisez-la
+                    pour afficher dynamiquement les responsables dans la liste déroulante du formulaire.
                 </Text>
 
-                <Heading level={3}>Validation du formulaire :</Heading>
+                <Heading level={3}>2. Validation du formulaire</Heading>
                 <Text>
-                    Lorsqu'un utilisateur soumet le formulaire :
+                    Lorsqu&apos;un utilisateur soumet le formulaire :
                 </Text>
 
                 <List>
-                    <ListItem>Créer une instance de la classe <Code>Matiere</Code> avec les données du
-                        formulaire</ListItem>
-                    <ListItem>Si toutes les données sont valides, insérez la nouvelle <Code>Matiere</Code> dans la base
-                        de données et redirigez vers <Code>index.php</Code>.</ListItem>
-                    <ListItem>En cas d'erreur, réaffichez le formulaire avec les valeurs saisies et les messages
-                        d'erreur correspondants pour permettre à l'utilisateur de corriger sa saisie.</ListItem>
+                    <ListItem>
+                        Créez une instance de la classe <Code>Matiere</Code> avec les données du formulaire.
+                    </ListItem>
+                    <ListItem>
+                        Si toutes les données sont valides, insérez la nouvelle <Code>Matiere</Code> dans la
+                        base de données et redirigez vers <Code>index.php</Code>.
+                    </ListItem>
+                    <ListItem>
+                        En cas d&apos;erreur, réaffichez le formulaire avec les valeurs saisies et les
+                        messages d&apos;erreur correspondants pour permettre à l&apos;utilisateur de
+                        corriger sa saisie.
+                    </ListItem>
                 </List>
             </section>
 
             {/* Partie C */}
             <section className="pt-6">
-                <Heading level={2}>C - Gestion des Brouillons en Session</Heading>
+                <Heading level={2}>C- Gestion des brouillons en session</Heading>
 
                 <Text>
-                    Dans cette dernière partie, vous devez implémenter la gestion des brouillons pour permettre aux
-                    utilisateurs de sauvegarder temporairement leurs saisies.
+                    Dans cette dernière partie, vous devez implémenter la gestion des brouillons pour
+                    permettre aux utilisateurs de sauvegarder temporairement leurs saisies.
                 </Text>
 
-                <Heading level={4}>
-                    Fonctionnement attendu :
-                </Heading>
+                <Heading level={3}>1. Fonctionnement attendu</Heading>
 
                 <List ordered>
                     <ListItem>
                         <strong>Sauvegarde du brouillon :</strong>
                         <List>
-                            <ListItem>Lorsque l'utilisateur coche la case "brouillon" et soumet le formulaire valide,
-                                toutes les données doivent être stockées en session sous la
-                                clé <Code>$_SESSION['draft_matiere']</Code>.</ListItem>
-                            <ListItem>Stockez cet objet <code
-                                className="bg-gray-100 px-2 py-1 rounded text-sm">Matiere</code> en session sous la
-                                clé <code
-                                    className="bg-gray-100 px-2 py-1 rounded text-sm">$_SESSION['draft_matiere']</code>.</ListItem>
+                            <ListItem>
+                                Lorsque l&apos;utilisateur coche la case &quot;brouillon&quot; et soumet le
+                                formulaire valide, toutes les données doivent être stockées en session sous la
+                                clé <Code>$_SESSION[&apos;draft_matiere&apos;]</Code>.
+                            </ListItem>
+                            <ListItem>
+                                Stockez cet objet <Code>Matiere</Code> en session sous la clé{" "}
+                                <Code>$_SESSION[&apos;draft_matiere&apos;]</Code>.
+                            </ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
                         <strong>Chargement du brouillon :</strong>
                         <List>
-                            <ListItem>Au chargement du formulaire, vérifiez si un brouillon existe en
-                                session.</ListItem>
-                            <ListItem>Si un brouillon existe, récupérez l'objet <code
-                                className="bg-gray-100 px-2 py-1 rounded text-sm">Matiere</code> et utilisez ses getters
-                                pour pré-remplir automatiquement tous les champs du formulaire.</ListItem>
+                            <ListItem>
+                                Au chargement du formulaire, vérifiez si un brouillon existe en session.
+                            </ListItem>
+                            <ListItem>
+                                Si un brouillon existe, récupérez l&apos;objet <Code>Matiere</Code> et utilisez
+                                ses getters pour pré-remplir automatiquement tous les champs du formulaire.
+                            </ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
                         <strong>Validation et suppression du brouillon :</strong>
                         <List>
-                            <ListItem>Si l'utilisateur soumet le formulaire sans cocher "brouillon" et que les données
-                                sont valides, insérez la matière en base et supprimez le brouillon de la
-                                session.</ListItem>
+                            <ListItem>
+                                Si l&apos;utilisateur soumet le formulaire sans cocher &quot;brouillon&quot;
+                                et que les données sont valides, insérez la matière en base et supprimez le
+                                brouillon de la session.
+                            </ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
                         <strong>Gestion des erreurs :</strong>
                         <List>
-                            <ListItem>Si le formulaire contient des erreurs (même avec "brouillon" coché), ne
-                                sauvegardez PAS le brouillon et affichez les erreurs.</ListItem>
-                            <ListItem>L'utilisateur doit corriger les erreurs avant de pouvoir sauvegarder un
-                                brouillon.</ListItem>
+                            <ListItem>
+                                Si le formulaire contient des erreurs (même avec &quot;brouillon&quot; coché),
+                                ne sauvegardez PAS le brouillon et affichez les erreurs.
+                            </ListItem>
+                            <ListItem>
+                                L&apos;utilisateur doit corriger les erreurs avant de pouvoir sauvegarder un
+                                brouillon.
+                            </ListItem>
                         </List>
                     </ListItem>
                 </List>
@@ -527,20 +563,19 @@ INSERT INTO matiere (code, nom, heures_td, heures_tp, responsable_id, semestre) 
                     <AlertCircle className="h-5 w-5 text-yellow-600"/>
                     <AlertTitle className="text-yellow-900 font-semibold">⚠️ Attention</AlertTitle>
                     <AlertDescription className="text-yellow-800">
-                        <p>
-                            Si vous rencontrez des problèmes de redirection infinie ou si les données en session ne se
-                            comportent pas comme prévu,
-                            vérifiez que vous utilisez correctement <Code>session_start()</Code> au début de chaque
-                            fichier PHP
-                            et que vous testez l'existence des clés avec <Code>isset()</Code> avant d'y accéder.
-                        </p>
+                        <Text>
+                            Si vous rencontrez des problèmes de redirection infinie ou si les données en
+                            session ne se comportent pas comme prévu, vérifiez que vous utilisez correctement{" "}
+                            <Code>session_start()</Code> au début de chaque fichier PHP et que vous testez
+                            l&apos;existence des clés avec <Code>isset()</Code> avant d&apos;y accéder.
+                        </Text>
                     </AlertDescription>
                 </Alert>
             </section>
 
-            <p className="mt-8 text-xl font-semibold text-center text-gray-800 border-t pt-6">
+            <Text className="mt-8 text-xl font-semibold text-center border-t pt-6">
                 Bonne chance ! 🎓
-            </p>
+            </Text>
         </article>
     );
 }

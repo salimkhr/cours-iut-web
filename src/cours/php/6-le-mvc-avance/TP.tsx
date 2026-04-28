@@ -11,7 +11,7 @@ export default function TP() {
             <section>
                 <Heading level={2} netflex>A- Utilisation des services</Heading>
                 <Heading level={3}>1. Correction des données</Heading>
-                <Text>Executer le script SQL suivant pour ajouter les données manquantes :</Text>
+                <Text>Exécutez le script SQL suivant pour ajouter les données manquantes :</Text>
                 <CodeCard language="sql" collapsible>
                     {`UPDATE series
                       SET description = 'À Baltimore, policiers, trafiquants, journalistes et habitants se croisent dans une fresque réaliste et percutante. Chaque saison explore un pan de la ville, dévoilant un système corrompu, des destins brisés et une humanité en quête de justice et de rédemption.',
@@ -101,7 +101,7 @@ export default function TP() {
                         updated_at = NOW()
                     WHERE id = 11;`}
                 </CodeCard>
-                <Text>Ajouter <Link href="/download/php/uploads.zip" download>les images suivantes</Link> dans le dossier <Code>uploads/series/</Code> a la racine du projet</Text>
+                <Text>Ajoutez <Link href="/download/php/uploads.zip" download>les images suivantes</Link> dans le dossier <Code>uploads/series/</Code> à la racine du projet.</Text>
                 <Heading level={3}>2. Affichage des images</Heading>
                 <Text>
                     Créez le fichier <Code>ImageService.php</Code> dans le répertoire <Code>App/services</Code> avec le contenu suivant :
@@ -292,13 +292,13 @@ class ImageService
                 </List>
             </section>
             <section>
-                <Heading level={2}>Gestion des épisodes dans les séries</Heading>
+                <Heading level={2}>B- Gestion des épisodes dans les séries</Heading>
 
-                <Text>Enrichir la classe <Code>Serie</Code> avec la gestion des épisodes :</Text>
+                <Text>Enrichissez la classe <Code>Serie</Code> avec la gestion des épisodes :</Text>
                 <List>
-                    <ListItem>Ajouter une propriété `array $episodes`</ListItem>
-                    <ListItem>Créer les méthodes <Code>getEpisodes()</Code> et <Code>setEpisodes(array $episodes)</Code></ListItem>
-                    <ListItem>Implémenter une méthode <Code>getEpisodesBySeason(): array</Code> qui retourne les épisodes organisés par saison</ListItem>
+                    <ListItem>Ajoutez une propriété <Code>array $episodes</Code></ListItem>
+                    <ListItem>Créez les méthodes <Code>getEpisodes()</Code> et <Code>setEpisodes(array $episodes)</Code></ListItem>
+                    <ListItem>Implémentez une méthode <Code>getEpisodesBySeason(): array</Code> qui retourne les épisodes organisés par saison</ListItem>
                 </List>
                 <CodeCard language="php">{`public function getEpisodesBySeason(): array {
     $episodesBySeason = [];
@@ -308,42 +308,42 @@ class ImageService
     return $episodesBySeason;
 }`}</CodeCard>
 
-                <Heading level={2}>Création et implémentation du SerieService</Heading>
+                <Heading level={2}>C- Création et implémentation du SerieService</Heading>
 
-                <Text>Dans le dossier <Code>app/services</Code>, créer une nouvelle classe <Code>SerieService</Code> avec :</Text>
+                <Text>Dans le dossier <Code>app/services</Code>, créez une nouvelle classe <Code>SerieService</Code> avec :</Text>
                 <List>
                     <ListItem>Une méthode publique <Code>getSeriesByIdWithEpisode(int $id): Serie</Code></ListItem>
                     <ListItem>Une méthode publique <Code>getAllSeriesWithEpisode(): array</Code></ListItem>
                 </List>
                 <Text>Ces méthodes seront complétées dans les étapes suivantes.</Text>
 
-                <Text className="mt-5">Ajouter une méthode privée <Code>addEpisodeToSerie(Serie $serie)</Code> qui doit :</Text>
+                <Text className="mt-5">Ajoutez une méthode privée <Code>addEpisodeToSerie(Serie $serie)</Code> qui doit :</Text>
                 <List>
-                    <ListItem>Utiliser <Code>EpisodeRepository::findBySeriesId()</Code> pour récupérer les épisodes</ListItem>
-                    <ListItem>Associer ces épisodes à la série passée en paramètre</ListItem>
+                    <ListItem>Utilisez <Code>EpisodeRepository::findBySeriesId()</Code> pour récupérer les épisodes</ListItem>
+                    <ListItem>Associez ces épisodes à la série passée en paramètre</ListItem>
                 </List>
 
-                <Text className="mt-5">Compléter ensuite la méthode <Code>getServiceByIdWithEpisode</Code> :</Text>
+                <Text className="mt-5">Complétez ensuite la méthode <Code>getServiceByIdWithEpisode</Code> :</Text>
                 <List>
-                    <ListItem>Récupérer la série via <Code>SeriesRepository::findById()</Code></ListItem>
-                    <ListItem>Enrichir cette série avec ses épisodes via <Code>SerieService::addEpisodeToSerie()</Code></ListItem>
-                    <ListItem>Retourner la série complète avec ses épisodes</ListItem>
+                    <ListItem>Récupérez la série via <Code>SeriesRepository::findById()</Code></ListItem>
+                    <ListItem>Enrichissez cette série avec ses épisodes via <Code>SerieService::addEpisodeToSerie()</Code></ListItem>
+                    <ListItem>Retournez la série complète avec ses épisodes</ListItem>
                 </List>
 
-                <Heading level={2}>Mise à jour du contrôleur et de la vue</Heading>
+                <Heading level={2}>D- Mise à jour du contrôleur et de la vue</Heading>
 
-                <Text className="mt-5">Modifier la méthode <Code>show()</Code> du contrôleur <Code>SeriesController</Code> :</Text>
+                <Text className="mt-5">Modifiez la méthode <Code>show()</Code> du contrôleur <Code>SeriesController</Code> :</Text>
                 <List>
-                    <ListItem>Remplacer l&apos;appel direct aux repositories par <Code>SerieService::getSeriesByIdWithEpisode()</Code></ListItem>
+                    <ListItem>Remplacez l&apos;appel direct aux repositories par <Code>SerieService::getSeriesByIdWithEpisode()</Code></ListItem>
                 </List>
 
-                <Text className="mt-5">Modifier le fichier <Code>series.html.php</Code> :</Text>
+                <Text className="mt-5">Modifiez le fichier <Code>series.html.php</Code> :</Text>
                 <List>
-                    <ListItem>Utiliser la méthode <Code>Serie::getEpisodesBySeason()</Code> pour afficher les épisodes</ListItem>
+                    <ListItem>Utilisez la méthode <Code>Serie::getEpisodesBySeason()</Code> pour afficher les épisodes</ListItem>
                 </List>
             </section>
             <section>
-                <Heading level={2} netflex>C- Administration</Heading>
+                <Heading level={2} netflex>E- Administration</Heading>
 
                 <Heading level={3}>1. Templates d&apos;administration</Heading>
 
@@ -415,19 +415,19 @@ class ImageService
 </html>`}
                 </CodeCard>
                 <Text>Pourquoi <Code>header_admin.php</Code> et <Code>footer_admin.php</Code> ?
-                    Pour éviter de répéter le même code HTML sur chaque page d’administration (principe <strong>“Don’t Repeat Yourself”</strong> <em>(Ne te répète pas)</em>).
+                    Pour éviter de répéter le même code HTML sur chaque page d&apos;administration (principe <strong>&quot;Don&apos;t Repeat Yourself&quot;</strong> <em>(Ne vous répétez pas)</em>).
                     Un seul fichier pour le header et le footer = maintenance plus simple et design cohérent, distinct du site public.</Text>
 
                 <Heading level={3}>2. Liste des saisons</Heading>
 
                 <Text>
-                    Dans cette partie, nous allons créer un panneau d'administration pour les <strong>Saisons</strong>.
+                    Dans cette partie, nous allons créer un panneau d&apos;administration pour les <strong>Saisons</strong>.
                     Ce panneau permettra, dans un prochain TP, de créer, modifier et supprimer des saisons.
                 </Text>
 
                 <List ordered>
                     <ListItem>
-                        Créer la méthode <Code>AdminSeriesController::list()</Code>, son appel dans <Code>admin.php</Code>,
+                        Créez la méthode <Code>AdminSeriesController::list()</Code>, son appel dans <Code>admin.php</Code>,
                         et la vue correspondante <Code>series_list.html.php</Code>.
                         <br />
                         <CodeCard language="php" filename="series_list.html.php" collapsible>
@@ -492,25 +492,25 @@ class ImageService
                     </ListItem>
 
                     <ListItem>
-                        Compléter la méthode <Code>getAllSeriesWithEpisode(): array</Code> afin de récupérer l'ensemble des saisons avec leurs épisodes associés.
+                        Complétez la méthode <Code>getAllSeriesWithEpisode(): array</Code> afin de récupérer l&apos;ensemble des saisons avec leurs épisodes associés.
                     </ListItem>
 
                     <ListItem>
-                        Utiliser la méthode <Code>getAllSeriesWithEpisode(): array</Code> dans <Code>AdminSaisonController::list()</Code>
+                        Utilisez la méthode <Code>getAllSeriesWithEpisode(): array</Code> dans <Code>AdminSaisonController::list()</Code>
                         pour transmettre la liste des saisons à la vue.
                     </ListItem>
 
                     <ListItem>
-                        Compléter la vue <Code>saison_list.html.php</Code> afin que le tableau affiche la liste des saisons,
-                        et que les boutons d'action redirigent vers les pages appropriées en incluant l'identifiant (<Code>id</Code>) dans l'URL.
+                        Complétez la vue <Code>saison_list.html.php</Code> afin que le tableau affiche la liste des saisons,
+                        et que les boutons d&apos;action redirigent vers les pages appropriées en incluant l&apos;identifiant (<Code>id</Code>) dans l&apos;URL.
                     </ListItem>
                 </List>
                 <Heading level={3}>2. Liste des épisodes</Heading>
 
                 <Text>
                     En reprenant la logique présentée ci-dessus, créez une liste des épisodes de la série passée en paramètre.
-                    Le point d'entrée devra être le fichier <Code>admin_episode.php</Code>.
-                    Dans cette vue, le tableau affichera la liste des épisodes, et ne comportera que les boutons d'action <strong>Modifier</strong> et <strong>Supprimer</strong>.
+                    Le point d&apos;entrée devra être le fichier <Code>admin_episode.php</Code>.
+                    Dans cette vue, le tableau affichera la liste des épisodes, et ne comportera que les boutons d&apos;action <strong>Modifier</strong> et <strong>Supprimer</strong>.
                     La vue affichera les colonnes suivantes :</Text>
                     <CodeCard language="html">
                         {`<thead class="border-bottom border-secondary">
@@ -530,26 +530,26 @@ class ImageService
             </section>
 
             <section>
-                <Heading level={2}>C- API (optionnel)</Heading>
+                <Heading level={2}>F- API (optionnel)</Heading>
 
                 <Text>
-                    Dans cette partie, nous allons créer une première route d’API permettant de récupérer les séries ainsi que leurs saisons et épisodes associés.
+                    Dans cette partie, nous allons créer une première route d&apos;API permettant de récupérer les séries ainsi que leurs saisons et épisodes associés.
                 </Text>
 
                 <List ordered>
                     <ListItem>
-                        Créer un contrôleur <Code>ApiController</Code> contenant une méthode <Code>index()</Code>.
-                        Cette méthode aura pour rôle d’appeler le service <Code>SerieService::getAllSeriesWithEpisode()</Code>
-                        afin de récupérer l’ensemble des données nécessaires.
+                        Créez un contrôleur <Code>ApiController</Code> contenant une méthode <Code>index()</Code>.
+                        Cette méthode aura pour rôle d&apos;appeler le service <Code>SerieService::getAllSeriesWithEpisode()</Code>
+                        afin de récupérer l&apos;ensemble des données nécessaires.
                     </ListItem>
 
                     <ListItem>
-                        Créer un point d’entrée <Code>api.php</Code> qui appellera la méthode <Code>ApiController::index()</Code>.
+                        Créez un point d&apos;entrée <Code>api.php</Code> qui appellera la méthode <Code>ApiController::index()</Code>.
                         Ce fichier jouera le même rôle que <Code>admin.php</Code> ou <Code>index.php</Code>, mais dédié aux appels API.
                     </ListItem>
 
                     <ListItem>
-                        Dans la méthode <Code>index()</Code>, au lieu d’utiliser une vue avec <Code>view()</Code>, vous utiliserez la méthode <Code>json($data)</Code> permettant d’envoyer les données au format JSON.
+                        Dans la méthode <Code>index()</Code>, au lieu d&apos;utiliser une vue avec <Code>view()</Code>, utilisez la méthode <Code>json($data)</Code> permettant d’envoyer les données au format JSON.
                     </ListItem>
 
                     <ListItem>
@@ -558,7 +558,7 @@ class ImageService
                         </Text>
                         <List>
                             <ListItem>
-                                Implémenter l’interface <Code>JsonSerializable</Code> dans les classes <Code>Series</Code> et <Code>Episode</Code>.
+                                Implémentez l&apos;interface <Code>JsonSerializable</Code> dans les classes <Code>Series</Code> et <Code>Episode</Code>.
                                 Par exemple :
                                 <CodeCard language="php">
                                     {`class Series implements JsonSerializable {
@@ -606,7 +606,7 @@ class ImageService
                         </List>
                     </ListItem>
                 </List>
-                <Text>Vous pourrez tester via <Link href="localhost:8000/api.php" target="_blank">localhost:8000/api.php</Link></Text>
+                <Text>Vous pourrez tester via <Code>localhost:8000/api.php</Code>.</Text>
             </section>
 
         </article>

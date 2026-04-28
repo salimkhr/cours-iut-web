@@ -151,7 +151,11 @@ cd mvc`}
                     </ListItem>
 
                     <ListItem>
-                        Lancez le serveur de développement : <CodeCard language="bach" showLineNumbers={false}>{`php -S localhost:8000 -t public`}</CodeCard>
+b
+
+
+
+                        Lancez le serveur de développement : <CodeCard language="bash" showLineNumbers={false}>{`php -S localhost:8000 -t public`}</CodeCard>
                     </ListItem>
 
                     <ListItem>
@@ -334,7 +338,7 @@ $this->view('home', [
                         Vous devez voir le prénom et la liste de films s&apos;afficher correctement.
                     </ListItem>
 
-                    <ListItem>Mofifier la vue <Code>home</Code> pour que le controleur transmette a la vue les films de la liste : <CodeCard
+                    <ListItem>Modifiez la vue <Code>home</Code> pour que le controleur transmette a la vue les films de la liste : <CodeCard
                         language="php">
                         {`[
     [
@@ -381,7 +385,7 @@ $this->view('home', [
                     </CodeCard>Pour chaque film, généré le HTML sous <Code>{`<h2 class="text-white mb-4">Nos films</h2>`}</Code>
                     </ListItem>
                      <ListItem>
-    Ajouter la gestion du cas où la liste est vide :
+    Ajoutez la gestion du cas où la liste est vide :
     afficher un message <CodeCard language="html">{`<div class="alert alert-info">Aucun film disponible pour le moment.</div>`}</CodeCard>
     à la place de la grille des films.
   </ListItem>
@@ -398,7 +402,7 @@ $this->view('home', [
 
                 <List ordered>
                     <ListItem>
-                        Analysez le code HTML statique de la section Pricing dansb<Code>index.html.php</Code>. Repérez les points communs (titre, prix, description...).
+                        Analysez le code HTML statique de la section Pricing dans <Code>index.html.php</Code>. Repérez les points communs (titre, prix, description...).
                     </ListItem>
                     <ListItem>
                         Dans <Code>IndexController</Code>, créez un tableau associatif avec les 3 offres (basique, standard, premium).
@@ -431,17 +435,17 @@ $this->view('home', [
                         Incluez ces deux fichiers dans vos vues <Code>index</Code> et <Code>home</Code>.
                     </ListItem>
                     <ListItem>
-                        Rechargez vos pages : l’affichage reste identique, mais le code est désormais mieux organisé.
+                        Rechargez vos pages : l&apos;affichage reste identique, mais le code est désormais mieux organisé.
                     </ListItem>
                 </List>
             </section>
+
+            <section>
                 <Heading level={2} netflex>F- Personnalisation des pages</Heading>
                 <Text>Ajoutez vos films préférés aux pages <Code>home</Code> et <Code>index</Code> en personnalisant uniquement les contrôleurs et les images du dossier <Code>public</Code>.
   Ne modifiez pas les vues <Code>home</Code> et <Code>index</Code>, car elles sont conçues pour être génériques et réutilisables.
   Toutes les modifications doivent passer par les contrôleurs et les images afin de préserver la structure et le style des pages.
 </Text>
-            <section>
-
             </section>
 
             <section>
