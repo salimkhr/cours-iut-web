@@ -4,8 +4,7 @@ import Heading from "@/components/ui/Heading";
 import {cn} from "@/lib/utils";
 import {slideTextSizes} from "@/components/Slides/ui/config/slideConfig";
 
-interface SlideHeadingProps extends React.ComponentProps<typeof Heading> {
-}
+type SlideHeadingProps = React.ComponentProps<typeof Heading>
 
 export const SlideHeading: React.FC<SlideHeadingProps> = ({
                                                               className,

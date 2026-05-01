@@ -16,42 +16,42 @@ import ClickCounterBox from "@/cours/javascript/2-les-evenements/Exemple/ClickCo
 import Module from "@/types/Module";
 import Section from "@/types/Section";
 
-export default function Slide() {
-    const mockModule: Module = {
-        _id: "javascript",
-        title: "JavaScript",
-        path: "javascript",
-        iconName: "Braces",
-        description: "Apprendre les bases de JavaScript pour le web interactif",
-        sections: [],
-        associatedSae: []
-    };
+interface DemoBoxProps {
+    children: React.ReactNode;
+    title: string;
+}
 
-    const mockSection: Section = {
-        title: "Les événements",
-        path: "les-evenements",
-        contents: [],
-        description: "Gestion des événements en JavaScript",
-        tags: ["Events", "JS", "addEventListener", "handlers", "interactions"],
-        totalDuration: 0,
-        hasCorrection: false,
-        order: 2
-    };
-
-    interface DemoBoxProps {
-        children: React.ReactNode;
-        title: string;
-    }
-
-    const DemoBox = ({children, title}: DemoBoxProps) => (
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-6">
-            {title && <h3 className="text-xl font-semibold mb-4 text-blue-900">🎯 {title}</h3>}
-            <div className="flex items-center justify-center">
-                {children}
-            </div>
+const DemoBox = ({children, title}: DemoBoxProps) => (
+    <div className="bg-linear-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-6">
+        {title && <h3 className="text-xl font-semibold mb-4 text-blue-900">🎯 {title}</h3>}
+        <div className="flex items-center justify-center">
+            {children}
         </div>
-    );
+    </div>
+);
 
+const mockModule: Module = {
+    _id: "javascript",
+    title: "JavaScript",
+    path: "javascript",
+    iconName: "Braces",
+    description: "Apprendre les bases de JavaScript pour le web interactif",
+    sections: [],
+    associatedSae: []
+};
+
+const mockSection: Section = {
+    title: "Les événements",
+    path: "les-evenements",
+    contents: [],
+    description: "Gestion des événements en JavaScript",
+    tags: ["Events", "JS", "addEventListener", "handlers", "interactions"],
+    totalDuration: 0,
+    hasCorrection: false,
+    order: 2
+};
+
+export default function Slide() {
     return (
         <div className="w-full">
             <SlidesScreen module={mockModule} section={mockSection}>
@@ -74,7 +74,7 @@ export default function Slide() {
                 </SlideScreen>
 
                 {/* A - Qu'est-ce qu'un événement */}
-                <SlideScreen title="1 - Qu'est-ce qu'un événement ?">
+                <SlideScreen title="A - Qu'est-ce qu'un événement ?">
                     <SlideText>
                         Un événement est une action détectable qui se produit dans le navigateur :
                     </SlideText>
@@ -87,19 +87,21 @@ export default function Slide() {
                             focus/blur</SlideListItem>
                     </SlideList>
                     <SlideText>
-                        JavaScript permet de détecter ces événements et d'y réagir en exécutant du code spécifique.
+                        JavaScript permet de détecter ces événements et d&apos;y réagir en exécutant du code
+                        spécifique.
                     </SlideText>
                 </SlideScreen>
 
                 {/* B - addEventListener */}
-                <SlideScreen title="2.1 - Ajouter un écouteur avec addEventListener">
+                <SlideScreen title="B.1 - Ajouter un écouteur avec addEventListener">
                     <SlideNote>
                         {`- addEventListener est LA méthode moderne pour gérer les événements.
 - Expliquer que c'est mieux que les attributs HTML onclick="..." (séparation HTML/JS).
 - Montrer qu'on peut ajouter plusieurs écouteurs sur le même élément.`}
                     </SlideNote>
                     <SlideText>
-                        Les écouteurs d'événements permettent d'attendre et de répondre à des actions spécifiques.
+                        Les écouteurs d&apos;événements permettent d&apos;attendre et de répondre à des
+                        actions spécifiques.
                     </SlideText>
 
                     <div className="grid grid-cols-2 gap-6">
@@ -118,14 +120,17 @@ button.addEventListener("click", () => {
                     </div>
                 </SlideScreen>
 
-                <SlideScreen title="2.1 - Structure de addEventListener">
+                <SlideScreen title="B.2 - Structure de addEventListener">
                     <SlideText>
                         addEventListener() prend deux paramètres essentiels :
                     </SlideText>
                     <SlideList>
-                        <SlideListItem>Premier paramètre : Le type d'événement (ex: "click", "keydown")</SlideListItem>
-                        <SlideListItem>Deuxième paramètre : La fonction à exécuter quand l'événement se
-                            produit</SlideListItem>
+                        <SlideListItem>
+                            Premier paramètre : le type d&apos;événement (ex. &quot;click&quot;, &quot;keydown&quot;).
+                        </SlideListItem>
+                        <SlideListItem>
+                            Deuxième paramètre : la fonction à exécuter quand l&apos;événement se produit.
+                        </SlideListItem>
                     </SlideList>
 
                     <SlideCode language="javascript">
@@ -140,7 +145,7 @@ window.addEventListener("scroll", updateScroll);`}
                 </SlideScreen>
 
                 {/* C - removeEventListener */}
-                <SlideScreen title="2.2 - Supprimer un écouteur avec removeEventListener">
+                <SlideScreen title="B.3 - Supprimer un écouteur avec removeEventListener">
                     <SlideNote>
                         {`- IMPORTANT : Pour supprimer un écouteur, il faut la même référence de fonction.
 - Les fonctions anonymes ne peuvent pas être supprimées (différente à chaque fois).
@@ -165,7 +170,7 @@ button.removeEventListener("click", () => console.log("Test"));
                 </SlideScreen>
 
                 {/* D - Types d'événements - Chargement */}
-                <SlideScreen title="3.1 - Événements de chargement">
+                <SlideScreen title="C.1 - Événements de chargement">
                     <SlideText>
                         Événements liés au chargement de la page et des ressources :
                     </SlideText>
@@ -185,7 +190,7 @@ button.removeEventListener("click", () => console.log("Test"));
                             <SlideList>
                                 <SlideListItem>Page entière chargée</SlideListItem>
                                 <SlideListItem>Toutes les ressources (images, CSS, JS)</SlideListItem>
-                                <SlideListItem>Utiliser si besoin des dimensions d'images</SlideListItem>
+                                <SlideListItem>Utiliser si besoin des dimensions d&apos;images</SlideListItem>
                             </SlideList>
                         </div>
                     </div>
@@ -202,7 +207,7 @@ window.addEventListener("load", () => {
                 </SlideScreen>
 
                 {/* E - Types d'événements - Souris */}
-                <SlideScreen title="3.2 - Événements de souris">
+                <SlideScreen title="C.2 - Événements de souris">
                     <SlideText>
                         Les événements déclenchés par les interactions avec la souris :
                     </SlideText>
@@ -226,9 +231,9 @@ element.addEventListener("mouseup", handleUp);`}
                 </SlideScreen>
 
                 {/* F - Types d'événements - Clavier */}
-                <SlideScreen title="3.3 - Événements de clavier">
+                <SlideScreen title="C.3 - Événements de clavier">
                     <SlideText>
-                        Les événements déclenchés par l'utilisation du clavier :
+                        Les événements déclenchés par l&apos;utilisation du clavier :
                     </SlideText>
 
                     <SlideCode language="javascript">
@@ -249,7 +254,7 @@ input.addEventListener("input", (event) => {
                 </SlideScreen>
 
                 {/* G - Types d'événements - Formulaire */}
-                <SlideScreen title="3.4 - Événements de formulaire">
+                <SlideScreen title="C.4 - Événements de formulaire">
                     <SlideText>
                         Événements spécifiques aux formulaires et champs de saisie :
                     </SlideText>
@@ -274,7 +279,7 @@ input.addEventListener("focus", () => {
                 </SlideScreen>
 
                 {/* H - Types d'événements - Fenêtre */}
-                <SlideScreen title="3.5 - Événements de fenêtre">
+                <SlideScreen title="C.5 - Événements de fenêtre">
                     <SlideText>
                         Événements liés à la fenêtre du navigateur :
                     </SlideText>
@@ -298,15 +303,15 @@ image.addEventListener("error", () => {
                 </SlideScreen>
 
                 {/* I - L'objet Event */}
-                <SlideScreen title="4 - L'objet Event">
+                <SlideScreen title="D - L'objet Event">
                     <SlideNote>
                         {`- L'objet event est AUTOMATIQUEMENT créé et passé à la fonction.
 - Il contient toutes les informations sur l'événement qui s'est produit.
 - Très important pour accéder à l'élément cliqué, position souris, touche pressée, etc.`}
                     </SlideNote>
                     <SlideText>
-                        Lorsqu'un événement est déclenché, JavaScript crée automatiquement un objet contenant des
-                        informations détaillées.
+                        Lorsqu&apos;un événement est déclenché, JavaScript crée automatiquement un objet
+                        contenant des informations détaillées.
                     </SlideText>
 
                     <SlideCode language="javascript">
@@ -321,9 +326,9 @@ document.addEventListener("click", (event) => {
                 </SlideScreen>
 
                 {/* J - Propriétés communes Event */}
-                <SlideScreen title="4.1 - Propriétés communes de Event">
+                <SlideScreen title="D.1 - Propriétés communes de Event">
                     <SlideText>
-                        Propriétés disponibles pour tous les types d'événements :
+                        Propriétés disponibles pour tous les types d&apos;événements :
                     </SlideText>
 
                     <div className="grid grid-cols-2 gap-6">
@@ -352,7 +357,7 @@ event.stopPropagation()`}
                 </SlideScreen>
 
                 {/* K - Propriétés souris */}
-                <SlideScreen title="4.2 - Propriétés spécifiques : Souris">
+                <SlideScreen title="D.2 - Propriétés spécifiques : souris">
                     <SlideText>
                         Propriétés disponibles pour les événements de souris :
                     </SlideText>
@@ -381,7 +386,7 @@ event.stopPropagation()`}
                 </SlideScreen>
 
                 {/* L - Propriétés clavier */}
-                <SlideScreen title="4.3 - Propriétés spécifiques : Clavier">
+                <SlideScreen title="D.3 - Propriétés spécifiques : clavier">
                     <SlideText>
                         Propriétés disponibles pour les événements de clavier :
                     </SlideText>
@@ -413,9 +418,9 @@ event.stopPropagation()`}
                 </SlideScreen>
 
                 {/* M - Exemple : Changer couleur */}
-                <SlideScreen title="5.1 - Exemple : Changer la couleur au clic">
+                <SlideScreen title="E.1 - Exemple : changer la couleur au clic">
                     <SlideText>
-                        Modifier le style d'un élément lors d'un clic :
+                        Modifier le style d&apos;un élément lors d&apos;un clic :
                     </SlideText>
 
                     <div className="grid grid-cols-2 gap-6">
@@ -437,7 +442,7 @@ box.addEventListener("click", () => {
                 </SlideScreen>
 
                 {/* N - Exemple : Position souris */}
-                <SlideScreen title="5.2 - Exemple : Afficher position souris">
+                <SlideScreen title="E.2 - Exemple : afficher la position souris">
                     <SlideText>
                         Suivre le mouvement de la souris en temps réel :
                     </SlideText>
@@ -464,7 +469,7 @@ document.addEventListener(
                 </SlideScreen>
 
                 {/* O - Exemple : Détecter touche */}
-                <SlideScreen title="5.3 - Exemple : Détecter les touches">
+                <SlideScreen title="E.3 - Exemple : détecter les touches">
                     <SlideText>
                         Afficher quelle touche ou combinaison est pressée :
                     </SlideText>
@@ -498,7 +503,7 @@ document.addEventListener(
                 </SlideScreen>
 
                 {/* P - Exemple : Validation formulaire */}
-                <SlideScreen title="5.4 - Exemple : Validation de formulaire">
+                <SlideScreen title="E.4 - Exemple : validation de formulaire">
                     <SlideNote>
                         {`- event.preventDefault() est ESSENTIEL pour empêcher la soumission par défaut.
 - Sans preventDefault, le formulaire recharge la page.
@@ -534,9 +539,9 @@ form.addEventListener("submit", (e) => {
                 </SlideScreen>
 
                 {/* Q - Exemple : Compteur */}
-                <SlideScreen title="5.5 - Exemple : Compteur de clics">
+                <SlideScreen title="E.5 - Exemple : compteur de clics">
                     <SlideText>
-                        Créer un compteur qui s'incrémente à chaque clic :
+                        Créer un compteur qui s&apos;incrémente à chaque clic :
                     </SlideText>
 
                     <div className="grid grid-cols-2 gap-6">

@@ -1,7 +1,12 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const fs = require('fs');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require('path');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const cheerio = require('cheerio');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const babelParser = require('@babel/parser');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const generate = require('@babel/generator').default;
 
 const coursDir = 'src/cours';
@@ -109,10 +114,8 @@ function extractMarkdown(filePath) {
     // Cherche le JSX retourné dans la fonction composant
     let jsxNode = null;
 
-    // Fonction pour extraire le JSX retourné
-    const {types: t} = require('@babel/core'); // utile pour tests de types
-
     // Parcours simple de l'AST pour trouver un ReturnStatement avec un argument JSX
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const traverse = require('@babel/traverse').default;
 
     traverse(ast, {

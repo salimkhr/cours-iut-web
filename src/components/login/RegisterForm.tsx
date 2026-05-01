@@ -12,10 +12,25 @@ import Link from "next/link";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import Script from "next/script";
 
+interface TurnstileOptions {
+    sitekey: string;
+    callback?: (token: string) => void;
+    "error-callback"?: () => void;
+    "expired-callback"?: () => void;
+    "timeout-callback"?: () => void;
+    theme?: "light" | "dark" | "auto";
+    size?: "normal" | "compact";
+    tabindex?: number;
+    action?: string;
+    cData?: string;
+    language?: string;
+    appearance?: "always" | "execute" | "interaction-only";
+}
+
 declare global {
     interface Window {
         turnstile: {
-            render: (container: string | HTMLElement, options: any) => string;
+            render: (container: string | HTMLElement, options: TurnstileOptions) => string;
             reset: (widgetId?: string) => void;
             remove: (widgetId: string) => void;
         };
@@ -41,7 +56,7 @@ export default function RegisterForm() {
                 const container = document.querySelector(".captcha-container");
                 if (container && container.innerHTML === "") {
                     widgetId = window.turnstile.render(".captcha-container", {
-                        sitekey: process.env.NEXT_PUBLIC_TURNSTILE_TOKEN,
+                        sitekey: process.env.NEXT_PUBLIC_TURNSTILE_TOKEN!,
                         callback: (token: string) => {
                             setCaptchaToken(token);
                         },
@@ -114,7 +129,7 @@ export default function RegisterForm() {
 
                 {/* SPLIT LINE */}
                 <div
-                    className="hidden lg:block w-px bg-gradient-to-b from-transparent via-gray-300 dark:via-gray-700 to-transparent"/>
+                    className="hidden lg:block w-px bg-linear-to-b from-transparent via-gray-300 dark:via-gray-700 to-transparent"/>
 
                 {/* RIGHT — FORM */}
                 <section
@@ -251,7 +266,7 @@ export default function RegisterForm() {
                                 ) : (
                                     <>
                                         <User className="h-4 w-4"/>
-                                        S'inscrire
+                                        S&apos;inscrire
                                     </>
                                 )}
                             </Button>

@@ -164,12 +164,12 @@ export default function TP() {
             <section>
                 <Heading level={2}>A- Le debug</Heading>
                 <Text>
-                    Dans un fichier <Code>~/public_html/TP1/debug.html</Code>, écrire une page contenant dans des
-                    balises script :
+                    Dans un fichier <Code>~/public_html/TP1/debug.html</Code>, écrivez une page contenant dans
+                    des balises <Code>&lt;script&gt;</Code> :
                 </Text>
-                <CodeCard language="javascript" filename={"debug.html"}>
+                <CodeCard language="javascript" filename="debug.html">
                     {`const lastname = 'Medical';             // Chaîne de caractères
-const firstname = ['Anne','Lyse'];          // Tableau de chaîne de caractères
+const firstname = ['Anne','Lyse'];          // Tableau de chaînes de caractères
 const age = 25;                             // Entier
 const price = 19.99;                        // Float
 const isStudent = true;                     // Booléen
@@ -177,10 +177,12 @@ const isStudent = true;                     // Booléen
 console.log('Age:', age, 'Price:', price, 'Is Student:', isStudent, 'Lastname:', lastname);`}
                 </CodeCard>
                 <List ordered>
-                    <ListItem>ouvrez l&apos;inspecteur d&apos;éléments.</ListItem>
-                    <ListItem>Expliquer ce que fait <Code>console.log()</Code>.</ListItem>
-                    <ListItem>utiliser <Code>console.table()</Code> et <Code>console.log()</Code> pour afficher
-                        firstname</ListItem>
+                    <ListItem>Ouvrez l&apos;inspecteur d&apos;éléments du navigateur.</ListItem>
+                    <ListItem>Expliquez ce que fait <Code>console.log()</Code>.</ListItem>
+                    <ListItem>
+                        Utilisez <Code>console.table()</Code> et <Code>console.log()</Code> pour afficher{" "}
+                        <Code>firstname</Code>.
+                    </ListItem>
                 </List>
             </section>
             <section>
@@ -188,49 +190,50 @@ console.log('Age:', age, 'Price:', price, 'Is Student:', isStudent, 'Lastname:',
                 <Text>Voici le contenu du fichier <Code>animalerie.html</Code> :</Text>
                 <CodeCard language="html" filename="animalerie.html">
                     {`<!DOCTYPE html>
-    <html lang="fr">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Animalerie - Bienvenue !</title>
-            <style>
-                .highlight {
-                    background-color: lightyellow;
-                    border: 2px dashed green;
-                }
-                .important {
-                    color: red;
-                    font-weight: bold;
-                }
-                    .pet {
-                    font-style: italic;
-                }
-                </style>
-            </head>
-            <body>
-                <header>
-                    <h1 id="main-title">Bienvenue dans notre animalerie !</h1>
-                </header>
-    
-                <p class="description">Votre animalerie en ligne préférée, au service de vos compagnons
-                à poils, plumes et écailles !</p>
-    
-                <section>
-                    <Heading level={2}>Nos animaux disponibles :</Heading>
-                    <ul id="pet-list">
-                        <li class="pet">Chien : Labrador</li>
-                        <li class="pet">Chat : Persan</li>
-                        <li class="pet">Poisson : Combattant</li>
-                    </ul>
-                </section>
-    
-                <footer>
-                    <p id="footer-text">© 2025 - Animalerie magique</p>
-                </footer>
-    
-                <script src="animalerie.js"></script>
-            </body>
-        </html>`}
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Animalerie - Bienvenue !</title>
+        <style>
+            .highlight {
+                background-color: lightyellow;
+                border: 2px dashed green;
+            }
+            .important {
+                color: red;
+                font-weight: bold;
+            }
+            .pet {
+                font-style: italic;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1 id="main-title">Bienvenue dans notre animalerie !</h1>
+        </header>
+
+        <p class="description">
+            Votre animalerie en ligne préférée, au service de vos compagnons à poils, plumes et écailles !
+        </p>
+
+        <section>
+            <h2>Nos animaux disponibles :</h2>
+            <ul id="pet-list">
+                <li class="pet">Chien : Labrador</li>
+                <li class="pet">Chat : Persan</li>
+                <li class="pet">Poisson : Combattant</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p id="footer-text">© 2025 - Animalerie magique</p>
+        </footer>
+
+        <script src="animalerie.js"></script>
+    </body>
+</html>`}
                 </CodeCard>
 
                 <Text>
@@ -242,31 +245,28 @@ console.log('Age:', age, 'Price:', price, 'Is Student:', isStudent, 'Lastname:',
                         <Text>Changez les contenus suivants :</Text>
                         <List>
                             <ListItem>
-                                Utilisez <Code>getElementById</Code> pour modifier le texte du titre principal
-                                (<Code>h1#main-title</Code>) en : <Code>&quot;Bienvenue dans l&apos;univers magique des
-                                animaux !&quot;</Code>.
+                                Utilisez <Code>getElementById</Code> pour modifier le texte du titre principal{" "}
+                                (<Code>h1#main-title</Code>) en{" "}
+                                <Code>&quot;Bienvenue dans l&apos;univers magique des animaux !&quot;</Code>.
                             </ListItem>
                             <ListItem>
-                                Utilisez <Code>getElementsByClassName</Code> pour modifier le paragraphe avec la classe
-                                <Code>.description</Code> en : <Code>&quot;Découvrez nos adorables animaux et leurs
-                                accessoires magiques !&quot;</Code>.
+                                Utilisez <Code>getElementsByClassName</Code> pour modifier le paragraphe
+                                portant la classe <Code>.description</Code> en{" "}
+                                <Code>&quot;Découvrez nos adorables animaux et leurs accessoires magiques !&quot;</Code>.
                             </ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
-                        <Text>
-                            Ajoutez ou modifiez des classes CSS pour styliser les éléments :
-                        </Text>
+                        <Text>Ajoutez ou modifiez des classes CSS pour styliser les éléments :</Text>
                         <List>
                             <ListItem>
-                                Ajoutez la classe <Code>highlight</Code> à tous les animaux dans la liste
-                                (<Code>li.pet</Code>) en utilisant
-                                <Code>getElementsByClassName</Code>.
+                                Ajoutez la classe <Code>highlight</Code> à tous les animaux de la liste
+                                (<Code>li.pet</Code>) en utilisant <Code>getElementsByClassName</Code>.
                             </ListItem>
                             <ListItem>
-                                Ajoutez la classe <Code>important</Code> uniquement au premier animal de la liste
-                                (<Code>Chien : Labrador</Code>).
+                                Ajoutez la classe <Code>important</Code> uniquement au premier animal de la
+                                liste (<Code>Chien : Labrador</Code>).
                             </ListItem>
                         </List>
                     </ListItem>
@@ -275,24 +275,20 @@ console.log('Age:', age, 'Price:', price, 'Is Student:', isStudent, 'Lastname:',
                         <Text>Modifiez ou ajoutez des attributs :</Text>
                         <List>
                             <ListItem>
-                                Ajoutez un attribut <Code>data-promo=&quot;true&quot;</Code> à chaque élément de la
-                                liste des
-                                animaux
-                                (<Code>li</Code>).
+                                Ajoutez un attribut <Code>data-promo=&quot;true&quot;</Code> à chaque
+                                élément de la liste des animaux (<Code>li</Code>).
                             </ListItem>
                             <ListItem>
-                                Ajoutez un attribut <Code>title=&quot;Merci de nous rendre visite !&quot;</Code> au
-                                footer
+                                Ajoutez un attribut{" "}
+                                <Code>title=&quot;Merci de nous rendre visite !&quot;</Code> au footer
                                 (<Code>#footer-text</Code>).
                             </ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
-                        <Text>
-                            Modifiez directement le style en ligne du footer (<Code>#footer-text</Code>) pour changer sa
-                            couleur en <Code>DarkViolet</Code>.
-                        </Text>
+                        Modifiez directement le style en ligne du footer (<Code>#footer-text</Code>) pour
+                        changer sa couleur en <Code>DarkViolet</Code>.
                     </ListItem>
                 </List>
             </section>
@@ -305,7 +301,7 @@ console.log('Age:', age, 'Price:', price, 'Is Student:', isStudent, 'Lastname:',
                     nombreux streamers pour collecter des dons destinés aux victimes en Palestine, au Congo, au Soudan
                     et au Liban, au profit de Médecins Sans Frontières.
                 </Text>
-                <Text>Dans un fichier <Code>stream_for_Humanity.html</Code>,contenant :</Text>
+                <Text>Créez un fichier <Code>stream_for_Humanity.html</Code> contenant :</Text>
 
                 <CodeCard language="html" filename="stream_for_Humanity.html">
                     {`<!doctype html>
@@ -336,35 +332,39 @@ console.log('Age:', age, 'Price:', price, 'Is Student:', isStudent, 'Lastname:',
 </html>
 `}
                 </CodeCard>
-                <Text>Dans un fichier <Code>stream_for_Humanity.js</Code>,contenant :</Text>
+                <Text>Créez un fichier <Code>stream_for_Humanity.js</Code> contenant :</Text>
                 <CodeCard language="javascript" filename="stream_for_Humanity.js" collapsible>
                     {`const streamers = ${JSON.stringify(streamers.sort((a, b) => a.pseudo.localeCompare(b.pseudo)), null, 2)};`}
                 </CodeCard>
-                <Text>En utilisant le tableau de streamers et innerHTML pour créer les élements, suivez les
-                    instruction pour réaliser le
-                    Tableau ci-dessous :</Text>
-               <List ordered>
+                <Text>
+                    En utilisant le tableau <Code>streamers</Code> et <Code>innerHTML</Code> pour créer les
+                    éléments, suivez les instructions pour réaliser le tableau ci-dessous :
+                </Text>
+                <List ordered>
                     <ListItem>
-                        a l&apos;aide de <Code>document.getElementById()</Code>, récupérer l&apos;élément ayant comme
-                        id <Code>listSfh</Code>, utiliser <Code>console.log();</Code> pour verifier
+                        À l&apos;aide de <Code>document.getElementById()</Code>, récupérez l&apos;élément
+                        ayant comme id <Code>listSfh</Code>, puis utilisez <Code>console.log()</Code> pour
+                        vérifier que la sélection fonctionne.
                     </ListItem>
                     <ListItem>
-                        parcourez le tableau streamers, et a l&apos;aide de <Code>console.log</Code>, afficher les
-                        informations de chaque streamer
+                        Parcourez le tableau <Code>streamers</Code> et, à l&apos;aide de{" "}
+                        <Code>console.log()</Code>, affichez les informations de chaque streamer.
                     </ListItem>
                     <ListItem>
-                        Modifier le parcours, pour ajouter une ligne (&lt;tr&gt;) au tableau pour chaque item de la
-                        liste
+                        Modifiez le parcours pour ajouter une ligne <Code>&lt;tr&gt;</Code> au tableau pour
+                        chaque streamer.
                     </ListItem>
                     <ListItem>
-                        Modifier le parcours, pour ajouter les cellules (&lt;td&gt;) au tableau pour chaque item de la
-                        liste. les image auront comme <Code>alt</Code> &quot;Photo de + name&quot; et
-                        comme <Code>width</Code> 70px
+                        Modifiez le parcours pour ajouter les cellules <Code>&lt;td&gt;</Code> à chaque ligne.
+                        Les images auront comme <Code>alt</Code> <Code>&quot;Photo de &quot; + name</Code> et
+                        comme <Code>width</Code> <Code>70</Code> (en pixels).
                     </ListItem>
                 </List>
 
-                <Text>Reproduire le même tableau sans utiliser innerHTML, mais en construisant les éléments
-                    via <Code>document.createElement</Code> et en les ajoutant au DOM</Text>
+                <Text>
+                    Reproduisez le même tableau sans utiliser <Code>innerHTML</Code>, mais en construisant les
+                    éléments via <Code>document.createElement()</Code> et en les ajoutant au DOM.
+                </Text>
 
                 <Table>
                     <TableHeader>

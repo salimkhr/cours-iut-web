@@ -43,8 +43,8 @@ export default function Slide() {
               - Expliquer la différence entre structure (HTML), style (CSS) et comportement (JS).`}
                     </SlideNote>
                     <SlideText>
-                        JavaScript est un langage de programmation utilisé pour rendre les pages web interactives. C'est
-                        l'un des trois piliers du développement web :
+                        JavaScript est un langage de programmation utilisé pour rendre les pages web
+                        interactives. C&apos;est l&apos;un des trois piliers du développement web :
                     </SlideText>
                     <SlideList>
                         <SlideListItem>HTML : structure du contenu</SlideListItem>
@@ -100,7 +100,7 @@ arr.push(4); // OK - modification du contenu`}
 
                 <SlideScreen title="B.2 - Types de données">
                     <SlideText>
-                        JavaScript détermine automatiquement le type à l'exécution :
+                        JavaScript détermine automatiquement le type à l&apos;exécution :
                     </SlideText>
                     <SlideCode language="javascript" highlight="1-2 | 4-5 | 7-8 | 10-11 | 13-16">
                         {`// Chaîne de caractères
@@ -495,9 +495,10 @@ console.table(fruits);`}
                         Interface pour manipuler dynamiquement le contenu, la structure et le style des pages web.
                     </SlideText>
                     <SlideList>
-                        <SlideListItem>Représente la page sous forme d'arbre d'objets</SlideListItem>
-                        <SlideListItem>Permet d'accéder, modifier, ajouter ou supprimer des éléments
-                            HTML</SlideListItem>
+                        <SlideListItem>Représente la page sous forme d&apos;arbre d&apos;objets.</SlideListItem>
+                        <SlideListItem>
+                            Permet d&apos;accéder, modifier, ajouter ou supprimer des éléments HTML.
+                        </SlideListItem>
                         <SlideListItem>Rend les pages web interactives</SlideListItem>
                     </SlideList>
                 </SlideScreen>

@@ -1,11 +1,11 @@
 'use client';
-import {useTheme} from "next-themes";
 import Section from "@/types/Section";
 import Module from "@/types/Module";
 import {Badge} from '@/components/ui/badge';
 import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
 import {BookOpen, CodeXml, FolderCode, Gitlab, GraduationCap, Presentation} from "lucide-react";
-import {useEffect, useState} from "react";
+import {useIsDark} from "@/hook/useIsDark";
+import {useMounted} from "@/hook/useMounted";
 
 interface SectionCardProps {
     section: Section;
@@ -14,12 +14,9 @@ interface SectionCardProps {
 }
 
 export default function SectionCard({section, currentModule, isAdmin}: SectionCardProps) {
-    const {theme} = useTheme();
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => setMounted(true), []);
+    const mounted = useMounted();
+    const isDark = useIsDark();
     if (!mounted) return null; // SSR-safe
-
-    const isDark = theme === 'dark';
 
     const header = (
         <span className={`text-xs font-mono ${isDark ? 'text-gray-200' : 'text-white'}`}>

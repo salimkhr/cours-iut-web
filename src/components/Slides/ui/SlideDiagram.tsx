@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import mermaid from "mermaid";
 import {useTheme} from "next-themes";
 import {cn} from "@/lib/utils";
+import {useMounted} from "@/hook/useMounted";
 
 interface SlideDiagramProps {
     chart: string;
@@ -13,23 +14,15 @@ export const SlideDiagram: React.FC<SlideDiagramProps> = ({
                                                               chart,
                                                               className
                                                           }) => {
-    const [svg, setSvg] = useState<string>("");
+    const mounted = useMounted();
     const {theme, systemTheme} = useTheme();
-    const [mounted, setMounted] = useState(false);
-
-    // Fix hydration
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const chartIsEmpty = !chart || chart.trim() === "";
+    const [svg, setSvg] = useState<string>(
+        chartIsEmpty ? "<p>Aucun diagramme fourni</p>" : ""
+    );
 
     useEffect(() => {
-        if (!mounted) {
-            return;
-        }
-
-        if (!chart || chart.trim() === "") {
-            console.error("⚠️ Chart vide ou invalide");
-            setSvg("<p>Aucun diagramme fourni</p>");
+        if (!mounted || chartIsEmpty) {
             return;
         }
 
@@ -85,7 +78,7 @@ export const SlideDiagram: React.FC<SlideDiagramProps> = ({
         return () => {
             isMounted = false;
         };
-    }, [chart, theme, systemTheme, mounted]);
+    }, [chart, chartIsEmpty, theme, systemTheme, mounted]);
 
     // Skeleton pendant le chargement
     if (!mounted) {

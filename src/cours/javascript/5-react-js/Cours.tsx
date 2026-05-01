@@ -1,30 +1,52 @@
 import Text from "@/components/ui/Text";
+import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
 import Heading from "@/components/ui/Heading";
 import CodeCard from "@/components/Cards/CodeCard";
 
 export default function Cours() {
     return (
-       <article>
-           <Heading level={2}>Introduction à React</Heading>
-           <Text>
-               React est une bibliothèque JavaScript populaire pour la construction d&apos;interfaces utilisateur
-               interactives et dynamiques.
-               Ce cours vous guidera à travers les concepts fondamentaux de React.
-           </Text>
+        <article>
+            <section>
+                <Text>
+                    React est une bibliothèque JavaScript populaire pour la construction d&apos;interfaces
+                    utilisateur interactives et dynamiques. Ce cours vous guidera à travers les concepts
+                    fondamentaux de React :
+                </Text>
+                <List>
+                    <ListItem><strong>Composants</strong> : les blocs de construction de l&apos;UI.</ListItem>
+                    <ListItem>
+                        <strong>Props</strong> : les paramètres passés aux composants.
+                    </ListItem>
+                    <ListItem>
+                        <strong>État</strong> : la mémoire interne des composants (<Code>useState</Code>).
+                    </ListItem>
+                    <ListItem>
+                        <strong>Effets</strong> : les opérations déclenchées par un changement (<Code>useEffect</Code>).
+                    </ListItem>
+                    <ListItem>
+                        <strong>Événements</strong> : la réponse aux interactions utilisateur.
+                    </ListItem>
+                    <ListItem>
+                        <strong>Contexte</strong> : le partage de données entre composants distants.
+                    </ListItem>
+                </List>
+            </section>
 
-           <Heading level={2}>Composants</Heading>
-           <Text>
-               Les composants sont les blocs de construction de toute application React. Ils permettent de diviser
-               l&apos;interface utilisateur
-               en morceaux indépendants et réutilisables.
-           </Text>
-           <Text>
-               Un composant est une fonction ou une classe qui renvoie un élément React (généralement du JSX). Voici un
-               exemple :
-           </Text>
-           <CodeCard language="javascript">
-               {`import React from 'react';
+            <section>
+                <Heading level={2}>A- Composants</Heading>
+                <Text>
+                    Les composants sont les blocs de construction de toute application React. Ils permettent
+                    de diviser l&apos;interface utilisateur en morceaux indépendants et réutilisables.
+                </Text>
+
+                <Heading level={3}>1. Définition d&apos;un composant</Heading>
+                <Text>
+                    Un composant est une fonction (ou une classe) qui renvoie un élément React, généralement
+                    écrit en JSX. Par convention, son nom commence par une majuscule.
+                </Text>
+                <CodeCard language="javascript">
+                    {`import React from 'react';
 
 // Définition d'un composant simple
 function HelloWorld() {
@@ -32,15 +54,15 @@ function HelloWorld() {
 }
 
 export default HelloWorld;`}
-           </CodeCard>
+                </CodeCard>
 
-           <Heading level={2}>Exemple d&apos;utilisation d&apos;un composant</Heading>
-           <Text>
-               Dans cet exemple, nous importons le composant HelloWorld dans notre application principale, puis nous le
-               rendons à l&apos;intérieur du composant principal.
-           </Text>
-           <CodeCard language="javascript">
-               {`import React from 'react';
+                <Heading level={3}>2. Utilisation d&apos;un composant</Heading>
+                <Text>
+                    Pour utiliser un composant, il faut l&apos;importer puis le rendre comme une balise
+                    JSX à l&apos;intérieur d&apos;un autre composant.
+                </Text>
+                <CodeCard language="javascript">
+                    {`import React from 'react';
 import ReactDOM from 'react-dom';
 import HelloWorld from './HelloWorld';
 
@@ -51,149 +73,157 @@ function App() {
             <HelloWorld />
         </div>
     );
-}`}
-           </CodeCard>
+}
 
-           <Heading level={2}>Props</Heading>
-           <Text>
-               Les props sont des arguments passés à des composants. Ils permettent de personnaliser le comportement et
-               l&apos;apparence des composants.
-           </Text>
-           <CodeCard language="javascript">
-               {`function Hello(props) {
+export default App;`}
+                </CodeCard>
+            </section>
+
+            <section>
+                <Heading level={2}>B- Props</Heading>
+                <Text>
+                    Les <em>props</em> (abréviation de <em>properties</em>) sont les arguments passés aux
+                    composants. Elles permettent de personnaliser le comportement et l&apos;apparence des
+                    composants depuis le parent.
+                </Text>
+                <CodeCard language="javascript">
+                    {`function Hello(props) {
     return <h1>Hello, {props.name}! You are {props.age} years old.</h1>;
 }
 
 export default Hello;`}
-           </CodeCard>
-           <Text>
-               Utilisation :
-           </Text>
-           <CodeCard language="jsx">
-               {`
-function HelloAlice() {
+                </CodeCard>
+
+                <Text>
+                    On peut également déstructurer directement les props dans la signature de la fonction
+                    pour un code plus concis :
+                </Text>
+                <CodeCard language="javascript">
+                    {`function Hello({ name, age }) {
+    return <h1>Hello, {name}! You are {age} years old.</h1>;
+}
+
+export default Hello;`}
+                </CodeCard>
+
+                <Text>Utilisation depuis un parent :</Text>
+                <CodeCard language="jsx">
+                    {`function HelloAlice() {
     return <Hello name="Alice" age={25} />;
 }
 
 export default HelloAlice;`}
-           </CodeCard>
+                </CodeCard>
+            </section>
 
-           <Heading level={2}>Gestion d&apos;état avec useState</Heading>
-           <Text>
-               <Code>useState</Code> est un hook qui permet aux composants de gérer leur propre état interne.
-           </Text>
-           <CodeCard language="javascript">
-               {`import React, { useState } from 'react';
+            <section>
+                <Heading level={2}>C- Gestion d&apos;état avec useState</Heading>
+                <Text>
+                    <Code>useState</Code> est un <em>hook</em> qui permet aux composants de gérer leur
+                    propre état interne. Il retourne un tableau de deux éléments :
+                </Text>
+                <List>
+                    <ListItem>la valeur actuelle de l&apos;état ;</ListItem>
+                    <ListItem>une fonction pour la mettre à jour.</ListItem>
+                </List>
+                <CodeCard language="javascript">
+                    {`import React, { useState } from 'react';
 
 // Composant de compteur utilisant useState pour gérer l'état
 function Counter() {
-  const [count, setCount] = useState(0);
+    const [count, setCount] = useState(0);
 
-  return (
-    <div>
-      <p>Compteur: {count}</p>
-      <button onClick={() => setCount(count + 1)}>Incrémenter</button>
-    </div>
-  );
-}`}
-           </CodeCard>
+    return (
+        <div>
+            <p>Compteur : {count}</p>
+            <button onClick={() => setCount(count + 1)}>Incrémenter</button>
+        </div>
+    );
+}
 
-           <Heading level={2}>Effets avec useEffect</Heading>
-           <Text>
-               <Code>useEffect</Code> permet d&apos;effectuer des opérations en réponse à des changements dans le
-               composant,
-               comme la mise à jour de l&apos;interface utilisateur
-               ou les appels à des API externes.
-           </Text>
-           <CodeCard language="javascript">
-               {`import React, { useState, useEffect } from 'react';
+export default Counter;`}
+                </CodeCard>
+                <Text>
+                    Chaque appel à <Code>setCount</Code> déclenche un nouveau rendu du composant avec la
+                    nouvelle valeur de <Code>count</Code>.
+                </Text>
+            </section>
 
-// Composant de minuteur utilisant useEffect pour mettre à jour le temps écoulé
+            <section>
+                <Heading level={2}>D- Effets avec useEffect</Heading>
+                <Text>
+                    <Code>useEffect</Code> permet d&apos;effectuer des opérations en réponse à des
+                    changements dans le composant : appels à des API externes, abonnements, minuteurs,
+                    manipulation manuelle du DOM, etc.
+                </Text>
+                <Text>
+                    Le <em>tableau de dépendances</em> (deuxième argument) contrôle quand l&apos;effet est
+                    rejoué : à chaque changement d&apos;une dépendance.
+                </Text>
+                <CodeCard language="javascript">
+                    {`import React, { useState, useEffect } from 'react';
+
+// Composant minuteur utilisant useEffect pour mettre à jour le temps écoulé
 function Timer() {
-  const [seconds, setSeconds] = useState(0);
+    const [seconds, setSeconds] = useState(0);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setSeconds(seconds + 1);
-    }, 1000);
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setSeconds((s) => s + 1);
+        }, 1000);
 
-    return () => clearInterval(timer);
-  }, [seconds]);
+        // Fonction de nettoyage : appelée avant le prochain effet ou au démontage
+        return () => clearInterval(timer);
+    }, []); // [] = exécuté une seule fois (au montage)
 
-  return <p>Temps écoulé : {seconds} secondes</p>;
-}`}
-           </CodeCard>
+    return <p>Temps écoulé : {seconds} secondes</p>;
+}
 
-           <Heading level={2}>Les événements</Heading>
-           <Text>
-               React simplifie la gestion des événements avec une syntaxe similaire au JavaScript natif. Voici un
-               exemple :
-           </Text>
-           <CodeCard language="javascript">
-               {`function MyButton() {
-  // Fonction handleClick pour gérer le clic sur le bouton
-  function handleClick() {
-    console.log("Le bouton a été cliqué !");
-  }
+export default Timer;`}
+                </CodeCard>
+            </section>
 
-  return (
-    // Utilisation de onClick pour détecter le clic sur le bouton
-    <button onClick={handleClick}>Cliquez-moi</button>
-  );
-}`}
-           </CodeCard>
+            <section>
+                <Heading level={2}>E- Les événements</Heading>
+                <Text>
+                    React simplifie la gestion des événements avec une syntaxe similaire à JavaScript natif,
+                    mais en <strong>camelCase</strong> (<Code>onClick</Code>, <Code>onChange</Code>,{" "}
+                    <Code>onSubmit</Code>…) et avec une <strong>fonction</strong> en valeur.
+                </Text>
+                <CodeCard language="javascript">
+                    {`function MyButton() {
+    // Fonction handleClick pour gérer le clic sur le bouton
+    function handleClick() {
+        console.log("Le bouton a été cliqué !");
+    }
 
-           <Heading level={2}>Composants</Heading>
-           <Text>
-               Les composants sont les blocs de construction de toute application React. Ils permettent de diviser
-               l&apos;interface utilisateur en morceaux indépendants et réutilisables.
-           </Text>
-           <CodeCard language="javascript">{`function HelloWorld() {
-    return <h1>Hello, World!</h1>;
-}`}</CodeCard>
+    return (
+        <button onClick={handleClick}>Cliquez-moi</button>
+    );
+}
 
-           <Heading level={2}>Props</Heading>
-           <Text>
-               Les props sont des arguments passés à des composants pour les personnaliser.
-           </Text>
-           <CodeCard language="javascript">{`function Hello({ name }) {
-    return <h1>Hello, {name}!</h1>;
-}`}</CodeCard>
+export default MyButton;`}
+                </CodeCard>
+            </section>
 
-           <Heading level={2}>Gestion d&apos;état avec useState</Heading>
-           <CodeCard language="javascript">{`function Counter() {
-  const [count, setCount] = useState(0);
-  return (
-    <div>
-      <p>Compteur: {count}</p>
-      <button onClick={() => setCount(count + 1)}>Incrémenter</button>
-    </div>
-  );
-}`}</CodeCard>
+            <section>
+                <Heading level={2}>F- Contexte</Heading>
+                <Text>
+                    Le contexte permet de partager des valeurs globales entre plusieurs composants sans
+                    avoir à les passer manuellement à chaque niveau de l&apos;arborescence (<em>prop drilling</em>).
+                </Text>
+                <Text>
+                    Trois étapes : créer le contexte avec <Code>createContext()</Code>, fournir une valeur
+                    avec <Code>&lt;Context.Provider&gt;</Code>, puis la consommer avec <Code>useContext()</Code>.
+                </Text>
+                <CodeCard language="javascript">
+                    {`import React, { createContext, useContext, useState } from 'react';
 
-           <Heading level={2}>Effets avec useEffect</Heading>
-           <CodeCard language="javascript">{`function Timer() {
-  const [seconds, setSeconds] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setSeconds(seconds + 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [seconds]);
-
-  return <p>Temps écoulé: {seconds} secondes</p>;
-}`}</CodeCard>
-
-           <Heading level={2}>Contexte</Heading>
-           <Text>
-               Le contexte en React est utilisé pour partager des valeurs globales entre plusieurs composants sans
-               avoir à les passer manuellement à chaque niveau de l&apos;arborescence.
-           </Text>
-           <CodeCard language="javascript">{`const MyContext = createContext();
+const MyContext = createContext();
 
 function MyProvider({ children }) {
     const [value, setValue] = useState("Hello Context");
+
     return (
         <MyContext.Provider value={{ value, setValue }}>
             {children}
@@ -203,10 +233,13 @@ function MyProvider({ children }) {
 
 function MyComponent() {
     const { value, setValue } = useContext(MyContext);
+
     return (
         <div>
-            <p>Valeur du contexte: {value}</p>
-            <button onClick={() => setValue("Nouveau Contexte")}>Changer la valeur</button>
+            <p>Valeur du contexte : {value}</p>
+            <button onClick={() => setValue("Nouveau contexte")}>
+                Changer la valeur
+            </button>
         </div>
     );
 }
@@ -217,7 +250,11 @@ function App() {
             <MyComponent />
         </MyProvider>
     );
-}`}</CodeCard>
-       </article>
+}
+
+export default App;`}
+                </CodeCard>
+            </section>
+        </article>
     );
 }

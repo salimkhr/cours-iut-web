@@ -1,10 +1,11 @@
 'use client';
 
 import {GlitchText} from "@/components/GlitchText";
-import {ReactNode, useEffect, useState} from "react";
+import {ReactNode, useMemo} from "react";
 import TagsBadges from "@/components/page/TagsBadges";
-import {useTheme} from "next-themes";
 import {HeaderSvg} from "@/components/HeaderSvg";
+import {useIsDark} from "@/hook/useIsDark";
+import {useMounted} from "@/hook/useMounted";
 
 interface HeroSectionProps {
     title: string;
@@ -25,25 +26,16 @@ export default function HeroSection({
                                         tags = [],
                                         path = ''
                                     }: HeroSectionProps) {
-    const {theme} = useTheme();
-    const [mounted, setMounted] = useState(false);
+    const mounted = useMounted();
+    const isDark = useIsDark();
 
-    useEffect(() => setMounted(true), []);
-
-    const variableName = `--color-${path}`;
-
-    const [color, setColor] = useState<string>("");
-
-    useEffect(() => {
+    const color = useMemo(() => {
+        if (!mounted || typeof window === 'undefined') return "";
         const root = getComputedStyle(document.documentElement);
-        const value = root.getPropertyValue(variableName).trim();
-        setColor(value);
-    }, [variableName]);
+        return root.getPropertyValue(`--color-${path}`).trim();
+    }, [mounted, path]);
 
     if (!mounted) return null; // SSR safe
-
-
-    const isDark = theme === "dark";
 
     const titleElement = (
         <h1

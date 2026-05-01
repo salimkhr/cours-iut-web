@@ -3,7 +3,7 @@
 import Section from "@/types/Section";
 import {Label} from "@/components/ui/label";
 import {Switch} from "@/components/ui/switch";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import updateSectionState from "@/hook/admin/updateSectionState";
 import EditSectionButton from "@/components/admin/EditSectionButton";
 import Module from "@/types/Module";
@@ -20,14 +20,12 @@ export default function AdminSection({
                                          section,
                                          modData,
                                      }: AdminSectionProps) {
+    const [currentSection, setCurrentSection] = useState<Section>(section);
 
-    const [isAvailable, setIsAvailable] = useState(!!section.isAvailable);
-    const [correctionIsAvailable, setIscorrectionIsAvailable] = useState(!!section.correctionIsAvailable);
-    const [examenIsLock, setExamenIsLock] = useState(!!section.examenIsLock);
+    const isAvailable = !!currentSection.isAvailable;
+    const correctionIsAvailable = !!currentSection.correctionIsAvailable;
 
     const moduleId = modData._id;
-
-    const [currentSection, setCurrentSection] = useState<Section>(section)
 
     const {editSection: editSectionApi} = useAdminApi();
 
@@ -40,25 +38,9 @@ export default function AdminSection({
         key: keyof Pick<Section, "correctionIsAvailable" | "isAvailable" | "examenIsLock">,
         value: boolean
     ) => {
-        if (key === "isAvailable") setIsAvailable(value);
-
-        if (key === "correctionIsAvailable") setIscorrectionIsAvailable(value);
-        if (key === "examenIsLock") setExamenIsLock(value);
-        updateSectionState(moduleId, section.order, key, value);
+        setCurrentSection((prev) => ({...prev, [key]: value}));
+        updateSectionState(moduleId, currentSection.order, key, value);
     };
-
-    // sync avec les props si elles changent de l'extérieur
-    useEffect(() => {
-        setIsAvailable(!!currentSection.isAvailable);
-    }, [currentSection.isAvailable]);
-
-    useEffect(() => {
-        setIscorrectionIsAvailable(!!currentSection.correctionIsAvailable);
-    }, [currentSection.correctionIsAvailable]);
-
-    useEffect(() => {
-        setExamenIsLock(!!currentSection.examenIsLock);
-    }, [currentSection.examenIsLock]);
 
     return (
         <div className="rounded-lg border p-3 space-y-3 bg-muted/40">
@@ -90,7 +72,7 @@ export default function AdminSection({
                 </div>
                 {currentSection.contents.includes('examen') && (
                     <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t mt-2">
-                        <span>Code d'accès :</span>
+                        <span>Code d&apos;accès :</span>
                         <code
                             className="bg-muted px-1.5 py-0.5 rounded font-mono font-bold text-primary">
                             {modData._id?.toString().slice(-6).toUpperCase()}

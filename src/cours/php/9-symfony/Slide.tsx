@@ -1,12 +1,12 @@
 'use client';
-import { SlidesScreen } from "@/components/Slides/SlidesScreen";
+import {SlidesScreen} from "@/components/Slides/SlidesScreen";
 import React from 'react';
-import { SlideScreen } from "@/components/Slides/SlideScreen";
-import { SlideText } from "@/components/Slides/ui/SlideText";
-import { SlideCode } from "@/components/Slides/ui/SlideCode";
-import { SlideList, SlideListItem } from "@/components/Slides/ui/SlideList";
-import { SlideNote } from "@/components/Slides/ui/SlideNote";
-import { SlideDiagram } from "@/components/Slides/ui/SlideDiagram";
+import {SlideScreen} from "@/components/Slides/SlideScreen";
+import {SlideText} from "@/components/Slides/ui/SlideText";
+import {SlideCode} from "@/components/Slides/ui/SlideCode";
+import {SlideList, SlideListItem} from "@/components/Slides/ui/SlideList";
+import {SlideNote} from "@/components/Slides/ui/SlideNote";
+import {SlideDiagram} from "@/components/Slides/ui/SlideDiagram";
 import Module from "@/types/Module";
 import Section from "@/types/Section";
 
@@ -283,7 +283,7 @@ class ArticleController extends AbstractController
                     <SlideCode language="twig" highlight="1-12 | 14-23">
                         {`{# templates/base.html.twig — layout commun #}
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <title>{% block title %}Mon Site{% endblock %}</title>
 </head>
@@ -432,8 +432,8 @@ php bin/console doctrine:migrations:migrate`}
                     <SlideList>
                         <SlideListItem><code>find($id)</code> — récupérer par identifiant</SlideListItem>
                         <SlideListItem><code>findAll()</code> — récupérer tous les enregistrements</SlideListItem>
-                        <SlideListItem><code>findBy(['status' =&gt; 'published'])</code> — filtrer par critères</SlideListItem>
-                        <SlideListItem><code>findOneBy(['slug' =&gt; $slug])</code> — récupérer un seul résultat</SlideListItem>
+                        <SlideListItem><code>findBy([&apos;status&apos; =&gt; &apos;published&apos;])</code> — filtrer par critères</SlideListItem>
+                        <SlideListItem><code>findOneBy([&apos;slug&apos; =&gt; $slug])</code> — récupérer un seul résultat</SlideListItem>
                     </SlideList>
                     <SlideCode language="php" highlight="1-3 | 5-14">
                         {`// src/Repository/ArticleRepository.php

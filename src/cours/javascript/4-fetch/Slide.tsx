@@ -65,24 +65,27 @@ export default function FetchSlides() {
                         backend (serveur). Dans ce cours, nous allons voir :
                     </SlideText>
                     <SlideList>
-                        <SlideListItem>TypeScript : typage statique pour JavaScript</SlideListItem>
-                        <SlideListItem>NPM : gestionnaire de paquets Node.js</SlideListItem>
-                        <SlideListItem>Express : framework backend Node.js</SlideListItem>
-                        <SlideListItem>Promises et async/await : gestion de l'asynchrone</SlideListItem>
-                        <SlideListItem>Fetch API : communication avec le serveur</SlideListItem>
-                        <SlideListItem>Sécurité : tokens Bearer et CORS</SlideListItem>
+                        <SlideListItem>TypeScript : typage statique pour JavaScript.</SlideListItem>
+                        <SlideListItem>NPM : gestionnaire de paquets Node.js.</SlideListItem>
+                        <SlideListItem>Express : framework backend Node.js.</SlideListItem>
+                        <SlideListItem>
+                            Promises et async/await : gestion de l&apos;asynchrone.
+                        </SlideListItem>
+                        <SlideListItem>Fetch API : communication avec le serveur.</SlideListItem>
+                        <SlideListItem>Sécurité : tokens Bearer et CORS.</SlideListItem>
                     </SlideList>
                 </SlideScreen>
 
                 {/* TypeScript Introduction */}
-                <SlideScreen title="A - TypeScript : JavaScript avec types">
+                <SlideScreen title="A.1 - TypeScript : types de base">
                     <SlideNote>
                         {`- TypeScript est un sur-ensemble de JavaScript qui ajoute le typage statique.
 - Développé par Microsoft, très populaire pour les projets d'envergure.
 - Le code TypeScript est compilé en JavaScript standard.`}
                     </SlideNote>
                     <SlideText>
-                        TypeScript ajoute des types à JavaScript pour détecter les erreurs avant l'exécution :
+                        TypeScript ajoute des types à JavaScript pour détecter les erreurs avant
+                        l&apos;exécution :
                     </SlideText>
                     <SlideCode language="typescript" highlight="1-4 | 6-10">
                         {`// Types de base
@@ -93,37 +96,38 @@ const estEtudiant: boolean = true;
 // Tableaux et objets typés
 const notes: number[] = [15, 18, 12];
 const utilisateur: { nom: string; age: number } = {
-  nom: "Bob",
-  age: 30
+    nom: "Bob",
+    age: 30
 };`}
                     </SlideCode>
                 </SlideScreen>
-                <SlideScreen title="A - TypeScript : JavaScript avec types">
+
+                <SlideScreen title="A.2 - TypeScript : interfaces">
                     <SlideNote>
-                        {`- TypeScript est un sur-ensemble de JavaScript qui ajoute le typage statique.
-- Développé par Microsoft, très populaire pour les projets d'envergure.
-- Le code TypeScript est compilé en JavaScript standard.`}
+                        {`- Les interfaces décrivent la "forme" d'un objet.
+- Très utiles pour partager des contrats entre composants.
+- Convention : nom en PascalCase (User, Session, etc.).`}
                     </SlideNote>
                     <SlideText>
-                        TypeScript ajoute des types à JavaScript pour détecter les erreurs avant l'exécution :
+                        Les interfaces décrivent la structure d&apos;un objet :
                     </SlideText>
                     <SlideCode language="typescript" highlight="1-6 | 8-12">
                         {`// Interfaces
 interface User {
-  id: string;
-  name: string;
-  email: string;
+    id: string;
+    name: string;
+    email: string;
 }
 
 const user: User = {
-  id: "123",
-  name: "Alice",
-  email: "alice@example.com"
+    id: "123",
+    name: "Alice",
+    email: "alice@example.com"
 };`}
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="A - TypeScript : Fonctions typées">
+                <SlideScreen title="A.3 - TypeScript : fonctions typées">
                     <SlideText>
                         TypeScript permet de typer les paramètres et les valeurs de retour :
                     </SlideText>
@@ -148,7 +152,7 @@ function createSession(questions: Array<{stimulus: string; response: string}>): 
                 </SlideScreen>
 
                 {/* NPM */}
-                <SlideScreen title="B - NPM : Node Package Manager">
+                <SlideScreen title="B.1 - NPM : Node Package Manager">
                     <div className="flex items-start gap-8">
 
                         {/* Colonne gauche */}
@@ -161,19 +165,23 @@ function createSession(questions: Array<{stimulus: string; response: string}>): 
                             </SlideNote>
 
                             <SlideText>
-                                NPM permet d'installer et gérer les bibliothèques JavaScript :
+                                NPM permet d&apos;installer et de gérer les bibliothèques JavaScript :
                             </SlideText>
 
                             <SlideList>
-                                <SlideListItem>Installer des packages (express, react, etc.)</SlideListItem>
-                                <SlideListItem>Gérer les versions des dépendances</SlideListItem>
-                                <SlideListItem>Partager son propre code avec la communauté</SlideListItem>
-                                <SlideListItem>Exécuter des scripts de build et de développement</SlideListItem>
+                                <SlideListItem>
+                                    Installer des packages (express, react, etc.).
+                                </SlideListItem>
+                                <SlideListItem>Gérer les versions des dépendances.</SlideListItem>
+                                <SlideListItem>Partager son propre code avec la communauté.</SlideListItem>
+                                <SlideListItem>
+                                    Exécuter des scripts de build et de développement.
+                                </SlideListItem>
                             </SlideList>
                         </div>
 
                         {/* Colonne droite */}
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                             <Image
                                 src="https://lesjoiesducode.fr/content/052/node_modules-olive-js.jpg"
                                 alt="npm logo"
@@ -187,7 +195,7 @@ function createSession(questions: Array<{stimulus: string; response: string}>): 
                 </SlideScreen>
 
 
-                <SlideScreen title="B - NPM : Installation de packages">
+                <SlideScreen title="B.2 - NPM : installation de packages">
                     <SlideText>
                         Commandes essentielles pour installer des dépendances :
                     </SlideText>
@@ -209,7 +217,7 @@ npm install -g nodemon`}
                     </SlideText>
                 </SlideScreen>
 
-                <SlideScreen title="B - NPM : package.json">
+                <SlideScreen title="B.3 - NPM : package.json">
                     <SlideNote>
                         {`- package.json est le fichier de configuration du projet.
 - Décrit le projet : nom, version, auteur, licence.
@@ -242,14 +250,20 @@ npm install -g nodemon`}
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="B - NPM : Versions sémantiques">
+                <SlideScreen title="B.4 - NPM : versions sémantiques">
                     <SlideText>
                         NPM utilise le versioning sémantique (SemVer) : MAJOR.MINOR.PATCH
                     </SlideText>
                     <SlideList>
-                        <SlideListItem>MAJOR (1.0.0 → 2.0.0) : changements incompatibles</SlideListItem>
-                        <SlideListItem>MINOR (1.0.0 → 1.1.0) : nouvelles fonctionnalités compatibles</SlideListItem>
-                        <SlideListItem>PATCH (1.0.0 → 1.0.1) : corrections de bugs</SlideListItem>
+                        <SlideListItem>
+                            <strong>MAJOR</strong> (1.0.0 → 2.0.0) : changements incompatibles.
+                        </SlideListItem>
+                        <SlideListItem>
+                            <strong>MINOR</strong> (1.0.0 → 1.1.0) : nouvelles fonctionnalités compatibles.
+                        </SlideListItem>
+                        <SlideListItem>
+                            <strong>PATCH</strong> (1.0.0 → 1.0.1) : corrections de bugs.
+                        </SlideListItem>
                     </SlideList>
                     <SlideCode language="json" highlight="1-6">
                         {`// Symboles de version dans package.json
@@ -261,7 +275,7 @@ npm install -g nodemon`}
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="B - NPM : Scripts">
+                <SlideScreen title="B.5 - NPM : scripts">
                     <SlideNote>
                         {`- Les scripts NPM permettent d'automatiser les tâches répétitives.
 - Lancés avec : npm run <nom-du-script>
@@ -288,7 +302,7 @@ npm run build       # Compile TypeScript → JavaScript`}
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="B - NPM : Initialiser un projet">
+                <SlideScreen title="B.6 - NPM : initialiser un projet">
                     <SlideText>
                         Créer un nouveau projet Node.js :
                     </SlideText>
@@ -312,14 +326,14 @@ npm install
                 </SlideScreen>
 
                 {/* Express Introduction */}
-                <SlideScreen title="C - Express : Framework Backend">
+                <SlideScreen title="C.1 - Express : framework backend">
                     <SlideNote>
                         {`- Express est le framework Node.js le plus populaire pour créer des APIs.
 - Minimaliste et flexible, il permet de gérer facilement les routes et middlewares.
 - Utilisé dans des millions d'applications en production.`}
                     </SlideNote>
                     <SlideText>
-                        Express simplifie la création de serveurs HTTP et d'APIs REST :
+                        Express simplifie la création de serveurs HTTP et d&apos;APIs REST :
                     </SlideText>
                     <SlideCode language="typescript" highlight="1-3 | 5-9 | 11-13 |15-18">
                         {`// Installation : npm install express
@@ -343,7 +357,7 @@ app.listen(3000, () => {
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="C - Express : Routes et Contrôleurs">
+                <SlideScreen title="C.2 - Express : routes et contrôleurs">
                     <SlideText>
                         Organisation MVC : séparation des routes et de la logique métier :
                     </SlideText>
@@ -384,26 +398,39 @@ export async function createSession(
                 </SlideScreen>
 
                 {/* Backend Milgram */}
-                <SlideScreen title="D - Le Backend du TP : Vue d'ensemble">
+                <SlideScreen title="D.1 - Le backend du TP : vue d'ensemble">
                     <SlideNote>
                         {`- Présenter le backend comme une simulation de l'expérience de Milgram.
 - Expliquer brièvement : associations de mots, mauvaises réponses = chocs électriques.
 - Mentionner que c'est un exercice pédagogique pour comprendre les APIs REST.`}
                     </SlideNote>
                     <SlideText>
-                        Notre API simule une expérience psychologique avec des sessions de questions-réponses :
+                        Notre API simule une expérience psychologique avec des sessions de
+                        questions-réponses :
                     </SlideText>
                     <SlideList>
-                        <SlideListItem>auth.ts : Middleware d'authentification Bearer</SlideListItem>
-                        <SlideListItem>sessions.ts : Gestion des sessions en mémoire</SlideListItem>
-                        <SlideListItem>questions.ts : Paires de mots stimulus/réponse</SlideListItem>
-                        <SlideListItem>shocks.ts : Simulation des réactions aux chocs</SlideListItem>
-                        <SlideListItem>controller.ts : Logique des endpoints</SlideListItem>
-                        <SlideListItem>routes.ts : Définition des routes REST</SlideListItem>
+                        <SlideListItem>
+                            <code>auth.ts</code> : middleware d&apos;authentification Bearer.
+                        </SlideListItem>
+                        <SlideListItem>
+                            <code>sessions.ts</code> : gestion des sessions en mémoire.
+                        </SlideListItem>
+                        <SlideListItem>
+                            <code>questions.ts</code> : paires de mots stimulus/réponse.
+                        </SlideListItem>
+                        <SlideListItem>
+                            <code>shocks.ts</code> : simulation des réactions aux chocs.
+                        </SlideListItem>
+                        <SlideListItem>
+                            <code>controller.ts</code> : logique des endpoints.
+                        </SlideListItem>
+                        <SlideListItem>
+                            <code>routes.ts</code> : définition des routes REST.
+                        </SlideListItem>
                     </SlideList>
                 </SlideScreen>
 
-                <SlideScreen title="D - Structure d'une Session">
+                <SlideScreen title="D.2 - Structure d'une session">
                     <SlideText>
                         Voici comment une session est structurée dans notre API :
                     </SlideText>
@@ -426,7 +453,7 @@ export interface Session {
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="D - Endpoints de l'API">
+                <SlideScreen title="D.3 - Endpoints de l'API">
                     <SlideText>
                         Les routes disponibles dans notre API REST :
                     </SlideText>
@@ -451,19 +478,26 @@ DELETE /api/sessions/:id`}
                 </SlideScreen>
 
                 {/* Promises */}
-                <SlideScreen title="E - Les Promises : Gérer l'asynchrone">
+                <SlideScreen title="E.1 - Les Promises : gérer l'asynchrone">
                     <SlideNote>
                         {`- JavaScript est mono-thread : une seule chose à la fois.
 - Les Promises permettent de gérer des opérations asynchrones sans bloquer.
 - Essentiel pour les requêtes HTTP, les timers, la lecture de fichiers, etc.`}
                     </SlideNote>
                     <SlideText>
-                        Une Promise représente une valeur qui sera disponible maintenant, plus tard, ou jamais :
+                        Une Promise représente une valeur qui sera disponible maintenant, plus tard, ou
+                        jamais :
                     </SlideText>
                     <SlideList>
-                        <SlideListItem>Pending : en cours d'exécution</SlideListItem>
-                        <SlideListItem>Fulfilled : terminée avec succès (resolve)</SlideListItem>
-                        <SlideListItem>Rejected : terminée avec erreur (reject)</SlideListItem>
+                        <SlideListItem>
+                            <strong>Pending</strong> : en cours d&apos;exécution.
+                        </SlideListItem>
+                        <SlideListItem>
+                            <strong>Fulfilled</strong> : terminée avec succès (<code>resolve</code>).
+                        </SlideListItem>
+                        <SlideListItem>
+                            <strong>Rejected</strong> : terminée avec erreur (<code>reject</code>).
+                        </SlideListItem>
                     </SlideList>
                     <SlideCode language="javascript" highlight="1-6">
                         {`// Création d'une Promise
@@ -475,7 +509,7 @@ const maPromise = new Promise((resolve, reject) => {
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="E - Promises : then / catch / finally">
+                <SlideScreen title="E.2 - Promises : then / catch / finally">
                     <SlideText>
                         Utiliser les méthodes then, catch et finally pour gérer le résultat :
                     </SlideText>
@@ -493,14 +527,14 @@ const maPromise = new Promise((resolve, reject) => {
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="E - async / await : Syntaxe moderne">
+                <SlideScreen title="E.3 - async / await : syntaxe moderne">
                     <SlideNote>
                         {`- async/await est du sucre syntaxique pour les Promises.
 - Rend le code asynchrone plus lisible, comme du code synchrone.
 - Toujours utiliser try/catch avec async/await pour gérer les erreurs.`}
                     </SlideNote>
                     <SlideText>
-                        async/await simplifie l'écriture du code asynchrone :
+                        <code>async/await</code> simplifie l&apos;écriture du code asynchrone :
                     </SlideText>
                     <SlideCode language="javascript" highlight="1-8 | 10-18">
                         {`// Fonction asynchrone
@@ -526,7 +560,7 @@ console.log(data);`}
                 </SlideScreen>
 
                 {/* Fetch */}
-                <SlideScreen title="F - Fetch API : Introduction">
+                <SlideScreen title="F.1 - Fetch API : introduction">
                     <SlideNote>
                         {`- Fetch est l'API moderne pour faire des requêtes HTTP.
 - Remplace XMLHttpRequest (ancien, complexe).
@@ -534,7 +568,7 @@ console.log(data);`}
 - Intégré nativement dans tous les navigateurs modernes.`}
                     </SlideNote>
                     <SlideText>
-                        L'API Fetch permet de communiquer avec un serveur depuis le navigateur :
+                        L&apos;API Fetch permet de communiquer avec un serveur depuis le navigateur :
                     </SlideText>
                     <SlideCode language="javascript" highlight="1-6 | 8-13">
                         {`// GET simple
@@ -553,7 +587,7 @@ try {
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="F - Fetch : Méthodes HTTP">
+                <SlideScreen title="F.2 - Fetch : méthodes HTTP">
                     <SlideText>
                         Les principales méthodes HTTP pour interagir avec une API REST :
                     </SlideText>
@@ -586,7 +620,7 @@ const response = await fetch("/api/sessions/123", {
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="F - Fetch : Headers et Corps de requête">
+                <SlideScreen title="F.3 - Fetch : headers et corps de requête">
                     <SlideText>
                         Personnaliser les en-têtes et le corps de la requête :
                     </SlideText>
@@ -608,7 +642,7 @@ console.log(result);`}
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="F - Fetch : Gestion des erreurs (1/3)">
+                <SlideScreen title="F.4 - Fetch : gestion des erreurs (1/3)">
                     <SlideText>
                         ❌ Problème : fetch ne rejette PAS sur 404 ou 500
                     </SlideText>
@@ -629,7 +663,7 @@ console.log(result);`}
 }`}
                     </SlideCode>
                 </SlideScreen>
-                <SlideScreen title="F - Fetch : Gestion des erreurs (2/3)">
+                <SlideScreen title="F.5 - Fetch : gestion des erreurs (2/3)">
                     <SlideText>
                         ✅ Solution : vérifier response.ok
                     </SlideText>
@@ -650,7 +684,7 @@ console.log(result);`}
 }`}
                     </SlideCode>
                 </SlideScreen>
-                <SlideScreen title="F - Fetch : Gestion des erreurs (3/3)">
+                <SlideScreen title="F.6 - Fetch : gestion des erreurs (3/3)">
                     <SlideText>
                         ✅ Gestion détaillée selon le code HTTP
                     </SlideText>
@@ -675,7 +709,7 @@ else if (response.ok) {
                 </SlideScreen>
 
                 {/* Sécurité */}
-                <SlideScreen title="G - Sécurité : Bearer Tokens">
+                <SlideScreen title="G.1 - Sécurité : Bearer tokens">
                     <SlideNote>
                         {`- Les tokens Bearer sont un standard pour sécuriser les APIs.
 - Format : "Authorization: Bearer <token>"
@@ -683,7 +717,7 @@ else if (response.ok) {
 - Ne JAMAIS exposer les tokens dans le code frontend (utiliser variables d'environnement).`}
                     </SlideNote>
                     <SlideText>
-                        Les tokens Bearer authentifient les requêtes vers l'API :
+                        Les tokens Bearer authentifient les requêtes vers l&apos;API :
                     </SlideText>
                     <div className="grid grid-cols-2 gap-6">
                         <SlideCode language="typescript" highlight="1-11">
@@ -731,7 +765,7 @@ const response = await fetch(
                     </div>
                 </SlideScreen>
 
-                <SlideScreen title="G - Sécurité : CORS">
+                <SlideScreen title="G.2 - Sécurité : CORS">
                     <SlideNote>
                         {`- CORS = Cross-Origin Resource Sharing
 - Mécanisme de sécurité des navigateurs
@@ -763,7 +797,7 @@ app.use(cors({
 
                 <SlideScreen title="H - Flux complet d'une requête">
                     <SlideText>
-                        Comprendre le cheminement complet d'une requête HTTP :
+                        Comprendre le cheminement complet d&apos;une requête HTTP :
                     </SlideText>
 
                     <SlideDiagram chart={requestFlowDiagram} />

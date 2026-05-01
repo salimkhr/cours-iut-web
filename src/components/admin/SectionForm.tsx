@@ -1,7 +1,7 @@
 'use client';
 
 import {useCallback, useEffect} from 'react';
-import {Controller, useForm} from 'react-hook-form';
+import {Controller, useForm, useWatch} from 'react-hook-form';
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,} from '@/components/ui/dialog';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
@@ -74,12 +74,11 @@ export default function SectionForm({
             totalDuration: 1,
             examenIsLock: false,
         };
-    }, [isEditMode, modData.sections?.length, section?.contents, section?.correctionIsAvailable, section?.description, section?.hasCorrection, section?.isAvailable, section?.order, section?.path, section?.tags, section?.title, section?.totalDuration]);
+    }, [isEditMode, section, modData.sections.length]);
 
     const {
         register,
         handleSubmit,
-        watch,
         setValue,
         reset,
         control,
@@ -87,6 +86,9 @@ export default function SectionForm({
     } = useForm<Section>({
         defaultValues: getDefaultValues(),
     });
+
+    const title = useWatch({control, name: 'title'});
+    const contents = useWatch({control, name: 'contents'}) || [];
 
     // Reset form when section changes or dialog opens/closes
     useEffect(() => {
@@ -96,7 +98,6 @@ export default function SectionForm({
     }, [open, section, reset, getDefaultValues]);
 
     // Met à jour automatiquement "path" à partir de "title" (seulement en mode ajout)
-    const title = watch('title');
     useEffect(() => {
         if (!isEditMode && title) {
             setValue('path', `${modData.sections.length + 1}-${title.toLowerCase().replace(/\s+/g, '-')}`);
@@ -122,8 +123,6 @@ export default function SectionForm({
         }
         onOpenChange(false);
     };
-
-    const contents = watch('contents') || [];
 
     // Fonction pour toggle les contenus dans le tableau
     const toggleContent = (item: string) => {

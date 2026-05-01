@@ -99,46 +99,54 @@ export default function PropagationSlides() {
 - Expliquer que la propagation permet la délégation d'événements, une technique très puissante.`}
                     </SlideNote>
                     <SlideText>
-                        Lorsqu'un événement est déclenché sur un élément du DOM, il ne reste pas uniquement sur cet
-                        élément. Il traverse plusieurs phases avant d'être complètement traité.
+                        Lorsqu&apos;un événement est déclenché sur un élément du DOM, il ne reste pas
+                        uniquement sur cet élément. Il traverse plusieurs phases avant d&apos;être
+                        complètement traité.
                     </SlideText>
                     <SlideList>
-                        <SlideListItem>L'événement parcourt l'arbre DOM en suivant un chemin précis</SlideListItem>
-                        <SlideListItem>Trois phases distinctes : capture, cible, et bouillonnement</SlideListItem>
-                        <SlideListItem>Comprendre ce mécanisme permet d'optimiser la gestion des
-                            événements</SlideListItem>
+                        <SlideListItem>
+                            L&apos;événement parcourt l&apos;arbre DOM en suivant un chemin précis.
+                        </SlideListItem>
+                        <SlideListItem>
+                            Trois phases distinctes : capture, cible et bouillonnement.
+                        </SlideListItem>
+                        <SlideListItem>
+                            Comprendre ce mécanisme permet d&apos;optimiser la gestion des événements.
+                        </SlideListItem>
                     </SlideList>
                 </SlideScreen>
 
                 {/* Les 3 phases */}
-                <SlideScreen title="1 - Les Trois Phases de Propagation">
+                <SlideScreen title="A.1 - Les trois phases de propagation">
                     <SlideNote>
                         {`- IMPORTANT : Chaque événement traverse ces 3 phases dans l'ordre.
 - La plupart du temps, on travaille avec la phase de bouillonnement (par défaut).
 - La phase de capture est moins utilisée mais reste importante à connaître.`}
                     </SlideNote>
                     <SlideText>
-                        Voici les trois phases que traverse un événement dans l'arbre DOM :
+                        Voici les trois phases que traverse un événement dans l&apos;arbre DOM :
                     </SlideText>
 
                     <SlideList>
                         <SlideListItem>
-                            <strong>Phase de Capture</strong> : L'événement descend de document vers l'élément cible.
-                            Les gestionnaires avec capture: true sont exécutés.
+                            <strong>Phase de capture</strong> : l&apos;événement descend de{" "}
+                            <code>document</code> vers l&apos;élément cible. Les gestionnaires avec{" "}
+                            <code>capture: true</code> sont exécutés.
                         </SlideListItem>
                         <SlideListItem>
-                            <strong>Phase de Cible</strong> : L'événement atteint l'élément sur lequel il a été
-                            déclenché. Les gestionnaires de cet élément sont exécutés.
+                            <strong>Phase de cible</strong> : l&apos;événement atteint l&apos;élément sur
+                            lequel il a été déclenché. Les gestionnaires de cet élément sont exécutés.
                         </SlideListItem>
                         <SlideListItem>
-                            <strong>Phase de Bouillonnement</strong> : L'événement remonte de l'élément cible vers
-                            document. Les gestionnaires sans capture sont exécutés (comportement par défaut).
+                            <strong>Phase de bouillonnement</strong> : l&apos;événement remonte de
+                            l&apos;élément cible vers <code>document</code>. Les gestionnaires sans capture
+                            sont exécutés (comportement par défaut).
                         </SlideListItem>
                     </SlideList>
                 </SlideScreen>
 
                 {/* Visualisation du parcours */}
-                <SlideScreen title="1.1 - Parcours Complet d'un Événement">
+                <SlideScreen title="A.2 - Parcours complet d'un événement">
                     <SlideNote>
                         {`- Utiliser ce diagramme pour expliquer visuellement le parcours.
 - Insister sur le fait que l'événement descend PUIS remonte.
@@ -148,12 +156,13 @@ export default function PropagationSlides() {
                     <SlideDiagram chart={propagationDiagram}/>
 
                     <SlideText>
-                        L'événement part de Document, descend jusqu'à la cible, puis remonte.
+                        L&apos;événement part de <code>document</code>, descend jusqu&apos;à la cible, puis
+                        remonte.
                     </SlideText>
                 </SlideScreen>
 
                 {/* Exemple phase de bouillonnement */}
-                <SlideScreen title="2 - Phase de Bouillonnement (Par Défaut)">
+                <SlideScreen title="A.3 - Phase de bouillonnement (par défaut)">
                     <SlideNote>
                         {`- C'est le comportement par défaut de addEventListener.
 - L'événement "bouillonne" vers le haut comme une bulle d'air dans l'eau.
@@ -184,7 +193,7 @@ child.addEventListener("click", () => {
                 </SlideScreen>
 
                 {/* Exemple phase de capture */}
-                <SlideScreen title="3 - Phase de Capture">
+                <SlideScreen title="A.4 - Phase de capture">
                     <SlideNote>
                         {`- Pour activer la capture, passer true ou { capture: true } en 3ème argument.
 - La capture intercepte l'événement AVANT qu'il n'atteigne la cible.
@@ -211,7 +220,7 @@ child.addEventListener("click", () => {
                 </SlideScreen>
 
                 {/* stopPropagation */}
-                <SlideScreen title="4 - Arrêter la Propagation">
+                <SlideScreen title="A.5 - Arrêter la propagation">
                     <SlideNote>
                         {`- stopPropagation() arrête la propagation à l'élément actuel.
 - Les gestionnaires suivants dans la chaîne ne seront PAS exécutés.
@@ -235,12 +244,12 @@ parent.addEventListener("click", () => {
                     </SlideCode>
 
                     <SlideText>
-                        L'événement s'arrête au niveau actuel et ne remonte/descend plus.
+                        L&apos;événement s&apos;arrête au niveau actuel et ne remonte/descend plus.
                     </SlideText>
                 </SlideScreen>
 
                 {/* Délégation - Introduction */}
-                <SlideScreen title="5 - La Délégation d'Événements">
+                <SlideScreen title="B.1 - La délégation d'événements">
                     <SlideNote>
                         {`- La délégation est UNE technique majeure en JavaScript.
 - Au lieu d'attacher un écouteur à chaque élément enfant, on en attache UN SEUL au parent.
@@ -250,18 +259,23 @@ parent.addEventListener("click", () => {
                     <SlideDiagram chart={delegationDiagram}/>
 
                     <SlideList>
-                        <SlideListItem>Utilise la phase de bouillonnement pour capturer les événements des
-                            enfants</SlideListItem>
-                        <SlideListItem>Réduit le nombre d'écouteurs attachés (meilleures
-                            performances)</SlideListItem>
-                        <SlideListItem>Fonctionne automatiquement pour les éléments ajoutés
-                            dynamiquement</SlideListItem>
-                        <SlideListItem>Utilise event.target pour identifier l'élément cliqué</SlideListItem>
+                        <SlideListItem>
+                            Utilise la phase de bouillonnement pour capturer les événements des enfants.
+                        </SlideListItem>
+                        <SlideListItem>
+                            Réduit le nombre d&apos;écouteurs attachés (meilleures performances).
+                        </SlideListItem>
+                        <SlideListItem>
+                            Fonctionne automatiquement pour les éléments ajoutés dynamiquement.
+                        </SlideListItem>
+                        <SlideListItem>
+                            Utilise <code>event.target</code> pour identifier l&apos;élément cliqué.
+                        </SlideListItem>
                     </SlideList>
                 </SlideScreen>
 
                 {/* Délégation - Exemple */}
-                <SlideScreen title="5.1 - Exemple de Délégation">
+                <SlideScreen title="B.2 - Exemple de délégation">
                     <SlideNote>
                         {`- Montrer qu'on attache UN SEUL écouteur sur le <ul>.
 - event.target.tagName permet de vérifier le type d'élément cliqué.
@@ -292,7 +306,7 @@ list.appendChild(newItem);`}
                 </SlideScreen>
 
                 {/* event.target vs event.currentTarget */}
-                <SlideScreen title="5.2 - event.target vs event.currentTarget">
+                <SlideScreen title="B.3 - event.target vs event.currentTarget">
                     <SlideNote>
                         {`- CRITIQUE : Bien comprendre la différence entre target et currentTarget.
 - target = l'élément qui a déclenché l'événement (où le clic a eu lieu).
@@ -301,12 +315,12 @@ list.appendChild(newItem);`}
 
                     <SlideList>
                         <SlideListItem>
-                            <strong>event.target</strong> : L'élément qui a réellement déclenché l'événement (l'élément
-                            cliqué)
+                            <strong>event.target</strong> : l&apos;élément qui a réellement déclenché
+                            l&apos;événement (l&apos;élément cliqué).
                         </SlideListItem>
                         <SlideListItem>
-                            <strong>event.currentTarget</strong> : L'élément sur lequel l'écouteur est attaché (toujours
-                            le même)
+                            <strong>event.currentTarget</strong> : l&apos;élément sur lequel l&apos;écouteur
+                            est attaché (toujours le même).
                         </SlideListItem>
                     </SlideList>
 
@@ -324,7 +338,7 @@ list.appendChild(newItem);`}
                 </SlideScreen>
 
                 {/* Navigation DOM - closest */}
-                <SlideScreen title="6 - Navigation DOM : closest()">
+                <SlideScreen title="B.4 - Navigation DOM : closest()">
                     <SlideNote>
                         {`- closest() est TRÈS utile pour la délégation d'événements.
 - Remonte dans l'arbre DOM pour trouver le premier ancêtre correspondant.
@@ -354,7 +368,7 @@ console.log(notFound); // null`}
                 </SlideScreen>
 
                 {/* Délégation avancée avec closest */}
-                <SlideScreen title="6.1 - Délégation Avancée avec closest()">
+                <SlideScreen title="B.5 - Délégation avancée avec closest()">
                     <SlideNote>
                         {`- closest() permet de gérer des structures HTML complexes.
 - Très utile quand on clique sur un élément enfant mais qu'on veut agir sur le parent.
@@ -383,7 +397,7 @@ list.addEventListener("click", (event) => {
                 </SlideScreen>
 
                 {/* Navigation DOM - parentElement et children */}
-                <SlideScreen title="6.2 - parentElement et children">
+                <SlideScreen title="B.6 - parentElement et children">
                     <SlideNote>
                         {`- parentElement : accès direct au parent (un seul niveau).
 - children : tous les enfants directs sous forme de HTMLCollection.
@@ -399,23 +413,23 @@ console.log(parent);
 const parent2 = document.getElementById("parent");
 const children = parent2.children; // HTMLCollection
 
-for (let child of parent2.children) {
-  console.log(child);
+for (const child of parent2.children) {
+    console.log(child);
 }`}
                     </SlideCode>
 
                     <SlideList>
                         <SlideListItem>
-                            <strong>parentElement</strong> : Accède à l'élément parent direct
+                            <strong>parentElement</strong> : accède à l&apos;élément parent direct.
                         </SlideListItem>
                         <SlideListItem>
-                            <strong>children</strong> : Accède à tous les éléments enfants directs
+                            <strong>children</strong> : accède à tous les éléments enfants directs.
                         </SlideListItem>
                     </SlideList>
                 </SlideScreen>
 
                 {/* preventDefault */}
-                <SlideScreen title="7 - preventDefault()">
+                <SlideScreen title="B.7 - preventDefault()">
                     <SlideNote>
                         {`- preventDefault() empêche le comportement par défaut de l'événement.
 - N'arrête PAS la propagation (contrairement à stopPropagation).
@@ -442,7 +456,7 @@ form.addEventListener("submit", (event) => {
                 </SlideScreen>
 
                 {/* preventDefault vs stopPropagation */}
-                <SlideScreen title="7.1 - preventDefault vs stopPropagation">
+                <SlideScreen title="B.8 - preventDefault vs stopPropagation">
                     <SlideNote>
                         {`- Ces deux méthodes sont souvent confondues mais font des choses différentes.
 - preventDefault : annule l'action par défaut (suivre un lien, soumettre un formulaire).
@@ -454,18 +468,18 @@ form.addEventListener("submit", (event) => {
                         <div>
                             <h3 className="text-2xl font-semibold mb-4 text-gray-800">preventDefault()</h3>
                             <SlideList>
-                                <SlideListItem>Annule le comportement par défaut</SlideListItem>
-                                <SlideListItem>La propagation continue normalement</SlideListItem>
-                                <SlideListItem>Exemples : soumettre formulaire, suivre lien</SlideListItem>
+                                <SlideListItem>Annule le comportement par défaut.</SlideListItem>
+                                <SlideListItem>La propagation continue normalement.</SlideListItem>
+                                <SlideListItem>Exemples : soumettre un formulaire, suivre un lien.</SlideListItem>
                             </SlideList>
                         </div>
 
                         <div>
                             <h3 className="text-2xl font-semibold mb-4 text-gray-800">stopPropagation()</h3>
                             <SlideList>
-                                <SlideListItem>Arrête la propagation de l'événement</SlideListItem>
-                                <SlideListItem>Le comportement par défaut s'exécute</SlideListItem>
-                                <SlideListItem>Les gestionnaires parents non appelés</SlideListItem>
+                                <SlideListItem>Arrête la propagation de l&apos;événement.</SlideListItem>
+                                <SlideListItem>Le comportement par défaut s&apos;exécute.</SlideListItem>
+                                <SlideListItem>Les gestionnaires parents ne sont pas appelés.</SlideListItem>
                             </SlideList>
                         </div>
                     </div>
@@ -480,7 +494,7 @@ form.addEventListener("submit", (event) => {
                 </SlideScreen>
 
                 {/* Exemple complet délégation */}
-                <SlideScreen title="8 - Exemple Complet : Liste de Tâches">
+                <SlideScreen title="B.9 - Exemple complet : liste de tâches">
                     <SlideNote>
                         {`- Exemple pratique combinant délégation, closest(), et plusieurs types d'actions.
 - Montre comment gérer plusieurs types d'événements avec un seul écouteur.
@@ -518,7 +532,7 @@ todoList.addEventListener("click", (event) => {
                 </SlideScreen>
 
                 {/* Cas d'usage délégation */}
-                <SlideScreen title="8.1 - Quand Utiliser la Délégation ?">
+                <SlideScreen title="B.10 - Quand utiliser la délégation ?">
                     <SlideNote>
                         {`- La délégation n'est pas toujours nécessaire, mais très utile dans ces cas.
 - Pour un seul bouton, pas besoin de délégation - attachez directement l'écouteur.
@@ -527,19 +541,20 @@ todoList.addEventListener("click", (event) => {
 
                     <SlideList>
                         <SlideListItem>
-                            <strong>Éléments dynamiques</strong> : Listes ajoutées/supprimées (commentaires, tâches,
-                            notifications)
+                            <strong>Éléments dynamiques</strong> : listes ajoutées/supprimées (commentaires,
+                            tâches, notifications).
                         </SlideListItem>
                         <SlideListItem>
-                            <strong>Grand nombre d'éléments</strong> : Tableaux, listes longues (inefficace d'attacher
-                            un écouteur à chacun)
+                            <strong>Grand nombre d&apos;éléments</strong> : tableaux, listes longues
+                            (inefficace d&apos;attacher un écouteur à chacun).
                         </SlideListItem>
                         <SlideListItem>
-                            <strong>Structure répétitive</strong> : Grilles de cartes, galeries d'images, menus de
-                            navigation
+                            <strong>Structure répétitive</strong> : grilles de cartes, galeries
+                            d&apos;images, menus de navigation.
                         </SlideListItem>
                         <SlideListItem>
-                            <strong>Performance</strong> : Réduit la consommation mémoire et améliore la vitesse
+                            <strong>Performance</strong> : réduit la consommation mémoire et améliore la
+                            vitesse.
                         </SlideListItem>
                     </SlideList>
                 </SlideScreen>

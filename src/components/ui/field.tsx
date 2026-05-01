@@ -1,13 +1,13 @@
 "use client"
 
 import * as React from "react"
-import {useEffect, useMemo, useState} from "react"
+import {useMemo} from "react"
 import {cva, type VariantProps} from "class-variance-authority"
 
 import {cn} from "@/lib/utils"
 import {Label} from "@/components/ui/label"
 import {Separator} from "@/components/ui/separator"
-import {useTheme} from "next-themes";
+import {useIsDark} from "@/hook/useIsDark";
 
 function FieldSet({className, ...props}: React.ComponentProps<"fieldset">) {
     return (
@@ -141,16 +141,7 @@ function FieldTitle({className, ...props}: React.ComponentProps<"div">) {
 }
 
 function FieldDescription({className, ...props}: React.ComponentProps<"p">) {
-
-    const {theme, systemTheme} = useTheme();
-    const [mounted, setMounted] = useState(false);
-
-// Determine actual theme with fallback
-    const currentTheme = mounted ? (theme === "system" ? systemTheme : theme) : "light";
-    const isDark = currentTheme === "dark";
-
-    useEffect(() => setMounted(true), []);
-
+    const isDark = useIsDark();
 
     return (
         <p

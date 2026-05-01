@@ -1,9 +1,10 @@
 'use client';
-import {ReactNode, useEffect, useState} from 'react';
+import {ReactNode} from 'react';
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
-import {useTheme} from "next-themes";
+import {useIsDark} from "@/hook/useIsDark";
+import {useMounted} from "@/hook/useMounted";
 import Link from "next/link";
 
 interface BaseCardProps {
@@ -28,12 +29,9 @@ export default function BaseCard({
                                      withLed = true,
                                      className = ""
                                  }: BaseCardProps) {
-    const {theme} = useTheme();
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => setMounted(true), []);
+    const mounted = useMounted();
+    const isDark = useIsDark();
     if (!mounted) return null; // SSR safe
-
-    const isDark = theme === 'dark';
 
     return (
         <div
@@ -112,12 +110,9 @@ export function ActionButton({
                                  disabled = false,
                                  target = '_self'
                              }: ActionButtonProps) {
-    const {theme} = useTheme();
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => setMounted(true), []);
+    const mounted = useMounted();
+    const isDark = useIsDark();
     if (!mounted) return null;
-
-    const isDark = theme === 'dark';
 
     return (
         <Link

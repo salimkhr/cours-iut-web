@@ -82,11 +82,11 @@ export default function PageCodeExamen({currentModule, onSuccess, examKey}: Page
                 content={
                     <div className="flex flex-col items-center gap-6 w-full px-8">
                         <Heading level={1} className="text-2xl lg:text-3xl text-center">
-                            Accéder à l'examen
+                            Accéder à l&apos;examen
                         </Heading>
 
                         <p className="text-muted-foreground text-center max-w-xl">
-                            Un code d'accès à 6 caractères est requis pour continuer.
+                            Un code d&apos;accès à 6 caractères est requis pour continuer.
                         </p>
 
                         <div className="w-full max-w-md space-y-4">

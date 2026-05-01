@@ -7,7 +7,7 @@ interface SlideNoteProps {
   className?: string;
 }
 
-export const SlideNote: React.FC<SlideNoteProps> = ({ children, className }) => {
+export const SlideNote: React.FC<SlideNoteProps> = () => {
   return null; // Ne rien afficher directement, les notes sont gérées par le contexte
 };
 

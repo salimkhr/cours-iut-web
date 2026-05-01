@@ -1,13 +1,14 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
 import {ClipboardCopyIcon, DownloadIcon, MaximizeIcon, MinimizeIcon} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {oneDark, oneLight} from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {Button} from "@/components/ui/button";
 import Module from "@/types/Module";
-import {useTheme} from "next-themes";
+import {useIsDark} from "@/hook/useIsDark";
+import {useMounted} from "@/hook/useMounted";
 
 export interface CodeCardProps {
     language: string;
@@ -29,15 +30,12 @@ export default function CodeCard({
                                      collapsible = false,
                                      highlightLines,
                                  }: CodeCardProps) {
-    const {theme} = useTheme();
-    const [mounted, setMounted] = useState(false);
+    const mounted = useMounted();
+    const isDark = useIsDark();
     const [copied, setCopied] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
 
-    useEffect(() => setMounted(true), []);
     if (!mounted) return null; // SSR-safe
-
-    const isDark = theme === 'dark';
 
     const lineCount = children.split('\n').length;
     const isLongFile = lineCount > 50;

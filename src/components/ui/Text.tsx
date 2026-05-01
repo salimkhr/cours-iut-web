@@ -1,8 +1,8 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
-import {useTheme} from "next-themes";
+import React from "react";
 import {cn} from "@/lib/utils";
+import {useIsDark} from "@/hook/useIsDark";
 
 interface TextProps extends React.HTMLAttributes<HTMLParagraphElement> {
     variant?: "default" | "muted" | "light";
@@ -15,14 +15,7 @@ export default function Text({
                          as: Component = "p",
                          ...props
                      }: TextProps) {
-    const {theme, systemTheme} = useTheme();
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => setMounted(true), []);
-
-    // Determine actual theme (fallback to system theme)
-    const currentTheme = mounted ? (theme === "system" ? systemTheme : theme) : "light";
-    const isDark = currentTheme === "dark";
+    const isDark = useIsDark();
 
     const variants: Record<NonNullable<TextProps["variant"]>, string> = {
         // Increased contrast ratios for WCAG AA compliance

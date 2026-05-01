@@ -10,9 +10,9 @@ import CodeCard from "@/components/Cards/CodeCard";
 export default function Examen() {
 
     const sections = [
-        {title: "A - Fetch & Boutons", points: 6, time: "0h30"},
-        {title: "B - DOM & Cartes",    points: 8, time: "0h40"},
-        {title: "C - Events & Formulaire", points: 6, time: "0h20"},
+        {title: "A- Fetch & boutons", points: 6, time: "0h30"},
+        {title: "B- DOM & cartes", points: 8, time: "0h40"},
+        {title: "C- Events & formulaire", points: 6, time: "0h20"},
     ];
 
     const agents = [
@@ -37,7 +37,7 @@ export default function Examen() {
                 <Text>
                     BMAD est une méthode de développement assistée par IA qui découpe un projet en 4 rôles spécialisés,
                     chacun exécuté par un agent IA distinct. Les agents travaillent <strong>en chaîne</strong> :
-                    la sortie de l'un devient l'entrée du suivant.
+                    la sortie de l&apos;un devient l&apos;entrée du suivant.
                 </Text>
                 <List>
                     {agents.map((a, i) => (
@@ -47,8 +47,8 @@ export default function Examen() {
                     ))}
                 </List>
                 <Text className="mt-4">
-                    Chaque agent reçoit un <strong>prompt</strong> (l'action à exécuter), produit un <strong>fichier de sortie</strong>,
-                    et le transmet à l'agent suivant.
+                    Chaque agent reçoit un <strong>prompt</strong> (l&apos;action à exécuter), produit un <strong>fichier de sortie</strong>,
+                    et le transmet à l&apos;agent suivant.
                     Votre mission : construire une interface qui permet de <strong>composer un pipeline BMAD</strong> en ajoutant des agents un par un.
                 </Text>
 
@@ -56,7 +56,7 @@ export default function Examen() {
                     <AlertCircle className="h-5 w-5 text-yellow-600"/>
                     <AlertTitle className="text-yellow-900 font-semibold">Consignes</AlertTitle>
                     <AlertDescription className="text-yellow-800">
-                        <Text>L'utilisation d'Internet, du téléphone ou d'outils d'IA est interdite.</Text>
+                        <Text>L&apos;utilisation d&apos;Internet, du téléphone ou d&apos;outils d&apos;IA est interdite.</Text>
                     </AlertDescription>
                 </Alert>
             </section>
@@ -87,9 +87,9 @@ export default function Examen() {
     └── index.js   ← votre travail`}
                 </CodeCard>
 
-                <Heading level={3}>Lancer le backend</Heading>
+                <Heading level={3}>1. Lancer le backend</Heading>
                 <Text>
-                    Le backend est un serveur PHP à démarrer dans le dossier du projet avant d'ouvrir la page :
+                    Le backend est un serveur PHP à démarrer dans le dossier du projet avant d&apos;ouvrir la page :
                 </Text>
                 <CodeCard language="bash">
                     {`php -S localhost:8000`}
@@ -427,22 +427,22 @@ function lancerPipeline(sessions) {
 
             {/* Partie A */}
             <section className="pt-6">
-                <Heading level={2}>A - Fetch & Boutons — 6 pts — 0h30</Heading>
+                <Heading level={2}>A- Fetch & boutons — 6 pts — 0h30</Heading>
 
-                <Heading level={3}>Initialisation</Heading>
+                <Heading level={3}>1. Initialisation</Heading>
                 <Text>
-                    Dans <Code>js/index.js</Code>, créer une fonction <Code>startApp</Code> appelée lors de l'événement <Code>load</Code> de la page.
+                    Dans <Code>js/index.js</Code>, créez une fonction <Code>startApp</Code> appelée lors de l&apos;événement <Code>load</Code> de la page.
                 </Text>
 
-                <Heading level={3}>Récupération des agents</Heading>
+                <Heading level={3}>2. Récupération des agents</Heading>
                 <Text>
-                    Dans <Code>startApp</Code>, utiliser <Code>fetch</Code> pour récupérer la liste des agents depuis l'URL suivante :
+                    Dans <Code>startApp</Code>, utilisez <Code>fetch</Code> pour récupérer la liste des agents depuis l&apos;URL suivante :
                 </Text>
                 <CodeCard language="text" filename="URL de l'API">
                     {`http://localhost:8000/agents`}
                 </CodeCard>
                 <Text>
-                    L'API retourne directement un tableau JSON :
+                    L&apos;API retourne directement un tableau JSON :
                 </Text>
                 <CodeCard language="json" filename="Réponse de l'API">
                     {`[
@@ -453,32 +453,32 @@ function lancerPipeline(sessions) {
 ]`}
                 </CodeCard>
                 <List>
-                    <ListItem>Passer <Code>#loading</Code> à <Code>display: block</Code> avant le fetch, puis à <Code>display: none</Code> une fois les données reçues</ListItem>
-                    <ListItem>Passer le tableau à <Code>afficherBoutons(agents)</Code></ListItem>
+                    <ListItem>Passez <Code>#loading</Code> à <Code>display: block</Code> avant le fetch, puis à <Code>display: none</Code> une fois les données reçues</ListItem>
+                    <ListItem>Passez le tableau à <Code>afficherBoutons(agents)</Code></ListItem>
                 </List>
 
-                <Heading level={3}>Génération des boutons</Heading>
+                <Heading level={3}>3. Génération des boutons</Heading>
                 <Text>
-                    Implémenter <Code>afficherBoutons(agents)</Code>.
-                    Pour chaque agent du tableau, créer un bouton avec <Code>document.createElement</Code> et l'insérer dans <Code>#boutons-agents</Code>.
+                    Implémentez <Code>afficherBoutons(agents)</Code>.
+                    Pour chaque agent du tableau, créez un bouton avec <Code>document.createElement</Code> et insérez-le dans <Code>#boutons-agents</Code>.
                 </Text>
                 <List>
-                    <ListItem>Définir le <Code>textContent</Code> avec l'emoji et le nom de l'agent</ListItem>
-                    <ListItem>Ajouter la classe <Code>btn-agent</Code></ListItem>
-                    <ListItem>Stocker l'identifiant de l'agent dans <Code>dataset.agentId</Code></ListItem>
-                    <ListItem>Insérer le bouton dans <Code>#boutons-agents</Code> avec <Code>appendChild</Code></ListItem>
+                    <ListItem>Définissez le <Code>textContent</Code> avec l&apos;emoji et le nom de l&apos;agent</ListItem>
+                    <ListItem>Ajoutez la classe <Code>btn-agent</Code></ListItem>
+                    <ListItem>Stockez l&apos;identifiant de l&apos;agent dans <Code>dataset.agentId</Code></ListItem>
+                    <ListItem>Insérez le bouton dans <Code>#boutons-agents</Code> avec <Code>appendChild</Code></ListItem>
                 </List>
             </section>
 
             {/* Partie B */}
             <section className="pt-6">
-                <Heading level={2}>B - DOM & Cartes — 8 pts — 0h40</Heading>
+                <Heading level={2}>B- DOM & cartes — 8 pts — 0h40</Heading>
 
-                <Heading level={3}>Tableau des sessions</Heading>
+                <Heading level={3}>1. Tableau des sessions</Heading>
                 <Text>
-                    Déclarer un tableau vide <Code>sessions</Code> en dehors de toute fonction.
+                    Déclarez un tableau vide <Code>sessions</Code> en dehors de toute fonction.
                     Il contiendra un objet par carte ajoutée au pipeline.
-                    Voici la structure d'un objet session :
+                    Voici la structure d&apos;un objet session :
                 </Text>
                 <CodeCard language="js">
                     {`{
@@ -492,14 +492,14 @@ function lancerPipeline(sessions) {
 }`}
                 </CodeCard>
 
-                <Heading level={3}>Ajout d'une carte</Heading>
+                <Heading level={3}>2. Ajout d&apos;une carte</Heading>
                 <Text>
-                    Implémenter <Code>ajouterCarteAuPipeline(agent, action, produit, description)</Code>.
+                    Implémentez <Code>ajouterCarteAuPipeline(agent, action, produit, description)</Code>.
                     Cette fonction sera appelée à chaque soumission du formulaire (partie C).
                 </Text>
                 <Text>
-                    À la fin de <Code>js/index.js</Code>, ajouter un appel direct à <Code>ajouterCarteAuPipeline()</Code>
-                    avec des données en dur pour vérifier que la carte s'affiche correctement.
+                    À la fin de <Code>js/index.js</Code>, ajoutez un appel direct à <Code>ajouterCarteAuPipeline()</Code>
+                    avec des données en dur pour vérifier que la carte s&apos;affiche correctement.
                 </Text>
                 <CodeCard language="js">
                     {`// À supprimer après vérification
@@ -514,29 +514,29 @@ ajouterCarteAuPipeline(
                 <Text>
                     La fonction doit exécuter les étapes suivantes <strong>dans cet ordre</strong> :
                 </Text>
-                <List>
+                <List ordered>
                     <ListItem>
-                        Construire l'objet session avec <Code>id</Code> égal à <Code>sessions.length + 1</Code>,
-                        puis l'ajouter au tableau <Code>sessions</Code> avec <Code>push</Code>
+                        Construisez l&apos;objet session avec <Code>id</Code> égal à <Code>sessions.length + 1</Code>,
+                        puis ajoutez-le au tableau <Code>sessions</Code> avec <Code>push</Code>.
                     </ListItem>
                     <ListItem>
                         Si <Code>sessions</Code> contient <strong>au moins deux éléments</strong> après le push,
-                        créer une flèche et l'insérer dans <Code>#pipeline</Code> avant la nouvelle carte.
-                        La flèche affiche le <Code>produit</Code> de l'avant-dernier élément de <Code>sessions</Code>
-                        (c'est-à-dire <Code>sessions[sessions.length - 2].produit</Code>), qui représente le fichier transmis par l'agent précédent
+                        créez une flèche et insérez-la dans <Code>#pipeline</Code> avant la nouvelle carte.
+                        La flèche affiche le <Code>produit</Code> de l&apos;avant-dernier élément de <Code>sessions</Code>
+                        (c&apos;est-à-dire <Code>sessions[sessions.length - 2].produit</Code>), qui représente le fichier transmis par l&apos;agent précédent.
                     </ListItem>
                     <ListItem>
-                        Créer la carte avec <Code>innerHTML</Code> et l'insérer dans <Code>#pipeline</Code>.
-                        La carte doit porter l'attribut <Code>data-id</Code> égal à son <Code>id</Code>
+                        Créez la carte avec <Code>innerHTML</Code> et insérez-la dans <Code>#pipeline</Code>.
+                        La carte doit porter l&apos;attribut <Code>data-id</Code> égal à son <Code>id</Code>.
                     </ListItem>
                     <ListItem>
-                        Activer le bouton <Code>#btn-lancer</Code> en retirant l'attribut <Code>disabled</Code>
+                        Activez le bouton <Code>#btn-lancer</Code> en retirant l&apos;attribut <Code>disabled</Code>.
                     </ListItem>
                 </List>
 
                 <Text>
-                    Le numéro affiché dans <Code>.card-num</Code> est l'<Code>id</Code> de la session formaté sur deux chiffres.
-                    Utiliser <Code>String(id).padStart(2, "0")</Code> pour obtenir <Code>"01"</Code>, <Code>"02"</Code>, etc.
+                    Le numéro affiché dans <Code>.card-num</Code> est l&apos;<Code>id</Code> de la session formaté sur deux chiffres.
+                    Utilisez <Code>String(id).padStart(2, &quot;0&quot;)</Code> pour obtenir <Code>&quot;01&quot;</Code>, <Code>&quot;02&quot;</Code>, etc.
                 </Text>
 
                 <Text>Structure HTML attendue pour une flèche :</Text>
@@ -568,10 +568,10 @@ ajouterCarteAuPipeline(
 </div>`}
                 </CodeCard>
 
-                <Heading level={3}>Mise à jour des statuts</Heading>
+                <Heading level={3}>3. Mise à jour des statuts</Heading>
                 <Text>
-                    Ajouter dans <Code>startApp</Code> un événement <Code>click</Code> sur <Code>#btn-lancer</Code>.
-                    Au clic, appeler <Code>lancerPipeline(sessions)</Code> — cette fonction est fournie dans <Code>js/index.js</Code>.
+                    Ajoutez dans <Code>startApp</Code> un événement <Code>click</Code> sur <Code>#btn-lancer</Code>.
+                    Au clic, appelez <Code>lancerPipeline(sessions)</Code> — cette fonction est fournie dans <Code>js/index.js</Code>.
                     Elle retourne une Promise qui résout avec le tableau suivant :
                 </Text>
                 <CodeCard language="json" filename="Retour de lancerPipeline()">
@@ -582,48 +582,48 @@ ajouterCarteAuPipeline(
 ]`}
                 </CodeCard>
                 <Text>
-                    Pour chaque objet du tableau retourné, sélectionner la carte dont l'attribut <Code>data-id</Code> correspond à <Code>id</Code>,
-                    puis remplacer le <Code>textContent</Code> de son <Code>.badge-statut</Code> par la valeur de <Code>statut</Code>.
+                    Pour chaque objet du tableau retourné, sélectionnez la carte dont l&apos;attribut <Code>data-id</Code> correspond à <Code>id</Code>,
+                    puis remplacez le <Code>textContent</Code> de son <Code>.badge-statut</Code> par la valeur de <Code>statut</Code>.
                 </Text>
             </section>
 
             {/* Partie C */}
             <section className="pt-6">
-                <Heading level={2}>C - Events & Formulaire — 6 pts — 0h20</Heading>
+                <Heading level={2}>C- Events & formulaire — 6 pts — 0h20</Heading>
 
-                <Heading level={3}>Clic sur un bouton agent</Heading>
+                <Heading level={3}>1. Clic sur un bouton agent</Heading>
                 <Text>
-                    Dans <Code>afficherBoutons</Code>, ajouter un événement <Code>click</Code> sur chaque bouton agent.
+                    Dans <Code>afficherBoutons</Code>, ajoutez un événement <Code>click</Code> sur chaque bouton agent.
                     Au clic :
                 </Text>
                 <List>
-                    <ListItem>Ajouter la classe <Code>show</Code> sur <Code>#modal-form-overlay</Code> pour afficher la modale</ListItem>
-                    <ListItem>Écrire l'emoji et le nom de l'agent dans <Code>#modal-agent-label</Code></ListItem>
+                    <ListItem>Ajoutez la classe <Code>show</Code> sur <Code>#modal-form-overlay</Code> pour afficher la modale.</ListItem>
+                    <ListItem>Écrivez l&apos;emoji et le nom de l&apos;agent dans <Code>#modal-agent-label</Code>.</ListItem>
                     <ListItem>
-                        Stocker l'agent courant dans une variable accessible par le gestionnaire de soumission du formulaire
-                        (déclarer cette variable en dehors de toute fonction, comme <Code>sessions</Code>)
+                        Stockez l&apos;agent courant dans une variable accessible par le gestionnaire de soumission du formulaire
+                        (déclarez cette variable en dehors de toute fonction, comme <Code>sessions</Code>).
                     </ListItem>
                 </List>
 
-                <Heading level={3}>Fermeture de la modale</Heading>
+                <Heading level={3}>2. Fermeture de la modale</Heading>
                 <Text>
-                    Ajouter un événement <Code>click</Code> sur le bouton <Code>#btn-fermer-modal</Code>
+                    Ajoutez un événement <Code>click</Code> sur le bouton <Code>#btn-fermer-modal</Code>
                     qui retire la classe <Code>show</Code> de <Code>#modal-form-overlay</Code>.
                 </Text>
 
-                <Heading level={3}>Soumission du formulaire</Heading>
+                <Heading level={3}>3. Soumission du formulaire</Heading>
                 <Text>
-                    Ajouter un événement <Code>submit</Code> sur <Code>#form-session</Code>.
-                    Récupérer les valeurs des trois champs :
+                    Ajoutez un événement <Code>submit</Code> sur <Code>#form-session</Code>.
+                    Récupérez les valeurs des trois champs :
                 </Text>
                 <List>
-                    <ListItem><Code>#input-action</Code> — le prompt exécuté par l'agent</ListItem>
+                    <ListItem><Code>#input-action</Code> — le prompt exécuté par l&apos;agent</ListItem>
                     <ListItem><Code>#input-produit</Code> — le fichier produit</ListItem>
                     <ListItem><Code>#input-description</Code> — la description</ListItem>
                 </List>
                 <Text>
-                    Appeler <Code>ajouterCarteAuPipeline()</Code> avec l'agent courant et les trois valeurs,
-                    puis retirer la classe <Code>show</Code> de <Code>#modal-form-overlay</Code> et réinitialiser le formulaire avec <Code>reset()</Code>.
+                    Appelez <Code>ajouterCarteAuPipeline()</Code> avec l&apos;agent courant et les trois valeurs,
+                    puis retirez la classe <Code>show</Code> de <Code>#modal-form-overlay</Code> et réinitialisez le formulaire avec <Code>reset()</Code>.
                 </Text>
             </section>
 

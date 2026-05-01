@@ -1,8 +1,8 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
-import {useTheme} from "next-themes";
+import React from "react";
 import {cn} from "@/lib/utils";
+import {useIsDark} from "@/hook/useIsDark";
 
 type ListProps = React.HTMLAttributes<HTMLUListElement | HTMLOListElement> & {
     ordered?: boolean;
@@ -55,14 +55,7 @@ export function ListItem({
                              variant = "default",
                              ...props
                          }: ListItemProps) {
-    const { theme, systemTheme } = useTheme();
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => setMounted(true), []);
-
-    // Determine actual theme with fallback
-    const currentTheme = mounted ? (theme === "system" ? systemTheme : theme) : "light";
-    const isDark = currentTheme === "dark";
+    const isDark = useIsDark();
 
     const variants = {
         default: isDark ? "text-gray-100" : "text-gray-900",

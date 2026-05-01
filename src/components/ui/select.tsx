@@ -1,12 +1,11 @@
 "use client"
 
 import * as React from "react"
-import {useEffect, useState} from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
 import {CheckIcon, ChevronDownIcon, ChevronUpIcon} from "lucide-react"
 
 import {cn} from "@/lib/utils"
-import {useTheme} from "next-themes";
+import {useIsDark} from "@/hook/useIsDark";
 
 function Select({
                     ...props
@@ -58,16 +57,8 @@ function SelectContent({
                            position = "popper",
                            ...props
                        }: React.ComponentProps<typeof SelectPrimitive.Content>) {
+    const isDark = useIsDark();
 
-    const {theme, systemTheme} = useTheme();
-    const [mounted, setMounted] = useState(false);
-
-// Determine actual theme with fallback
-    const currentTheme = mounted ? (theme === "system" ? systemTheme : theme) : "light";
-    const isDark = currentTheme === "dark";
-
-    useEffect(() => setMounted(true), []);
-    
     return (
         <SelectPrimitive.Portal>
             <SelectPrimitive.Content

@@ -1,16 +1,11 @@
 'use client'
 
 import {useTheme} from 'next-themes'
-import {useEffect, useState} from 'react'
+import {useMounted} from '@/hook/useMounted'
 
 export function ThemeToggle() {
-    const [mounted, setMounted] = useState(false)
+    const mounted = useMounted()
     const { theme, setTheme } = useTheme()
-
-    // Évite les problèmes d'hydratation
-    useEffect(() => {
-        setMounted(true)
-    }, [])
 
     if (!mounted) {
         return null

@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {cn} from "@/lib/utils";
 import {ProgressPoint} from "./ProgressPoint";
-import {useTheme} from "next-themes";
+import {useIsDark} from "@/hook/useIsDark";
+import {useMounted} from "@/hook/useMounted";
 
 interface ProgressGroupProps {
     isCurrentSlide: boolean;
@@ -21,12 +22,9 @@ export const ProgressGroup: React.FC<ProgressGroupProps> = ({
                                                                 activeRef
                                                             }) => {
 
-    const {theme} = useTheme();
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => setMounted(true), []);
+    const mounted = useMounted();
+    const isDark = useIsDark();
     if (!mounted) return null;
-
-    const isDark = theme === 'dark';
     return (
         <div
             className={cn(

@@ -10,7 +10,7 @@ export default function TP() {
         <article>
             <section>
                 <Heading level={2}>A- Vérification du mot de passe</Heading>
-                <Text>Dans le fichier <Code>login.html</Code>, ajoute la page suivante :</Text>
+                <Text>Dans le fichier <Code>login.html</Code>, ajoutez la page suivante :</Text>
                 <DownloadCodeButton language="html" filename="login.html">
                     {`<!DOCTYPE html>
 <html lang="fr">
@@ -33,7 +33,7 @@ export default function TP() {
 <body>
 
     <div class="container mt-5">
-        <h2 class="text-center mb-4">Réinitialiser votre mot de passe</Heading>
+        <h2 class="text-center mb-4">Réinitialiser votre mot de passe</h2>
 
         <form id="resetPasswordForm">
             <div class="mb-3">
@@ -71,77 +71,87 @@ export default function TP() {
                 </DownloadCodeButton>
                 <List ordered>
                     <ListItem>
-                        Crée un gestionnaire d&apos;événements pour la soumission du formulaire de réinitialisation du
-                        mot de
-                        passe.
-                        Il doit empêcher l&apos;envoi du formulaire par défaut en
-                        utilisant <Code>event.preventDefault()</Code>.
+                        Créez un gestionnaire d&apos;événements pour la soumission du formulaire de
+                        réinitialisation du mot de passe. Il doit empêcher l&apos;envoi par défaut grâce à{" "}
+                        <Code>event.preventDefault()</Code>.
                     </ListItem>
 
                     <ListItem>
-                        Vérifie si les mots de passe saisis dans les
-                        champs <Code>newPassword</Code> et <Code>confirmPassword</Code>
-                        correspondent. Si ce n&apos;est pas le cas, affiche un message d&apos;erreur
-                        dans <Code>errorMessage</Code> et empêche l&apos;envoi du formulaire.
-                    </ListItem>
-
-                    <ListItem>
-                        Crée une fonction <Code>validatePassword</Code> qui valide la force du mot de passe saisi
-                        dans <Code>newPassword</Code>.
-                        La validation doit vérifier :
-                        <List ordered>
-                            <ListItem>La longueur du mot de passe (au moins 8 caractères). <Code>const lengthCriteria =
-                                password.length &gt;= 8;</Code></ListItem>
-                            <ListItem>La présence d&apos;une lettre majuscule<Code>const upperCase =
-                                /[A-Z]/.test(password);</Code></ListItem>
-                            <ListItem>La présence d&apos;une lettre minuscule<Code>const lowerCase =
-                                /[a-z]/.test(password);</Code></ListItem>
-                            <ListItem>La présence d&apos;un chiffre <Code>const digit =
-                                /\d/.test(password);</Code></ListItem>
-                            <ListItem>La présence d&apos;un caractère spécial <Code>const specialChar =
-                                /[!@#$%^&*]/.test(password);</Code>.</ListItem>
-                        </List>
-                        <Text>La fonction doit retourner un objet contenant :</Text>
-                        <List ordered>
-                            <ListItem><Code>isValid</Code> : un booléen indiquant si le mot de passe est
-                                valide.</ListItem>
-                            <ListItem><Code>message</Code> : un message expliquant pourquoi le mot de passe est
-                                invalide
-                                (le cas échéant).</ListItem>
-                            <ListItem><Code>strength</Code> : un indicateur de la force du mot de passe
-                                (&quot;Faible&quot; (&lt; a 4 critères) ,&quot;Moyenne&quot; (4 critères)
-                                ou &quot;Fort&quot;
-                                (5 critères)).</ListItem>
-                        </List>
-                    </ListItem>
-
-                    <ListItem>
-                        Utilise la fonction <Code>validatePassword</Code> pour afficher la force du mot de passe
-                        dans <Code>passwordStrength</Code>.
-                        Change la classe de <Code>passwordStrength</Code> en fonction de la force du mot de passe
-                        (&quot;strength-weak&quot;, &quot;strength-medium&quot;, &quot;strength-strong&quot;).
-                    </ListItem>
-
-                    <ListItem>
-                        Si tous les critères sont remplis (les mots de passe correspondent et le mot de passe est
-                        valide), affiche une alerte
-                        avec le message &quot;Mot de passe réinitialisé avec succès !&quot; et réinitialise le
+                        Vérifiez si les mots de passe saisis dans les champs <Code>newPassword</Code> et{" "}
+                        <Code>confirmPassword</Code> correspondent. Si ce n&apos;est pas le cas, affichez un
+                        message d&apos;erreur dans <Code>errorMessage</Code> et empêchez l&apos;envoi du
                         formulaire.
                     </ListItem>
 
                     <ListItem>
-                        Ajoute un gestionnaire d&apos;événements pour détecter la perte du focus sur le
-                        champ <Code>newPassword</Code>.
-                        Ce gestionnaire doit appeler la fonction de validation du mot de passe chaque fois que
-                        l&apos;utilisateur quitte le champ.
+                        Créez une fonction <Code>validatePassword</Code> qui valide la force du mot de passe
+                        saisi dans <Code>newPassword</Code>. La validation doit vérifier :
+                        <List ordered>
+                            <ListItem>
+                                La longueur du mot de passe (au moins 8 caractères) :{" "}
+                                <Code>const lengthCriteria = password.length &gt;= 8;</Code>.
+                            </ListItem>
+                            <ListItem>
+                                La présence d&apos;une lettre majuscule :{" "}
+                                <Code>const upperCase = /[A-Z]/.test(password);</Code>.
+                            </ListItem>
+                            <ListItem>
+                                La présence d&apos;une lettre minuscule :{" "}
+                                <Code>const lowerCase = /[a-z]/.test(password);</Code>.
+                            </ListItem>
+                            <ListItem>
+                                La présence d&apos;un chiffre :{" "}
+                                <Code>{`const digit = /\\d/.test(password);`}</Code>.
+                            </ListItem>
+                            <ListItem>
+                                La présence d&apos;un caractère spécial :{" "}
+                                <Code>{`const specialChar = /[!@#$%^&*]/.test(password);`}</Code>.
+                            </ListItem>
+                        </List>
+                        <Text>La fonction doit retourner un objet contenant :</Text>
+                        <List ordered>
+                            <ListItem>
+                                <Code>isValid</Code> : un booléen indiquant si le mot de passe est valide.
+                            </ListItem>
+                            <ListItem>
+                                <Code>message</Code> : un message expliquant pourquoi le mot de passe est
+                                invalide (le cas échéant).
+                            </ListItem>
+                            <ListItem>
+                                <Code>strength</Code> : un indicateur de la force du mot de passe —{" "}
+                                <Code>&quot;Faible&quot;</Code> (moins de 4 critères),{" "}
+                                <Code>&quot;Moyenne&quot;</Code> (4 critères) ou{" "}
+                                <Code>&quot;Fort&quot;</Code> (5 critères).
+                            </ListItem>
+                        </List>
+                    </ListItem>
+
+                    <ListItem>
+                        Utilisez la fonction <Code>validatePassword</Code> pour afficher la force du mot de
+                        passe dans <Code>passwordStrength</Code>. Changez la classe de{" "}
+                        <Code>passwordStrength</Code> en fonction de la force (<Code>strength-weak</Code>,{" "}
+                        <Code>strength-medium</Code>, <Code>strength-strong</Code>).
+                    </ListItem>
+
+                    <ListItem>
+                        Si tous les critères sont remplis (les mots de passe correspondent et le mot de passe
+                        est valide), affichez une alerte avec le message{" "}
+                        <Code>&quot;Mot de passe réinitialisé avec succès !&quot;</Code> et réinitialisez le
+                        formulaire.
+                    </ListItem>
+
+                    <ListItem>
+                        Ajoutez un gestionnaire d&apos;événements <Code>blur</Code> sur le champ{" "}
+                        <Code>newPassword</Code>. Ce gestionnaire doit appeler la fonction de validation du
+                        mot de passe chaque fois que l&apos;utilisateur quitte le champ.
                     </ListItem>
                 </List>
 
             </section>
             <section>
-                <Heading level={2}>B - Création d&apos;un dashboard</Heading>
+                <Heading level={2}>B- Création d&apos;un dashboard</Heading>
 
-                <Text>Dans le fichier <Code>Dashboard.html</Code>, ajoute la page suivante :</Text>
+                <Text>Dans le fichier <Code>dashboard.html</Code>, ajoutez la page suivante :</Text>
                 <DownloadCodeButton language="html" filename="dashboard.html">
                     {`<!DOCTYPE html>
 <html lang="fr">
@@ -190,7 +200,7 @@ export default function TP() {
 `}
                 </DownloadCodeButton>
 
-                <Text>Dans le fichier <Code>dashboard.js</Code>, ajoute le code suivant :</Text>
+                <Text>Dans le fichier <Code>dashboard.js</Code>, ajoutez le code suivant :</Text>
                 <CodeCard language="javascript">
                     {`const CARD_HTML = \`
         <div class=" col">
@@ -221,37 +231,46 @@ const LIST_HTML = \`
                 </CodeCard>
 
                 <List ordered>
-                    <ListItem> Crée une fonction <Code>addTask</Code> qui sera exécutée lorsqu&apos;on clique sur
-                        le bouton <Code>button#addTask</Code>. Cette fonction devra ajouter à
-                        la <Code>div#taskList</Code> le code HTML contenu dans la
-                        constante <Code>CARD_HTML</Code>.</ListItem>
+                    <ListItem>
+                        Créez une fonction <Code>addTask</Code> qui sera exécutée au clic sur le bouton{" "}
+                        <Code>button#addTask</Code>. Cette fonction doit ajouter à la{" "}
+                        <Code>div#taskList</Code> le code HTML contenu dans la constante{" "}
+                        <Code>CARD_HTML</Code>.
+                    </ListItem>
 
-                    <ListItem>Attribue un gestionnaire d&apos;événements à la <Code>div#taskList</Code> pour gérer les
-                        clics
-                        sur les éléments suivants :
+                    <ListItem>
+                        Attachez un gestionnaire d&apos;événements à la <Code>div#taskList</Code> pour gérer
+                        les clics sur les éléments suivants :
                         <List ordered>
-                            <ListItem>Ajouter un nouvel élément à la <Code>ul.list-group</Code> en insérant le HTML de
-                                la constante <Code>LIST_HTML</Code> lorsque le bouton <Code>button.add-item</Code> est
-                                cliqué.</ListItem>
-                            <ListItem>Supprimer l&apos;élément <Code>li</Code> parent du bouton lorsque le
-                                bouton <Code>button.delete-item</Code> est cliqué.</ListItem>
-                            <ListItem>Supprimer l&apos;élément <Code>div.card</Code> parent du bouton lorsque le
-                                bouton <Code>button.delete-task</Code> est cliqué.</ListItem>
-                            <ListItem>Remplacer l&apos;élément en fonction de
-                                l&apos;attribut <Code>data-type</Code> par
-                                un <Code>input</Code> ou un <Code>textarea</Code> (pour <Code>task-description</Code>)
-                                lorsqu&apos;on clique dessus.</ListItem>
+                            <ListItem>
+                                Ajoutez un nouvel élément à la <Code>ul.list-group</Code> en insérant le HTML
+                                de la constante <Code>LIST_HTML</Code> lorsque le bouton{" "}
+                                <Code>button.add-item</Code> est cliqué.
+                            </ListItem>
+                            <ListItem>
+                                Supprimez l&apos;élément <Code>li</Code> parent du bouton lorsque le bouton{" "}
+                                <Code>button.delete-item</Code> est cliqué.
+                            </ListItem>
+                            <ListItem>
+                                Supprimez l&apos;élément <Code>div.card</Code> parent du bouton lorsque le
+                                bouton <Code>button.delete-task</Code> est cliqué.
+                            </ListItem>
+                            <ListItem>
+                                Remplacez l&apos;élément en fonction de l&apos;attribut <Code>data-type</Code>{" "}
+                                par un <Code>input</Code> ou un <Code>textarea</Code> (pour{" "}
+                                <Code>task-description</Code>) lorsqu&apos;on clique dessus.
+                            </ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
-                        Ajoute un gestionnaire d&apos;événements pour gérer le <Code>onBlur</Code> (perte du focus) sur
-                        les
+                        Ajoutez un gestionnaire d&apos;événements <Code>blur</Code> (perte du focus) sur les
                         éléments, afin de :
                         <List ordered>
-                            <ListItem>Remplacer l&apos;élément en fonction de
-                                l&apos;attribut <Code>data-type</Code> par
-                                un <Code>h5</Code>, un <Code>span</Code> ou un <Code>p</Code>.</ListItem>
+                            <ListItem>
+                                Remplacer l&apos;élément en fonction de l&apos;attribut <Code>data-type</Code>{" "}
+                                par un <Code>h5</Code>, un <Code>span</Code> ou un <Code>p</Code>.
+                            </ListItem>
                         </List>
                     </ListItem>
                 </List>

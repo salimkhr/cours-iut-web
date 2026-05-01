@@ -10,7 +10,6 @@ interface SlideListProps extends React.ComponentProps<typeof List> {
 
 export const SlideList: React.FC<SlideListProps> = ({
                                                         className,
-                                                        size = "default",
                                                         children,
                                                         spacing = "relaxed",
                                                         ...props

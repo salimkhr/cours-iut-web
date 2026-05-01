@@ -43,26 +43,27 @@ export default function TP() {
                 <Text>Complétez le fichier <Code>events.js</Code> pour effectuer les manipulations suivantes :</Text>
                 <List ordered>
                     <ListItem>
-                        <Text className={"font-bold"}>Événement de clic</Text> : Utilisez <Code>addEventListener</Code> pour
-                        ajouter un événement au bouton. Lorsque le bouton est cliqué : Affichez une alerte avec le
-                        message <Code>&quot;Bouton cliqué !&quot;</Code>
+                        <Text className="font-bold">Événement de clic</Text> : utilisez{" "}
+                        <Code>addEventListener</Code> pour ajouter un événement au bouton. Lorsque le bouton
+                        est cliqué, affichez une alerte avec le message{" "}
+                        <Code>&quot;Bouton cliqué !&quot;</Code>.
                     </ListItem>
 
                     <ListItem>
-                        <Text className={"font-bold"}>Événement au survol</Text> : Ajoutez un gestionnaire événement a
-                        la <Code>div#colorBox</Code>.
-                        Lorsque la souris survole la boîte :
+                        <Text className="font-bold">Événement au survol</Text> : ajoutez un gestionnaire
+                        d&apos;événement à la <Code>div#colorBox</Code>. Lorsque la souris survole la boîte :
                         <List>
                             <ListItem>Changez la couleur de fond en bleu.</ListItem>
-                            <ListItem>Lorsque la souris quitte la boîte, remettez la couleur initiale
-                                (grise).</ListItem>
+                            <ListItem>
+                                Lorsque la souris quitte la boîte, remettez la couleur initiale (grise).
+                            </ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
-                        <Text className={"font-bold"}>Événement d&apos;entrée clavier</Text> : Ajoutez un gestionnaire
-                        d&apos;événement à l&apos;<Code>input#nameInput</Code>. Lorsque du texte est saisi : Affichez le
-                        texte saisi sous le champ dans un paragraphe <Code>p#greetingText</Code>.
+                        <Text className="font-bold">Événement d&apos;entrée clavier</Text> : ajoutez un
+                        gestionnaire d&apos;événement à l&apos;<Code>input#nameInput</Code>. Lorsque du texte
+                        est saisi, affichez le texte saisi dans le paragraphe <Code>p#greetingText</Code>.
                     </ListItem>
                 </List>
             </section>
@@ -75,7 +76,7 @@ export default function TP() {
                     JavaScript. Vous devez gérer les questions, les réponses, les jokers et le système de progression.
                 </Text>
 
-                <Text>Récupérer les fichiers</Text>
+                <Text>Téléchargez les fichiers de départ :</Text>
                 <HStack>
                     <DownloadCodeButton language="html" filename={"game.html"}>
                         {`<!DOCTYPE html>
@@ -614,65 +615,66 @@ const quiz = [
                     </DownloadCodeButton>
                 </HStack>
 
-                <Heading level={3}>1/ Gestion des questions</Heading>
+                <Heading level={3}>1. Gestion des questions</Heading>
                 <List ordered>
                     <ListItem>
-                        <Text>Dans le fichier game.js, créer les variables suivantes :</Text>
+                        <Text>Dans le fichier <Code>game.js</Code>, créez les variables suivantes :</Text>
                         <List>
-                            <ListItem>index = 0;</ListItem>
+                            <ListItem><Code>let index = 0;</Code></ListItem>
                             <ListItem>
-                                <Code>const btns</Code> contenant les éléments ayant la classe <Code>answer</Code>
+                                <Code>const btns</Code> contenant les éléments ayant la classe{" "}
+                                <Code>answer</Code>.
                             </ListItem>
                             <ListItem>
-                                <Code>const moneys</Code> contenant les éléments ayant la classe <Code>money-item</Code>
+                                <Code>const moneys</Code> contenant les éléments ayant la classe{" "}
+                                <Code>money-item</Code>.
                             </ListItem>
                             <ListItem>
-                                <Code>const questionElm</Code> contenant l&apos;élément ayant comme
-                                id <Code>question</Code>
+                                <Code>const questionElm</Code> contenant l&apos;élément ayant l&apos;id{" "}
+                                <Code>question</Code>.
                             </ListItem>
                             <ListItem>
-                                <Code>const explanationElm</Code> contenant l&apos;élément ayant comme
-                                id <Code>explanation</Code>
+                                <Code>const explanationElm</Code> contenant l&apos;élément ayant l&apos;id{" "}
+                                <Code>explanation</Code>.
                             </ListItem>
                         </List>
                     </ListItem>
 
                     <ListItem>
-                        Créer une fonction <Code>displayQuestion(index)</Code> modifiant le texte de
-                        l&apos;élément <Code>#question</Code> en se basant sur le
-                        tableau <Code>quiz[index].question</Code>. Elle sera
-                        appelée après le chargement du DOM.
+                        Créez une fonction <Code>displayQuestion(index)</Code> modifiant le texte de
+                        l&apos;élément <Code>#question</Code> en se basant sur le tableau{" "}
+                        <Code>quiz[index].question</Code>. Appelez-la après le chargement du DOM.
                     </ListItem>
 
                     <ListItem>
-                        Créer une fonction <Code>updateAnswers(question)</Code> mettant à jour le texte des
-                        éléments <Code>.answer</Code> en se basant sur <Code>quiz.options</Code>. Cette fonction
-                        sera appelée par la fonction <Code>displayQuestion</Code>.
+                        Créez une fonction <Code>updateAnswers(question)</Code> mettant à jour le texte des
+                        éléments <Code>.answer</Code> en se basant sur <Code>quiz.options</Code>. Appelez-la
+                        depuis <Code>displayQuestion</Code>.
                     </ListItem>
 
                     <ListItem>
-                        Ajouter un événement sur le clic des <Code>.answer</Code> appelant la fonction
-                        <Code>validateAnswer</Code>. Si la réponse est correcte (<Code>data-index</Code> égale à
-                        <Code>quiz[index].correctAnswer</Code>), ajouter la classe <Code>correct</Code>, sinon ajouter
-                        la classe <Code>incorrect</Code>.
+                        Ajoutez un événement <Code>click</Code> sur les <Code>.answer</Code> qui appelle la
+                        fonction <Code>validateAnswer</Code>. Si la réponse est correcte
+                        (<Code>data-index</Code> égal à <Code>quiz[index].correctAnswer</Code>), ajoutez la
+                        classe <Code>correct</Code> ; sinon ajoutez la classe <Code>incorrect</Code>.
                     </ListItem>
 
                     <ListItem>
-                        Modifier l&apos;événement pour gérer la variable <Code>index</Code>, afin de
-                        l&apos;incrémenter si la réponse est correcte, ou la remettre à 0. On rappellera
-                        <Code>displayQuestion</Code> et on fera les modifications nécessaires dans une fonction
-                        <Code>resetDisplayQuestion</Code> pour réafficher les réponses sans les classes
-                        <Code>.correct</Code> ou <Code>.incorrect</Code>.
+                        Modifiez l&apos;événement pour gérer la variable <Code>index</Code> : incrémentez-la
+                        si la réponse est correcte, sinon remettez-la à 0. Rappelez ensuite{" "}
+                        <Code>displayQuestion</Code> et créez une fonction <Code>resetDisplayQuestion</Code>
+                        pour réafficher les réponses sans les classes <Code>.correct</Code> ou{" "}
+                        <Code>.incorrect</Code>.
                     </ListItem>
 
                     <ListItem>
-                        Modifier l&apos;événement pour modifier le texte de
-                        l&apos;élément <Code>#explanation</Code> avec <Code>quiz[index].explanation</Code>.
+                        Modifiez l&apos;événement pour mettre à jour le texte de l&apos;élément{" "}
+                        <Code>#explanation</Code> avec <Code>quiz[index].explanation</Code>.
                     </ListItem>
 
                     <ListItem>
-                        Afin d&apos;avoir une UX plus intéressante, utiliser <Code>setTimeout()</Code> pour appeler
-                        la fonction <Code>displayQuestion</Code> après 3 secondes :
+                        Afin d&apos;améliorer l&apos;UX, utilisez <Code>setTimeout()</Code> pour appeler la
+                        fonction <Code>displayQuestion</Code> après 3 secondes :
                         <CodeCard language="js">
                             {`// Affiche la prochaine question après un délai
 setTimeout(() => {
@@ -682,31 +684,30 @@ setTimeout(() => {
                     </ListItem>
 
                     <ListItem>
-                        Modifier la fonction <Code>resetDisplayQuestion</Code> pour
-                        remettre <Code>&quot;&quot;</Code> dans
-                        l&apos;élément <Code>#explanation</Code>.
+                        Modifiez la fonction <Code>resetDisplayQuestion</Code> pour remettre{" "}
+                        <Code>&quot;&quot;</Code> dans l&apos;élément <Code>#explanation</Code>.
                     </ListItem>
                 </List>
 
-                <Heading level={3}>2/ Gestion des jokers</Heading>
+                <Heading level={3}>2. Gestion des jokers</Heading>
                 <List ordered>
                     <ListItem>
-                        Modifier la fonction <Code>fiftyFifty</Code> afin de désactiver (&quot;disabled&quot;) 2
-                        mauvaises réponses.
+                        Modifiez la fonction <Code>fiftyFifty</Code> afin de désactiver
+                        (<Code>disabled</Code>) deux mauvaises réponses.
                     </ListItem>
                     <ListItem>
-                        Modifier les événements <Code>showAskAudience</Code>, <Code>showCallFriend</Code> et
-                        <Code>fiftyFifty</Code> afin de ne permettre de les utiliser qu&apos;une seule fois (ouverture
-                        de
-                        la modal et action sur les boutons).
+                        Modifiez les fonctions <Code>showAskAudience</Code>, <Code>showCallFriend</Code> et{" "}
+                        <Code>fiftyFifty</Code> afin de ne permettre de les utiliser qu&apos;une seule fois
+                        (ouverture de la modal et action sur les boutons).
                     </ListItem>
                 </List>
 
-                <Heading level={3}>3/ Gestion des scores</Heading>
+                <Heading level={3}>3. Gestion des scores</Heading>
                 <List ordered>
-                    <ListItem>En utilisant la class <Code>active</Code>,modifier l&apos;item de la
-                        liste <Code>.money-item</Code> afin d&apos;indiquer au joueur a quel montant il est
-                        arrivé.</ListItem>
+                    <ListItem>
+                        En utilisant la classe <Code>active</Code>, modifiez l&apos;item de la liste{" "}
+                        <Code>.money-item</Code> afin d&apos;indiquer au joueur à quel montant il est arrivé.
+                    </ListItem>
                 </List>
             </section>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import {useEffect, useState} from 'react';
-import {useForm} from 'react-hook-form';
+import {useForm, useWatch} from 'react-hook-form';
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
@@ -57,7 +57,7 @@ const FIXED_SAES = [
 export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
     const [open, setOpen] = useState(false);
 
-    const {register, handleSubmit, watch, setValue, reset, formState: {errors}} = useForm<FormData>({
+    const {register, handleSubmit, control, setValue, reset, formState: {errors}} = useForm<FormData>({
         defaultValues: {
             coefficients: FIXED_COMPETENCES.map(c => ({competenceName: c, value: 0})),
             instructors: [{firstName: "", lastName: "", email: ""}],
@@ -65,8 +65,10 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
         }
     });
 
+    const title = useWatch({control, name: "title"});
+    const instructors = useWatch({control, name: "instructors"});
+
     // Met à jour automatiquement "path" à partir de "title"
-    const title = watch("title");
     useEffect(() => {
         if (title) {
             setValue("path", title.toLowerCase().replace(/\s+/g, '-'));
@@ -173,7 +175,7 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
 
                         <div>
                             <Label>Enseignants</Label>
-                            {watch("instructors").map((_, index) => (
+                            {instructors.map((_, index) => (
                                 <div key={index} className="grid grid-cols-3 gap-2 mb-2">
                                     <Input
                                         placeholder="Prénom" {...register(`instructors.${index}.firstName` as const)} />

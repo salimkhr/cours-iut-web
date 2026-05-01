@@ -2,18 +2,15 @@
 
 import {Github, LinkedinIcon, Mail} from "lucide-react";
 import Link from "next/link";
-import {useTheme} from "next-themes";
-import {useEffect, useState} from "react";
+import {useIsDark} from "@/hook/useIsDark";
+import {useMounted} from "@/hook/useMounted";
 
 const yearDisplay = new Date().getFullYear();
 
 export default function Footer() {
-    const { theme } = useTheme();
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => setMounted(true), []);
+    const mounted = useMounted();
+    const isDark = useIsDark();
     if (!mounted) return null;
-
-    const isDark = theme === "dark";
 
     return (
         <div

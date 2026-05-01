@@ -4,6 +4,7 @@ import mermaid from "mermaid";
 import BaseCard from "@/components/Cards/BaseCard";
 import {useTheme} from "next-themes";
 import Text from "@/components/ui/Text";
+import {useMounted} from "@/hook/useMounted";
 
 type DiagramCardProps = {
     header?: string;
@@ -11,23 +12,15 @@ type DiagramCardProps = {
 };
 
 export default function DiagramCard({header, chart}: DiagramCardProps) {
-    const [svg, setSvg] = useState<string>("");
+    const mounted = useMounted();
     const {theme, systemTheme} = useTheme();
-    const [mounted, setMounted] = useState(false);
-
-    // Fix hydration
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const chartIsEmpty = !chart || chart.trim() === "";
+    const [svg, setSvg] = useState<string>(
+        chartIsEmpty ? "<p>Aucun diagramme fourni</p>" : ""
+    );
 
     useEffect(() => {
-        if (!mounted) {
-            return;
-        }
-
-        if (!chart || chart.trim() === "") {
-            console.error("⚠️ Chart vide ou invalide");
-            setSvg("<p>Aucun diagramme fourni</p>");
+        if (!mounted || chartIsEmpty) {
             return;
         }
 
@@ -67,7 +60,7 @@ export default function DiagramCard({header, chart}: DiagramCardProps) {
         return () => {
             isMounted = false;
         };
-    }, [chart, theme, systemTheme, mounted]);
+    }, [chart, chartIsEmpty, theme, systemTheme, mounted]);
 
     // Skeleton pendant le chargement
     if (!mounted) {

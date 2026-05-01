@@ -7,7 +7,7 @@ export default function KeyPressBox() {
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            let keys = [];
+            const keys = [];
 
             if (event.ctrlKey) keys.push("Ctrl");
             if (event.shiftKey) keys.push("Shift");

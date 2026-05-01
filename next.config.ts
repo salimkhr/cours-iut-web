@@ -1,6 +1,5 @@
 // next.config.ts
 import createMDX from '@next/mdx';
-import withPWAInit from 'next-pwa';
 import type {NextConfig} from 'next';
 
 // Configuration de base
@@ -41,11 +40,6 @@ const baseConfig: NextConfig = {
 
 // Plugins typés
 const withMDX = createMDX({}) as (config: NextConfig) => NextConfig;
-const withPWA = withPWAInit({
-    dest: 'public',
-    register: true,
-    skipWaiting: true,
-}) as (config: NextConfig) => NextConfig;
 
 // Export de la configuration finale
-export default withPWA(withMDX(baseConfig));
+export default withMDX(baseConfig);

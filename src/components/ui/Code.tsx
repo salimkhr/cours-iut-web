@@ -1,17 +1,11 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
-import {useTheme} from "next-themes";
+import React from "react";
 import {cn} from "@/lib/utils";
+import {useIsDark} from "@/hook/useIsDark";
 
 export default function Code({ className = "", ...props }: React.HTMLAttributes<HTMLElement>) {
-    const { theme, systemTheme } = useTheme();
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => setMounted(true), []);
-
-    const currentTheme = mounted ? (theme === "system" ? systemTheme : theme) : "light";
-    const isDark = currentTheme === "dark";
+    const isDark = useIsDark();
 
     const styles = isDark
         ? "bg-gray-800 text-gray-100"

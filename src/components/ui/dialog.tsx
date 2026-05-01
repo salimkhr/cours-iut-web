@@ -4,7 +4,9 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {XIcon} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {useTheme} from "next-themes";
-import {ComponentProps, useEffect, useState} from "react";
+import {ComponentProps} from "react";
+import {useIsDark} from "@/hook/useIsDark";
+import {useMounted} from "@/hook/useMounted";
 
 function Dialog({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
     return <DialogPrimitive.Root data-slot="dialog" {...props} />;
@@ -41,13 +43,9 @@ function DialogContent({
                            showCloseButton = true,
                            ...props
                        }: ComponentProps<typeof DialogPrimitive.Content> & { showCloseButton?: boolean }) {
-    const { theme } = useTheme();
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => setMounted(true), []);
+    const mounted = useMounted();
+    const isDark = useIsDark();
     if (!mounted) return null; // SSR safe
-
-    const isDark = theme === "dark";
 
     return (
         <DialogPortal data-slot="dialog-portal">

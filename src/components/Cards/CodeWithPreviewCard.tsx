@@ -1,11 +1,12 @@
 'use client'
-import React, {ReactNode, useEffect, useState} from 'react';
+import React, {ReactNode, useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
 import {ClipboardCopyIcon} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {Button} from "@/components/ui/button";
 import {oneDark, oneLight} from "react-syntax-highlighter/dist/esm/styles/prism";
-import {useTheme} from "next-themes";
+import {useIsDark} from "@/hook/useIsDark";
+import {useMounted} from "@/hook/useMounted";
 
 interface CodeWithPreviewCardProps {
     language: string;
@@ -40,14 +41,10 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
     let previewContent: ReactNode = null;
 
     const [copied, setCopied] = useState(false);
-    const {theme} = useTheme();
-
-    useEffect(() => setMounted(true), []);
-    const [mounted, setMounted] = useState(false);
+    const mounted = useMounted();
+    const isDark = useIsDark();
 
     if (!mounted) return null; // SSR-safe
-
-    const isDark = theme === 'dark';
 
     const handleCopy = () => {
         navigator.clipboard.writeText(codeContent).then(() => {

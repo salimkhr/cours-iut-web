@@ -1,10 +1,10 @@
 "use client";
 
 import {cn} from "@/lib/utils";
-import {JSX, useEffect, useState} from "react";
+import {JSX} from "react";
 import {Film} from "lucide-react";
 import Text from "./Text";
-import {useTheme} from "next-themes";
+import {useIsDark} from "@/hook/useIsDark";
 
 type HeadingProps = {
     level?: 1 | 2 | 3 | 4 | 5 | 6;
@@ -23,14 +23,7 @@ export default function Heading({
                                 }: HeadingProps) {
     const Tag = `h${level}` as keyof JSX.IntrinsicElements;
 
-    const { theme, systemTheme } = useTheme();
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => setMounted(true), []);
-
-    // Determine actual theme with fallback
-    const currentTheme = mounted ? (theme === "system" ? systemTheme : theme) : "light";
-    const isDark = currentTheme === "dark";
+    const isDark = useIsDark();
 
     const styles: Record<number, string> = {
         1: `text-5xl font-bold my-6 ${isDark ? "text-gray-100" : "text-gray-900"}`,
