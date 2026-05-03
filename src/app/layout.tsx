@@ -1,5 +1,5 @@
 import type {Metadata} from 'next';
-import {JetBrains_Mono} from 'next/font/google';
+import {IBM_Plex_Sans, JetBrains_Mono} from 'next/font/google';
 import './globals.css';
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -11,6 +11,12 @@ const jetbrainsMono = JetBrains_Mono({
     subsets: ['latin'],
     weight: ['400', '500', '600', '700'],
     variable: '--font-jetbrains-mono',
+});
+
+const ibmPlexSans = IBM_Plex_Sans({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700'],
+    variable: '--font-ibm-plex-sans',
 });
 
 export const metadata: Metadata = {
@@ -28,8 +34,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({children}: { children: React.ReactNode }) {
     return (
-        <html lang="fr" className={jetbrainsMono.variable} suppressHydrationWarning>
-        <body className="min-h-screen font-mono">
+        <html lang="fr" className={`${jetbrainsMono.variable} ${ibmPlexSans.variable}`} suppressHydrationWarning>
+        <body className="min-h-screen font-sans">
         <ThemeProvider
             attribute="class"
             defaultTheme="system"

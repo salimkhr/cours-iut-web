@@ -4,7 +4,7 @@ import {GlitchText} from "@/components/GlitchText";
 import {ReactNode, useMemo} from "react";
 import TagsBadges from "@/components/page/TagsBadges";
 import {HeaderSvg} from "@/components/HeaderSvg";
-import {useIsDark} from "@/hook/useIsDark";
+import {Particles} from "@/components/magicui/particles";
 import {useMounted} from "@/hook/useMounted";
 
 interface HeroSectionProps {
@@ -27,15 +27,12 @@ export default function HeroSection({
                                         path = ''
                                     }: HeroSectionProps) {
     const mounted = useMounted();
-    const isDark = useIsDark();
 
     const color = useMemo(() => {
         if (!mounted || typeof window === 'undefined') return "";
         const root = getComputedStyle(document.documentElement);
         return root.getPropertyValue(`--color-${path}`).trim();
     }, [mounted, path]);
-
-    if (!mounted) return null; // SSR safe
 
     const titleElement = (
         <h1
@@ -45,9 +42,17 @@ export default function HeroSection({
         </h1>
     );
 
+    const particleColor = color || '#94a3b8';
+
     return (
         <section
-            className="w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between lg:px-6 gap-4 lg:gap-6 lg:min-h-[45vh]">
+            className="relative w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between lg:px-6 gap-4 lg:gap-6 lg:min-h-[45vh]">
+            <Particles
+                className="absolute inset-0 -z-10"
+                quantity={70}
+                color={particleColor}
+                ease={60}
+            />
             <div className="flex flex-col items-center justify-center w-full lg:w-2/3 opacity-0 animate-fade-in">
                 <GlitchText>
                     <div className="flex flex-col items-center justify-center w-full mt-10">
@@ -57,11 +62,7 @@ export default function HeroSection({
                 </GlitchText>
 
                 {description && (
-                    <p
-                        className={`text-base sm:text-lg text-center max-w-2xl leading-relaxed ${
-                            isDark ? "text-gray-400" : "text-gray-600"
-                        }`}
-                    >
+                    <p className="text-base sm:text-lg text-center max-w-2xl leading-relaxed text-gray-600 dark:text-gray-400">
                         {description}
                     </p>
                 )}

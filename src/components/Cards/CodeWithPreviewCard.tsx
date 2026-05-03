@@ -5,8 +5,6 @@ import {ClipboardCopyIcon} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {Button} from "@/components/ui/button";
 import {oneDark, oneLight} from "react-syntax-highlighter/dist/esm/styles/prism";
-import {useIsDark} from "@/hook/useIsDark";
-import {useMounted} from "@/hook/useMounted";
 
 interface CodeWithPreviewCardProps {
     language: string;
@@ -41,10 +39,6 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
     let previewContent: ReactNode = null;
 
     const [copied, setCopied] = useState(false);
-    const mounted = useMounted();
-    const isDark = useIsDark();
-
-    if (!mounted) return null; // SSR-safe
 
     const handleCopy = () => {
         navigator.clipboard.writeText(codeContent).then(() => {
@@ -84,6 +78,18 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
         </>
     );
 
+    const sharedHighlighterProps = {
+        language,
+        customStyle: {
+            margin: 0,
+            fontSize: '0.875rem',
+            lineHeight: '1.25rem',
+            height: '100%',
+        },
+        wrapLongLines: true,
+        showLineNumbers: true,
+    };
+
     const content = (
         <div className="w-full h-full overflow-hidden">
             {/* Layout responsive : côte à côte sur desktop, empilé sur mobile */}
@@ -91,20 +97,16 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
                 {/* Panel Code */}
                 <div className="flex-1 min-h-0">
                     <div className="h-full overflow-hidden lg:border-r-2 border-b-2 lg:border-b-0 border-module">
-                        <SyntaxHighlighter
-                            language={language}
-                            style={isDark ? oneDark : oneLight}
-                            customStyle={{
-                                margin: 0,
-                                fontSize: '0.875rem',
-                                lineHeight: '1.25rem',
-                                height: '100%',
-                            }}
-                            wrapLongLines={true}
-                            showLineNumbers={true}
-                        >
-                            {codeContent}
-                        </SyntaxHighlighter>
+                        <div className="block dark:hidden h-full">
+                            <SyntaxHighlighter style={oneLight} {...sharedHighlighterProps}>
+                                {codeContent}
+                            </SyntaxHighlighter>
+                        </div>
+                        <div className="hidden dark:block h-full">
+                            <SyntaxHighlighter style={oneDark} {...sharedHighlighterProps}>
+                                {codeContent}
+                            </SyntaxHighlighter>
+                        </div>
                     </div>
                 </div>
 

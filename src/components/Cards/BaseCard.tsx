@@ -1,10 +1,7 @@
-'use client';
 import {ReactNode} from 'react';
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
-import {useIsDark} from "@/hook/useIsDark";
-import {useMounted} from "@/hook/useMounted";
 import Link from "next/link";
 
 interface BaseCardProps {
@@ -17,6 +14,7 @@ interface BaseCardProps {
     withHover?: boolean;
     withLed?: boolean;
     className?: string;
+    overlay?: ReactNode;
 }
 
 export default function BaseCard({
@@ -27,28 +25,29 @@ export default function BaseCard({
                                      withMarge = true,
                                      withHover = true,
                                      withLed = true,
-                                     className = ""
+                                     className = "",
+                                     overlay
                                  }: BaseCardProps) {
-    const mounted = useMounted();
-    const isDark = useIsDark();
-    if (!mounted) return null; // SSR safe
-
     return (
         <div
             className={cn(
-                "group h-full flex flex-col", // 🟢 Force la hauteur complète
-                withHover ? "hover:shadow-xl transition-all duration-300 hover:scale-105" : "",
+                "group h-full flex flex-col",
+                withHover
+                    ? "transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                    : "",
                 className
             )}
         >
             <Card
                 className={cn(
-                    // 🟢 Étend la carte sur toute la hauteur disponible
-                    "w-full h-full flex flex-col justify-between text-center border-2 rounded-lg shadow-lg overflow-hidden",
-                    `border-${currentModule ? currentModule.path : 'module'}`,
-                    isDark ? "bg-gray-800" : "bg-white"
+                    "relative w-full h-full flex flex-col justify-between text-center border-2 rounded-lg shadow-md overflow-hidden",
+                    "bg-white dark:bg-gray-800",
+                    "text-gray-900 dark:text-gray-100",
+                    "transition-shadow duration-300",
+                    `border-${currentModule ? currentModule.path : 'module'}`
                 )}
             >
+                {overlay}
                 <CardHeader
                     className={cn(
                         "flex flex-row justify-between items-center p-4 group-hover:brightness-110 transition-all duration-300",
@@ -62,17 +61,15 @@ export default function BaseCard({
                 <CardContent
                     className={cn(
                         withMarge ? "p-6" : "",
-                        "flex-grow flex flex-col items-center justify-center", // 🟢 permet à content de s’étirer et de centrer verticalement
-                        isDark ? "bg-footer" : "bg-white"
+                        "flex-grow flex flex-col items-center justify-center",
+                        "bg-white dark:bg-footer"
                     )}
                 >
                     {content}
                 </CardContent>
 
                 {footer && (
-                    <CardFooter
-                        className={cn("p-4 mt-auto", isDark ? "bg-footer" : "bg-white")}
-                    >
+                    <CardFooter className="p-4 mt-auto bg-white dark:bg-footer">
                         {footer}
                     </CardFooter>
                 )}
@@ -83,11 +80,11 @@ export default function BaseCard({
 
 export function LEDIndicator() {
     return (
-        <div className="flex gap-2">
-            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse"></div>
-            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse"
+        <div className="flex gap-2" aria-hidden="true">
+            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse motion-reduce:group-hover:animate-none"></div>
+            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse motion-reduce:group-hover:animate-none"
                  style={{animationDelay: '0.2s'}}></div>
-            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse"
+            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse motion-reduce:group-hover:animate-none"
                  style={{animationDelay: '0.4s'}}></div>
         </div>
     );
@@ -110,39 +107,35 @@ export function ActionButton({
                                  disabled = false,
                                  target = '_self'
                              }: ActionButtonProps) {
-    const mounted = useMounted();
-    const isDark = useIsDark();
-    if (!mounted) return null;
+    const baseClasses = cn(
+        `inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm
+     [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0
+     outline-none transition-all duration-300
+     h-9 px-4 py-2 font-semibold border-2
+     has-[>svg]:px-3
+     focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-current
+     shadow-xs
+     aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive`,
+        `bg-destructive hover:bg-destructive/90 dark:bg-destructive/60
+     border-${currentModule ? currentModule.path : 'module'}
+     text-${currentModule ? currentModule.path : 'module'}`,
+        "text-black dark:text-white",
+        disabled
+            ? 'pointer-events-none opacity-50 cursor-not-allowed brightness-75'
+            : 'cursor-pointer hover:brightness-110',
+        className
+    );
+
+    if (disabled) {
+        return (
+            <span aria-disabled="true" className={baseClasses}>
+                {children}
+            </span>
+        );
+    }
 
     return (
-        <Link
-            href={disabled ? '#' : href}
-            target={target}
-            onClick={e => disabled && e.preventDefault()}
-            className={cn(
-                `inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm 
-     [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 
-     outline-none cursor-pointer transition-all duration-300
-     h-9 px-4 py-2 font-semibold border-2 w-1/3
-     has-[>svg]:px-3
-     focus-visible:ring-[3px]
-     focus-visible:border-ring 
-     shadow-xs
-     disabled:pointer-events-none disabled:opacity-50
-     aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive`,
-                // Couleurs dynamiques selon le module
-                `bg-destructive hover:bg-destructive/90 dark:bg-destructive/60 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40
-     border-${currentModule ? currentModule.path : 'module'} 
-     text-${currentModule ? currentModule.path : 'module'}`,
-                // Thème sombre / clair
-                isDark ? 'text-white' : 'text-black',
-                // États désactivés
-                disabled
-                    ? 'pointer-events-none opacity-50 cursor-not-allowed brightness-75'
-                    : 'hover:brightness-110',
-                className
-            )}
-        >
+        <Link href={href} target={target} className={baseClasses}>
             {children}
         </Link>
     );

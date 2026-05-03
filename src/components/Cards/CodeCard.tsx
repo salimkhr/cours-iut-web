@@ -7,8 +7,6 @@ import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {oneDark, oneLight} from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {Button} from "@/components/ui/button";
 import Module from "@/types/Module";
-import {useIsDark} from "@/hook/useIsDark";
-import {useMounted} from "@/hook/useMounted";
 
 export interface CodeCardProps {
     language: string;
@@ -30,12 +28,8 @@ export default function CodeCard({
                                      collapsible = false,
                                      highlightLines,
                                  }: CodeCardProps) {
-    const mounted = useMounted();
-    const isDark = useIsDark();
     const [copied, setCopied] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
-
-    if (!mounted) return null; // SSR-safe
 
     const lineCount = children.split('\n').length;
     const isLongFile = lineCount > 50;
@@ -151,6 +145,29 @@ export default function CodeCard({
 
     const highlightedLines = highlightLines ? parseHighlightLines(highlightLines) : [];
 
+    const sharedHighlighterProps = {
+        language,
+        customStyle: {
+            margin: 0,
+            fontSize: '0.875rem',
+            lineHeight: '1.25rem',
+            height: 'auto',
+            borderRadius: '0',
+        },
+        wrapLines: true,
+        lineProps: (lineNumber: number) => {
+            const style: React.CSSProperties = {display: 'block', width: '100%'};
+            const isHighlighted = highlightedLines.includes(lineNumber);
+            if (highlightedLines.length > 0 && !isHighlighted) {
+                style.opacity = 0.5;
+                style.filter = 'grayscale(0.5)';
+            }
+            return {style};
+        },
+        wrapLongLines: true,
+        showLineNumbers,
+    };
+
     const content = (
         <div className="w-full h-full overflow-visible">
             {collapsible && isLongFile && !isExpanded ? (
@@ -159,34 +176,18 @@ export default function CodeCard({
                     <p className="text-xs mt-2">Cliquez sur &quot;Afficher&rdquo; pour voir le contenu</p>
                 </div>
             ) : (
-                <SyntaxHighlighter
-                    language={language}
-                    style={isDark ? oneDark : oneLight}
-                    customStyle={{
-                        margin: 0,
-                        fontSize: '0.875rem',
-                        lineHeight: '1.25rem',
-                        height: 'auto',
-                        borderRadius: '0',
-                    }}
-                    wrapLines={true}
-                    lineProps={(lineNumber) => {
-                        const style: React.CSSProperties = {display: 'block', width: '100%'};
-                        const isHighlighted = highlightedLines.includes(lineNumber);
-
-                        if (highlightedLines.length > 0) {
-                            if (!isHighlighted) {
-                                style.opacity = 0.5;
-                                style.filter = 'grayscale(0.5)';
-                            }
-                        }
-                        return {style};
-                    }}
-                    wrapLongLines
-                    showLineNumbers={showLineNumbers}
-                >
-                    {children}
-                </SyntaxHighlighter>
+                <>
+                    <div className="block dark:hidden">
+                        <SyntaxHighlighter style={oneLight} {...sharedHighlighterProps}>
+                            {children}
+                        </SyntaxHighlighter>
+                    </div>
+                    <div className="hidden dark:block">
+                        <SyntaxHighlighter style={oneDark} {...sharedHighlighterProps}>
+                            {children}
+                        </SyntaxHighlighter>
+                    </div>
+                </>
             )}
         </div>
     );

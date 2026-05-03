@@ -11,8 +11,27 @@ type DiagramCardProps = {
     chart: string;
 };
 
+function DiagramSkeleton() {
+    return (
+        <div
+            className="h-48 w-full flex items-center justify-center gap-6 px-8 animate-pulse"
+            role="status"
+            aria-label="Chargement du diagramme"
+        >
+            <div className="h-12 w-20 rounded bg-gray-200 dark:bg-gray-700"/>
+            <div className="h-px w-8 bg-gray-300 dark:bg-gray-600"/>
+            <div className="h-12 w-20 rounded bg-gray-200 dark:bg-gray-700"/>
+            <div className="h-px w-8 bg-gray-300 dark:bg-gray-600"/>
+            <div className="h-12 w-20 rounded bg-gray-200 dark:bg-gray-700"/>
+        </div>
+    );
+}
+
 export default function DiagramCard({header, chart}: DiagramCardProps) {
     const mounted = useMounted();
+    // Exception au pattern "Tailwind dark: only" : Mermaid s'initialise via un
+    // appel JS impératif `mermaid.initialize({ theme })` qui prend une string,
+    // pas une classe CSS. On a donc besoin de lire le thème en JS via next-themes.
     const {theme, systemTheme} = useTheme();
     const chartIsEmpty = !chart || chart.trim() === "";
     const [svg, setSvg] = useState<string>(
@@ -27,11 +46,9 @@ export default function DiagramCard({header, chart}: DiagramCardProps) {
         let isMounted = true;
         const diagramId = `mermaid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-        // Déterminer le thème effectif
         const currentTheme = theme === "system" ? systemTheme : theme;
         const mermaidTheme = currentTheme === "dark" ? "dark" : "default";
 
-        // Configuration Mermaid
         mermaid.initialize({
             theme: mermaidTheme,
             startOnLoad: false,
@@ -39,7 +56,6 @@ export default function DiagramCard({header, chart}: DiagramCardProps) {
             fontFamily: 'inherit'
         });
 
-        // Render async
         const renderDiagram = async () => {
             try {
                 const result = await mermaid.render(diagramId, chart);
@@ -47,7 +63,7 @@ export default function DiagramCard({header, chart}: DiagramCardProps) {
                     setSvg(result.svg);
                 }
             } catch (err) {
-                console.error("❌ Erreur Mermaid:", err);
+                console.error("Erreur Mermaid:", err);
                 if (isMounted) {
                     const message = err instanceof Error ? err.message : String(err);
                     setSvg(`<pre style="color: red; white-space: pre-wrap;">${message}\n\n${chart}</pre>`);
@@ -62,20 +78,6 @@ export default function DiagramCard({header, chart}: DiagramCardProps) {
         };
     }, [chart, chartIsEmpty, theme, systemTheme, mounted]);
 
-    // Skeleton pendant le chargement
-    if (!mounted) {
-        return (
-            <BaseCard
-                header={<Text className="text-white">{header}</Text>}
-                content={<div className="h-48 animate-pulse bg-gray-200 dark:bg-gray-700 rounded"/>}
-                withMarge={false}
-                withHover={false}
-                withLed={false}
-                className="w-full"
-            />
-        );
-    }
-
     return (
         <BaseCard
             header={<Text className="text-white">{header}</Text>}
@@ -83,9 +85,7 @@ export default function DiagramCard({header, chart}: DiagramCardProps) {
                 svg ? (
                     <div dangerouslySetInnerHTML={{__html: svg}} className="w-full mx-auto"/>
                 ) : (
-                    <div className="h-48 flex items-center justify-center text-gray-500">
-                        Chargement du diagramme...
-                    </div>
+                    <DiagramSkeleton/>
                 )
             }
             withMarge={false}

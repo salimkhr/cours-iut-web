@@ -1,17 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@custom-variant dark (&:where(.dark, .dark *));
 
-.nextjs__container_errors_desc {
-    word-spacing: 1em;
-}
-
-.messageText {
-    word-spacing: .1em;
-}
-
-svg p {
-    word-spacing: .1em;
+@theme {
+    --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+    --font-sans: var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif;
+    --color-footer: #121212;
 }
 
 /* Variables CSS */
@@ -36,11 +31,6 @@ svg p {
     --color-php: #777bb4;
     --color-scroll: #ffffff;
     /*--color-javascript: #f7df1e;*/
-}
-
-/* Réglage global */
-* {
-    word-spacing: -0.3em;
 }
 
 /* Animations keyframes */
@@ -365,10 +355,6 @@ svg p {
     padding: 0 10px;
     margin-bottom: 10px;
     width: 100%;
-}
-
-.bg-footer {
-    background-color: #121212;
 }
 
 /* === 🌐 Scrollbar globale stylisée === */

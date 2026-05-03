@@ -14,12 +14,7 @@ interface ImageCardProps {
 export default function ImageCard({src, title, width = 800, height = 800, unoptimized = true}: ImageCardProps) {
 
     const header = (
-
-        <>
-            <span className="text-sm text-white font-mono">{title}</span>
-            {/*Centre le text justify-content tout ça tout ça, ne cherche pas TKT*/}
-            <span> </span>
-        </>
+        <span className="flex-1 text-center text-sm text-white font-mono">{title}</span>
     );
 
     const content = (

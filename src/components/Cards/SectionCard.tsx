@@ -1,11 +1,8 @@
-'use client';
 import Section from "@/types/Section";
 import Module from "@/types/Module";
 import {Badge} from '@/components/ui/badge';
 import BaseCard, {ActionButton} from "@/components/Cards/BaseCard";
 import {BookOpen, CodeXml, FolderCode, Gitlab, GraduationCap, Presentation} from "lucide-react";
-import {useIsDark} from "@/hook/useIsDark";
-import {useMounted} from "@/hook/useMounted";
 
 interface SectionCardProps {
     section: Section;
@@ -14,12 +11,8 @@ interface SectionCardProps {
 }
 
 export default function SectionCard({section, currentModule, isAdmin}: SectionCardProps) {
-    const mounted = useMounted();
-    const isDark = useIsDark();
-    if (!mounted) return null; // SSR-safe
-
     const header = (
-        <span className={`text-xs font-mono ${isDark ? 'text-gray-200' : 'text-white'}`}>
+        <span className="text-xs font-mono text-white dark:text-gray-200">
       {section.totalDuration} Séance{section.totalDuration > 1 ? 's' : ''}
     </span>
     );
@@ -29,12 +22,12 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
             <h2 className={`text-2xl font-bold mb-2 text-${currentModule?.path}`}>
                 {section.order}. {section.title}
             </h2>
-            <p className={isDark ? "text-gray-300" : "text-gray-700"}>{section.description}</p>
+            <p className="text-gray-700 dark:text-gray-300">{section.description}</p>
             <div className="flex flex-wrap justify-center gap-1 mt-2">
                 {section.tags?.map((tag) => (
                     <Badge
                         key={tag}
-                        className={`border-2 border-${currentModule.path} font-mono text-xs ${isDark ? 'text-gray-200' : ''}`}
+                        className={`border-2 border-${currentModule.path} font-mono text-xs dark:text-gray-200`}
                     >
                         #{tag}
                     </Badge>
@@ -51,7 +44,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                     <ActionButton
                         key={index}
                         currentModule={currentModule}
-                        className={`w-1/${section.contents.length + 2}`}
+                        className="flex-1"
                         href={`/${currentModule.path}/${section.path}/${item}`}
                         disabled={!isAdmin && !section.isAvailable}
                     >
@@ -70,7 +63,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
             {section.hasCorrection && (
                 <ActionButton
                     currentModule={currentModule}
-                    className={`w-1/${section.contents.length + 2}`}
+                    className="flex-1"
                     href={`${process.env.NEXT_PUBLIC_GIT_URL}/${currentModule.path}/${section.path}`}
                     target="_blank"
                     disabled={!isAdmin && !section.correctionIsAvailable}

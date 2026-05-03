@@ -27,7 +27,7 @@ export default function ContentCard({content, section, currentModule}: SectionCa
         <div className="flex flex-row gap-2 justify-center w-full">
             <ActionButton
                 currentModule={currentModule}
-                className="w-1/2"
+                className="flex-1"
                 href={`/${currentModule.path}/${section.path}/${content}`}
                 disabled={!section.isAvailable}
             >
