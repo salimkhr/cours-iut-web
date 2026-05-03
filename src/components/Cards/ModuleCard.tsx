@@ -3,7 +3,6 @@
 import {BookOpen} from 'lucide-react';
 import Module from "@/types/Module";
 import BaseCard from "@/components/Cards/BaseCard";
-import {BorderBeam} from "@/components/magicui/border-beam";
 import iconMap from "@/lib/iconMap";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
@@ -41,12 +40,12 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
         </Button>
     );
 
-    const overlay = (
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-            <BorderBeam size={80} duration={6} colorFrom={moduleColor} colorTo={moduleColor}/>
-            <BorderBeam size={80} duration={6} delay={3} reverse colorFrom={moduleColor} colorTo={moduleColor}/>
-        </div>
-    );
+    // const overlay = (
+    //     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+    //         <BorderBeam size={80} duration={6} colorFrom={moduleColor} colorTo={moduleColor}/>
+    //         <BorderBeam size={80} duration={6} delay={3} reverse colorFrom={moduleColor} colorTo={moduleColor}/>
+    //     </div>
+    // );
 
     return (
         <BaseCard
@@ -55,7 +54,7 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
             header={header}
             content={content}
             footer={footer}
-            overlay={overlay}
+            // overlay={overlay}
         />
     );
 }
