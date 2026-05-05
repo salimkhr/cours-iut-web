@@ -1,6 +1,6 @@
 services:
   app:
-    image: ghcr.io/salimkhr/cours-iut-web:latest
+    image: ghcr.io/salimkhr/cours-iut-web:${APP_ENV:-latest}
     pull_policy: always
     environment:
       - NODE_ENV=production
