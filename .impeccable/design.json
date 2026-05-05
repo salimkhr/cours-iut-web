@@ -1,0 +1,350 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-04T00:00:00.000Z",
+  "title": "Design System: cours-iut-web",
+  "extensions": {
+    "colorMeta": {
+      "html-css": {
+        "role": "primary",
+        "displayName": "Foundry Rouille",
+        "canonical": "oklch(46% 0.12 35)",
+        "tonalRamp": [
+          "oklch(20% 0.05 35)",
+          "oklch(28% 0.08 35)",
+          "oklch(36% 0.10 35)",
+          "oklch(46% 0.12 35)",
+          "oklch(56% 0.13 35)",
+          "oklch(68% 0.11 35)",
+          "oklch(80% 0.07 35)",
+          "oklch(92% 0.03 35)"
+        ],
+        "purpose": "HTML/CSS module wayfinding. Châssis (border + header), titres, particules, ActionButton border."
+      },
+      "javascript": {
+        "role": "primary",
+        "displayName": "Golden Hour Amber",
+        "canonical": "oklch(76% 0.16 80)",
+        "tonalRamp": [
+          "oklch(28% 0.08 80)",
+          "oklch(38% 0.12 80)",
+          "oklch(50% 0.16 80)",
+          "oklch(62% 0.18 80)",
+          "oklch(76% 0.16 80)",
+          "oklch(85% 0.12 80)",
+          "oklch(92% 0.08 80)",
+          "oklch(97% 0.03 80)"
+        ],
+        "purpose": "JavaScript module wayfinding. Couleur signature de l'heure dorée du système."
+      },
+      "php": {
+        "role": "secondary",
+        "displayName": "Twilight Slate",
+        "canonical": "oklch(43% 0.07 280)",
+        "tonalRamp": [
+          "oklch(20% 0.04 280)",
+          "oklch(28% 0.05 280)",
+          "oklch(35% 0.06 280)",
+          "oklch(43% 0.07 280)",
+          "oklch(54% 0.07 280)",
+          "oklch(67% 0.06 280)",
+          "oklch(80% 0.04 280)",
+          "oklch(92% 0.02 280)"
+        ],
+        "purpose": "PHP module wayfinding (mode jour). En mode nuit, bascule vers Neon Iris #777bb4."
+      },
+      "php-night": {
+        "role": "secondary",
+        "displayName": "Neon Iris",
+        "canonical": "oklch(57% 0.12 280)",
+        "tonalRamp": [
+          "oklch(25% 0.06 280)",
+          "oklch(35% 0.09 280)",
+          "oklch(45% 0.11 280)",
+          "oklch(57% 0.12 280)",
+          "oklch(68% 0.12 280)",
+          "oklch(78% 0.10 280)",
+          "oklch(87% 0.07 280)",
+          "oklch(95% 0.03 280)"
+        ],
+        "purpose": "PHP module wayfinding (mode nuit). Hommage au violet officiel de l'éléPHPant."
+      },
+      "login": {
+        "role": "tertiary",
+        "displayName": "Indigo Vertical",
+        "canonical": "oklch(28% 0.20 270)",
+        "tonalRamp": [
+          "oklch(15% 0.10 270)",
+          "oklch(20% 0.15 270)",
+          "oklch(28% 0.20 270)",
+          "oklch(38% 0.22 270)",
+          "oklch(50% 0.20 270)",
+          "oklch(64% 0.16 270)",
+          "oklch(78% 0.10 270)",
+          "oklch(92% 0.04 270)"
+        ],
+        "purpose": "Login/auth surface uniquement. Bleu ukiyo-e ultra-profond, signale changement de surface."
+      },
+      "brainfuck": {
+        "role": "tertiary",
+        "displayName": "Synapse Violet",
+        "canonical": "oklch(50% 0.27 295)",
+        "tonalRamp": [
+          "oklch(22% 0.13 295)",
+          "oklch(30% 0.18 295)",
+          "oklch(40% 0.23 295)",
+          "oklch(50% 0.27 295)",
+          "oklch(62% 0.24 295)",
+          "oklch(74% 0.18 295)",
+          "oklch(85% 0.11 295)",
+          "oklch(94% 0.05 295)"
+        ],
+        "purpose": "Brainfuck module wayfinding. Violet électrique ésotérique, langage de niche."
+      },
+      "studio-black": {
+        "role": "neutral",
+        "displayName": "Studio Black",
+        "canonical": "oklch(15% 0 0)",
+        "tonalRamp": [
+          "oklch(8% 0 0)",
+          "oklch(12% 0 0)",
+          "oklch(15% 0 0)",
+          "oklch(20% 0 0)",
+          "oklch(28% 0 0)",
+          "oklch(40% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(85% 0 0)"
+        ],
+        "purpose": "Scrollbar (mode clair), bg-footer, fond de carte en mode sombre. Pas un noir pur."
+      },
+      "studio-cream": {
+        "role": "neutral",
+        "displayName": "Studio Cream",
+        "canonical": "oklch(100% 0 0)",
+        "tonalRamp": [
+          "oklch(85% 0.005 30)",
+          "oklch(90% 0.005 30)",
+          "oklch(94% 0.005 30)",
+          "oklch(97% 0.004 30)",
+          "oklch(99% 0.003 30)",
+          "oklch(100% 0 0)",
+          "oklch(100% 0 0)",
+          "oklch(100% 0 0)"
+        ],
+        "purpose": "Fond clair des cartes et corps de contenu. Trajectoire: glisser vers oklch(99% 0.005 30) pour respecter The Tinted-Cream Rule."
+      }
+    },
+    "typographyMeta": {
+      "hero": {
+        "displayName": "Hero Title",
+        "purpose": "Titre d'accueil et de module (h1) traversé par GlitchText. Une seule occurrence par page."
+      },
+      "display": {
+        "displayName": "Display",
+        "purpose": "Titre de page interne (h1 sur pages de cours)."
+      },
+      "heading": {
+        "displayName": "Heading",
+        "purpose": "Titres de section (h2). Préfixe alphabétique A-/B-/C- imposé dans les cours."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Titres de sous-section (h3). Préfixe numérique 1./2./3. imposé dans les cours."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texte courant. Largeur de ligne bornée à 65–75ch sur les pages de cours."
+      },
+      "body-emphasis": {
+        "displayName": "Body Emphasis",
+        "purpose": "Mise en avant inline (poids 600), sans bascule italique."
+      },
+      "label": {
+        "displayName": "Label (Mono)",
+        "purpose": "Métadonnées : durées, tags #mono, libellés langage, comptes. JetBrains Mono."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "Code inline (<Code>) et blocs de code (CodeCard). JetBrains Mono."
+      }
+    },
+    "shadows": [
+      {
+        "name": "subtle",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "purpose": "Boutons, inputs, badges. Surface minimale."
+      },
+      {
+        "name": "resting",
+        "value": "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+        "purpose": "BaseCard au repos (shadow-md)."
+      },
+      {
+        "name": "lifted",
+        "value": "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+        "purpose": "BaseCard au hover (shadow-2xl) combiné à -translate-y-1."
+      },
+      {
+        "name": "card-hover-effect",
+        "value": "0 10px 30px rgba(0, 0, 0, 0.15)",
+        "purpose": "Variante custom dans globals.css, équivalent fonctionnel de lifted."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-standard",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Easing par défaut (ease-out-expo). Aucun bounce, aucun elastic."
+      },
+      {
+        "name": "duration-short",
+        "value": "0.6s",
+        "purpose": "fade-in-up et card-hover. Variable CSS --animation-duration-short."
+      },
+      {
+        "name": "duration-medium",
+        "value": "0.8s",
+        "purpose": "fade-in et fade-in-right. Variable CSS --animation-duration-medium."
+      },
+      {
+        "name": "duration-long",
+        "value": "3s",
+        "purpose": "Réservée à gradientShift (à supprimer, gradient-text est banni)."
+      },
+      {
+        "name": "transition-state",
+        "value": "300ms",
+        "purpose": "Transitions de couleur sur theme toggle, transitions hover sur cartes et boutons."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "2xl", "value": "1536px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Module Card",
+      "kind": "card",
+      "refersTo": "card-module",
+      "description": "Signature card. Châssis 2px en couleur module, header coloré avec 3 LED blanches, corps neutre. Hover lève + agrandit l'ombre.",
+      "html": "<a href=\"javascript-cours\" class=\"ds-module-card-wrap\"><div class=\"ds-module-card\" data-module=\"javascript\"><header class=\"ds-module-card-header\"><div class=\"ds-led\" aria-hidden=\"true\"><span></span><span></span><span></span></div><svg class=\"ds-module-icon\" viewBox=\"0 0 24 24\" width=\"40\" height=\"40\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M16 18l6-6-6-6\"/><path d=\"M8 6l-6 6 6 6\"/></svg></header><div class=\"ds-module-card-body\"><h2 class=\"ds-module-title\">JavaScript</h2><p class=\"ds-module-desc\">Manipulation du DOM, événements, fetch, hooks React.</p></div><footer class=\"ds-module-card-footer\"><button class=\"ds-action-button\" type=\"button\">Voir les cours</button></footer></div></a>",
+      "css": ".ds-module-card-wrap { display: block; text-decoration: none; color: inherit; } .ds-module-card { display: flex; flex-direction: column; height: 100%; background: #ffffff; color: #111827; border: 2px solid #D4A017; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); overflow: hidden; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1); } .ds-module-card-wrap:hover .ds-module-card { transform: translateY(-4px); box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); } @media (prefers-reduced-motion: reduce) { .ds-module-card { transition: none; } .ds-module-card-wrap:hover .ds-module-card { transform: none; } } .ds-module-card-header { display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 1rem; background: #D4A017; color: #ffffff; transition: filter 0.3s; } .ds-module-card-wrap:hover .ds-module-card-header { filter: brightness(1.1); } .ds-led { display: flex; gap: 0.5rem; } .ds-led span { width: 0.5rem; height: 0.5rem; background: #ffffff; border-radius: 9999px; } .ds-module-card-wrap:hover .ds-led span { animation: ds-pulse 1.2s ease-in-out infinite; } .ds-module-card-wrap:hover .ds-led span:nth-child(2) { animation-delay: 0.2s; } .ds-module-card-wrap:hover .ds-led span:nth-child(3) { animation-delay: 0.4s; } @media (prefers-reduced-motion: reduce) { .ds-module-card-wrap:hover .ds-led span { animation: none; } } @keyframes ds-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } } .ds-module-icon { color: #ffffff; transition: transform 0.3s; } .ds-module-card-wrap:hover .ds-module-icon { transform: rotate(12deg); } .ds-module-card-body { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; padding: 1.5rem; text-align: center; } .ds-module-title { font-family: var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif; font-size: 1.875rem; font-weight: 700; line-height: 1.2; color: #D4A017; margin: 0 0 0.75rem; } .ds-module-desc { font-family: var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif; font-size: 1rem; line-height: 1.6; color: #374151; margin: 0; } .ds-module-card-footer { padding: 1rem; margin-top: auto; background: #ffffff; }"
+    },
+    {
+      "name": "Action Button (module-bordered)",
+      "kind": "button",
+      "refersTo": "button-outline-module",
+      "description": "Variante signature : bordure 2px en couleur module, texte en couleur module, fond crème, hover augmente la luminosité. Utilisée pour ouvrir Cours/TP/Slide/Examen.",
+      "html": "<a href=\"#\" class=\"ds-action-button\" data-module=\"javascript\"><span>Cours</span><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z\"/><path d=\"M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z\"/></svg></a>",
+      "css": ".ds-action-button { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.25rem; padding: 0.5rem 1rem; border: 2px solid #D4A017; border-radius: 0.375rem; background: #ffffff; color: #D4A017; font-family: var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 600; text-decoration: none; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); cursor: pointer; transition: filter 0.3s cubic-bezier(0.16, 1, 0.3, 1); } .ds-action-button:hover { filter: brightness(1.1); } .ds-action-button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { .ds-action-button { transition: none; } }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Bouton neutre global (shadcn default). Studio Black sur Studio Cream, hover assombrit à 90%.",
+      "html": "<button type=\"button\" class=\"ds-btn-primary\">Valider</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.25rem; padding: 0.5rem 1rem; border: 0; border-radius: 0.375rem; background: #121212; color: #ffffff; font-family: var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); cursor: pointer; transition: background 0.2s cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-primary:hover { background: rgb(18 18 18 / 0.9); } .ds-btn-primary:focus-visible { outline: 3px solid rgb(18 18 18 / 0.5); outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { .ds-btn-primary { transition: none; } }"
+    },
+    {
+      "name": "Tag Badge (#mono)",
+      "kind": "chip",
+      "refersTo": "badge-tag",
+      "description": "Badge tag de section. Bordure 2px en couleur module, mono, préfixé '#'. Usage : tags techniques (#dom, #fetch, #hooks).",
+      "html": "<span class=\"ds-badge-tag\" data-module=\"javascript\">#hooks</span>",
+      "css": ".ds-badge-tag { display: inline-flex; align-items: center; justify-content: center; padding: 0.125rem 0.5rem; border: 2px solid #D4A017; border-radius: 0.375rem; background: transparent; color: #111827; font-family: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.025em; line-height: 1.4; white-space: nowrap; }"
+    },
+    {
+      "name": "Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Input shadcn standard. h-9, rounded-md, focus-visible avec anneau 3px ring/50.",
+      "html": "<input type=\"text\" class=\"ds-input\" placeholder=\"Rechercher un cours\" />",
+      "css": ".ds-input { display: block; width: 100%; height: 2.25rem; padding: 0.25rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background: transparent; color: #111827; font-family: var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif; font-size: 1rem; line-height: 1.5; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); outline: none; transition: color 0.2s, box-shadow 0.2s; } .ds-input::placeholder { color: #9ca3af; } .ds-input:focus-visible { border-color: rgb(18 18 18); box-shadow: 0 0 0 3px rgb(18 18 18 / 0.5); } .ds-input[aria-invalid=\"true\"] { border-color: #b91c1c; box-shadow: 0 0 0 3px rgb(185 28 28 / 0.2); } @media (prefers-reduced-motion: reduce) { .ds-input { transition: none; } }"
+    },
+    {
+      "name": "Code Card Header",
+      "kind": "custom",
+      "refersTo": "card-module",
+      "description": "Header signature du CodeCard : libellé langage en mono blanc, compteur de lignes, actions (Copier/Télécharger/Afficher). Pas de LED ici.",
+      "html": "<div class=\"ds-codecard\" data-module=\"javascript\"><header class=\"ds-codecard-header\"><div class=\"ds-codecard-meta\"><span class=\"ds-codecard-lang\">JS</span><span class=\"ds-codecard-count\">42 lignes</span></div><div class=\"ds-codecard-actions\"><button type=\"button\" class=\"ds-codecard-btn\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"9\" y=\"9\" width=\"13\" height=\"13\" rx=\"2\"/><path d=\"M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\"/></svg><span>Copier</span></button></div></header><div class=\"ds-codecard-body\"><pre><code>console.log('Neo-Mirai Lab Station');</code></pre></div></div>",
+      "css": ".ds-codecard { border: 2px solid #D4A017; border-radius: 0.5rem; overflow: hidden; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); background: #ffffff; } .ds-codecard-header { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 1rem; background: #D4A017; color: #ffffff; } .ds-codecard-meta { display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-jetbrains-mono), ui-monospace, monospace; } .ds-codecard-lang { font-size: 0.875rem; font-weight: 500; letter-spacing: 0.025em; } .ds-codecard-count { font-size: 0.75rem; opacity: 0.75; } .ds-codecard-actions { display: flex; gap: 0.25rem; } .ds-codecard-btn { display: inline-flex; align-items: center; gap: 0.5rem; height: 2rem; padding: 0 0.75rem; border: 0; border-radius: 0.375rem; background: transparent; color: #ffffff; font-family: var(--font-ibm-plex-sans), ui-sans-serif, sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.2s; } .ds-codecard-btn:hover { background: rgb(255 255 255 / 0.15); } @media (prefers-reduced-motion: reduce) { .ds-codecard-btn { transition: none; } } .ds-codecard-body { padding: 1rem; font-family: var(--font-jetbrains-mono), ui-monospace, monospace; font-size: 0.875rem; line-height: 1.45; color: #111827; } .ds-codecard-body pre { margin: 0; } .ds-codecard-body code { font-family: inherit; }"
+    },
+    {
+      "name": "Navigation Link",
+      "kind": "nav",
+      "refersTo": "navigation-link",
+      "description": "Item de NavBar. Icône Lucide 28px + label hidden md:inline. Active state via bg-accent.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\" class=\"ds-nav-link\" aria-current=\"page\"><svg viewBox=\"0 0 24 24\" width=\"28\" height=\"28\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/><polyline points=\"9 22 9 12 15 12 15 22\"/></svg><span class=\"ds-nav-label\">Accueil</span></a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; border-bottom: 2px solid #e5e7eb; padding: 0 0.5rem; } .ds-nav-link { display: inline-flex; align-items: center; gap: 0.5rem; height: 2.25rem; padding: 0.5rem 1rem; border-radius: 0.375rem; color: #111827; font-family: var(--font-ibm-plex-sans), ui-sans-serif, sans-serif; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: background 0.2s, color 0.2s; } .ds-nav-link:hover { background: #f3f4f6; } .ds-nav-link[aria-current=\"page\"] { background: rgb(243 244 246 / 0.7); } .ds-nav-link:focus-visible { outline: 3px solid rgb(18 18 18 / 0.5); outline-offset: 2px; } .ds-nav-label { display: none; font-size: 1.125rem; } @media (min-width: 768px) { .ds-nav-label { display: inline; } } @media (prefers-reduced-motion: reduce) { .ds-nav-link { transition: none; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Neo-Mirai Lab Station",
+    "overview": "Un atelier-laboratoire japonais futuriste, éclairé à l'heure dorée. L'étudiant en BUT Informatique entre dans un workshop où chaque langage est un instrument identifié par sa couleur de châssis : la rouille profonde du HTML, l'or saturé du JS, l'ardoise crépusculaire du PHP, l'indigo ukiyo-e du Login, le violet électrique de Brainfuck. Les voyants blancs sur l'en-tête des cartes sont des indicateurs d'état (LED). Le mono JetBrains sert de langage du terminal pour toutes les métadonnées. Le glitch sur le titre du hero est le signal CRT du studio. Cette identité s'oppose explicitement à W3Schools (vieux, moche, dense en publicités, sans hiérarchie typographique) et à toute la pédagogie scolaire institutionnelle (Moodle, Sakai, Canvas). La discipline visuelle vient de Tailwind UI ; la chaleur Neo-Mirai vient du choix de couleurs saturées-chaudes plutôt que froides, et d'un dark mode qui reste tiède (charbon plus glows ambrés/rouille) plutôt que bleu-cyberpunk générique.",
+    "keyCharacteristics": [
+      "Couleur par langage = wayfinding strict, pas ornement",
+      "Châssis BaseCard (bordure 2px en couleur module, en-tête coloré + LED blanches, corps neutre)",
+      "Typo bicéphale : IBM Plex Sans pour la prose, JetBrains Mono pour les métadonnées",
+      "Dark mode tiède (#121212 plus accents saturés) plutôt que bleu-froid",
+      "Élévation : plat au repos, levé sur interaction (translate-y plus shadow-2xl)",
+      "Motion : tout transition / animation a un partner motion-reduce:"
+    ],
+    "rules": [
+      {
+        "name": "The Module-Color Rule",
+        "body": "Les couleurs html-css, php, javascript, login, brainfuck sont du wayfinding strict. Elles n'apparaissent que sur les surfaces dont elles signalent l'identité. Interdites comme accent décoratif sur les pages neutres (admin, chat, home), interdites en couleur de bouton générique, interdites en background de section non-module.",
+        "section": "colors"
+      },
+      {
+        "name": "The Golden Hour Rule",
+        "body": "Quand plusieurs couleurs cohabitent (page d'accueil avec ses 4 modules), la palette penche sur le chaud : Foundry Rouille et Golden Hour Amber priment visuellement, Twilight Slate et Indigo Vertical sont leurs contre-poids. Le dark mode ne refroidit pas vers le bleu : il garde le charbon #121212 et laisse les accents ambrés/rouille faire le glow.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tinted-Cream Rule",
+        "body": "Les fonds clairs (bg-white) sont actuellement en #ffffff pur, héritage Tailwind. La trajectoire est de les faire glisser vers oklch(99% 0.005 30) (crème tintée vers la rouille). À appliquer progressivement quand on touche globals.css. Aucun nouveau composant ne doit hardcoder #fff brut sans intention.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono-for-Metadata Rule",
+        "body": "JetBrains Mono est réservé au code et aux métadonnées-données : extensions, tags #mono, durées, libellés langage, numéros de ligne, comptes, badges de catégorie. IBM Plex Sans tient tout le reste : titres, corps, navigation, boutons, labels d'UI. Mélanger les deux dans une même phrase est une erreur ; basculer en mono signale 'donnée'.",
+        "section": "typography"
+      },
+      {
+        "name": "The 65-75ch Rule",
+        "body": "Le corps de texte des pages de cours est borné en largeur de ligne entre 65 et 75 caractères. La cible la plus exigeante est l'étudiant qui révise la veille du partiel à 1h du mat ; au-delà de 75ch les yeux décrochent.",
+        "section": "typography"
+      },
+      {
+        "name": "The Lift-on-Touch Rule",
+        "body": "Une carte ne se lève que quand l'utilisateur peut agir dessus (clic, focus, hover). Une carte non-cliquable reste plate. Le mouvement vertical est un signal d'affordance, pas une décoration. La levée est désactivée via motion-reduce:hover:translate-y-0.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do réserver les couleurs html-css, php, javascript, login, brainfuck à leurs surfaces propriétaires.",
+      "Do utiliser BaseCard pour tout point d'entrée vers un module ou une section.",
+      "Do doubler systématiquement le code couleur d'un libellé textuel ou d'un picto Lucide.",
+      "Do ajouter motion-reduce: partner à toute transition, animate- ou duration-.",
+      "Do utiliser JetBrains Mono pour tags #xxx, durées, libellés langage, numéros de ligne ; IBM Plex Sans pour tout le reste.",
+      "Do borner le corps de texte des cours à 65–75ch.",
+      "Do garder le dark mode tiède : charbon #121212 plus glows rouille/ambre, jamais bleu-froid."
+    ],
+    "donts": [
+      "Don't ressembler à W3Schools : aucune publicité, aucun encart sponsorisé, pas de typographie système banale.",
+      "Don't ressembler à Moodle / Sakai / Canvas : pas de fond beige, pas de formulaires partout, pas d'interface plate institutionnelle.",
+      "Don't utiliser border-left ou border-right plus grand que 1px comme bande colorée d'accent.",
+      "Don't appliquer gradient-text sur du nouveau contenu (la classe existe encore dans globals.css mais elle est bannie).",
+      "Don't créer de cartes identiques à 4-couleurs sur des pages neutres sans wayfinding par couleur réel.",
+      "Don't mélanger <p>, <ul>, <h2>, <code> bruts dans le contenu pédagogique.",
+      "Don't utiliser #000 ou #fff purs pour de nouveaux fonds.",
+      "Don't animer des propriétés CSS layout (width, height, top, margin). Uniquement transform, opacity, couleurs.",
+      "Don't utiliser bounce ou elastic comme courbe d'easing.",
+      "Don't introduire un modal pour une action qui peut tenir en inline."
+    ]
+  }
+}

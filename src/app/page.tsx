@@ -3,7 +3,6 @@ import Link from "next/link";
 import getModules from "@/lib/getModules";
 import HeroSection from "@/components/page/HeroSection";
 import CoursesSection from "@/components/page/CoursesSection";
-import PageFooter from "@/components/page/PageFooter";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {Metadata} from "next";
 
@@ -28,15 +27,12 @@ export default async function Home() {
                     <Link
                         key={`${currentModule.path}_${index}`}
                         className="opacity-0 animate-fade-in-up"
-                        style={{animationDelay: `${index * 0.1}s`}}
                         href={currentModule.path}
                     >
                         <ModuleCard currentModule={currentModule}/>
                     </Link>
                 ))}
             </CoursesSection>
-
-            <PageFooter/>
         </div>
     );
 }

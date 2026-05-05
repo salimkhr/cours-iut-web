@@ -13,7 +13,7 @@ export default function CoursesSection({
                                        }: CoursesSectionProps) {
     return (
         <section className="w-full px-4 lg:px-8 z-100 overflow-x-hidden">
-            <h2 className="text-4xl lg:text-6xl font-extrabold mb-4 lg:mb-8 text-center opacity-0 animate-fade-in-up">
+            <h2 className="text-3xl font-bold leading-tight mb-4 lg:mb-8 text-center opacity-0 animate-fade-in-up">
                 {title}
             </h2>
             <div className={`${containerClassName} w-full`}>{children}</div>

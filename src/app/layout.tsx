@@ -1,5 +1,5 @@
 import type {Metadata} from 'next';
-import {IBM_Plex_Sans, JetBrains_Mono} from 'next/font/google';
+import {Syne, DM_Sans} from 'next/font/google';
 import './globals.css';
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -7,16 +7,18 @@ import CsrfInitializer from "@/components/CsrfInitializer";
 import {ThemeProvider} from "@/components/ThemeProvider";
 import {AuthProvider} from "@/context/AuthContext";
 
-const jetbrainsMono = JetBrains_Mono({
+const syne = Syne({
     subsets: ['latin'],
-    weight: ['400', '500', '600', '700'],
-    variable: '--font-jetbrains-mono',
+    weight: ['600', '700', '800'],
+    variable: '--font-syne',
+    display: 'swap',
 });
 
-const ibmPlexSans = IBM_Plex_Sans({
+const dmSans = DM_Sans({
     subsets: ['latin'],
     weight: ['400', '500', '600', '700'],
-    variable: '--font-ibm-plex-sans',
+    variable: '--font-dm-sans',
+    display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -34,7 +36,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({children}: { children: React.ReactNode }) {
     return (
-        <html lang="fr" className={`${jetbrainsMono.variable} ${ibmPlexSans.variable}`} suppressHydrationWarning>
+        <html lang="fr" className={`${syne.variable} ${dmSans.variable}`} suppressHydrationWarning>
         <body className="min-h-screen font-sans">
         <ThemeProvider
             attribute="class"

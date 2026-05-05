@@ -6,6 +6,8 @@ import BaseCard from "@/components/Cards/BaseCard";
 import iconMap from "@/lib/iconMap";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
+import Heading from "@/components/ui/Heading";
+import Text from "@/components/ui/Text";
 
 
 interface ModuleCardProps {
@@ -15,22 +17,21 @@ interface ModuleCardProps {
 export default function ModuleCard({currentModule}: ModuleCardProps) {
     const {title, description, path, iconName} = currentModule;
     const Icon = iconMap[iconName] || BookOpen;
-    const moduleColor = `var(--color-${path})`;
 
     const header = (
-        <div className="group-hover:rotate-12 transition-transform duration-300" key={path}>
+        <div className="group-hover:rotate-12 motion-reduce:group-hover:rotate-0 transition-transform duration-300 motion-reduce:transition-none" key={path}>
             <Icon size={40} className="text-white"/>
         </div>
     );
 
     const content = (
         <>
-            <h2 className={`text-3xl font-bold mb-3 text-${path}`}>
+            <Heading level={2} className={`mt-0 mb-3 text-${path}`}>
                 {title}
-            </h2>
-            <p className="text-center leading-relaxed">
+            </Heading>
+            <Text className="text-center leading-relaxed">
                 {description}
-            </p>
+            </Text>
         </>
     );
 
@@ -40,13 +41,6 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
         </Button>
     );
 
-    // const overlay = (
-    //     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-    //         <BorderBeam size={80} duration={6} colorFrom={moduleColor} colorTo={moduleColor}/>
-    //         <BorderBeam size={80} duration={6} delay={3} reverse colorFrom={moduleColor} colorTo={moduleColor}/>
-    //     </div>
-    // );
-
     return (
         <BaseCard
             href={path}
@@ -54,7 +48,6 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
             header={header}
             content={content}
             footer={footer}
-            // overlay={overlay}
         />
     );
 }
