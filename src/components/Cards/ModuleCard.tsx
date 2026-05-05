@@ -2,9 +2,7 @@
 
 import {BookOpen} from 'lucide-react';
 import Module from "@/types/Module";
-import BaseCard from "@/components/Cards/BaseCard";
 import iconMap from "@/lib/iconMap";
-import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 
 
@@ -15,46 +13,55 @@ interface ModuleCardProps {
 export default function ModuleCard({currentModule}: ModuleCardProps) {
     const {title, description, path, iconName} = currentModule;
     const Icon = iconMap[iconName] || BookOpen;
-    const moduleColor = `var(--color-${path})`;
-
-    const header = (
-        <div className="group-hover:rotate-12 transition-transform duration-300" key={path}>
-            <Icon size={40} className="text-white"/>
-        </div>
-    );
-
-    const content = (
-        <>
-            <h2 className={`text-3xl font-bold mb-3 text-${path}`}>
-                {title}
-            </h2>
-            <p className="text-center leading-relaxed">
-                {description}
-            </p>
-        </>
-    );
-
-    const footer = (
-        <Button className={cn(`w-full border-2`, `border-${currentModule.path}`)} variant="outline">
-            Voir les cours
-        </Button>
-    );
-
-    // const overlay = (
-    //     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-    //         <BorderBeam size={80} duration={6} colorFrom={moduleColor} colorTo={moduleColor}/>
-    //         <BorderBeam size={80} duration={6} delay={3} reverse colorFrom={moduleColor} colorTo={moduleColor}/>
-    //     </div>
-    // );
 
     return (
-        <BaseCard
-            href={path}
-            currentModule={currentModule}
-            header={header}
-            content={content}
-            footer={footer}
-            // overlay={overlay}
-        />
+        <article
+            className={cn(
+                "group relative h-full flex flex-col gap-5 p-6 lg:p-8",
+                "bg-brand-light dark:bg-brand-dark-soft",
+                "rounded-2xl border border-brand-gray-300/60 dark:border-brand-gray-700/60",
+                "transition-all duration-300 ease-out",
+                "hover:-translate-y-1 hover:shadow-xl hover:border-transparent",
+                "motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+            )}
+        >
+            <div
+                className={cn(
+                    "flex items-center justify-center w-14 h-14 rounded-xl text-white shadow-sm",
+                    `bg-${path}`
+                )}
+            >
+                <Icon size={28}/>
+            </div>
+
+            <div className="flex flex-col gap-2 flex-grow">
+                <h3 className={cn("text-2xl font-bold tracking-tight", `text-${path}`)}>
+                    {title}
+                </h3>
+                {description && (
+                    <p className="text-sm leading-relaxed text-brand-gray-700 dark:text-brand-gray-300">
+                        {description}
+                    </p>
+                )}
+            </div>
+
+            <span
+                className="inline-flex items-center gap-2 text-sm font-semibold text-brand-primary mt-auto">
+                Voir les cours
+                <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="size-4 transition-transform duration-300 group-hover:translate-x-1"
+                >
+                    <path d="M5 12h14"/>
+                    <path d="M13 5l7 7-7 7"/>
+                </svg>
+            </span>
+        </article>
     );
 }

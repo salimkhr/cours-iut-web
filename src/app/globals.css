@@ -7,6 +7,18 @@
     --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
     --font-sans: var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif;
     --color-footer: #121212;
+
+    /* Design system — Neo-Mirai */
+    --color-brand-primary: #E85D04;
+    --color-brand-accent: #FB923C;
+    --color-brand-accent-dark: #C2410C;
+    --color-brand-dark: #0F172A;
+    --color-brand-dark-soft: #1E293B;
+    --color-brand-light: #F8E9D6;
+    --color-brand-gray-100: #F1F5F9;
+    --color-brand-gray-300: #CBD5E1;
+    --color-brand-gray-500: #64748B;
+    --color-brand-gray-700: #334155;
 }
 
 /* Variables CSS */
