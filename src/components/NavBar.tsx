@@ -31,8 +31,8 @@ export default async function NavBar() {
     const isAdmin = sessionRes?.user?.role === 'admin';
 
     return (
-        <header>
-            <NavigationMenu className="border-b-2 border-border">
+        <header className="bg-brand-light dark:bg-brand-dark">
+            <NavigationMenu className="bg-brand-light dark:bg-brand-dark border-b-2 border-border">
                 <NavigationMenuList className="flex items-center">
                     <NavigationMenuItem>
                         <NavigationMenuLink asChild>

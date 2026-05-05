@@ -9,14 +9,17 @@ interface CoursesSectionProps {
 export default function CoursesSection({
                                            title,
                                            children,
-                                           containerClassName = "grid gap-6 lg:gap-8 w-full p-4 lg:px-40 mx-auto grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(400px,1fr))] mb-12 lg:mb-16"
+                                           containerClassName = "grid gap-6 lg:gap-8 w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
                                        }: CoursesSectionProps) {
     return (
-        <section className="w-full px-4 lg:px-8 z-100 overflow-x-hidden">
-            <h2 className="text-4xl lg:text-6xl font-extrabold mb-4 lg:mb-8 text-center opacity-0 animate-fade-in-up">
-                {title}
-            </h2>
-            <div className={`${containerClassName} w-full`}>{children}</div>
+        <section className="w-full px-6 lg:pl-12 lg:pr-6 py-16 lg:py-24">
+            <div className="flex flex-col items-start mb-10 lg:mb-14 opacity-0 animate-fade-in-up">
+                <h2 className="text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-left text-brand-dark dark:text-brand-light">
+                    {title}
+                </h2>
+                <span aria-hidden="true" className="block w-24 h-1 bg-brand-primary rounded-full mt-4"/>
+            </div>
+            <div className={containerClassName}>{children}</div>
         </section>
     );
 }
