@@ -12,9 +12,9 @@
     --color-brand-primary: #E85D04;
     --color-brand-accent: #FB923C;
     --color-brand-accent-dark: #C2410C;
-    --color-brand-dark: #0F172A;
+    --color-brand-dark: #221e18;
     --color-brand-dark-soft: #1E293B;
-    --color-brand-light: #F8E9D6;
+    --color-brand-light: #f0d5b7;
     --color-brand-gray-100: #F1F5F9;
     --color-brand-gray-300: #CBD5E1;
     --color-brand-gray-500: #64748B;
@@ -35,6 +35,9 @@
     --animation-duration-short: 0.6s;
     --animation-duration-medium: 0.8s;
     --animation-duration-long: 3s;
+
+    /* Hauteur de la navbar (h-9 + border-b-2) */
+    --navbar-h: 38px;
 }
 
 /* Variables Dark Mode */

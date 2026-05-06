@@ -2,7 +2,6 @@ import type {Metadata} from 'next';
 import {IBM_Plex_Sans, JetBrains_Mono} from 'next/font/google';
 import './globals.css';
 import NavBar from "@/components/NavBar";
-import Footer from "@/components/Footer";
 import CsrfInitializer from "@/components/CsrfInitializer";
 import {ThemeProvider} from "@/components/ThemeProvider";
 import {AuthProvider} from "@/context/AuthContext";
@@ -35,7 +34,7 @@ export const metadata: Metadata = {
 export default function RootLayout({children}: { children: React.ReactNode }) {
     return (
         <html lang="fr" className={`${jetbrainsMono.variable} ${ibmPlexSans.variable}`} suppressHydrationWarning>
-        <body className="min-h-screen font-sans">
+        <body className="min-h-screen font-sans bg-brand-light dark:bg-brand-dark text-brand-dark dark:text-brand-light">
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -45,7 +44,6 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
             <AuthProvider>
                 <NavBar/>
                 {children}
-                <Footer/>
                 <CsrfInitializer/>
             </AuthProvider>
         </ThemeProvider>

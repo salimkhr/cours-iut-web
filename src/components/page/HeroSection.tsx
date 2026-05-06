@@ -4,6 +4,7 @@ import {ReactNode, useMemo} from "react";
 import TagsBadges from "@/components/page/TagsBadges";
 import {Particles} from "@/components/magicui/particles";
 import {useMounted} from "@/hook/useMounted";
+import {useIsDark} from "@/hook/useIsDark";
 
 interface HeroSectionProps {
     title: string;
@@ -27,6 +28,7 @@ export default function HeroSection({
                                         path = ''
                                     }: HeroSectionProps) {
     const mounted = useMounted();
+    const isDark = useIsDark();
 
     const color = useMemo(() => {
         if (!mounted || typeof window === 'undefined') return "";
@@ -35,14 +37,16 @@ export default function HeroSection({
     }, [mounted, path]);
 
     const isHome = !path;
-    const heroImage = isHome ? '/images/header/pont.png' : imagePath;
+    const heroImage = isHome
+        ? (isDark ? '/images/header/pont-dark.png' : '/images/header/pont-light.png')
+        : imagePath;
     const particleColor = color || '#94a3b8';
 
     return (
         <section
             role="img"
             aria-label={imageAlt}
-            className="relative w-full bg-no-repeat bg-right-bottom bg-contain lg:min-h-[70vh] overflow-hidden border-b border-brand-gray-300 dark:border-brand-gray-700"
+            className="relative w-full bg-no-repeat bg-right-bottom bg-contain lg:min-h-[70vh] overflow-hidden border-b border-brand-dark/15 dark:border-brand-light/15 -mt-(--navbar-h)"
             style={{backgroundImage: `url(${heroImage})`}}
         >
             {!isHome && (

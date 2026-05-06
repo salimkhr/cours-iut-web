@@ -18,8 +18,8 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
         <article
             className={cn(
                 "group relative h-full flex flex-col gap-5 p-6 lg:p-8",
-                "bg-brand-light dark:bg-brand-dark-soft",
-                "rounded-2xl border border-brand-gray-300/60 dark:border-brand-gray-700/60",
+                "bg-brand-dark dark:bg-brand-light text-brand-light dark:text-brand-dark",
+                "rounded-2xl border border-brand-gray-700/60 dark:border-brand-gray-300/60",
                 "transition-all duration-300 ease-out",
                 "hover:-translate-y-1 hover:shadow-xl hover:border-transparent",
                 "motion-reduce:transition-none motion-reduce:hover:translate-y-0"
@@ -39,14 +39,14 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
                     {title}
                 </h3>
                 {description && (
-                    <p className="text-sm leading-relaxed text-brand-gray-700 dark:text-brand-gray-300">
+                    <p className="text-sm leading-relaxed text-brand-gray-300 dark:text-brand-gray-700">
                         {description}
                     </p>
                 )}
             </div>
 
             <span
-                className="inline-flex items-center gap-2 text-sm font-semibold text-brand-primary mt-auto">
+                className="inline-flex items-center justify-center gap-2 rounded-lg border-[3px] border-brand-primary text-brand-light dark:text-brand-dark group-hover:bg-brand-primary group-hover:text-white px-6 py-3 text-sm font-semibold tracking-wide transition-all duration-300 mt-auto">
                 Voir les cours
                 <svg
                     aria-hidden="true"
@@ -56,7 +56,7 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
                     strokeWidth={3}
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="size-4 transition-transform duration-300 group-hover:translate-x-1"
+                    className="size-4 text-brand-primary group-hover:text-white transition-all duration-300 group-hover:translate-x-1"
                 >
                     <path d="M5 12h14"/>
                     <path d="M13 5l7 7-7 7"/>
