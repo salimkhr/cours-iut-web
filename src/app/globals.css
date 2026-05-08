@@ -412,3 +412,30 @@ input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 1000px #1c1b22 inset !important;
     -webkit-text-fill-color: #f9fafb !important;
 }
+
+/* Idle float — uses the `translate` property (not `transform`) so Framer Motion
+   parallax via `style.y` (transform) can compose without being overridden. */
+@keyframes floatSlow {
+    0%   { translate: 0 0; }
+    50%  { translate: 0 -10px; }
+    100% { translate: 0 0; }
+}
+
+@keyframes floatMedium {
+    0%   { translate: 0 0; }
+    50%  { translate: 6px -8px; }
+    100% { translate: 0 0; }
+}
+
+@keyframes floatDrift {
+    0%   { translate: 0 0; }
+    33%  { translate: -6px 4px; }
+    66%  { translate: 4px -6px; }
+    100% { translate: 0 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .animate-float-slow   { animation: floatSlow 9s ease-in-out infinite; }
+    .animate-float-medium { animation: floatMedium 7s ease-in-out infinite; }
+    .animate-float-drift  { animation: floatDrift 11s ease-in-out infinite; }
+}

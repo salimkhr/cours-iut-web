@@ -47,3 +47,5 @@ rag
 /public/sw.js
 /public/workbox*.js
 /.claude/
+/assets/
+/.agents/
