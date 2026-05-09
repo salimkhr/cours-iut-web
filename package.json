@@ -22,6 +22,7 @@
     "@babel/generator": "^7.29.1",
     "@babel/parser": "^7.29.0",
     "@babel/traverse": "^7.29.0",
+    "@clerk/localizations": "^4.6.2",
     "@clerk/nextjs": "^7.3.2",
     "@hookform/resolvers": "^5.2.2",
     "@mdx-js/loader": "^3.1.1",
