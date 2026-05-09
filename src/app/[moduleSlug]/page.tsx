@@ -1,3 +1,4 @@
+import Link from "next/link";
 import SectionCard from "@/components/Cards/SectionCard";
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import Section from "@/types/Section";
@@ -30,7 +31,7 @@ export default async function Module({params}: ModulePageProps) {
     const {moduleSlug} = await params;
     const {currentModule} = await getModuleData({moduleSlug});
 
-    const {totalSections, totalAvailableSections, progress, hasAvailableContent} =
+    const {totalSections, totalAvailableSections, progress, hasAvailableContent, lastAvailableSectionPath} =
         getModuleProgress(currentModule);
 
     // 🔐 Clerk auth
@@ -52,11 +53,34 @@ export default async function Module({params}: ModulePageProps) {
                 imagePath={`images/header/header_${currentModule.path}.svg`}
                 imageAlt={currentModule.title}
                 tags={allTags}
-                icon={<Icon size={70} className="mb-4"/>}
+                icon={<Icon size={56} className="mb-4"/>}
                 path={currentModule.path}
+                compact
             >
-
-                <ModuleInfo currentModule={currentModule}/>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    {hasAvailableContent && lastAvailableSectionPath && (
+                        <Link
+                            href={`/${currentModule.path}/${lastAvailableSectionPath}`}
+                            className="group inline-flex items-center justify-center gap-2 rounded-lg border-[3px] border-brand-primary text-brand-dark dark:text-brand-light hover:bg-brand-primary hover:text-white px-6 py-3 text-sm font-semibold tracking-wide transition-all duration-300"
+                        >
+                            Continuer le cours
+                            <svg
+                                aria-hidden="true"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth={3}
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="size-4 text-brand-primary group-hover:text-white transition-all duration-300 group-hover:translate-x-1"
+                            >
+                                <path d="M5 12h14"/>
+                                <path d="M13 5l7 7-7 7"/>
+                            </svg>
+                        </Link>
+                    )}
+                    <ModuleInfo currentModule={currentModule}/>
+                </div>
             </HeroSection>
 
 

@@ -5,6 +5,7 @@ import TagsBadges from "@/components/page/TagsBadges";
 import {Particles} from "@/components/magicui/particles";
 import {useMounted} from "@/hook/useMounted";
 import {useIsDark} from "@/hook/useIsDark";
+import {cn} from "@/lib/utils";
 
 interface HeroSectionProps {
     title: string;
@@ -15,6 +16,7 @@ interface HeroSectionProps {
     tags?: string[];
     icon?: ReactNode;
     path?: string;
+    compact?: boolean;
 }
 
 export default function HeroSection({
@@ -25,7 +27,8 @@ export default function HeroSection({
                                         children,
                                         icon,
                                         tags = [],
-                                        path = ''
+                                        path = '',
+                                        compact = false
                                     }: HeroSectionProps) {
     const mounted = useMounted();
     const isDark = useIsDark();
@@ -37,7 +40,8 @@ export default function HeroSection({
     }, [mounted, path]);
 
     const isHome = !path;
-    const heroImage = isHome
+    const useBridge = isHome || compact;
+    const heroImage = useBridge
         ? (isDark ? '/images/header/pont-dark.png' : '/images/header/pont-light.png')
         : imagePath;
     const particleColor = color || '#94a3b8';
@@ -46,7 +50,12 @@ export default function HeroSection({
         <section
             role="img"
             aria-label={imageAlt}
-            className="relative w-full bg-no-repeat bg-right-bottom bg-contain lg:bg-cover lg:bg-right-bottom min-h-[60vh] lg:min-h-[80vh] overflow-hidden border-b border-brand-dark/15 dark:border-brand-light/15 -mt-(--navbar-h)"
+            className={cn(
+                "relative w-full bg-no-repeat bg-right-bottom bg-contain lg:bg-cover lg:bg-right-bottom overflow-hidden border-b border-brand-dark/15 dark:border-brand-light/15 -mt-(--navbar-h)",
+                compact
+                    ? "min-h-[26vh] lg:min-h-[34vh]"
+                    : "min-h-[60vh] lg:min-h-[80vh]"
+            )}
             style={{backgroundImage: `url(${heroImage})`}}
         >
             {!isHome && (
@@ -75,24 +84,55 @@ export default function HeroSection({
             </div>
 
             <div
-                className="relative z-10 mx-auto w-full max-w-7xl flex flex-col items-center lg:items-start justify-center px-6 lg:pl-12 lg:pr-6 py-16 lg:py-24 min-h-[60vh] lg:min-h-[80vh] opacity-0 animate-fade-in">
+                className={cn(
+                    "relative z-10 mx-auto w-full max-w-7xl flex flex-col items-center lg:items-start justify-center px-6 lg:pl-12 lg:pr-6 opacity-0 animate-fade-in",
+                    compact
+                        ? "py-7 lg:py-10 min-h-[26vh] lg:min-h-[34vh]"
+                        : "py-16 lg:py-24 min-h-[60vh] lg:min-h-[80vh]"
+                )}>
                 <div className="w-full max-w-[640px]">
-                    {icon && <div className="mb-4 flex justify-center lg:justify-start">{icon}</div>}
+                    {compact ? (
+                        <div className="flex items-center gap-3 lg:gap-4 justify-center lg:justify-start leading-none text-brand-dark dark:text-brand-light text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl">
+                            {icon && (
+                                <div className="shrink-0 inline-flex items-center [&_svg]:w-[0.85em] [&_svg]:h-[0.85em] [&_svg]:block">
+                                    {icon}
+                                </div>
+                            )}
+                            <h1 className="font-extrabold tracking-tight">
+                                {title}
+                                <span className="text-brand-primary">.</span>
+                            </h1>
+                        </div>
+                    ) : (
+                        <>
+                            {icon && <div className="mb-4 flex justify-center lg:justify-start">{icon}</div>}
+                            <h1 className="font-extrabold tracking-tight leading-[0.95] text-center lg:text-left text-brand-dark dark:text-brand-light text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl">
+                                {title}
+                                <span className="text-brand-primary">.</span>
+                            </h1>
+                        </>
+                    )}
 
-                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[0.95] text-center lg:text-left text-brand-dark dark:text-brand-light">
-                        {title}
-                        <span className="text-brand-primary">.</span>
-                    </h1>
-
-                    <span aria-hidden="true" className="block w-16 h-1 bg-brand-primary rounded-full mt-6 mx-auto lg:mx-0"/>
+                    <span aria-hidden="true" className={cn(
+                        "block h-1 bg-brand-primary rounded-full mx-auto lg:mx-0",
+                        compact ? "w-12 mt-3" : "w-16 mt-6"
+                    )}/>
 
                     {description && (
-                        <p className="mt-5 text-base sm:text-lg lg:text-lg xl:text-xl leading-relaxed text-brand-gray-700 dark:text-brand-gray-300 text-center lg:text-left max-w-prose mx-auto lg:mx-0">
+                        <p className={cn(
+                            "leading-relaxed text-brand-gray-700 dark:text-brand-gray-300 text-center lg:text-left max-w-prose mx-auto lg:mx-0",
+                            compact
+                                ? "mt-3 text-sm sm:text-base lg:text-base"
+                                : "mt-5 text-base sm:text-lg lg:text-lg xl:text-xl"
+                        )}>
                             {description}
                         </p>
                     )}
 
-                    {children && <div className="mt-7 w-full flex justify-center lg:justify-start">{children}</div>}
+                    {children && <div className={cn(
+                        "w-full flex justify-center lg:justify-start",
+                        compact ? "mt-4" : "mt-7"
+                    )}>{children}</div>}
 
                     {tags.length > 0 && (
                         <div className="mt-6 w-full flex justify-center lg:justify-start">

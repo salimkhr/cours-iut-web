@@ -16,16 +16,12 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
     const {title, description, path, iconName, sections} = currentModule;
     const Icon = iconMap[iconName] || BookOpen;
     const sectionsCount = sections?.length ?? 0;
-    const {progress: pct} = getModuleProgress(currentModule);
+    const {progress: pct, lastAvailableSectionPath} = getModuleProgress(currentModule);
 
-    const lastAvailableSection = (sections ?? [])
-        .filter((s) => s.isAvailable && !s.contents.includes('examen'))
-        .sort((a, b) => b.order - a.order)[0];
-
-    const continueHref = lastAvailableSection
-        ? `/${path}/${lastAvailableSection.path}`
+    const continueHref = lastAvailableSectionPath
+        ? `/${path}/${lastAvailableSectionPath}`
         : `/${path}`;
-    const canContinue = !!lastAvailableSection;
+    const canContinue = !!lastAvailableSectionPath;
 
     return (
         <article
@@ -78,7 +74,7 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
                         {title}
                     </h3>
                     {sectionsCount > 0 && (
-                        <p className="mt-1.5 text-[11px] uppercase tracking-[0.18em] font-semibold text-bridge-800/85 dark:text-bridge-200/70">
+                        <p className="mt-1.5 text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark dark:text-bridge-200/70">
                             {sectionsCount} chapitre{sectionsCount > 1 ? 's' : ''}
                         </p>
                     )}
@@ -87,16 +83,16 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
 
             {/* Description */}
             {description && (
-                <p className="text-sm leading-relaxed text-bridge-800/90 dark:text-bridge-100/85 flex-grow">
+                <p className="text-sm leading-relaxed font-medium text-brand-dark dark:text-bridge-100/90 flex-grow">
                     {description}
                 </p>
             )}
 
             {/* Progression — same style as ProgressSection on /[moduleSlug] */}
             <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.18em] font-semibold text-bridge-800/85 dark:text-bridge-200/70">
+                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark dark:text-bridge-200/70">
                     <span>Progression</span>
-                    <span className="tabular-nums text-bridge-900 dark:text-bridge-100">{pct}%</span>
+                    <span className="tabular-nums text-brand-dark dark:text-bridge-100">{pct}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
@@ -116,10 +112,11 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
                     className={cn(
                         "group/cta inline-flex items-center justify-center gap-2 rounded-lg flex-1",
                         "px-5 py-2.5 text-sm font-semibold tracking-wide",
-                        "bg-brand-primary text-white",
-                        "shadow-[0_4px_14px_-6px_rgba(232,93,4,0.45)]",
+                        "bg-bridge-700 text-bridge-50 dark:bg-bridge-200 dark:text-bridge-900",
+                        "shadow-[0_4px_14px_-6px_rgba(94,59,34,0.4)]",
                         "transition-[background-color,box-shadow,transform] duration-300",
-                        "hover:bg-brand-accent-dark hover:shadow-[0_8px_20px_-6px_rgba(232,93,4,0.55)]",
+                        "hover:bg-bridge-800 dark:hover:bg-bridge-100",
+                        "hover:shadow-[0_8px_20px_-6px_rgba(94,59,34,0.55)]",
                         "active:translate-y-px",
                         !canContinue && "opacity-60 pointer-events-none cursor-not-allowed"
                     )}
@@ -133,11 +130,11 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
                     className={cn(
                         "inline-flex items-center justify-center gap-1.5 rounded-lg",
                         "px-4 py-2.5 text-sm font-semibold tracking-wide",
-                        "border border-bridge-700/45 text-bridge-900",
+                        "border border-bridge-700/55 text-brand-dark",
                         "dark:border-bridge-400/40 dark:text-bridge-100",
                         "transition-[color,border-color,background-color] duration-300",
-                        "hover:bg-bridge-200 hover:border-brand-primary hover:text-brand-primary",
-                        "dark:hover:bg-bridge-700 dark:hover:border-brand-accent dark:hover:text-brand-accent"
+                        "hover:bg-bridge-200 hover:border-bridge-700 hover:text-bridge-900",
+                        "dark:hover:bg-bridge-700 dark:hover:border-bridge-300 dark:hover:text-bridge-50"
                     )}
                 >
                     Voir les chapitres

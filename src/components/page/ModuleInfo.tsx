@@ -17,8 +17,25 @@ export default function ModuleInfo({currentModule}: ModuleInfoProps) {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline" className={`border-2 font-bold text-${currentModule.path}`}>
+                <Button
+                    variant="outline"
+                    className="group inline-flex items-center justify-center gap-2 rounded-lg border-2 border-bridge-700/45 dark:border-bridge-300/45 bg-transparent text-brand-dark dark:text-bridge-100 hover:bg-bridge-700/10 hover:border-bridge-700/70 dark:hover:bg-bridge-300/10 dark:hover:border-bridge-300/70 px-6 py-3 text-sm font-semibold tracking-wide transition-all duration-300 h-auto"
+                >
                     Plus d&apos;infos
+                    <svg
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={3}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="size-4 transition-transform duration-300 group-hover:scale-110"
+                    >
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                    </svg>
                 </Button>
             </DialogTrigger>
 
