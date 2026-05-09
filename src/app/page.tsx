@@ -48,14 +48,13 @@ export default async function Home() {
             <div id="cours" className="w-full">
                 <CoursesSection title="Liste des cours">
                     {modules.map((currentModule, index) => (
-                        <Link
+                        <div
                             key={`${currentModule.path}_${index}`}
                             className="opacity-0 animate-fade-in-up"
                             style={{animationDelay: `${index * 0.1}s`}}
-                            href={currentModule.path}
                         >
                             <ModuleCard currentModule={currentModule}/>
-                        </Link>
+                        </div>
                     ))}
                 </CoursesSection>
             </div>

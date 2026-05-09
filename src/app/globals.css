@@ -19,6 +19,19 @@
     --color-brand-gray-300: #CBD5E1;
     --color-brand-gray-500: #64748B;
     --color-brand-gray-700: #334155;
+
+    /* Bridge palette — derived from the hero bridge illustration (#d59b6d / #93613a).
+       Used for the course cards. Warm caramel ↔ deep cocoa. Avoids pure black/white. */
+    --color-bridge-50:  #f7ebd9;
+    --color-bridge-100: #ecd4b3;
+    --color-bridge-200: #e2bd8e;
+    --color-bridge-300: #d59b6d;
+    --color-bridge-400: #b8835a;
+    --color-bridge-500: #93613a;
+    --color-bridge-600: #74492b;
+    --color-bridge-700: #5e3b22;
+    --color-bridge-800: #3f2818;
+    --color-bridge-900: #2a1d12;
 }
 
 /* Variables CSS */
@@ -26,7 +39,7 @@
     /* Couleurs principales par langage */
     --color-html-css: #9e371a;
     --color-php: #53567d;
-    --color-javascript: #D4A017;
+    --color-javascript: #5e4300;
     --color-login: #0000b3;
     --color-brainfuck: #8A2BE2;
     --color-scroll: #121212;
@@ -45,7 +58,7 @@
     /*--color-html-css: #e34f26;  */
     --color-php: #777bb4;
     --color-scroll: #ffffff;
-    /*--color-javascript: #f7df1e;*/
+    --color-javascript: #f7df1e;
 }
 
 /* Animations keyframes */

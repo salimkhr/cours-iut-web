@@ -9,6 +9,7 @@ import HeroSection from "@/components/page/HeroSection";
 import CoursesSection from "@/components/page/CoursesSection";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getModuleData} from "@/hook/getModuleData";
+import getModuleProgress from "@/lib/getModuleProgress";
 import ModuleInfo from "@/components/page/ModuleInfo";
 import {Metadata} from "next";
 import {currentUser} from "@clerk/nextjs/server";
@@ -29,34 +30,13 @@ export default async function Module({params}: ModulePageProps) {
     const {moduleSlug} = await params;
     const {currentModule} = await getModuleData({moduleSlug});
 
-    // Module statistics
-    const totalSections = currentModule.sections.filter(
-        (section: Section) => !section.contents.includes('examen')
-    ).length;
-
-    const totalAvailableSections = currentModule.sections.filter(
-        (section: Section) => section.isAvailable && !section.contents.includes('examen')
-    ).length;
-
-    const totalSectionsProgress = currentModule.sections.filter(
-        (section: Section) => !section.contents.includes('examen')
-    ).reduce(
-        (sum, section: Section) => sum + (section.totalDuration || 1),
-        0
-    );
+    const {totalSections, totalAvailableSections, progress, hasAvailableContent} =
+        getModuleProgress(currentModule);
 
     // 🔐 Clerk auth
     const user = await currentUser();
     const isAdmin = user?.publicMetadata?.role === 'admin';
 
-    const totalAvailableSectionsProgress = currentModule.sections
-        .filter((section: Section) => section.isAvailable && !section.contents.includes('examen'))
-        .reduce((sum, section: Section) => sum + (section.totalDuration || 1), 0);
-
-    const progress = totalSections > 0
-        ? Math.round((totalAvailableSectionsProgress / totalSectionsProgress) * 100)
-        : 0;
-    const hasAvailableContent = totalAvailableSections > 0;
     const allTags = [...new Set(
         currentModule.sections.flatMap((section: Section) => section.tags || [])
     )].sort((a, b) => a.localeCompare(b));
