@@ -1,15 +1,16 @@
 import {Badge} from "@/components/ui/badge";
+import {cn} from "@/lib/utils";
 
 interface TagsBadgesProps {
     tags: string[];
-    moduleTheme: string;
+    /** Kept for backward compatibility — no longer used for theming, kept neutral. */
+    moduleTheme?: string;
     maxTags?: number;
     animationDelay?: string;
 }
 
 export default function TagsBadges({
                                        tags,
-                                       moduleTheme,
                                        maxTags = 8,
                                        animationDelay = '0.3s'
                                    }: TagsBadgesProps) {
@@ -17,13 +18,17 @@ export default function TagsBadges({
 
     return (
         <div
-            className="flex flex-wrap justify-center gap-2 mb-8 opacity-0 animate-fade-in-up"
+            className="flex flex-wrap justify-center gap-2 opacity-0 animate-fade-in-up"
             style={{animationDelay}}
         >
             {tags.slice(0, maxTags).map((tag) => (
                 <Badge
                     key={tag}
-                    className={`border-2 border-${moduleTheme} text-${moduleTheme} font-mono text-xs hover:bg-${moduleTheme} hover:text-white transition-colors`}
+                    className={cn(
+                        "border-2 bg-transparent font-mono font-semibold text-sm px-3 py-1 rounded-md transition-colors",
+                        "border-bridge-700/55 text-brand-dark hover:bg-bridge-700/10",
+                        "dark:border-bridge-200/60 dark:text-bridge-50 dark:hover:bg-bridge-200/15"
+                    )}
                 >
                     #{tag}
                 </Badge>

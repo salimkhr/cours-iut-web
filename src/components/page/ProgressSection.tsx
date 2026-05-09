@@ -1,4 +1,3 @@
-import {Sparkles} from "lucide-react";
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
 
@@ -43,13 +42,6 @@ export default function ProgressSection({
                     />
 
                     <div className="relative flex flex-col gap-6 lg:gap-7 items-start lg:items-center text-left lg:text-center">
-
-                        {/* Eyebrow */}
-                        <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] font-semibold text-brand-dark dark:text-bridge-200/80">
-                            <Sparkles className="w-3.5 h-3.5"/>
-                            Parcours du module
-                        </div>
-
                         {/* Heading */}
                         <h4 className={cn(
                             "text-3xl lg:text-4xl xl:text-5xl font-extrabold tracking-tight leading-[1.05] text-brand-dark dark:text-brand-light",

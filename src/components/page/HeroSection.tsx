@@ -136,7 +136,7 @@ export default function HeroSection({
 
                     {tags.length > 0 && (
                         <div className="mt-6 w-full flex justify-center lg:justify-start">
-                            <TagsBadges tags={tags} moduleTheme={title}/>
+                            <TagsBadges tags={tags} moduleTheme={path}/>
                         </div>
                     )}
                 </div>
