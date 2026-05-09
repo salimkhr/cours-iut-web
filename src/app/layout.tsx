@@ -3,9 +3,8 @@ import {IBM_Plex_Sans, JetBrains_Mono} from 'next/font/google';
 import './globals.css';
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import CsrfInitializer from "@/components/CsrfInitializer";
 import {ThemeProvider} from "@/components/ThemeProvider";
-import {AuthProvider} from "@/context/AuthContext";
+import {ClerkProvider} from "@clerk/nextjs";
 
 const jetbrainsMono = JetBrains_Mono({
     subsets: ['latin'],
@@ -34,7 +33,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({children}: { children: React.ReactNode }) {
     return (
-        <html lang="fr" className={`${jetbrainsMono.variable} ${ibmPlexSans.variable}`} suppressHydrationWarning>
+        <ClerkProvider>
+            <html lang="fr" className={`${jetbrainsMono.variable} ${ibmPlexSans.variable}`} suppressHydrationWarning>
         <body className="min-h-screen font-sans">
         <ThemeProvider
             attribute="class"
@@ -42,14 +42,13 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
             enableSystem
             disableTransitionOnChange
         >
-            <AuthProvider>
                 <NavBar/>
                 {children}
                 <Footer/>
-                <CsrfInitializer/>
-            </AuthProvider>
+
         </ThemeProvider>
         </body>
         </html>
+        </ClerkProvider>
     );
 }

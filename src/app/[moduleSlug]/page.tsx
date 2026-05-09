@@ -11,8 +11,7 @@ import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getModuleData} from "@/hook/getModuleData";
 import ModuleInfo from "@/components/page/ModuleInfo";
 import {Metadata} from "next";
-import {auth} from "@/lib/auth";
-import {headers} from "next/headers";
+import {currentUser} from "@clerk/nextjs/server";
 
 
 interface ModulePageProps {
@@ -46,9 +45,9 @@ export default async function Module({params}: ModulePageProps) {
         0
     );
 
-    const sessionRes = await auth.api.getSession({headers: await headers()});
-
-    const isAdmin = sessionRes?.user?.role === 'admin';
+    // 🔐 Clerk auth
+    const user = await currentUser();
+    const isAdmin = user?.publicMetadata?.role === 'admin';
 
     const totalAvailableSectionsProgress = currentModule.sections
         .filter((section: Section) => section.isAvailable && !section.contents.includes('examen'))

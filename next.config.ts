@@ -21,6 +21,7 @@ const baseConfig: NextConfig = {
             { protocol: 'https', hostname: 'media4.giphy.com' },
             { protocol: 'https', hostname: 'media5.giphy.com' },
             { protocol: 'https', hostname: 'salimkhraimeche.dev' },
+            { protocol: 'https', hostname: 'img.clerk.com' },
         ],
         formats: ['image/avif', 'image/webp'],
     },
