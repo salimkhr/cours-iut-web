@@ -6,8 +6,7 @@ import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getContentComponent} from "@/lib/getContentComponent";
 import ExamenWrapper from "@/components/ExamenWrapper";
 import {Metadata} from "next";
-import {auth} from "@/lib/auth";
-import {headers} from "next/headers";
+import {currentUser} from "@clerk/nextjs/server";
 
 interface ContentPageProps {
     params: Promise<{
@@ -30,8 +29,9 @@ export async function generateMetadata({params}: ContentPageProps): Promise<Meta
 export default async function Content({params}: ContentPageProps) {
     const {moduleSlug, sectionSlug, contentSlug} = await params;
 
-    const sessionRes = await auth.api.getSession({headers: await headers()});
-    const isAdmin = sessionRes?.user?.role === 'admin';
+    const user = await currentUser();
+
+    const isAdmin = user?.publicMetadata?.role === 'admin';
 
     const {currentModule, currentSection, currentContent} =
         await getModuleData({

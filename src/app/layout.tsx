@@ -2,9 +2,9 @@ import type {Metadata} from 'next';
 import {IBM_Plex_Sans, JetBrains_Mono} from 'next/font/google';
 import './globals.css';
 import NavBar from "@/components/NavBar";
-import CsrfInitializer from "@/components/CsrfInitializer";
+import Footer from "@/components/Footer";
 import {ThemeProvider} from "@/components/ThemeProvider";
-import {AuthProvider} from "@/context/AuthContext";
+import {ClerkProvider} from "@clerk/nextjs";
 
 const jetbrainsMono = JetBrains_Mono({
     subsets: ['latin'],
@@ -33,21 +33,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({children}: { children: React.ReactNode }) {
     return (
-        <html lang="fr" className={`${jetbrainsMono.variable} ${ibmPlexSans.variable}`} suppressHydrationWarning>
-        <body className="min-h-screen font-sans bg-brand-light dark:bg-brand-dark text-brand-dark dark:text-brand-light">
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-        >
-            <AuthProvider>
-                <NavBar/>
-                {children}
-                <CsrfInitializer/>
-            </AuthProvider>
-        </ThemeProvider>
-        </body>
+        <ClerkProvider>
+            <html lang="fr" className={`${jetbrainsMono.variable} ${ibmPlexSans.variable}`} suppressHydrationWarning>
+                <body className="min-h-screen font-sans bg-brand-light dark:bg-brand-dark text-brand-dark dark:text-brand-light">
+                    <ThemeProvider
+                        attribute="class"
+                        defaultTheme="system"
+                        enableSystem
+                        disableTransitionOnChange
+                    >
+                        <NavBar/>
+                        {children}
+                        <Footer/>
+                 </ThemeProvider>
+            </body>
         </html>
+        </ClerkProvider>
     );
 }
