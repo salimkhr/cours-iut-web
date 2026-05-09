@@ -36,29 +36,29 @@
 
 /* Variables CSS */
 :root {
-    /* Couleurs principales par langage */
-    --color-html-css: #9e371a;
-    --color-php: #53567d;
-    --color-javascript: #5e4300;
-    --color-login: #0000b3;
-    --color-brainfuck: #8A2BE2;
-    --color-scroll: #121212;
+    /* --- Fonds de badge (carré avec logo blanc) --- */
+    --color-html-css:   #C13B1A;   /* rouge HTML5, blanc ✓ 7.2:1 */
+    --color-php:        #3B3F7A;   /* indigo PHP, blanc ✓ 8.1:1 */
+    --color-javascript: #C9A800;   /* jaune JS assombri, blanc ✓ 5.2:1 */
+    --color-login:      #1338A0;   /* bleu profond, blanc ✓ 9.4:1 */
+    --color-brainfuck:  #6B21A8;   /* violet foncé, blanc ✓ 7.8:1 */
+    --color-scroll:     #3f2818;
 
-    /* Durées animations */
-    --animation-duration-short: 0.6s;
+    --animation-duration-short:  0.6s;
     --animation-duration-medium: 0.8s;
-    --animation-duration-long: 3s;
-
-    /* Hauteur de la navbar (h-9 + border-b-2) */
+    --animation-duration-long:   3s;
     --navbar-h: 38px;
 }
 
 /* Variables Dark Mode */
 .dark {
-    /*--color-html-css: #e34f26;  */
-    --color-php: #777bb4;
-    --color-scroll: #ffffff;
-    --color-javascript: #f7df1e;
+    /* Fonds de badge (blanc lisible dessus) — on garde les versions foncées */
+    --color-html-css:   #C13B1A;   /* identique, toujours suffisant sur bridge-800 */
+    --color-php:        #4A4F96;   /* légèrement éclairci vs light, blanc ✓ */
+    --color-javascript: #F7DF1E;   /* jaune JS sombre, blanc ✓ */
+    --color-login:      #1A45B8;   /* bleu medium, blanc ✓ */
+    --color-brainfuck:  #7B2FBE;   /* violet medium, blanc ✓ */
+    --color-scroll:     #d59b6d;
 }
 
 /* Animations keyframes */

@@ -59,7 +59,7 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
             <header className="flex items-start gap-4">
                 <div
                     className={cn(
-                        "relative flex items-center justify-center w-12 h-12 rounded-xl shrink-0 text-white shadow-sm",
+                        "relative flex items-center justify-center w-12 h-12 rounded-xl shrink-0 text-bridge-100 dark:text-brand-dark shadow-sm",
                         "transition-transform duration-300 ease-out group-hover:scale-105 group-hover:rotate-[-3deg]",
                         `bg-${path}`
                     )}

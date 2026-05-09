@@ -19,14 +19,9 @@ interface SectionPageProps {
     }>;
 }
 
-export async function generateMetadata({
-                                           params,
-                                       }: SectionPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: SectionPageProps): Promise<Metadata> {
     const { moduleSlug, sectionSlug } = await params;
-    const { currentModule, currentSection } = await getModuleData({
-        moduleSlug,
-        sectionSlug,
-    });
+    const { currentModule, currentSection } = await getModuleData({ moduleSlug, sectionSlug });
 
     return currentSection !== null
         ? generatePageMetadata({ currentModule, currentSection })
@@ -36,10 +31,7 @@ export async function generateMetadata({
 export default async function SectionPage({ params }: SectionPageProps) {
     const { moduleSlug, sectionSlug } = await params;
 
-    const { currentModule, currentSection } = await getModuleData({
-        moduleSlug,
-        sectionSlug,
-    });
+    const { currentModule, currentSection } = await getModuleData({ moduleSlug, sectionSlug });
 
     const orderedSections = [...(currentModule.sections ?? [])].sort(
         (a, b) => a.order - b.order
@@ -71,82 +63,87 @@ export default async function SectionPage({ params }: SectionPageProps) {
                 compact
             />
 
-            {/* Stats */}
+            {/* Stats + Nav */}
             {currentSection && (
-                <section className="w-full max-w-7xl mx-auto px-6 lg:px-12 -mt-6 lg:-mt-9 mb-10 lg:mb-14">
+                <section className="relative w-full max-w-7xl mx-auto px-6 lg:px-12 -mt-6 lg:-mt-9 mb-10 lg:mb-14">
 
-                    <div className="grid grid-cols-[auto_1fr_auto] items-stretch gap-6">
+                    {/* STATS — centré, taille fixe */}
+                    <div className="relative max-w-2xl mx-auto">
+                        <div
+                            className={cn(
+                                "grid grid-cols-3 gap-2 sm:gap-4 rounded-2xl",
+                                "bg-bridge-300 border border-bridge-500/45",
+                                "dark:bg-bridge-800 dark:border-bridge-500/35",
+                                "shadow-[0_8px_28px_-12px_rgba(147,97,58,0.45)]",
+                                "dark:shadow-[0_8px_28px_-12px_rgba(0,0,0,0.6)]",
+                                "p-5 sm:p-6 lg:p-7",
+                                "relative overflow-hidden"
+                            )}
+                        >
+                            <div
+                                aria-hidden="true"
+                                className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-2xl bg-linear-to-r from-transparent via-bridge-100/70 to-transparent dark:via-bridge-500/30"
+                            />
 
-                        {/* LEFT NAV */}
-                        <div className="flex items-center">
+                            <Stat
+                                Icon={Clock}
+                                label="Séances"
+                                value={currentSection.totalDuration}
+                                unit={currentSection.totalDuration > 1 ? "séances" : "séance"}
+                            />
+                            <Stat
+                                Icon={Layers}
+                                label="Contenus"
+                                value={currentSection.contents.length}
+                                unit={currentSection.contents.length > 1 ? "modules" : "module"}
+                                withDivider
+                            />
+                            <Stat
+                                Icon={Hash}
+                                label="Position"
+                                value={`${currentIndex >= 0 ? currentIndex + 1 : "?"} / ${orderedSections.length}`}
+                                unit="dans le module"
+                                withDivider
+                            />
+                        </div>
+                    </div>
+
+                    {/* NAV — sous les stats, 2 lignes sur mobile, absolue latérale sur desktop */}
+                    <div className={cn(
+                        "mt-3 flex flex-col gap-2",
+                        "lg:mt-0 lg:flex-row lg:absolute lg:inset-0 lg:items-center lg:justify-between lg:pointer-events-none"
+                    )}>
+                        {/* LEFT */}
+                        <div className="w-full min-w-0 lg:flex-none lg:w-[210px] lg:pointer-events-auto">
                             {prevSection ? (
                                 <SectionNavCard
                                     href={`/${moduleSlug}/${prevSection.path}`}
                                     direction="prev"
                                     section={prevSection}
                                 />
-                            ) : <div />}
+                            ) : (
+                                <div className="lg:hidden" />
+                            )}
                         </div>
 
-                        {/* STATS */}
-                        <div className="relative">
-                            <div
-                                className={cn(
-                                    "grid grid-cols-3 gap-2 sm:gap-4 rounded-2xl",
-                                    "bg-bridge-300 border border-bridge-500/45",
-                                    "dark:bg-bridge-800 dark:border-bridge-500/35",
-                                    "shadow-[0_8px_28px_-12px_rgba(147,97,58,0.45)]",
-                                    "dark:shadow-[0_8px_28px_-12px_rgba(0,0,0,0.6)]",
-                                    "p-5 sm:p-6 lg:p-7",
-                                    "relative overflow-hidden"
-                                )}
-                            >
-                                <div
-                                    aria-hidden="true"
-                                    className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-2xl bg-linear-to-r from-transparent via-bridge-100/70 to-transparent dark:via-bridge-500/30"
-                                />
-
-                                <Stat
-                                    Icon={Clock}
-                                    label="Séances"
-                                    value={currentSection.totalDuration}
-                                    unit={currentSection.totalDuration > 1 ? "séances" : "séance"}
-                                />
-
-                                <Stat
-                                    Icon={Layers}
-                                    label="Contenus"
-                                    value={currentSection.contents.length}
-                                    unit={currentSection.contents.length > 1 ? "modules" : "module"}
-                                    withDivider
-                                />
-
-                                <Stat
-                                    Icon={Hash}
-                                    label="Position"
-                                    value={`${currentIndex >= 0 ? currentIndex + 1 : "?"} / ${orderedSections.length}`}
-                                    unit="dans le module"
-                                    withDivider
-                                />
-                            </div>
-                        </div>
-
-                        {/* RIGHT NAV */}
-                        <div className="flex items-center justify-end">
+                        {/* RIGHT */}
+                        <div className="w-full min-w-0 lg:flex-none lg:w-[210px] lg:pointer-events-auto">
                             {nextSection ? (
                                 <SectionNavCard
                                     href={`/${moduleSlug}/${nextSection.path}`}
                                     direction="next"
                                     section={nextSection}
                                 />
-                            ) : <div />}
+                            ) : (
+                                <div className="lg:hidden" />
+                            )}
                         </div>
-
                     </div>
+
                 </section>
             )}
 
-            {/* COURSES + NAV HEADER */}
+            {/* COURSES */}
             <CoursesSection title="Les cours">
                 {currentSection?.contents.map((content, index) => (
                     <div
@@ -178,19 +175,12 @@ interface StatProps {
     withDivider?: boolean;
 }
 
-function Stat({
-                  Icon,
-                  label,
-                  value,
-                  unit,
-                  withDivider,
-              }: StatProps) {
+function Stat({ Icon, label, value, unit, withDivider }: StatProps) {
     return (
         <div
             className={cn(
                 "flex flex-col items-center text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left px-2 sm:px-4",
-                withDivider &&
-                "sm:border-l sm:border-bridge-700/25 dark:sm:border-bridge-500/30"
+                withDivider && "sm:border-l sm:border-bridge-700/25 dark:sm:border-bridge-500/30"
             )}
         >
             <div className="hidden sm:flex items-center justify-center w-11 h-11 rounded-xl bg-bridge-700/15 text-brand-dark dark:bg-bridge-500/25 dark:text-bridge-100">
@@ -225,11 +215,7 @@ interface SectionNavCardProps {
     section: Section;
 }
 
-function SectionNavCard({
-                            href,
-                            direction,
-                            section,
-                        }: SectionNavCardProps) {
+function SectionNavCard({ href, direction, section }: SectionNavCardProps) {
     const isPrev = direction === "prev";
 
     return (
@@ -237,30 +223,37 @@ function SectionNavCard({
             href={href}
             className={cn(
                 "group/nav flex items-center gap-3 rounded-xl",
+                "w-full min-w-0",
                 "bg-bridge-300 border border-bridge-500/45",
                 "dark:bg-bridge-800 dark:border-bridge-500/35",
-                "px-3 py-2",
+                "px-3 py-2 h-[52px]",                         // ← hauteur fixe
                 "hover:bg-bridge-200 dark:hover:bg-bridge-700",
                 "transition-all duration-300"
             )}
         >
             {isPrev && (
-                <ArrowLeft className="w-4 h-4 text-brand-dark dark:text-bridge-100" />
+                <ArrowLeft className="w-4 h-4 shrink-0 text-brand-dark dark:text-bridge-100" />
             )}
 
-            <div className="flex flex-col leading-tight">
-                <span className="text-[10px] uppercase tracking-wider text-brand-dark/60 dark:text-bridge-200/60 flex items-center gap-1">
-                    <NotebookPen className="w-3 h-3" />
+            <div className={cn(
+                "flex flex-col leading-tight min-w-0 flex-1 overflow-hidden", // ← overflow-hidden
+                !isPrev && "items-end text-right"
+            )}>
+                <span className={cn(
+                    "text-[10px] uppercase tracking-wider text-brand-dark/60 dark:text-bridge-200/60 flex items-center gap-1 shrink-0",
+                    !isPrev && "flex-row-reverse"
+                )}>
+                    <NotebookPen className="w-3 h-3 shrink-0" />
                     {isPrev ? "Précédente" : "Suivante"}
                 </span>
 
-                <span className="text-sm font-semibold text-brand-dark dark:text-bridge-50 truncate max-w-[180px]">
+                <span className="text-sm font-semibold text-brand-dark dark:text-bridge-50 truncate w-full">
                     {section.order}. {section.title}
                 </span>
             </div>
 
             {!isPrev && (
-                <ArrowRight className="w-4 h-4 text-brand-dark dark:text-bridge-100" />
+                <ArrowRight className="w-4 h-4 shrink-0 text-brand-dark dark:text-bridge-100" />
             )}
         </Link>
     );
