@@ -69,6 +69,7 @@
     "recharts": "^3.7.0",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
+    "svix": "^1.93.0",
     "tailwind-merge": "^3.4.0",
     "vaul": "^1.1.2",
     "zustand": "^5.0.11"
