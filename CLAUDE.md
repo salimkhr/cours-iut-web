@@ -150,3 +150,15 @@ Règles condensées :
   critère de validation.
 - Pas de nouvelle dépendance pour les cours ; signaler tout composant manquant plutôt que de
   l'inventer.
+
+## 11. Design Context
+
+Pour toute tâche de design / UI / UX, consulter en priorité :
+
+- **`PRODUCT.md`** (racine) — register, users, purpose, brand personality, anti-references,
+  design principles, accessibilité. C'est la source de vérité stratégique.
+- **`DESIGN.md`** (racine, si présent) — système visuel : palette, typographie, composants,
+  layout. Utilisé par les commandes `/impeccable` pour rester on-brand.
+
+Mettre à jour ces fichiers via `/impeccable teach` (stratégie) ou `/impeccable document`
+(visuel) plutôt qu'en éditant à la main.

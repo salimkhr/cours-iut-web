@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import {ArrowRight, BookOpen, ChevronRight} from 'lucide-react';
+import {ArrowRight, BookOpen, ChevronRight, Lock} from 'lucide-react';
 import Module from "@/types/Module";
 import iconMap from "@/lib/iconMap";
 import getModuleProgress from "@/lib/getModuleProgress";
@@ -10,9 +10,10 @@ import {cn} from "@/lib/utils";
 
 interface ModuleCardProps {
     currentModule: Module;
+    isAuthed?: boolean;
 }
 
-export default function ModuleCard({currentModule}: ModuleCardProps) {
+export default function ModuleCard({currentModule, isAuthed = true}: ModuleCardProps) {
     const {title, description, path, iconName, sections} = currentModule;
     const Icon = iconMap[iconName] || BookOpen;
     const sectionsCount = sections?.length ?? 0;
@@ -79,6 +80,14 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
                         </p>
                     )}
                 </div>
+                {!isAuthed && (
+                    <span
+                        aria-label="Verrouillé"
+                        className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-bridge-500/15 text-brand-dark/60 dark:bg-bridge-500/20 dark:text-bridge-200/70 shrink-0"
+                    >
+                        <Lock className="w-3.5 h-3.5"/>
+                    </span>
+                )}
             </header>
 
             {/* Description */}
@@ -88,59 +97,63 @@ export default function ModuleCard({currentModule}: ModuleCardProps) {
                 </p>
             )}
 
-            {/* Progression — same style as ProgressSection on /[moduleSlug] */}
-            <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark dark:text-bridge-200/70">
-                    <span>Progression</span>
-                    <span className="tabular-nums text-brand-dark dark:text-bridge-100">{pct}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                        className={cn("h-2 rounded-full transition-all duration-300", `bg-${path}`)}
-                        style={{width: `${pct}%`}}
-                    />
-                </div>
-            </div>
+            {isAuthed && (
+                <>
+                    {/* Progression — same style as ProgressSection on /[moduleSlug] */}
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark dark:text-bridge-200/70">
+                            <span>Progression</span>
+                            <span className="tabular-nums text-brand-dark dark:text-bridge-100">{pct}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                                className={cn("h-2 rounded-full transition-all duration-300", `bg-${path}`)}
+                                style={{width: `${pct}%`}}
+                            />
+                        </div>
+                    </div>
 
-            {/* Actions */}
-            <div className="relative z-10 flex flex-col sm:flex-row items-stretch gap-2.5 pt-1">
-                <Link
-                    href={continueHref}
-                    aria-label={`Continuer le cours ${title}`}
-                    aria-disabled={!canContinue || undefined}
-                    tabIndex={canContinue ? undefined : -1}
-                    className={cn(
-                        "group/cta inline-flex items-center justify-center gap-2 rounded-lg flex-1",
-                        "px-5 py-2.5 text-sm font-semibold tracking-wide",
-                        "bg-bridge-700 text-bridge-50 dark:bg-bridge-200 dark:text-bridge-900",
-                        "shadow-[0_4px_14px_-6px_rgba(94,59,34,0.4)]",
-                        "transition-[background-color,box-shadow,transform] duration-300",
-                        "hover:bg-bridge-800 dark:hover:bg-bridge-100",
-                        "hover:shadow-[0_8px_20px_-6px_rgba(94,59,34,0.55)]",
-                        "active:translate-y-px",
-                        !canContinue && "opacity-60 pointer-events-none cursor-not-allowed"
-                    )}
-                >
-                    Continuer le cours
-                    <ArrowRight className="size-4 transition-transform duration-300 group-hover/cta:translate-x-1"/>
-                </Link>
-                <Link
-                    href={`/${path}`}
-                    aria-label={`Voir les chapitres de ${title}`}
-                    className={cn(
-                        "inline-flex items-center justify-center gap-1.5 rounded-lg",
-                        "px-4 py-2.5 text-sm font-semibold tracking-wide",
-                        "border border-bridge-700/55 text-brand-dark",
-                        "dark:border-bridge-400/40 dark:text-bridge-100",
-                        "transition-[color,border-color,background-color] duration-300",
-                        "hover:bg-bridge-200 hover:border-bridge-700 hover:text-bridge-900",
-                        "dark:hover:bg-bridge-700 dark:hover:border-bridge-300 dark:hover:text-bridge-50"
-                    )}
-                >
-                    Voir les chapitres
-                    <ChevronRight className="size-4"/>
-                </Link>
-            </div>
+                    {/* Actions */}
+                    <div className="relative z-10 flex flex-col sm:flex-row items-stretch gap-2.5 pt-1">
+                        <Link
+                            href={continueHref}
+                            aria-label={`Continuer le cours ${title}`}
+                            aria-disabled={!canContinue || undefined}
+                            tabIndex={canContinue ? undefined : -1}
+                            className={cn(
+                                "group/cta inline-flex items-center justify-center gap-2 rounded-lg flex-1",
+                                "px-5 py-2.5 text-sm font-semibold tracking-wide",
+                                "bg-bridge-700 text-bridge-50 dark:bg-bridge-200 dark:text-bridge-900",
+                                "shadow-[0_4px_14px_-6px_rgba(94,59,34,0.4)]",
+                                "transition-[background-color,box-shadow,transform] duration-300",
+                                "hover:bg-bridge-800 dark:hover:bg-bridge-100",
+                                "hover:shadow-[0_8px_20px_-6px_rgba(94,59,34,0.55)]",
+                                "active:translate-y-px",
+                                !canContinue && "opacity-60 pointer-events-none cursor-not-allowed"
+                            )}
+                        >
+                            Continuer le cours
+                            <ArrowRight className="size-4 transition-transform duration-300 group-hover/cta:translate-x-1"/>
+                        </Link>
+                        <Link
+                            href={`/${path}`}
+                            aria-label={`Voir les chapitres de ${title}`}
+                            className={cn(
+                                "inline-flex items-center justify-center gap-1.5 rounded-lg",
+                                "px-4 py-2.5 text-sm font-semibold tracking-wide",
+                                "border border-bridge-700/55 text-brand-dark",
+                                "dark:border-bridge-400/40 dark:text-bridge-100",
+                                "transition-[color,border-color,background-color] duration-300",
+                                "hover:bg-bridge-200 hover:border-bridge-700 hover:text-bridge-900",
+                                "dark:hover:bg-bridge-700 dark:hover:border-bridge-300 dark:hover:text-bridge-50"
+                            )}
+                        >
+                            Voir les chapitres
+                            <ChevronRight className="size-4"/>
+                        </Link>
+                    </div>
+                </>
+            )}
         </article>
     );
 }

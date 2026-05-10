@@ -5,6 +5,7 @@ export default interface Section {
     title: string;
     path: string;
     description?: string;
+    objectives?: string[];
     contents: string[];
     tags: string[];
     // Statistiques de la section

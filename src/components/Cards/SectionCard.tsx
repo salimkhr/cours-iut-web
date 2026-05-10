@@ -1,37 +1,19 @@
 'use client';
 
 import Link from "next/link";
-import {
-    BookOpen,
-    Clock,
-    CodeXml,
-    FolderCode,
-    Gitlab,
-    GraduationCap,
-    Lock,
-    Presentation
-} from "lucide-react";
+import {BookOpen, Clock, Gitlab, Lock} from "lucide-react";
 
 import Section from "@/types/Section";
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
+import {CONTENT_ICON, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
+import {Button} from "@/components/ui/button";
 
 interface SectionCardProps {
     section: Section;
     currentModule: Module;
     isAdmin: boolean;
 }
-
-const CONTENT_ORDER = ['cours', 'TP', 'slide', 'projet', 'examen'] as const;
-type ContentKey = typeof CONTENT_ORDER[number];
-
-const CONTENT_ICON: Record<ContentKey, React.ComponentType<{className?: string}>> = {
-    cours: BookOpen,
-    TP: CodeXml,
-    slide: Presentation,
-    projet: FolderCode,
-    examen: GraduationCap,
-};
 
 export default function SectionCard({section, currentModule, isAdmin}: SectionCardProps) {
     const {path: modulePath} = currentModule;
@@ -46,6 +28,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
 
     return (
         <article
+            style={{'--module-color': `var(--color-${modulePath})`} as React.CSSProperties}
             className={cn(
                 "group relative h-full flex flex-col gap-7 p-7 lg:p-9 rounded-2xl",
                 "bg-bridge-300 border border-bridge-500/45",
@@ -130,69 +113,77 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                 {sortedContents.map((item) => {
                     const Icon = CONTENT_ICON[item as ContentKey] ?? BookOpen;
                     const disabled = isLocked;
-                    const className = cn(
-                        "inline-flex items-center justify-center gap-1.5 rounded-lg flex-1 min-w-[88px]",
-                        "px-3 py-2 text-xs font-semibold tracking-wide uppercase",
-                        "border border-bridge-700/55 text-brand-dark",
-                        "dark:border-bridge-400/40 dark:text-bridge-100",
-                        "transition-[color,border-color,background-color] duration-300",
-                        !disabled && "hover:bg-bridge-200 hover:border-bridge-700 hover:text-bridge-900 dark:hover:bg-bridge-700 dark:hover:border-bridge-300 dark:hover:text-bridge-50",
+                    const buttonClassName = cn(
+                        "group/btn flex-1 min-w-[88px] rounded-lg",
+                        "text-xs font-semibold tracking-wide uppercase",
+                        "border-2 border-(--module-color) text-brand-dark dark:text-bridge-50",
+                        "bg-transparent shadow-none",
+                        "hover:bg-(--module-color) hover:text-white hover:shadow-md hover:border-(--module-color)",
+                        "transition-[color,border-color,background-color,box-shadow] duration-300",
                         disabled && "opacity-50 pointer-events-none cursor-not-allowed"
                     );
+                    const iconClassName = "w-4 h-4 shrink-0 text-(--module-color) group-hover/btn:text-white transition-colors duration-300";
                     const label = item.charAt(0).toUpperCase() + item.slice(1);
 
-                    if (disabled) {
-                        return (
-                            <span key={item} aria-disabled="true" className={className}>
-                                <Icon className="w-4 h-4 shrink-0"/>
-                                <span className="hidden md:inline">{label}</span>
-                            </span>
-                        );
-                    }
-
                     return (
-                        <Link
+                        <Button
                             key={item}
-                            href={`/${modulePath}/${section.path}/${item}`}
-                            className={className}
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className={buttonClassName}
                         >
-                            <Icon className="w-4 h-4 shrink-0"/>
-                            <span className="hidden md:inline">{label}</span>
-                        </Link>
+                            {disabled ? (
+                                <span aria-disabled="true">
+                                    <Icon className={iconClassName}/>
+                                    <span className="hidden md:inline">{label}</span>
+                                </span>
+                            ) : (
+                                <Link href={`/${modulePath}/${section.path}/${item}`}>
+                                    <Icon className={iconClassName}/>
+                                    <span className="hidden md:inline">{label}</span>
+                                </Link>
+                            )}
+                        </Button>
                     );
                 })}
 
                 {section.hasCorrection && (() => {
                     const correctionDisabled = !isAdmin && !section.correctionIsAvailable;
-                    const correctionClass = cn(
-                        "inline-flex items-center justify-center gap-1.5 rounded-lg flex-1 min-w-[88px]",
-                        "px-3 py-2 text-xs font-semibold tracking-wide uppercase",
-                        "border border-dashed border-bridge-700/55 text-brand-dark",
-                        "dark:border-bridge-400/40 dark:text-bridge-100/90",
-                        "transition-[color,border-color,background-color] duration-300",
-                        !correctionDisabled && "hover:border-solid hover:bg-bridge-200 hover:text-brand-dark dark:hover:bg-bridge-700 dark:hover:text-bridge-50",
+                    const correctionClassName = cn(
+                        "group/btn flex-1 min-w-[88px] rounded-lg",
+                        "text-xs font-semibold tracking-wide uppercase",
+                        "border-2 border-dashed border-(--module-color) text-brand-dark dark:text-bridge-50",
+                        "bg-transparent shadow-none",
+                        "hover:border-solid hover:bg-(--module-color) hover:text-white hover:shadow-md hover:border-(--module-color)",
+                        "transition-[color,border-color,background-color,box-shadow] duration-300",
                         correctionDisabled && "opacity-50 pointer-events-none cursor-not-allowed"
                     );
-
-                    if (correctionDisabled) {
-                        return (
-                            <span aria-disabled="true" className={correctionClass}>
-                                <Gitlab className="w-4 h-4 shrink-0"/>
-                                <span className="hidden md:inline">Correction</span>
-                            </span>
-                        );
-                    }
+                    const correctionIconClass = "w-4 h-4 shrink-0 text-(--module-color) group-hover/btn:text-white transition-colors duration-300";
 
                     return (
-                        <Link
-                            href={`${process.env.NEXT_PUBLIC_GIT_URL}/${modulePath}/${section.path}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={correctionClass}
+                        <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className={correctionClassName}
                         >
-                            <Gitlab className="w-4 h-4 shrink-0"/>
-                            <span className="hidden md:inline">Correction</span>
-                        </Link>
+                            {correctionDisabled ? (
+                                <span aria-disabled="true">
+                                    <Gitlab className={correctionIconClass}/>
+                                    <span className="hidden md:inline">Correction</span>
+                                </span>
+                            ) : (
+                                <Link
+                                    href={`${process.env.NEXT_PUBLIC_GIT_URL}/${modulePath}/${section.path}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Gitlab className={correctionIconClass}/>
+                                    <span className="hidden md:inline">Correction</span>
+                                </Link>
+                            )}
+                        </Button>
                     );
                 })()}
             </div>

@@ -30,6 +30,9 @@ const QUOTES = [
     { text: "Un système solide repose sur des abstractions simples.", author: "Barbara Liskov" },
     { text: "La discipline quotidienne produit les applications exceptionnelles.", author: "Claude Sonnet" },
     { text: "La perfection est atteinte lorsqu'il n'y a plus rien à retirer.", author: "Antoine de Saint-Exupéry" },
+    { text: "Ce que l'on conçoit bien s'énonce clairement, et les mots pour le dire arrivent aisément.", author: "Nicolas Boileau" },
+    { text: "L'architecture est la volonté d'une époque traduite en espace.", author: "Ludwig Mies van der Rohe" },
+    { text: "Toute chose difficile est simple dès qu'on l'a comprise.", author: "Claude Sonnet" },
 ];
 
 
@@ -43,17 +46,9 @@ export default function AboutSection() {
         ? "/images/header/escalier-dark.png"
         : "/images/header/escalier-light.png";
 
-    const junctionLight = "#ead1b6";
-    const junctionDark = "#171512";
-
-    const textBg = isDark
-        ? `linear-gradient(to right, #171512 0%, ${junctionDark} 100%)`
-        : `linear-gradient(to right, #faf8f5 0%, ${junctionLight} 100%)`;
-
     const imageFade = isDark
-        ? `linear-gradient(to right, ${junctionDark} 0%, transparent 28%)`
-        : `linear-gradient(to right, ${junctionLight} 0%, transparent 28%)`;
-
+        ? `linear-gradient(to right, #171512 0%, #171512 45%, rgba(23,21,18,0.6) 65%, transparent 100%)`
+        : `linear-gradient(to right, #faf8f5 0%, #faf8f5 45%, rgba(250,248,245,0.6) 65%, transparent 100%)`;
 
     return (
         <>
@@ -63,14 +58,25 @@ export default function AboutSection() {
           width: 100%;
           overflow: hidden;
           border-top: 1px solid var(--color-brand-gray-300, #e2ddd6);
-          display: grid;
-          grid-template-columns: 1fr;
+          min-height: clamp(260px, 40vw, 560px);
         }
-        @media (min-width: 1024px) {
-          .about-section {
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
-            align-items: stretch;
-          }
+
+        .about-image-wrap {
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+        }
+        .about-image-wrap img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: right center;
+        }
+        .about-image-fade {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
         }
 
         .about-text {
@@ -80,28 +86,8 @@ export default function AboutSection() {
           flex-direction: column;
           justify-content: flex-start;
           padding: clamp(2.5rem, 6vw, 5rem) clamp(1.5rem, 4vw, 3.5rem);
-        }
-
-        .about-image-wrap {
-          position: relative;
-          overflow: hidden;
-          min-height: 300px;
-        }
-        @media (max-width: 1023px) {
-          .about-image-wrap { min-height: 260px; }
-        }
-        .about-image-wrap img {
-          display: block;
           width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: left center;
-        }
-        .about-image-fade {
-          position: absolute;
-          inset: 0;
-          z-index: 1;
-          pointer-events: none;
+          box-sizing: border-box;
         }
 
         .quote-rule {
@@ -141,7 +127,7 @@ export default function AboutSection() {
           line-height: 1.2;
           letter-spacing: -0.015em;
           margin: 0;
-          max-width: 34ch;
+          max-width: 100%;
         }
 
         .quote-author {
@@ -161,12 +147,16 @@ export default function AboutSection() {
 
             <section className="about-section" aria-label="Architecture moderne — escalier avec citation inspirante">
 
-                {/* Colonne gauche — texte */}
-                <div
-                    className="about-text"
-                    style={{ background: textBg }}
-                >
-                    <div className={`quote-block visible`}>
+                {/* Image en fond pleine largeur */}
+                <div className="about-image-wrap" aria-hidden="true">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={heroImage} alt="" />
+                    <div className="about-image-fade" style={{ background: imageFade }} />
+                </div>
+
+                {/* Texte en overlay, sans contrainte de colonne */}
+                <div className="about-text">
+                    <div className="quote-block visible">
                         <span className="quote-rule" aria-hidden="true" />
                         <p className="quote-label" aria-hidden="true">Philosophie</p>
 
@@ -178,13 +168,6 @@ export default function AboutSection() {
                             <footer className="quote-author">{quote.author}</footer>
                         </blockquote>
                     </div>
-                </div>
-
-                {/* Colonne droite — image avec fondu raccordé */}
-                <div className="about-image-wrap" aria-hidden="true">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={heroImage} alt="" />
-                    <div className="about-image-fade" style={{ background: imageFade }} />
                 </div>
 
             </section>

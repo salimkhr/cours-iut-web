@@ -3,7 +3,5 @@ export default function RootLayout({
                                    }: Readonly<{
     children: React.ReactNode;
 }>) {
-    return (
-        <section className="mx-auto px-4 md:px-8">{children}</section>
-    );
+    return <>{children}</>;
 }

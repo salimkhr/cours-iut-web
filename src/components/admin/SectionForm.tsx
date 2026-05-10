@@ -16,6 +16,7 @@ export type Section = {
     title: string;
     path: string;
     description?: string;
+    objectives?: string[] | string;
     tags: string[] | string;
     totalDuration: number;
     hasCorrection: boolean;
@@ -54,6 +55,7 @@ export default function SectionForm({
                 title: section.title,
                 path: section.path,
                 description: section.description || '',
+                objectives: Array.isArray(section.objectives) ? section.objectives.join('\n') : (section.objectives ?? ''),
                 tags: isString(section.tags) ? section?.tags : section?.tags.join(','),
                 totalDuration: section.totalDuration,
                 hasCorrection: section.hasCorrection,
@@ -112,9 +114,14 @@ export default function SectionForm({
             availableContents.includes(content)
         );
 
+        const cleanedObjectives = isString(data.objectives)
+            ? data.objectives.split('\n').map(o => o.trim()).filter(o => o.length > 0)
+            : (data.objectives ?? []);
+
         onSubmit({
             ...data,
             contents: cleanedContents,
+            objectives: cleanedObjectives,
             tags: isString(data.tags) ? data.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : data.tags,
         });
 
@@ -205,6 +212,14 @@ export default function SectionForm({
                     <div>
                         <Label htmlFor="description">Description</Label>
                         <Textarea id="description" {...register('description')} />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="objectives">Objectifs du cours</Label>
+                        <Textarea id="objectives" rows={5} {...register('objectives')} />
+                        <span className="text-sm text-gray-500">
+                            Un objectif par ligne (ex. « Comprendre les sélecteurs CSS »)
+                        </span>
                     </div>
 
                     <div>

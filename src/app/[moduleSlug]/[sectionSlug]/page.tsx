@@ -1,11 +1,14 @@
-import Link from "next/link";
-import {ArrowLeft, ArrowRight, Clock, Hash, Layers, NotebookPen} from "lucide-react";
+import {Clock, Hash, Layers, Target} from "lucide-react";
+import {currentUser} from "@clerk/nextjs/server";
 
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import HeroSection from "@/components/page/HeroSection";
-import CoursesSection from "@/components/page/CoursesSection";
+import Stat from "@/components/page/Stat";
 import ContentCard from "@/components/Cards/ContentCard";
+import SectionNavCard from "@/components/Cards/SectionNavCard";
 import PageFooter from "@/components/page/PageFooter";
+import EditSectionFab from "@/components/admin/EditSectionFab";
+import {List, ListItem} from "@/components/ui/List";
 import {getModuleData} from "@/hook/getModuleData";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {cn} from "@/lib/utils";
@@ -19,19 +22,19 @@ interface SectionPageProps {
     }>;
 }
 
-export async function generateMetadata({ params }: SectionPageProps): Promise<Metadata> {
-    const { moduleSlug, sectionSlug } = await params;
-    const { currentModule, currentSection } = await getModuleData({ moduleSlug, sectionSlug });
+export async function generateMetadata({params}: SectionPageProps): Promise<Metadata> {
+    const {moduleSlug, sectionSlug} = await params;
+    const {currentModule, currentSection} = await getModuleData({moduleSlug, sectionSlug});
 
     return currentSection !== null
-        ? generatePageMetadata({ currentModule, currentSection })
+        ? generatePageMetadata({currentModule, currentSection})
         : {};
 }
 
-export default async function SectionPage({ params }: SectionPageProps) {
-    const { moduleSlug, sectionSlug } = await params;
+export default async function SectionPage({params}: SectionPageProps) {
+    const {moduleSlug, sectionSlug} = await params;
 
-    const { currentModule, currentSection } = await getModuleData({ moduleSlug, sectionSlug });
+    const {currentModule, currentSection} = await getModuleData({moduleSlug, sectionSlug});
 
     const orderedSections = [...(currentModule.sections ?? [])].sort(
         (a, b) => a.order - b.order
@@ -49,9 +52,15 @@ export default async function SectionPage({ params }: SectionPageProps) {
             ? orderedSections[currentIndex + 1]
             : null;
 
+    const hasObjectives =
+        !!currentSection?.objectives && currentSection.objectives.length > 0;
+
+    const user = await currentUser();
+    const isAdmin = user?.publicMetadata?.role === "admin";
+
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
-            <BreadcrumbGenerator currentModule={currentModule} />
+            <BreadcrumbGenerator currentModule={currentModule}/>
 
             <HeroSection
                 title={`${currentSection?.order}. ${currentSection?.title}`}
@@ -63,9 +72,9 @@ export default async function SectionPage({ params }: SectionPageProps) {
                 compact
             />
 
-            {/* Stats + Nav */}
+            {/* Stats + Nav latérale */}
             {currentSection && (
-                <section className="relative w-full max-w-7xl mx-auto px-6 lg:px-12 -mt-6 lg:-mt-9 mb-10 lg:mb-14">
+                <section className="relative w-full max-w-7xl mx-auto px-6 lg:px-12 -mt-6 lg:-mt-9 mb-6 lg:mb-8">
 
                     {/* STATS — centré, taille fixe */}
                     <div className="relative max-w-2xl mx-auto">
@@ -89,31 +98,30 @@ export default async function SectionPage({ params }: SectionPageProps) {
                                 Icon={Clock}
                                 label="Séances"
                                 value={currentSection.totalDuration}
-                                unit={currentSection.totalDuration > 1 ? "séances" : "séance"}
+                                modulePath={currentModule.path}
                             />
                             <Stat
                                 Icon={Layers}
                                 label="Contenus"
                                 value={currentSection.contents.length}
-                                unit={currentSection.contents.length > 1 ? "modules" : "module"}
+                                modulePath={currentModule.path}
                                 withDivider
                             />
                             <Stat
                                 Icon={Hash}
                                 label="Position"
                                 value={`${currentIndex >= 0 ? currentIndex + 1 : "?"} / ${orderedSections.length}`}
-                                unit="dans le module"
+                                modulePath={currentModule.path}
                                 withDivider
                             />
                         </div>
                     </div>
 
-                    {/* NAV — sous les stats, 2 lignes sur mobile, absolue latérale sur desktop */}
+                    {/* NAV — sous les stats sur mobile, latérale absolue sur desktop */}
                     <div className={cn(
                         "mt-3 flex flex-col gap-2",
-                        "lg:mt-0 lg:flex-row lg:absolute lg:inset-0 lg:items-center lg:justify-between lg:pointer-events-none"
+                        "lg:mt-0 lg:flex-row lg:absolute lg:inset-0 lg:items-center lg:justify-between lg:pointer-events-none lg:translate-y-2"
                     )}>
-                        {/* LEFT */}
                         <div className="w-full min-w-0 lg:flex-none lg:w-[210px] lg:pointer-events-auto">
                             {prevSection ? (
                                 <SectionNavCard
@@ -122,11 +130,10 @@ export default async function SectionPage({ params }: SectionPageProps) {
                                     section={prevSection}
                                 />
                             ) : (
-                                <div className="lg:hidden" />
+                                <div className="lg:hidden"/>
                             )}
                         </div>
 
-                        {/* RIGHT */}
                         <div className="w-full min-w-0 lg:flex-none lg:w-[210px] lg:pointer-events-auto">
                             {nextSection ? (
                                 <SectionNavCard
@@ -135,126 +142,68 @@ export default async function SectionPage({ params }: SectionPageProps) {
                                     section={nextSection}
                                 />
                             ) : (
-                                <div className="lg:hidden" />
+                                <div className="lg:hidden"/>
                             )}
                         </div>
                     </div>
-
                 </section>
             )}
 
-            {/* COURSES */}
-            <CoursesSection title="Les cours">
-                {currentSection?.contents.map((content, index) => (
+            {/* OBJECTIFS — bandeau compact pleine largeur */}
+            {hasObjectives && (
+                <section className="w-full max-w-7xl mx-auto px-6 lg:px-12 mb-6 lg:mb-8">
                     <div
-                        key={content}
-                        className="opacity-0 animate-fade-in-up"
-                        style={{ animationDelay: `${index * 0.1}s` }}
+                        className={cn(
+                            "rounded-2xl px-5 py-4 sm:px-6",
+                            "bg-bridge-300 border border-bridge-500/45",
+                            "dark:bg-bridge-800 dark:border-bridge-500/35"
+                        )}
                     >
-                        <ContentCard
-                            section={currentSection}
-                            currentModule={currentModule}
-                            content={content}
-                        />
+                        <div className="flex items-center gap-2 mb-2">
+                            <Target className="w-4 h-4 text-brand-dark dark:text-bridge-100"/>
+                            <h2 className="text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-dark/70 dark:text-bridge-200/70">
+                                Objectifs du cours
+                            </h2>
+                        </div>
+                        <List
+                            spacing="compact"
+                            className="sm:columns-2 lg:columns-3 sm:gap-x-8 text-sm"
+                        >
+                            {currentSection!.objectives!.map((objective, i) => (
+                                <ListItem key={i} className="break-inside-avoid">
+                                    {objective}
+                                </ListItem>
+                            ))}
+                        </List>
                     </div>
-                ))}
-            </CoursesSection>
+                </section>
+            )}
 
-            <PageFooter path={currentModule.path} />
+            {/* COURSES — sans gros titre, padding réduit */}
+            <section className="w-full max-w-7xl mx-auto px-6 lg:px-12 pb-12 lg:pb-16">
+                <h2 className="sr-only">Les cours</h2>
+                <div className="grid gap-4 lg:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                    {currentSection?.contents.map((content, index) => (
+                        <div
+                            key={content}
+                            className="opacity-0 animate-fade-in-up"
+                            style={{animationDelay: `${index * 0.08}s`}}
+                        >
+                            <ContentCard
+                                section={currentSection}
+                                currentModule={currentModule}
+                                content={content}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            <PageFooter path={currentModule.path}/>
+
+            {isAdmin && currentSection && (
+                <EditSectionFab modData={currentModule} section={currentSection}/>
+            )}
         </div>
-    );
-}
-
-/* ---------------- STAT ---------------- */
-
-interface StatProps {
-    Icon: React.ComponentType<{ className?: string }>;
-    label: string;
-    value: number | string;
-    unit?: string;
-    withDivider?: boolean;
-}
-
-function Stat({ Icon, label, value, unit, withDivider }: StatProps) {
-    return (
-        <div
-            className={cn(
-                "flex flex-col items-center text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left px-2 sm:px-4",
-                withDivider && "sm:border-l sm:border-bridge-700/25 dark:sm:border-bridge-500/30"
-            )}
-        >
-            <div className="hidden sm:flex items-center justify-center w-11 h-11 rounded-xl bg-bridge-700/15 text-brand-dark dark:bg-bridge-500/25 dark:text-bridge-100">
-                <Icon className="w-5 h-5" />
-            </div>
-
-            <div className="flex flex-col min-w-0">
-                <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-dark/70 dark:text-bridge-200/70">
-                    <Icon className="w-3.5 h-3.5 sm:hidden" />
-                    {label}
-                </span>
-
-                <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-brand-dark dark:text-bridge-50 tabular-nums leading-none mt-1">
-                    {value}
-                </span>
-
-                {unit && (
-                    <span className="text-[11px] sm:text-xs text-brand-dark/60 dark:text-bridge-100/60 mt-1 truncate">
-                        {unit}
-                    </span>
-                )}
-            </div>
-        </div>
-    );
-}
-
-/* ---------------- NAV CARD ---------------- */
-
-interface SectionNavCardProps {
-    href: string;
-    direction: "prev" | "next";
-    section: Section;
-}
-
-function SectionNavCard({ href, direction, section }: SectionNavCardProps) {
-    const isPrev = direction === "prev";
-
-    return (
-        <Link
-            href={href}
-            className={cn(
-                "group/nav flex items-center gap-3 rounded-xl",
-                "w-full min-w-0",
-                "bg-bridge-300 border border-bridge-500/45",
-                "dark:bg-bridge-800 dark:border-bridge-500/35",
-                "px-3 py-2 h-[52px]",                         // ← hauteur fixe
-                "hover:bg-bridge-200 dark:hover:bg-bridge-700",
-                "transition-all duration-300"
-            )}
-        >
-            {isPrev && (
-                <ArrowLeft className="w-4 h-4 shrink-0 text-brand-dark dark:text-bridge-100" />
-            )}
-
-            <div className={cn(
-                "flex flex-col leading-tight min-w-0 flex-1 overflow-hidden", // ← overflow-hidden
-                !isPrev && "items-end text-right"
-            )}>
-                <span className={cn(
-                    "text-[10px] uppercase tracking-wider text-brand-dark/60 dark:text-bridge-200/60 flex items-center gap-1 shrink-0",
-                    !isPrev && "flex-row-reverse"
-                )}>
-                    <NotebookPen className="w-3 h-3 shrink-0" />
-                    {isPrev ? "Précédente" : "Suivante"}
-                </span>
-
-                <span className="text-sm font-semibold text-brand-dark dark:text-bridge-50 truncate w-full">
-                    {section.order}. {section.title}
-                </span>
-            </div>
-
-            {!isPrev && (
-                <ArrowRight className="w-4 h-4 shrink-0 text-brand-dark dark:text-bridge-100" />
-            )}
-        </Link>
     );
 }

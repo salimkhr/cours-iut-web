@@ -116,6 +116,7 @@ export async function PUT(
                     [`sections.${oldSectionIndex}.title`]: updatedSection.title,
                     [`sections.${oldSectionIndex}.path`]: updatedSection.path,
                     [`sections.${oldSectionIndex}.description`]: updatedSection.description,
+                    [`sections.${oldSectionIndex}.objectives`]: updatedSection.objectives,
                     [`sections.${oldSectionIndex}.tags`]: updatedSection.tags,
                     [`sections.${oldSectionIndex}.totalDuration`]: updatedSection.totalDuration,
                     [`sections.${oldSectionIndex}.hasCorrection`]: updatedSection.hasCorrection,

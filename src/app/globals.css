@@ -48,6 +48,24 @@
     --animation-duration-medium: 0.8s;
     --animation-duration-long:   3s;
     --navbar-h: 38px;
+
+    /* === Clerk — intégration Neo-Mirai (light) === */
+    --clerk-color-primary: #E85D04;            /* brand-primary */
+    --clerk-color-primary-foreground: #FFFFFF;
+    --clerk-color-danger: #DC2626;
+    --clerk-color-success: #16A34A;
+    --clerk-color-warning: #F36B16;
+    --clerk-color-neutral: #221e18;            /* brand-dark */
+    --clerk-color-foreground: #221e18;
+    --clerk-color-background: #f7ebd9;         /* bridge-50, contraste avec la page brand-light */
+    --clerk-color-input: #FFFFFF;
+    --clerk-color-input-foreground: #221e18;
+    --clerk-color-ring: color-mix(in srgb, #E85D04 30%, transparent);
+    --clerk-color-shimmer: #FFFFFF;
+    --clerk-color-modal-backdrop: color-mix(in srgb, #221e18 65%, transparent);
+    --clerk-border-radius: 0.75rem;            /* aligné sur les rounded-xl du projet */
+    --clerk-spacing: 1rem;
+    --clerk-font-family: var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Variables Dark Mode */
@@ -59,6 +77,18 @@
     --color-login:      #1A45B8;   /* bleu medium, blanc ✓ */
     --color-brainfuck:  #7B2FBE;   /* violet medium, blanc ✓ */
     --color-scroll:     #d59b6d;
+
+    /* === Clerk — intégration Neo-Mirai (dark) === */
+    --clerk-color-primary: #FB923C;            /* brand-accent (plus lumineux sur fond sombre) */
+    --clerk-color-primary-foreground: #221e18; /* texte sombre lisible sur orange clair */
+    --clerk-color-neutral: #f0d5b7;            /* brand-light */
+    --clerk-color-foreground: #f0d5b7;
+    --clerk-color-background: #3f2818;         /* bridge-800 */
+    --clerk-color-input: #2a1d12;              /* bridge-900 */
+    --clerk-color-input-foreground: #f0d5b7;
+    --clerk-color-ring: color-mix(in srgb, #FB923C 35%, transparent);
+    --clerk-color-shimmer: #5e3b22;            /* bridge-700 */
+    --clerk-color-modal-backdrop: color-mix(in srgb, #000000 75%, transparent);
 }
 
 /* Animations keyframes */
@@ -133,6 +163,20 @@
 
 .animate-slide-in-bottom {
     animation: slideInFromBottom var(--animation-duration-medium) ease-out forwards;
+}
+
+/* Reduced-motion fallback : sans cette règle, les éléments avec `opacity-0
+   animate-fade-in*` resteraient invisibles si le navigateur supprime
+   l'animation (preference utilisateur). */
+@media (prefers-reduced-motion: reduce) {
+    .animate-fade-in,
+    .animate-fade-in-up,
+    .animate-fade-in-right,
+    .animate-slide-in-bottom {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
 }
 
 /* Animation au scroll */
