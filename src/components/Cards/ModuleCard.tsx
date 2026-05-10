@@ -51,7 +51,7 @@ export default function ModuleCard({ currentModule, isAuthed = true }: ModuleCar
             <Link
                 href={`/${path}`}
                 aria-label={`Voir les chapitres de ${title}`}
-                className="absolute inset-0 rounded-2xl"
+                className="absolute inset-0 rounded-2xl z-0"
                 aria-hidden="true"
                 tabIndex={-1}
             />
@@ -94,7 +94,7 @@ export default function ModuleCard({ currentModule, isAuthed = true }: ModuleCar
             )}
 
             {isAuthed && (
-                <CardFooter className="flex flex-col gap-4">
+                <CardFooter className="flex flex-col gap-4 z-10">
                     {/* Progress */}
                     <div className="w-full">
                         <div className="flex justify-between text-[11px] uppercase tracking-[0.18em] font-semibold">
