@@ -58,7 +58,7 @@ export default async function Home() {
                 )}
             </HeroSection>
 
-            <div id="cours" className="w-full">
+            <div id="cours" className="w-full mt-8">
                 <CoursesSection
                     title="Liste des cours"
                     containerClassName="flex flex-wrap justify-center gap-6 lg:gap-8 w-full"
