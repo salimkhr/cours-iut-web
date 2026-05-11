@@ -1,7 +1,7 @@
 import ModuleCard from "@/components/Cards/ModuleCard";
 import Link from "next/link";
 import {ArrowRight, Lock} from "lucide-react";
-import {auth} from "@clerk/nextjs/server";
+import {getServerSession} from "@/lib/auth";
 import getModules from "@/lib/getModules";
 import HeroSection from "@/components/page/HeroSection";
 import CoursesSection from "@/components/page/CoursesSection";
@@ -10,7 +10,6 @@ import AuthCTAPair from "@/components/page/AuthCTAPair";
 import PageFooter from "@/components/page/PageFooter";
 import {Button} from "@/components/ui/button";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
-import {cn} from "@/lib/utils";
 import {Metadata} from "next";
 
 export const metadata: Metadata = generatePageMetadata({
@@ -19,8 +18,8 @@ export const metadata: Metadata = generatePageMetadata({
 });
 
 export default async function Home() {
-    const {userId} = await auth();
-    const isAuthed = !!userId;
+    const session = await getServerSession();
+    const isAuthed = !!session;
 
     const allModules = await getModules();
     // Brainfuck est un easter egg — non listé dans la vitrine publique non-authed.
@@ -61,15 +60,13 @@ export default async function Home() {
             <div id="cours" className="w-full mt-8">
                 <CoursesSection
                     title="Liste des cours"
-                    containerClassName="flex flex-wrap justify-center gap-6 lg:gap-8 w-full"
+                    // On utilise grid pour forcer des colonnes strictement égales
+                    containerClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full"
                 >
                     {visibleModules.map((currentModule, index) => (
                         <div
                             key={`${currentModule.path}_${index}`}
-                            className={cn(
-                                "basis-full sm:basis-[calc(50%-0.75rem)] lg:basis-[calc(33.333%-1.34rem)] max-w-md",
-                                "opacity-0 animate-fade-in-up"
-                            )}
+                            className="opacity-0 animate-fade-in-up w-full"
                             style={{animationDelay: `${index * 0.1}s`}}
                         >
                             <ModuleCard currentModule={currentModule} isAuthed={isAuthed}/>

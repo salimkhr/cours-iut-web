@@ -56,9 +56,14 @@ export default function ContentSwitcher({
         <div
             className={cn(
                 "sticky top-(--navbar-h) z-30 w-full",
-                "bg-brand-light/85 dark:bg-brand-dark/85 backdrop-blur-md"
+                // Même traitement visuel que la NavBar : fond transparent
+                // + blur léger, pour que le contenu en dessous reste lisible.
+                "bg-transparent backdrop-blur-xs",
+                "border-b border-border"
             )}
         >
+            {/* ReadingProgress collé en haut, au plus près de la navbar */}
+            <ReadingProgress modulePath={moduleSlug}/>
             <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
                 <nav
                     aria-label="Types de contenu de la section"
@@ -87,7 +92,6 @@ export default function ContentSwitcher({
                     })}
                 </nav>
             </div>
-            <ReadingProgress modulePath={moduleSlug}/>
         </div>
     );
 }

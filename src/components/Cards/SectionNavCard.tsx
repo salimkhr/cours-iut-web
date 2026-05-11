@@ -18,10 +18,11 @@ export default function SectionNavCard({href, direction, section}: SectionNavCar
             className={cn(
                 "group/nav flex items-center gap-3 rounded-xl",
                 "w-full min-w-0",
-                "bg-bridge-300 border border-bridge-500/45",
-                "dark:bg-bridge-800 dark:border-bridge-500/35",
+                // Même fond que les cards (sans le pont)
+                "bg-[#f7ebd9] dark:bg-[#13110d]",
+                "border border-bridge-500/45 dark:border-bridge-500/35",
                 "px-3 py-2 h-[52px]",
-                "hover:bg-bridge-200 dark:hover:bg-bridge-700",
+                "hover:border-bridge-500/65 dark:hover:border-bridge-400/55",
                 "transition-all duration-300"
             )}
         >

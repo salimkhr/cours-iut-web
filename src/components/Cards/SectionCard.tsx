@@ -8,6 +8,7 @@ import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
 import {CONTENT_ICON, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
 import {Button} from "@/components/ui/button";
+import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
 
 interface SectionCardProps {
     section: Section;
@@ -30,162 +31,170 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
         <article
             style={{'--module-color': `var(--color-${modulePath})`} as React.CSSProperties}
             className={cn(
-                "group relative h-full flex flex-col gap-7 p-7 lg:p-9 rounded-2xl",
-                "bg-bridge-300 border border-bridge-500/45",
-                "dark:bg-bridge-800 dark:border-bridge-500/35",
+                "group relative h-full flex flex-col p-7 lg:p-9 rounded-2xl overflow-hidden",
+                // Couleurs pleines pour matcher le départ du gradient et éviter les fuites au zoom
+                "bg-[#f7ebd9] dark:bg-[#13110d]",
+                "border border-bridge-500/45 dark:border-bridge-500/35",
                 "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)]",
                 "dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
-                "transition-[transform,box-shadow,background-color,border-color] duration-300 ease-out",
-                !isLocked && "hover:-translate-y-1.5 hover:bg-bridge-200 hover:border-bridge-500/65 dark:hover:bg-bridge-700 dark:hover:border-bridge-400/55 hover:shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:hover:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
+                "transition-[transform,box-shadow,border-color] duration-300 ease-out",
+                !isLocked && "hover:-translate-y-1.5 hover:border-bridge-500/65 dark:hover:border-bridge-400/55 hover:shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:hover:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
                 isLocked && "opacity-85",
                 "motion-reduce:transition-none motion-reduce:hover:translate-y-0"
             )}
         >
-            {/* Whole-card click target — section landing page */}
+            <CardBridgeBackground/>
+
+            {/* Whole-card click target — section landing page (z-10) */}
             {!isLocked && (
                 <Link
                     href={sectionHref}
                     aria-label={`Ouvrir la section ${section.order}. ${section.title}`}
                     tabIndex={-1}
                     aria-hidden="true"
-                    className="absolute inset-0 rounded-2xl"
+                    className="absolute inset-0 rounded-2xl z-10"
                 />
             )}
 
-            {/* Top edge highlight */}
+            {/* Top edge highlight (décoratif, sans pointer-events) */}
             <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-2xl bg-linear-to-r from-transparent via-bridge-100/70 to-transparent dark:via-bridge-500/30"
+                className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-2xl bg-linear-to-r from-transparent via-bridge-100/70 to-transparent dark:via-bridge-500/30 z-10"
             />
 
-            {/* Header: order chip + title + duration + lock state (one line) */}
-            <header className="flex items-center gap-3">
-                <div className={cn(
-                    "inline-flex items-center justify-center min-w-9 h-9 px-2.5 rounded-lg text-white font-mono font-bold text-sm shadow-sm shrink-0",
-                    `bg-${modulePath}`
-                )}>
-                    {section.order.toString().padStart(2, '0')}
-                </div>
-                <h3 className={cn(
-                    "text-xl lg:text-2xl font-bold tracking-tight leading-tight flex-1 min-w-0",
-                    `text-${modulePath}`
-                )}>
-                    {section.title}
-                </h3>
-                <div className="flex items-center gap-2 shrink-0">
-                    <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark dark:text-bridge-200/70 whitespace-nowrap">
-                        <Clock className="w-3.5 h-3.5"/>
-                        {section.totalDuration}
-                        <span className="hidden sm:inline">&nbsp;séance{section.totalDuration > 1 ? 's' : ''}</span>
-                    </span>
-                    {isLocked && (
-                        <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100">
-                            <Lock className="w-3 h-3"/>
-                            <span className="hidden sm:inline">Verrouillé</span>
+            {/* CONTENU — z-20 > overlay (z-10), pointer-events-none pour
+                laisser passer les clics ; les boutons réactivent auto. */}
+            <div className="relative z-20 flex flex-col gap-7 h-full pointer-events-none">
+
+                {/* Header: order chip + title + duration + lock state */}
+                <header className="flex items-center gap-3">
+                    <div className={cn(
+                        "inline-flex items-center justify-center min-w-9 h-9 px-2.5 rounded-lg text-white font-mono font-bold text-sm shadow-sm shrink-0",
+                        `bg-${modulePath}`
+                    )}>
+                        {section.order.toString().padStart(2, '0')}
+                    </div>
+                    <h3 className={cn(
+                        "text-xl lg:text-2xl font-bold tracking-tight leading-tight flex-1 min-w-0",
+                        `text-${modulePath}`
+                    )}>
+                        {section.title}
+                    </h3>
+                    <div className="flex items-center gap-2 shrink-0">
+                        <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark dark:text-bridge-200/70 whitespace-nowrap">
+                            <Clock className="w-3.5 h-3.5"/>
+                            {section.totalDuration}
+                            <span className="hidden sm:inline">&nbsp;séance{section.totalDuration > 1 ? 's' : ''}</span>
                         </span>
-                    )}
+                        {isLocked && (
+                            <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100">
+                                <Lock className="w-3 h-3"/>
+                                <span className="hidden sm:inline">Verrouillé</span>
+                            </span>
+                        )}
+                    </div>
+                </header>
+
+                {/* Description */}
+                {section.description && (
+                    <p className="text-sm leading-relaxed font-medium text-brand-dark dark:text-bridge-100/90 flex-grow">
+                        {section.description}
+                    </p>
+                )}
+
+                {/* Tags */}
+                {section.tags && section.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                        {section.tags.map((tag) => (
+                            <span
+                                key={tag}
+                                className="inline-flex items-center font-mono text-[11px] tracking-tight px-2.5 py-1 rounded-md border border-bridge-700/40 text-brand-dark dark:border-bridge-400/40 dark:text-bridge-100"
+                            >
+                                #{tag}
+                            </span>
+                        ))}
+                    </div>
+                )}
+
+                {/* Actions — réactivent les clics dans le wrapper non-cliquable */}
+                <div className="flex flex-wrap gap-2.5 pt-3 mt-auto border-t border-bridge-700/20 dark:border-bridge-500/20 pointer-events-auto">
+                    {sortedContents.map((item) => {
+                        const Icon = CONTENT_ICON[item as ContentKey] ?? BookOpen;
+                        const disabled = isLocked;
+                        const buttonClassName = cn(
+                            "group/btn flex-1 min-w-[88px] rounded-lg",
+                            "text-xs font-semibold tracking-wide uppercase",
+                            "border-2 border-(--module-color) text-brand-dark dark:text-bridge-50",
+                            "bg-transparent shadow-none",
+                            "hover:bg-(--module-color) hover:text-white hover:shadow-md hover:border-(--module-color)",
+                            "transition-[color,border-color,background-color,box-shadow] duration-300",
+                            disabled && "opacity-50 pointer-events-none cursor-not-allowed"
+                        );
+                        const iconClassName = "w-4 h-4 shrink-0 text-(--module-color) group-hover/btn:text-white transition-colors duration-300";
+                        const label = item.charAt(0).toUpperCase() + item.slice(1);
+
+                        return (
+                            <Button
+                                key={item}
+                                asChild
+                                variant="outline"
+                                size="sm"
+                                className={buttonClassName}
+                            >
+                                {disabled ? (
+                                    <span aria-disabled="true">
+                                        <Icon className={iconClassName}/>
+                                        <span className="hidden md:inline">{label}</span>
+                                    </span>
+                                ) : (
+                                    <Link href={`/${modulePath}/${section.path}/${item}`}>
+                                        <Icon className={iconClassName}/>
+                                        <span className="hidden md:inline">{label}</span>
+                                    </Link>
+                                )}
+                            </Button>
+                        );
+                    })}
+
+                    {section.hasCorrection && (() => {
+                        const correctionDisabled = !isAdmin && !section.correctionIsAvailable;
+                        const correctionClassName = cn(
+                            "group/btn flex-1 min-w-[88px] rounded-lg",
+                            "text-xs font-semibold tracking-wide uppercase",
+                            "border-2 border-dashed border-(--module-color) text-brand-dark dark:text-bridge-50",
+                            "bg-transparent shadow-none",
+                            "hover:border-solid hover:bg-(--module-color) hover:text-white hover:shadow-md hover:border-(--module-color)",
+                            "transition-[color,border-color,background-color,box-shadow] duration-300",
+                            correctionDisabled && "opacity-50 pointer-events-none cursor-not-allowed"
+                        );
+                        const correctionIconClass = "w-4 h-4 shrink-0 text-(--module-color) group-hover/btn:text-white transition-colors duration-300";
+
+                        return (
+                            <Button
+                                asChild
+                                variant="outline"
+                                size="sm"
+                                className={correctionClassName}
+                            >
+                                {correctionDisabled ? (
+                                    <span aria-disabled="true">
+                                        <Gitlab className={correctionIconClass}/>
+                                        <span className="hidden md:inline">Correction</span>
+                                    </span>
+                                ) : (
+                                    <Link
+                                        href={`${process.env.NEXT_PUBLIC_GIT_URL}/${modulePath}/${section.path}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Gitlab className={correctionIconClass}/>
+                                        <span className="hidden md:inline">Correction</span>
+                                    </Link>
+                                )}
+                            </Button>
+                        );
+                    })()}
                 </div>
-            </header>
-
-            {/* Description */}
-            {section.description && (
-                <p className="text-sm leading-relaxed font-medium text-brand-dark dark:text-bridge-100/90 flex-grow">
-                    {section.description}
-                </p>
-            )}
-
-            {/* Tags */}
-            {section.tags && section.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-1">
-                    {section.tags.map((tag) => (
-                        <span
-                            key={tag}
-                            className="inline-flex items-center font-mono text-[11px] tracking-tight px-2.5 py-1 rounded-md border border-bridge-700/40 text-brand-dark dark:border-bridge-400/40 dark:text-bridge-100"
-                        >
-                            #{tag}
-                        </span>
-                    ))}
-                </div>
-            )}
-
-            {/* Actions */}
-            <div className="relative z-10 flex flex-wrap gap-2.5 pt-3 mt-auto border-t border-bridge-700/20 dark:border-bridge-500/20">
-                {sortedContents.map((item) => {
-                    const Icon = CONTENT_ICON[item as ContentKey] ?? BookOpen;
-                    const disabled = isLocked;
-                    const buttonClassName = cn(
-                        "group/btn flex-1 min-w-[88px] rounded-lg",
-                        "text-xs font-semibold tracking-wide uppercase",
-                        "border-2 border-(--module-color) text-brand-dark dark:text-bridge-50",
-                        "bg-transparent shadow-none",
-                        "hover:bg-(--module-color) hover:text-white hover:shadow-md hover:border-(--module-color)",
-                        "transition-[color,border-color,background-color,box-shadow] duration-300",
-                        disabled && "opacity-50 pointer-events-none cursor-not-allowed"
-                    );
-                    const iconClassName = "w-4 h-4 shrink-0 text-(--module-color) group-hover/btn:text-white transition-colors duration-300";
-                    const label = item.charAt(0).toUpperCase() + item.slice(1);
-
-                    return (
-                        <Button
-                            key={item}
-                            asChild
-                            variant="outline"
-                            size="sm"
-                            className={buttonClassName}
-                        >
-                            {disabled ? (
-                                <span aria-disabled="true">
-                                    <Icon className={iconClassName}/>
-                                    <span className="hidden md:inline">{label}</span>
-                                </span>
-                            ) : (
-                                <Link href={`/${modulePath}/${section.path}/${item}`}>
-                                    <Icon className={iconClassName}/>
-                                    <span className="hidden md:inline">{label}</span>
-                                </Link>
-                            )}
-                        </Button>
-                    );
-                })}
-
-                {section.hasCorrection && (() => {
-                    const correctionDisabled = !isAdmin && !section.correctionIsAvailable;
-                    const correctionClassName = cn(
-                        "group/btn flex-1 min-w-[88px] rounded-lg",
-                        "text-xs font-semibold tracking-wide uppercase",
-                        "border-2 border-dashed border-(--module-color) text-brand-dark dark:text-bridge-50",
-                        "bg-transparent shadow-none",
-                        "hover:border-solid hover:bg-(--module-color) hover:text-white hover:shadow-md hover:border-(--module-color)",
-                        "transition-[color,border-color,background-color,box-shadow] duration-300",
-                        correctionDisabled && "opacity-50 pointer-events-none cursor-not-allowed"
-                    );
-                    const correctionIconClass = "w-4 h-4 shrink-0 text-(--module-color) group-hover/btn:text-white transition-colors duration-300";
-
-                    return (
-                        <Button
-                            asChild
-                            variant="outline"
-                            size="sm"
-                            className={correctionClassName}
-                        >
-                            {correctionDisabled ? (
-                                <span aria-disabled="true">
-                                    <Gitlab className={correctionIconClass}/>
-                                    <span className="hidden md:inline">Correction</span>
-                                </span>
-                            ) : (
-                                <Link
-                                    href={`${process.env.NEXT_PUBLIC_GIT_URL}/${modulePath}/${section.path}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <Gitlab className={correctionIconClass}/>
-                                    <span className="hidden md:inline">Correction</span>
-                                </Link>
-                            )}
-                        </Button>
-                    );
-                })()}
             </div>
         </article>
     );

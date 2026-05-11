@@ -26,8 +26,9 @@ export default function ProgressSection({
                 <div
                     className={cn(
                         "grid grid-cols-3 gap-2 sm:gap-4 rounded-2xl",
-                        "bg-bridge-300 border border-bridge-500/45",
-                        "dark:bg-bridge-800 dark:border-bridge-500/35",
+                        // Même fond que les cards (sans le pont)
+                        "bg-[#f7ebd9] dark:bg-[#13110d]",
+                        "border border-bridge-500/45 dark:border-bridge-500/35",
                         "shadow-[0_8px_28px_-12px_rgba(147,97,58,0.45)]",
                         "dark:shadow-[0_8px_28px_-12px_rgba(0,0,0,0.6)]",
                         "p-5 sm:p-6 lg:p-7",

@@ -48,24 +48,6 @@
     --animation-duration-medium: 0.8s;
     --animation-duration-long:   3s;
     --navbar-h: 38px;
-
-    /* === Clerk — intégration Neo-Mirai (light) === */
-    --clerk-color-primary: #E85D04;            /* brand-primary */
-    --clerk-color-primary-foreground: #FFFFFF;
-    --clerk-color-danger: #DC2626;
-    --clerk-color-success: #16A34A;
-    --clerk-color-warning: #F36B16;
-    --clerk-color-neutral: #221e18;            /* brand-dark */
-    --clerk-color-foreground: #221e18;
-    --clerk-color-background: #f7ebd9;         /* bridge-50, contraste avec la page brand-light */
-    --clerk-color-input: #FFFFFF;
-    --clerk-color-input-foreground: #221e18;
-    --clerk-color-ring: color-mix(in srgb, #E85D04 30%, transparent);
-    --clerk-color-shimmer: #FFFFFF;
-    --clerk-color-modal-backdrop: color-mix(in srgb, #221e18 65%, transparent);
-    --clerk-border-radius: 0.75rem;            /* aligné sur les rounded-xl du projet */
-    --clerk-spacing: 1rem;
-    --clerk-font-family: var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Variables Dark Mode */

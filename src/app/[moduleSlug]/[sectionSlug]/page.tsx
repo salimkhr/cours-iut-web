@@ -1,5 +1,5 @@
 import {Clock, Hash, Layers, Target} from "lucide-react";
-import {currentUser} from "@clerk/nextjs/server";
+import {getServerSession} from "@/lib/auth";
 
 import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import HeroSection from "@/components/page/HeroSection";
@@ -55,8 +55,8 @@ export default async function SectionPage({params}: SectionPageProps) {
     const hasObjectives =
         !!currentSection?.objectives && currentSection.objectives.length > 0;
 
-    const user = await currentUser();
-    const isAdmin = user?.publicMetadata?.role === "admin";
+    const session = await getServerSession();
+    const isAdmin = session?.user.role === "admin";
 
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
@@ -81,8 +81,10 @@ export default async function SectionPage({params}: SectionPageProps) {
                         <div
                             className={cn(
                                 "grid grid-cols-3 gap-2 sm:gap-4 rounded-2xl",
-                                "bg-bridge-300 border border-bridge-500/45",
-                                "dark:bg-bridge-800 dark:border-bridge-500/35",
+                                // Même fond que les cards (sans le pont) :
+                                // couleurs pleines #f7ebd9 / #13110d.
+                                "bg-[#f7ebd9] dark:bg-[#13110d]",
+                                "border border-bridge-500/45 dark:border-bridge-500/35",
                                 "shadow-[0_8px_28px_-12px_rgba(147,97,58,0.45)]",
                                 "dark:shadow-[0_8px_28px_-12px_rgba(0,0,0,0.6)]",
                                 "p-5 sm:p-6 lg:p-7",
@@ -120,7 +122,7 @@ export default async function SectionPage({params}: SectionPageProps) {
                     {/* NAV — sous les stats sur mobile, latérale absolue sur desktop */}
                     <div className={cn(
                         "mt-3 flex flex-col gap-2",
-                        "lg:mt-0 lg:flex-row lg:absolute lg:inset-0 lg:items-center lg:justify-between lg:pointer-events-none lg:translate-y-2"
+                        "lg:mt-0 lg:flex-row lg:absolute lg:inset-0 lg:items-center lg:justify-between lg:pointer-events-none lg:translate-y-6"
                     )}>
                         <div className="w-full min-w-0 lg:flex-none lg:w-[210px] lg:pointer-events-auto">
                             {prevSection ? (
@@ -155,8 +157,8 @@ export default async function SectionPage({params}: SectionPageProps) {
                     <div
                         className={cn(
                             "rounded-2xl px-5 py-4 sm:px-6",
-                            "bg-bridge-300 border border-bridge-500/45",
-                            "dark:bg-bridge-800 dark:border-bridge-500/35"
+                            "bg-[#f7ebd9] dark:bg-[#13110d]",
+                            "border border-bridge-500/45 dark:border-bridge-500/35"
                         )}
                     >
                         <div className="flex items-center gap-2 mb-2">
@@ -182,11 +184,14 @@ export default async function SectionPage({params}: SectionPageProps) {
             {/* COURSES — sans gros titre, padding réduit */}
             <section className="w-full max-w-7xl mx-auto px-6 lg:px-12 pb-12 lg:pb-16">
                 <h2 className="sr-only">Les cours</h2>
-                <div className="grid gap-4 lg:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="flex flex-wrap justify-center gap-4 lg:gap-6">
                     {currentSection?.contents.map((content, index) => (
                         <div
                             key={content}
-                            className="opacity-0 animate-fade-in-up"
+                            className={cn(
+                                "basis-full sm:basis-[calc(50%-0.5rem)] lg:basis-[calc(33.333%-1rem)] max-w-md",
+                                "opacity-0 animate-fade-in-up"
+                            )}
                             style={{animationDelay: `${index * 0.08}s`}}
                         >
                             <ContentCard

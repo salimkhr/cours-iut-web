@@ -13,7 +13,7 @@ import {getContentComponent} from "@/lib/getContentComponent";
 import {cn} from "@/lib/utils";
 import {CONTENT_DESC, CONTENT_ICON, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
 import {Metadata} from "next";
-import {currentUser} from "@clerk/nextjs/server";
+import {getServerSession} from "@/lib/auth";
 
 const SPLIT_SLUG = 'split';
 
@@ -39,8 +39,8 @@ export default async function Content({params}: ContentPageProps) {
     const {moduleSlug, sectionSlug, contentSlug} = await params;
     const isSplit = contentSlug === SPLIT_SLUG;
 
-    const user = await currentUser();
-    const isAdmin = user?.publicMetadata?.role === 'admin';
+    const session = await getServerSession();
+    const isAdmin = session?.user.role === 'admin';
 
     const {currentModule, currentSection, currentContent} = await getModuleData({
         moduleSlug,
@@ -172,7 +172,7 @@ export default async function Content({params}: ContentPageProps) {
                     {/* Lesson body */}
                     <main
                         className={cn(
-                            "w-full max-w-5xl mx-auto px-6 lg:px-8 py-10 lg:py-14",
+                            "w-full max-w-7xl mx-auto px-3 lg:px-4 py-10 lg:py-14",
                             `header-${currentModule.path}`
                         )}
                     >

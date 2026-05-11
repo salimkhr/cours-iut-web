@@ -41,9 +41,9 @@ export default function ReadingProgress({modulePath}: ReadingProgressProps) {
             value={progress}
             aria-label="Progression de lecture"
             className={cn(
-                "h-0.5 rounded-none bg-bridge-500/20 dark:bg-bridge-500/15",
+                "h-1.5 rounded-none bg-transparent",
                 "[&>[data-slot=progress-indicator]]:bg-current",
-                "[&>[data-slot=progress-indicator]]:transition-none"
+                "[&>[data-slot=progress-indicator]]:transition-[transform] [&>[data-slot=progress-indicator]]:duration-150 [&>[data-slot=progress-indicator]]:ease-out"
             )}
             style={{
                 color: modulePath

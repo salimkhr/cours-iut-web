@@ -1,25 +1,25 @@
-import {auth, currentUser} from "@clerk/nextjs/server";
+import {headers} from "next/headers";
+import {auth} from "@/lib/auth";
 import getModules from "@/lib/getModules";
 import NavBarClient from "./NavBarClient";
 
 export default async function NavBar() {
-    const { userId } = await auth();
-    const user = await currentUser();
+    const session = await auth.api.getSession({headers: await headers()});
     const modules = await getModules();
 
-    const safeUser = user
+    const safeUser = session
         ? {
-            id: user.id,
-            username: `${user.firstName} ${user.lastName}`,
-            imageUrl: user.imageUrl,
-            email: user.emailAddresses?.[0]?.emailAddress ?? null,
+            id: session.user.id,
+            username: session.user.name ?? null,
+            imageUrl: session.user.image ?? null,
+            email: session.user.email ?? null,
         }
         : null;
 
     return (
         <NavBarClient
-            userId={userId}
-            role={(user?.publicMetadata?.role as string) ?? ""}
+            userId={session?.user.id ?? null}
+            role={session?.user.role ?? ""}
             user={safeUser}
             modules={modules}
         />

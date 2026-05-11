@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import {usePathname} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import Image from "next/image";
 import {useTheme} from "next-themes";
-import {useClerk} from "@clerk/nextjs";
+import {authClient} from "@/lib/auth-client";
 
 import {
     NavigationMenu,
@@ -53,7 +53,7 @@ const dropdownItemClass = cn(
 type SafeUser = {
     id: string;
     username: string | null;
-    imageUrl: string;
+    imageUrl: string | null;
     email: string | null;
 } | null;
 
@@ -72,9 +72,9 @@ export default function NavBarClient({
                                      }: Props) {
 
     const pathname = usePathname();
+    const router = useRouter();
     const mounted = useMounted();
     const {theme, setTheme} = useTheme();
-    const {signOut} = useClerk();
 
     const isLoggedIn = !!userId;
     const isAdmin = role === 'admin';
@@ -88,9 +88,15 @@ export default function NavBarClient({
             isActive(href) ? "bg-accent text-accent-foreground" : ""
         }`;
 
+    async function handleSignOut() {
+        await authClient.signOut();
+        router.push("/");
+        router.refresh();
+    }
+
     return (
         <header className="sticky top-0 z-50 bg-transparent backdrop-blur-xs">
-            <NavigationMenu className="border-b-2 border-border px-2">
+            <NavigationMenu className="border-b border-border px-2">
 
                 {/* LEFT NAV */}
                 <div className="flex items-center gap-2">
@@ -116,8 +122,8 @@ export default function NavBarClient({
                     {!isLoggedIn && (
                         <NavigationMenuItem>
                             <Link
-                                href="/sign-in"
-                                className={linkClass("/sign-in") + " flex items-center gap-1"}
+                                href="/login"
+                                className={linkClass("/login") + " flex items-center gap-1"}
                             >
                                 <UserLockIcon className="w-5 h-5" />
                                 <span className="hidden md:inline">Login</span>
@@ -162,13 +168,19 @@ export default function NavBarClient({
                                     aria-label="Menu utilisateur"
                                     className="flex flex-row items-center gap-2 rounded-full p-0.5 outline-none transition-colors hover:bg-bridge-200/50 dark:hover:bg-bridge-700/50 focus-visible:ring-2 focus-visible:ring-brand-primary"
                                 >
-                                    <Image
-                                        src={user.imageUrl}
-                                        alt="avatar"
-                                        width={32}
-                                        height={32}
-                                        className="rounded-full"
-                                    />
+                                    {user.imageUrl ? (
+                                        <Image
+                                            src={user.imageUrl}
+                                            alt="avatar"
+                                            width={32}
+                                            height={32}
+                                            className="rounded-full"
+                                        />
+                                    ) : (
+                                        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-bridge-300 dark:bg-bridge-700">
+                                            <UserIcon className="w-4 h-4"/>
+                                        </span>
+                                    )}
                                     <span className="hidden md:inline text-sm pr-2">
                                         {user.username ?? user.email}
                                     </span>
@@ -186,12 +198,6 @@ export default function NavBarClient({
                         <DropdownMenuContent align="end" sideOffset={8} className={dropdownContentClass}>
                             {isLoggedIn && user ? (
                                 <>
-                                    <DropdownMenuItem asChild className={dropdownItemClass}>
-                                        <Link href="/account" className="flex items-center gap-2.5">
-                                            <UserIcon className="w-4 h-4 shrink-0"/>
-                                            <span>Mon compte</span>
-                                        </Link>
-                                    </DropdownMenuItem>
                                     <DropdownMenuItem
                                         onSelect={(e) => {
                                             e.preventDefault();
@@ -205,7 +211,7 @@ export default function NavBarClient({
                                         </div>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                        onSelect={() => signOut()}
+                                        onSelect={() => handleSignOut()}
                                         className={dropdownItemClass}
                                     >
                                         <div className="flex items-center gap-2.5 w-full">
@@ -229,7 +235,7 @@ export default function NavBarClient({
                                         </div>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild className={dropdownItemClass}>
-                                        <Link href="/sign-in" className="flex items-center gap-2.5">
+                                        <Link href="/login" className="flex items-center gap-2.5">
                                             <LogIn className="w-4 h-4 shrink-0"/>
                                             <span>Connexion</span>
                                         </Link>

@@ -14,7 +14,7 @@ import getModuleProgress from "@/lib/getModuleProgress";
 import ModuleInfo from "@/components/page/ModuleInfo";
 import {Button} from "@/components/ui/button";
 import {Metadata} from "next";
-import {currentUser} from "@clerk/nextjs/server";
+import {getServerSession} from "@/lib/auth";
 
 
 interface ModulePageProps {
@@ -35,9 +35,8 @@ export default async function Module({params}: ModulePageProps) {
     const {totalSections, totalAvailableSections, progress, hasAvailableContent, lastAvailableSectionPath} =
         getModuleProgress(currentModule);
 
-    // 🔐 Clerk auth
-    const user = await currentUser();
-    const isAdmin = user?.publicMetadata?.role === 'admin';
+    const session = await getServerSession();
+    const isAdmin = session?.user.role === 'admin';
 
     const allTags = [...new Set(
         currentModule.sections.flatMap((section: Section) => section.tags || [])

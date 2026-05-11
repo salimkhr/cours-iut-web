@@ -1,37 +1,43 @@
-import {clerkMiddleware, createRouteMatcher} from "@clerk/nextjs/server";
-import {NextResponse} from "next/server";
+import {NextRequest, NextResponse} from "next/server";
+import {getSessionCookie} from "better-auth/cookies";
 
-const isPublicRoute = createRouteMatcher([
+const PUBLIC_PATHS = [
     "/",
-    "/sign-in(.*)",
-    "/sign-up(.*)",
+    "/login",
+    "/register",
     "/api/health",
-    "/api/webhooks/(.*)",
-]);
+    "/api/auth", // tous les endpoints better-auth
+];
 
-const isAdminRoute = createRouteMatcher([
-    "/admin(.*)",
-    "/api/admin(.*)",
-]);
+function isPublic(pathname: string): boolean {
+    return PUBLIC_PATHS.some(
+        (p) => pathname === p || pathname.startsWith(p + "/"),
+    );
+}
 
-export default clerkMiddleware(async (auth, req) => {
-    if (isPublicRoute(req)) return;
+export default function proxy(req: NextRequest) {
+    const {pathname} = req.nextUrl;
 
-    // 1) Tout sauf l'allowlist exige une session
-    await auth.protect();
+    if (isPublic(pathname)) return NextResponse.next();
 
-    // 2) Routes admin : on exige role === "admin" via le claim JWT custom
-    if (isAdminRoute(req)) {
-        const {sessionClaims} = await auth();
-        const role = sessionClaims?.metadata?.role;
-
-        if (role !== "admin") {
-            return req.nextUrl.pathname.startsWith("/api/")
-                ? NextResponse.json({error: "Not found"}, {status: 404})
-                : NextResponse.redirect(new URL("/", req.url));
+    // Check cookie-only : rapide, pas d'appel DB. On vérifie que l'utilisateur
+    // a une session valide (cookie signé). Le rôle admin est vérifié dans la
+    // page/route handler concernée via auth.api.getSession(), pour éviter un
+    // appel DB sur toutes les requêtes.
+    const sessionCookie = getSessionCookie(req);
+    if (!sessionCookie) {
+        // Routes API => 401 JSON, pages => redirect vers /login
+        if (pathname.startsWith("/api/")) {
+            return NextResponse.json({error: "Unauthorized"}, {status: 401});
         }
+        const url = req.nextUrl.clone();
+        url.pathname = "/login";
+        url.searchParams.set("redirect_to", pathname);
+        return NextResponse.redirect(url);
     }
-});
+
+    return NextResponse.next();
+}
 
 export const config = {
     matcher: ["/((?!_next|.*\\..*).*)", "/(api|trpc)(.*)"],

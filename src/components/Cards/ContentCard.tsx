@@ -5,6 +5,7 @@ import {ArrowRight, BookOpen, CodeXml, FolderCode, GraduationCap, Lock, Presenta
 import Module from "@/types/Module";
 import Section from "@/types/Section";
 import {cn} from "@/lib/utils";
+import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
 
 interface ContentCardProps {
     content: string;
@@ -55,85 +56,93 @@ export default function ContentCard({content, section, currentModule}: ContentCa
     return (
         <article
             className={cn(
-                "group relative h-full flex flex-col gap-5 p-6 lg:p-7 rounded-2xl",
-                "bg-bridge-300 border border-bridge-500/45",
-                "dark:bg-bridge-800 dark:border-bridge-500/35",
+                "group relative h-full flex flex-col p-6 lg:p-7 rounded-2xl overflow-hidden",
+                // Même fond que les autres cards
+                "bg-[#f7ebd9] dark:bg-[#13110d]",
+                "border border-bridge-500/45 dark:border-bridge-500/35",
                 "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)]",
                 "dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
-                "transition-[transform,box-shadow,background-color,border-color] duration-300 ease-out",
-                !isLocked && "hover:-translate-y-1.5 hover:bg-bridge-200 hover:border-bridge-500/65 dark:hover:bg-bridge-700 dark:hover:border-bridge-400/55 hover:shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:hover:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
+                "transition-[transform,box-shadow,border-color] duration-300 ease-out",
+                !isLocked && "hover:-translate-y-1.5 hover:border-bridge-500/65 dark:hover:border-bridge-400/55 hover:shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:hover:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
                 isLocked && "opacity-85",
                 "motion-reduce:transition-none motion-reduce:hover:translate-y-0"
             )}
         >
-            {/* Whole-card click target */}
+            <CardBridgeBackground/>
+
+            {/* Whole-card click target (z-10) */}
             {!isLocked && (
                 <Link
                     href={href}
                     aria-label={`Ouvrir ${label}`}
                     tabIndex={-1}
                     aria-hidden="true"
-                    className="absolute inset-0 rounded-2xl"
+                    className="absolute inset-0 rounded-2xl z-10"
                 />
             )}
 
             {/* Top edge highlight */}
             <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-2xl bg-linear-to-r from-transparent via-bridge-100/70 to-transparent dark:via-bridge-500/30"
+                className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-2xl bg-linear-to-r from-transparent via-bridge-100/70 to-transparent dark:via-bridge-500/30 z-10"
             />
 
-            {/* Header: icon + title (same line) + lock badge */}
-            <header className="flex items-center gap-3">
-                <div
-                    className={cn(
-                        "flex items-center justify-center w-12 h-12 rounded-xl shrink-0 text-white shadow-sm",
-                        "transition-transform duration-300 ease-out group-hover:scale-105 group-hover:rotate-[-3deg]",
-                        `bg-${modulePath}`
+            {/* CONTENU — z-20 > overlay (z-10), pointer-events-none ;
+                la CTA réactive auto. */}
+            <div className="relative z-20 flex flex-col gap-5 h-full pointer-events-none">
+
+                {/* Header: icon + title (same line) + lock badge */}
+                <header className="flex items-center gap-3">
+                    <div
+                        className={cn(
+                            "flex items-center justify-center w-12 h-12 rounded-xl shrink-0 text-white shadow-sm",
+                            "transition-transform duration-300 ease-out group-hover:scale-105 group-hover:rotate-[-3deg]",
+                            `bg-${modulePath}`
+                        )}
+                    >
+                        <Icon className="w-6 h-6"/>
+                    </div>
+                    <h3 className={cn(
+                        "text-2xl font-bold tracking-tight leading-tight flex-1 min-w-0",
+                        `text-${modulePath}`
+                    )}>
+                        {label}
+                    </h3>
+                    {isLocked && (
+                        <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100 shrink-0">
+                            <Lock className="w-3 h-3"/>
+                            <span className="hidden sm:inline">Verrouillé</span>
+                        </span>
                     )}
-                >
-                    <Icon className="w-6 h-6"/>
+                </header>
+
+                {/* Description */}
+                {description && (
+                    <p className="text-sm leading-relaxed font-medium text-brand-dark dark:text-bridge-100/90 flex-grow">
+                        {description}
+                    </p>
+                )}
+
+                {/* CTA */}
+                <div className="pt-3 mt-auto border-t border-bridge-700/20 dark:border-bridge-500/20 pointer-events-auto">
+                    {isLocked ? (
+                        <span
+                            aria-disabled="true"
+                            className="inline-flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-semibold tracking-wide border border-bridge-700/55 text-brand-dark dark:border-bridge-400/40 dark:text-bridge-100 opacity-50 pointer-events-none cursor-not-allowed"
+                        >
+                            Indisponible
+                            <Lock className="w-4 h-4"/>
+                        </span>
+                    ) : (
+                        <Link
+                            href={href}
+                            className="group/cta inline-flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-semibold tracking-wide border border-bridge-700/55 text-brand-dark dark:border-bridge-400/40 dark:text-bridge-100 transition-[color,border-color,background-color] duration-300 hover:bg-bridge-200 hover:border-bridge-700 hover:text-bridge-900 dark:hover:bg-bridge-700 dark:hover:border-bridge-300 dark:hover:text-bridge-50"
+                        >
+                            Ouvrir {label}
+                            <ArrowRight className="size-4 transition-transform duration-300 group-hover/cta:translate-x-1"/>
+                        </Link>
+                    )}
                 </div>
-                <h3 className={cn(
-                    "text-2xl font-bold tracking-tight leading-tight flex-1 min-w-0",
-                    `text-${modulePath}`
-                )}>
-                    {label}
-                </h3>
-                {isLocked && (
-                    <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100 shrink-0">
-                        <Lock className="w-3 h-3"/>
-                        <span className="hidden sm:inline">Verrouillé</span>
-                    </span>
-                )}
-            </header>
-
-            {/* Description */}
-            {description && (
-                <p className="text-sm leading-relaxed font-medium text-brand-dark dark:text-bridge-100/90 flex-grow">
-                    {description}
-                </p>
-            )}
-
-            {/* CTA */}
-            <div className="relative z-10 pt-3 mt-auto border-t border-bridge-700/20 dark:border-bridge-500/20">
-                {isLocked ? (
-                    <span
-                        aria-disabled="true"
-                        className="inline-flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-semibold tracking-wide border border-bridge-700/55 text-brand-dark dark:border-bridge-400/40 dark:text-bridge-100 opacity-50 pointer-events-none cursor-not-allowed"
-                    >
-                        Indisponible
-                        <Lock className="w-4 h-4"/>
-                    </span>
-                ) : (
-                    <Link
-                        href={href}
-                        className="group/cta inline-flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-semibold tracking-wide border border-bridge-700/55 text-brand-dark dark:border-bridge-400/40 dark:text-bridge-100 transition-[color,border-color,background-color] duration-300 hover:bg-bridge-200 hover:border-bridge-700 hover:text-bridge-900 dark:hover:bg-bridge-700 dark:hover:border-bridge-300 dark:hover:text-bridge-50"
-                    >
-                        Ouvrir {label}
-                        <ArrowRight className="size-4 transition-transform duration-300 group-hover/cta:translate-x-1"/>
-                    </Link>
-                )}
             </div>
         </article>
     );
