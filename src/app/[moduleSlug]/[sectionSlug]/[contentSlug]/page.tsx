@@ -11,7 +11,7 @@ import {getModuleData} from "@/hook/getModuleData";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getContentComponent} from "@/lib/getContentComponent";
 import {cn} from "@/lib/utils";
-import {CONTENT_DESC, CONTENT_ICON, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
+import {CONTENT_DESC, CONTENT_ICON, ContentKey} from "@/lib/contentMeta";
 import {Metadata} from "next";
 import {getServerSession} from "@/lib/auth";
 
@@ -82,18 +82,6 @@ export default async function Content({params}: ContentPageProps) {
     const contentDesc = isSplit
         ? 'Cours et TP en parallèle.'
         : (CONTENT_DESC[contentKey] ?? currentSection.description ?? '');
-
-    // Prev / Next within the section's available contents (canonical order) — single mode only
-    const sortedContents = !isSplit
-        ? [...currentSection.contents].sort(
-            (a, b) => CONTENT_ORDER.indexOf(a as ContentKey) - CONTENT_ORDER.indexOf(b as ContentKey)
-        )
-        : [];
-    const currentIdx = !isSplit ? sortedContents.indexOf(currentContent!) : -1;
-    const prevContent = !isSplit && currentIdx > 0 ? sortedContents[currentIdx - 1] : null;
-    const nextContent = !isSplit && currentIdx >= 0 && currentIdx < sortedContents.length - 1
-        ? sortedContents[currentIdx + 1]
-        : null;
 
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">

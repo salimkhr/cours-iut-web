@@ -5,7 +5,8 @@ import {CONTENT_ICON, CONTENT_LABELS, CONTENT_ORDER, ContentKey} from "@/lib/con
 import ReadingProgress from "@/components/page/ReadingProgress";
 
 const SPLIT_KEY = 'split';
-const SPLIT_LABEL = 'Côte à côte';
+const SPLIT_LABEL = '' +
+    'Côte à côte';
 
 interface ContentSwitcherProps {
     contents: string[];
@@ -31,7 +32,9 @@ export default function ContentSwitcher({
         (a, b) => CONTENT_ORDER.indexOf(a as ContentKey) - CONTENT_ORDER.indexOf(b as ContentKey)
     );
 
-    const tabs: Tab[] = sorted.map((content) => {
+    const tabs: Tab[] = sorted.filter(
+        (content) => content !== 'slide'
+    ).map((content) => {
         const key = content as ContentKey;
         return {
             key: content,
