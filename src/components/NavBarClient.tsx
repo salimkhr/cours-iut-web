@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import {usePathname, useRouter} from "next/navigation";
-import Image from "next/image";
 import {useTheme} from "next-themes";
 import {authClient} from "@/lib/auth-client";
 
@@ -13,7 +12,14 @@ import {
     navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
 
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import iconMap from "@/lib/iconMap";
 import {
@@ -26,6 +32,7 @@ import {
     Sun,
     User as UserIcon,
     UserCheck,
+    UserCog,
     UserLockIcon
 } from "lucide-react";
 import Module from "@/types/Module";
@@ -169,13 +176,14 @@ export default function NavBarClient({
                                     className="flex flex-row items-center gap-2 rounded-full p-0.5 outline-none transition-colors hover:bg-bridge-200/50 dark:hover:bg-bridge-700/50 focus-visible:ring-2 focus-visible:ring-brand-primary"
                                 >
                                     {user.imageUrl ? (
-                                        <Image
-                                            src={user.imageUrl}
-                                            alt="avatar"
-                                            width={32}
-                                            height={32}
-                                            className="rounded-full"
-                                        />
+                                        <span className="block w-8 h-8 rounded-full overflow-hidden shrink-0">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={user.imageUrl}
+                                                alt="avatar"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </span>
                                     ) : (
                                         <span className="flex items-center justify-center w-8 h-8 rounded-full bg-bridge-300 dark:bg-bridge-700">
                                             <UserIcon className="w-4 h-4"/>
@@ -198,27 +206,38 @@ export default function NavBarClient({
                         <DropdownMenuContent align="end" sideOffset={8} className={dropdownContentClass}>
                             {isLoggedIn && user ? (
                                 <>
-                                    <DropdownMenuItem
-                                        onSelect={(e) => {
-                                            e.preventDefault();
-                                            setTheme(isDark ? 'light' : 'dark');
-                                        }}
-                                        className={dropdownItemClass}
-                                    >
-                                        <div className="flex items-center gap-2.5 w-full">
-                                            {isDark ? <Sun className="w-4 h-4 shrink-0"/> : <Moon className="w-4 h-4 shrink-0"/>}
-                                            <span>{isDark ? 'Mode clair' : 'Mode sombre'}</span>
-                                        </div>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        onSelect={() => handleSignOut()}
-                                        className={dropdownItemClass}
-                                    >
-                                        <div className="flex items-center gap-2.5 w-full">
-                                            <LogOut className="w-4 h-4 shrink-0"/>
-                                            <span>Déconnexion</span>
-                                        </div>
-                                    </DropdownMenuItem>
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuItem
+                                            onSelect={(e) => {
+                                                e.preventDefault();
+                                                setTheme(isDark ? 'light' : 'dark');
+                                            }}
+                                            className={dropdownItemClass}
+                                        >
+                                            <div className="flex items-center gap-2.5 w-full">
+                                                {isDark ? <Sun className="w-4 h-4 shrink-0"/> : <Moon className="w-4 h-4 shrink-0"/>}
+                                                <span>{isDark ? 'Mode clair' : 'Mode sombre'}</span>
+                                            </div>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuGroup>
+                                    <DropdownMenuSeparator className="bg-bridge-400/40 dark:bg-bridge-500/45"/>
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuItem asChild className={dropdownItemClass}>
+                                            <Link href="/account" className="flex items-center gap-2.5">
+                                                <UserCog className="w-4 h-4 shrink-0"/>
+                                                <span>Mon compte</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onSelect={() => handleSignOut()}
+                                            className={dropdownItemClass}
+                                        >
+                                            <div className="flex items-center gap-2.5 w-full">
+                                                <LogOut className="w-4 h-4 shrink-0"/>
+                                                <span>Déconnexion</span>
+                                            </div>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuGroup>
                                 </>
                             ) : (
                                 <>

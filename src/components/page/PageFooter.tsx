@@ -76,8 +76,21 @@ export default async function PageFooter({}: PageFooterProps = {}) {
 
             <div className="border-t border-brand-light/15">
                 <div
-                    className="mx-auto max-w-6xl px-6 lg:px-12 py-3 md:py-6 flex flex-col sm:flex-row items-center justify-between gap-1 md:gap-2 text-[11px] md:text-xs text-brand-light/60">
+                    className="mx-auto max-w-6xl px-6 lg:px-12 py-3 md:py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] md:text-xs text-brand-light/60">
                     <p>&copy; {new Date().getFullYear()} Salim Khraimeche — Tous droits réservés.</p>
+                    <nav className="flex flex-wrap items-center gap-x-3 gap-y-1" aria-label="Liens légaux">
+                        <Link href="/mentions-legales" className="hover:text-brand-accent transition-colors">
+                            Mentions légales
+                        </Link>
+                        <span aria-hidden>·</span>
+                        <Link href="/politique-confidentialite" className="hover:text-brand-accent transition-colors">
+                            Confidentialité
+                        </Link>
+                        <span aria-hidden>·</span>
+                        <Link href="/conditions-utilisation" className="hover:text-brand-accent transition-colors">
+                            CGU
+                        </Link>
+                    </nav>
                     <p>BUT Informatique — IUT</p>
                 </div>
             </div>

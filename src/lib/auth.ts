@@ -3,6 +3,7 @@ import {mongodbAdapter} from "better-auth/adapters/mongodb";
 import {admin, captcha, username} from "better-auth/plugins";
 import {MongoClient} from "mongodb";
 import {headers} from "next/headers";
+import {Resend} from "resend";
 
 // better-auth a besoin de l'instance Db au moment de la config (module load).
 // MongoClient.db() est lazy : la connexion réseau se fait à la première op,
@@ -13,26 +14,70 @@ const mongoClient = new MongoClient(uri);
 const db = mongoClient.db("cours-iut-web");
 
 const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+const resendApiKey = process.env.RESEND_API_KEY;
+const fromEmail = process.env.RESEND_FROM_EMAIL ?? "no-reply@salimkhraimeche.dev";
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 export const auth = betterAuth({
     appName: "cours-iut-web",
     database: mongodbAdapter(db),
 
+    user: {
+        additionalFields: {
+            group: {
+                type: "string",
+                required: false,
+                input: true,
+            },
+        },
+    },
+
     emailAndPassword: {
         enabled: true,
-        // Pas de vérification email en self-hosted éducatif : on garde simple.
-        requireEmailVerification: false,
-        // Règles password. À ajuster selon la politique souhaitée.
-        // Pour de la complexité (majuscule + chiffre + symbole), passer
-        // par `password.hash` custom ou valider côté form avant submit.
+        requireEmailVerification: !!resend,
         minPasswordLength: 7,
         maxPasswordLength: 128,
     },
 
+    emailVerification: {
+        sendVerificationEmail: async ({user, url}) => {
+            if (!resend) return;
+            await resend.emails.send({
+                from: fromEmail,
+                to: user.email,
+                subject: "Confirmez votre adresse email — Cours Web IUT",
+                html: `
+                    <div style="font-family:sans-serif;max-width:480px;margin:0 auto">
+                        <h2 style="color:#C2410C">Confirmez votre email</h2>
+                        <p>Bonjour ${user.name},</p>
+                        <p>Cliquez sur le bouton ci-dessous pour valider votre compte sur la plateforme de cours de l'IUT.</p>
+                        <a href="${url}"
+                           style="display:inline-block;margin:16px 0;padding:12px 24px;background:#C2410C;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">
+                            Valider mon email
+                        </a>
+                        <p style="color:#666;font-size:13px">Ce lien expire dans 24 heures.<br>Si vous n'avez pas créé de compte, ignorez cet email.</p>
+                    </div>
+                `,
+            });
+        },
+        autoSignInAfterVerification: true,
+        expiresIn: 60 * 60 * 24, // 24 h
+        callbackURL: "/email-verifie",
+    },
+
     session: {
-        // Cookie persistant côté client. Refresh de session géré côté serveur.
         expiresIn: 60 * 60 * 24 * 7, // 7 jours
-        updateAge: 60 * 60 * 24, // refresh quotidien
+        updateAge: 60 * 60 * 24,      // refresh quotidien
+    },
+
+    advanced: {
+        // Derrière le proxy Dokploy, la vraie IP client est dans X-Forwarded-For.
+        ipAddress: {
+            ipAddressHeaders: [
+                "cf-connecting-ip",   // Cloudflare (si activé côté Dokploy)
+                "x-forwarded-for",    // standard RFC 7239
+            ],
+        },
     },
 
     plugins: [

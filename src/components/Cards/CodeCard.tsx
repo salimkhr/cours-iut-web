@@ -2,10 +2,9 @@
 
 import React, {useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
-import {ClipboardCopyIcon, DownloadIcon, MaximizeIcon, MinimizeIcon} from "lucide-react";
+import {ChevronDown, ChevronUp, ClipboardCopy, Download} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {oneDark, oneLight} from 'react-syntax-highlighter/dist/esm/styles/prism';
-import {Button} from "@/components/ui/button";
 import Module from "@/types/Module";
 
 export interface CodeCardProps {
@@ -16,7 +15,7 @@ export interface CodeCardProps {
     filename?: string;
     currentModule?: Module;
     collapsible?: boolean;
-    highlightLines?: string; // Nouvelle prop pour la mise en avant
+    highlightLines?: string;
 }
 
 export default function CodeCard({
@@ -43,36 +42,24 @@ export default function CodeCard({
 
     const getMimeType = (lang: string) => {
         switch (lang.toLowerCase()) {
-            case "html":
-                return "text/html";
-            case "css":
-                return "text/css";
+            case "html": return "text/html";
+            case "css": return "text/css";
             case "js":
-            case "javascript":
-                return "application/javascript";
-            case "json":
-                return "application/json";
+            case "javascript": return "application/javascript";
+            case "json": return "application/json";
             case "ts":
-            case "typescript":
-                return "application/typescript";
-            case "php":
-                return "application/x-httpd-php";
-            case "sql":
-                return "application/sql";
-            case "xml":
-                return "application/xml";
+            case "typescript": return "application/typescript";
+            case "php": return "application/x-httpd-php";
+            case "sql": return "application/sql";
+            case "xml": return "application/xml";
             case "yaml":
-            case "yml":
-                return "application/x-yaml";
-            case "txt":
-            default:
-                return "text/plain";
+            case "yml": return "application/x-yaml";
+            default: return "text/plain";
         }
     };
 
     const handleDownload = () => {
-        const mimeType = getMimeType(language);
-        const blob = new Blob([children], {type: `${mimeType};charset=utf-8`});
+        const blob = new Blob([children], {type: `${getMimeType(language)};charset=utf-8`});
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
@@ -81,50 +68,58 @@ export default function CodeCard({
         URL.revokeObjectURL(url);
     };
 
-    const toggleExpand = () => setIsExpanded(!isExpanded);
-
     const headerCard = (
-        <div className="flex justify-between items-center w-full">
-            <div className="flex items-center gap-2">
-                <span className="text-sm font-mono text-white">{language.toUpperCase()}</span>
+        <div className="flex items-center gap-3 w-full min-w-0">
+
+            {/* Onglet fichier / langage */}
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+                <span className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-sm rounded px-2.5 py-1 text-xs font-mono text-white/95 truncate max-w-[220px]">
+                    {filename ?? `${language.toLowerCase()}`}
+                </span>
+                {filename && (
+                    <span className="shrink-0 text-[10px] font-semibold tracking-[0.18em] uppercase text-white/45">
+                        {language}
+                    </span>
+                )}
                 {isLongFile && (
-                    <span className="text-xs font-mono text-white/70">{lineCount} lignes</span>
+                    <span className="shrink-0 text-[10px] font-mono text-white/35">
+                        {lineCount}L
+                    </span>
                 )}
             </div>
-            <div className="flex gap-1">
+
+            {/* Actions */}
+            <div className="flex items-center gap-0.5 shrink-0">
                 {collapsible && isLongFile && (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={toggleExpand}
-                        className="flex items-center gap-2 text-white"
+                    <button
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="flex items-center gap-1.5 px-2 py-1 rounded text-xs text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                         title={isExpanded ? "Masquer" : "Afficher"}
                     >
-                        {isExpanded ? <><MinimizeIcon className="w-4 h-4"/> <span
-                            className="hidden sm:inline">Masquer</span></> : <><MaximizeIcon className="w-4 h-4"/> <span
-                            className="hidden sm:inline">Afficher</span></>}
-                    </Button>
+                        {isExpanded
+                            ? <><ChevronUp className="w-3.5 h-3.5"/><span className="hidden sm:inline">Masquer</span></>
+                            : <><ChevronDown className="w-3.5 h-3.5"/><span className="hidden sm:inline">Afficher</span></>
+                        }
+                    </button>
                 )}
                 {filename && (
-                    <Button
-                        variant="ghost"
-                        size="sm"
+                    <button
                         onClick={handleDownload}
-                        className="flex items-center gap-2 text-white"
-                        title="Télécharger le fichier"
+                        className="p-1.5 rounded text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+                        title="Télécharger"
+                        aria-label="Télécharger le fichier"
                     >
-                        <DownloadIcon className="w-4 h-4"/> <span className="hidden sm:inline">{filename}</span>
-                    </Button>
+                        <Download className="w-3.5 h-3.5"/>
+                    </button>
                 )}
-                <Button
-                    variant="ghost"
-                    size="sm"
+                <button
                     onClick={handleCopy}
-                    className="flex items-center gap-2 text-white"
+                    className="flex items-center gap-1.5 px-2 py-1 rounded text-xs text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                    aria-label="Copier le code"
                 >
-                    <ClipboardCopyIcon className="w-4 h-4"/> <span
-                    className="hidden sm:inline">{copied ? 'Copié !' : 'Copier'}</span>
-                </Button>
+                    <ClipboardCopy className="w-3.5 h-3.5"/>
+                    <span className="hidden sm:inline">{copied ? 'Copié !' : 'Copier'}</span>
+                </button>
             </div>
         </div>
     );
@@ -150,17 +145,17 @@ export default function CodeCard({
         customStyle: {
             margin: 0,
             fontSize: '0.875rem',
-            lineHeight: '1.25rem',
+            lineHeight: '1.6',
             height: 'auto',
             borderRadius: '0',
+            background: 'transparent',
         },
         wrapLines: true,
         lineProps: (lineNumber: number) => {
             const style: React.CSSProperties = {display: 'block', width: '100%'};
             const isHighlighted = highlightedLines.includes(lineNumber);
             if (highlightedLines.length > 0 && !isHighlighted) {
-                style.opacity = 0.5;
-                style.filter = 'grayscale(0.5)';
+                style.opacity = 0.4;
             }
             return {style};
         },
@@ -169,11 +164,15 @@ export default function CodeCard({
     };
 
     const content = (
-        <div className="w-full h-full overflow-visible">
+        <div className="w-full overflow-x-auto">
             {collapsible && isLongFile && !isExpanded ? (
-                <div className="p-8 text-center text-gray-500">
-                    <p className="text-sm">Code masqué ({lineCount} lignes)</p>
-                    <p className="text-xs mt-2">Cliquez sur &quot;Afficher&rdquo; pour voir le contenu</p>
+                <div className="py-10 text-center">
+                    <p className="text-sm font-mono text-bridge-500 dark:text-bridge-400">
+                        {lineCount} lignes masquées
+                    </p>
+                    <p className="text-xs mt-1 text-bridge-400 dark:text-bridge-500">
+                        Cliquez sur &quot;Afficher&rdquo; pour voir le contenu
+                    </p>
                 </div>
             ) : (
                 <>

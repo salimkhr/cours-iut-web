@@ -3,6 +3,7 @@ import {IBM_Plex_Sans, JetBrains_Mono} from 'next/font/google';
 import './globals.css';
 import NavBar from "@/components/NavBar";
 import {ThemeProvider} from "@/components/ThemeProvider";
+import {Toaster} from "@/components/ui/sonner";
 
 const jetbrainsMono = JetBrains_Mono({
     subsets: ['latin'],
@@ -41,6 +42,7 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
                 >
                     <NavBar/>
                     {children}
+                    <Toaster richColors closeButton/>
                 </ThemeProvider>
             </body>
         </html>

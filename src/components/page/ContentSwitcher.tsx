@@ -83,6 +83,7 @@ export default function ContentSwitcher({
                                 className={cn(
                                     "shrink-0 inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold",
                                     "border transition-colors duration-200",
+                                    key === SPLIT_KEY && "hidden lg:inline-flex",
                                     isActive
                                         ? "bg-brand-primary text-brand-light border-brand-primary shadow-sm"
                                         : "text-brand-dark/70 dark:text-bridge-100/70 border-transparent hover:text-brand-dark dark:hover:text-bridge-50 hover:bg-bridge-300/60 dark:hover:bg-bridge-700/60"

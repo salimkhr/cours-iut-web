@@ -17,23 +17,6 @@ import {Label} from "@/components/ui/label";
 
 import {loginSchema, LoginValues} from "@/lib/schemas/login.schema";
 
-// ─── Turnstile types (inchangé) ───────────────────────────────────────────────
-
-interface TurnstileOptions {
-    sitekey: string;
-    callback?: (token: string) => void;
-    theme?: "light" | "dark" | "auto";
-}
-
-declare global {
-    interface Window {
-        turnstile: {
-            render: (container: string | HTMLElement, options: TurnstileOptions) => string;
-            reset: (widgetId?: string) => void;
-            remove: (widgetId: string) => void;
-        };
-    }
-}
 
 export default function LoginForm() {
     const router = useRouter();

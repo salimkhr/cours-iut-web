@@ -9,9 +9,10 @@ interface AuthLayoutProps {
     title: string;
     description: string;
     children: ReactNode;
+    wide?: boolean;
 }
 
-export default function AuthLayout({title, description, children}: AuthLayoutProps) {
+export default function AuthLayout({title, description, children, wide = false}: AuthLayoutProps) {
     const mounted = useMounted();
     const isDark = useIsDark();
     const heroImage = mounted && isDark
@@ -25,7 +26,7 @@ export default function AuthLayout({title, description, children}: AuthLayoutPro
             className={cn(
                 "relative w-full min-h-screen overflow-hidden -mt-(--navbar-h)",
                 "bg-brand-light dark:bg-brand-dark",
-                "bg-no-repeat bg-right-bottom bg-contain lg:bg-cover lg:bg-right-bottom",
+                "bg-no-repeat bg-cover bg-right lg:bg-right-bottom",
             )}
             style={{backgroundImage: `url(${heroImage})`}}
         >
@@ -50,7 +51,7 @@ export default function AuthLayout({title, description, children}: AuthLayoutPro
             <div className="relative z-10 mx-auto w-full max-w-7xl min-h-screen flex items-start lg:items-center justify-center lg:justify-start px-6 lg:pl-12 lg:pr-6 py-12 lg:py-20 opacity-0 animate-fade-in">
                 {/* Bloc unique en haut-gauche, comme la home : titre + descriptif
                     + formulaire empilés. Le pont reste libre sur la moitié droite. */}
-                <div className="w-full max-w-md lg:max-w-[480px]">
+                <div className={cn("w-full", wide ? "max-w-[90vw] lg:max-w-[42vw]" : "max-w-md lg:max-w-[480px]")}>
                     <h1 className="font-extrabold tracking-tight leading-[0.95] text-brand-dark dark:text-brand-light text-4xl sm:text-5xl lg:text-6xl text-center lg:text-left">
                         {title}
                         <span className="text-brand-accent-dark">.</span>

@@ -4,55 +4,47 @@ import {useEffect, useRef, useState} from "react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
-import {AlertCircle, Camera, CheckCircle2, Eye, EyeOff, Lock, Mail, User, UserPlus, X} from "lucide-react";
+import {Camera, Eye, EyeOff, Hash, Lock, Mail, Sparkles, User, UserPlus, X} from "lucide-react";
+import {toast} from "sonner";
 import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {authClient} from "@/lib/auth-client";
 import {Button} from "@/components/ui/button";
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group";
-import {Label} from "@/components/ui/label";
-import {registerSchema, RegisterValues} from "@/lib/schemas/register.schema";
+import {Field, FieldError, FieldLabel} from "@/components/ui/field";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {GROUPS, registerSchema, RegisterValues, STUDENT_EMAIL_DOMAIN} from "@/lib/schemas/register.schema";
 
-// ─── Turnstile types ────────────────────────────────────────────────────────────
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
-interface TurnstileOptions {
-    sitekey: string;
-    callback?: (token: string) => void;
-    "error-callback"?: () => void;
-    "expired-callback"?: () => void;
-    "timeout-callback"?: () => void;
-    theme?: "light" | "dark" | "auto";
-    size?: "normal" | "compact";
-    tabindex?: number;
-    action?: string;
-    cData?: string;
-    language?: string;
-    appearance?: "always" | "execute" | "interaction-only";
+function toEmailPart(str: string): string {
+    return str
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")   // supprime les accents
+        .replace(/['\s-]+/g, ".")           // espaces, tirets, apostrophes → point
+        .replace(/[^a-z0-9.]/g, "")        // supprime les autres caractères spéciaux
+        .replace(/\.+/g, ".")              // collapse les points multiples
+        .replace(/^\.|\.$/, "");           // trim les points en début/fin
 }
 
-declare global {
-    interface Window {
-        turnstile: {
-            render: (container: string | HTMLElement, options: TurnstileOptions) => string;
-            reset: (widgetId?: string) => void;
-            remove: (widgetId: string) => void;
-        };
-    }
-}
-
-const SCHOOL_DOMAIN = "salimkhraimeche.dev";
-
-// ─── Component ─────────────────────────────────────────────────────────────────
+// ─── Component ───────────────────────────────────────────────────────────────
 
 export default function RegisterForm() {
     const router = useRouter();
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-    const [serverError, setServerError] = useState<string | null>(null);
-    const [success, setSuccess] = useState(false);
     const [preview, setPreview] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
+    const [emailAutoFilled, setEmailAutoFilled] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const emailManualRef = useRef(false);
 
     const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_TOKEN;
     const captchaRequired = !!sitekey;
@@ -62,12 +54,17 @@ export default function RegisterForm() {
         handleSubmit,
         control,
         reset,
+        watch,
+        setValue,
         formState: {errors, isSubmitting},
     } = useForm<RegisterValues>({
         resolver: zodResolver(registerSchema),
     });
 
-    // ── Turnstile ────────────────────────────────────────────────────────────────
+    const watchedFirstName = watch("firstName");
+    const watchedLastName = watch("lastName");
+
+    // ── Turnstile ─────────────────────────────────────────────────────────────
 
     useEffect(() => {
         if (!sitekey) return;
@@ -99,69 +96,98 @@ export default function RegisterForm() {
         }
     }
 
-    // ── Submit ───────────────────────────────────────────────────────────────────
+    // ── Email auto-complétion ─────────────────────────────────────────────────
 
-    async function onSubmit(values: RegisterValues) {
-        setServerError(null);
+    useEffect(() => {
+        if (emailManualRef.current) return;
+        const first = toEmailPart(watchedFirstName ?? "");
+        const last = toEmailPart(watchedLastName ?? "");
+        if (!first && !last) return;
+        const suggested = [first, last].filter(Boolean).join(".") + STUDENT_EMAIL_DOMAIN;
+        setValue("email", suggested, {shouldValidate: false, shouldDirty: false, shouldTouch: false});
+        setEmailAutoFilled(true);
+    }, [watchedFirstName, watchedLastName, setValue]);
 
-        if (captchaRequired && !captchaToken) {
-            setServerError("Veuillez valider le captcha");
-            return;
-        }
+    // ── Picture helpers ───────────────────────────────────────────────────────
 
-        const isEmail = values.identifier.includes("@");
-        const email = isEmail ? values.identifier : `${values.identifier}@${SCHOOL_DOMAIN}`;
-        const username = isEmail ? values.identifier.split("@")[0] : values.identifier;
-
-        const fetchOptions = captchaToken
-            ? {headers: {"x-captcha-response": captchaToken}}
-            : undefined;
-
-        try {
-            const res = await authClient.signUp.email({
-                name: values.name,
-                email,
-                username,
-                password: values.password,
-                fetchOptions,
-            });
-
-            if (res.error) {
-                setServerError(res.error.message ?? "Inscription impossible.");
-                resetCaptcha();
-                return;
-            }
-
-            setSuccess(true);
-            reset();
-            setPreview(null);
-            resetCaptcha();
-            router.refresh();
-        } catch (err) {
-            setServerError(err instanceof Error ? err.message : String(err));
-            resetCaptcha();
-        }
-    }
-
-    // ── Picture helpers ──────────────────────────────────────────────────────────
-
-    function handleFileChange(
-        e: React.ChangeEvent<HTMLInputElement>,
-        onChange: (file: File) => void
-    ) {
+    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>, onChange: (f: File) => void) {
         const file = e.target.files?.[0];
         if (!file) return;
         onChange(file);
         setPreview(URL.createObjectURL(file));
     }
 
-    function removePicture(onChange: (file: File | undefined) => void) {
+    function removePicture(onChange: (f: File | undefined) => void) {
         onChange(undefined as unknown as File);
         setPreview(null);
         if (fileInputRef.current) fileInputRef.current.value = "";
     }
 
-    // ── Render ───────────────────────────────────────────────────────────────────
+    // ── Submit ────────────────────────────────────────────────────────────────
+
+    async function onSubmit(values: RegisterValues) {
+
+        if (captchaRequired && !captchaToken) {
+            toast.error("Veuillez valider le captcha.");
+            return;
+        }
+
+        const fetchOptions = captchaToken
+            ? {headers: {"x-captcha-response": captchaToken}}
+            : undefined;
+
+        let imageUrl: string | undefined;
+        if (values.picture instanceof File) {
+            const fd = new FormData();
+            fd.append("file", values.picture);
+            const uploadRes = await fetch("/api/upload-avatar", {method: "POST", body: fd});
+            if (!uploadRes.ok) {
+                const {error} = await uploadRes.json();
+                toast.error(error ?? "Échec de l'upload de la photo.");
+                return;
+            }
+            const {url} = await uploadRes.json();
+            imageUrl = url;
+        }
+
+        try {
+            const res = await (authClient.signUp.email as Function)({
+                name: `${values.firstName} ${values.lastName}`,
+                email: values.email,
+                username: values.identifier,
+                password: values.password,
+                image: imageUrl,
+                group: values.group,
+                fetchOptions,
+            });
+
+            if (res.error) {
+                toast.error(res.error.message ?? "Inscription impossible.");
+                resetCaptcha();
+                return;
+            }
+
+            const needsVerification = !res.data?.session;
+            if (needsVerification) {
+                toast.success("Compte créé !", {
+                    description: `Un lien de confirmation a été envoyé à ${values.email}.`,
+                    duration: 8000,
+                });
+            } else {
+                toast.success("Compte créé avec succès !");
+                router.refresh();
+            }
+
+            reset();
+            setPreview(null);
+            resetCaptcha();
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : String(err));
+            resetCaptcha();
+        }
+    }
+
+    // ── Render ────────────────────────────────────────────────────────────────
 
     return (
         <>
@@ -173,177 +199,179 @@ export default function RegisterForm() {
                 />
             )}
 
-            {/* Success */}
-            {success && (
-                <div className="flex items-start gap-2 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-300 dark:border-green-700 mb-5">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5"/>
-                    <p className="text-sm text-green-700 dark:text-green-300">
-                        Compte créé avec succès !
-                    </p>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+
+                {/* ── Prénom / Nom ── */}
+                <div className="grid grid-cols-2 gap-4">
+                    <Field>
+                        <FieldLabel htmlFor="firstName">Prénom</FieldLabel>
+                        <InputGroup>
+                            <InputGroupAddon><User className="h-4 w-4 text-brand-accent-dark/70"/></InputGroupAddon>
+                            <InputGroupInput
+                                id="firstName"
+                                placeholder="Jean"
+                                autoComplete="given-name"
+                                aria-invalid={!!errors.firstName}
+                                {...register("firstName")}
+                            />
+                        </InputGroup>
+                        <FieldError errors={[errors.firstName]}/>
+                    </Field>
+
+                    <Field>
+                        <FieldLabel htmlFor="lastName">Nom</FieldLabel>
+                        <InputGroup>
+                            <InputGroupAddon><User className="h-4 w-4 text-brand-accent-dark/70"/></InputGroupAddon>
+                            <InputGroupInput
+                                id="lastName"
+                                placeholder="Dupont"
+                                autoComplete="family-name"
+                                aria-invalid={!!errors.lastName}
+                                {...register("lastName")}
+                            />
+                        </InputGroup>
+                        <FieldError errors={[errors.lastName]}/>
+                    </Field>
                 </div>
-            )}
 
-            {/* Server error */}
-            {serverError && (
-                <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 mb-5">
-                    <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5"/>
-                    <p className="text-sm text-red-700 dark:text-red-300">{serverError}</p>
-                </div>
-            )}
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-
-                {/* ── Name ── */}
-                <div className="space-y-2">
-                    <Label htmlFor="name" className="text-brand-dark dark:text-brand-light">
-                        Nom
-                    </Label>
+                {/* ── Email ── */}
+                <Field>
+                    <div className="flex items-center justify-between">
+                        <FieldLabel htmlFor="email">Email universitaire</FieldLabel>
+                        {emailAutoFilled && (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                                <Sparkles className="h-3 w-3"/>
+                                Suggéré — modifiable
+                            </span>
+                        )}
+                    </div>
                     <InputGroup>
+                        <InputGroupAddon><Mail className="h-4 w-4 text-brand-accent-dark/70"/></InputGroupAddon>
                         <InputGroupInput
-                            id="name"
-                            type="text"
-                            placeholder="Votre nom"
-                            autoComplete="name"
-                            {...register("name")}
+                            id="email"
+                            type="email"
+                            placeholder={`prenom.nom${STUDENT_EMAIL_DOMAIN}`}
+                            autoComplete="email"
+                            aria-invalid={!!errors.email}
+                            {...register("email", {
+                                onChange: () => {
+                                    emailManualRef.current = true;
+                                    setEmailAutoFilled(false);
+                                },
+                            })}
                         />
-                        <InputGroupAddon>
-                            <User className="h-5 w-5 text-brand-accent-dark/70"/>
-                        </InputGroupAddon>
                     </InputGroup>
-                    {errors.name && (
-                        <p className="text-xs text-red-500">{errors.name.message}</p>
-                    )}
+                    <FieldError errors={[errors.email]}/>
+                </Field>
+
+                {/* ── Identifiant + Groupe ── */}
+                <div className="grid grid-cols-2 gap-4">
+                    <Field>
+                        <FieldLabel htmlFor="identifier">Identifiant</FieldLabel>
+                        <InputGroup>
+                            <InputGroupAddon><Hash className="h-4 w-4 text-brand-accent-dark/70"/></InputGroupAddon>
+                            <InputGroupInput
+                                id="identifier"
+                                placeholder="ab123456"
+                                autoComplete="username"
+                                aria-invalid={!!errors.identifier}
+                                {...register("identifier")}
+                            />
+                        </InputGroup>
+                        <FieldError errors={[errors.identifier]}/>
+                    </Field>
+
+                    <Field>
+                        <FieldLabel>Groupe TD</FieldLabel>
+                        <Controller
+                            name="group"
+                            control={control}
+                            render={({field}) => (
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                    <SelectTrigger
+                                        className="w-full"
+                                        aria-invalid={!!errors.group}
+                                    >
+                                        <SelectValue placeholder="Choisir…"/>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {GROUPS.map((g) => (
+                                            <SelectItem key={g} value={g}>{g}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
+                        <FieldError errors={[errors.group]}/>
+                    </Field>
                 </div>
 
-                {/* ── Identifier ── */}
-                <div className="space-y-2">
-                    <Label htmlFor="identifier" className="text-brand-dark dark:text-brand-light">
-                        Identifiant
-                    </Label>
+                {/* ── Mot de passe ── */}
+                <Field>
+                    <FieldLabel htmlFor="password">Mot de passe</FieldLabel>
                     <InputGroup>
-                        <InputGroupInput
-                            id="identifier"
-                            type="text"
-                            placeholder="votre identifiant"
-                            autoComplete="username"
-                            {...register("identifier")}
-                        />
-                        <InputGroupAddon>
-                            <Mail className="h-5 w-5 text-brand-accent-dark/70"/>
-                        </InputGroupAddon>
-                    </InputGroup>
-                    {errors.identifier && (
-                        <p className="text-xs text-red-500">{errors.identifier.message}</p>
-                    )}
-                </div>
-
-                {/* ── Password ── */}
-                <div className="space-y-2">
-                    <Label htmlFor="password" className="text-brand-dark dark:text-brand-light">
-                        Mot de passe
-                    </Label>
-
-                    <InputGroup className="relative">
+                        <InputGroupAddon><Lock className="h-4 w-4 text-brand-accent-dark/70"/></InputGroupAddon>
                         <InputGroupInput
                             id="password"
                             type={showPassword ? "text" : "password"}
                             placeholder="••••••••"
                             autoComplete="new-password"
+                            aria-invalid={!!errors.password}
                             {...register("password")}
                         />
-
-                        {/* LOCK à gauche */}
-                        <InputGroupAddon>
-                            <Lock className="h-5 w-5 text-brand-accent-dark/70" />
-                        </InputGroupAddon>
-
-                        {/* 👁️ Oeil à droite (FORCÉ) */}
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
+                        <InputGroupAddon align="inline-end">
                             <button
                                 type="button"
                                 onClick={() => setShowPassword((v) => !v)}
                                 className="text-brand-accent-dark/70 hover:text-brand-accent-dark transition-colors"
                                 aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
                             >
-                                {showPassword ? (
-                                    <EyeOff className="h-5 w-5" />
-                                ) : (
-                                    <Eye className="h-5 w-5" />
-                                )}
+                                {showPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
                             </button>
-                        </div>
+                        </InputGroupAddon>
                     </InputGroup>
+                    <FieldError errors={[errors.password]}/>
+                </Field>
 
-                    {errors.password && (
-                        <p className="text-xs text-red-500">
-                            {errors.password.message}
-                        </p>
-                    )}
-                </div>
-
-                {/* ── Picture ── */}
-                <div className="space-y-2">
-                    <Label className="text-brand-dark dark:text-brand-light">
-                        Photo de profil
-                    </Label>
-
+                {/* ── Photo de profil ── */}
+                <Field>
+                    <FieldLabel>Photo de profil <span className="text-muted-foreground font-normal">(optionnelle)</span></FieldLabel>
                     <Controller
                         name="picture"
                         control={control}
                         render={({field: {onChange, value: _value, ...field}}) => (
                             <div className="flex items-center gap-4">
-                                {/* Avatar preview / placeholder */}
                                 <div className="relative shrink-0">
-                                    <div
-                                        className={`
-                                            w-20 h-20 rounded-full overflow-hidden border-2 flex items-center justify-center
-                                            ${preview
-                                            ? "border-brand-accent-dark"
-                                            : "border-dashed border-brand-gray-400 dark:border-brand-gray-600 bg-brand-gray-100 dark:bg-brand-gray-800"
-                                        }
-                                        `}
-                                    >
+                                    <div className={`w-16 h-16 rounded-full overflow-hidden border-2 flex items-center justify-center bg-muted ${preview ? "border-brand-accent-dark" : "border-dashed border-border"}`}>
                                         {preview ? (
                                             // eslint-disable-next-line @next/next/no-img-element
-                                            <img
-                                                src={preview}
-                                                alt="Aperçu"
-                                                className="w-full h-full object-cover"
-                                            />
+                                            <img src={preview} alt="Aperçu" className="w-full h-full object-cover"/>
                                         ) : (
-                                            <User className="h-8 w-8 text-brand-gray-400 dark:text-brand-gray-500"/>
+                                            <Camera className="h-6 w-6 text-muted-foreground"/>
                                         )}
                                     </div>
-
-                                    {/* Remove button */}
                                     {preview && (
                                         <button
                                             type="button"
                                             onClick={() => removePicture(onChange)}
-                                            className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center shadow transition-colors"
+                                            className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive hover:bg-destructive/80 flex items-center justify-center shadow transition-colors"
                                             aria-label="Supprimer la photo"
                                         >
                                             <X className="h-3 w-3 text-white"/>
                                         </button>
                                     )}
                                 </div>
-
-                                {/* Upload button */}
-                                <div className="flex flex-col gap-1.5">
+                                <div className="flex flex-col gap-1">
                                     <button
                                         type="button"
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-brand-accent-dark/60 text-brand-accent-dark hover:bg-brand-accent-dark/5 text-sm font-medium transition-colors"
+                                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-input text-sm hover:bg-accent transition-colors"
                                     >
-                                        <Camera className="h-4 w-4"/>
-                                        {preview ? "Changer la photo" : "Choisir une photo"}
+                                        <Camera className="h-3.5 w-3.5"/>
+                                        {preview ? "Changer" : "Choisir une photo"}
                                     </button>
-                                    <p className="text-xs text-brand-gray-500 dark:text-brand-gray-400">
-                                        JPG, PNG, WebP — max 5 Mo
-                                    </p>
+                                    <p className="text-xs text-muted-foreground">JPG, PNG, WebP — max 5 Mo</p>
                                 </div>
-
-                                {/* Hidden file input */}
                                 <input
                                     {...field}
                                     ref={fileInputRef}
@@ -355,11 +383,8 @@ export default function RegisterForm() {
                             </div>
                         )}
                     />
-
-                    {errors.picture && (
-                        <p className="text-xs text-red-500 mt-1">{errors.picture.message}</p>
-                    )}
-                </div>
+                    <FieldError errors={[errors.picture]}/>
+                </Field>
 
                 {/* ── Captcha ── */}
                 {sitekey && <div className="captcha-container"/>}
@@ -380,12 +405,9 @@ export default function RegisterForm() {
                 </Button>
             </form>
 
-            <p className="text-center text-sm mt-6 text-brand-gray-700 dark:text-brand-gray-300">
+            <p className="text-center text-sm mt-6 text-muted-foreground">
                 Déjà un compte ?{" "}
-                <Link
-                    href="/login"
-                    className="font-bold underline underline-offset-4 text-brand-accent-dark hover:opacity-80"
-                >
+                <Link href="/login" className="font-bold underline underline-offset-4 text-brand-accent-dark hover:opacity-80">
                     Se connecter
                 </Link>
             </p>

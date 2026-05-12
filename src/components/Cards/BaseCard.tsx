@@ -33,24 +33,33 @@ export default function BaseCard({
             className={cn(
                 "group h-full flex flex-col",
                 withHover
-                    ? "transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                    ? "transition-all duration-300 ease-out hover:-translate-y-1.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
                     : "",
                 className
             )}
         >
             <Card
                 className={cn(
-                    "relative w-full h-full flex flex-col justify-between text-center border-2 rounded-lg shadow-md overflow-hidden",
-                    "bg-white dark:bg-gray-800",
-                    "text-gray-900 dark:text-gray-100",
+                    "relative w-full h-full flex flex-col justify-between border rounded-2xl overflow-hidden",
+                    "bg-bridge-50 dark:bg-bridge-900",
+                    "text-bridge-900 dark:text-bridge-100",
+                    `border-${currentModule ? currentModule.path : 'module'}`,
+                    "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)] dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
+                    withHover
+                        ? "hover:shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:hover:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]"
+                        : "",
                     "transition-shadow duration-300",
-                    `border-${currentModule ? currentModule.path : 'module'}`
                 )}
             >
+                {/* Top edge highlight */}
+                <div aria-hidden="true"
+                     className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent z-10 pointer-events-none"/>
+
                 {overlay}
+
                 <CardHeader
                     className={cn(
-                        "flex flex-row justify-between items-center p-4 group-hover:brightness-110 transition-all duration-300",
+                        "flex flex-row justify-between items-center px-4 py-3 transition-brightness duration-300",
                         `bg-${currentModule ? currentModule.path : 'module'}`
                     )}
                 >
@@ -60,16 +69,15 @@ export default function BaseCard({
 
                 <CardContent
                     className={cn(
-                        withMarge ? "p-6" : "",
-                        "flex-grow flex flex-col items-center justify-center",
-                        "bg-white dark:bg-footer"
+                        withMarge ? "p-6" : "p-0",
+                        "flex-grow flex flex-col",
                     )}
                 >
                     {content}
                 </CardContent>
 
                 {footer && (
-                    <CardFooter className="p-4 mt-auto bg-white dark:bg-footer">
+                    <CardFooter className="p-4 mt-auto border-t border-bridge-400/30 dark:border-bridge-600/30">
                         {footer}
                     </CardFooter>
                 )}
@@ -80,12 +88,12 @@ export default function BaseCard({
 
 export function LEDIndicator() {
     return (
-        <div className="flex gap-2" aria-hidden="true">
-            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse motion-reduce:group-hover:animate-none"></div>
-            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse motion-reduce:group-hover:animate-none"
-                 style={{animationDelay: '0.2s'}}></div>
-            <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse motion-reduce:group-hover:animate-none"
-                 style={{animationDelay: '0.4s'}}></div>
+        <div className="flex gap-1.5 shrink-0" aria-hidden="true">
+            <span className="w-2.5 h-2.5 rounded-full bg-white/30 group-hover:bg-white/60 transition-colors duration-300"/>
+            <span className="w-2.5 h-2.5 rounded-full bg-white/30 group-hover:bg-white/60 transition-colors duration-300"
+                  style={{transitionDelay: '50ms'}}/>
+            <span className="w-2.5 h-2.5 rounded-full bg-white/30 group-hover:bg-white/60 transition-colors duration-300"
+                  style={{transitionDelay: '100ms'}}/>
         </div>
     );
 }
