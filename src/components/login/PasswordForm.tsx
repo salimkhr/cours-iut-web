@@ -22,6 +22,16 @@ const passwordSchema = z.object({
 });
 type PasswordValues = z.infer<typeof passwordSchema>;
 
+function EyeButton({visible, onToggle}: {visible: boolean; onToggle: () => void}) {
+    return (
+        <button type="button" onClick={onToggle}
+            className="text-brand-accent-dark/70 hover:text-brand-accent-dark transition-colors"
+            aria-label={visible ? "Masquer" : "Afficher"}>
+            {visible ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+        </button>
+    );
+}
+
 export default function PasswordForm() {
     const [show, setShow] = useState({current: false, next: false, confirm: false});
 
@@ -48,14 +58,6 @@ export default function PasswordForm() {
         reset();
     }
 
-    const EyeButton = ({field}: {field: keyof typeof show}) => (
-        <button type="button" onClick={() => toggle(field)}
-            className="text-brand-accent-dark/70 hover:text-brand-accent-dark transition-colors"
-            aria-label={show[field] ? "Masquer" : "Afficher"}>
-            {show[field] ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
-        </button>
-    );
-
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
@@ -68,7 +70,7 @@ export default function PasswordForm() {
                         placeholder="••••••••" autoComplete="current-password"
                         aria-invalid={!!errors.currentPassword}
                         {...register("currentPassword")}/>
-                    <InputGroupAddon align="inline-end"><EyeButton field="current"/></InputGroupAddon>
+                    <InputGroupAddon align="inline-end"><EyeButton visible={show.current} onToggle={() => toggle("current")}/></InputGroupAddon>
                 </InputGroup>
                 <FieldError errors={[errors.currentPassword]}/>
             </Field>
@@ -82,7 +84,7 @@ export default function PasswordForm() {
                         placeholder="••••••••" autoComplete="new-password"
                         aria-invalid={!!errors.newPassword}
                         {...register("newPassword")}/>
-                    <InputGroupAddon align="inline-end"><EyeButton field="next"/></InputGroupAddon>
+                    <InputGroupAddon align="inline-end"><EyeButton visible={show.next} onToggle={() => toggle("next")}/></InputGroupAddon>
                 </InputGroup>
                 <FieldError errors={[errors.newPassword]}/>
             </Field>
@@ -96,7 +98,7 @@ export default function PasswordForm() {
                         placeholder="••••••••" autoComplete="new-password"
                         aria-invalid={!!errors.confirmPassword}
                         {...register("confirmPassword")}/>
-                    <InputGroupAddon align="inline-end"><EyeButton field="confirm"/></InputGroupAddon>
+                    <InputGroupAddon align="inline-end"><EyeButton visible={show.confirm} onToggle={() => toggle("confirm")}/></InputGroupAddon>
                 </InputGroup>
                 <FieldError errors={[errors.confirmPassword]}/>
             </Field>

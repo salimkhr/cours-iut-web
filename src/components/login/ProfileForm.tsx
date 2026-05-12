@@ -5,7 +5,7 @@ import {useRouter} from "next/navigation";
 import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
-import {Camera, Hash, Save, User, X} from "lucide-react";
+import {Camera, Save, User, X} from "lucide-react";
 import {toast} from "sonner";
 
 import {authClient} from "@/lib/auth-client";
@@ -86,7 +86,7 @@ export default function ProfileForm({initialFirstName, initialLastName, imageUrl
         };
         if (imageUrl !== undefined) updateData.image = imageUrl;
 
-        const res = await (authClient.updateUser as Function)(updateData);
+        const res = await (authClient.updateUser as (data: Record<string, unknown>) => Promise<{error?: {message?: string}}>)(updateData);
 
         if (res?.error) {
             toast.error(res.error.message ?? "Mise à jour impossible.");
@@ -107,7 +107,7 @@ export default function ProfileForm({initialFirstName, initialLastName, imageUrl
                 <Controller
                     name="picture"
                     control={control}
-                    render={({field: {onChange, value: _v, ...field}}) => (
+                    render={({field: {onChange, value: _value, ...field}}) => (
                         <div className="flex items-center gap-4">
                             <div className="relative shrink-0">
                                 <div className={`w-16 h-16 rounded-full overflow-hidden border-2 flex items-center justify-center bg-muted ${preview ? "border-brand-accent-dark" : "border-dashed border-border"}`}>

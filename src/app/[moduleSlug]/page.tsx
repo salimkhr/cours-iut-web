@@ -32,7 +32,7 @@ export default async function Module({params}: ModulePageProps) {
     const {moduleSlug} = await params;
     const {currentModule} = await getModuleData({moduleSlug});
 
-    const {totalSections, totalAvailableSections, progress, hasAvailableContent, lastAvailableSectionPath} =
+    const {totalSections, totalAvailableSections, hasAvailableContent, lastAvailableSectionPath} =
         getModuleProgress(currentModule);
 
     const session = await getServerSession();
