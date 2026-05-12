@@ -5,6 +5,8 @@ import {useRouter} from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
 import {AlertCircle, Lock, LogIn, Mail} from "lucide-react";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 import {authClient} from "@/lib/auth-client";
 import {Button} from "@/components/ui/button";
@@ -13,19 +15,14 @@ import {Field, FieldContent, FieldDescription, FieldLabel, FieldTitle} from "@/c
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group";
 import {Label} from "@/components/ui/label";
 
+import {loginSchema, LoginValues} from "@/lib/schemas/login.schema";
+
+// ─── Turnstile types (inchangé) ───────────────────────────────────────────────
+
 interface TurnstileOptions {
     sitekey: string;
     callback?: (token: string) => void;
-    "error-callback"?: () => void;
-    "expired-callback"?: () => void;
-    "timeout-callback"?: () => void;
     theme?: "light" | "dark" | "auto";
-    size?: "normal" | "compact";
-    tabindex?: number;
-    action?: string;
-    cData?: string;
-    language?: string;
-    appearance?: "always" | "execute" | "interaction-only";
 }
 
 declare global {
@@ -40,23 +37,40 @@ declare global {
 
 export default function LoginForm() {
     const router = useRouter();
-    const [identifier, setIdentifier] = useState("");
-    const [password, setPassword] = useState("");
-    const [rememberMe, setRememberMe] = useState(true);
+
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_TOKEN;
     const captchaRequired = !!sitekey;
 
+    const {
+        register,
+        handleSubmit,
+        formState: {errors},
+        watch,
+        setValue,
+    } = useForm<LoginValues>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: {
+            rememberMe: true,
+        },
+    });
+
+    const rememberMe = watch("rememberMe");
+
+    // ── Turnstile ───────────────────────────────────────────────
+
     useEffect(() => {
         if (!sitekey) return;
+
         let widgetId: string | null = null;
-        const checkTurnstile = () => {
+
+        const check = () => {
             if (window.turnstile) {
-                const container = document.querySelector(".captcha-container");
-                if (container && container.innerHTML === "") {
+                const el = document.querySelector(".captcha-container");
+                if (el && el.innerHTML === "") {
                     widgetId = window.turnstile.render(".captcha-container", {
                         sitekey,
                         callback: (token: string) => setCaptchaToken(token),
@@ -64,10 +78,12 @@ export default function LoginForm() {
                     });
                 }
             } else {
-                setTimeout(checkTurnstile, 100);
+                setTimeout(check, 100);
             }
         };
-        checkTurnstile();
+
+        check();
+
         return () => {
             if (widgetId && window.turnstile) window.turnstile.remove(widgetId);
         };
@@ -80,8 +96,9 @@ export default function LoginForm() {
         }
     }
 
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
+    // ── Submit ───────────────────────────────────────────────
+
+    async function onSubmit(values: LoginValues) {
         setLoading(true);
         setError(null);
 
@@ -94,20 +111,21 @@ export default function LoginForm() {
         const fetchOptions = captchaToken
             ? {headers: {"x-captcha-response": captchaToken}}
             : undefined;
-        const isEmail = identifier.includes("@");
+
+        const isEmail = values.identifier.includes("@");
 
         try {
             const res = isEmail
                 ? await authClient.signIn.email({
-                    email: identifier,
-                    password,
-                    rememberMe,
+                    email: values.identifier,
+                    password: values.password,
+                    rememberMe: values.rememberMe,
                     fetchOptions,
                 })
                 : await authClient.signIn.username({
-                    username: identifier,
-                    password,
-                    rememberMe,
+                    username: values.identifier,
+                    password: values.password,
+                    rememberMe: values.rememberMe,
                     fetchOptions,
                 });
 
@@ -139,59 +157,57 @@ export default function LoginForm() {
 
             {error && (
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 mb-5">
-                    <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5"/>
+                    <AlertCircle className="h-5 w-5 text-red-500 mt-0.5"/>
                     <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+
+                {/* Identifier */}
                 <div className="space-y-2">
-                    <Label htmlFor="identifier" className="text-brand-dark dark:text-brand-light">
-                        Identifiant
-                    </Label>
+                    <Label>Identifiant</Label>
                     <InputGroup>
                         <InputGroupInput
-                            id="identifier"
                             type="text"
-                            value={identifier}
-                            onChange={(e) => setIdentifier(e.target.value)}
                             placeholder="votre identifiant"
                             autoComplete="username"
-                            required
+                            {...register("identifier")}
                         />
                         <InputGroupAddon>
                             <Mail className="h-5 w-5 text-brand-accent-dark/70"/>
                         </InputGroupAddon>
                     </InputGroup>
+                    {errors.identifier && (
+                        <p className="text-xs text-red-500">{errors.identifier.message}</p>
+                    )}
                 </div>
 
+                {/* Password */}
                 <div className="space-y-2">
-                    <Label htmlFor="password" className="text-brand-dark dark:text-brand-light">
-                        Mot de passe
-                    </Label>
+                    <Label>Mot de passe</Label>
                     <InputGroup>
                         <InputGroupInput
-                            id="password"
                             type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
                             placeholder="••••••••"
                             autoComplete="current-password"
-                            minLength={7}
-                            required
+                            {...register("password")}
                         />
                         <InputGroupAddon>
                             <Lock className="h-5 w-5 text-brand-accent-dark/70"/>
                         </InputGroupAddon>
                     </InputGroup>
+                    {errors.password && (
+                        <p className="text-xs text-red-500">{errors.password.message}</p>
+                    )}
                 </div>
 
+                {/* Remember me */}
                 <FieldLabel>
                     <Field orientation="horizontal">
                         <Checkbox
-                            id="rememberMe"
                             checked={rememberMe}
-                            onCheckedChange={(checked) => setRememberMe(!!checked)}
+                            onCheckedChange={(v) => setValue("rememberMe", !!v)}
                         />
                         <FieldContent>
                             <FieldTitle>Rester connecté</FieldTitle>
@@ -202,17 +218,11 @@ export default function LoginForm() {
                     </Field>
                 </FieldLabel>
 
-                {sitekey && (
-                    <div className="flex justify-center min-h-[65px]">
-                        <div className="captcha-container"/>
-                    </div>
-                )}
+                {/* Captcha */}
+                {sitekey && <div className="captcha-container"/>}
 
-                <Button
-                    type="submit"
-                    disabled={loading}
-                    size="lg"
-                    className="group w-full h-auto rounded-lg bg-brand-accent-dark text-white hover:bg-brand-accent-dark hover:-translate-y-0.5 border-2 border-brand-accent-dark px-6 py-3 text-sm font-semibold tracking-wide shadow-[0_8px_24px_-10px_rgba(194,65,12,0.55)] hover:shadow-[0_14px_36px_-12px_rgba(194,65,12,0.75)] transition-all duration-300 flex items-center justify-center gap-2"
+                {/* Submit */}
+                <Button type="submit" disabled={loading} size="lg" className="group w-full h-auto rounded-lg bg-brand-accent-dark text-white hover:bg-brand-accent-dark hover:-translate-y-0.5 border-2 border-brand-accent-dark px-6 py-3 text-sm font-semibold tracking-wide shadow-[0_8px_24px_-10px_rgba(194,65,12,0.55)] hover:shadow-[0_14px_36px_-12px_rgba(194,65,12,0.75)] transition-all duration-300 flex items-center justify-center gap-2"
                 >
                     {loading ? "Connexion…" : (
                         <>

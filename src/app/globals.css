@@ -443,12 +443,12 @@
 
 input:-webkit-autofill {
     height: 90%;
-    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-box-shadow: 0 0 0 1000px #f8edde inset !important;
     -webkit-text-fill-color: #111 !important;
 }
 
 .dark input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 1000px #1c1b22 inset !important;
+    -webkit-box-shadow: 0 0 0 1000px #392618 inset !important;
     -webkit-text-fill-color: #f9fafb !important;
 }
 
