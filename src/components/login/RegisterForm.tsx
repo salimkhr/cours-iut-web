@@ -6,7 +6,7 @@ import Link from "next/link";
 import Script from "next/script";
 import {Camera, Eye, EyeOff, Hash, Lock, Mail, Sparkles, User, UserPlus, X} from "lucide-react";
 import {toast} from "sonner";
-import {Controller, useForm} from "react-hook-form";
+import {Controller, useForm, useWatch} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {authClient} from "@/lib/auth-client";
@@ -42,9 +42,8 @@ export default function RegisterForm() {
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
-    const [emailAutoFilled, setEmailAutoFilled] = useState(false);
+    const [isEmailManual, setIsEmailManual] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const emailManualRef = useRef(false);
 
     const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_TOKEN;
     const captchaRequired = !!sitekey;
@@ -54,15 +53,15 @@ export default function RegisterForm() {
         handleSubmit,
         control,
         reset,
-        watch,
         setValue,
         formState: {errors, isSubmitting},
     } = useForm<RegisterValues>({
         resolver: zodResolver(registerSchema),
     });
 
-    const watchedFirstName = watch("firstName");
-    const watchedLastName = watch("lastName");
+    const watchedFirstName = useWatch({control, name: "firstName"});
+    const watchedLastName = useWatch({control, name: "lastName"});
+
 
     // ── Turnstile ─────────────────────────────────────────────────────────────
 
@@ -98,15 +97,17 @@ export default function RegisterForm() {
 
     // ── Email auto-complétion ─────────────────────────────────────────────────
 
+    const emailAutoFilled = !isEmailManual
+        && !!(toEmailPart(watchedFirstName ?? "") || toEmailPart(watchedLastName ?? ""));
+
     useEffect(() => {
-        if (emailManualRef.current) return;
+        if (isEmailManual) return;
         const first = toEmailPart(watchedFirstName ?? "");
         const last = toEmailPart(watchedLastName ?? "");
         if (!first && !last) return;
         const suggested = [first, last].filter(Boolean).join(".") + STUDENT_EMAIL_DOMAIN;
         setValue("email", suggested, {shouldValidate: false, shouldDirty: false, shouldTouch: false});
-        setEmailAutoFilled(true);
-    }, [watchedFirstName, watchedLastName, setValue]);
+    }, [isEmailManual, watchedFirstName, watchedLastName, setValue]);
 
     // ── Picture helpers ───────────────────────────────────────────────────────
 
@@ -151,7 +152,8 @@ export default function RegisterForm() {
         }
 
         try {
-            const res = await (authClient.signUp.email as Function)({
+            type SignUpResult = {data?: {session?: unknown} | null; error?: {message?: string} | null};
+            const res = await (authClient.signUp.email as unknown as (data: Record<string, unknown>) => Promise<SignUpResult>)({
                 name: `${values.firstName} ${values.lastName}`,
                 email: values.email,
                 username: values.identifier,
@@ -254,10 +256,7 @@ export default function RegisterForm() {
                             autoComplete="email"
                             aria-invalid={!!errors.email}
                             {...register("email", {
-                                onChange: () => {
-                                    emailManualRef.current = true;
-                                    setEmailAutoFilled(false);
-                                },
+                                onChange: () => setIsEmailManual(true),
                             })}
                         />
                     </InputGroup>

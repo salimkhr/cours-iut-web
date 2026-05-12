@@ -1,4 +1,4 @@
-import { createRequire } from "module";
+import {createRequire} from "module";
 
 const require = createRequire(import.meta.url);
 
@@ -7,10 +7,20 @@ const nextTypescript = require("eslint-config-next/typescript");
 
 const eslintConfig = [
     {
-        ignores: [".pnp.cjs", ".pnp.loader.mjs", ".yarn/**"],
+        ignores: [".pnp.cjs", ".pnp.loader.mjs", ".yarn/**", ".agents/**"],
     },
     ...nextCoreWebVitals,
     ...nextTypescript,
+    {
+        rules: {
+            "@typescript-eslint/no-unused-vars": ["warn", {
+                argsIgnorePattern: "^_",
+                varsIgnorePattern: "^_",
+                caughtErrorsIgnorePattern: "^_",
+                destructuredArrayIgnorePattern: "^_",
+            }],
+        },
+    },
 ];
 
 export default eslintConfig;

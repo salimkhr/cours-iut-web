@@ -5,7 +5,7 @@ import {useRouter} from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
 import {AlertCircle, Lock, LogIn, Mail} from "lucide-react";
-import {useForm} from "react-hook-form";
+import {useForm, useWatch} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {authClient} from "@/lib/auth-client";
@@ -31,8 +31,8 @@ export default function LoginForm() {
     const {
         register,
         handleSubmit,
+        control,
         formState: {errors},
-        watch,
         setValue,
     } = useForm<LoginValues>({
         resolver: zodResolver(loginSchema),
@@ -41,7 +41,7 @@ export default function LoginForm() {
         },
     });
 
-    const rememberMe = watch("rememberMe");
+    const rememberMe = useWatch({control, name: "rememberMe"});
 
     // ── Turnstile ───────────────────────────────────────────────
 
