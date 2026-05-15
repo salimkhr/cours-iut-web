@@ -78,7 +78,9 @@ export default function SectionForm({
                 isAvailable: section.isAvailable ?? true,
                 correctionIsAvailable: section.correctionIsAvailable ?? true,
                 order: section.order,
-                contents: section.contents,
+                contents: section.contents.filter(
+                    (c): c is typeof AVAILABLE_CONTENTS[number] => (AVAILABLE_CONTENTS as readonly string[]).includes(c)
+                ) as SectionFormValues['contents'],
                 examenIsLock: section.examenIsLock ?? false,
             };
         }
@@ -304,7 +306,7 @@ export default function SectionForm({
                                         type="number"
                                         min={1}
                                         className={inputCn}
-                                        {...register('totalDuration')}
+                                        {...register('totalDuration', {valueAsNumber: true})}
                                     />
                                     {errors.totalDuration && (
                                         <p className="text-red-500 text-xs mt-1">{errors.totalDuration.message}</p>
@@ -317,7 +319,7 @@ export default function SectionForm({
                                         type="number"
                                         min={1}
                                         className={inputCn}
-                                        {...register('order')}
+                                        {...register('order', {valueAsNumber: true})}
                                     />
                                     {errors.order && (
                                         <p className="text-red-500 text-xs mt-1">{errors.order.message}</p>

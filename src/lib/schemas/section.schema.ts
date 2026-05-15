@@ -8,12 +8,12 @@ export const sectionFormSchema = z.object({
     description: z.string().optional(),
     objectives: z.string().optional(),
     tags: z.string().optional(),
-    totalDuration: z.coerce.number().int().min(1, "Minimum 1 séance"),
+    totalDuration: z.number().int().min(1, "Minimum 1 séance"),
     hasCorrection: z.boolean(),
     isAvailable: z.boolean(),
     correctionIsAvailable: z.boolean(),
     examenIsLock: z.boolean(),
-    order: z.coerce.number().int().min(1, "Position minimum 1"),
+    order: z.number().int().min(1, "Position minimum 1"),
     contents: z.array(z.enum(AVAILABLE_CONTENTS)).min(1, "Sélectionnez au moins un type de contenu"),
 });
 
