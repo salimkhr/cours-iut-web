@@ -4,7 +4,7 @@ import {useCallback, useEffect} from 'react';
 import {Controller, useForm, useWatch} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Pencil, Plus} from 'lucide-react';
-import {Sheet, SheetContent, SheetTitle} from '@/components/ui/sheet';
+import {Sheet, SheetContent, SheetDescription, SheetTitle} from '@/components/ui/sheet';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
@@ -55,26 +55,26 @@ export default function SectionForm({
     const isEditMode = mode === 'edit' && section !== undefined;
 
     const getDefaultValues = useCallback((): SectionFormValues => {
-        if (isEditMode && section) {
+        if (isEditMode) {
             return {
-                title: section.title,
-                path: section.path,
-                description: section.description ?? '',
-                objectives: Array.isArray(section.objectives)
-                    ? section.objectives.join('\n')
-                    : (section.objectives ?? ''),
-                tags: Array.isArray(section.tags)
-                    ? section.tags.join(',')
-                    : (section.tags ?? ''),
-                totalDuration: section.totalDuration,
-                hasCorrection: section.hasCorrection,
-                isAvailable: section.isAvailable ?? true,
-                correctionIsAvailable: section.correctionIsAvailable ?? true,
-                order: section.order,
-                contents: section.contents.filter(
+                title: section!.title,
+                path: section!.path,
+                description: section!.description ?? '',
+                objectives: Array.isArray(section!.objectives)
+                    ? section!.objectives.join('\n')
+                    : (section!.objectives ?? ''),
+                tags: Array.isArray(section!.tags)
+                    ? section!.tags.join(',')
+                    : (section!.tags ?? ''),
+                totalDuration: section!.totalDuration,
+                hasCorrection: section!.hasCorrection,
+                isAvailable: section!.isAvailable ?? true,
+                correctionIsAvailable: section!.correctionIsAvailable ?? true,
+                order: section!.order,
+                contents: section!.contents.filter(
                     (c): c is typeof AVAILABLE_CONTENTS[number] => (AVAILABLE_CONTENTS as readonly string[]).includes(c)
                 ) as SectionFormValues['contents'],
-                examenIsLock: section.examenIsLock ?? false,
+                examenIsLock: section!.examenIsLock ?? false,
             };
         }
         return {
@@ -121,12 +121,12 @@ export default function SectionForm({
         }
     }, [title, setValue, modData.sections?.length, isEditMode]);
 
-    const toggleContent = (item: string) => {
+    const toggleContent = (item: typeof AVAILABLE_CONTENTS[number]) => {
         setValue(
             'contents',
             contents.includes(item)
                 ? contents.filter((c) => c !== item)
-                : [...contents, item],
+                : ([...contents, item] as SectionFormValues['contents']),
             {shouldDirty: true, shouldValidate: true},
         );
     };
@@ -148,7 +148,6 @@ export default function SectionForm({
             tags: cleanedTags,
         });
 
-        if (!isEditMode) reset(getDefaultValues());
         onOpenChange(false);
     };
 
@@ -163,7 +162,6 @@ export default function SectionForm({
                     'p-0 gap-0 overflow-hidden flex flex-col sm:max-w-[480px]',
                     'bg-[#f7ebd9] dark:bg-[#13110d]',
                     'border-l border-bridge-500/45',
-                    '[&>button]:text-white/80 [&>button:hover]:text-white',
                 )}
             >
                 {/* Header */}
@@ -190,6 +188,9 @@ export default function SectionForm({
                         <SheetTitle className="text-white font-bold text-xl leading-tight p-0 m-0">
                             {isEditMode ? 'Modifier la section' : 'Ajouter une section'}
                         </SheetTitle>
+                        <SheetDescription className="sr-only">
+                            {isEditMode ? 'Modifier les paramètres de la section' : 'Ajouter une nouvelle section au module'}
+                        </SheetDescription>
                     </div>
                 </div>
 
