@@ -17,6 +17,7 @@ import {
     type SectionFormValues,
     AVAILABLE_CONTENTS,
 } from '@/lib/schemas/section.schema';
+import Eyebrow from '@/components/admin/ui/Eyebrow';
 
 // Type exporté pour rétrocompatibilité avec EditSectionFab et AddSectionButton
 export type Section = {
@@ -41,14 +42,6 @@ interface SectionFormProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSubmit: (section: Section) => void;
-}
-
-function Eyebrow({children}: {children: React.ReactNode}) {
-    return (
-        <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark/55 dark:text-bridge-200/55">
-            {children}
-        </p>
-    );
 }
 
 export default function SectionForm({

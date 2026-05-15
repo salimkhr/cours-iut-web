@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect} from 'react';
+import {useCallback, useEffect} from 'react';
 import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Settings} from 'lucide-react';
@@ -18,6 +18,7 @@ import {
     FIXED_COMPETENCES,
     FIXED_SAES,
 } from '@/lib/schemas/module.schema';
+import Eyebrow from '@/components/admin/ui/Eyebrow';
 
 interface EditModuleSheetProps {
     module: Module;
@@ -26,21 +27,13 @@ interface EditModuleSheetProps {
     onSubmit: (data: ModuleFormValues) => Promise<void>;
 }
 
-function Eyebrow({children}: {children: React.ReactNode}) {
-    return (
-        <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark/55 dark:text-bridge-200/55">
-            {children}
-        </p>
-    );
-}
-
 export default function EditModuleSheet({
     module,
     open,
     onOpenChange,
     onSubmit,
 }: EditModuleSheetProps) {
-    const defaultValues: ModuleFormValues = {
+    const getDefaultValues = useCallback((): ModuleFormValues => ({
         title: module.title,
         path: module.path,
         iconName: module.iconName,
@@ -54,7 +47,7 @@ export default function EditModuleSheet({
         instructors: module.instructors?.length
             ? module.instructors
             : [{firstName: '', lastName: '', email: ''}],
-    };
+    }), [module]);
 
     const {
         register,
@@ -64,16 +57,15 @@ export default function EditModuleSheet({
         formState: {errors, isSubmitting},
     } = useForm<ModuleFormValues>({
         resolver: zodResolver(moduleFormSchema),
-        defaultValues,
+        defaultValues: getDefaultValues(),
     });
 
     const {fields: instructorFields, append: appendInstructor, remove: removeInstructor} =
         useFieldArray({control, name: 'instructors'});
 
     useEffect(() => {
-        if (open) reset(defaultValues);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open]);
+        if (open) reset(getDefaultValues());
+    }, [open, reset, getDefaultValues]);
 
     const handleFormSubmit = async (data: ModuleFormValues) => {
         await onSubmit(data);
@@ -131,18 +123,37 @@ export default function EditModuleSheet({
                             <div className="flex gap-3">
                                 <div className="flex-1">
                                     <Label htmlFor="em-title" className={labelCn}>Titre *</Label>
-                                    <Input id="em-title" className={inputCn} {...register('title')}/>
+                                    <Input
+                                        id="em-title"
+                                        className={inputCn}
+                                        {...register('title')}
+                                        aria-invalid={errors.title ? 'true' : 'false'}
+                                    />
                                     {errors.title && (
                                         <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>
                                     )}
                                 </div>
                                 <div className="w-36">
                                     <Label htmlFor="em-icon" className={labelCn}>Icône *</Label>
-                                    <Input id="em-icon" className={inputCn} {...register('iconName')}/>
+                                    <Input
+                                        id="em-icon"
+                                        className={inputCn}
+                                        {...register('iconName')}
+                                        aria-invalid={errors.iconName ? 'true' : 'false'}
+                                    />
                                     {errors.iconName && (
                                         <p className="text-red-500 text-xs mt-1">{errors.iconName.message}</p>
                                     )}
                                 </div>
+                            </div>
+                            <div className="w-36">
+                                <Label htmlFor="em-path" className={labelCn}>Path</Label>
+                                <Input
+                                    id="em-path"
+                                    className={cn(inputCn, 'opacity-60 cursor-not-allowed')}
+                                    {...register('path')}
+                                    readOnly
+                                />
                             </div>
                             <div>
                                 <Label htmlFor="em-desc" className={labelCn}>Description</Label>
@@ -234,7 +245,7 @@ export default function EditModuleSheet({
                                         size="icon"
                                         className="h-8 w-8 text-bridge-500 hover:text-red-500"
                                         onClick={() => removeInstructor(index)}
-                                        aria-label="Supprimer l&apos;intervenant"
+                                        aria-label="Supprimer l'intervenant"
                                     >
                                         ×
                                     </Button>
