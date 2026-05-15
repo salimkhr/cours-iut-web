@@ -31,7 +31,7 @@ export const moduleFormSchema = z.object({
     associatedSae: z.array(z.string()).default([]),
     coefficients: z.array(z.object({
         competenceName: z.string(),
-        value: z.coerce.number().int().min(0).max(100),
+        value: z.number().int().min(0).max(100),
     })),
     manager: instructorSchema.optional(),
     instructors: z.array(instructorSchema).default([]),

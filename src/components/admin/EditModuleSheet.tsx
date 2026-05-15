@@ -171,7 +171,7 @@ export default function EditModuleSheet({
                                         max={100}
                                         step={1}
                                         className={cn(inputCn, 'w-20 text-center')}
-                                        {...register(`coefficients.${index}.value`)}
+                                        {...register(`coefficients.${index}.value`, {valueAsNumber: true})}
                                     />
                                 </div>
                             ))}
