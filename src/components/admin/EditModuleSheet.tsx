@@ -1,7 +1,7 @@
 'use client';
 
 import {useCallback, useEffect} from 'react';
-import {Controller, useFieldArray, useForm} from 'react-hook-form';
+import {Controller, useFieldArray, useForm, type Resolver} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Settings} from 'lucide-react';
 import {Sheet, SheetContent, SheetTitle} from '@/components/ui/sheet';
@@ -56,7 +56,7 @@ export default function EditModuleSheet({
         reset,
         formState: {errors, isSubmitting},
     } = useForm<ModuleFormValues>({
-        resolver: zodResolver(moduleFormSchema),
+        resolver: zodResolver(moduleFormSchema) as Resolver<ModuleFormValues>,
         defaultValues: getDefaultValues(),
     });
 
