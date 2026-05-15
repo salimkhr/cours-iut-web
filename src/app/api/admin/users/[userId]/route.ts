@@ -14,12 +14,16 @@ export async function DELETE(
 
     const { userId } = await params;
 
-    // reason: better-auth admin plugin types not exposed for removeUser method
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (auth.api as any).removeUser({
-        body: { userId },
-        headers: await headers(),
-    });
-
-    return NextResponse.json({ success: true });
+    try {
+        // reason: better-auth admin plugin types not exposed for removeUser method
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (auth.api as any).removeUser({
+            body: { userId },
+            headers: await headers(),
+        });
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("[admin] removeUser error:", error);
+        return NextResponse.json({ error: "Erreur lors de la suppression" }, { status: 500 });
+    }
 }
