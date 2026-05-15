@@ -1,10 +1,10 @@
 "use client";
 
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
-import {Camera, Eye, EyeOff, Hash, Lock, Mail, Sparkles, User, UserPlus, X} from "lucide-react";
+import {Eye, EyeOff, Hash, Lock, Mail, Sparkles, User, UserPlus} from "lucide-react";
 import {toast} from "sonner";
 import {Controller, useForm, useWatch} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -40,10 +40,8 @@ function toEmailPart(str: string): string {
 export default function RegisterForm() {
     const router = useRouter();
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-    const [preview, setPreview] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [isEmailManual, setIsEmailManual] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_TOKEN;
     const captchaRequired = !!sitekey;
@@ -109,21 +107,6 @@ export default function RegisterForm() {
         setValue("email", suggested, {shouldValidate: false, shouldDirty: false, shouldTouch: false});
     }, [isEmailManual, watchedFirstName, watchedLastName, setValue]);
 
-    // ── Picture helpers ───────────────────────────────────────────────────────
-
-    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>, onChange: (f: File) => void) {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        onChange(file);
-        setPreview(URL.createObjectURL(file));
-    }
-
-    function removePicture(onChange: (f: File | undefined) => void) {
-        onChange(undefined as unknown as File);
-        setPreview(null);
-        if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-
     // ── Submit ────────────────────────────────────────────────────────────────
 
     async function onSubmit(values: RegisterValues) {
@@ -137,20 +120,6 @@ export default function RegisterForm() {
             ? {headers: {"x-captcha-response": captchaToken}}
             : undefined;
 
-        let imageUrl: string | undefined;
-        if (values.picture instanceof File) {
-            const fd = new FormData();
-            fd.append("file", values.picture);
-            const uploadRes = await fetch("/api/upload-avatar", {method: "POST", body: fd});
-            if (!uploadRes.ok) {
-                const {error} = await uploadRes.json();
-                toast.error(error ?? "Échec de l'upload de la photo.");
-                return;
-            }
-            const {url} = await uploadRes.json();
-            imageUrl = url;
-        }
-
         try {
             type SignUpResult = {data?: {session?: unknown} | null; error?: {message?: string} | null};
             const res = await (authClient.signUp.email as unknown as (data: Record<string, unknown>) => Promise<SignUpResult>)({
@@ -158,7 +127,6 @@ export default function RegisterForm() {
                 email: values.email,
                 username: values.identifier,
                 password: values.password,
-                image: imageUrl,
                 group: values.group,
                 fetchOptions,
             });
@@ -181,7 +149,6 @@ export default function RegisterForm() {
             }
 
             reset();
-            setPreview(null);
             resetCaptcha();
         } catch (err) {
             toast.error(err instanceof Error ? err.message : String(err));
@@ -330,59 +297,6 @@ export default function RegisterForm() {
                         </InputGroupAddon>
                     </InputGroup>
                     <FieldError errors={[errors.password]}/>
-                </Field>
-
-                {/* ── Photo de profil ── */}
-                <Field>
-                    <FieldLabel>Photo de profil <span className="text-muted-foreground font-normal">(optionnelle)</span></FieldLabel>
-                    <Controller
-                        name="picture"
-                        control={control}
-                        render={({field: {onChange, value: _value, ...field}}) => (
-                            <div className="flex items-center gap-4">
-                                <div className="relative shrink-0">
-                                    <div className={`w-16 h-16 rounded-full overflow-hidden border-2 flex items-center justify-center bg-muted ${preview ? "border-brand-accent-dark" : "border-dashed border-border"}`}>
-                                        {preview ? (
-                                            // eslint-disable-next-line @next/next/no-img-element
-                                            <img src={preview} alt="Aperçu" className="w-full h-full object-cover"/>
-                                        ) : (
-                                            <Camera className="h-6 w-6 text-muted-foreground"/>
-                                        )}
-                                    </div>
-                                    {preview && (
-                                        <button
-                                            type="button"
-                                            onClick={() => removePicture(onChange)}
-                                            className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive hover:bg-destructive/80 flex items-center justify-center shadow transition-colors"
-                                            aria-label="Supprimer la photo"
-                                        >
-                                            <X className="h-3 w-3 text-white"/>
-                                        </button>
-                                    )}
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <button
-                                        type="button"
-                                        onClick={() => fileInputRef.current?.click()}
-                                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-input text-sm hover:bg-accent transition-colors"
-                                    >
-                                        <Camera className="h-3.5 w-3.5"/>
-                                        {preview ? "Changer" : "Choisir une photo"}
-                                    </button>
-                                    <p className="text-xs text-muted-foreground">JPG, PNG, WebP — max 5 Mo</p>
-                                </div>
-                                <input
-                                    {...field}
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/jpeg,image/png,image/webp,image/gif"
-                                    className="hidden"
-                                    onChange={(e) => handleFileChange(e, onChange)}
-                                />
-                            </div>
-                        )}
-                    />
-                    <FieldError errors={[errors.picture]}/>
                 </Field>
 
                 {/* ── Captcha ── */}

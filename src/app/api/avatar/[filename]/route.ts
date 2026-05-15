@@ -1,42 +1,49 @@
-import {NextRequest, NextResponse} from "next/server";
-import {readFile} from "fs/promises";
+import { NextRequest, NextResponse } from "next/server";
+import { readFile } from "fs/promises";
 import path from "path";
+import { UPLOAD_CONFIG } from "@/lib/upload/config";
 
 const MIME: Record<string, string> = {
-    jpg: "image/jpeg",
-    jpeg: "image/jpeg",
-    png: "image/png",
+    jpg:  "image/jpeg",
+    png:  "image/png",
     webp: "image/webp",
-    gif: "image/gif",
+    gif:  "image/gif",
+    pdf:  "application/pdf",
 };
+
+// Nom de fichier valide : UUID v4 + extension connue
+// ex: 550e8400-e29b-41d4-a716-446655440000.jpg
+const SAFE_FILENAME = /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}\.[a-z]{2,4}$/i;
 
 export async function GET(
     _req: NextRequest,
-    {params}: {params: Promise<{filename: string}>}
+    { params }: { params: Promise<{ filename: string }> },
 ) {
-    const {filename} = await params;
+    const { filename } = await params;
 
-    // Bloquer toute tentative de path traversal
-    if (filename.includes("/") || filename.includes("..") || filename.includes("\0")) {
-        return new NextResponse(null, {status: 400});
+    if (!SAFE_FILENAME.test(filename)) {
+        return new NextResponse(null, { status: 400 });
     }
 
-    const ext = filename.split(".").pop()?.toLowerCase() ?? "";
+    const ext = filename.split(".").pop()!.toLowerCase();
     const contentType = MIME[ext];
     if (!contentType) {
-        return new NextResponse(null, {status: 415});
+        return new NextResponse(null, { status: 415 });
     }
 
     try {
-        const filePath = path.join(process.cwd(), "uploads", "avatars", filename);
+        const filePath = path.join(UPLOAD_CONFIG.uploadsDir, "avatars", filename);
         const buffer = await readFile(filePath);
+
         return new NextResponse(buffer, {
             headers: {
                 "Content-Type": contentType,
+                "Content-Disposition": "inline",
                 "Cache-Control": "private, max-age=3600",
+                "X-Content-Type-Options": "nosniff",
             },
         });
     } catch {
-        return new NextResponse(null, {status: 404});
+        return new NextResponse(null, { status: 404 });
     }
 }

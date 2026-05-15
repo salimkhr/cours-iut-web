@@ -4,7 +4,6 @@ import {useRef, useState} from "react";
 import {useRouter} from "next/navigation";
 import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {z} from "zod";
 import {Camera, Save, User, X} from "lucide-react";
 import {toast} from "sonner";
 
@@ -14,14 +13,7 @@ import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/inpu
 import {Field, FieldError, FieldLabel} from "@/components/ui/field";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {GROUPS, Group} from "@/lib/schemas/register.schema";
-
-const profileSchema = z.object({
-    firstName: z.string().min(2, "Prénom trop court"),
-    lastName: z.string().min(2, "Nom trop court"),
-    group: z.enum(GROUPS).optional(),
-    picture: z.instanceof(File).optional(),
-});
-type ProfileValues = z.infer<typeof profileSchema>;
+import {profileSchema, ProfileValues} from "@/lib/schemas/profile.schema";
 
 type Props = {
     initialFirstName: string;

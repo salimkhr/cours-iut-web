@@ -14,8 +14,6 @@ const PUBLIC_PATHS = [
     "/email-verifie",
 ];
 
-const AUTH_ONLY_PATHS = ["/login", "/register"];
-
 function isPublic(pathname: string): boolean {
     return PUBLIC_PATHS.some(
         (p) => pathname === p || pathname.startsWith(p + "/"),
@@ -26,13 +24,10 @@ export default function proxy(req: NextRequest) {
     const {pathname} = req.nextUrl;
     const sessionCookie = getSessionCookie(req);
 
-    // Déjà connecté → /login et /register redirigent vers /
-    if (sessionCookie && AUTH_ONLY_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
-        const url = req.nextUrl.clone();
-        url.pathname = "/";
-        url.search = "";
-        return NextResponse.redirect(url);
-    }
+    // La redirection des utilisateurs connectés hors de /login et /register
+    // est gérée dans les pages elles-mêmes via getServerSession() (validation DB).
+    // Ici on ne vérifie que la présence du cookie, ce qui ne suffit pas pour
+    // distinguer une session valide d'un cookie périmé.
 
     if (isPublic(pathname)) return NextResponse.next();
 

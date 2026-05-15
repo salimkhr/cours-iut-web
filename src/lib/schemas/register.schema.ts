@@ -11,13 +11,15 @@ export const registerSchema = z.object({
     email: z
         .string()
         .email("Email invalide")
-        .endsWith(STUDENT_EMAIL_DOMAIN, `L'email doit être en ${STUDENT_EMAIL_DOMAIN}`),
+        .refine(
+            (val) => process.env.NEXT_PUBLIC_RESTRICT_EMAIL_DOMAIN !== "true" || val.endsWith(STUDENT_EMAIL_DOMAIN),
+            `L'email doit être en ${STUDENT_EMAIL_DOMAIN}`,
+        ),
     identifier: z
         .string()
         .regex(IDENTIFIER_REGEX, "Format attendu : 2 lettres + 6 chiffres (ex. ab123456)"),
     group: z.enum(GROUPS, {message: "Sélectionnez un groupe"}),
     password: z.string().min(7, "Mot de passe trop court (7 caractères min.)"),
-    picture: z.instanceof(File).optional(),
 });
 
 export type RegisterValues = z.infer<typeof registerSchema>;
