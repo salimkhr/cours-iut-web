@@ -1,4 +1,7 @@
+'use client';
+
 import {ReactNode} from 'react';
+import {motion, useReducedMotion} from 'framer-motion';
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
@@ -28,15 +31,13 @@ export default function BaseCard({
                                      className = "",
                                      overlay
                                  }: BaseCardProps) {
+    const prefersReducedMotion = useReducedMotion();
+
     return (
-        <div
-            className={cn(
-                "group h-full flex flex-col",
-                withHover
-                    ? "transition-all duration-300 ease-out hover:-translate-y-1.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-                    : "",
-                className
-            )}
+        <motion.div
+            className={cn("group h-full flex flex-col", className)}
+            whileHover={withHover && !prefersReducedMotion ? {y: -6} : {}}
+            transition={{duration: 0.3, ease: "easeOut"}}
         >
             <Card
                 className={cn(
@@ -82,7 +83,7 @@ export default function BaseCard({
                     </CardFooter>
                 )}
             </Card>
-        </div>
+        </motion.div>
     );
 }
 

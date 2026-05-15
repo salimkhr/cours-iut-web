@@ -3,19 +3,18 @@ services:
     image: ghcr.io/salimkhr/cours-iut-web:staging
     pull_policy: always
     environment:
-      - NODE_ENV=staging
+      - NODE_ENV=production
       - PORT=3000
       - CLAMAV_HOST=clamav
       - CLAMAV_PORT=3310
     env_file:
       - .env
     restart: unless-stopped
+    networks:
+      - dokploy-network
     volumes:
       - /etc/dokploy/volumes/cours-iut-web-uploads:/app/uploads
       - /etc/dokploy/volumes/cours-iut-web-quarantine:/app/quarantine
-    depends_on:
-      clamav:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:3000/api/health"]
       interval: 30s
@@ -23,18 +22,6 @@ services:
       retries: 3
       start_period: 30s
 
-  clamav:
-    image: clamav/clamav:stable
-    restart: unless-stopped
-    volumes:
-      - clamav_db_staging:/var/lib/clamav
-      - /etc/dokploy/volumes/cours-iut-web-quarantine:/quarantine
-    healthcheck:
-      test: ["CMD", "clamdcheck.sh"]
-      interval: 60s
-      timeout: 30s
-      retries: 5
-      start_period: 300s
-
-volumes:
-  clamav_db_staging:
+networks:
+  dokploy-network:
+    external: true

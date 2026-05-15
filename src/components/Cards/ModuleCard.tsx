@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import {motion, useReducedMotion} from 'framer-motion';
 import {ArrowRight, BookOpen, ChevronRight, Lock} from "lucide-react";
 import Module from "@/types/Module";
 import iconMap from "@/lib/iconMap";
@@ -26,18 +27,22 @@ export default function ModuleCard({currentModule, isAuthed = true}: ModuleCardP
         : `/${path}`;
 
     const canContinue = !!lastAvailableSectionPath;
+    const prefersReducedMotion = useReducedMotion();
 
     return (
+        <motion.div
+            className="h-full"
+            whileHover={!prefersReducedMotion ? {y: -4} : {}}
+            transition={{duration: 0.3, ease: "easeOut"}}
+        >
         <Card
             className={cn(
                 "group relative h-full flex flex-col gap-6 p-7 lg:p-8 overflow-hidden border border-bridge-500/20",
-                // Couleurs pleines pour éviter l'effet de transparence qui casse le fond du pont
                 "bg-[#f7ebd9] dark:bg-[#13110d]",
                 "shadow-[0_2px_10px_-8px_rgba(0,0,0,0.25)]",
                 "dark:shadow-[0_2px_14px_-10px_rgba(0,0,0,0.6)]",
-                "transition-[transform,box-shadow,border-color] duration-300 ease-out",
-                "hover:-translate-y-1 hover:shadow-xl",
-                "motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                "transition-[box-shadow] duration-300 ease-out",
+                "hover:shadow-xl",
             )}
         >
             <CardBridgeBackground/>
@@ -142,5 +147,6 @@ export default function ModuleCard({currentModule, isAuthed = true}: ModuleCardP
                 )}
             </div>
         </Card>
+        </motion.div>
     );
 }

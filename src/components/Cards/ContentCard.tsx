@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import {motion, useReducedMotion} from 'framer-motion';
 import {ArrowRight, BookOpen, CodeXml, FolderCode, GraduationCap, Lock, Presentation} from "lucide-react";
 import Module from "@/types/Module";
 import Section from "@/types/Section";
@@ -52,21 +53,22 @@ export default function ContentCard({content, section, currentModule}: ContentCa
     const isLocked = !section.isAvailable;
     const href = isLocked ? '#' : `/${currentModule.path}/${section.path}/${content}`;
     const {path: modulePath} = currentModule;
+    const prefersReducedMotion = useReducedMotion();
 
     return (
-        <article
+        <motion.article
             className={cn(
                 "group relative h-full flex flex-col p-6 lg:p-7 rounded-2xl overflow-hidden",
-                // Même fond que les autres cards
                 "bg-[#f7ebd9] dark:bg-[#13110d]",
                 "border border-bridge-500/45 dark:border-bridge-500/35",
                 "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)]",
                 "dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
-                "transition-[transform,box-shadow,border-color] duration-300 ease-out",
-                !isLocked && "hover:-translate-y-1.5 hover:border-bridge-500/65 dark:hover:border-bridge-400/55 hover:shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:hover:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
+                "transition-[box-shadow,border-color] duration-300 ease-out",
+                !isLocked && "hover:border-bridge-500/65 dark:hover:border-bridge-400/55 hover:shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:hover:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
                 isLocked && "opacity-85",
-                "motion-reduce:transition-none motion-reduce:hover:translate-y-0"
             )}
+            whileHover={!isLocked && !prefersReducedMotion ? {y: -6} : {}}
+            transition={{duration: 0.3, ease: "easeOut"}}
         >
             <CardBridgeBackground/>
 
@@ -144,6 +146,6 @@ export default function ContentCard({content, section, currentModule}: ContentCa
                     )}
                 </div>
             </div>
-        </article>
+        </motion.article>
     );
 }

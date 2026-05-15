@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import {motion, useReducedMotion} from 'framer-motion';
 import {BookOpen, Clock, Gitlab, Lock} from "lucide-react";
 
 import Section from "@/types/Section";
@@ -23,25 +24,27 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
         ? `/${modulePath}/${section.path}`
         : '#';
 
+    const prefersReducedMotion = useReducedMotion();
+
     const sortedContents = [...section.contents].sort(
         (a, b) => CONTENT_ORDER.indexOf(a as ContentKey) - CONTENT_ORDER.indexOf(b as ContentKey)
     );
 
     return (
-        <article
+        <motion.article
             style={{'--module-color': `var(--color-${modulePath})`} as React.CSSProperties}
             className={cn(
                 "group relative h-full flex flex-col p-7 lg:p-9 rounded-2xl overflow-hidden",
-                // Couleurs pleines pour matcher le départ du gradient et éviter les fuites au zoom
                 "bg-[#f7ebd9] dark:bg-[#13110d]",
                 "border border-bridge-500/45 dark:border-bridge-500/35",
                 "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)]",
                 "dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
-                "transition-[transform,box-shadow,border-color] duration-300 ease-out",
-                !isLocked && "hover:-translate-y-1.5 hover:border-bridge-500/65 dark:hover:border-bridge-400/55 hover:shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:hover:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
+                "transition-[box-shadow,border-color] duration-300 ease-out",
+                !isLocked && "hover:border-bridge-500/65 dark:hover:border-bridge-400/55 hover:shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:hover:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
                 isLocked && "opacity-85",
-                "motion-reduce:transition-none motion-reduce:hover:translate-y-0"
             )}
+            whileHover={!isLocked && !prefersReducedMotion ? {y: -6} : {}}
+            transition={{duration: 0.3, ease: "easeOut"}}
         >
             <CardBridgeBackground/>
 
@@ -196,6 +199,6 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                     })()}
                 </div>
             </div>
-        </article>
+        </motion.article>
     );
 }
