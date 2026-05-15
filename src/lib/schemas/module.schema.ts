@@ -1,4 +1,4 @@
-import { z } from "zod";
+import {z} from "zod";
 
 export const FIXED_COMPETENCES = [
     "1/ Réaliser un développement",
