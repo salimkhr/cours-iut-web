@@ -2,16 +2,23 @@
 
 import {useCallback, useEffect} from 'react';
 import {Controller, useForm, useWatch} from 'react-hook-form';
-import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,} from '@/components/ui/dialog';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {Pencil, Plus} from 'lucide-react';
+import {Sheet, SheetContent, SheetTitle} from '@/components/ui/sheet';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
-import Module from "@/types/Module";
 import {Checkbox} from '@/components/ui/checkbox';
-import {Textarea} from "@/components/ui/textarea";
-import {isString} from "next/dist/build/webpack/plugins/jsconfig-paths-plugin";
+import {Textarea} from '@/components/ui/textarea';
+import {cn} from '@/lib/utils';
+import Module from '@/types/Module';
+import {
+    sectionFormSchema,
+    type SectionFormValues,
+    AVAILABLE_CONTENTS,
+} from '@/lib/schemas/section.schema';
 
-// Type pour une section
+// Type exporté pour rétrocompatibilité avec EditSectionFab et AddSectionButton
 export type Section = {
     title: string;
     path: string;
@@ -29,54 +36,67 @@ export type Section = {
 
 interface SectionFormProps {
     modData: Module;
-    section?: Section; // Section à éditer (optionnel)
+    section?: Section;
     mode: 'add' | 'edit';
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSubmit: (section: Section) => void;
-    trigger?: React.ReactNode; // Trigger personnalisé (optionnel)
+}
+
+function Eyebrow({children}: {children: React.ReactNode}) {
+    return (
+        <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark/55 dark:text-bridge-200/55">
+            {children}
+        </p>
+    );
 }
 
 export default function SectionForm({
-                                        modData,
-                                        section,
-                                        mode,
-                                        open,
-                                        onOpenChange,
-                                        onSubmit,
-                                        trigger
-                                    }: SectionFormProps) {
+    modData,
+    section,
+    mode,
+    open,
+    onOpenChange,
+    onSubmit,
+}: SectionFormProps) {
     const isEditMode = mode === 'edit' && section !== undefined;
 
-    // Préparer les valeurs par défaut basées sur le mode
-    const getDefaultValues = useCallback((): Partial<Section> => {
-        if (isEditMode) {
+    const getDefaultValues = useCallback((): SectionFormValues => {
+        if (isEditMode && section) {
             return {
                 title: section.title,
                 path: section.path,
-                description: section.description || '',
-                objectives: Array.isArray(section.objectives) ? section.objectives.join('\n') : (section.objectives ?? ''),
-                tags: isString(section.tags) ? section?.tags : section?.tags.join(','),
+                description: section.description ?? '',
+                objectives: Array.isArray(section.objectives)
+                    ? section.objectives.join('\n')
+                    : (section.objectives ?? ''),
+                tags: Array.isArray(section.tags)
+                    ? section.tags.join(',')
+                    : (section.tags ?? ''),
                 totalDuration: section.totalDuration,
                 hasCorrection: section.hasCorrection,
-                isAvailable: section.isAvailable,
-                correctionIsAvailable: section.correctionIsAvailable,
-                contents: section.contents,
+                isAvailable: section.isAvailable ?? true,
+                correctionIsAvailable: section.correctionIsAvailable ?? true,
                 order: section.order,
-                examenIsLock: section.examenIsLock || false,
+                contents: section.contents,
+                examenIsLock: section.examenIsLock ?? false,
             };
         }
-
         return {
+            title: '',
+            path: '',
+            description: '',
+            objectives: '',
+            tags: '',
+            totalDuration: 1,
             hasCorrection: true,
             isAvailable: true,
             correctionIsAvailable: true,
-            contents: ['cours', 'TP'],
-            order: (modData.sections?.length ?? 0) + 1,
-            totalDuration: 1,
             examenIsLock: false,
+            order: (modData.sections?.length ?? 0) + 1,
+            contents: ['cours', 'TP'],
         };
-    }, [isEditMode, section, modData.sections.length]);
+    }, [isEditMode, section, modData.sections?.length]);
 
     const {
         register,
@@ -85,266 +105,271 @@ export default function SectionForm({
         reset,
         control,
         formState: {errors},
-    } = useForm<Section>({
+    } = useForm<SectionFormValues>({
+        resolver: zodResolver(sectionFormSchema),
         defaultValues: getDefaultValues(),
     });
 
     const title = useWatch({control, name: 'title'});
-    const contents = useWatch({control, name: 'contents'}) || [];
+    const contents = useWatch({control, name: 'contents'}) ?? [];
 
-    // Reset form when section changes or dialog opens/closes
     useEffect(() => {
-        if (open) {
-            reset(getDefaultValues());
-        }
-    }, [open, section, reset, getDefaultValues]);
+        if (open) reset(getDefaultValues());
+    }, [open, reset, getDefaultValues]);
 
-    // Met à jour automatiquement "path" à partir de "title" (seulement en mode ajout)
     useEffect(() => {
         if (!isEditMode && title) {
-            setValue('path', `${modData.sections.length + 1}-${title.toLowerCase().replace(/\s+/g, '-')}`);
+            setValue(
+                'path',
+                `${(modData.sections?.length ?? 0) + 1}-${title.toLowerCase().replace(/\s+/g, '-')}`,
+            );
         }
-    }, [title, setValue, modData.sections.length, isEditMode]);
+    }, [title, setValue, modData.sections?.length, isEditMode]);
 
-    const availableContents = ['cours', 'TP', 'slide', 'projet', 'examen'];
-
-    const handleFormSubmit = (data: Section) => {
-        // Filtrer pour ne garder que les contenus valides
-        const cleanedContents = (data.contents || []).filter(content =>
-            availableContents.includes(content)
+    const toggleContent = (item: string) => {
+        setValue(
+            'contents',
+            contents.includes(item)
+                ? contents.filter((c) => c !== item)
+                : [...contents, item],
+            {shouldDirty: true, shouldValidate: true},
         );
+    };
 
-        const cleanedObjectives = isString(data.objectives)
-            ? data.objectives.split('\n').map(o => o.trim()).filter(o => o.length > 0)
-            : (data.objectives ?? []);
+    const handleFormSubmit = (data: SectionFormValues) => {
+        const cleanedObjectives = (data.objectives ?? '')
+            .split('\n')
+            .map((o) => o.trim())
+            .filter((o) => o.length > 0);
+
+        const cleanedTags = (data.tags ?? '')
+            .split(',')
+            .map((t) => t.trim())
+            .filter((t) => t.length > 0);
 
         onSubmit({
             ...data,
-            contents: cleanedContents,
             objectives: cleanedObjectives,
-            tags: isString(data.tags) ? data.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : data.tags,
+            tags: cleanedTags,
         });
 
-        if (!isEditMode) {
-            reset();
-        }
+        if (!isEditMode) reset(getDefaultValues());
         onOpenChange(false);
     };
 
-    // Fonction pour toggle les contenus dans le tableau
-    const toggleContent = (item: string) => {
-        if (contents.includes(item)) {
-            setValue(
-                'contents',
-                contents.filter((c) => c !== item),
-                {shouldDirty: true, shouldValidate: true}
-            );
-        } else {
-            setValue(
-                'contents',
-                [...contents, item],
-                {shouldDirty: true, shouldValidate: true}
-            );
-        }
-    };
-
-    const dialogTitle = isEditMode ? 'Modifier le cours' : 'Ajouter un nouveau cours';
-    const submitButtonText = isEditMode ? 'Modifier' : 'Ajouter';
+    const inputCn = "bg-bridge-100/60 dark:bg-bridge-800/60 border-bridge-500/45 focus-visible:ring-bridge-500/50";
+    const labelCn = "text-sm font-semibold text-brand-dark dark:text-bridge-200";
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            {trigger && trigger}
-
-            <DialogContent>
-                <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4 mt-2">
-                    <DialogHeader>
-                        <DialogTitle>{dialogTitle}</DialogTitle>
-                    </DialogHeader>
-
-                    <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                        <div className="w-full">
-                            <Label htmlFor="title">Titre *</Label>
-                            <Input
-                                id="title"
-                                {...register('title', {required: 'Le titre est obligatoire'})}
-                                aria-invalid={errors.title ? 'true' : 'false'}
-                            />
-                            {errors.title && (
-                                <p className="text-red-500 text-sm">{errors.title.message}</p>
-                            )}
-                        </div>
-                        <div className="w-full">
-                            <Label htmlFor="path">Path *</Label>
-                            <Input
-                                id="path"
-                                {...register('path', {required: 'Le path est obligatoire'})}
-                                aria-invalid={errors.path ? 'true' : 'false'}
-                                readOnly={isEditMode} // Path non modifiable en édition
-                                className={isEditMode ? 'bg-gray-100' : ''}
-                            />
-                            {errors.path && (
-                                <p className="text-red-500 text-sm">{errors.path.message}</p>
-                            )}
-                        </div>
+        <Sheet open={open} onOpenChange={onOpenChange}>
+            <SheetContent
+                side="right"
+                className={cn(
+                    'p-0 gap-0 overflow-hidden flex flex-col sm:max-w-[480px]',
+                    'bg-[#f7ebd9] dark:bg-[#13110d]',
+                    'border-l border-bridge-500/45',
+                    '[&>button]:text-white/80 [&>button:hover]:text-white',
+                )}
+            >
+                {/* Header */}
+                <div
+                    className={cn(
+                        'relative flex items-center gap-4 px-6 py-5 pr-14 overflow-hidden shrink-0',
+                        `bg-${modData.path}`,
+                    )}
+                >
+                    <div
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                    />
+                    <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 shrink-0">
+                        {isEditMode
+                            ? <Pencil className="w-5 h-5 text-white" aria-hidden="true"/>
+                            : <Plus className="w-5 h-5 text-white" aria-hidden="true"/>
+                        }
                     </div>
+                    <div className="flex flex-col gap-0.5">
+                        <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/60">
+                            Section
+                        </p>
+                        <SheetTitle className="text-white font-bold text-xl leading-tight p-0 m-0">
+                            {isEditMode ? 'Modifier la section' : 'Ajouter une section'}
+                        </SheetTitle>
+                    </div>
+                </div>
 
-                    <div>
-                        <Label>Contenu</Label>
-                        <div className="grid grid-cols-5 gap-2 mt-2">
-                            {availableContents.map((content) => (
-                                <label
-                                    key={content}
-                                    className="flex items-center space-x-2 cursor-pointer"
-                                >
-                                    <Checkbox
-                                        checked={contents.includes(content)}
-                                        onCheckedChange={() => toggleContent(content)}
-                                        aria-label={content}
+                {/* Body + Footer */}
+                <form
+                    onSubmit={handleSubmit(handleFormSubmit)}
+                    className="flex flex-col flex-1 overflow-hidden"
+                >
+                    <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-5">
+
+                        {/* Identification */}
+                        <section className="flex flex-col gap-3">
+                            <Eyebrow>Identification</Eyebrow>
+                            <div className="flex gap-3">
+                                <div className="flex-1">
+                                    <Label htmlFor="sf-title" className={labelCn}>Titre *</Label>
+                                    <Input
+                                        id="sf-title"
+                                        className={inputCn}
+                                        {...register('title')}
+                                        aria-invalid={errors.title ? 'true' : 'false'}
                                     />
-                                    <span>
-                                        {content.charAt(0).toUpperCase() + content.slice(1)}
-                                    </span>
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div>
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea id="description" {...register('description')} />
-                    </div>
-
-                    <div>
-                        <Label htmlFor="objectives">Objectifs du cours</Label>
-                        <Textarea id="objectives" rows={5} {...register('objectives')} />
-                        <span className="text-sm text-gray-500">
-                            Un objectif par ligne (ex. « Comprendre les sélecteurs CSS »)
-                        </span>
-                    </div>
-
-                    <div>
-                        <Label htmlFor="tags">Tags</Label>
-                        <Textarea id="tags" {...register('tags')} />
-                        <span className="text-sm text-gray-500">
-                            Ajouter les tags en les séparant par une virgule
-                        </span>
-                    </div>
-
-                    <div>
-                        <Label htmlFor="totalDuration">Nombre de séances *</Label>
-                        <Input
-                            id="totalDuration"
-                            type="number"
-                            min={1}
-                            {...register('totalDuration', {
-                                required: 'Le nombre de séances est obligatoire',
-                                valueAsNumber: true,
-                            })}
-                        />
-                        {errors.totalDuration && (
-                            <p className="text-red-500 text-sm">
-                                {errors.totalDuration.message}
-                            </p>
-                        )}
-                    </div>
-
-                    <div>
-                        <Label htmlFor="order">Position</Label>
-                        <Input
-                            id="order"
-                            type="number"
-                            min={1}
-                            {...register('order', {
-                                required: 'La position est obligatoire',
-                                valueAsNumber: true,
-                            })}
-                        />
-                        {errors.order && (
-                            <p className="text-red-500 text-sm">{errors.order.message}</p>
-                        )}
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2 mt-2">
-                        <div>
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <Controller
-                                    name="isAvailable"
-                                    control={control}
-                                    render={({field}) => (
-                                        <Checkbox
-                                            id="isAvailable"
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                        />
+                                    {errors.title && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>
                                     )}
-                                />
-                                <span>Disponible</span>
-                            </label>
-                        </div>
-                        <div>
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <Controller
-                                    name="hasCorrection"
-                                    control={control}
-                                    render={({field}) => (
-                                        <Checkbox
-                                            id="hasCorrection"
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                        />
+                                </div>
+                                <div className="w-40">
+                                    <Label htmlFor="sf-path" className={labelCn}>Path *</Label>
+                                    <Input
+                                        id="sf-path"
+                                        className={cn(inputCn, isEditMode && 'opacity-60 cursor-not-allowed')}
+                                        {...register('path')}
+                                        readOnly={isEditMode}
+                                        aria-invalid={errors.path ? 'true' : 'false'}
+                                    />
+                                    {errors.path && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.path.message}</p>
                                     )}
-                                />
-                                <span>Correction</span>
-                            </label>
-                        </div>
-                        <div>
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <Controller
-                                    name="correctionIsAvailable"
-                                    control={control}
-                                    render={({field}) => (
+                                </div>
+                            </div>
+                            <div>
+                                <Label htmlFor="sf-description" className={labelCn}>Description</Label>
+                                <Textarea id="sf-description" className={inputCn} {...register('description')}/>
+                            </div>
+                        </section>
+
+                        <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+
+                        {/* Contenu */}
+                        <section className="flex flex-col gap-3">
+                            <Eyebrow>Types de contenu</Eyebrow>
+                            <div className="grid grid-cols-3 gap-2">
+                                {AVAILABLE_CONTENTS.map((content) => (
+                                    <label key={content} className="flex items-center gap-2 cursor-pointer">
                                         <Checkbox
-                                            id="correctionIsAvailable"
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
+                                            checked={contents.includes(content)}
+                                            onCheckedChange={() => toggleContent(content)}
+                                            aria-label={content}
                                         />
-                                    )}
+                                        <span className="text-sm text-brand-dark dark:text-bridge-100 capitalize">
+                                            {content}
+                                        </span>
+                                    </label>
+                                ))}
+                            </div>
+                            {errors.contents && (
+                                <p className="text-red-500 text-xs">{errors.contents.message}</p>
+                            )}
+                        </section>
+
+                        <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+
+                        {/* Pédagogie */}
+                        <section className="flex flex-col gap-3">
+                            <Eyebrow>Pédagogie</Eyebrow>
+                            <div>
+                                <Label htmlFor="sf-objectives" className={labelCn}>Objectifs</Label>
+                                <Textarea
+                                    id="sf-objectives"
+                                    rows={4}
+                                    className={inputCn}
+                                    {...register('objectives')}
                                 />
-                                <span>Correction Disponible</span>
-                            </label>
-                        </div>
-                        <div>
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <Controller
-                                    name="examenIsLock"
-                                    control={control}
-                                    render={({field}) => (
-                                        <Checkbox
-                                            id="examenIsLock"
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
+                                <span className="text-xs text-bridge-500 dark:text-bridge-400 mt-1 block">
+                                    Un objectif par ligne
+                                </span>
+                            </div>
+                            <div>
+                                <Label htmlFor="sf-tags" className={labelCn}>Tags</Label>
+                                <Textarea id="sf-tags" rows={2} className={inputCn} {...register('tags')}/>
+                                <span className="text-xs text-bridge-500 dark:text-bridge-400 mt-1 block">
+                                    Séparés par une virgule
+                                </span>
+                            </div>
+                        </section>
+
+                        <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+
+                        {/* Paramètres */}
+                        <section className="flex flex-col gap-3">
+                            <Eyebrow>Paramètres</Eyebrow>
+                            <div className="flex gap-4">
+                                <div className="w-28">
+                                    <Label htmlFor="sf-duration" className={labelCn}>Séances *</Label>
+                                    <Input
+                                        id="sf-duration"
+                                        type="number"
+                                        min={1}
+                                        className={inputCn}
+                                        {...register('totalDuration')}
+                                    />
+                                    {errors.totalDuration && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.totalDuration.message}</p>
+                                    )}
+                                </div>
+                                <div className="w-28">
+                                    <Label htmlFor="sf-order" className={labelCn}>Position *</Label>
+                                    <Input
+                                        id="sf-order"
+                                        type="number"
+                                        min={1}
+                                        className={inputCn}
+                                        {...register('order')}
+                                    />
+                                    {errors.order && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.order.message}</p>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                {(
+                                    [
+                                        {name: 'isAvailable', label: 'Disponible'},
+                                        {name: 'hasCorrection', label: 'Correction'},
+                                        {name: 'correctionIsAvailable', label: 'Correction disponible'},
+                                        {name: 'examenIsLock', label: 'Examen verrouillé'},
+                                    ] as const
+                                ).map(({name, label}) => (
+                                    <label key={name} className="flex items-center gap-2 cursor-pointer">
+                                        <Controller
+                                            name={name}
+                                            control={control}
+                                            render={({field}) => (
+                                                <Checkbox
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                />
+                                            )}
                                         />
-                                    )}
-                                />
-                                <span>Examen verrouillé</span>
-                            </label>
-                        </div>
+                                        <span className="text-sm text-brand-dark dark:text-bridge-100">{label}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </section>
                     </div>
 
-                    <DialogFooter>
+                    {/* Footer sticky */}
+                    <div className="shrink-0 border-t border-bridge-700/20 dark:border-bridge-500/20 px-6 py-4 flex items-center justify-between gap-3">
                         <Button
                             type="button"
                             variant="ghost"
+                            className="text-brand-dark dark:text-bridge-200"
                             onClick={() => onOpenChange(false)}
                         >
                             Annuler
                         </Button>
-                        <Button type="submit" variant="outline">
-                            {submitButtonText}
+                        <Button
+                            type="submit"
+                            className={cn('text-white font-semibold', `bg-${modData.path} hover:opacity-90`)}
+                        >
+                            {isEditMode ? 'Enregistrer' : 'Ajouter'}
                         </Button>
-                    </DialogFooter>
+                    </div>
                 </form>
-            </DialogContent>
-        </Dialog>
+            </SheetContent>
+        </Sheet>
     );
 }
