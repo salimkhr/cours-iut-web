@@ -2,9 +2,6 @@ services:
   clamav:
     image: clamav/clamav:stable
     restart: unless-stopped
-    environment:
-      - CLAMD_CONF_TCPSocket=3310
-      - CLAMD_CONF_TCPAddr=0.0.0.0
     networks:
       dokploy-network:
         aliases:
