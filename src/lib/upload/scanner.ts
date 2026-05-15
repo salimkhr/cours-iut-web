@@ -31,8 +31,7 @@ export async function scanWithClamAV(buf: Buffer): Promise<ScanResult> {
         socket.on("error", (err) => settle({ error: `ClamAV: ${err.message}` }));
 
         socket.connect(port, host, () => {
-            // Commande INSTREAM (null-terminated)
-            socket.write("zINSTREAM\0");
+            socket.write("nINSTREAM\n");
 
             // Envoi par chunks de 4 Ko : [uint32BE taille][données]
             const CHUNK = 4096;

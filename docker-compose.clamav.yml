@@ -1,0 +1,27 @@
+services:
+  clamav:
+    image: clamav/clamav:stable
+    restart: unless-stopped
+    environment:
+      - CLAMD_CONF_TCPSocket=3310
+      - CLAMD_CONF_TCPAddr=0.0.0.0
+    networks:
+      dokploy-network:
+        aliases:
+          - clamav
+    volumes:
+      - clamav_db:/var/lib/clamav
+      - /etc/dokploy/volumes/cours-iut-web-quarantine:/quarantine
+    healthcheck:
+      test: ["CMD", "clamdcheck.sh"]
+      interval: 60s
+      timeout: 30s
+      retries: 5
+      start_period: 300s
+
+volumes:
+  clamav_db:
+
+networks:
+  dokploy-network:
+    external: true
