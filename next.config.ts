@@ -26,6 +26,10 @@ const baseConfig: NextConfig = {
         formats: ['image/avif', 'image/webp'],
     },
 
+    experimental: {
+        authInterrupts: true,
+    },
+
     turbopack: {
         resolveAlias: {
             '@components': 'src/components', // alias pratique pour les imports
