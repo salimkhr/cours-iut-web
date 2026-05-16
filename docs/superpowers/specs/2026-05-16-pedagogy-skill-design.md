@@ -53,6 +53,14 @@ Créer un skill local `/pedagogy` pour assister la rédaction et la révision de
 
 ### `cours.md` — Théorie
 
+**Chapeau "À savoir pour ce cours" (obligatoire en tête de chaque cours) :**
+- Bloc rétractable (collapsed par défaut) avec le titre "À savoir pour ce cours"
+- Contient 3–5 notions prérequises du ou des cours précédents
+- Chaque notion : une phrase de rappel + un micro-exemple de code minimal (`Code` inline ou `CodeCard` selon la longueur)
+- Objectif : activer la mémoire sans re-enseigner — jamais plus de 10 lignes de code au total
+- Composant UI : `Accordion` ou `Collapsible` de shadcn/ui, style visuellement distinct du contenu principal (fond légèrement coloré, icône "rappel")
+- En mode écriture, le skill demande quel cours précède avant de générer ce bloc
+
 Structure imposée pour chaque concept :
 1. **Contexte** — pourquoi ce concept existe, quel problème il résout
 2. **Définition** — concept expliqué avec ses propres mots, sans jargon préalable
