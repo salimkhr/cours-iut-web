@@ -21,12 +21,9 @@ export default function ErrorLayout({code, description, gifTag, action}: ErrorLa
     return (
         <AuthLayout title={code} description={description}>
             <div className="flex flex-col gap-4">
-                {/* GIF */}
-                <div className="w-full h-48 rounded-xl overflow-hidden bg-bridge-200/40 dark:bg-bridge-700/40">
-                    {loading && (
-                        <div className="w-full h-full animate-pulse bg-bridge-300/50 dark:bg-bridge-600/50 rounded-xl"/>
-                    )}
-                    {!loading && gifUrl && (
+                {/* GIF — skeleton overlaid pendant le chargement, image conservée lors du refetch */}
+                <div className="relative w-full h-48 rounded-xl overflow-hidden bg-bridge-200/40 dark:bg-bridge-700/40">
+                    {gifUrl && (
                         <Image
                             src={gifUrl}
                             alt="GIF illustrant l'erreur"
@@ -36,24 +33,26 @@ export default function ErrorLayout({code, description, gifTag, action}: ErrorLa
                             className="w-full h-full object-cover rounded-xl"
                         />
                     )}
+                    {loading && (
+                        <div className="absolute inset-0 animate-pulse bg-bridge-300/50 dark:bg-bridge-600/50 rounded-xl"/>
+                    )}
                 </div>
 
-                {/* Reload GIF */}
                 <Button
                     variant="ghost"
                     size="sm"
                     onClick={refetch}
+                    aria-label="Charger un autre GIF"
                     className="self-center gap-1.5 text-brand-gray-500 hover:text-brand-accent-dark"
                 >
-                    <RefreshCw size={13}/>
+                    <RefreshCw size={16}/>
                     Autre GIF
                 </Button>
 
-                {/* Actions */}
                 <div className="flex flex-col sm:flex-row gap-3">
-                    <Button asChild className="flex-1">
+                    <Button asChild className="flex-1 gap-2">
                         <Link href="/">
-                            <Home size={15} className="mr-2"/>
+                            <Home size={16}/>
                             Retour à l&apos;accueil
                         </Link>
                     </Button>

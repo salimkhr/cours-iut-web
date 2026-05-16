@@ -10,7 +10,7 @@ interface GifData {
 
 export default function useRandomGif(tag = "404-not-found") {
   const [gifUrl, setGifUrl] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchGif = useCallback(async () => {
