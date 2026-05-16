@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import {connectToDB} from "@/lib/mongodb";
 import {ObjectId} from "bson";
 import {getServerSession} from "@/lib/auth";
+import {moduleFormSchema} from "@/lib/schemas/module.schema";
 
 export async function PUT(
     req: Request,
@@ -13,11 +14,12 @@ export async function PUT(
     }
 
     const {moduleId} = await params;
-    const body = await req.json();
 
-    // Ne jamais écraser _id ni sections via ce endpoint
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {_id, sections, ...updateData} = body;
+    const parsed = moduleFormSchema.safeParse(await req.json());
+    if (!parsed.success) {
+        return NextResponse.json({error: parsed.error.flatten()}, {status: 400});
+    }
+    const updateData = parsed.data;
 
     try {
         const db = await connectToDB();

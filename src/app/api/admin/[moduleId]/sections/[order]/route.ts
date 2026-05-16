@@ -2,18 +2,26 @@ import {NextResponse} from 'next/server';
 import {connectToDB} from '@/lib/mongodb';
 import {ObjectId} from 'bson';
 import Module from '@/types/Module';
+import {withAdmin} from '@/lib/withAdmin';
+import {z} from 'zod';
 
-export async function PUT(
+const toggleSchema = z.object({
+    key: z.enum(['isAvailable', 'correctionIsAvailable', 'examenIsLock']),
+    value: z.boolean(),
+});
+
+export const PUT = withAdmin(async (
     req: Request,
     {params}: { params: Promise<{ moduleId: string; order: string }> }
-) {
+) => {
     try {
         const {moduleId, order} = await params;
-        const {key, value} = await req.json();
 
-        if (!['isAvailable', 'correctionIsAvailable', 'examenIsLock'].includes(key)) {
-            return NextResponse.json({error: 'Clé invalide'}, {status: 400});
+        const parsed = toggleSchema.safeParse(await req.json());
+        if (!parsed.success) {
+            return NextResponse.json({error: parsed.error.flatten()}, {status: 400});
         }
+        const {key, value} = parsed.data;
 
         const db = await connectToDB();
 
@@ -36,4 +44,4 @@ export async function PUT(
         console.error(error);
         return NextResponse.json({error: 'Erreur interne'}, {status: 500});
     }
-}
+});
