@@ -10,9 +10,8 @@ sous forme de cours, TPs, slides et examens, avec authentification, espace admin
 
 - **Next.js** `^16.1.6` (App Router exclusif, Turbopack en dev)
 - **React** `^19.2.4`, **TypeScript** `5.9.3` (strict)
-- **MongoDB** : driver `mongodb@^7.1.0` (pas de Mongoose, pas de Prisma)
+- **MongoDB** : driver `mongodb@^7.1.0` (pas de Prisma)
 - **better-auth** `^1.4.18` (`mongodbAdapter`, plugins `admin` + `captcha` Cloudflare Turnstile)
-- **drizzle-orm** `^0.45.1` — **À définir** : déclaré en deps mais aucun usage observé dans `src/`
 - **Tailwind CSS v4** (`^4.1.18`) + `@tailwindcss/postcss`
 - **shadcn/ui** via `radix-ui`, **Framer Motion** `^12.31.0`, **Zustand** `^5.0.11`
 - **MDX** : `@next/mdx@^16.1.6`, `@mdx-js/react`, `remark-gfm`, `rehype-raw`
