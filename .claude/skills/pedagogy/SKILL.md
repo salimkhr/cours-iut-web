@@ -24,7 +24,7 @@ description: Aide à la rédaction et à la révision des contenus pédagogiques
 - **Langue** : français, **vouvoyé strict** dans toutes les instructions destinées aux étudiants
 - **Ton** : précis, bienveillant, sans condescendance — expliquer le POURQUOI avant le COMMENT
 - **Exemples** : toujours concrets et ancrés dans un cas réel. Jamais de `foo`, `bar`, `test1`, `exemple`
-- **Composants JSX imposés** : `Text`, `Heading`, `List`/`ListItem`, `Code`, `CodeCard`, `CodeWithPreviewCard`, `ImageCard`, `DiagramCard`. **Jamais** de `<p>`, `<ul>`, `<li>`, `<h2>`, `<code>` bruts.
+- **Composants JSX imposés** : `Text`, `Heading`, `List`/`ListItem`, `Code`, `CodeCard`, `CodeWithPreviewCard`, `ImageCard`, `DiagramCard`, `SectionCard`. **Jamais** de `<p>`, `<ul>`, `<li>`, `<h2>`, `<code>` bruts.
 - **Apostrophes en JSX** : toujours échappées (`&apos;` ou `&rsquo;`). Guillemets : `&quot;`.
 - **Structure de page** : `<article><section>` avec préfixes `A-`, `B-`, `C-` sur `<Heading level={2}>` et `1.`, `2.`, `3.` sur `<Heading level={3}>`
 
@@ -45,30 +45,60 @@ description: Aide à la rédaction et à la révision des contenus pédagogiques
 
 ## Mode révision — 2 sous-agents en parallèle
 
-Dispatcher **2 sous-agents simultanément** via l'outil Agent (même message, deux appels Agent indépendants).
+### Étape 0 — Collecte du dossier (obligatoire avant tout dispatch)
+
+Avant de dispatcher les sous-agents, **lire tous les fichiers du dossier cible** :
+
+1. Identifier le dossier (ex. `src/cours/javascript/1-le-dom/`)
+2. Lire **chaque fichier présent** avec l'outil Read : `Cours.tsx`, `Slide.tsx`, `TP.tsx`, `Examen.tsx`
+3. Passer **l'intégralité du contenu de chaque fichier** aux sous-agents, clairement séparé par fichier
+
+Tous les fichiers sont **simultanément en révision** : Cours.tsx, TP.tsx, Slide.tsx sont tous évalués,
+pas seulement l'un d'eux. Les sous-agents analysent chaque fichier individuellement **et** la cohérence
+entre eux.
+
+---
+
+Dispatcher **2 sous-agents simultanément** via l'outil Agent (même message, deux appels indépendants).
 
 ### Sous-agent 1 — Pédagogue expert
 
-Prompt à utiliser :
+Prompt à utiliser (injecter `[CONTENU_COURS]`, `[CONTENU_SLIDE]`, `[CONTENU_TP]`) :
 
-Tu es un expert en pédagogie universitaire spécialisé en informatique. Lis le contenu
-fourni et produis un rapport structuré en 3 sections :
+Tu es un expert en pédagogie universitaire spécialisé en informatique.
+
+Tu reçois tous les fichiers d'un même module de cours. Analyse-les tous et produis un
+rapport en 4 sections.
+
+**Cours.tsx** :
+[CONTENU_COURS]
+
+**Slide.tsx** :
+[CONTENU_SLIDE]
+
+**TP.tsx** :
+[CONTENU_TP]
 
 ## Rapport pédagogue
 
-### Clarté et progression
-Pour chaque problème : [section ou ligne] Problème : ... → Suggestion : ...
-Chercher : concepts introduits dans le désordre, jargon non défini, sauts logiques,
-termes utilisés avant d'être expliqués.
+### Clarté et progression (Cours.tsx + Slide.tsx)
+Pour chaque problème : [fichier / section] Problème : ... → Suggestion : ...
+Chercher dans le Cours et les Slides : concepts introduits dans le désordre, jargon
+non défini, sauts logiques, termes utilisés avant d'être expliqués.
 
-### Guidage
-Pour chaque problème : [section ou ligne] Problème : ... → Suggestion : ...
-Chercher : exercices qui donnent la réponse directement, exercices sans ancrage
-(l'étudiant ne sait pas par où commencer), niveau d'aide inadapté à la position
-dans la séquence pédagogique.
+### Guidage (TP.tsx)
+Pour chaque problème : [section ou exercice] Problème : ... → Suggestion : ...
+Chercher : exercices qui donnent la réponse directement, exercices sans ancrage,
+absence de critère de validation, guidage inadapté à la position dans la séquence.
 
-### Structure JSX et conventions
-Pour chaque problème : [section ou ligne] Problème : ... → Suggestion : ...
+### Cohérence Cours → TP
+Pour chaque problème : [Cours / TP] Problème : ... → Suggestion : ...
+Chercher : concepts utilisés dans le TP mais absents du Cours, concepts enseignés dans
+le Cours mais jamais mis en pratique dans le TP, nuances du Cours non reprises dans
+le TP alors qu'elles éviteraient des erreurs fréquentes.
+
+### Structure JSX et conventions (tous fichiers)
+Pour chaque problème : [fichier / ligne] Problème : ... → Suggestion : ...
 Chercher : balises HTML brutes, composants manquants, non-respect du vouvoyé,
 infinitifs dans les consignes de TP, apostrophes non échappées.
 
@@ -77,32 +107,46 @@ Si aucun problème dans une section, écrire "RAS".
 
 ### Sous-agent 2 — Étudiant en difficulté
 
-Prompt à utiliser :
+Prompt à utiliser (injecter `[CONTENU_COURS]`, `[CONTENU_SLIDE]`, `[CONTENU_TP]`) :
 
-Tu es un étudiant BUT Informatique en difficulté qui lit ce contenu pour la première
-fois. Tu n'as pas de connaissances préalables en dehors de ce qui a été explicitement
-enseigné avant.
+Tu es un étudiant BUT Informatique en difficulté. Tu lis les contenus dans l'ordre
+où tu les recevrais : d'abord le Cours, puis les Slides, puis le TP.
 
-Lis le contenu ligne par ligne et signale tout ce qui te bloquerait ou te perdrait.
+**Cours.tsx** (tu lis ça en premier) :
+[CONTENU_COURS]
+
+**Slide.tsx** (tu lis ça ensuite, en cours) :
+[CONTENU_SLIDE]
+
+**TP.tsx** (tu fais ça après le cours) :
+[CONTENU_TP]
+
+Signale tout ce qui te bloquerait ou te perdrait dans chacun des trois fichiers.
+Dans le TP, tiens compte de ce que tu viens de lire dans le Cours et les Slides.
 
 ## Rapport étudiant
 
 Pour chaque problème, format :
-- [section/ligne] Citation courte du passage — "Ce passage me bloque parce que..." ou
+- [fichier / section] Citation courte — "Ce passage me bloque parce que..." ou
   "Je ne comprends pas pourquoi..." ou "Je serais bloqué ici parce que..." ou
-  "Cet exercice suppose que je sache X, mais X n'a pas été expliqué."
+  "Cet exercice suppose que je sache X, mais X n'a pas été expliqué dans le cours."
 
 Signaler notamment :
-- Mots ou notions utilisés sans définition
-- Explications qui supposent un contexte non fourni
-- Exercices dont tu ne sais pas par où commencer
-- Étapes qui manquent entre deux consignes
-- Endroits où tu pourrais faire quelque chose d'incorrect en pensant avoir raison
+- Dans le Cours : notions mal expliquées, exemples trop abstraits, sauts logiques
+- Dans le TP : exercices dont tu ne sais pas par où commencer même après le cours,
+  notions du TP absentes du cours, étapes manquantes entre deux consignes
+- Endroits où tu pourrais produire quelque chose d'incorrect en pensant avoir raison
 
-Si tout est clair, écrire "Contenu accessible — aucun blocage identifié."
+Si tout est clair dans un fichier, écrire "Contenu accessible — aucun blocage identifié."
 
 ### Consolidation
 
 Présenter les deux rapports l'un après l'autre, clairement séparés.
+
+Enregistrer le rapport consolidé dans le dossier traité, sous le nom `REVIEW.md` :
+- Chemin : `[dossier_cible]/REVIEW.md` (ex. `src/cours/javascript/1-le-dom/REVIEW.md`)
+- Format : Markdown avec les deux rapports, la date, et le fichier révisé en en-tête
+- Si le fichier existe déjà, l'écraser
+
 Puis proposer : **"Souhaitez-vous que je réécrive les passages ciblés ?"**
 Si oui, réécrire uniquement les passages identifiés en expliquant chaque changement.
