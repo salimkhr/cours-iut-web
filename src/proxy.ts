@@ -10,7 +10,6 @@ const PUBLIC_PATHS = [
     "/mentions-legales",
     "/politique-confidentialite",
     "/conditions-utilisation",
-    "/api/upload-avatar",
     "/email-verifie",
     "/reset-password",
     "/forgot-password",

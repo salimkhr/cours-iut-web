@@ -18,3 +18,11 @@ export const sectionFormSchema = z.object({
 });
 
 export type SectionFormValues = z.infer<typeof sectionFormSchema>;
+
+// Schéma utilisé côté serveur : le formulaire transforme objectives/tags en tableaux avant envoi
+export const sectionApiSchema = sectionFormSchema.extend({
+    objectives: z.array(z.string()).optional(),
+    tags: z.array(z.string()).default([]),
+});
+
+export type SectionApiValues = z.infer<typeof sectionApiSchema>;
