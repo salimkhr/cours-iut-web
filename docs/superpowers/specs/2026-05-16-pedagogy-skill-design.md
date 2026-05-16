@@ -80,6 +80,13 @@ Règles absolues :
 - Jamais d'infinitif (`Créer le fichier`) ni de futur (`Vous créerez`)
 - Chaque exercice testable de manière autonome (pas de dépendance exercice N → exercice N+1)
 
+**Projet cumulatif (PHP — Netflex) :**
+Certains modules PHP sont construits sur un projet fil rouge (`Netflex`) qui évolue d'un TP à l'autre. Dans ce cas :
+- Avant d'écrire ou de réviser un TP PHP, le skill **lit les TPs précédents** (`src/cours/php/`) pour établir l'état courant du projet (fichiers existants, classes/fonctions déjà définies, structure en place)
+- Les exercices du TP en cours s'appuient sur cet état sans le répéter ni le contredire
+- Le skill signale explicitement les prérequis Netflex en tête du TP : "À ce stade, votre projet contient…"
+- En mode révision, le sous-agent `pedagogue` vérifie la cohérence avec les TPs précédents ; le sous-agent `student` signale si un exercice suppose du code jamais vu
+
 ### `slide.md` — Présentations
 
 - 1 concept par slide, 5 lignes de texte maximum
