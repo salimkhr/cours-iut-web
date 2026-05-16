@@ -11,6 +11,7 @@ import PageFooter from "@/components/page/PageFooter";
 import {Button} from "@/components/ui/button";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {Metadata} from "next";
+import AdminHomeFab from "@/components/admin/AdminHomeFab";
 
 export const metadata: Metadata = generatePageMetadata({
     defaultTitle: "Développement Web | Salim Khraimeche",
@@ -84,6 +85,8 @@ export default async function Home() {
                     <AuthCTAPair className="justify-center"/>
                 </section>
             )}
+
+            {session?.user.role === 'admin' && <AdminHomeFab />}
 
             <AboutSection/>
 

@@ -78,6 +78,7 @@ Colonnes :
 | Colonne | Contenu |
 |---|---|
 | Utilisateur | Avatar (photo profil) + fallback initiales colorées + nom + email |
+| Groupe | Champ `user.group` (additionalField better-auth, déjà en base) |
 | Rôle | Badge `admin` / `user` |
 | Créé le | Date d'inscription formatée |
 | Actions | Bouton reset MDP + bouton supprimer |
@@ -102,7 +103,40 @@ Cohérent avec le design system existant.
 
 ---
 
-## 4. Nouvelles routes API
+## 4. UI/UX des formulaires admin
+
+### Conteneur : Sheet au lieu de Dialog
+
+Tous les formulaires admin (section, module) migrent de `Dialog` vers `Sheet` (panneau latéral droit, shadcn). Avantages : plus de place pour les champs, pas d'empilement de modales, workflow naturel côte-à-côte avec la page.
+
+### Anatomie des Sheets
+
+**Header** — fond plein `bg-${modulePath}` (ou `bg-bridge-700` pour les sheets sans contexte module) :
+- Icône dans un rond `bg-white/20`
+- Eyebrow `text-[11px] uppercase tracking-[0.18em]` + titre blanc
+- Top-edge highlight `via-white/40`
+
+**Body** — `bg-[#f7ebd9] dark:bg-[#13110d]`
+- Sections séparées par `border-t border-bridge-700/20 dark:border-bridge-500/20`
+- Chaque groupe de champs précédé d'un eyebrow label
+- Inputs : fond `bg-bridge-100/60 dark:bg-bridge-800/60`, bordure `border-bridge-500/45`
+- Pas de fond blanc pur, pas de gris neutre
+
+**Footer** — sticky bas de sheet :
+- Bouton primaire `bg-brand-primary text-brand-light` (Enregistrer)
+- Bouton annuler `variant="ghost"` à gauche
+
+### Tableau utilisateurs
+
+- Fond `bg-[#f7ebd9] dark:bg-[#13110d]`, bordure `border-bridge-500/45`
+- En-têtes de colonne : eyebrow style `text-[11px] uppercase tracking-[0.18em]`
+- Lignes avec séparateur `border-bridge-700/10 dark:border-bridge-500/10`
+- Badges rôle : `admin` en `bg-${modulePath}` blanc, `user` en `bg-bridge-200/60 dark:bg-bridge-700/60`
+- Avatar fallback : initiales sur fond dérivé du nom (hash → index palette bridge)
+
+---
+
+## 5. Nouvelles routes API
 
 | Route | Méthode | Auth requise | Rôle |
 |---|---|---|---|

@@ -32,7 +32,7 @@ export default function EditSectionFab({modData, section}: EditSectionFabProps) 
                 aria-label="Modifier la section"
                 title="Modifier la section"
                 className={cn(
-                    "fixed bottom-6 right-6 z-40 h-12 w-12 rounded-full p-0 shadow-lg",
+                    "fixed bottom-6 right-6 z-40 h-12 w-12 rounded-full p-0 shadow-lg text-white",
                     `bg-${modData.path} hover:opacity-90`
                 )}
             >

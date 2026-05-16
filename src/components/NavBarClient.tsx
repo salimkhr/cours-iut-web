@@ -21,6 +21,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import iconMap from "@/lib/iconMap";
 import {
     BookOpen,
@@ -30,13 +31,12 @@ import {
     Moon,
     Settings,
     Sun,
-    User as UserIcon,
     UserCheck,
     UserCog,
     UserLockIcon
 } from "lucide-react";
 import Module from "@/types/Module";
-import {cn} from "@/lib/utils";
+import { cn, avatarColor, avatarInitials } from "@/lib/utils";
 import {useMounted} from "@/hook/useMounted";
 
 const dropdownContentClass = cn(
@@ -175,20 +175,15 @@ export default function NavBarClient({
                                     aria-label="Menu utilisateur"
                                     className="flex flex-row items-center gap-2 rounded-full p-0.5 outline-none transition-colors hover:bg-bridge-200/50 dark:hover:bg-bridge-700/50 focus-visible:ring-2 focus-visible:ring-brand-primary"
                                 >
-                                    {user.imageUrl ? (
-                                        <span className="block w-8 h-8 rounded-full overflow-hidden shrink-0">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
-                                                src={user.imageUrl}
-                                                alt="avatar"
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </span>
-                                    ) : (
-                                        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-bridge-300 dark:bg-bridge-700">
-                                            <UserIcon className="w-4 h-4"/>
-                                        </span>
-                                    )}
+                                    <Avatar className="size-8 shrink-0">
+                                        <AvatarImage src={user.imageUrl ?? undefined} alt={user.username ?? 'avatar'} />
+                                        <AvatarFallback
+                                            className="text-white text-xs font-semibold"
+                                            style={{ backgroundColor: avatarColor(user.username ?? user.email ?? 'U') }}
+                                        >
+                                            {avatarInitials(user.username ?? user.email ?? 'U')}
+                                        </AvatarFallback>
+                                    </Avatar>
                                     <span className="hidden md:inline text-sm pr-2">
                                         {user.username ?? user.email}
                                     </span>

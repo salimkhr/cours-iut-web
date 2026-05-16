@@ -15,7 +15,7 @@ import ModuleInfo from "@/components/page/ModuleInfo";
 import {Button} from "@/components/ui/button";
 import {Metadata} from "next";
 import {getServerSession} from "@/lib/auth";
-import EditModuleFab from "@/components/admin/EditModuleFab";
+import AdminModuleFab from "@/components/admin/AdminModuleFab";
 
 
 interface ModulePageProps {
@@ -108,7 +108,7 @@ export default async function Module({params}: ModulePageProps) {
             </CoursesSection>
 
             <PageFooter path={currentModule.path}/>
-            {isAdmin && <EditModuleFab module={currentModule}/>}
+            {isAdmin && <AdminModuleFab module={currentModule} />}
         </div>
     );
 }

@@ -37,6 +37,26 @@ export const auth = betterAuth({
         requireEmailVerification: !!resend,
         minPasswordLength: 7,
         maxPasswordLength: 128,
+        sendResetPassword: async ({ user, url }) => {
+            if (!resend) return;
+            void resend.emails.send({
+                from: fromEmail,
+                to: user.email,
+                subject: "Réinitialisation de votre mot de passe — Cours Web IUT",
+                html: `
+                    <div style="font-family:sans-serif;max-width:480px;margin:0 auto">
+                        <h2 style="color:#C2410C">Réinitialisation du mot de passe</h2>
+                        <p>Bonjour ${user.name},</p>
+                        <p>Cliquez sur le bouton ci-dessous pour réinitialiser votre mot de passe sur la plateforme de cours de l'IUT.</p>
+                        <a href="${url}"
+                           style="display:inline-block;margin:16px 0;padding:12px 24px;background:#C2410C;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">
+                            Réinitialiser mon mot de passe
+                        </a>
+                        <p style="color:#666;font-size:13px">Ce lien expire dans 1 heure.<br>Si vous n'avez pas demandé de réinitialisation, ignorez cet email.</p>
+                    </div>
+                `,
+            });
+        },
     },
 
     emailVerification: {

@@ -185,6 +185,16 @@ export default function LoginForm() {
                     )}
                 </div>
 
+                {/* Mot de passe oublié */}
+                <div className="flex justify-end -mt-2">
+                    <Link
+                        href="/forgot-password"
+                        className="text-xs text-brand-accent-dark hover:opacity-80 underline underline-offset-4"
+                    >
+                        Mot de passe oublié ?
+                    </Link>
+                </div>
+
                 {/* Remember me */}
                 <FieldLabel>
                     <Field orientation="horizontal">

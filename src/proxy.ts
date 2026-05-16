@@ -12,6 +12,8 @@ const PUBLIC_PATHS = [
     "/conditions-utilisation",
     "/api/upload-avatar",
     "/email-verifie",
+    "/reset-password",
+    "/forgot-password",
 ];
 
 function isPublic(pathname: string): boolean {

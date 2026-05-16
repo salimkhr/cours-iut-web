@@ -23,6 +23,8 @@ interface AddModuleButtonProps {
         instructors?: Instructor[];
         sections: Section[];
     }) => void;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
 type FormData = {
@@ -54,8 +56,11 @@ const FIXED_SAES = [
     'S4.01 : Développement d\'une application'
 ]
 
-export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
-    const [open, setOpen] = useState(false);
+export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChange}: AddModuleButtonProps) {
+    const [internalOpen, setInternalOpen] = useState(false);
+    const isControlled = controlledOpen !== undefined;
+    const open = isControlled ? controlledOpen : internalOpen;
+    const setOpen = isControlled ? (onOpenChange ?? (() => {})) : setInternalOpen;
 
     const {register, handleSubmit, control, setValue, reset, formState: {errors}} = useForm<FormData>({
         defaultValues: {
@@ -87,9 +92,11 @@ export default function AddModuleButton({onAdd}: AddModuleButtonProps) {
 
     return (
         <>
-            <div className="flex justify-end">
-                <Button onClick={() => setOpen(true)} variant="outline">Ajouter un module</Button>
-            </div>
+            {!isControlled && (
+                <div className="flex justify-end">
+                    <Button onClick={() => setOpen(true)} className="bg-brand-primary text-white hover:bg-brand-accent-dark">Ajouter un module</Button>
+                </div>
+            )}
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="max-h-[90vh] overflow-y-auto">
                     <DialogHeader>

@@ -21,8 +21,7 @@ export default function EditSectionButton({modData, onAdd, section}: AddSectionB
             <div className="flex justify-end mb-2">
                 <Button
                     onClick={() => setOpen(true)}
-                    variant="outline"
-                    className={`border-${modData.path} text-${modData.path}`}
+                    className={`bg-${modData.path} text-white hover:opacity-90 border-transparent`}
                 >
                     <Edit/>
                 </Button>
