@@ -3,7 +3,7 @@
 import {ReactNode} from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {Home, RefreshCw} from "lucide-react";
+import {Home} from "lucide-react";
 import AuthLayout from "@/components/login/AuthLayout";
 import {Button} from "@/components/ui/button";
 import useRandomGif from "@/hook/useRandomGif";
@@ -16,7 +16,7 @@ interface ErrorLayoutProps {
 }
 
 export default function ErrorLayout({code, description, gifTag, action}: ErrorLayoutProps) {
-    const {gifUrl, loading, refetch} = useRandomGif(gifTag);
+    const {gifUrl, loading} = useRandomGif(gifTag);
 
     return (
         <AuthLayout title={code} description={description}>
@@ -38,19 +38,8 @@ export default function ErrorLayout({code, description, gifTag, action}: ErrorLa
                     )}
                 </div>
 
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={refetch}
-                    aria-label="Charger un autre GIF"
-                    className="self-center gap-1.5 text-brand-gray-500 hover:text-brand-accent-dark"
-                >
-                    <RefreshCw size={16}/>
-                    Autre GIF
-                </Button>
-
                 <div className="flex flex-col sm:flex-row gap-3">
-                    <Button asChild className="flex-1 gap-2">
+                    <Button asChild variant="outline" className="flex-1 gap-2">
                         <Link href="/">
                             <Home size={16}/>
                             Retour à l&apos;accueil
