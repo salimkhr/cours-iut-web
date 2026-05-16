@@ -4,7 +4,7 @@
 
 Application Next.js (App Router) servant de site de cours web pour les étudiants de l'IUT
 (BUT Informatique). Périmètre : contenus pédagogiques (HTML/CSS, JavaScript, PHP, Brainfuck)
-sous forme de cours, TPs, slides et examens, avec authentification, espace admin et chat IA.
+sous forme de cours, TPs, slides et examens, avec authentification et espace admin.
 
 ## 2. Stack technique
 
@@ -48,11 +48,11 @@ npm run update            # npx npm-check-updates -u && npm install
 
 Modules :
 
-- `src/app/` — routing (`[moduleSlug]`, `admin`, `api`, `chat`, `login`, `register`, `actions`)
+- `src/app/` — routing (`[moduleSlug]`, `admin`, `api`, `login`, `register`, `actions`)
 - `src/components/ui/` — primitives UI (`Text`, `Heading`, `List`, `Code`, `Box`, `Stack`, etc.)
 - `src/components/Cards/` — cards composites (`CodeCard`, `ImageCard`, `DiagramCard`, `SectionCard`)
 - `src/components/Slides/` — moteur de slides (hooks `useFullscreen`, `useKeyboardNav`)
-- `src/components/admin/`, `src/components/login/`, `src/components/ia/`
+- `src/components/admin/`, `src/components/login/`
 - `src/lib/` — connexion DB (`mongodb.ts`), auth serveur (`auth.ts`), auth client (`auth-client.ts`),
   utils (`utils.ts`), métadonnées (`generatePageMetadata.ts`), modules (`getModules.ts`)
 - `src/lib/store/` — stores Zustand
@@ -99,8 +99,6 @@ Toutes lues directement via `process.env.X` (pas de module `lib/env.ts`).
 | `MONGODB_URI`                  | URI de connexion MongoDB                                      | `src/lib/mongodb.ts`            |
 | `TURNSTILE_SECRET_KEY`         | Clé secrète Cloudflare Turnstile (côté serveur)               | `src/lib/auth.ts`               |
 | `NEXT_PUBLIC_TURNSTILE_TOKEN`  | Sitekey Turnstile (côté client, formulaires login/register)   | `src/components/login/*.tsx`    |
-| `BACKEND_IA_API_URL`           | URL du backend du chat IA                                     | `src/app/api/chat/route.ts`     |
-| `BACKEND_IA_API_KEY`           | Clé API du backend IA                                         | `src/app/api/chat/route.ts`     |
 | `NEXT_PUBLIC_WS_URL`           | URL WebSocket autorisée dans la CSP                           | `src/proxy.ts`                  |
 | `NEXT_PUBLIC_GIT_URL`          | Base d'URL du repo (lien « Éditer sur GitHub »)               | `src/components/Cards/SectionCard.tsx` |
 | `NODE_ENV` / `NEXT_PHASE`      | Standards Next/Node, lus par `mongodb.ts` et `csrf-token`     | divers                          |
