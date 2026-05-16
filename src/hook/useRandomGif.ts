@@ -8,7 +8,7 @@ interface GifData {
   };
 }
 
-export default function useRandomGif() {
+export default function useRandomGif(tag = "404-not-found") {
   const [gifUrl, setGifUrl] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +18,7 @@ export default function useRandomGif() {
     setError(null);
     try {
       const response = await fetch(
-        "https://api.giphy.com/v1/gifs/random?api_key=V1lkx88QRDG9DnAdryMooFePC01U9WTa&tag=404-not-found&rating=g"
+        `https://api.giphy.com/v1/gifs/random?api_key=V1lkx88QRDG9DnAdryMooFePC01U9WTa&tag=${encodeURIComponent(tag)}&rating=g`
       );
       const { data } = (await response.json()) as { data: GifData };
       setGifUrl(data.images.original.url);
@@ -30,7 +30,7 @@ export default function useRandomGif() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [tag]);
 
   useEffect(() => {
     // chargement initial
