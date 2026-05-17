@@ -99,6 +99,7 @@
     "typescript": "5.9.3"
   },
   "pnpm": {
+    "onlyBuiltDependencies": ["bcrypt", "sharp", "unrs-resolver"],
     "overrides": {
       "lodash-es": "^4.17.23",
       "uuid": "^14.0.0",
