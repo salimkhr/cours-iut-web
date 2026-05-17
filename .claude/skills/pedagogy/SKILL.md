@@ -74,7 +74,10 @@ entre eux.
 
 ---
 
-Dispatcher **2 sous-agents simultanément** via l'outil Agent (même message, deux appels indépendants).
+Dispatcher les sous-agents simultanément via l'outil Agent (même message, appels indépendants) :
+- **Toujours** : Sous-agent 1 (Pédagogue) + Sous-agent 2 (Étudiant en difficulté)
+- **Si `MODULE_PRECEDENT` n'est pas null** : ajouter Sous-agent 3 (Cohérence inter-modules)
+- **Si `MODULE_PRECEDENT` est null** : ne pas dispatcher le Sous-agent 3
 
 ### Sous-agent 1 — Pédagogue expert
 
