@@ -58,6 +58,7 @@ Avant de dispatcher les sous-agents, **lire tous les fichiers du dossier cible**
      (ex. `src/cours/javascript/2-les-evenements/` → préfixe `2`)
    - Utiliser Glob sur le répertoire matière pour trouver un dossier dont le nom
      commence par `{N-1}-` (ex. pour N=2, pattern `1-*` dans `src/cours/javascript/`)
+     Seul le dossier N-1 est recherché — pas N-2 ni plus. Si N-1 n'existe pas, passer directement au cas "N > 1 mais dossier N-1 introuvable".
    - **Si N = 1** : définir `MODULE_PRECEDENT = null`
    - **Si dossier N-1 trouvé** : lire chaque fichier présent (Cours.tsx, Slide.tsx,
      TP.tsx) avec l'outil Read ; stocker sous `CONTENU_N1_COURS`,
@@ -221,7 +222,7 @@ Enregistrer le rapport consolidé dans le dossier traité, sous le nom `REVIEW.m
 ---
 
 ## Rapport cohérence inter-modules
-> Analyse de la continuité entre [NOM_N1] et [NOM_N]
+> Analyse de la continuité entre [NOM_N1] et [NOM_N] *(omis si MODULE_PRECEDENT est null)*
 
 [rapport sous-agent 3]
 ````
