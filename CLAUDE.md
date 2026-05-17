@@ -20,18 +20,18 @@ sous forme de cours, TPs, slides et examens, avec authentification et espace adm
 ## 3. Commandes essentielles
 
 ```
-npm run dev               # next dev --turbopack
-npm run build             # next build (mode standalone)
-npm run postbuild_linux   # copie .next/static + public dans .next/standalone
-npm run postbuild_win     # idem, version Windows (xcopy)
-npm run start             # node .next/standalone/server.js
-npm run lint              # next lint
-npm run lint:fix          # next lint --fix
-npm run extract-cours     # node script/extractCours.js
-npm run extract-coursmd   # node script/extractToMarkdown.js
-npm run generate-imports  # node script/generateContentImports.js
-npm run audit             # npm audit --production
-npm run update            # npx npm-check-updates -u && npm install
+pnpm dev                  # next dev --turbopack
+pnpm build                # next build (mode standalone)
+pnpm postbuild_linux      # copie .next/static + public dans .next/standalone
+pnpm postbuild_win        # idem, version Windows (xcopy)
+pnpm start                # node .next/standalone/server.js
+pnpm lint                 # next lint
+pnpm lint:fix             # next lint --fix
+pnpm extract-cours        # node script/extractCours.js
+pnpm extract-coursmd      # node script/extractToMarkdown.js
+pnpm generate-imports     # node script/generateContentImports.js
+pnpm audit                # pnpm audit --prod
+pnpm update               # npx npm-check-updates -u && pnpm install
 ```
 
 ## 4. Architecture

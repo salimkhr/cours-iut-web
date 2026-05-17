@@ -1,13 +1,15 @@
 # Étape 1 : Dépendances
 FROM node:25-alpine3.22 AS deps
 RUN apk add --no-cache libc6-compat
+RUN corepack enable && corepack prepare pnpm@11.1.2 --activate
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 # Étape 2 : Build
 FROM node:25-alpine3.22 AS builder
+RUN corepack enable && corepack prepare pnpm@11.1.2 --activate
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -20,7 +22,7 @@ ENV NEXT_PUBLIC_TURNSTILE_TOKEN=$NEXT_PUBLIC_TURNSTILE_TOKEN
 ENV NEXT_PUBLIC_GIT_URL=$NEXT_PUBLIC_GIT_URL
 ENV NEXT_PUBLIC_RESTRICT_EMAIL_DOMAIN=$NEXT_PUBLIC_RESTRICT_EMAIL_DOMAIN
 
-RUN npm run build
+RUN pnpm run build
 
 # Étape 3 : Production
 FROM node:25-alpine3.22 AS runner
