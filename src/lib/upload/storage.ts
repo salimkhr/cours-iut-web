@@ -1,7 +1,18 @@
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
-import { UPLOAD_CONFIG } from "./config";
+
+function getUploadsBase(): string {
+    const val = process.env.UPLOADS_DIR;
+    if (!val) throw new Error("Variable d'environnement manquante : UPLOADS_DIR");
+    return val;
+}
+
+function getQuarantineBase(): string {
+    const val = process.env.QUARANTINE_DIR;
+    if (!val) throw new Error("Variable d'environnement manquante : QUARANTINE_DIR");
+    return val;
+}
 
 /**
  * Écrit le buffer dans uploads/<subdir>/<uuid>.<ext> avec permissions 640.
@@ -9,7 +20,7 @@ import { UPLOAD_CONFIG } from "./config";
  */
 export async function storeFinal(buf: Buffer, ext: string, subdir = "avatars"): Promise<string> {
     const filename = `${randomUUID()}.${ext}`;
-    const dir = path.join(UPLOAD_CONFIG.uploadsDir, subdir);
+    const dir = path.join(getUploadsBase(), subdir);
     await mkdir(dir, { recursive: true });
     await writeFile(path.join(dir, filename), buf, { mode: 0o640 });
     return filename;
@@ -20,7 +31,7 @@ export async function storeFinal(buf: Buffer, ext: string, subdir = "avatars"): 
  * Le nom inclut un timestamp pour faciliter l'audit.
  */
 export async function storeQuarantine(buf: Buffer, reason: string): Promise<void> {
-    const dir = UPLOAD_CONFIG.quarantineDir;
+    const dir = getQuarantineBase();
     await mkdir(dir, { recursive: true });
     const filename = `${Date.now()}_${randomUUID()}`;
     await writeFile(path.join(dir, filename), buf, { mode: 0o600 });

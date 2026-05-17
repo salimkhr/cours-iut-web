@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
 import path from "path";
-import { UPLOAD_CONFIG } from "@/lib/upload/config";
 
 const MIME: Record<string, string> = {
     jpg:  "image/jpeg",
@@ -32,7 +31,9 @@ export async function GET(
     }
 
     try {
-        const filePath = path.join(UPLOAD_CONFIG.uploadsDir, "avatars", filename);
+        const uploadsDir = process.env.UPLOADS_DIR;
+        if (!uploadsDir) throw new Error("Variable d'environnement manquante : UPLOADS_DIR");
+        const filePath = path.join(uploadsDir, "avatars", filename);
         const buffer = await readFile(filePath);
 
         return new NextResponse(buffer, {

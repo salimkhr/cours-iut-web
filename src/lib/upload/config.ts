@@ -1,10 +1,5 @@
-import path from "path";
-
 export const UPLOAD_CONFIG = {
     maxBytes: 10 * 1024 * 1024, // 10 Mo
-
-    uploadsDir:    process.env.UPLOADS_DIR    ?? path.join(process.cwd(), "uploads"),
-    quarantineDir: process.env.QUARANTINE_DIR ?? path.join(process.cwd(), "quarantine"),
 
     clamav: {
         host:    process.env.CLAMAV_HOST ?? "clamav",
