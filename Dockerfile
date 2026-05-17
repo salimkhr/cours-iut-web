@@ -1,5 +1,5 @@
 # Étape 1 : Dépendances
-FROM node:25-alpine3.22 AS deps
+FROM node:26-alpine AS deps
 RUN apk add --no-cache libc6-compat
 RUN npm install -g pnpm@11.1.2
 WORKDIR /app
@@ -8,7 +8,7 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # Étape 2 : Build
-FROM node:25-alpine3.22 AS builder
+FROM node:26-alpine AS builder
 RUN npm install -g pnpm@11.1.2
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -25,7 +25,7 @@ ENV NEXT_PUBLIC_RESTRICT_EMAIL_DOMAIN=$NEXT_PUBLIC_RESTRICT_EMAIL_DOMAIN
 RUN pnpm run build
 
 # Étape 3 : Production
-FROM node:25-alpine3.22 AS runner
+FROM node:26-alpine AS runner
 WORKDIR /app
 RUN apk add --no-cache vips && addgroup -S nodejs && adduser -S -G nodejs nextjs
 
