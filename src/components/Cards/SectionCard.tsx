@@ -22,6 +22,7 @@ interface SectionCardProps {
 export default function SectionCard({section, currentModule, isAdmin}: SectionCardProps) {
     const {path: modulePath} = currentModule;
     const [available, setAvailable] = useState(section.isAvailable);
+    const [pending, setPending] = useState(false);
     const isLocked = !isAdmin && !available;
     const sectionHref = available || isAdmin
         ? `/${modulePath}/${section.path}`
@@ -34,9 +35,17 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
     );
 
     async function handleToggleLock() {
+        if (pending) return;
         const next = !available;
+        setPending(true);
         setAvailable(next);
-        await updateSectionState(currentModule._id as string, section.order, 'isAvailable', next);
+        try {
+            await updateSectionState(currentModule._id as string, section.order, 'isAvailable', next);
+        } catch {
+            setAvailable(!next);
+        } finally {
+            setPending(false);
+        }
     }
 
     return (
@@ -100,6 +109,8 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                             <button
                                 type="button"
                                 onClick={handleToggleLock}
+                                disabled={pending}
+                                aria-busy={pending}
                                 className={cn(
                                     "pointer-events-auto inline-flex items-center gap-1 rounded-md px-2 py-0.5",
                                     "text-[10px] uppercase tracking-[0.18em] font-semibold",
