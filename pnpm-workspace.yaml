@@ -1,4 +1,4 @@
 allowBuilds:
-  bcrypt: false
-  sharp: false
-  unrs-resolver: false
+  bcrypt: true
+  sharp: true
+  unrs-resolver: true
