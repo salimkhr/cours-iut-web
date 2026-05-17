@@ -197,12 +197,39 @@ Si aucun problème dans une section, écrire "RAS".
 
 ### Consolidation
 
-Présenter les deux rapports l'un après l'autre, clairement séparés.
+Attendre les résultats de tous les sous-agents dispatchés, puis les présenter
+l'un après l'autre, clairement séparés.
 
 Enregistrer le rapport consolidé dans le dossier traité, sous le nom `REVIEW.md` :
-- Chemin : `[dossier_cible]/REVIEW.md` (ex. `src/cours/javascript/1-le-dom/REVIEW.md`)
-- Format : Markdown avec les deux rapports, la date, et le fichier révisé en en-tête
+- Chemin : `[dossier_cible]/REVIEW.md` (ex. `src/cours/javascript/2-les-evenements/REVIEW.md`)
 - Si le fichier existe déjà, l'écraser
+- Format :
+
+````markdown
+# REVIEW — [module] — [date]
+
+---
+
+## Rapport pédagogue
+[rapport sous-agent 1]
+
+---
+
+## Rapport étudiant
+[rapport sous-agent 2]
+
+---
+
+## Rapport cohérence inter-modules
+> Analyse de la continuité entre [NOM_N1] et [NOM_N]
+
+[rapport sous-agent 3]
+````
+
+Si `MODULE_PRECEDENT` est null, remplacer le contenu de la section
+"Rapport cohérence inter-modules" par le message stocké dans
+`MODULE_PRECEDENT_ERREUR`, ou si `MODULE_PRECEDENT_ERREUR` n'est pas défini :
+> Premier module — aucun prérequis inter-modules à vérifier.
 
 Puis proposer : **"Souhaitez-vous que je réécrive les passages ciblés ?"**
 Si oui, réécrire uniquement les passages identifiés en expliquant chaque changement.
