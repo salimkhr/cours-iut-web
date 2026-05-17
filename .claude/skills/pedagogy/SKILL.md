@@ -52,6 +52,17 @@ Avant de dispatcher les sous-agents, **lire tous les fichiers du dossier cible**
 1. Identifier le dossier (ex. `src/cours/javascript/1-le-dom/`)
 2. Lire **chaque fichier présent** avec l'outil Read : `Cours.tsx`, `Slide.tsx`, `TP.tsx`, `Examen.tsx`
 3. Passer **l'intégralité du contenu de chaque fichier** aux sous-agents, clairement séparé par fichier
+4. **Identifier le module N-1** :
+   - Extraire le préfixe numérique du dossier cible
+     (ex. `src/cours/javascript/2-les-evenements/` → préfixe `2`)
+   - Utiliser Glob sur le répertoire matière pour trouver un dossier dont le nom
+     commence par `{N-1}-` (ex. pour N=2, pattern `1-*` dans `src/cours/javascript/`)
+   - **Si N = 1** : définir `MODULE_PRECEDENT = null`
+   - **Si dossier N-1 trouvé** : lire chaque fichier présent (Cours.tsx, Slide.tsx,
+     TP.tsx, Examen.tsx) avec l'outil Read ; stocker sous `CONTENU_N1_COURS`,
+     `CONTENU_N1_SLIDE`, `CONTENU_N1_TP`. Fichiers absents = chaîne vide.
+   - **Si N > 1 mais dossier N-1 introuvable** : définir `MODULE_PRECEDENT = null`,
+     prévoir dans le REVIEW.md : "Module N-1 introuvable — vérification inter-modules ignorée."
 
 Tous les fichiers sont **simultanément en révision** : Cours.tsx, TP.tsx, Slide.tsx sont tous évalués,
 pas seulement l'un d'eux. Les sous-agents analysent chaque fichier individuellement **et** la cohérence
