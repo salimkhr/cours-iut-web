@@ -11,6 +11,7 @@ import Coefficient from "@/types/Coefficient";
 import Instructor from "@/types/Instructor";
 import {Textarea} from "@/components/ui/textarea";
 import {cn} from "@/lib/utils";
+import {FIXED_COMPETENCES, FIXED_SAES} from "@/lib/schemas/module.schema";
 
 interface AddModuleButtonProps {
     onAdd: (module: {
@@ -38,23 +39,6 @@ type FormData = {
     manager: Instructor;
     instructors: Instructor[];
 };
-
-const FIXED_COMPETENCES = [
-    "1/ Réaliser un développement",
-    "2/ Optimiser des applications",
-    "3/ Administrer des systèmes informatiques communicants complexes",
-    "4/ Gérer des données de l'information",
-    "5/ Conduire un projet",
-    "6/ Travailler en équipe"
-];
-
-const FIXED_SAES = [
-    "S2.01 : Développement d'application",
-    "S2.02 : Exploration algorithmique d'un problème",
-    "S2.05 : Gestion d'un projet",
-    "S3.01 : Développement d'une Application",
-    "S4.01 : Développement d'une application",
-];
 
 const inputCn = "bg-bridge-100/60 dark:bg-bridge-800/60 border-bridge-500/45 focus-visible:ring-bridge-500/50";
 const labelCn = "text-sm font-semibold text-brand-dark dark:text-bridge-200";
