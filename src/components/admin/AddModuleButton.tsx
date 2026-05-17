@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from 'react';
 import {useForm, useWatch} from 'react-hook-form';
-import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
+import {Sheet, SheetContent, SheetTitle, SheetDescription} from "@/components/ui/sheet";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
@@ -10,6 +10,7 @@ import Section from "@/types/Section";
 import Coefficient from "@/types/Coefficient";
 import Instructor from "@/types/Instructor";
 import {Textarea} from "@/components/ui/textarea";
+import {cn} from "@/lib/utils";
 
 interface AddModuleButtonProps {
     onAdd: (module: {
@@ -36,7 +37,6 @@ type FormData = {
     coefficients: Coefficient[];
     manager: Instructor;
     instructors: Instructor[];
-
 };
 
 const FIXED_COMPETENCES = [
@@ -49,12 +49,15 @@ const FIXED_COMPETENCES = [
 ];
 
 const FIXED_SAES = [
-    'S2.01 : Développement d\'application',
-    'S2.02 : Exploration algorithmique d\'un problème',
-    'S2.05 : Gestion d\'un projet',
-    'S3.01 : Développement d\'une Application',
-    'S4.01 : Développement d\'une application'
-]
+    "S2.01 : Développement d'application",
+    "S2.02 : Exploration algorithmique d'un problème",
+    "S2.05 : Gestion d'un projet",
+    "S3.01 : Développement d'une Application",
+    "S4.01 : Développement d'une application",
+];
+
+const inputCn = "bg-bridge-100/60 dark:bg-bridge-800/60 border-bridge-500/45 focus-visible:ring-bridge-500/50";
+const labelCn = "text-sm font-semibold text-brand-dark dark:text-bridge-200";
 
 export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChange}: AddModuleButtonProps) {
     const [internalOpen, setInternalOpen] = useState(false);
@@ -73,7 +76,6 @@ export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChan
     const title = useWatch({control, name: "title"});
     const instructors = useWatch({control, name: "instructors"});
 
-    // Met à jour automatiquement "path" à partir de "title"
     useEffect(() => {
         if (title) {
             setValue("path", title.toLowerCase().replace(/\s+/g, '-'));
@@ -85,7 +87,6 @@ export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChan
             ...data,
             sections: [],
         });
-
         reset();
         setOpen(false);
     };
@@ -94,118 +95,172 @@ export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChan
         <>
             {!isControlled && (
                 <div className="flex justify-end">
-                    <Button onClick={() => setOpen(true)} className="bg-brand-primary text-white hover:bg-brand-accent-dark">Ajouter un module</Button>
+                    <Button
+                        onClick={() => setOpen(true)}
+                        className="bg-brand-primary text-white hover:bg-brand-accent-dark"
+                    >
+                        Ajouter un module
+                    </Button>
                 </div>
             )}
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>Ajouter un nouveau module</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2">
 
-                        {/* Titre */}
-                        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-
-                            <div>
-                                <Label htmlFor="title">Titre *</Label>
-                                <Input
-                                    id="title"
-                                    {...register("title", {required: "Le titre est obligatoire"})}
-                                    aria-invalid={errors.title ? "true" : "false"}
-                                />
-                                {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
-                            </div>
-
-                            {/* Path */}
-                            <div>
-                                <Label htmlFor="path">Path *</Label>
-                                <Input
-                                    id="path"
-                                    {...register("path", {required: "Le path est obligatoire"})}
-                                    aria-invalid={errors.path ? "true" : "false"}
-                                />
-                                {errors.path && <p className="text-red-500 text-sm">{errors.path.message}</p>}
-                            </div>
+            <Sheet open={open} onOpenChange={setOpen}>
+                <SheetContent
+                    side="right"
+                    className={cn(
+                        'p-0 gap-0 overflow-hidden flex flex-col sm:max-w-[520px]',
+                        'bg-[#f7ebd9] dark:bg-[#13110d]',
+                        'border-l border-bridge-500/45',
+                        '[&>button]:text-white/80 [&>button:hover]:text-white',
+                    )}
+                >
+                    {/* Header */}
+                    <div className="relative flex items-center gap-4 px-6 py-5 pr-14 overflow-hidden shrink-0 bg-brand-primary">
+                        <div
+                            aria-hidden="true"
+                            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                        />
+                        <div className="flex flex-col gap-0.5">
+                            <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/60">
+                                Module
+                            </p>
+                            <SheetTitle className="text-white font-bold text-xl leading-tight p-0 m-0">
+                                Ajouter un nouveau module
+                            </SheetTitle>
                         </div>
+                        <SheetDescription className="sr-only">
+                            Formulaire de création d&apos;un nouveau module
+                        </SheetDescription>
+                    </div>
 
-                        {/* Icon */}
-                        <div>
-                            <Label htmlFor="iconName">Icon Name *</Label>
-                            <Input
-                                id="iconName"
-                                {...register("iconName", {required: "L'icône est obligatoire"})}
-                                aria-invalid={errors.iconName ? "true" : "false"}
-                            />
-                            {errors.iconName && <p className="text-red-500 text-sm">{errors.iconName.message}</p>}
-                        </div>
+                    {/* Body + Footer */}
+                    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 overflow-hidden">
+                        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
 
-                        {/* Description */}
-                        <div>
-                            <Label htmlFor="description">Description</Label>
-                            <Textarea
-                                id="description"
-                                {...register("description")}
-                            />
-                        </div>
-
-                        {/* Coefficients */}
-                        <div>
-                            <Label>Coefficients</Label>
-                            <div className="space-y-2">
-                                {FIXED_COMPETENCES.map((competence, index) => (
-                                    <div key={index} className="flex gap-2 items-center">
-                                        <span className="flex-1">{competence}</span>
-                                        <Input
-                                            type="number"
-                                            step="1"
-                                            className="w-24"
-                                            {...register(`coefficients.${index}.value` as const, {valueAsNumber: true})}
-                                        />
-                                        {/* Champ caché pour competenceName */}
-                                        <input
-                                            type="hidden" {...register(`coefficients.${index}.competenceName` as const)}
-                                            value={competence}/>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div>
-                            <Label>Responsable du module</Label>
-                            <div className="grid grid-cols-3 gap-2">
-                                <Input placeholder="Prénom" {...register("manager.firstName")} />
-                                <Input placeholder="Nom" {...register("manager.lastName")} />
-                                <Input placeholder="Email" type="email" {...register("manager.email")} />
-                            </div>
-                        </div>
-
-                        <div>
-                            <Label>Enseignants</Label>
-                            {instructors.map((_, index) => (
-                                <div key={index} className="grid grid-cols-3 gap-2 mb-2">
+                            {/* Titre + Path */}
+                            <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                                <div className="flex-1">
+                                    <Label htmlFor="am-title" className={labelCn}>Titre *</Label>
                                     <Input
-                                        placeholder="Prénom" {...register(`instructors.${index}.firstName` as const)} />
-                                    <Input placeholder="Nom" {...register(`instructors.${index}.lastName` as const)} />
-                                    <Input placeholder="Email"
-                                           type="email" {...register(`instructors.${index}.email` as const)} />
+                                        id="am-title"
+                                        className={inputCn}
+                                        {...register("title", {required: "Le titre est obligatoire"})}
+                                        aria-invalid={errors.title ? "true" : "false"}
+                                    />
+                                    {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
                                 </div>
-                            ))}
+                                <div className="w-36">
+                                    <Label htmlFor="am-path" className={labelCn}>Path *</Label>
+                                    <Input
+                                        id="am-path"
+                                        className={inputCn}
+                                        {...register("path", {required: "Le path est obligatoire"})}
+                                        aria-invalid={errors.path ? "true" : "false"}
+                                    />
+                                    {errors.path && <p className="text-red-500 text-xs mt-1">{errors.path.message}</p>}
+                                </div>
+                            </div>
+
+                            {/* Icon */}
+                            <div>
+                                <Label htmlFor="am-icon" className={labelCn}>Icon Name *</Label>
+                                <Input
+                                    id="am-icon"
+                                    className={inputCn}
+                                    {...register("iconName", {required: "L'icône est obligatoire"})}
+                                    aria-invalid={errors.iconName ? "true" : "false"}
+                                />
+                                {errors.iconName && <p className="text-red-500 text-xs mt-1">{errors.iconName.message}</p>}
+                            </div>
+
+                            {/* Description */}
+                            <div>
+                                <Label htmlFor="am-description" className={labelCn}>Description</Label>
+                                <Textarea id="am-description" className={inputCn} {...register("description")}/>
+                            </div>
+
+                            {/* Coefficients */}
+                            <div>
+                                <Label className={labelCn}>Coefficients</Label>
+                                <div className="space-y-2 mt-1">
+                                    {FIXED_COMPETENCES.map((competence, index) => (
+                                        <div key={index} className="flex gap-2 items-center">
+                                            <span className="flex-1 text-sm text-brand-dark dark:text-bridge-100">{competence}</span>
+                                            <Input
+                                                type="number"
+                                                step="1"
+                                                className={cn(inputCn, "w-20 text-center")}
+                                                {...register(`coefficients.${index}.value` as const, {valueAsNumber: true})}
+                                            />
+                                            <input
+                                                type="hidden"
+                                                {...register(`coefficients.${index}.competenceName` as const)}
+                                                value={competence}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Responsable */}
+                            <div>
+                                <Label className={labelCn}>Responsable du module</Label>
+                                <div className="grid grid-cols-3 gap-2 mt-1">
+                                    <Input placeholder="Prénom" className={inputCn} {...register("manager.firstName")}/>
+                                    <Input placeholder="Nom" className={inputCn} {...register("manager.lastName")}/>
+                                    <Input placeholder="Email" type="email" className={inputCn} {...register("manager.email")}/>
+                                </div>
+                            </div>
+
+                            {/* Enseignants */}
+                            <div>
+                                <Label className={labelCn}>Enseignants</Label>
+                                <div className="space-y-2 mt-1">
+                                    {instructors.map((_, index) => (
+                                        <div key={index} className="grid grid-cols-3 gap-2">
+                                            <Input placeholder="Prénom" className={inputCn} {...register(`instructors.${index}.firstName` as const)}/>
+                                            <Input placeholder="Nom" className={inputCn} {...register(`instructors.${index}.lastName` as const)}/>
+                                            <Input placeholder="Email" type="email" className={inputCn} {...register(`instructors.${index}.email` as const)}/>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* SAÉ */}
+                            <div>
+                                <Label className={labelCn}>SAÉ associées</Label>
+                                <select
+                                    multiple
+                                    className="mt-1 border border-bridge-500/45 rounded-md p-2 w-full bg-bridge-100/60 dark:bg-bridge-800/60"
+                                    {...register("associatedSae")}
+                                >
+                                    {FIXED_SAES.map((sae, index) => (
+                                        <option key={index} value={sae}>{sae}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
 
-                        <div>
-                            <select multiple
-                                    className="border border-gray-300 rounded-md p-2 w-full"  {...register("associatedSae")}>
-                                {FIXED_SAES.map((sae, index) => (<option key={index} value={sae}>{sae}</option>))}
-                            </select>
+                        {/* Footer sticky */}
+                        <div className="shrink-0 border-t border-bridge-700/20 dark:border-bridge-500/20 px-6 py-4 flex items-center justify-between gap-3">
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                className="text-brand-dark dark:text-bridge-200"
+                                onClick={() => setOpen(false)}
+                            >
+                                Annuler
+                            </Button>
+                            <Button
+                                type="submit"
+                                className="bg-brand-primary text-white hover:bg-brand-accent-dark"
+                            >
+                                Ajouter
+                            </Button>
                         </div>
-
-                        <DialogFooter>
-                            <Button type="submit" variant="outline">Ajouter</Button>
-                        </DialogFooter>
                     </form>
-                </DialogContent>
-            </Dialog>
+                </SheetContent>
+            </Sheet>
         </>
     );
 }
