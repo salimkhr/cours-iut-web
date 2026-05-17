@@ -37,7 +37,7 @@ export default function useRandomGif(tag = "404-not-found") {
   }, [tag]);
 
   useEffect(() => {
-    // chargement initial
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchGif();
   }, [fetchGif]);
 

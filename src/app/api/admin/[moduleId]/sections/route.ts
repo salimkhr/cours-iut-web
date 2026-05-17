@@ -69,7 +69,7 @@ export const PUT = withAdmin(async (
             return NextResponse.json({error: 'Section introuvable'}, {status: 404});
         }
 
-        const oldSection = currentModule.sections[oldSectionIndex];
+        const _oldSection = currentModule.sections[oldSectionIndex];
 
         // Mettre à jour la section dans la base de données
         const result = await db.collection<Module>('modules').updateOne(
