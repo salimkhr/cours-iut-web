@@ -51,7 +51,7 @@ export default function HeroSection({
             role="img"
             aria-label={imageAlt}
             className={cn(
-                "relative w-full bg-no-repeat bg-right-bottom bg-contain lg:bg-cover lg:bg-right-bottom overflow-hidden border-b border-brand-dark/15 dark:border-brand-light/15 -mt-(--navbar-h)",
+                "relative w-full bg-no-repeat bg-right-bottom bg-cover overflow-hidden border-b border-brand-dark/15 dark:border-brand-light/15 -mt-(--navbar-h)",
                 compact
                     ? "min-h-[26vh] lg:min-h-[34vh]"
                     : "min-h-[60vh] lg:min-h-[80vh]"

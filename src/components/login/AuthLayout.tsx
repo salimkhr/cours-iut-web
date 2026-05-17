@@ -26,7 +26,7 @@ export default function AuthLayout({title, description, children, wide = false}:
             className={cn(
                 "relative w-full min-h-screen overflow-hidden -mt-(--navbar-h)",
                 "bg-brand-light dark:bg-brand-dark",
-                "bg-no-repeat bg-cover bg-right lg:bg-right-bottom",
+                "bg-no-repeat bg-right-bottom bg-cover",
             )}
             style={{backgroundImage: `url(${heroImage})`}}
         >
