@@ -49,8 +49,8 @@ description: Aide à la rédaction et à la révision des contenus pédagogiques
 
 Avant de dispatcher les sous-agents, **lire tous les fichiers du dossier cible** :
 
-1. Identifier le dossier (ex. `src/cours/javascript/1-le-dom/`)
-2. Lire **chaque fichier présent** avec l'outil Read : `Cours.tsx`, `Slide.tsx`, `TP.tsx`, `Examen.tsx`
+1. Identifier le dossier (ex. `src/cours/javascript/2-les-evenements/`) ; stocker son nom (ex. `2-les-evenements`) sous `NOM_N`
+2. Lire **chaque fichier présent** avec l'outil Read : `Cours.tsx`, `Slide.tsx`, `TP.tsx`, `Examen.tsx` ; stocker le contenu sous `CONTENU_COURS`, `CONTENU_SLIDE`, `CONTENU_TP`, `CONTENU_EXAMEN`
 3. Passer **l'intégralité du contenu de chaque fichier** aux sous-agents, clairement séparé par fichier
 4. **Identifier le module N-1** :
    - Extraire le préfixe numérique entier du dossier cible (tous les chiffres consécutifs
