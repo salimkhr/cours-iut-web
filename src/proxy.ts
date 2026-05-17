@@ -13,6 +13,7 @@ const PUBLIC_PATHS = [
     "/email-verifie",
     "/reset-password",
     "/forgot-password",
+    "/resend-verification",
 ];
 
 function isPublic(pathname: string): boolean {

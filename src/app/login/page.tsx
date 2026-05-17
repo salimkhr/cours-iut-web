@@ -13,7 +13,7 @@ export default async function LoginPage() {
     return (
         <AuthLayout
             title="Connexion"
-            description="Retrouvez l'accès à vos cours, TP, slides et examens. Connectez-vous avec le même compte que l'intranet."
+            description="Connectez-vous avec le même compte que l'intranet."
         >
             <LoginForm/>
         </AuthLayout>

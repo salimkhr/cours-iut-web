@@ -51,7 +51,7 @@ export default function AuthLayout({title, description, children, wide = false}:
             <div className="relative z-10 mx-auto w-full max-w-7xl min-h-screen flex items-start lg:items-center justify-center lg:justify-start px-6 lg:pl-12 lg:pr-6 py-12 lg:py-20 opacity-0 animate-fade-in">
                 {/* Bloc unique en haut-gauche, comme la home : titre + descriptif
                     + formulaire empilés. Le pont reste libre sur la moitié droite. */}
-                <div className={cn("w-full", wide ? "max-w-[90vw] lg:max-w-[42vw]" : "max-w-md lg:max-w-[480px]")}>
+                <div className="w-full">
                     <h1 className="font-extrabold tracking-tight leading-[0.95] text-brand-dark dark:text-brand-light text-4xl sm:text-5xl lg:text-6xl text-center lg:text-left">
                         {title}
                         <span className="text-brand-accent-dark">.</span>
@@ -71,6 +71,7 @@ export default function AuthLayout({title, description, children, wide = false}:
                         "shadow-[0_12px_32px_-12px_rgba(147,97,58,0.45)]",
                         "dark:shadow-[0_12px_32px_-12px_rgba(0,0,0,0.7)]",
                         "backdrop-blur-md",
+                        wide ? "lg:max-w-[42vw]" : "lg:max-w-[480px]",
                     )}>
                         {children}
                     </div>

@@ -1,23 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import Link from "next/link";
 import Script from "next/script";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { AlertCircle, Mail, Send } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { Label } from "@/components/ui/label";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {z} from "zod";
+import {AlertCircle, Mail, Send} from "lucide-react";
+import {authClient} from "@/lib/auth-client";
+import {Button} from "@/components/ui/button";
+import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group";
+import {Label} from "@/components/ui/label";
 
 const schema = z.object({
     email: z.string().email("Adresse email invalide"),
 });
 type Values = z.infer<typeof schema>;
 
-export default function ForgotPasswordForm() {
+export default function ResendVerificationForm() {
     const [sent, setSent] = useState(false);
     const [serverError, setServerError] = useState<string | null>(null);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
@@ -25,7 +25,7 @@ export default function ForgotPasswordForm() {
     const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_TOKEN;
     const captchaRequired = !!sitekey;
 
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Values>({
+    const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm<Values>({
         resolver: zodResolver(schema),
     });
 
@@ -36,9 +36,9 @@ export default function ForgotPasswordForm() {
 
         const check = () => {
             if (window.turnstile) {
-                const el = document.querySelector(".captcha-container-forgot");
+                const el = document.querySelector(".captcha-container-resend");
                 if (el && el.innerHTML === "") {
-                    widgetId = window.turnstile.render(".captcha-container-forgot", {
+                    widgetId = window.turnstile.render(".captcha-container-resend", {
                         sitekey,
                         callback: (token: string) => setCaptchaToken(token),
                         theme: "auto",
@@ -67,17 +67,17 @@ export default function ForgotPasswordForm() {
         setServerError(null);
 
         const fetchOptions = captchaToken
-            ? { headers: { "x-captcha-response": captchaToken } }
+            ? {headers: {"x-captcha-response": captchaToken}}
             : undefined;
 
-        const { error } = await authClient.requestPasswordReset({
+        const {error} = await authClient.sendVerificationEmail({
             email: values.email,
-            redirectTo: `${window.location.origin}/reset-password`,
+            callbackURL: "/email-verifie",
             fetchOptions,
         });
 
         if (error) {
-            console.error("[forgot-password]", error);
+            console.error("[resend-verification]", error);
             setServerError(error.message ?? "Une erreur est survenue.");
             resetCaptcha();
             return;
@@ -90,10 +90,10 @@ export default function ForgotPasswordForm() {
         return (
             <div className="text-center space-y-5">
                 <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto">
-                    <Send className="w-6 h-6 text-green-600 dark:text-green-400" />
+                    <Send className="w-6 h-6 text-green-600 dark:text-green-400"/>
                 </div>
                 <p className="text-sm text-brand-gray-700 dark:text-brand-gray-300">
-                    Si un compte est associé à cette adresse, un lien de réinitialisation vient d&apos;être envoyé.
+                    Si un compte non vérifié est associé à cette adresse, un nouveau lien de confirmation vient d&apos;être envoyé.
                     Pensez à vérifier vos spams.
                 </p>
                 <Link
@@ -119,7 +119,7 @@ export default function ForgotPasswordForm() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 {serverError && (
                     <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700">
-                        <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
+                        <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0"/>
                         <p className="text-sm text-red-700 dark:text-red-300">{serverError}</p>
                     </div>
                 )}
@@ -134,7 +134,7 @@ export default function ForgotPasswordForm() {
                             {...register("email")}
                         />
                         <InputGroupAddon>
-                            <Mail className="h-5 w-5 text-brand-accent-dark/70" />
+                            <Mail className="h-5 w-5 text-brand-accent-dark/70"/>
                         </InputGroupAddon>
                     </InputGroup>
                     {errors.email && (
@@ -142,7 +142,7 @@ export default function ForgotPasswordForm() {
                     )}
                 </div>
 
-                {sitekey && <div className="captcha-container-forgot" />}
+                {sitekey && <div className="captcha-container-resend"/>}
 
                 <Button
                     type="submit"
@@ -150,7 +150,7 @@ export default function ForgotPasswordForm() {
                     size="lg"
                     className="w-full bg-brand-accent-dark text-white hover:bg-brand-accent-dark/90 flex items-center justify-center gap-2"
                 >
-                    {isSubmitting ? "Envoi…" : captchaRequired && !captchaToken ? "Validation du captcha…" : <><Send className="h-4 w-4"/>Envoyer le lien</>}
+                    {isSubmitting ? "Envoi…" : captchaRequired && !captchaToken ? "Validation du captcha…" : <><Send className="h-4 w-4"/>Renvoyer le lien de confirmation</>}
                 </Button>
 
                 <p className="text-center text-sm text-brand-gray-700 dark:text-brand-gray-300">
