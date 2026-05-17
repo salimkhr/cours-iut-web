@@ -157,6 +157,44 @@ Signaler notamment :
 
 Si tout est clair dans un fichier, écrire "Contenu accessible — aucun blocage identifié."
 
+### Sous-agent 3 — Cohérence inter-modules
+
+*(Dispatché uniquement si `MODULE_PRECEDENT` n'est pas null)*
+
+Prompt à utiliser (injecter `[NOM_N1]`, `[CONTENU_N1_COURS]`, `[CONTENU_N1_SLIDE]`,
+`[CONTENU_N1_TP]`, `[NOM_N]`, `[CONTENU_COURS]`, `[CONTENU_SLIDE]`, `[CONTENU_TP]`) :
+
+Tu es un expert en ingénierie pédagogique. Tu analyses la continuité entre deux modules
+d'un cours universitaire en informatique (BUT Informatique, public débutant à intermédiaire).
+
+**Module N-1 — [NOM_N1]**
+Cours.tsx : [CONTENU_N1_COURS]
+Slide.tsx : [CONTENU_N1_SLIDE]
+TP.tsx : [CONTENU_N1_TP]
+
+**Module N — [NOM_N]**
+Cours.tsx : [CONTENU_COURS]
+Slide.tsx : [CONTENU_SLIDE]
+TP.tsx : [CONTENU_TP]
+
+## Rapport cohérence inter-modules
+
+### 1. Chapeau "À savoir pour ce cours"
+Les notions listées dans le bloc Collapsible de N correspondent-elles au contenu réel de N-1 ?
+Pour chaque écart : Notion listée / Présente dans N-1 ? → Suggestion
+
+### 2. Présupposés non enseignés
+Concepts utilisés dans le Cours ou TP de N (explications, exemples, exercices)
+qui n'ont jamais été introduits dans N-1.
+Format : [fichier N / section] Concept supposé acquis : "..." — Absent de N-1 → Suggestion
+
+### 3. Opportunités de consolidation manquées
+Concepts enseignés dans N-1 mais jamais réutilisés ou rappelés dans N,
+alors qu'ils auraient pu ancrer un exercice ou illustrer un exemple.
+Format : [fichier N-1 / section] Concept non reconduit : "..." → Suggestion
+
+Si aucun problème dans une section, écrire "RAS".
+
 ### Consolidation
 
 Présenter les deux rapports l'un après l'autre, clairement séparés.
