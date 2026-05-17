@@ -1,8 +1,9 @@
 'use client';
 
+import {useState} from 'react';
 import Link from "next/link";
 import {motion, useReducedMotion} from 'framer-motion';
-import {BookOpen, Clock, Gitlab, Lock} from "lucide-react";
+import {BookOpen, Clock, Gitlab, Lock, Unlock} from "lucide-react";
 
 import Section from "@/types/Section";
 import Module from "@/types/Module";
@@ -10,6 +11,7 @@ import {cn} from "@/lib/utils";
 import {CONTENT_ICON, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
 import {Button} from "@/components/ui/button";
 import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
+import updateSectionState from "@/hook/admin/updateSectionState";
 
 interface SectionCardProps {
     section: Section;
@@ -19,8 +21,9 @@ interface SectionCardProps {
 
 export default function SectionCard({section, currentModule, isAdmin}: SectionCardProps) {
     const {path: modulePath} = currentModule;
-    const isLocked = !isAdmin && !section.isAvailable;
-    const sectionHref = section.isAvailable || isAdmin
+    const [available, setAvailable] = useState(section.isAvailable);
+    const isLocked = !isAdmin && !available;
+    const sectionHref = available || isAdmin
         ? `/${modulePath}/${section.path}`
         : '#';
 
@@ -29,6 +32,12 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
     const sortedContents = [...section.contents].sort(
         (a, b) => CONTENT_ORDER.indexOf(a as ContentKey) - CONTENT_ORDER.indexOf(b as ContentKey)
     );
+
+    async function handleToggleLock() {
+        const next = !available;
+        setAvailable(next);
+        await updateSectionState(currentModule._id as string, section.order, 'isAvailable', next);
+    }
 
     return (
         <motion.article
@@ -59,14 +68,12 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                 />
             )}
 
-            {/* Top edge highlight (décoratif, sans pointer-events) */}
+            {/* Top edge highlight */}
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-2xl bg-linear-to-r from-transparent via-bridge-100/70 to-transparent dark:via-bridge-500/30 z-10"
             />
 
-            {/* CONTENU — z-20 > overlay (z-10), pointer-events-none pour
-                laisser passer les clics ; les boutons réactivent auto. */}
             <div className="relative z-20 flex flex-col gap-7 h-full pointer-events-none">
 
                 {/* Header: order chip + title + duration + lock state */}
@@ -89,11 +96,39 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                             {section.totalDuration}
                             <span className="hidden sm:inline">&nbsp;séance{section.totalDuration > 1 ? 's' : ''}</span>
                         </span>
-                        {isLocked && (
-                            <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100">
-                                <Lock className="w-3 h-3"/>
-                                <span className="hidden sm:inline">Verrouillé</span>
-                            </span>
+                        {isAdmin ? (
+                            <button
+                                type="button"
+                                onClick={handleToggleLock}
+                                className={cn(
+                                    "pointer-events-auto inline-flex items-center gap-1 rounded-md px-2 py-0.5",
+                                    "text-[10px] uppercase tracking-[0.18em] font-semibold",
+                                    "transition-colors duration-200 cursor-pointer",
+                                    available
+                                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50"
+                                        : "bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100 hover:bg-bridge-700/50"
+                                )}
+                                aria-label={available ? "Verrouiller la section" : "Déverrouiller la section"}
+                            >
+                                {available ? (
+                                    <>
+                                        <Unlock className="w-3 h-3"/>
+                                        <span className="hidden sm:inline">Disponible</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Lock className="w-3 h-3"/>
+                                        <span className="hidden sm:inline">Verrouillé</span>
+                                    </>
+                                )}
+                            </button>
+                        ) : (
+                            isLocked && (
+                                <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100">
+                                    <Lock className="w-3 h-3"/>
+                                    <span className="hidden sm:inline">Verrouillé</span>
+                                </span>
+                            )
                         )}
                     </div>
                 </header>
@@ -119,7 +154,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                     </div>
                 )}
 
-                {/* Actions — réactivent les clics dans le wrapper non-cliquable */}
+                {/* Actions */}
                 <div className="flex flex-wrap gap-2.5 pt-3 mt-auto border-t border-bridge-700/20 dark:border-bridge-500/20 pointer-events-auto">
                     {sortedContents.map((item) => {
                         const Icon = CONTENT_ICON[item as ContentKey] ?? BookOpen;
