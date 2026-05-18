@@ -1,5 +1,5 @@
 ---
-name: pedagogy:write
+name: pedagogy-write
 description: Rédaction de nouveaux contenus pédagogiques (Cours, TP, Slide, Examen) pour le site de cours IUT BUT Informatique.
 ---
 

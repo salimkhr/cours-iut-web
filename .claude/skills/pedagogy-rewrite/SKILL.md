@@ -1,5 +1,5 @@
 ---
-name: pedagogy:rewrite
+name: pedagogy-rewrite
 description: Réécriture guidée de contenus pédagogiques à partir d'un REVIEW.md. Regroupe les problèmes par thème, brainstorme 2-3 angles de correction par thème, réécrit et marque les items comme traités.
 ---
 

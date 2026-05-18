@@ -1,5 +1,5 @@
 ---
-name: pedagogy:review
+name: pedagogy-review
 description: Révision et critique des contenus pédagogiques (Cours, TP, Slide, Examen) pour le site de cours IUT BUT Informatique. Dispatche 3 sous-agents en parallèle et produit un REVIEW.md avec cases à cocher.
 ---
 
