@@ -155,8 +155,10 @@ Si aucun problème dans une section, écrire "RAS".
 ## Consolidation
 
 Attendre les résultats de tous les sous-agents dispatchés, puis écrire `REVIEW.md` :
-- Chemin : `[dossier_cible]/REVIEW.md`
-- Si le fichier existe déjà, l'écraser
+- Dériver `[matiere]` et `[n-slug]` depuis les deux derniers segments non vides du chemin `dossier_cible`
+  (ex. `src/cours/javascript/1-le-dom/` → `matiere=javascript`, `n-slug=1-le-dom`)
+- Écrire dans `reviews/[matiere]-[n-slug]-REVIEW.md` à la racine du projet
+- Créer le dossier `reviews/` s'il n'existe pas. Si le fichier existe déjà, l'écraser.
 
 ```
 # REVIEW — [module] — [date]
