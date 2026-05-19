@@ -4,10 +4,51 @@ import Code from "@/components/ui/Code";
 import Heading from "@/components/ui/Heading";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import CodeCard from "@/components/Cards/CodeCard";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
 
 export default function Cours() {
     return (
         <article>
+            <CoursePrerequisites>
+                <Text>
+                    <strong>Les fonctions fléchées</strong> sont utilisées partout dans les traitements
+                    asynchrones — en particulier comme callbacks passés à <Code>then</Code> et comme
+                    corps de fonctions <Code>async</Code>.
+                </Text>
+                <CodeCard language="javascript" title="Fonction fléchée">
+                    {`const doubler = (x) => x * 2;
+const saluer = (nom) => {
+    return "Bonjour " + nom;
+};`}
+                </CodeCard>
+
+                <Text>
+                    <strong>Les méthodes de tableau</strong> <Code>map</Code> et <Code>filter</Code>{" "}
+                    servent à transformer et filtrer les données reçues d&apos;une API avant de les
+                    afficher.
+                </Text>
+                <CodeCard language="javascript" title="map et filter">
+                    {`const noms = utilisateurs.map((u) => u.nom);
+const majeurs = utilisateurs.filter((u) => u.age >= 18);`}
+                </CodeCard>
+
+                <Text>
+                    <strong>Modifier le DOM après réception des données</strong> — <Code>innerHTML</Code>{" "}
+                    et <Code>createElement</Code> permettent d&apos;injecter les résultats d&apos;une API
+                    directement dans la page.
+                </Text>
+                <CodeCard language="javascript" title="Afficher dans le DOM">
+                    {`const liste = document.getElementById("resultats");
+liste.innerHTML = "<li>Élément chargé</li>";`}
+                </CodeCard>
+
+                <Text>
+                    <strong>Les événements</strong> déclenchent souvent les appels réseau —{" "}
+                    <Code>addEventListener("click", ...)</Code> sur un bouton pour lancer une
+                    requête à la demande de l&apos;utilisateur.
+                </Text>
+            </CoursePrerequisites>
+
             <section>
                 <Heading level={2}>A- Introduction aux API et à la sécurité</Heading>
                 <Text>

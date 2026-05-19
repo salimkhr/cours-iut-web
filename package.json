@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "postbuild_linux": "cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
     "postbuild_win": "xcopy /E /I .next\\static .next\\standalone\\.next\\static && xcopy /E /I public .next\\standalone\\public",
@@ -99,12 +99,12 @@
     "typescript": "5.9.3"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["bcrypt", "sharp", "unrs-resolver"],
-    "overrides": {
-      "lodash-es": "^4.17.23",
-      "uuid": "^14.0.0",
-      "postcss@8.4.31": "^8.5.10"
-    }
+    "onlyBuiltDependencies": ["bcrypt", "sharp", "unrs-resolver"]
   },
-  "packageManager": "pnpm@11.1.2"
+  "packageManager": "pnpm@11.1.2",
+  "overrides": {
+    "lodash-es": "^4.17.23",
+    "uuid": "^14.0.0",
+    "postcss@8.4.31": "^8.5.10"
+  }
 }

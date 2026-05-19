@@ -4,10 +4,20 @@ import Code from "@/components/ui/Code";
 import CodeCard from "@/components/Cards/CodeCard";
 import {List, ListItem} from "@/components/ui/List";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
 
 export default function Cours() {
     return (
         <article>
+            <CoursePrerequisites>
+                <Text><strong>Formulaires PHP</strong> — <Code>$_POST</Code> contient les données soumises, <Code>isset()</Code> vérifie leur présence, <Code>htmlspecialchars()</Code> les sécurise.</Text>
+                <Text><strong>Écriture en base</strong> — les méthodes <Code>create()</Code> et <Code>update()</Code> du repository exécutent des INSERT et UPDATE via des requêtes PDO préparées.</Text>
+                <CodeCard language="php" title="Écriture via repository">
+                    {`$category = new Category(0, $name);
+$this->repo->create($category); // INSERT en base`}
+                </CodeCard>
+                <Text><strong>Redirection après traitement</strong> — après un POST réussi, le contrôleur redirige vers une page GET pour éviter la re-soumission du formulaire.</Text>
+            </CoursePrerequisites>
             {/* SECTION 1 : INTRODUCTION */}
             <section>
                 <Heading level={2}>Introduction aux sessions</Heading>

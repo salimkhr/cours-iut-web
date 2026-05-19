@@ -1,4 +1,5 @@
 import CodeCard from "@/components/Cards/CodeCard";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
 import Text from "@/components/ui/Text";
 import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
@@ -7,7 +8,64 @@ import Heading from "@/components/ui/Heading";
 export default function Cours() {
     return (
         <article>
+            <CoursePrerequisites>
+                <Text>
+                    <strong>La structure d&apos;une page HTML</strong> repose sur quatre balises
+                    imbriquées : <Code>&lt;html&gt;</Code> contient tout, <Code>&lt;head&gt;</Code>{" "}
+                    porte les métadonnées (titre, encodage, styles), <Code>&lt;body&gt;</Code>{" "}
+                    contient le contenu visible.
+                </Text>
+                <CodeCard language="html" title="Squelette HTML">
+                    {`<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Ma page</title>
+    </head>
+    <body>
+        <h1>Titre principal</h1>
+        <p>Un paragraphe.</p>
+    </body>
+</html>`}
+                </CodeCard>
+
+                <Text>
+                    <strong>Les balises de contenu courantes</strong> structurent le texte et les blocs
+                    de la page : <Code>&lt;div&gt;</Code> et <Code>&lt;span&gt;</Code> sont des
+                    conteneurs neutres, <Code>&lt;p&gt;</Code> un paragraphe,{" "}
+                    <Code>&lt;h1&gt;</Code>–<Code>&lt;h6&gt;</Code> des titres hiérarchisés.
+                </Text>
+                <CodeCard language="html" title="Balises courantes">
+                    {`<div class="carte">
+    <h2>Titre de la carte</h2>
+    <p>Description <span class="important">importante</span>.</p>
+</div>`}
+                </CodeCard>
+
+                <Text>
+                    <strong>L&apos;attribut <Code>id</Code></strong> donne un identifiant unique à un
+                    élément. <strong>L&apos;attribut <Code>class</Code></strong> lui attribue une ou
+                    plusieurs classes réutilisables sur plusieurs éléments.
+                </Text>
+                <CodeCard language="html" title="Attributs id et class">
+                    {`<h1 id="titre-principal">Bienvenue</h1>
+<p class="intro">Premier paragraphe.</p>
+<p class="intro important">Deuxième paragraphe.</p>`}
+                </CodeCard>
+
+                <Text>
+                    <strong>Les sélecteurs CSS</strong> permettent de cibler des éléments pour leur
+                    appliquer des styles : par balise, par classe avec <Code>.</Code> ou par identifiant
+                    avec <Code>#</Code>.
+                </Text>
+                <CodeCard language="css" title="Sélecteurs CSS">
+                    {`p { color: black; }        /* tous les <p> */
+.intro { font-size: 1rem; } /* class="intro" */
+#titre-principal { }        /* id="titre-principal" */`}
+                </CodeCard>
+            </CoursePrerequisites>
             <section>
+                <Heading level={2}>A- Introduction au JavaScript</Heading>
                 <Text>
                     JavaScript est un langage de programmation utilisé pour rendre les pages web
                     interactives. C&apos;est l&apos;un des trois piliers du développement web :
@@ -17,10 +75,6 @@ export default function Cours() {
                     <ListItem><strong>CSS</strong> : mise en forme.</ListItem>
                     <ListItem><strong>JavaScript</strong> : interactions et logique.</ListItem>
                 </List>
-            </section>
-
-            <section>
-                <Heading level={2}>A- Introduction au JavaScript</Heading>
 
                 <Heading level={3}>1. Inclure JavaScript dans un fichier HTML</Heading>
                 <Text>
@@ -49,6 +103,20 @@ export default function Cours() {
     </body>
 </html>`}
                 </CodeCard>
+                <Text>
+                    Important : placez toujours la balise <Code>&lt;script&gt;</Code> juste avant{" "}
+                    <Code>&lt;/body&gt;</Code>. Si elle se trouve dans le <Code>&lt;head&gt;</Code>,
+                    JavaScript s&apos;exécute avant que les éléments HTML soient chargés et ne peut pas
+                    les trouver. Vous pouvez aussi utiliser l&apos;attribut <Code>defer</Code> qui charge
+                    le script en parallèle et l&apos;exécute une fois la page prête :{" "}
+                    <Code>{`<script src="script.js" defer></script>`}</Code>.
+                </Text>
+                <Text>
+                    Dès que votre script est chargé, vous pouvez afficher des messages dans la console
+                    du navigateur avec <Code>console.log()</Code>. Ouvrez la console maintenant avec{" "}
+                    <Code>F12</Code> → onglet <Code>Console</Code> — les détails de l&apos;outil sont
+                    présentés en section G.
+                </Text>
             </section>
 
             <section>
@@ -71,8 +139,11 @@ export default function Cours() {
                         changer au cours de l&apos;exécution du programme.
                     </ListItem>
                     <ListItem>
-                        <strong><Code>var</Code></strong> est similaire à <Code>let</Code> mais a un
-                        comportement de portée global ou de fonction. À ne plus utiliser.
+                        <strong><Code>var</Code></strong> est l&apos;ancienne façon de déclarer des
+                        variables. À ne plus utiliser : <Code>var</Code> est <em>remonté</em> (hoisted)
+                        en haut de sa portée — la variable est connue avant même sa déclaration, ce qui
+                        produit des comportements inattendus. De plus, il autorise la redéclaration
+                        silencieuse sans erreur.
                     </ListItem>
                 </List>
 
@@ -91,10 +162,13 @@ let age = 25;
 age = 26;
 console.log(age); // 26
 
-// var : ancien mot-clé, à ne plus utiliser
-var name = "Alice";
-name = "Bob";
-console.log(name); // Bob`}
+// var : hoisting — variable connue avant sa déclaration
+console.log(compteur); // undefined (pas d'erreur, mais pas 0 !)
+var compteur = 0;
+
+// var autorise la redéclaration silencieuse
+var x = 1;
+var x = 2; // Aucune erreur — avec let ce serait une erreur`}
                 </CodeCard>
 
                 <Heading level={3}>2. Types de données</Heading>
@@ -121,7 +195,18 @@ const fruits = ["pomme", "banane", "cerise"]; // type: array
 const personne = {
     nom: "Alice", // string
     age: 25       // number
-};`}
+};
+
+// Valeurs spéciales
+let nonDefini;           // undefined : variable déclarée sans valeur assignée
+const absent = null;     // null : absence intentionnelle de valeur
+
+// typeof révèle le type d'une valeur
+console.log(typeof message);   // "string"
+console.log(typeof age);       // "number"
+console.log(typeof isStudent); // "boolean"
+console.log(typeof fruits);    // "object" ← pas "array" (particularité de JS à connaître)
+console.log(typeof null);      // "object" ← autre curiosité historique de JS`}
                 </CodeCard>
             </section>
 
@@ -235,7 +320,9 @@ if (temperature > 25) {
                 <Text>
                     Le <Code>switch</Code> est utilisé lorsque l&apos;on compare{" "}
                     <strong>une même valeur à plusieurs cas possibles</strong>. Il est souvent plus lisible
-                    qu&apos;une succession de <Code>if...else if</Code>.
+                    qu&apos;une succession de <Code>if...else if</Code>. Le mot-clé <Code>break</Code>{" "}
+                    est indispensable à la fin de chaque cas : sans lui, l&apos;exécution continue dans
+                    le cas suivant (<em>fall-through</em>), ce qui est rarement voulu.
                 </Text>
                 <CodeCard language="javascript">
                     {`const day = 3;
@@ -274,13 +361,35 @@ console.log(statut); // "majeur"`}
                     transformer et analyser leurs données.
                 </Text>
 
-                <Heading level={3}>1. Parcourir un tableau</Heading>
+                <Heading level={3}>1. Ajouter, supprimer et rechercher</Heading>
+                <Text>
+                    Avant de parcourir ou transformer un tableau, il est utile de savoir y ajouter et
+                    rechercher des éléments.
+                </Text>
+                <CodeCard language="javascript">
+                    {`const fruits = ["pomme", "banane"];
+
+// Ajouter à la fin
+fruits.push("cerise");         // ["pomme", "banane", "cerise"]
+
+// Supprimer le dernier élément
+const dernier = fruits.pop();  // dernier = "cerise", fruits = ["pomme", "banane"]
+
+// Chercher l'index d'une valeur (-1 si absente)
+const idx = fruits.indexOf("banane"); // 1
+const absent = fruits.indexOf("kiwi"); // -1
+
+// Vérifier la présence d'une valeur
+const existe = fruits.includes("pomme"); // true`}
+                </CodeCard>
+
+                <Heading level={3}>2. Parcourir un tableau</Heading>
                 <Text>
                     JavaScript propose plusieurs façons de parcourir un tableau. Le choix dépend du type de
                     traitement que vous souhaitez effectuer.
                 </Text>
 
-                <Heading level={4}>1.1 Boucle <Code>for</Code> classique</Heading>
+                <Heading level={4}>2.1 Boucle <Code>for</Code> classique</Heading>
                 <Text>
                     La boucle <Code>for</Code> permet de parcourir un tableau à l&apos;aide de son index.
                     Elle est utile lorsque l&apos;on a besoin de contrôler précisément la boucle.
@@ -293,7 +402,7 @@ for (let i = 0; i < fruits.length; i++) {
 }`}
                 </CodeCard>
 
-                <Heading level={4}>1.2 Méthode <Code>forEach</Code></Heading>
+                <Heading level={4}>2.2 Méthode <Code>forEach</Code></Heading>
                 <Text>
                     <Code>forEach</Code> exécute une fonction pour chaque élément du tableau. Elle est
                     idéale lorsque l&apos;on souhaite simplement effectuer une action sur chaque valeur.
@@ -306,7 +415,7 @@ fruits.forEach((fruit) => {
 });`}
                 </CodeCard>
 
-                <Heading level={4}>1.3 Boucle <Code>for...of</Code></Heading>
+                <Heading level={4}>2.3 Boucle <Code>for...of</Code></Heading>
                 <Text>
                     <Code>for...of</Code> permet de parcourir directement les valeurs d&apos;un tableau,
                     sans passer par les indices.
@@ -319,7 +428,7 @@ for (const fruit of fruits) {
 }`}
                 </CodeCard>
 
-                <Heading level={3}>2. Transformer un tableau avec <Code>map</Code></Heading>
+                <Heading level={3}>3. Transformer un tableau avec <Code>map</Code></Heading>
                 <Text>
                     La méthode <Code>map</Code> permet de <strong>transformer chaque élément</strong>{" "}
                     d&apos;un tableau et de retourner un <strong>nouveau tableau</strong>. Le tableau
@@ -352,7 +461,7 @@ const names = users.map((user) => user.name);
 console.log(names); // ["Alice", "Bob", "Charlie"]`}
                 </CodeCard>
 
-                <Heading level={3}>3. Filtrer un tableau avec <Code>filter</Code></Heading>
+                <Heading level={3}>4. Filtrer un tableau avec <Code>filter</Code></Heading>
                 <Text>
                     La méthode <Code>filter</Code> permet de créer un nouveau tableau contenant uniquement
                     les éléments qui respectent une condition.
@@ -384,7 +493,7 @@ const adultUsers = users.filter((user) => user.age >= 18);
 console.log(adultUsers);`}
                 </CodeCard>
 
-                <Heading level={3}>4. Réduire un tableau avec <Code>reduce</Code></Heading>
+                <Heading level={3}>5. Réduire un tableau avec <Code>reduce</Code></Heading>
                 <Text>
                     La méthode <Code>reduce</Code> permet de <strong>combiner toutes les valeurs</strong>{" "}
                     d&apos;un tableau en une seule (nombre, chaîne, objet, tableau, etc.).
@@ -395,7 +504,13 @@ console.log(adultUsers);`}
                 <CodeCard language="javascript">
                     {`const numbers = [1, 2, 3, 4, 5];
 
-// Calculer la somme des nombres
+// À chaque itération, reduce passe l'accumulateur (résultat précédent) à la fonction :
+// Départ : acc = 0            (valeur initiale fournie en 2e argument)
+// Tour 1 : acc = 0  + 1  → 1
+// Tour 2 : acc = 1  + 2  → 3
+// Tour 3 : acc = 3  + 3  → 6
+// Tour 4 : acc = 6  + 4  → 10
+// Tour 5 : acc = 10 + 5  → 15
 const sum = numbers.reduce((accumulator, current) => accumulator + current, 0);
 
 console.log(sum); // 15`}
@@ -414,10 +529,11 @@ const total = cart.reduce((acc, product) => acc + product.price * product.quanti
 console.log(total); // 1050`}
                 </CodeCard>
 
-                <Heading level={3}>5. Chaînage des méthodes</Heading>
+                <Heading level={3}>6. Chaînage des méthodes</Heading>
                 <Text>
                     Les méthodes <Code>map</Code>, <Code>filter</Code> et <Code>reduce</Code> peuvent être
-                    enchaînées pour effectuer des traitements complexes de manière lisible et expressive.
+                    enchaînées : chaque méthode reçoit le tableau produit par la précédente. L&apos;ordre
+                    d&apos;écriture est l&apos;ordre d&apos;exécution, de haut en bas.
                 </Text>
                 <CodeCard language="javascript">
                     {`const users = [
@@ -719,6 +835,31 @@ const allElements = document.querySelectorAll(".maClasse");`}
                         correspondant à un sélecteur CSS, renvoie une <Code>NodeList</Code>.
                     </ListItem>
                 </List>
+                <Text>
+                    <strong>HTMLCollection vs NodeList</strong> — <Code>getElementsByClassName</Code> et{" "}
+                    <Code>getElementsByTagName</Code> renvoient une <Code>HTMLCollection</Code>, qui ne
+                    supporte pas <Code>forEach</Code>. Utilisez <Code>for...of</Code> ou accédez aux
+                    éléments par leur index. <Code>querySelectorAll</Code> renvoie une{" "}
+                    <Code>NodeList</Code> qui supporte <Code>forEach</Code>.
+                </Text>
+                <CodeCard language="javascript">
+                    {`// getElementsByClassName → HTMLCollection (pas de forEach)
+const items = document.getElementsByClassName("item");
+
+// Accéder à un élément précis par son index
+items[0].textContent = "Premier élément modifié";
+
+// Itérer sur une HTMLCollection avec for...of
+for (const item of items) {
+    item.classList.add("highlight");
+}
+
+// querySelectorAll → NodeList (forEach disponible)
+const allItems = document.querySelectorAll(".item");
+allItems.forEach((item) => {
+    item.classList.add("highlight");
+});`}
+                </CodeCard>
 
                 <Heading level={3}>2. Manipuler des éléments</Heading>
                 <Text>
@@ -754,8 +895,9 @@ element.classList.toggle("toggleClasse"); // Bascule ajout/suppression`}
                     </ListItem>
                     <ListItem>
                         <strong><Code>setAttribute</Code></strong> : modifie un attribut de l&apos;élément.
-                        Ici, l&apos;attribut <Code>required</Code> est ajouté pour rendre la saisie
-                        obligatoire dans l&apos;input.
+                        Fonctionne avec tous les attributs HTML valides, y compris les attributs
+                        personnalisés <Code>data-*</Code> qui permettent de stocker des données sur un
+                        élément : <Code>{"element.setAttribute('data-id', '42')"}</Code>.
                     </ListItem>
                     <ListItem>
                         <strong><Code>getAttribute</Code></strong> : récupère la valeur d&apos;un attribut
@@ -767,9 +909,11 @@ element.classList.toggle("toggleClasse"); // Bascule ajout/suppression`}
                     </ListItem>
                     <ListItem>
                         <strong><Code>innerHTML</Code></strong> : modifie tout le contenu HTML à
-                        l&apos;intérieur de l&apos;élément, balises comprises. À utiliser avec précaution
-                        pour éviter les vulnérabilités XSS — préférez <Code>textContent</Code> pour du
-                        texte simple.
+                        l&apos;intérieur de l&apos;élément, balises comprises. Sûr si le contenu est
+                        statique (écrit dans votre code). Dangereux si le contenu vient de
+                        l&apos;utilisateur : c&apos;est une faille XSS (<em>Cross-Site Scripting</em>),
+                        où du code malveillant peut être injecté dans la page via la saisie.
+                        Dans ce cas, utilisez <Code>textContent</Code> à la place.
                     </ListItem>
                     <ListItem>
                         <strong><Code>classList</Code></strong> : manipule les classes d&apos;un élément
@@ -778,6 +922,46 @@ element.classList.toggle("toggleClasse"); // Bascule ajout/suppression`}
                         directement l&apos;attribut <Code>class</Code>.
                     </ListItem>
                 </List>
+                <Text>
+                    Pour les attributs <Code>data-*</Code>, l&apos;API <Code>dataset</Code> est plus
+                    concise que <Code>setAttribute</Code>/<Code>getAttribute</Code>. Elle convertit
+                    automatiquement le nom en camelCase : l&apos;attribut HTML{" "}
+                    <Code>data-en-stock</Code> devient <Code>element.dataset.enStock</Code>.
+                </Text>
+                <CodeCard language="javascript">
+                    {`const carte = document.getElementById("carte-produit");
+
+// Via setAttribute / getAttribute (verbeux)
+carte.setAttribute("data-prix", "29.99");
+console.log(carte.getAttribute("data-prix")); // "29.99"
+
+// Via dataset (plus lisible)
+carte.dataset.prix = "29.99";
+carte.dataset.enStock = "true";     // → attribut data-en-stock dans le HTML
+console.log(carte.dataset.prix);    // "29.99"
+console.log(carte.dataset.enStock); // "true"`}
+                </CodeCard>
+                <Text>
+                    <Code>innerHTML</Code> est particulièrement utile pour injecter du HTML structuré,
+                    comme des lignes de tableau générées depuis un tableau de données :
+                </Text>
+                <CodeCard language="javascript">
+                    {`const tbody = document.getElementById("liste");
+
+const utilisateurs = [
+    { prenom: "Alice", age: 25 },
+    { prenom: "Bob",   age: 17 }
+];
+
+utilisateurs.forEach((utilisateur) => {
+    tbody.innerHTML += \`
+        <tr>
+            <td>\${utilisateur.prenom}</td>
+            <td>\${utilisateur.age} ans</td>
+        </tr>
+    \`;
+});`}
+                </CodeCard>
 
                 <Heading level={3}>3. Ajouter ou supprimer des éléments</Heading>
                 <Text>
@@ -830,6 +1014,38 @@ element.remove();`}
                         n&apos;apparaîtra plus dans le navigateur.
                     </ListItem>
                 </List>
+                <Text>
+                    Pour construire du HTML complexe avec <Code>createElement</Code>, créez chaque
+                    élément séparément et assemblez-les du plus profond vers le plus haut — enfant
+                    d&apos;abord, parent ensuite. Exemple avec une liste de définitions{" "}
+                    <Code>&lt;dl&gt;</Code> :
+                </Text>
+                <CodeCard language="javascript">
+                    {`const glossaire = document.getElementById("glossaire");
+
+const termes = [
+    { mot: "DOM",  definition: "Représentation en arbre d'une page HTML." },
+    { mot: "CSS",  definition: "Langage de mise en forme des pages web." },
+    { mot: "HTML", definition: "Langage de structuration du contenu web." }
+];
+
+termes.forEach((terme) => {
+    // 1. Créer le groupe (div englobe dt + dd)
+    const groupe = document.createElement("div");
+
+    // 2. Créer le terme et sa définition
+    const dt = document.createElement("dt");
+    dt.textContent = terme.mot;
+
+    const dd = document.createElement("dd");
+    dd.textContent = terme.definition;
+
+    // 3. Assembler du plus profond vers le plus haut
+    groupe.appendChild(dt);        // terme → groupe
+    groupe.appendChild(dd);        // définition → groupe
+    glossaire.appendChild(groupe); // groupe → liste
+});`}
+                </CodeCard>
             </section>
         </article>
     );

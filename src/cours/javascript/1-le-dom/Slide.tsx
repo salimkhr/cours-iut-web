@@ -38,7 +38,7 @@ export default function Slide() {
                 {/* Introduction */}
                 <SlideScreen title="JavaScript - Introduction">
                     <SlideNote>
-                        {`-Bienvenue dans le cours JavaScript !
+                        {`- Bienvenue dans le cours JavaScript !
               - Rappeler que JS est indispensable aujourd'hui.
               - Expliquer la différence entre structure (HTML), style (CSS) et comportement (JS).`}
                     </SlideNote>
@@ -182,7 +182,7 @@ if (temperature > 25) {
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="C.3 - Structure switch">
+                <SlideScreen title="C.4 - Structure switch">
                     <SlideText>
                         Comparer une même valeur à plusieurs cas :
                     </SlideText>
@@ -205,7 +205,7 @@ switch (day) {
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="C.4 - Opérateur ternaire">
+                <SlideScreen title="C.5 - Opérateur ternaire">
                     <SlideText>
                         Forme condensée de if...else pour conditions simples :
                     </SlideText>
@@ -514,6 +514,7 @@ console.table(fruits);`}
                         Méthodes pour sélectionner des éléments :
                     </SlideText>
 
+                    {/* Mise en page côte-à-côte pour la slide — pas du code à reproduire */}
                     <div className="grid grid-cols-2 gap-6">
                         <SlideCode language="html" highlight="1-6">
                             {`<!-- HTML de base -->
@@ -552,6 +553,7 @@ document.querySelectorAll(".texte");`}
                         Modifier le contenu et les attributs :
                     </SlideText>
 
+                    {/* Mise en page côte-à-côte pour la slide — pas du code à reproduire */}
                     <div className="grid grid-cols-2 gap-6 mb-6">
                         <SlideCode language="html" highlight="1-3">
                             {`<!-- HTML de départ -->
@@ -571,25 +573,24 @@ document.querySelectorAll(".texte");`}
 const message = document.getElementById("message");
 message.textContent = "Nouveau contenu";
 
-// Modifier le HTML
-const message = document.getElementById("message");
+// Modifier le HTML (même élément, pas de redéclaration)
 message.innerHTML = "<strong>Texte en gras</strong>";
 
 // Modifier un attribut
 const email = document.getElementById("email");
 email.setAttribute("required", true);
 
-// Récupérer un attribut
-const email = document.getElementById("email");
+// Récupérer un attribut (même élément, pas de redéclaration)
 const estRequis = email.getAttribute("required");`}
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="H.2 - Manipuler le style">
+                <SlideScreen title="H.3 - Manipuler le style">
                     <SlideText>
                         Modifier les styles et classes CSS :
                     </SlideText>
 
+                    {/* Mise en page côte-à-côte pour la slide — pas du code à reproduire */}
                     <div className="grid grid-cols-2 gap-6 mb-6">
                         <SlideCode language="html" highlight="1-2">
                             {`<!-- HTML de départ -->
@@ -617,11 +618,12 @@ box.classList.toggle("active"); // Bascule`}
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="H.3 - Ajouter des éléments">
+                <SlideScreen title="H.4 - Ajouter des éléments">
                     <SlideText>
                         Créer et ajouter des éléments dans le DOM :
                     </SlideText>
 
+                    {/* Mise en page côte-à-côte pour la slide — pas du code à reproduire */}
                     <div className="grid grid-cols-2 gap-6 mb-6">
                         <SlideCode language="html" highlight="1-4">
                             {`<!-- HTML de départ -->
@@ -639,21 +641,23 @@ box.classList.toggle("active"); // Bascule`}
                         </SlideCode>
                     </div>
 
-                    <SlideCode language="javascript" highlight="1-6 | 8-10 | 12-14 | 16-19">
-                        {`// Créer un nouvel élément
-const nouveauP = document.createElement("p");
-nouveauP.textContent = "Nouveau paragraphe";
-
-// Ajouter à la fin du container
-document.getElementById("container").appendChild(nouveauP);
+                    <SlideCode language="javascript" highlight="1-3 | 5-8 | 10-14 | 16-19">
+                        {`// Ajouter à la fin du container
+const p1 = document.createElement("p");
+p1.textContent = "Ajouté à la fin";
+document.getElementById("container").appendChild(p1);
 
 // Ajouter au début du container
-const container = document.getElementById("container");
-container.prepend(nouveauP);
+const p2 = document.createElement("p");
+p2.textContent = "Ajouté au début";
+document.getElementById("container").prepend(p2);
 
-// Ajouter avant un élément existant
+// Insérer avant un élément existant
+const p3 = document.createElement("p");
+p3.textContent = "Inséré avant #premier";
+const container = document.getElementById("container");
 const premier = document.getElementById("premier");
-container.insertBefore(nouveauP, premier);
+container.insertBefore(p3, premier);
 
 // Créer un élément plus complexe
 const card = document.createElement("div");
@@ -663,11 +667,12 @@ document.body.appendChild(card);`}
                     </SlideCode>
                 </SlideScreen>
 
-                <SlideScreen title="H.3 - Supprimer des éléments">
+                <SlideScreen title="H.5 - Supprimer des éléments">
                     <SlideText>
                         Supprimer des éléments du DOM :
                     </SlideText>
 
+                    {/* Mise en page côte-à-côte pour la slide — pas du code à reproduire */}
                     <div className="grid grid-cols-2 gap-6 mb-6">
                         <SlideCode language="html" highlight="1-5">
                             {`<!-- HTML de départ -->

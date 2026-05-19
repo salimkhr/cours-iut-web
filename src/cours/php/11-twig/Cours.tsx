@@ -3,10 +3,25 @@ import {List, ListItem} from "@/components/ui/List";
 import Heading from "@/components/ui/Heading";
 import CodeCard from "@/components/Cards/CodeCard";
 import Code from "@/components/ui/Code";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
 
 export default function Cours() {
     return (
         <article>
+            <CoursePrerequisites>
+                <Text><strong>Vues PHP natif</strong> — une vue PHP mélange HTML et balises <Code>&lt;?php ... ?&gt;</Code> ; <Code>htmlspecialchars()</Code> doit être appelée manuellement sur chaque variable affichée.</Text>
+                <CodeCard language="php" title="Vue PHP natif">
+                    {`<h2><?= htmlspecialchars($article->getName()) ?></h2>
+<p><?= htmlspecialchars($article->getContent()) ?></p>`}
+                </CodeCard>
+                <Text><strong>Contrôleur Symfony</strong> — un contrôleur retourne un objet <Code>Response</Code> ; la méthode <Code>render()</Code> compile un template et renvoie le HTML généré.</Text>
+                <CodeCard language="php" title="render() dans Symfony">
+                    {`return $this->render('articles/list.html.twig', [
+    'articles' => $articles,
+]);`}
+                </CodeCard>
+                <Text><strong>Variables passées à la vue</strong> — le deuxième argument de <Code>render()</Code> est un tableau associatif ; chaque clé devient une variable disponible dans le template.</Text>
+            </CoursePrerequisites>
 
             {/* 0. Introduction */}
             <section>

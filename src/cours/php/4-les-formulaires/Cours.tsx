@@ -7,10 +7,21 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import CodeWithPreviewCard, {CodePanel, PreviewPanel} from "@/components/Cards/CodeWithPreviewCard";
 import InputCard from "@/components/Cards/InputCard";
 import CodeCard from "@/components/Cards/CodeCard";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
 
 export default function Cours() {
     return (
         <article>
+            <CoursePrerequisites>
+                <Text><strong>Pattern MVC</strong> — le <strong>Modèle</strong> gère les données, la <strong>Vue</strong> affiche le HTML, le <strong>Contrôleur</strong> orchestre le traitement des requêtes.</Text>
+                <Text><strong>Routage par paramètre GET</strong> — on dispatche les actions du contrôleur via <Code>$_GET[&apos;action&apos;]</Code> dans l&apos;URL.</Text>
+                <CodeCard language="php" title="Routage GET">
+                    {`// URL : article.php?action=show&id=1
+$action = $_GET['action'] ?? 'list';`}
+                </CodeCard>
+                <Text><strong>Balise HTML <Code>&lt;form&gt;</Code></strong> — l&apos;attribut <Code>action</Code> définit l&apos;URL cible, <Code>method</Code> choisit entre <Code>GET</Code> et <Code>POST</Code>.</Text>
+                <Text><strong>Classes PHP</strong> — constructeur <Code>__construct()</Code>, propriétés privées et méthodes getters pour encapsuler les données.</Text>
+            </CoursePrerequisites>
             <section>
                 <Text>
                     Ce cours vous présente la gestion des formulaires HTML en PHP : création,

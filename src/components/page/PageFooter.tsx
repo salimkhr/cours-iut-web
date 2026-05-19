@@ -91,7 +91,6 @@ export default async function PageFooter({}: PageFooterProps = {}) {
                             CGU
                         </Link>
                     </nav>
-                    <p>BUT Informatique — IUT</p>
                 </div>
             </div>
         </footer>

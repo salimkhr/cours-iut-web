@@ -177,11 +177,19 @@ const isStudent = true;                     // Booléen
 console.log('Age:', age, 'Price:', price, 'Is Student:', isStudent, 'Lastname:', lastname);`}
                 </CodeCard>
                 <List ordered>
-                    <ListItem>Ouvrez l&apos;inspecteur d&apos;éléments du navigateur.</ListItem>
-                    <ListItem>Expliquez ce que fait <Code>console.log()</Code>.</ListItem>
+                    <ListItem>
+                        Ouvrez l&apos;inspecteur du navigateur (<Code>F12</Code> ou clic droit →{" "}
+                        <Code>Inspecter</Code>), puis naviguez vers l&apos;onglet <Code>Console</Code>.
+                    </ListItem>
+                    <ListItem>
+                        Expliquez ce que fait <Code>console.log()</Code> : où son résultat
+                        apparaît-il, et dans quel contexte l&apos;utilise-t-on ?
+                    </ListItem>
                     <ListItem>
                         Utilisez <Code>console.table()</Code> et <Code>console.log()</Code> pour afficher{" "}
-                        <Code>firstname</Code>.
+                        <Code>firstname</Code>. Observez la différence : <Code>console.table</Code>{" "}
+                        affiche le tableau sous forme de colonnes indexées, <Code>console.log</Code>{" "}
+                        l&apos;affiche brut.
                     </ListItem>
                 </List>
             </section>
@@ -237,8 +245,26 @@ console.log('Age:', age, 'Price:', price, 'Is Student:', isStudent, 'Lastname:',
                 </CodeCard>
 
                 <Text>
-                    Complétez le fichier <Code>animalerie.js</Code> pour effectuer les modifications suivantes :
+                    Complétez le fichier <Code>animalerie.js</Code> en vous appuyant sur le squelette
+                    ci-dessous. Chacun des 4 blocs correspond à une étape numérotée dans la liste qui suit.
                 </Text>
+                <CodeCard language="javascript" filename="animalerie.js">
+                    {`// Étape 1 — Modifier les contenus texte
+const titre = document.getElementById("main-title");
+// ...
+const description = document.getElementsByClassName("description");
+// ...
+
+// Étape 2 — Ajouter ou modifier des classes CSS
+const animaux = document.getElementsByClassName("pet");
+// ...
+
+// Étape 3 — Modifier ou ajouter des attributs
+// ...
+
+// Étape 4 — Modifier le style en ligne
+// ...`}
+                </CodeCard>
 
                 <List ordered>
                     <ListItem>
@@ -348,14 +374,16 @@ console.log('Age:', age, 'Price:', price, 'Is Student:', isStudent, 'Lastname:',
                     </ListItem>
                     <ListItem>
                         Parcourez le tableau <Code>streamers</Code> et, à l&apos;aide de{" "}
-                        <Code>console.log()</Code>, affichez les informations de chaque streamer.
+                        <Code>console.log()</Code>, affichez les informations de chaque streamer.{" "}
+                        Vérifiez que la Console affiche bien 25 entrées.
                     </ListItem>
                     <ListItem>
-                        Modifiez le parcours pour ajouter une ligne <Code>&lt;tr&gt;</Code> au tableau pour
-                        chaque streamer.
+                        Modifiez le parcours du point 2 pour ajouter une ligne <Code>&lt;tr&gt;</Code> au
+                        tableau pour chaque streamer. Les étapes 3 et 4 modifient chacune le même
+                        parcours — ne créez pas de nouvelle boucle à chaque fois.
                     </ListItem>
                     <ListItem>
-                        Modifiez le parcours pour ajouter les cellules <Code>&lt;td&gt;</Code> à chaque ligne.
+                        Modifiez le parcours du point 3 pour ajouter les cellules <Code>&lt;td&gt;</Code> à chaque ligne.
                         Les images auront comme <Code>alt</Code> <Code>&quot;Photo de &quot; + name</Code> et
                         comme <Code>width</Code> <Code>70</Code> (en pixels).
                     </ListItem>
@@ -365,6 +393,29 @@ console.log('Age:', age, 'Price:', price, 'Is Student:', isStudent, 'Lastname:',
                     Reproduisez le même tableau sans utiliser <Code>innerHTML</Code>, mais en construisant les
                     éléments via <Code>document.createElement()</Code> et en les ajoutant au DOM.
                 </Text>
+
+                <Heading level={3}>Bonus — Filtrer les streamers</Heading>
+                <Text>
+                    À partir du tableau <Code>streamers</Code>, utilisez <Code>filter</Code> et{" "}
+                    <Code>map</Code> pour afficher dans la console uniquement les pseudos des
+                    streamers dont le prénom (<Code>name</Code>) commence par la lettre{" "}
+                    <Code>&quot;A&quot;</Code>.
+                </Text>
+                <List ordered>
+                    <ListItem>
+                        Utilisez <Code>filter</Code> pour conserver uniquement les streamers dont{" "}
+                        <Code>name</Code> commence par <Code>&quot;A&quot;</Code>. Critère de validation :
+                        le tableau filtré ne doit contenir que des entrées dont <Code>name[0] === &quot;A&quot;</Code>.
+                    </ListItem>
+                    <ListItem>
+                        Utilisez <Code>map</Code> sur le résultat pour n&apos;extraire que les pseudos.
+                        Vérifiez dans la Console que vous obtenez un tableau de chaînes de caractères.
+                    </ListItem>
+                    <ListItem>
+                        Affichez le résultat final avec <Code>console.log</Code> et{" "}
+                        <Code>console.table</Code>. Observez la différence d&apos;affichage.
+                    </ListItem>
+                </List>
 
                 <Table>
                     <TableHeader>
@@ -381,8 +432,9 @@ console.log('Age:', age, 'Price:', price, 'Is Student:', isStudent, 'Lastname:',
                                 <TableCell><Image src={streamer.photo} alt={"Photo de " + streamer.name} width={70} height={70}/></TableCell>
                                 <TableCell>{streamer.name}</TableCell>
                                 <TableCell>{streamer.pseudo}</TableCell>
-                                <TableCell><Link as="a"
+                                <TableCell><Link
                                                   target="_blank"
+                                                  rel="noopener noreferrer"
                                                   href={streamer.twitchLink}>{streamer.twitchLink}</Link></TableCell>
                             </TableRow>
                         ))}

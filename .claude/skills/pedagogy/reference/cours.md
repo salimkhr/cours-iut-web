@@ -4,7 +4,7 @@
 
 **Toujours présent en tête de cours, avant tout contenu.**
 
-- Composant : `Collapsible` de shadcn/ui (`@/components/ui/collapsible`), collapsed par défaut
+- Composant : `<CoursePrerequisites>` (`@/components/CoursePrerequisites`), collapsed par défaut — wrapper autour de `Collapsible` (`@/components/ui/collapsible`)
 - Titre affiché sur le trigger : "À savoir pour ce cours"
 - Style distinct du contenu : fond `bg-bridge-100/60 dark:bg-bridge-800/40`, bordure, icône ChevronDown
 - Contenu : **3 à 5 notions** du ou des cours précédents
@@ -15,19 +15,19 @@
 - **En mode écriture** : demander quel cours précède avant de générer ce bloc
 
 Exemple de structure JSX du chapeau :
-```tsxteste
-<Collapsible className="mb-8 rounded-xl border border-bridge-300/50 bg-bridge-100/60 dark:bg-bridge-800/40 dark:border-bridge-600/40">
-    <CollapsibleTrigger className="flex w-full items-center justify-between px-5 py-4 font-semibold text-brand-dark dark:text-brand-light">
-        À savoir pour ce cours
-        <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180"/>
-    </CollapsibleTrigger>
-    <CollapsibleContent className="px-5 pb-5 flex flex-col gap-3">
-        <Text><strong>Les boucles for</strong> répètent un bloc un nombre défini de fois.</Text>
-        <Code language="js">for (let i = 0; i &lt; 3; i++) console.log(i);</Code>
-        <Text><strong>Les tableaux</strong> stockent plusieurs valeurs dans une seule variable.</Text>
-        <Code language="js">const fruits = [&apos;pomme&apos;, &apos;poire&apos;];</Code>
-    </CollapsibleContent>
-</Collapsible>
+```tsx
+import CoursePrerequisites from "@/components/CoursePrerequisites";
+
+<CoursePrerequisites>
+    <Text><strong>Les boucles for</strong> répètent un bloc un nombre défini de fois.</Text>
+    <CodeCard language="js" title="Boucle for">
+        {`for (let i = 0; i < 3; i++) console.log(i);`}
+    </CodeCard>
+    <Text><strong>Les tableaux</strong> stockent plusieurs valeurs dans une seule variable.</Text>
+    <CodeCard language="js" title="Tableau">
+        {`const fruits = ['pomme', 'poire'];`}
+    </CodeCard>
+</CoursePrerequisites>
 ```
 
 ## Structure imposée pour chaque concept

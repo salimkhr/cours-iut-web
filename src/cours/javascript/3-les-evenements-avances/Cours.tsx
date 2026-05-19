@@ -4,6 +4,7 @@ import Code from "@/components/ui/Code";
 import Heading from "@/components/ui/Heading";
 import CodeCard from "@/components/Cards/CodeCard";
 import DiagramCard from "@/components/Cards/DiagramCard";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
 
 export default function Cours() {
     const propagationDiagram = `graph TD
@@ -62,6 +63,37 @@ export default function Cours() {
 
     return (
         <article>
+            <CoursePrerequisites>
+                <Text>
+                    <strong>Ajouter un écouteur d&apos;événement</strong> —{" "}
+                    <Code>addEventListener(type, callback)</Code> déclenche une fonction lors
+                    d&apos;une interaction sur l&apos;élément ciblé.
+                </Text>
+                <CodeCard language="javascript" title="addEventListener">
+                    {`const btn = document.getElementById("btn");
+btn.addEventListener("click", () => {
+    console.log("Cliqué !");
+});`}
+                </CodeCard>
+
+                <Text>
+                    <strong>L&apos;objet événement</strong> est automatiquement passé au callback.
+                    Sa propriété <Code>target</Code> désigne l&apos;élément qui a déclenché l&apos;événement,{" "}
+                    <Code>type</Code> précise le type d&apos;événement.
+                </Text>
+                <CodeCard language="javascript" title="Objet event">
+                    {`btn.addEventListener("click", (event) => {
+    console.log(event.type);   // "click"
+    console.log(event.target); // l'élément cliqué
+});`}
+                </CodeCard>
+
+                <Text>
+                    <strong>Les types d&apos;événements courants</strong> : <Code>click</Code>,{" "}
+                    <Code>mouseover</Code>, <Code>keydown</Code>, <Code>submit</Code>,{" "}
+                    <Code>input</Code> — chacun correspond à une interaction spécifique.
+                </Text>
+            </CoursePrerequisites>
             <section>
                 <Heading level={2}>A- Propagation des événements</Heading>
 

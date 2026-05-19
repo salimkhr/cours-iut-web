@@ -3,10 +3,28 @@ import {List, ListItem} from "@/components/ui/List";
 import CodeCard from "@/components/Cards/CodeCard";
 import Text from "@/components/ui/Text";
 import Code from "@/components/ui/Code";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
 
 export default function Cours() {
     return (
         <article>
+            <CoursePrerequisites>
+                <Text><strong>Variables PHP</strong> — une variable commence par <Code>$</Code> et peut stocker des types scalaires : <Code>string</Code>, <Code>int</Code>, <Code>float</Code>, <Code>bool</Code>.</Text>
+                <CodeCard language="php" title="Variables et types">
+                    {`$nom = "Alice";
+$age = 20;
+$estEtudiant = true;`}
+                </CodeCard>
+                <Text><strong>Structures de contrôle</strong> — <Code>if/else</Code> pour les conditions, <Code>for</Code> et <Code>while</Code> pour les boucles.</Text>
+                <CodeCard language="php" title="Boucle for et if/else">
+                    {`for ($i = 0; $i < 5; $i++) {
+    if ($i % 2 === 0) {
+        echo $i . " est pair";
+    }
+}`}
+                </CodeCard>
+                <Text><strong>Classes PHP</strong> — une classe regroupe propriétés et méthodes ; <Code>new</Code> crée une instance, <Code>$this</Code> désigne l&apos;objet courant.</Text>
+            </CoursePrerequisites>
             <section>
                 <Text>
                     Ce cours vous présente les structures de données fondamentales en PHP : les tableaux

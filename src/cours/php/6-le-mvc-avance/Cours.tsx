@@ -6,6 +6,7 @@ import {List, ListItem} from "@/components/ui/List";
 import DiagramCard from "@/components/Cards/DiagramCard";
 import Code from "@/components/ui/Code";
 import BaseCard from "@/components/Cards/BaseCard";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
 
 export default function Cours() {
     const chartMVCAvance = `
@@ -53,6 +54,24 @@ graph TD
 
     return (
         <article>
+            <CoursePrerequisites>
+                <Text><strong>Entités et repositories</strong> — une entité représente un objet métier (ex. <Code>Article</Code>) ; un repository encapsule les requêtes PDO pour lire les données.</Text>
+                <Text><strong>PDO</strong> — <Code>prepare()</Code> crée une requête préparée, <Code>execute()</Code> l&apos;exécute, <Code>fetch()</Code> récupère un enregistrement.</Text>
+                <CodeCard language="php" title="Requête préparée PDO">
+                    {`$stmt = $pdo->prepare('SELECT * FROM article WHERE id = :id');
+$stmt->execute([':id' => $id]);
+$row = $stmt->fetch();`}
+                </CodeCard>
+                <Text><strong>Repository dans le contrôleur</strong> — le contrôleur instancie le repository en lui passant la connexion PDO, puis appelle ses méthodes pour obtenir les données.</Text>
+                <CodeCard language="php" title="Contrôleur avec repository">
+                    {`class ArticleController {
+    private ArticleRepository $repo;
+    public function __construct(PDO $pdo) {
+        $this->repo = new ArticleRepository($pdo);
+    }
+}`}
+                </CodeCard>
+            </CoursePrerequisites>
             <section>
                 <Heading level={2}>Introduction</Heading>
                 <Text>

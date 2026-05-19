@@ -3,10 +3,49 @@ import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
 import Heading from "@/components/ui/Heading";
 import CodeCard from "@/components/Cards/CodeCard";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
 
 export default function Cours() {
     return (
         <article>
+            <CoursePrerequisites>
+                <Text>
+                    <strong>Les fonctions fléchées</strong> sont le format standard des composants
+                    React — chaque composant est une fonction qui reçoit des props et retourne du JSX.
+                </Text>
+                <CodeCard language="javascript" title="Fonction fléchée avec objet">
+                    {`const afficher = ({ nom, age }) => {
+    return nom + " a " + age + " ans";
+};`}
+                </CodeCard>
+
+                <Text>
+                    <strong><Code>Array.map</Code></strong> est indispensable en React pour transformer
+                    un tableau de données en liste d&apos;éléments JSX — chaque élément doit avoir une
+                    prop <Code>key</Code> unique.
+                </Text>
+                <CodeCard language="javascript" title="map pour afficher une liste">
+                    {`const fruits = ["pomme", "banane", "cerise"];
+fruits.map((fruit) => console.log(fruit));`}
+                </CodeCard>
+
+                <Text>
+                    <strong><Code>fetch</Code> et les promesses</strong> alimentent <Code>useEffect</Code>{" "}
+                    pour charger des données au montage d&apos;un composant. Une promesse représente une
+                    valeur disponible dans le futur.
+                </Text>
+                <CodeCard language="javascript" title="fetch basique">
+                    {`fetch("https://api.example.com/data")
+    .then((res) => res.json())
+    .then((data) => console.log(data));`}
+                </CodeCard>
+
+                <Text>
+                    <strong>Les événements DOM</strong> (<Code>addEventListener</Code>) sont remplacés
+                    en React par des props JSX comme <Code>onClick</Code>, <Code>onChange</Code> —
+                    même concept, syntaxe différente.
+                </Text>
+            </CoursePrerequisites>
             <section>
                 <Text>
                     React est une bibliothèque JavaScript populaire pour la construction d&apos;interfaces

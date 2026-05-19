@@ -461,8 +461,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('call-friend').addEventListener('click', showCallFriend);
     document.getElementById('fifty-fifty').addEventListener('click', fiftyFifty);
 
-    // Initialisation de la première question
-    displayQuestion(index);
+    // Initialisation de la première question (index vaut 0 au démarrage)
+    displayQuestion(0);
 });`}
                     </DownloadCodeButton>
                     <DownloadCodeButton language="js" filename={"question.js"}>

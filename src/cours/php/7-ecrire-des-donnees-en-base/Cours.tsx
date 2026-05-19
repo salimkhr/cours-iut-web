@@ -4,6 +4,7 @@ import Code from "@/components/ui/Code";
 import Text from "@/components/ui/Text";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import DiagramCard from "@/components/Cards/DiagramCard";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
 
 export default function Cours() {
     const chartCreateCategory = `sequenceDiagram
@@ -74,6 +75,20 @@ export default function Cours() {
 
     return (
         <article>
+            <CoursePrerequisites>
+                <Text><strong>Repository — lectures</strong> — <Code>findAll()</Code> et <Code>findById()</Code> utilisent PDO pour exécuter des SELECT et retourner des entités.</Text>
+                <CodeCard language="php" title="findById() avec PDO">
+                    {`public function findById(int $id): ?Article {
+    $stmt = $this->pdo->prepare('SELECT * FROM article WHERE id = :id');
+    $stmt->execute([':id' => $id]);
+    $row = $stmt->fetch();
+    return $row ? new Article($row['id'], $row['titre']) : null;
+}`}
+                </CodeCard>
+                <Text><strong>Formulaires POST</strong> — les données saisies arrivent dans <Code>$_POST</Code> ; la validation côté serveur vérifie leur présence et leur format avant traitement.</Text>
+                <Text><strong>Couche service</strong> — le service encapsule la logique métier et appelle le repository ; le contrôleur délègue au service plutôt que d&apos;accéder directement à la BDD.</Text>
+                <Text><strong>Entités PHP</strong> — objet avec constructeur, getters et éventuellement setters pour représenter un enregistrement de la base de données.</Text>
+            </CoursePrerequisites>
             {/* SECTION 1 : INTRODUCTION */}
             <section>
                 <Heading level={2}>Introduction</Heading>

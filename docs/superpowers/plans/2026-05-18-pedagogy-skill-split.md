@@ -58,7 +58,7 @@ description: Rédaction de nouveaux contenus pédagogiques (Cours, TP, Slide, Ex
 
 ## Principes communs
 
-- **Public cible** : étudiants BUT Informatique 1ère/2ème année, débutants à intermédiaires en développement web
+- **Public cible** : étudiants BUT Informatique 1ère/2ème/3eme année, débutants à intermédiaires en développement web
 - **Langue** : français, **vouvoyé strict** dans toutes les instructions destinées aux étudiants
 - **Ton** : précis, bienveillant, sans condescendance — expliquer le POURQUOI avant le COMMENT
 - **Exemples** : toujours concrets et ancrés dans un cas réel. Jamais de `foo`, `bar`, `test1`, `exemple`

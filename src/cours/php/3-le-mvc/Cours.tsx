@@ -4,6 +4,7 @@ import Heading from "@/components/ui/Heading";
 import CodeCard from "@/components/Cards/CodeCard";
 import Code from "@/components/ui/Code";
 import DiagramCard from "@/components/Cards/DiagramCard";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
 
 export default function Cours() {
     const chartBasique = `
@@ -30,6 +31,23 @@ graph TD
 
     return (
         <article>
+            <CoursePrerequisites>
+                <Text><strong>Tableaux associatifs</strong> — stockent des paires clé/valeur et se parcourent avec <Code>foreach</Code>.</Text>
+                <CodeCard language="php" title="Tableau associatif">
+                    {`$user = ["nom" => "Alice", "age" => 20];
+foreach ($user as $cle => $val) {
+    echo "$cle : $val";
+}`}
+                </CodeCard>
+                <Text><strong>Fonctions typées</strong> — les types des paramètres et de la valeur de retour peuvent être déclarés explicitement.</Text>
+                <CodeCard language="php" title="Fonction typée">
+                    {`function additionner(int $a, int $b): int {
+    return $a + $b;
+}`}
+                </CodeCard>
+                <Text><strong>Classes et objets</strong> — une classe définit des propriétés et méthodes ; <Code>new Classe()</Code> crée une instance, <Code>$this</Code> désigne l&apos;objet courant.</Text>
+                <Text><strong>Inclusion de fichiers</strong> — <Code>require</Code> et <Code>include</Code> permettent de découper le code PHP en plusieurs fichiers.</Text>
+            </CoursePrerequisites>
             <section>
                 <Text>
                     Ce cours vous présente le pattern MVC (Modèle-Vue-Contrôleur), une architecture

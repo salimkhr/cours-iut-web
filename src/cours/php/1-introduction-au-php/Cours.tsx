@@ -5,10 +5,28 @@ import ImageCard from "@/components/Cards/ImageCard";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import CodeCard from "@/components/Cards/CodeCard";
 import Code from "@/components/ui/Code";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
 
 export default function Cours() {
     return (
         <article>
+            <CoursePrerequisites>
+                <Text><strong>Structure HTML</strong> — un document web est composé de balises imbriquées : <Code>&lt;html&gt;</Code>, <Code>&lt;head&gt;</Code> et <Code>&lt;body&gt;</Code>.</Text>
+                <CodeCard language="html" title="Squelette HTML">
+                    {`<!DOCTYPE html>
+<html>
+  <head><title>Ma page</title></head>
+  <body><p>Bonjour</p></body>
+</html>`}
+                </CodeCard>
+                <Text><strong>Attributs HTML</strong> — les attributs <Code>id</Code>, <Code>class</Code> et <Code>href</Code> configurent les balises et permettent de les cibler en CSS.</Text>
+                <Text><strong>Sélecteurs CSS</strong> — on cible les éléments par balise (<Code>p</Code>), par classe (<Code>.classe</Code>) ou par identifiant (<Code>#id</Code>).</Text>
+                <CodeCard language="css" title="Sélecteurs CSS">
+                    {`p { color: blue; }
+.intro { font-size: 18px; }
+#titre { font-weight: bold; }`}
+                </CodeCard>
+            </CoursePrerequisites>
             <section>
                 <Text>
                     Ce cours vous introduit au développement web côté serveur avec PHP.

@@ -8,7 +8,7 @@ description: Réécriture guidée de contenus pédagogiques à partir d'un REVIE
 ## Invocation
 
 ```
-/pedagogy:rewrite        → sur un dossier contenant un REVIEW.md produit par /pedagogy:review
+/pedagogy:rewrite        → sur un dossier de cours dont le REVIEW.md est dans reviews/ (produit par /pedagogy:review)
 ```
 
 ---
@@ -16,12 +16,15 @@ description: Réécriture guidée de contenus pédagogiques à partir d'un REVIE
 ## Étape 0 — Vérification préalable
 
 1. Identifier le dossier cible (mentionné dans la conversation ou dossier actif)
-2. Chercher `REVIEW.md` dans ce dossier avec l'outil Read
-   - **Si absent** : afficher "Aucun REVIEW.md trouvé dans [dossier] — lancez d'abord `/pedagogy:review`." et s'arrêter.
-3. Lire `REVIEW.md`
-4. Compter les items `[ ]` (non traités) et les items `[x]` (traités)
+2. Dériver le chemin REVIEW depuis le dossier cible : extraire les deux derniers segments non vides
+   (ex. `src/cours/javascript/1-le-dom/` → `reviews/javascript-1-le-dom-REVIEW.md`).
+   Lire ce fichier avec l'outil Read.
+   - **Si absent** : afficher "Aucun REVIEW.md trouvé pour ce module
+     (`reviews/[matiere]-[n-slug]-REVIEW.md`) — lancez d'abord `/pedagogy:review` sur ce dossier."
+     et s'arrêter.
+3. Compter les items `[ ]` (non traités) et les items `[x]` (traités)
    - **Si tous les items sont `[x]`** : afficher "Tous les points sont déjà traités. Relancez `/pedagogy:review` pour une nouvelle révision." et s'arrêter.
-5. Lire les fichiers de cours présents dans le dossier : `Cours.tsx`, `Slide.tsx`, `TP.tsx`, `Examen.tsx`
+4. Lire les fichiers de cours présents dans le dossier : `Cours.tsx`, `Slide.tsx`, `TP.tsx`, `Examen.tsx`
 
 ---
 
@@ -96,7 +99,7 @@ Pour chaque thème dont l'angle a été validé :
    - Respecter les composants JSX imposés (`Text`, `Heading`, `List`/`ListItem`, `Code`, `CodeCard`, etc.)
    - Respecter le vouvoyé strict dans les instructions de TP
 
-2. **Mettre à jour `REVIEW.md`** pour chaque item traité :
+2. **Mettre à jour `reviews/[matiere]-[n-slug]-REVIEW.md`** pour chaque item traité :
    - Remplacer `- [ ]` par `- [x]`
    - Ajouter sous l'item : `  > Traité : [angle choisi — résumé en une phrase]`
 
@@ -116,6 +119,8 @@ Si tous les items sont `[x]` :
 ```
 REVIEW.md complète — tous les points ont été traités.
 ```
+
+4. **Invoquer `/pedagogy:sync`** sur le dossier cible pour mettre à jour le curriculum.
 
 ---
 

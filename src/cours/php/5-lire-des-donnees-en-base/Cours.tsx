@@ -3,10 +3,30 @@ import Code from "@/components/ui/Code";
 import Text from "@/components/ui/Text";
 import CodeCard from "@/components/Cards/CodeCard";
 import {List, ListItem} from "@/components/ui/List";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
 
 export default function Cours() {
     return (
         <article>
+            <CoursePrerequisites>
+                <Text><strong>Architecture MVC</strong> — le contrôleur reçoit la requête HTTP, choisit la vue et lui transmet les données à afficher.</Text>
+                <Text><strong>Formulaires PHP</strong> — <Code>$_GET</Code> et <Code>$_POST</Code> contiennent les données du formulaire ; <Code>isset()</Code> vérifie leur présence.</Text>
+                <CodeCard language="php" title="Récupération des données">
+                    {`if (isset($_POST['nom'])) {
+    $nom = htmlspecialchars($_POST['nom']);
+}`}
+                </CodeCard>
+                <Text><strong>Classes PHP</strong> — propriétés privées accessibles via des getters, constructeur qui initialise l&apos;objet à la création.</Text>
+                <CodeCard language="php" title="Classe avec getter">
+                    {`class Voiture {
+    private string $marque;
+    public function __construct(string $marque) {
+        $this->marque = $marque;
+    }
+    public function getMarque(): string { return $this->marque; }
+}`}
+                </CodeCard>
+            </CoursePrerequisites>
             <section>
                 <Text>
                     Ce cours vous présente la couche Modèle du pattern MVC : les entités pour représenter

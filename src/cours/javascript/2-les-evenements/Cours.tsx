@@ -11,10 +11,44 @@ import MouseTrackerBox from "@/cours/javascript/2-les-evenements/Exemple/MouseTr
 import ClickCounterBox from "@/cours/javascript/2-les-evenements/Exemple/ClickCounterBox";
 import KeyPressBox from "@/cours/javascript/2-les-evenements/Exemple/KeyPressBox";
 import FormBox from "@/cours/javascript/2-les-evenements/Exemple/FormBox";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
 
 export default function Cours() {
     return (
         <article>
+            <CoursePrerequisites>
+                <Text>
+                    <strong>Sélectionner un élément DOM</strong> — <Code>getElementById</Code> et{" "}
+                    <Code>querySelector</Code> retournent l&apos;élément HTML ciblé, sur lequel on
+                    pourra attacher des actions.
+                </Text>
+                <CodeCard language="javascript" title="Sélection">
+                    {`const btn = document.getElementById("mon-bouton");
+const titre = document.querySelector(".titre");`}
+                </CodeCard>
+
+                <Text>
+                    <strong>Modifier le contenu d&apos;un élément</strong> — <Code>textContent</Code>{" "}
+                    remplace le texte, <Code>innerHTML</Code> injecte du HTML, <Code>classList</Code>{" "}
+                    ajoute ou retire des classes CSS.
+                </Text>
+                <CodeCard language="javascript" title="Modification">
+                    {`element.textContent = "Nouveau texte";
+element.classList.add("actif");
+element.classList.remove("cache");`}
+                </CodeCard>
+
+                <Text>
+                    <strong>Les fonctions fléchées</strong> sont une syntaxe concise pour déclarer une
+                    fonction. Elles sont fréquemment utilisées comme fonctions de rappel.
+                </Text>
+                <CodeCard language="javascript" title="Fonction fléchée">
+                    {`const direBonjour = (nom) => {
+    console.log("Bonjour " + nom);
+};`}
+                </CodeCard>
+            </CoursePrerequisites>
+
             <section>
                 <Heading level={2}>A- Qu&apos;est-ce qu&apos;un événement ?</Heading>
                 <Text>
