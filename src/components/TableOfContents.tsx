@@ -83,7 +83,7 @@ export default function TableOfContents({
 
         elements.forEach((el) => observer.observe(el))
         return () => observer.disconnect()
-    }, [activeTab, currentContent])
+    }, [activeTab, currentContent, setActiveId])
 
     // Fermeture au clic extérieur
     useEffect(() => {
@@ -131,6 +131,7 @@ export default function TableOfContents({
                         <div className="flex gap-1">
                             {visibleTabs.map((tab) => (
                                 <button
+                                    type="button"
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
                                     className={cn(
@@ -143,11 +144,12 @@ export default function TableOfContents({
                                             : {}
                                     }
                                 >
-                                    {CONTENT_LABELS[tab as ContentKey]}
+                                    {CONTENT_LABELS[tab]}
                                 </button>
                             ))}
                         </div>
                         <button
+                            type="button"
                             onClick={() => setIsOpen(false)}
                             className="text-brand-dark/40 dark:text-bridge-300/40 hover:text-brand-dark dark:hover:text-bridge-100 transition-colors"
                             aria-label="Fermer"
@@ -160,8 +162,9 @@ export default function TableOfContents({
                     <div className="overflow-y-auto flex-1 py-2">
                         {displayedHeadings.length === 0 ? (
                             <div className="px-4 py-4 text-xs text-brand-dark/50 dark:text-bridge-300/50">
-                                Visitez le {CONTENT_LABELS[activeTab as ContentKey]} pour charger sa table des matières.{' '}
+                                Visitez le {CONTENT_LABELS[activeTab]} pour charger sa table des matières.{' '}
                                 <button
+                                    type="button"
                                     className="underline hover:text-brand-dark dark:hover:text-bridge-100 transition-colors"
                                     onClick={() => {
                                         router.push(`/${moduleSlug}/${sectionSlug}/${activeTab}`)
@@ -196,6 +199,7 @@ export default function TableOfContents({
 
             {/* Bouton flottant */}
             <button
+                type="button"
                 onClick={() => setIsOpen((p) => !p)}
                 className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg text-white transition-opacity hover:opacity-90"
                 style={{ backgroundColor: moduleColor }}
