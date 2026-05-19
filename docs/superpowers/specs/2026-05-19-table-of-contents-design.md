@@ -1,4 +1,4 @@
-# Design — Table des matières flottante pour les pages Cours et TP
+# Design — Table des matières flottante pour les pages Cours, TP et Examen
 
 **Date :** 2026-05-19
 **Statut :** Approuvé
@@ -7,34 +7,35 @@
 
 ## Contexte
 
-Les pages Cours peuvent être longues (plusieurs sections H2 et sous-sections H3). Les étudiants ont besoin de naviguer rapidement vers la section qui répond à leur question pendant un TP, sans avoir à scroller manuellement depuis le début. En mode TP, l'étudiant doit aussi pouvoir consulter rapidement une section du Cours correspondant sans perdre sa progression.
+Les pages Cours, TP et Examen peuvent être longues. Les étudiants ont besoin de naviguer rapidement vers la section pertinente, et de pouvoir consulter une autre vue (Cours depuis le TP, Cours depuis l'Examen, etc.) sans perdre leur position.
 
 ---
 
 ## Ce qui est construit
 
-Un composant `TableOfContents` — bouton flottant fixe en bas à droite qui ouvre un panneau à deux onglets : **Cours** et **TP**. L'onglet de la page courante est actif par défaut, avec surlignage au scroll. L'onglet de l'autre page liste les mêmes headings et navigue vers cette page à l'ancre choisie.
+Un composant `TableOfContents` — bouton flottant fixe en bas à droite qui ouvre un panneau à trois onglets : **Cours**, **TP** et **Examen**. L'onglet de la page courante est actif par défaut, avec surlignage au scroll. Les onglets des autres pages listent leurs headings (issus du store Zustand) et naviguent vers ces pages à l'ancre choisie.
 
 ---
 
 ## Périmètre
 
-**Activé sur :** pages Cours (`currentContent === 'cours'`) et pages TP (`currentContent === 'tp'`), mode normal uniquement.
+**Activé sur :** pages Cours (`currentContent === 'cours'`), TP (`currentContent === 'tp'`) et Examen (`currentContent === 'examen'`), mode normal uniquement.
 
-**Non activé sur :** Slides, Examen, mode côte à côte (split).
+**Non activé sur :** Slides, mode côte à côte (split).
 
-**Justification :** Le mode split affiche déjà les deux contenus en parallèle. Les slides ont leur propre navigation. Examen = contenu linéaire non-navigable.
+**Justification :** Le mode split affiche déjà les deux contenus en parallèle. Les slides ont leur propre navigation.
 
 ---
 
 ## Comportement
 
-### Deux onglets
+### Trois onglets
 
-Le panneau affiche deux onglets :
+Le panneau affiche trois onglets :
 
 - **Cours** — headings H2+H3 de la page Cours de la section courante
 - **TP** — headings H2+H3 de la page TP de la section courante
+- **Examen** — headings H2+H3 de la page Examen de la section courante
 
 L'onglet correspondant à la page actuellement affichée est l'onglet actif par défaut à l'ouverture.
 
@@ -52,11 +53,9 @@ Les headings extraits sont **persistés dans un store Zustand** (`tocStore`) par
 
 ### Extraction des headings — autre page
 
-Quand l'étudiant est sur la page Cours, l'onglet TP affiche les headings extraits lors de la dernière visite de cette page TP (lus depuis le store Zustand).
+Chaque onglet qui n'est pas la page courante affiche les headings extraits lors de la dernière visite de cette page (lus depuis le store Zustand).
 
-Quand l'étudiant est sur la page TP, l'onglet Cours affiche les headings extraits lors de la dernière visite de cette page Cours.
-
-Si l'étudiant n'a pas encore visité l'autre page dans cette session, l'onglet affiche un message : `"Visitez le [Cours/TP] pour charger sa table des matières."` avec un lien de navigation vers cette page.
+Si l'étudiant n'a pas encore visité une page dans cette session, l'onglet correspondant affiche un message : `"Visitez le [Cours/TP/Examen] pour charger sa table des matières."` avec un lien de navigation vers cette page.
 
 ### Surlignage actif
 
@@ -74,9 +73,10 @@ L'onglet de l'autre page ne surligne aucune entrée.
 1. Navigation `router.push` vers l'URL de l'autre page + `#slug`
 2. Ferme le panneau
 
-L'URL de l'autre page se construit depuis les params courants :
-- Si sur Cours (`/[moduleSlug]/[sectionSlug]/cours`) → TP = `/[moduleSlug]/[sectionSlug]/tp#slug`
-- Si sur TP (`/[moduleSlug]/[sectionSlug]/tp`) → Cours = `/[moduleSlug]/[sectionSlug]/cours#slug`
+L'URL des autres pages se construit depuis les params courants en remplaçant le segment `contentSlug` :
+- `cours` → `/[moduleSlug]/[sectionSlug]/cours#slug`
+- `tp` → `/[moduleSlug]/[sectionSlug]/tp#slug`
+- `examen` → `/[moduleSlug]/[sectionSlug]/examen#slug`
 
 ### Ouverture / fermeture du panneau
 
@@ -91,7 +91,7 @@ L'URL de l'autre page se construit depuis les params courants :
 
 ```
 ┌────────────────────────────┐
-│  [Cours] [TP]           ✕  │  ← onglets
+│  [Cours] [TP] [Examen]  ✕  │  ← onglets
 ├────────────────────────────┤
 │ ▶ A- Introduction au DOM   │  ← H2 actif (couleur module)
 │     1. Qu'est-ce que le DOM│  ← H3, indenté, plus petit
@@ -138,16 +138,16 @@ interface TocStore {
 }
 ```
 
-Le store vit dans `src/lib/store/tocStore.ts`. Il est peuplé par `TableOfContents` à chaque montage (page Cours ou TP) et persiste en mémoire pour la session (pas de localStorage).
+Le store vit dans `src/lib/store/tocStore.ts`. Il est peuplé par `TableOfContents` à chaque montage (page Cours, TP ou Examen) et persiste en mémoire pour la session (pas de localStorage).
 
 ---
 
 ## Intégration dans la page
 
-Dans `src/app/[moduleSlug]/[sectionSlug]/[contentSlug]/page.tsx`, après le `<main>` et uniquement quand on est sur Cours ou TP hors mode split :
+Dans `src/app/[moduleSlug]/[sectionSlug]/[contentSlug]/page.tsx`, après le `<main>` et uniquement quand on est sur Cours, TP ou Examen hors mode split :
 
 ```tsx
-{(currentContent === 'cours' || currentContent === 'tp') && !isSplit && (
+{(currentContent === 'cours' || currentContent === 'tp' || currentContent === 'examen') && !isSplit && (
     <TableOfContents
         modulePath={currentModule.path}
         currentContent={currentContent}
@@ -174,7 +174,7 @@ Le composant est `"use client"` et s'auto-exclut si les deux onglets sont vides.
 ## Ce qui n'est PAS dans ce scope
 
 - Pas de TOC en mode split (côte à côte)
-- Pas de TOC sur Slides ni Examen
+- Pas de TOC sur Slides
 - Pas de modification des fichiers de cours existants
 - Pas de persistance entre sessions (localStorage) — le store Zustand est en mémoire
 - Pas d'export de metadata depuis les cours (approche DOM scanning uniquement)
