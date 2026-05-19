@@ -12,7 +12,7 @@ export default function Cours() {
             <CoursePrerequisites>
                 <Text><strong>Formulaires PHP</strong> — <Code>$_POST</Code> contient les données soumises, <Code>isset()</Code> vérifie leur présence, <Code>htmlspecialchars()</Code> les sécurise.</Text>
                 <Text><strong>Écriture en base</strong> — les méthodes <Code>create()</Code> et <Code>update()</Code> du repository exécutent des INSERT et UPDATE via des requêtes PDO préparées.</Text>
-                <CodeCard language="php" title="Écriture via repository">
+                <CodeCard language="php">
                     {`$category = new Category(0, $name);
 $this->repo->create($category); // INSERT en base`}
                 </CodeCard>

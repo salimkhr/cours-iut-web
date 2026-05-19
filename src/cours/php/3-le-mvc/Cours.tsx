@@ -33,14 +33,14 @@ graph TD
         <article>
             <CoursePrerequisites>
                 <Text><strong>Tableaux associatifs</strong> — stockent des paires clé/valeur et se parcourent avec <Code>foreach</Code>.</Text>
-                <CodeCard language="php" title="Tableau associatif">
+                <CodeCard language="php">
                     {`$user = ["nom" => "Alice", "age" => 20];
 foreach ($user as $cle => $val) {
     echo "$cle : $val";
 }`}
                 </CodeCard>
                 <Text><strong>Fonctions typées</strong> — les types des paramètres et de la valeur de retour peuvent être déclarés explicitement.</Text>
-                <CodeCard language="php" title="Fonction typée">
+                <CodeCard language="php">
                     {`function additionner(int $a, int $b): int {
     return $a + $b;
 }`}

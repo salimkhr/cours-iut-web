@@ -12,7 +12,7 @@ export default function Cours() {
         <article>
             <CoursePrerequisites>
                 <Text><strong>Structure HTML</strong> — un document web est composé de balises imbriquées : <Code>&lt;html&gt;</Code>, <Code>&lt;head&gt;</Code> et <Code>&lt;body&gt;</Code>.</Text>
-                <CodeCard language="html" title="Squelette HTML">
+                <CodeCard language="html">
                     {`<!DOCTYPE html>
 <html>
   <head><title>Ma page</title></head>
@@ -21,7 +21,7 @@ export default function Cours() {
                 </CodeCard>
                 <Text><strong>Attributs HTML</strong> — les attributs <Code>id</Code>, <Code>class</Code> et <Code>href</Code> configurent les balises et permettent de les cibler en CSS.</Text>
                 <Text><strong>Sélecteurs CSS</strong> — on cible les éléments par balise (<Code>p</Code>), par classe (<Code>.classe</Code>) ou par identifiant (<Code>#id</Code>).</Text>
-                <CodeCard language="css" title="Sélecteurs CSS">
+                <CodeCard language="css">
                     {`p { color: blue; }
 .intro { font-size: 18px; }
 #titre { font-weight: bold; }`}

@@ -15,7 +15,7 @@ export default function Cours() {
             <CoursePrerequisites>
                 <Text><strong>Pattern MVC</strong> — le <strong>Modèle</strong> gère les données, la <strong>Vue</strong> affiche le HTML, le <strong>Contrôleur</strong> orchestre le traitement des requêtes.</Text>
                 <Text><strong>Routage par paramètre GET</strong> — on dispatche les actions du contrôleur via <Code>$_GET[&apos;action&apos;]</Code> dans l&apos;URL.</Text>
-                <CodeCard language="php" title="Routage GET">
+                <CodeCard language="php">
                     {`// URL : article.php?action=show&id=1
 $action = $_GET['action'] ?? 'list';`}
                 </CodeCard>

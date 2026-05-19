@@ -15,7 +15,7 @@ export default function Cours() {
                     porte les métadonnées (titre, encodage, styles), <Code>&lt;body&gt;</Code>{" "}
                     contient le contenu visible.
                 </Text>
-                <CodeCard language="html" title="Squelette HTML">
+                <CodeCard language="html">
                     {`<!DOCTYPE html>
 <html lang="fr">
     <head>
@@ -35,7 +35,7 @@ export default function Cours() {
                     conteneurs neutres, <Code>&lt;p&gt;</Code> un paragraphe,{" "}
                     <Code>&lt;h1&gt;</Code>–<Code>&lt;h6&gt;</Code> des titres hiérarchisés.
                 </Text>
-                <CodeCard language="html" title="Balises courantes">
+                <CodeCard language="html">
                     {`<div class="carte">
     <h2>Titre de la carte</h2>
     <p>Description <span class="important">importante</span>.</p>
@@ -47,7 +47,7 @@ export default function Cours() {
                     élément. <strong>L&apos;attribut <Code>class</Code></strong> lui attribue une ou
                     plusieurs classes réutilisables sur plusieurs éléments.
                 </Text>
-                <CodeCard language="html" title="Attributs id et class">
+                <CodeCard language="html">
                     {`<h1 id="titre-principal">Bienvenue</h1>
 <p class="intro">Premier paragraphe.</p>
 <p class="intro important">Deuxième paragraphe.</p>`}
@@ -58,7 +58,7 @@ export default function Cours() {
                     appliquer des styles : par balise, par classe avec <Code>.</Code> ou par identifiant
                     avec <Code>#</Code>.
                 </Text>
-                <CodeCard language="css" title="Sélecteurs CSS">
+                <CodeCard language="css">
                     {`p { color: black; }        /* tous les <p> */
 .intro { font-size: 1rem; } /* class="intro" */
 #titre-principal { }        /* id="titre-principal" */`}

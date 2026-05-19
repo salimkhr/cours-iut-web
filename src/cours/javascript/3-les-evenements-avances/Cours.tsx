@@ -69,7 +69,7 @@ export default function Cours() {
                     <Code>addEventListener(type, callback)</Code> déclenche une fonction lors
                     d&apos;une interaction sur l&apos;élément ciblé.
                 </Text>
-                <CodeCard language="javascript" title="addEventListener">
+                <CodeCard language="javascript">
                     {`const btn = document.getElementById("btn");
 btn.addEventListener("click", () => {
     console.log("Cliqué !");
@@ -81,7 +81,7 @@ btn.addEventListener("click", () => {
                     Sa propriété <Code>target</Code> désigne l&apos;élément qui a déclenché l&apos;événement,{" "}
                     <Code>type</Code> précise le type d&apos;événement.
                 </Text>
-                <CodeCard language="javascript" title="Objet event">
+                <CodeCard language="javascript">
                     {`btn.addEventListener("click", (event) => {
     console.log(event.type);   // "click"
     console.log(event.target); // l'élément cliqué

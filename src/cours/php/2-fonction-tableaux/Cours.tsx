@@ -10,13 +10,13 @@ export default function Cours() {
         <article>
             <CoursePrerequisites>
                 <Text><strong>Variables PHP</strong> — une variable commence par <Code>$</Code> et peut stocker des types scalaires : <Code>string</Code>, <Code>int</Code>, <Code>float</Code>, <Code>bool</Code>.</Text>
-                <CodeCard language="php" title="Variables et types">
+                <CodeCard language="php">
                     {`$nom = "Alice";
 $age = 20;
 $estEtudiant = true;`}
                 </CodeCard>
                 <Text><strong>Structures de contrôle</strong> — <Code>if/else</Code> pour les conditions, <Code>for</Code> et <Code>while</Code> pour les boucles.</Text>
-                <CodeCard language="php" title="Boucle for et if/else">
+                <CodeCard language="php">
                     {`for ($i = 0; $i < 5; $i++) {
     if ($i % 2 === 0) {
         echo $i . " est pair";

@@ -13,7 +13,7 @@ export default function Cours() {
                     <strong>Les fonctions fléchées</strong> sont le format standard des composants
                     React — chaque composant est une fonction qui reçoit des props et retourne du JSX.
                 </Text>
-                <CodeCard language="javascript" title="Fonction fléchée avec objet">
+                <CodeCard language="javascript">
                     {`const afficher = ({ nom, age }) => {
     return nom + " a " + age + " ans";
 };`}
@@ -24,7 +24,7 @@ export default function Cours() {
                     un tableau de données en liste d&apos;éléments JSX — chaque élément doit avoir une
                     prop <Code>key</Code> unique.
                 </Text>
-                <CodeCard language="javascript" title="map pour afficher une liste">
+                <CodeCard language="javascript">
                     {`const fruits = ["pomme", "banane", "cerise"];
 fruits.map((fruit) => console.log(fruit));`}
                 </CodeCard>
@@ -34,7 +34,7 @@ fruits.map((fruit) => console.log(fruit));`}
                     pour charger des données au montage d&apos;un composant. Une promesse représente une
                     valeur disponible dans le futur.
                 </Text>
-                <CodeCard language="javascript" title="fetch basique">
+                <CodeCard language="javascript">
                     {`fetch("https://api.example.com/data")
     .then((res) => res.json())
     .then((data) => console.log(data));`}

@@ -10,7 +10,7 @@ export default function Cours() {
             <CoursePrerequisites>
                 <Text><strong>Architecture MVC avancée</strong> — couche service entre le contrôleur et le repository, injection des dépendances dans le constructeur.</Text>
                 <Text><strong>Sessions PHP</strong> — <Code>session_start()</Code> active la session, <Code>$_SESSION</Code> stocke les données côté serveur entre les requêtes.</Text>
-                <CodeCard language="php" title="Sessions PHP">
+                <CodeCard language="php">
                     {`session_start();
 $_SESSION['user_id'] = 42;
 // Requête suivante :

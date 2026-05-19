@@ -11,13 +11,13 @@ export default function Cours() {
             <CoursePrerequisites>
                 <Text><strong>Architecture MVC</strong> — le contrôleur reçoit la requête HTTP, choisit la vue et lui transmet les données à afficher.</Text>
                 <Text><strong>Formulaires PHP</strong> — <Code>$_GET</Code> et <Code>$_POST</Code> contiennent les données du formulaire ; <Code>isset()</Code> vérifie leur présence.</Text>
-                <CodeCard language="php" title="Récupération des données">
+                <CodeCard language="php">
                     {`if (isset($_POST['nom'])) {
     $nom = htmlspecialchars($_POST['nom']);
 }`}
                 </CodeCard>
                 <Text><strong>Classes PHP</strong> — propriétés privées accessibles via des getters, constructeur qui initialise l&apos;objet à la création.</Text>
-                <CodeCard language="php" title="Classe avec getter">
+                <CodeCard language="php">
                     {`class Voiture {
     private string $marque;
     public function __construct(string $marque) {

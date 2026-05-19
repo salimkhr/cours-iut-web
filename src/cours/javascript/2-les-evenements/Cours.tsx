@@ -22,7 +22,7 @@ export default function Cours() {
                     <Code>querySelector</Code> retournent l&apos;élément HTML ciblé, sur lequel on
                     pourra attacher des actions.
                 </Text>
-                <CodeCard language="javascript" title="Sélection">
+                <CodeCard language="javascript">
                     {`const btn = document.getElementById("mon-bouton");
 const titre = document.querySelector(".titre");`}
                 </CodeCard>
@@ -32,7 +32,7 @@ const titre = document.querySelector(".titre");`}
                     remplace le texte, <Code>innerHTML</Code> injecte du HTML, <Code>classList</Code>{" "}
                     ajoute ou retire des classes CSS.
                 </Text>
-                <CodeCard language="javascript" title="Modification">
+                <CodeCard language="javascript">
                     {`element.textContent = "Nouveau texte";
 element.classList.add("actif");
 element.classList.remove("cache");`}
@@ -42,7 +42,7 @@ element.classList.remove("cache");`}
                     <strong>Les fonctions fléchées</strong> sont une syntaxe concise pour déclarer une
                     fonction. Elles sont fréquemment utilisées comme fonctions de rappel.
                 </Text>
-                <CodeCard language="javascript" title="Fonction fléchée">
+                <CodeCard language="javascript">
                     {`const direBonjour = (nom) => {
     console.log("Bonjour " + nom);
 };`}

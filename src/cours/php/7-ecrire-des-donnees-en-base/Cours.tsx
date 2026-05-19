@@ -77,7 +77,7 @@ export default function Cours() {
         <article>
             <CoursePrerequisites>
                 <Text><strong>Repository — lectures</strong> — <Code>findAll()</Code> et <Code>findById()</Code> utilisent PDO pour exécuter des SELECT et retourner des entités.</Text>
-                <CodeCard language="php" title="findById() avec PDO">
+                <CodeCard language="php">
                     {`public function findById(int $id): ?Article {
     $stmt = $this->pdo->prepare('SELECT * FROM article WHERE id = :id');
     $stmt->execute([':id' => $id]);
