@@ -15,7 +15,7 @@ export default function Cours() {
                     asynchrones — en particulier comme callbacks passés à <Code>then</Code> et comme
                     corps de fonctions <Code>async</Code>.
                 </Text>
-                <CodeCard language="javascript" title="Fonction fléchée">
+                <CodeCard language="javascript">
                     {`const doubler = (x) => x * 2;
 const saluer = (nom) => {
     return "Bonjour " + nom;
@@ -27,7 +27,7 @@ const saluer = (nom) => {
                     servent à transformer et filtrer les données reçues d&apos;une API avant de les
                     afficher.
                 </Text>
-                <CodeCard language="javascript" title="map et filter">
+                <CodeCard language="javascript">
                     {`const noms = utilisateurs.map((u) => u.nom);
 const majeurs = utilisateurs.filter((u) => u.age >= 18);`}
                 </CodeCard>
@@ -37,14 +37,14 @@ const majeurs = utilisateurs.filter((u) => u.age >= 18);`}
                     et <Code>createElement</Code> permettent d&apos;injecter les résultats d&apos;une API
                     directement dans la page.
                 </Text>
-                <CodeCard language="javascript" title="Afficher dans le DOM">
+                <CodeCard language="javascript">
                     {`const liste = document.getElementById("resultats");
 liste.innerHTML = "<li>Élément chargé</li>";`}
                 </CodeCard>
 
                 <Text>
                     <strong>Les événements</strong> déclenchent souvent les appels réseau —{" "}
-                    <Code>addEventListener("click", ...)</Code> sur un bouton pour lancer une
+                    <Code>addEventListener(&quot;click&quot;, ...)</Code> sur un bouton pour lancer une
                     requête à la demande de l&apos;utilisateur.
                 </Text>
             </CoursePrerequisites>
