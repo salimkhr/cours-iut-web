@@ -7,6 +7,7 @@ import ContentSwitcher from "@/components/page/ContentSwitcher";
 import ScrollRestore from "@/components/page/ScrollRestore";
 import PageFooter from "@/components/page/PageFooter";
 import ExamenWrapper from "@/components/ExamenWrapper";
+import TableOfContents from "@/components/TableOfContents";
 import {getModuleData} from "@/hook/getModuleData";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getContentComponent} from "@/lib/getContentComponent";
@@ -172,6 +173,15 @@ export default async function Content({params}: ContentPageProps) {
                             <ComponentToRender/>
                         )}
                     </main>
+                    {(currentContent === 'cours' || currentContent === 'TP' || currentContent === 'examen') && (
+                        <TableOfContents
+                            modulePath={currentModule.path}
+                            currentContent={currentContent as ContentKey}
+                            moduleSlug={moduleSlug}
+                            sectionSlug={sectionSlug}
+                            sectionContents={currentSection.contents}
+                        />
+                    )}
                 </>
             )}
 
