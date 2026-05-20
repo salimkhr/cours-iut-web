@@ -89,12 +89,6 @@ export default async function Content({params}: ContentPageProps) {
             {!isSplit && (
                 <ScrollRestore storageKey={`${moduleSlug}/${sectionSlug}/${currentContent}`}/>
             )}
-            <BreadcrumbGenerator
-                currentModule={currentModule}
-                currentSection={currentSection}
-                currentContent={isSplit ? 'Côte à côte' : currentContent!}
-            />
-
             <HeroSection
                 title={`${currentSection.order}. ${currentSection.title}`}
                 description={contentDesc}
@@ -102,6 +96,8 @@ export default async function Content({params}: ContentPageProps) {
                 imageAlt={currentModule.title}
                 path={currentModule.path}
                 icon={<ContentIcon/>}
+                backHref={`/${moduleSlug}/${sectionSlug}`}
+                backLabel={currentSection.title}
                 compact
             >
                 {currentSection.objectives && currentSection.objectives.length > 0 && (
@@ -129,6 +125,13 @@ export default async function Content({params}: ContentPageProps) {
                     </div>
                 )}
             </HeroSection>
+
+            <BreadcrumbGenerator
+                currentModule={currentModule}
+                currentSection={currentSection}
+                currentContent={isSplit ? 'Côte à côte' : currentContent!}
+                className="mx-auto w-full max-w-7xl px-6 lg:px-12 py-3"
+            />
 
             <ContentSwitcher
                 contents={currentSection.contents}
