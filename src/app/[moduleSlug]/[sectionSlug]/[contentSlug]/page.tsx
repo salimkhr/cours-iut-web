@@ -2,7 +2,6 @@ import {notFound} from "next/navigation";
 import {BookOpen, CodeXml, Columns2, Target} from "lucide-react";
 
 import HeroSection from "@/components/page/HeroSection";
-import ContentSwitcher from "@/components/page/ContentSwitcher";
 import ScrollRestore from "@/components/page/ScrollRestore";
 import PageFooter from "@/components/page/PageFooter";
 import ReadingProgress from "@/components/page/ReadingProgress";
@@ -127,22 +126,12 @@ export default async function Content({params}: ContentPageProps) {
                 )}
             </HeroSection>
 
-            <div className="2xl:hidden">
-                <ContentSwitcher
-                    contents={currentSection.contents}
-                    currentContent={isSplit ? SPLIT_SLUG : currentContent!}
-                    moduleSlug={moduleSlug}
-                    sectionSlug={sectionSlug}
-                    sectionTitle={`${currentSection.order}. ${currentSection.title}`}
-                />
-            </div>
-
             {!isSplit && (
                 <div className="sticky top-(--navbar-h) z-30 w-full">
                     <ReadingProgress modulePath={currentModule.path}/>
                 </div>
             )}
-            <div className="hidden 2xl:flex sticky top-(--navbar-h) z-[25] w-full justify-end">
+            <div className="flex sticky top-(--navbar-h) z-[25] w-full justify-end">
                 <div className={cn("flex px-1 border-l border-b border-border rounded-bl-xl bg-brand-light/85 dark:bg-brand-dark/85 backdrop-blur-md", isSplit ? "py-1" : "pt-2.5 pb-1")}>
                     <ContentSidebarNav
                         contents={currentSection.contents}
