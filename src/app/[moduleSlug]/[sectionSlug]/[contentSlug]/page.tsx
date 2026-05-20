@@ -154,7 +154,7 @@ export default async function Content({params}: ContentPageProps) {
             </div>
 
             {isSplit && CoursComponent && TPComponent ? (
-                <div className="flex flex-col lg:flex-row w-full max-w-screen-2xl mx-auto py-1 gap-2 lg:gap-0 lg:h-[calc(100dvh-var(--navbar-h)-3.5rem)]">
+                <div className="flex flex-col lg:flex-row w-full max-w-screen-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-0 py-1 gap-2 lg:gap-0 lg:h-[calc(100dvh-var(--navbar-h)-3.5rem)]">
                     <SplitPane
                         label="Cours"
                         Icon={BookOpen}
