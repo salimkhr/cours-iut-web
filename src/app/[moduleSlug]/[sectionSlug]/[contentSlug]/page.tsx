@@ -5,6 +5,8 @@ import HeroSection from "@/components/page/HeroSection";
 import ContentSwitcher from "@/components/page/ContentSwitcher";
 import ScrollRestore from "@/components/page/ScrollRestore";
 import PageFooter from "@/components/page/PageFooter";
+import ReadingProgress from "@/components/page/ReadingProgress";
+import ContentSidebarNav from "@/components/page/ContentSidebarNav";
 import ExamenWrapper from "@/components/ExamenWrapper";
 import TableOfContents from "@/components/TableOfContents";
 import {getModuleData} from "@/hook/getModuleData";
@@ -131,6 +133,16 @@ export default async function Content({params}: ContentPageProps) {
                 moduleSlug={moduleSlug}
                 sectionSlug={sectionSlug}
                 sectionTitle={`${currentSection.order}. ${currentSection.title}`}
+            />
+
+            <div className="sticky top-(--navbar-h) z-30 w-full">
+                <ReadingProgress modulePath={currentModule.path}/>
+            </div>
+            <ContentSidebarNav
+                contents={currentSection.contents}
+                currentContent={isSplit ? SPLIT_SLUG : currentContent!}
+                moduleSlug={moduleSlug}
+                sectionSlug={sectionSlug}
             />
 
             {isSplit && CoursComponent && TPComponent ? (
