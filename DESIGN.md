@@ -84,16 +84,18 @@ components:
     textColor: "{colors.brand-dark}"
     rounded: "{rounded.lg}"
     padding: "1.75rem"
-  switcher-tab-active:
-    backgroundColor: "{colors.brand-primary}"
-    textColor: "{colors.brand-light}"
+  content-nav-tab-active:
+    backgroundColor: "var(--color-${moduleSlug})"
+    textColor: "#ffffff"
     rounded: "{rounded.md}"
-    padding: "0.5rem 0.75rem"
-  switcher-tab-inactive:
+    height: "1.75rem"
+    padding: "0 0.625rem"
+  content-nav-tab-inactive:
     backgroundColor: "transparent"
-    textColor: "{colors.brand-dark}"
+    textColor: "{colors.brand-dark}/55"
     rounded: "{rounded.md}"
-    padding: "0.5rem 0.75rem"
+    height: "1.75rem"
+    padding: "0 0.625rem"
 ---
 
 # Design System: Cours IUT Web
@@ -233,14 +235,25 @@ Le système est *toujours légèrement levé*. Les cards portent une ombre ambia
 - **Compact mode:** min-height 26vh (mobile) / 34vh (desktop). Pour pages cours/TP.
 - **Full mode:** min-height 60vh (mobile) / 80vh (desktop). Pour pages module landing.
 
-### Content Switcher
+### Content Nav (ContentSidebarNav)
 
-- **Position:** sticky `top-(--navbar-h)` (38px), z-30.
-- **Background:** `bg-brand-light/85 dark:bg-brand-dark/85` + `backdrop-blur-md`.
-- **Tabs:** `rounded-lg`, gap-1, `px-3 py-2`, scroll horizontal sur overflow.
-- **Active:** filled `brand-primary` + texte `brand-light` + shadow-sm + bordure `brand-primary`.
-- **Inactive:** transparent + texte `brand-dark/70`, hover : bg `bridge-300/60` (light) / `bridge-700/60` (dark).
-- **Reading Progress:** intégré en bas du switcher (`h-0.5`), track `bridge-500/20`, indicator en couleur module via `bg-current` + inline `style.color`.
+- **Position:** sticky `top-(--navbar-h)`, z-[25]. Visible à **toutes les tailles d'écran**, ancré à droite via `w-full justify-end`.
+- **Background:** `bg-transparent backdrop-blur-xs` — identique à la navbar, effet verre sans teinte.
+- **Bordure:** `border-l border-b border-border rounded-bl-xl` — panneau accroché au bord droit, coin arrondi bas-gauche uniquement.
+- **Padding:** `pt-2.5 pb-1 px-1` en mode normal (compense les 6px de ReadingProgress superposé) ; `py-1 px-1` en mode split (ReadingProgress masqué).
+- **Tabs:** pills horizontaux, `h-7 rounded-md px-2.5`, icône `w-3.5 h-3.5` + label texte `text-sm font-medium`.
+- **Actif:** `backgroundColor: var(--color-${moduleSlug})` (couleur identitaire du module courant) + `text-white`. Jamais brand-primary fixe.
+- **Inactif:** `text-brand-dark/55 dark:text-bridge-100/55`, hover : `bg-bridge-300/40 dark:bg-bridge-700/40` + texte plein.
+- **Slides:** séparateur `h-4 w-px bg-border mx-0.5` + lien `<a target="_blank">` avec icône `ExternalLink`.
+- **Mode split:** ajoute un tab « Côte à côte » (icône `Columns2`) si la section contient `cours` **et** `TP`.
+
+### Reading Progress
+
+- **Position:** sticky `top-(--navbar-h)`, z-30 (au-dessus du Content Nav, z-[25]). Masqué en mode split (`!isSplit`).
+- **Hauteur:** `h-1.5` (6px), pleine largeur.
+- **Track:** `bridge-500/20`.
+- **Indicator:** couleur module via `style.color` + `bg-current`.
+- **Compensation visuelle:** le Content Nav utilise `pt-2.5` pour absorber les 6px de la barre qui le recouvre en haut.
 
 ### Navigation Prev/Next
 
@@ -252,8 +265,10 @@ Le système est *toujours légèrement levé*. Les cards portent une ombre ambia
 ### Split Pane (mode côte-à-côte)
 
 - **Layout:** `flex flex-col lg:flex-row` avec `lg:h-[calc(100dvh-var(--navbar-h)-3.5rem)]`.
-- **Chaque colonne:** `lg:w-1/2 lg:overflow-y-auto`, séparateur central `lg:border-l lg:border-bridge-500/30`.
-- **Sticky header par colonne (lg only):** label eyebrow + icône type en couleur module, `sticky top-0 backdrop-blur`.
+- **Container:** `px-3 sm:px-4 md:px-6 lg:px-0 py-1` — padding latéral sur mobile/tablette, zéro sur desktop (les panes gèrent leurs propres gouttières).
+- **Chaque colonne:** `lg:w-1/2 lg:overflow-y-auto`, gouttières `lg:pr-2` (gauche) / `lg:pl-2` (droite), séparateur `lg:border-l lg:border-bridge-500/30 lg:dark:border-bridge-500/25`.
+- **Sticky header par colonne (lg only):** label eyebrow + icône type en couleur module, `sticky top-0 backdrop-blur-md py-2`.
+- **Reading Progress:** masqué en mode split (le Content Nav adopte `py-1` sans compensation).
 
 ## 6. Do's and Don'ts
 
