@@ -2,7 +2,6 @@ import Link from "next/link";
 import {BookOpen, Columns2, ExternalLink} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {CONTENT_ICON, CONTENT_LABELS, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
-import ReadingProgress from "@/components/page/ReadingProgress";
 
 const SPLIT_KEY = 'split';
 const SPLIT_LABEL = 'Côte à côte';
@@ -58,7 +57,6 @@ export default function ContentSwitcher({
 
     return (
         <div className="w-full border-b border-border">
-            <ReadingProgress modulePath={moduleSlug}/>
             <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 flex items-stretch">
                 {sectionTitle && (
                     <div className="hidden sm:flex items-center shrink-1 min-w-0 mr-4 border-b-2 border-transparent -mb-px">
