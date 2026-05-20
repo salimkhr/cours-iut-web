@@ -1,7 +1,6 @@
 import {Clock, Hash, Layers, Target} from "lucide-react";
 import {getServerSession} from "@/lib/auth";
 
-import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import HeroSection from "@/components/page/HeroSection";
 import Stat from "@/components/page/Stat";
 import ContentCard from "@/components/Cards/ContentCard";
@@ -70,12 +69,6 @@ export default async function SectionPage({params}: SectionPageProps) {
                 compact
                 backHref={`/${moduleSlug}`}
                 backLabel={currentModule.title}
-            />
-
-            <BreadcrumbGenerator
-                currentModule={currentModule}
-                currentSection={currentSection ?? undefined}
-                className="mx-auto w-full max-w-7xl px-6 lg:px-12 py-3"
             />
 
             {/* Stats + Nav latérale */}
