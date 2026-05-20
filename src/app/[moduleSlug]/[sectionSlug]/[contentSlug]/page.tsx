@@ -137,11 +137,13 @@ export default async function Content({params}: ContentPageProps) {
                 />
             </div>
 
-            <div className="sticky top-(--navbar-h) z-30 w-full">
-                <ReadingProgress modulePath={currentModule.path}/>
-            </div>
+            {!isSplit && (
+                <div className="sticky top-(--navbar-h) z-30 w-full">
+                    <ReadingProgress modulePath={currentModule.path}/>
+                </div>
+            )}
             <div className="hidden 2xl:flex sticky top-(--navbar-h) z-[25] w-full justify-end">
-                <div className="flex pt-2.5 pb-1 px-1 border-l border-b border-border rounded-bl-xl bg-brand-light/85 dark:bg-brand-dark/85 backdrop-blur-md">
+                <div className={cn("flex px-1 border-l border-b border-border rounded-bl-xl bg-brand-light/85 dark:bg-brand-dark/85 backdrop-blur-md", isSplit ? "py-1" : "pt-2.5 pb-1")}>
                     <ContentSidebarNav
                         contents={currentSection.contents}
                         currentContent={isSplit ? SPLIT_SLUG : currentContent!}
@@ -152,7 +154,7 @@ export default async function Content({params}: ContentPageProps) {
             </div>
 
             {isSplit && CoursComponent && TPComponent ? (
-                <div className="flex flex-col lg:flex-row w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4 gap-4 lg:gap-0 lg:h-[calc(100dvh-var(--navbar-h)-3.5rem)]">
+                <div className="flex flex-col lg:flex-row w-full max-w-screen-2xl mx-auto px-2 lg:px-3 py-2 gap-4 lg:gap-0 lg:h-[calc(100dvh-var(--navbar-h)-3.5rem)]">
                     <SplitPane
                         label="Cours"
                         Icon={BookOpen}
@@ -218,8 +220,8 @@ function SplitPane({label, Icon, modulePath, side, children}: SplitPaneProps) {
             className={cn(
                 "lg:w-1/2 lg:overflow-y-auto",
                 side === 'left'
-                    ? "lg:pr-4 xl:pr-6"
-                    : "lg:pl-4 xl:pl-6 lg:border-l lg:border-bridge-500/30 lg:dark:border-bridge-500/25",
+                    ? "lg:pr-2"
+                    : "lg:pl-2 lg:border-l lg:border-bridge-500/30 lg:dark:border-bridge-500/25",
                 `header-${modulePath}`
             )}
         >
