@@ -46,8 +46,6 @@ export default async function Module({params}: ModulePageProps) {
 
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
-            <BreadcrumbGenerator currentModule={currentModule}/>
-
             <HeroSection
                 title={currentModule.title}
                 description={currentModule.description}
@@ -57,6 +55,8 @@ export default async function Module({params}: ModulePageProps) {
                 icon={<Icon size={56} className="mb-4"/>}
                 path={currentModule.path}
                 compact
+                backHref="/"
+                backLabel="Tous les cours"
             >
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     {hasAvailableContent && lastAvailableSectionPath && (
@@ -88,6 +88,11 @@ export default async function Module({params}: ModulePageProps) {
                     <ModuleInfo currentModule={currentModule}/>
                 </div>
             </HeroSection>
+
+            <BreadcrumbGenerator
+                currentModule={currentModule}
+                className="mx-auto w-full max-w-7xl px-6 lg:px-12 py-3"
+            />
 
             <ProgressSection
                 currentModule={currentModule}
