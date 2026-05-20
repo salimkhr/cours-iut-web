@@ -58,6 +58,12 @@ export default function TableOfContents({
         })
 
         setHeadings(`${sectionSlug}/${currentContent}`, extracted)
+
+        // Scroll vers l'ancre si présente dans l'URL (navigation inter-onglet via TOC)
+        const hash = window.location.hash.slice(1)
+        if (hash) {
+            document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' })
+        }
     }, [sectionSlug, currentContent, setHeadings])
 
     // IntersectionObserver — actif uniquement sur l'onglet courant
@@ -114,7 +120,7 @@ export default function TableOfContents({
         if (activeTab === currentContent) {
             document.getElementById(entry.id)?.scrollIntoView({ behavior: 'smooth' })
         } else {
-            router.push(`/${moduleSlug}/${sectionSlug}/${activeTab}#${entry.id}`)
+            router.push(`/${moduleSlug}/${sectionSlug}/${activeTab}#${entry.id}`, { scroll: false })
         }
         setIsOpen(false)
     }

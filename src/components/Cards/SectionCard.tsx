@@ -88,7 +88,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                 {/* Header: order chip + title + duration + lock state */}
                 <header className="flex items-center gap-3">
                     <div className={cn(
-                        "inline-flex items-center justify-center min-w-9 h-9 px-2.5 rounded-lg text-white font-mono font-bold text-sm shadow-sm shrink-0",
+                        "inline-flex items-center justify-center min-w-9 h-9 px-2.5 rounded-lg text-white dark:text-black font-mono font-bold shadow-sm shrink-0",
                         `bg-${modulePath}`
                     )}>
                         {section.order.toString().padStart(2, '0')}
