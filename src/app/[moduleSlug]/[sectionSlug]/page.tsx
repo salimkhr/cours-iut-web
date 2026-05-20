@@ -60,8 +60,6 @@ export default async function SectionPage({params}: SectionPageProps) {
 
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
-            <BreadcrumbGenerator currentModule={currentModule}/>
-
             <HeroSection
                 title={`${currentSection?.order}. ${currentSection?.title}`}
                 description={currentSection?.description}
@@ -70,6 +68,14 @@ export default async function SectionPage({params}: SectionPageProps) {
                 path={currentModule.path}
                 tags={currentSection?.tags ?? []}
                 compact
+                backHref={`/${moduleSlug}`}
+                backLabel={currentModule.title}
+            />
+
+            <BreadcrumbGenerator
+                currentModule={currentModule}
+                currentSection={currentSection ?? undefined}
+                className="mx-auto w-full max-w-7xl px-6 lg:px-12 py-3"
             />
 
             {/* Stats + Nav latérale */}
