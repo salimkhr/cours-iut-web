@@ -54,7 +54,6 @@ export default function HeroSection({
 
     return (
         <section
-            role="img"
             aria-label={imageAlt}
             className={cn(
                 "relative w-full bg-no-repeat bg-right-bottom bg-cover overflow-hidden border-b border-brand-dark/15 dark:border-brand-light/15 -mt-(--navbar-h)",

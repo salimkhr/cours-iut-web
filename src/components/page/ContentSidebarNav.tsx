@@ -60,7 +60,7 @@ export default function ContentSidebarNav({
                         scroll={false}
                         aria-current={isActive ? 'page' : undefined}
                         className={cn(
-                            "shrink-0 inline-flex items-center gap-1.5 px-2.5 h-7 text-sm font-medium rounded-md",
+                            "shrink-0 inline-flex items-center gap-0.5 px-1.5 h-7 text-sm font-medium rounded-md",
                             "transition-colors duration-200",
                             isActive
                                 ? "text-white"

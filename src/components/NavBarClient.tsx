@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {usePathname, useRouter} from "next/navigation";
+import NavReadingProgress from "@/components/NavReadingProgress";
 import {useTheme} from "next-themes";
 import {authClient} from "@/lib/auth-client";
 
@@ -21,22 +22,11 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import iconMap from "@/lib/iconMap";
-import {
-    BookOpen,
-    Home,
-    LogIn,
-    LogOut,
-    Moon,
-    Settings,
-    Sun,
-    UserCheck,
-    UserCog,
-    UserLockIcon
-} from "lucide-react";
+import {BookOpen, Home, LogIn, LogOut, Moon, Settings, Sun, UserCheck, UserCog, UserLockIcon} from "lucide-react";
 import Module from "@/types/Module";
-import { cn, avatarColor, avatarInitials } from "@/lib/utils";
+import {avatarColor, avatarInitials, cn} from "@/lib/utils";
 import {useMounted} from "@/hook/useMounted";
 
 const dropdownContentClass = cn(
@@ -102,7 +92,8 @@ export default function NavBarClient({
     }
 
     return (
-        <header className="sticky top-0 z-50 bg-transparent backdrop-blur-xs">
+        <header className="sticky top-0 z-50 bg-transparent backdrop-blur-xs relative">
+            <NavReadingProgress />
             <NavigationMenu className="border-b border-border px-2">
 
                 {/* LEFT NAV */}
@@ -175,7 +166,7 @@ export default function NavBarClient({
                                     aria-label="Menu utilisateur"
                                     className="flex flex-row items-center gap-2 rounded-full p-0.5 outline-none transition-colors hover:bg-bridge-200/50 dark:hover:bg-bridge-700/50 focus-visible:ring-2 focus-visible:ring-brand-primary"
                                 >
-                                    <Avatar className="size-8 shrink-0">
+                                    <Avatar className="size-6 shrink-0">
                                         <AvatarImage src={user.imageUrl ?? undefined} alt={user.username ?? 'avatar'} />
                                         <AvatarFallback
                                             className="text-white text-xs font-semibold"

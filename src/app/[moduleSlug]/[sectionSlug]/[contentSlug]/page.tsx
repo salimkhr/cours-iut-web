@@ -127,12 +127,10 @@ export default async function Content({params}: ContentPageProps) {
             </HeroSection>
 
             {!isSplit && (
-                <div className="sticky top-(--navbar-h) z-30 w-full">
-                    <ReadingProgress modulePath={currentModule.path}/>
-                </div>
+                <ReadingProgress modulePath={currentModule.path}/>
             )}
             <div className="flex sticky top-(--navbar-h) z-[25] w-full justify-end">
-                <div className={cn("flex px-1 border-l border-b border-border rounded-bl-xl bg-transparent backdrop-blur-xs", isSplit ? "py-1" : "pt-2.5 pb-1")}>
+                <div className={cn("flex px-1 border-l border-b border-border rounded-bl-xl bg-transparent backdrop-blur-xs", isSplit ? "py-1" : "pt-1 pb-1")}>
                     <ContentSidebarNav
                         contents={currentSection.contents}
                         currentContent={isSplit ? SPLIT_SLUG : currentContent!}
