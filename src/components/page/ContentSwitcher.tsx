@@ -57,13 +57,7 @@ export default function ContentSwitcher({
     if (tabs.length <= 1 && !contents.includes('slide')) return null;
 
     return (
-        <div
-            className={cn(
-                "sticky top-(--navbar-h) z-30 w-full",
-                "bg-transparent backdrop-blur-xs",
-                "border-b border-border"
-            )}
-        >
+        <div className="w-full border-b border-border">
             <ReadingProgress modulePath={moduleSlug}/>
             <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 flex items-stretch">
                 {sectionTitle && (
