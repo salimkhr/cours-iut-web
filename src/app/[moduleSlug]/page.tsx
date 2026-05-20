@@ -1,6 +1,5 @@
 import Link from "next/link";
 import SectionCard from "@/components/Cards/SectionCard";
-import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import Section from "@/types/Section";
 import iconMap from "@/lib/iconMap";
 import {BookOpen} from "lucide-react";
@@ -88,11 +87,6 @@ export default async function Module({params}: ModulePageProps) {
                     <ModuleInfo currentModule={currentModule}/>
                 </div>
             </HeroSection>
-
-            <BreadcrumbGenerator
-                currentModule={currentModule}
-                className="mx-auto w-full max-w-7xl px-6 lg:px-12 py-3"
-            />
 
             <ProgressSection
                 currentModule={currentModule}
