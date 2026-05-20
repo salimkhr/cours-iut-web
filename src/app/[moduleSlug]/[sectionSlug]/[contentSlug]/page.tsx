@@ -130,6 +130,7 @@ export default async function Content({params}: ContentPageProps) {
                 currentContent={isSplit ? SPLIT_SLUG : currentContent!}
                 moduleSlug={moduleSlug}
                 sectionSlug={sectionSlug}
+                sectionTitle={`${currentSection.order}. ${currentSection.title}`}
             />
 
             {isSplit && CoursComponent && TPComponent ? (
