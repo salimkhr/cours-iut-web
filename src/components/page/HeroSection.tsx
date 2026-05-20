@@ -1,6 +1,8 @@
 'use client';
 
 import {ReactNode, useMemo} from "react";
+import Link from "next/link";
+import {ChevronLeft} from "lucide-react";
 import TagsBadges from "@/components/page/TagsBadges";
 import {Particles} from "@/components/magicui/particles";
 import {useMounted} from "@/hook/useMounted";
@@ -17,6 +19,8 @@ interface HeroSectionProps {
     icon?: ReactNode;
     path?: string;
     compact?: boolean;
+    backHref?: string;
+    backLabel?: string;
 }
 
 export default function HeroSection({
@@ -28,7 +32,9 @@ export default function HeroSection({
                                         icon,
                                         tags = [],
                                         path = '',
-                                        compact = false
+                                        compact = false,
+                                        backHref,
+                                        backLabel
                                     }: HeroSectionProps) {
     const mounted = useMounted();
     const isDark = useIsDark();
@@ -133,10 +139,23 @@ export default function HeroSection({
                         </p>
                     )}
 
-                    {children && <div className={cn(
-                        "w-full flex justify-center lg:justify-start",
-                        compact ? "mt-4" : "mt-7"
-                    )}>{children}</div>}
+                    {(backHref || children) && (
+                        <div className={cn(
+                            "w-full flex flex-wrap items-center gap-3 justify-center lg:justify-start",
+                            compact ? "mt-4" : "mt-7"
+                        )}>
+                            {backHref && (
+                                <Link
+                                    href={backHref}
+                                    className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-bold border border-bridge-500/30 bg-white/30 dark:bg-black/30 hover:bg-white dark:hover:bg-bridge-900 backdrop-blur-md transition-colors"
+                                >
+                                    <ChevronLeft className="size-4"/>
+                                    {backLabel}
+                                </Link>
+                            )}
+                            {children}
+                        </div>
+                    )}
                 </div>
 
                 {tags.length > 0 && (
