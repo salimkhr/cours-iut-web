@@ -141,13 +141,15 @@ export default async function Content({params}: ContentPageProps) {
                 <ReadingProgress modulePath={currentModule.path}/>
             </div>
 
-            <div className="hidden 2xl:flex fixed top-(--navbar-h) right-0 z-[25] items-stretch border-b border-border bg-brand-light/85 dark:bg-brand-dark/85 backdrop-blur-md">
-                <ContentSidebarNav
-                    contents={currentSection.contents}
-                    currentContent={isSplit ? SPLIT_SLUG : currentContent!}
-                    moduleSlug={moduleSlug}
-                    sectionSlug={sectionSlug}
-                />
+            <div className="hidden 2xl:flex sticky top-(--navbar-h) z-[25] w-full justify-end">
+                <div className="flex items-stretch border-l border-b border-border bg-brand-light/85 dark:bg-brand-dark/85 backdrop-blur-md">
+                    <ContentSidebarNav
+                        contents={currentSection.contents}
+                        currentContent={isSplit ? SPLIT_SLUG : currentContent!}
+                        moduleSlug={moduleSlug}
+                        sectionSlug={sectionSlug}
+                    />
+                </div>
             </div>
 
             {isSplit && CoursComponent && TPComponent ? (
