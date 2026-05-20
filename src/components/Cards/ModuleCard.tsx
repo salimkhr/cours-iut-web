@@ -68,7 +68,7 @@ export default function ModuleCard({currentModule, isAuthed = true}: ModuleCardP
                 <CardHeader className="flex flex-row items-start gap-4 space-y-0 p-0">
                     <div
                         className={cn(
-                            "flex items-center justify-center w-12 h-12 rounded-xl text-white shadow-lg shrink-0",
+                            "flex items-center justify-center w-12 h-12 rounded-xl text-white shadow-lg shrink-0 text-white dark:text-black",
                             `bg-${path}` // Utilise tes couleurs de badge
                         )}
                     >
