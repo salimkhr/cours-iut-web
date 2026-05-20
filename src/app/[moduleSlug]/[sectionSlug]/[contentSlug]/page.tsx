@@ -139,15 +139,15 @@ export default async function Content({params}: ContentPageProps) {
 
             <div className="sticky top-(--navbar-h) z-30 w-full">
                 <ReadingProgress modulePath={currentModule.path}/>
-                <div className="hidden 2xl:flex w-full justify-end">
-                    <div className="flex items-stretch border-l border-b border-bridge-300/50 dark:border-bridge-600/40 rounded-bl-xl bg-brand-light/85 dark:bg-brand-dark/85 backdrop-blur-md">
-                        <ContentSidebarNav
-                            contents={currentSection.contents}
-                            currentContent={isSplit ? SPLIT_SLUG : currentContent!}
-                            moduleSlug={moduleSlug}
-                            sectionSlug={sectionSlug}
-                        />
-                    </div>
+            </div>
+            <div className="hidden 2xl:flex sticky top-(--navbar-h) z-[25] w-full justify-end">
+                <div className="flex py-1 px-1 border-l border-b border-bridge-300/50 dark:border-bridge-600/40 rounded-bl-xl bg-brand-light/85 dark:bg-brand-dark/85 backdrop-blur-md">
+                    <ContentSidebarNav
+                        contents={currentSection.contents}
+                        currentContent={isSplit ? SPLIT_SLUG : currentContent!}
+                        moduleSlug={moduleSlug}
+                        sectionSlug={sectionSlug}
+                    />
                 </div>
             </div>
 

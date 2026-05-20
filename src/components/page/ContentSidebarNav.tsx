@@ -49,7 +49,7 @@ export default function ContentSidebarNav({
     return (
         <nav
             aria-label="Changer de type de contenu"
-            className="flex items-stretch gap-0"
+            className="flex items-center gap-0.5"
         >
             {tabs.map(({key, href, label, Icon}) => {
                 const isActive = key === currentContent;
@@ -60,13 +60,13 @@ export default function ContentSidebarNav({
                         scroll={false}
                         aria-current={isActive ? 'page' : undefined}
                         className={cn(
-                            "shrink-0 inline-flex items-center gap-1.5 px-3 h-9 text-sm font-medium",
-                            "border-b-2 -mb-px transition-colors duration-200",
+                            "shrink-0 inline-flex items-center gap-1.5 px-2.5 h-7 text-sm font-medium rounded-md",
+                            "transition-colors duration-200",
                             isActive
-                                ? "text-brand-dark dark:text-bridge-50"
-                                : "border-transparent text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark dark:hover:text-bridge-100 hover:border-border"
+                                ? "text-white"
+                                : "text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark dark:hover:text-bridge-100 hover:bg-bridge-300/40 dark:hover:bg-bridge-700/40"
                         )}
-                        style={isActive ? {borderColor: `var(--color-${moduleSlug})`} : undefined}
+                        style={isActive ? {backgroundColor: `var(--color-${moduleSlug})`} : undefined}
                     >
                         <Icon className="w-3.5 h-3.5 shrink-0"/>
                         <span>{label}</span>
@@ -76,13 +76,13 @@ export default function ContentSidebarNav({
 
             {contents.includes('slide') && (
                 <>
-                    <div className="h-4 w-px bg-border mx-1 shrink-0 self-center"/>
+                    <div className="h-4 w-px bg-border mx-0.5 shrink-0"/>
                     <a
                         href={`/${moduleSlug}/${sectionSlug}/slide`}
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Ouvrir les slides dans un nouvel onglet"
-                        className="shrink-0 inline-flex items-center gap-1.5 px-3 h-9 text-sm font-medium border-b-2 border-transparent -mb-px transition-colors duration-200 text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark dark:hover:text-bridge-100 hover:border-border cursor-pointer"
+                        className="shrink-0 inline-flex items-center gap-1.5 px-2.5 h-7 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark dark:hover:text-bridge-100 hover:bg-bridge-300/40 dark:hover:bg-bridge-700/40"
                     >
                         <ExternalLink className="w-3.5 h-3.5 shrink-0"/>
                         <span>Slides</span>
