@@ -141,7 +141,7 @@ export default async function Content({params}: ContentPageProps) {
                 <ReadingProgress modulePath={currentModule.path}/>
             </div>
             <div className="hidden 2xl:flex sticky top-(--navbar-h) z-[25] w-full justify-end">
-                <div className="flex py-1 px-1 border-l border-b border-bridge-300/50 dark:border-bridge-600/40 rounded-bl-xl bg-brand-light/85 dark:bg-brand-dark/85 backdrop-blur-md">
+                <div className="flex pt-2.5 pb-1 px-1 border-l border-b border-border rounded-bl-xl bg-brand-light/85 dark:bg-brand-dark/85 backdrop-blur-md">
                     <ContentSidebarNav
                         contents={currentSection.contents}
                         currentContent={isSplit ? SPLIT_SLUG : currentContent!}
