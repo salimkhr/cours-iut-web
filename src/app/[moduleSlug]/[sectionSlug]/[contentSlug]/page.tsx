@@ -1,7 +1,6 @@
 import {notFound} from "next/navigation";
 import {BookOpen, CodeXml, Columns2, Target} from "lucide-react";
 
-import BreadcrumbGenerator from "@/components/BreadcrumbGenerator";
 import HeroSection from "@/components/page/HeroSection";
 import ContentSwitcher from "@/components/page/ContentSwitcher";
 import ScrollRestore from "@/components/page/ScrollRestore";
@@ -125,13 +124,6 @@ export default async function Content({params}: ContentPageProps) {
                     </div>
                 )}
             </HeroSection>
-
-            <BreadcrumbGenerator
-                currentModule={currentModule}
-                currentSection={currentSection}
-                currentContent={isSplit ? 'Côte à côte' : currentContent!}
-                className="mx-auto w-full max-w-7xl px-6 lg:px-12 py-3"
-            />
 
             <ContentSwitcher
                 contents={currentSection.contents}
