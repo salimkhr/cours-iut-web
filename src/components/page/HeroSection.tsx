@@ -97,6 +97,15 @@ export default function HeroSection({
                         : "py-16 lg:py-24 min-h-[60vh] lg:min-h-[80vh]"
                 )}>
                 <div className="w-full max-w-[640px]">
+                    {backHref && (
+                        <Link
+                            href={backHref}
+                            className="inline-flex items-center gap-1 text-sm text-brand-dark/55 dark:text-bridge-300/55 hover:text-brand-dark dark:hover:text-bridge-100 transition-colors mb-3 lg:mb-4"
+                        >
+                            <ChevronLeft className="size-3.5"/>
+                            {backLabel}
+                        </Link>
+                    )}
                     {compact ? (
                         <div className="flex items-center gap-3 lg:gap-4 justify-center lg:justify-start leading-none text-brand-dark dark:text-brand-light text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl">
                             {icon && (
@@ -139,20 +148,11 @@ export default function HeroSection({
                         </p>
                     )}
 
-                    {(backHref || children) && (
+                    {children && (
                         <div className={cn(
                             "w-full flex flex-wrap items-center gap-3 justify-center lg:justify-start",
                             compact ? "mt-4" : "mt-7"
                         )}>
-                            {backHref && (
-                                <Link
-                                    href={backHref}
-                                    className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-bold border border-bridge-500/30 bg-white/30 dark:bg-black/30 hover:bg-white dark:hover:bg-bridge-900 backdrop-blur-md transition-colors"
-                                >
-                                    <ChevronLeft className="size-4"/>
-                                    {backLabel}
-                                </Link>
-                            )}
                             {children}
                         </div>
                     )}
