@@ -127,23 +127,19 @@ export default async function Content({params}: ContentPageProps) {
                 )}
             </HeroSection>
 
-            <ContentSwitcher
-                contents={currentSection.contents}
-                currentContent={isSplit ? SPLIT_SLUG : currentContent!}
-                moduleSlug={moduleSlug}
-                sectionSlug={sectionSlug}
-                sectionTitle={`${currentSection.order}. ${currentSection.title}`}
-            />
+            <div className="2xl:hidden">
+                <ContentSwitcher
+                    contents={currentSection.contents}
+                    currentContent={isSplit ? SPLIT_SLUG : currentContent!}
+                    moduleSlug={moduleSlug}
+                    sectionSlug={sectionSlug}
+                    sectionTitle={`${currentSection.order}. ${currentSection.title}`}
+                />
+            </div>
 
             <div className="sticky top-(--navbar-h) z-30 w-full">
                 <ReadingProgress modulePath={currentModule.path}/>
             </div>
-            <ContentSidebarNav
-                contents={currentSection.contents}
-                currentContent={isSplit ? SPLIT_SLUG : currentContent!}
-                moduleSlug={moduleSlug}
-                sectionSlug={sectionSlug}
-            />
 
             {isSplit && CoursComponent && TPComponent ? (
                 <div className="flex flex-col lg:flex-row w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4 gap-4 lg:gap-0 lg:h-[calc(100dvh-var(--navbar-h)-3.5rem)]">
@@ -166,21 +162,32 @@ export default async function Content({params}: ContentPageProps) {
                 </div>
             ) : ComponentToRender && (
                 <>
-                    {/* Lesson body */}
-                    <main
-                        className={cn(
-                            "w-full max-w-7xl mx-auto px-3 lg:px-4 py-10 lg:py-14",
-                            `header-${currentModule.path}`
-                        )}
-                    >
-                        {currentContent === "examen" && currentSection.examenIsLock ? (
-                            <ExamenWrapper currentModule={currentModule}>
+                    <div className="relative w-full max-w-7xl mx-auto">
+                        <div className="hidden 2xl:block absolute left-full top-0 h-full pl-4">
+                            <div className="sticky top-[calc(var(--navbar-h)+16px)] pt-10 lg:pt-14">
+                                <ContentSidebarNav
+                                    contents={currentSection.contents}
+                                    currentContent={currentContent!}
+                                    moduleSlug={moduleSlug}
+                                    sectionSlug={sectionSlug}
+                                />
+                            </div>
+                        </div>
+                        <main
+                            className={cn(
+                                "px-3 lg:px-4 py-10 lg:py-14",
+                                `header-${currentModule.path}`
+                            )}
+                        >
+                            {currentContent === "examen" && currentSection.examenIsLock ? (
+                                <ExamenWrapper currentModule={currentModule}>
+                                    <ComponentToRender/>
+                                </ExamenWrapper>
+                            ) : (
                                 <ComponentToRender/>
-                            </ExamenWrapper>
-                        ) : (
-                            <ComponentToRender/>
-                        )}
-                    </main>
+                            )}
+                        </main>
+                    </div>
                     {(currentContent === 'cours' || currentContent === 'TP' || currentContent === 'examen') && (
                         <TableOfContents
                             modulePath={currentModule.path}
