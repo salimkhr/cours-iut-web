@@ -141,6 +141,15 @@ export default async function Content({params}: ContentPageProps) {
                 <ReadingProgress modulePath={currentModule.path}/>
             </div>
 
+            <div className="hidden 2xl:flex fixed top-(--navbar-h) right-0 z-[25] items-stretch border-b border-border bg-brand-light/85 dark:bg-brand-dark/85 backdrop-blur-md">
+                <ContentSidebarNav
+                    contents={currentSection.contents}
+                    currentContent={isSplit ? SPLIT_SLUG : currentContent!}
+                    moduleSlug={moduleSlug}
+                    sectionSlug={sectionSlug}
+                />
+            </div>
+
             {isSplit && CoursComponent && TPComponent ? (
                 <div className="flex flex-col lg:flex-row w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4 gap-4 lg:gap-0 lg:h-[calc(100dvh-var(--navbar-h)-3.5rem)]">
                     <SplitPane
@@ -162,32 +171,20 @@ export default async function Content({params}: ContentPageProps) {
                 </div>
             ) : ComponentToRender && (
                 <>
-                    <div className="relative w-full max-w-7xl mx-auto">
-                        <div className="hidden 2xl:block absolute left-full top-0 h-full pl-4">
-                            <div className="sticky top-[calc(var(--navbar-h)+16px)] pt-10 lg:pt-14">
-                                <ContentSidebarNav
-                                    contents={currentSection.contents}
-                                    currentContent={currentContent!}
-                                    moduleSlug={moduleSlug}
-                                    sectionSlug={sectionSlug}
-                                />
-                            </div>
-                        </div>
-                        <main
-                            className={cn(
-                                "px-3 lg:px-4 py-10 lg:py-14",
-                                `header-${currentModule.path}`
-                            )}
-                        >
-                            {currentContent === "examen" && currentSection.examenIsLock ? (
-                                <ExamenWrapper currentModule={currentModule}>
-                                    <ComponentToRender/>
-                                </ExamenWrapper>
-                            ) : (
+                    <main
+                        className={cn(
+                            "w-full max-w-7xl mx-auto px-3 lg:px-4 py-10 lg:py-14",
+                            `header-${currentModule.path}`
+                        )}
+                    >
+                        {currentContent === "examen" && currentSection.examenIsLock ? (
+                            <ExamenWrapper currentModule={currentModule}>
                                 <ComponentToRender/>
-                            )}
-                        </main>
-                    </div>
+                            </ExamenWrapper>
+                        ) : (
+                            <ComponentToRender/>
+                        )}
+                    </main>
                     {(currentContent === 'cours' || currentContent === 'TP' || currentContent === 'examen') && (
                         <TableOfContents
                             modulePath={currentModule.path}

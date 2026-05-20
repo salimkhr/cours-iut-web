@@ -49,7 +49,7 @@ export default function ContentSidebarNav({
     return (
         <nav
             aria-label="Changer de type de contenu"
-            className="flex flex-col gap-0.5 rounded-xl border border-border bg-brand-light/90 dark:bg-brand-dark/90 backdrop-blur-sm shadow-md p-1"
+            className="flex items-stretch gap-0"
         >
             {tabs.map(({key, href, label, Icon}) => {
                 const isActive = key === currentContent;
@@ -60,32 +60,31 @@ export default function ContentSidebarNav({
                         scroll={false}
                         aria-current={isActive ? 'page' : undefined}
                         className={cn(
-                            "flex flex-col items-center gap-1 w-14 px-1 py-2.5 rounded-lg",
-                            "text-[10px] font-semibold text-center leading-tight",
-                            "transition-colors duration-200",
+                            "shrink-0 inline-flex items-center gap-1.5 px-3 h-9 text-sm font-medium",
+                            "border-b-2 -mb-px transition-colors duration-200",
                             isActive
-                                ? "text-white"
-                                : "text-brand-dark/60 dark:text-bridge-100/60 hover:bg-bridge-300/50 dark:hover:bg-bridge-700/50 hover:text-brand-dark dark:hover:text-bridge-100"
+                                ? "text-brand-dark dark:text-bridge-50"
+                                : "border-transparent text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark dark:hover:text-bridge-100 hover:border-border"
                         )}
-                        style={isActive ? {backgroundColor: `var(--color-${moduleSlug})`} : undefined}
+                        style={isActive ? {borderColor: `var(--color-${moduleSlug})`} : undefined}
                     >
-                        <Icon className="w-4 h-4 shrink-0"/>
-                        <span className="break-words w-full">{label}</span>
+                        <Icon className="w-3.5 h-3.5 shrink-0"/>
+                        <span>{label}</span>
                     </Link>
                 );
             })}
 
             {contents.includes('slide') && (
                 <>
-                    <div className="h-px bg-border mx-1 my-0.5"/>
+                    <div className="h-4 w-px bg-border mx-1 shrink-0 self-center"/>
                     <a
                         href={`/${moduleSlug}/${sectionSlug}/slide`}
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Ouvrir les slides dans un nouvel onglet"
-                        className="flex flex-col items-center gap-1 w-14 px-1 py-2.5 rounded-lg text-[10px] font-semibold text-center leading-tight transition-colors duration-200 cursor-pointer text-brand-dark/60 dark:text-bridge-100/60 hover:bg-bridge-300/50 dark:hover:bg-bridge-700/50 hover:text-brand-dark dark:hover:text-bridge-100"
+                        className="shrink-0 inline-flex items-center gap-1.5 px-3 h-9 text-sm font-medium border-b-2 border-transparent -mb-px transition-colors duration-200 text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark dark:hover:text-bridge-100 hover:border-border cursor-pointer"
                     >
-                        <ExternalLink className="w-4 h-4 shrink-0"/>
+                        <ExternalLink className="w-3.5 h-3.5 shrink-0"/>
                         <span>Slides</span>
                     </a>
                 </>
