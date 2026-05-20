@@ -68,7 +68,7 @@ export default function ContentSwitcher({
 
                 <nav
                     aria-label="Types de contenu de la section"
-                    className="flex items-stretch gap-0 mx-auto sm:ml-auto sm:mr-0 overflow-x-auto"
+                    className="flex items-stretch gap-0 sm:ml-auto overflow-x-auto"
                 >
                     {tabs.map(({key, href, label, Icon}) => {
                         const isActive = key === currentContent;
