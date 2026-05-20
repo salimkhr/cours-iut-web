@@ -1,12 +1,11 @@
 import Link from "next/link";
-import {BookOpen, Columns2} from "lucide-react";
+import {BookOpen, Columns2, ExternalLink} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {CONTENT_ICON, CONTENT_LABELS, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
 import ReadingProgress from "@/components/page/ReadingProgress";
 
 const SPLIT_KEY = 'split';
-const SPLIT_LABEL = '' +
-    'Côte à côte';
+const SPLIT_LABEL = 'Côte à côte';
 
 interface ContentSwitcherProps {
     contents: string[];
@@ -53,24 +52,21 @@ export default function ContentSwitcher({
         });
     }
 
-    if (tabs.length <= 1) return null;
+    if (tabs.length <= 1 && !contents.includes('slide')) return null;
 
     return (
         <div
             className={cn(
                 "sticky top-(--navbar-h) z-30 w-full",
-                // Même traitement visuel que la NavBar : fond transparent
-                // + blur léger, pour que le contenu en dessous reste lisible.
                 "bg-transparent backdrop-blur-xs",
                 "border-b border-border"
             )}
         >
-            {/* ReadingProgress collé en haut, au plus près de la navbar */}
             <ReadingProgress modulePath={moduleSlug}/>
             <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
                 <nav
                     aria-label="Types de contenu de la section"
-                    className="flex items-center gap-1 overflow-x-auto py-2"
+                    className="flex items-center gap-1 overflow-x-auto py-1"
                 >
                     {tabs.map(({key, href, label, Icon}) => {
                         const isActive = key === currentContent;
@@ -81,7 +77,7 @@ export default function ContentSwitcher({
                                 scroll={false}
                                 aria-current={isActive ? 'page' : undefined}
                                 className={cn(
-                                    "shrink-0 inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold",
+                                    "shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-semibold",
                                     "border transition-colors duration-200",
                                     key === SPLIT_KEY && "hidden lg:inline-flex",
                                     isActive
@@ -89,11 +85,27 @@ export default function ContentSwitcher({
                                         : "text-brand-dark/70 dark:text-bridge-100/70 border-transparent hover:text-brand-dark dark:hover:text-bridge-50 hover:bg-bridge-300/60 dark:hover:bg-bridge-700/60"
                                 )}
                             >
-                                <Icon className="w-4 h-4 shrink-0"/>
+                                <Icon className="w-3.5 h-3.5 shrink-0"/>
                                 <span>{label}</span>
                             </Link>
                         );
                     })}
+
+                    {contents.includes('slide') && (
+                        <>
+                            <div className="h-4 w-px bg-border mx-1 shrink-0" aria-hidden="true"/>
+                            <a
+                                href={`/${moduleSlug}/${sectionSlug}/slide`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Ouvrir les slides dans un nouvel onglet"
+                                className="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-semibold border border-transparent transition-colors duration-200 text-brand-dark/70 dark:text-bridge-100/70 hover:text-brand-dark dark:hover:text-bridge-50 hover:bg-bridge-300/60 dark:hover:bg-bridge-700/60 cursor-pointer"
+                            >
+                                <ExternalLink className="w-3.5 h-3.5 shrink-0"/>
+                                <span>Slides</span>
+                            </a>
+                        </>
+                    )}
                 </nav>
             </div>
         </div>
