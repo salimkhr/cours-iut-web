@@ -15,14 +15,15 @@ interface BreadcrumbPageProps {
     currentModule: Module;
     currentSection?: Section;
     currentContent?: string;
+    className?: string;
 }
 
-export default function BreadcrumbGenerator({currentModule, currentSection, currentContent}: BreadcrumbPageProps) {
+export default function BreadcrumbGenerator({currentModule, currentSection, currentContent, className}: BreadcrumbPageProps) {
     return (
-        <Breadcrumb className={'mx-5 mt-3'}>
+        <Breadcrumb className={className}>
             <BreadcrumbList>
                 <BreadcrumbItem>
-                    <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                    <BreadcrumbLink href="/">Accueil</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator/>
 
