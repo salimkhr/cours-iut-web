@@ -132,7 +132,7 @@ export default async function Content({params}: ContentPageProps) {
                 </div>
             )}
             <div className="flex sticky top-(--navbar-h) z-[25] w-full justify-end">
-                <div className={cn("flex px-1 border-l border-b border-border rounded-bl-xl bg-brand-light/85 dark:bg-brand-dark/85 backdrop-blur-md", isSplit ? "py-1" : "pt-2.5 pb-1")}>
+                <div className={cn("flex px-1 border-l border-b border-border rounded-bl-xl bg-transparent backdrop-blur-xs", isSplit ? "py-1" : "pt-2.5 pb-1")}>
                     <ContentSidebarNav
                         contents={currentSection.contents}
                         currentContent={isSplit ? SPLIT_SLUG : currentContent!}
