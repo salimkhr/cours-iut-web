@@ -159,3 +159,7 @@ Pour toute tâche de design / UI / UX, consulter en priorité :
 
 Mettre à jour ces fichiers via `/impeccable teach` (stratégie) ou `/impeccable document`
 (visuel) plutôt qu'en éditant à la main.
+
+**Skill UI/UX obligatoire** : pour toute tâche touchant au design, à l'UI ou à l'UX
+(nouveau composant, révision visuelle, layout, navigation, couleurs, typographie…),
+invoquer le skill `ui-ux-pro-max` **avant** toute implémentation.
