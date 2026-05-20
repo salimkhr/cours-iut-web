@@ -95,8 +95,8 @@ export default async function Content({params}: ContentPageProps) {
                 imageAlt={currentModule.title}
                 path={currentModule.path}
                 icon={<ContentIcon/>}
-                backHref={`/${moduleSlug}/${sectionSlug}`}
-                backLabel={currentSection.title}
+                backHref={`/${moduleSlug}`}
+                backLabel={currentModule.title}
                 compact
             >
                 {currentSection.objectives && currentSection.objectives.length > 0 && (
