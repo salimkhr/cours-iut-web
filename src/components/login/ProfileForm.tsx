@@ -12,24 +12,27 @@ import {Button} from "@/components/ui/button";
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group";
 import {Field, FieldError, FieldLabel} from "@/components/ui/field";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {GROUPS, Group} from "@/lib/schemas/register.schema";
-import {profileSchema, ProfileValues} from "@/lib/schemas/profile.schema";
+import {GROUPS, Group, STUDENT_EMAIL_DOMAIN} from "@/lib/schemas/register.schema";
+import {createProfileSchema, ProfileValues} from "@/lib/schemas/profile.schema";
 
 type Props = {
     initialFirstName: string;
     initialLastName: string;
+    email: string;
     imageUrl: string | null;
     group: Group | null;
 };
 
-export default function ProfileForm({initialFirstName, initialLastName, imageUrl, group}: Props) {
+export default function ProfileForm({initialFirstName, initialLastName, email, imageUrl, group}: Props) {
     const router = useRouter();
     const [preview, setPreview] = useState<string | null>(imageUrl);
     const [pictureChanged, setPictureChanged] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const isStudent = email.endsWith(STUDENT_EMAIL_DOMAIN);
+
     const {register, handleSubmit, control, formState: {errors, isSubmitting}} = useForm<ProfileValues>({
-        resolver: zodResolver(profileSchema),
+        resolver: zodResolver(createProfileSchema(email)),
         defaultValues: {
             firstName: initialFirstName,
             lastName: initialLastName,
@@ -158,25 +161,31 @@ export default function ProfileForm({initialFirstName, initialLastName, imageUrl
                 </Field>
             </div>
 
-            {/* ── Groupe ── */}
-            <Field>
-                <FieldLabel>Groupe TD</FieldLabel>
-                <Controller name="group" control={control}
-                    render={({field}) => (
-                        <Select onValueChange={field.onChange} value={field.value}>
-                            <SelectTrigger className="w-full" aria-invalid={!!errors.group}>
-                                <SelectValue placeholder="Choisir…"/>
-                            </SelectTrigger>
-                            <SelectContent>
-                                {GROUPS.map((g) => (
-                                    <SelectItem key={g} value={g}>{g}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    )}
-                />
-                <FieldError errors={[errors.group]}/>
-            </Field>
+            {/* ── Groupe (étudiants uniquement) ── */}
+            {isStudent && (
+                <Field>
+                    <FieldLabel>Groupe TD</FieldLabel>
+                    <Controller name="group" control={control}
+                        render={({field}) => (
+                            <Select
+                                onValueChange={(v) => field.onChange(v === "__none__" ? undefined : v)}
+                                value={field.value ?? "__none__"}
+                            >
+                                <SelectTrigger className="w-full" aria-invalid={!!errors.group}>
+                                    <SelectValue placeholder="Choisir…"/>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="__none__" disabled>—</SelectItem>
+                                    {GROUPS.map((g) => (
+                                        <SelectItem key={g} value={g}>{g}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )}
+                    />
+                    <FieldError errors={[errors.group]}/>
+                </Field>
+            )}
 
             <Button type="submit" disabled={isSubmitting} size="lg"
                 className="w-full bg-brand-accent-dark hover:bg-brand-accent-dark/90 text-white flex items-center gap-2">

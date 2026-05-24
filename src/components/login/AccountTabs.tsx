@@ -60,6 +60,7 @@ export default function AccountTabs({initialFirstName, initialLastName, email, i
                     <ProfileForm
                         initialFirstName={initialFirstName}
                         initialLastName={initialLastName}
+                        email={email}
                         imageUrl={imageUrl}
                         group={group}
                     />

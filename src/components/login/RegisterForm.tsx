@@ -59,6 +59,12 @@ export default function RegisterForm() {
 
     const watchedFirstName = useWatch({control, name: "firstName"});
     const watchedLastName = useWatch({control, name: "lastName"});
+    const watchedEmail = useWatch({control, name: "email"});
+    const isStudent = (watchedEmail ?? "").endsWith(STUDENT_EMAIL_DOMAIN);
+
+    useEffect(() => {
+        if (!isStudent) setValue("group", undefined);
+    }, [isStudent, setValue]);
 
 
     // ── Turnstile ─────────────────────────────────────────────────────────────
@@ -82,7 +88,7 @@ export default function RegisterForm() {
         };
         checkTurnstile();
         return () => {
-            if (widgetId && window.turnstile) window.turnstile.remove(widgetId);
+            if (widgetId && window.turnstile) try { window.turnstile.remove(widgetId); } catch { /* widget déjà nettoyé */ }
         };
     }, [sitekey]);
 
@@ -179,7 +185,7 @@ export default function RegisterForm() {
                                 {...register("firstName")}
                             />
                         </InputGroup>
-                        <FieldError errors={[errors.firstName]}/>
+                        <FieldError className="text-brand-accent-dark" errors={[errors.firstName]}/>
                     </Field>
 
                     <Field>
@@ -194,7 +200,7 @@ export default function RegisterForm() {
                                 {...register("lastName")}
                             />
                         </InputGroup>
-                        <FieldError errors={[errors.lastName]}/>
+                        <FieldError className="text-brand-accent-dark" errors={[errors.lastName]}/>
                     </Field>
                 </div>
 
@@ -222,11 +228,11 @@ export default function RegisterForm() {
                             })}
                         />
                     </InputGroup>
-                    <FieldError errors={[errors.email]}/>
+                    <FieldError className="text-brand-accent-dark" errors={[errors.email]}/>
                 </Field>
 
-                {/* ── Identifiant + Groupe ── */}
-                <div className="grid grid-cols-2 gap-4">
+                {/* ── Identifiant + Groupe (étudiants) ── */}
+                <div className={isStudent ? "grid grid-cols-2 gap-4" : undefined}>
                     <Field>
                         <FieldLabel htmlFor="identifier">Identifiant</FieldLabel>
                         <InputGroup>
@@ -239,32 +245,38 @@ export default function RegisterForm() {
                                 {...register("identifier")}
                             />
                         </InputGroup>
-                        <FieldError errors={[errors.identifier]}/>
+                        <FieldError className="text-brand-accent-dark" errors={[errors.identifier]}/>
                     </Field>
 
-                    <Field>
-                        <FieldLabel>Groupe TD</FieldLabel>
-                        <Controller
-                            name="group"
-                            control={control}
-                            render={({field}) => (
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                    <SelectTrigger
-                                        className="w-full"
-                                        aria-invalid={!!errors.group}
+                    {isStudent && (
+                        <Field>
+                            <FieldLabel>Groupe TD</FieldLabel>
+                            <Controller
+                                name="group"
+                                control={control}
+                                render={({field}) => (
+                                    <Select
+                                        onValueChange={(v) => field.onChange(v === "__none__" ? undefined : v)}
+                                        value={field.value ?? "__none__"}
                                     >
-                                        <SelectValue placeholder="Choisir…"/>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {GROUPS.map((g) => (
-                                            <SelectItem key={g} value={g}>{g}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            )}
-                        />
-                        <FieldError errors={[errors.group]}/>
-                    </Field>
+                                        <SelectTrigger
+                                            className="w-full"
+                                            aria-invalid={!!errors.group}
+                                        >
+                                            <SelectValue placeholder="Choisir…"/>
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="__none__" disabled>—</SelectItem>
+                                            {GROUPS.map((g) => (
+                                                <SelectItem key={g} value={g}>{g}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                            <FieldError className="text-brand-accent-dark" errors={[errors.group]}/>
+                        </Field>
+                    )}
                 </div>
 
                 {/* ── Mot de passe ── */}
@@ -291,7 +303,7 @@ export default function RegisterForm() {
                             </button>
                         </InputGroupAddon>
                     </InputGroup>
-                    <FieldError errors={[errors.password]}/>
+                    <FieldError className="text-brand-accent-dark" errors={[errors.password]}/>
                 </Field>
 
                 {/* ── Captcha ── */}

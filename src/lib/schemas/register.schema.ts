@@ -18,8 +18,16 @@ export const registerSchema = z.object({
     identifier: z
         .string()
         .regex(IDENTIFIER_REGEX, "Format attendu : 2 lettres + 6 chiffres (ex. ab123456)"),
-    group: z.enum(GROUPS, {message: "Sélectionnez un groupe"}),
+    group: z.enum(GROUPS).optional(),
     password: z.string().min(7, "Mot de passe trop court (7 caractères min.)"),
+}).superRefine((data, ctx) => {
+    if (data.email.endsWith(STUDENT_EMAIL_DOMAIN) && !data.group) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Sélectionnez un groupe",
+            path: ["group"],
+        });
+    }
 });
 
 export type RegisterValues = z.infer<typeof registerSchema>;
