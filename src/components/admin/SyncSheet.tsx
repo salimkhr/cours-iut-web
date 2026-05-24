@@ -66,7 +66,7 @@ export default function SyncSheet({
     }
 
     async function handleModuleCreated(newMod: Omit<Module, '_id'>) {
-        await addModule(newMod as unknown as Omit<Module, '_id'>);
+        await addModule(newMod);
         onCreated();
         router.refresh();
     }
@@ -190,6 +190,7 @@ export default function SyncSheet({
 
             {/* Sheet création module */}
             <AddModuleButton
+                key={selectedModuleSlug ?? 'none'}
                 onAdd={handleModuleCreated}
                 open={addModuleOpen}
                 onOpenChange={setAddModuleOpen}
