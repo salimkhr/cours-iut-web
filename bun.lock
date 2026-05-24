@@ -87,6 +87,11 @@
       },
     },
   },
+  "trustedDependencies": [
+    "bcrypt",
+    "sharp",
+    "unrs-resolver",
+  ],
   "overrides": {
     "lodash-es": "^4.17.23",
     "postcss@8.4.31": "^8.5.10",
