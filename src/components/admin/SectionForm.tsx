@@ -42,6 +42,15 @@ interface SectionFormProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSubmit: (section: Section) => void;
+    prefill?: {
+        title?: string;
+        path?: string;
+        order?: number;
+        contents?: SectionFormValues['contents'];
+        isAvailable?: boolean;
+        hasCorrection?: boolean;
+        totalDuration?: number;
+    };
 }
 
 export default function SectionForm({
@@ -51,6 +60,7 @@ export default function SectionForm({
     open,
     onOpenChange,
     onSubmit,
+    prefill,
 }: SectionFormProps) {
     const isEditMode = mode === 'edit' && section !== undefined;
 
@@ -78,20 +88,20 @@ export default function SectionForm({
             };
         }
         return {
-            title: '',
-            path: '',
+            title: prefill?.title ?? '',
+            path: prefill?.path ?? '',
             description: '',
             objectives: '',
             tags: '',
-            totalDuration: 1,
-            hasCorrection: true,
-            isAvailable: true,
+            totalDuration: prefill?.totalDuration ?? 1,
+            hasCorrection: prefill?.hasCorrection ?? true,
+            isAvailable: prefill?.isAvailable ?? true,
             correctionIsAvailable: true,
             examenIsLock: false,
-            order: (modData.sections?.length ?? 0) + 1,
-            contents: ['cours', 'TP'],
+            order: prefill?.order ?? (modData.sections?.length ?? 0) + 1,
+            contents: prefill?.contents ?? ['cours', 'TP'],
         };
-    }, [isEditMode, section, modData.sections?.length]);
+    }, [isEditMode, section, modData.sections?.length, prefill]);
 
     const {
         register,
@@ -113,13 +123,13 @@ export default function SectionForm({
     }, [open, reset, getDefaultValues]);
 
     useEffect(() => {
-        if (!isEditMode && title) {
+        if (!isEditMode && !prefill?.path && title) {
             setValue(
                 'path',
                 `${(modData.sections?.length ?? 0) + 1}-${title.toLowerCase().replace(/\s+/g, '-')}`,
             );
         }
-    }, [title, setValue, modData.sections?.length, isEditMode]);
+    }, [title, setValue, modData.sections?.length, isEditMode, prefill?.path]);
 
     const toggleContent = (item: typeof AVAILABLE_CONTENTS[number]) => {
         setValue(
