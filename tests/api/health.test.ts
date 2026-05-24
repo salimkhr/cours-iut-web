@@ -7,6 +7,7 @@ let dbError: Error | null = null;
 mock.module("@/lib/mongodb", () => ({
     connectToDB: async () => {
         if (dbError) throw dbError;
+        if (!db) throw new Error("DB not initialised — beforeAll did not complete");
         return db;
     },
 }));
@@ -18,7 +19,7 @@ beforeAll(async () => {
     const { startMemoryDb } = await import("../helpers/db");
     ({ db, stop: stopDb } = await startMemoryDb());
 }, 60000);
-afterAll(() => stopDb(), 10000);
+afterAll(async () => { await stopDb?.(); }, 10000);
 afterEach(() => { dbError = null; });
 
 describe("GET /api/health", () => {
@@ -28,7 +29,7 @@ describe("GET /api/health", () => {
         expect(res.status).toBe(200);
         expect(body.status).toBe("ok");
         expect(body.db.status).toBe("up");
-        expect(typeof body.db.latencyMs).toBe("number");
+        expect(body.db.latencyMs).toBeGreaterThanOrEqual(0);
     });
 
     test("returns status degraded when DB is down", async () => {
