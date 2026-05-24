@@ -10,14 +10,15 @@ export const profileSchema = z.object({
 });
 
 export function createProfileSchema(email: string) {
-    const isStudent = email.endsWith(STUDENT_EMAIL_DOMAIN);
     return z.object({
         firstName: z.string().min(2, "Prénom trop court"),
         lastName: z.string().min(2, "Nom trop court"),
-        group: isStudent
-            ? z.enum(GROUPS, {message: "Sélectionnez un groupe"})
-            : z.enum(GROUPS).optional(),
+        group: z.enum(GROUPS).optional(),
         picture: z.instanceof(File).optional(),
+    }).superRefine((data, ctx) => {
+        if (email.endsWith(STUDENT_EMAIL_DOMAIN) && !data.group) {
+            ctx.addIssue({code: z.ZodIssueCode.custom, message: "Sélectionnez un groupe", path: ["group"]});
+        }
     });
 }
 
