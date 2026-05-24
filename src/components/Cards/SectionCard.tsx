@@ -3,7 +3,7 @@
 import {useState} from 'react';
 import Link from "next/link";
 import {motion, useReducedMotion} from 'framer-motion';
-import {BookOpen, Clock, Gitlab, Lock, Unlock} from "lucide-react";
+import {BookOpen, Clock, FolderGit, Lock, Unlock} from "lucide-react";
 
 import Section from "@/types/Section";
 import Module from "@/types/Module";
@@ -227,7 +227,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                             >
                                 {correctionDisabled ? (
                                     <span aria-disabled="true">
-                                        <Gitlab className={correctionIconClass}/>
+                                        <FolderGit className={correctionIconClass}/>
                                         <span className="hidden md:inline">Correction</span>
                                     </span>
                                 ) : (
@@ -236,7 +236,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
-                                        <Gitlab className={correctionIconClass}/>
+                                        <FolderGit className={correctionIconClass}/>
                                         <span className="hidden md:inline">Correction</span>
                                     </Link>
                                 )}

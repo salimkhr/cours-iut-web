@@ -1,5 +1,6 @@
 import Link from "next/link";
-import {Github, Linkedin, Mail} from "lucide-react";
+import {Mail} from "lucide-react";
+import {GitHubLogoIcon, LinkedInLogoIcon,} from "@radix-ui/react-icons";
 import getModules from "@/lib/getModules";
 
 interface PageFooterProps {
@@ -7,8 +8,8 @@ interface PageFooterProps {
 }
 
 const socialItems = [
-    {label: "GitHub", href: "https://github.com/salimkhr", icon: Github},
-    {label: "LinkedIn", href: "https://www.linkedin.com/in/salim-khraimeche/", icon: Linkedin},
+    {label: "GitHub", href: "https://github.com/salimkhr", icon: GitHubLogoIcon},
+    {label: "LinkedIn", href: "https://www.linkedin.com/in/salim-khraimeche/", icon: LinkedInLogoIcon},
     {label: "Contact", href: "mailto:salimkhr@gmail.com", icon: Mail},
 ];
 
