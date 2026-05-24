@@ -5,6 +5,7 @@ import {connectToDB} from "@/lib/mongodb";
 import Module from "@/types/Module";
 import {WithId} from "mongodb";
 import {AVAILABLE_CONTENTS, SectionFormValues} from "@/lib/schemas/section.schema";
+import {withAdmin} from "@/lib/withAdmin";
 
 // Mappe le nom du fichier .tsx vers la valeur du schema
 const FILE_TO_CONTENT: Record<string, typeof AVAILABLE_CONTENTS[number]> = {
@@ -38,7 +39,7 @@ export type SyncResponse = {
     missingSections: MissingSectionItem[];
 };
 
-export async function GET(): Promise<NextResponse<SyncResponse>> {
+export const GET = withAdmin(async (_request: Request): Promise<NextResponse<SyncResponse>> => {
     const coursDir = path.join(process.cwd(), "src", "cours");
     const db = await connectToDB();
     const modules = await db.collection<Module>("modules").find().toArray() as WithId<Module>[];
@@ -48,7 +49,7 @@ export async function GET(): Promise<NextResponse<SyncResponse>> {
     const missingModules: {slug: string}[] = [];
     const missingSections: MissingSectionItem[] = [];
 
-    const moduleSlugs = await fs.readdir(coursDir);
+    const moduleSlugs = await fs.readdir(coursDir).catch(() => [] as string[]);
 
     for (const moduleSlug of moduleSlugs) {
         const moduleStat = await fs.stat(path.join(coursDir, moduleSlug));
@@ -99,4 +100,4 @@ export async function GET(): Promise<NextResponse<SyncResponse>> {
     }
 
     return NextResponse.json({missingModules, missingSections});
-}
+});
