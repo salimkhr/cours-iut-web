@@ -14,7 +14,7 @@ import AddModuleButton from '@/components/admin/AddModuleButton';
 import SyncSheet from '@/components/admin/SyncSheet';
 import useAdminApi from '@/hook/admin/useAdminApi';
 import Module from '@/types/Module';
-import {SyncResponse} from '@/app/api/admin/sync/route';
+import type {SyncResponse} from '@/app/api/admin/sync/route';
 
 export default function AdminHomeFab() {
     const [addModuleOpen, setAddModuleOpen] = useState(false);
@@ -51,7 +51,7 @@ export default function AdminHomeFab() {
     }, []);
 
     const handleAdd = async (newMod: Omit<Module, '_id'>) => {
-        await addModule(newMod as unknown as Omit<Module, '_id'>);
+        await addModule(newMod);
         router.refresh();
     };
 

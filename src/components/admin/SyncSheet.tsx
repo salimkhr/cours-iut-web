@@ -10,7 +10,7 @@ import AddModuleButton from '@/components/admin/AddModuleButton';
 import SectionForm, {Section} from '@/components/admin/SectionForm';
 import useAdminApi from '@/hook/admin/useAdminApi';
 import Module from '@/types/Module';
-import {MissingSectionItem} from '@/app/api/admin/sync/route';
+import type {MissingSectionItem} from '@/app/api/admin/sync/route';
 
 interface SyncSheetProps {
     open: boolean;
