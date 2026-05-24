@@ -6,12 +6,12 @@ export async function startMemoryDb(): Promise<{ db: Db; stop: () => Promise<voi
     const server = await MongoMemoryServer.create();
     const client = new MongoClient(server.getUri());
     await client.connect();
-    const db = client.db("test");
+    const db = client.db("cours-iut-web");
     return {
         db,
         stop: async () => {
             await client.close();
-            await server.stop();
+            await server.stop({ doCleanup: true, force: true });
         },
     };
 }
