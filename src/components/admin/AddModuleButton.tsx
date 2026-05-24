@@ -27,6 +27,7 @@ interface AddModuleButtonProps {
     }) => void;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
+    defaultPath?: string;
 }
 
 type FormData = {
@@ -43,7 +44,7 @@ type FormData = {
 const inputCn = "bg-bridge-100/60 dark:bg-bridge-800/60 border-bridge-500/45 focus-visible:ring-bridge-500/50";
 const labelCn = "text-sm font-semibold text-brand-dark dark:text-bridge-200";
 
-export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChange}: AddModuleButtonProps) {
+export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChange, defaultPath}: AddModuleButtonProps) {
     const [internalOpen, setInternalOpen] = useState(false);
     const isControlled = controlledOpen !== undefined;
     const open = isControlled ? controlledOpen : internalOpen;
@@ -51,6 +52,7 @@ export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChan
 
     const {register, handleSubmit, control, setValue, reset, formState: {errors}} = useForm<FormData>({
         defaultValues: {
+            path: defaultPath ?? '',
             coefficients: FIXED_COMPETENCES.map(c => ({competenceName: c, value: 0})),
             instructors: [{firstName: "", lastName: "", email: ""}],
             manager: {firstName: "", lastName: "", email: ""}
@@ -61,10 +63,10 @@ export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChan
     const instructors = useWatch({control, name: "instructors"});
 
     useEffect(() => {
-        if (title) {
+        if (!defaultPath && title) {
             setValue("path", title.toLowerCase().replace(/\s+/g, '-'));
         }
-    }, [title, setValue]);
+    }, [title, setValue, defaultPath]);
 
     const onSubmit = (data: FormData) => {
         onAdd({
