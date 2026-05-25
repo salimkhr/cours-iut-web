@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import {useState} from 'react';
+import {ChevronDown, ChevronUp} from 'lucide-react';
 import ModuleCard from '@/components/Cards/ModuleCard';
 import type Module from '@/types/Module';
 
@@ -16,7 +16,7 @@ export default function ExtraModulesSection({ modules }: Props) {
         <div className="w-full px-6 lg:pl-12 lg:pr-6 mt-2 mb-8 flex flex-col items-center gap-4">
             <button
                 onClick={() => setOpen(o => !o)}
-                className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-dark/60 dark:text-bridge-200/60 hover:text-brand-dark dark:hover:text-bridge-100 transition-colors"
+                className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-primary dark:text-brand-primary-200/60 hover:text-brand-dark dark:hover:text-bridge-100 transition-colors"
             >
                 {open
                     ? <><ChevronUp className="w-3.5 h-3.5" /> Voir moins</>
