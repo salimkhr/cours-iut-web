@@ -5,7 +5,7 @@ import NavBarClient from "./NavBarClient";
 
 export default async function NavBar() {
     const session = await auth.api.getSession({headers: await headers()});
-    const modules = (await getModules()).filter(m => !m.isExtra);
+    const modules = session ? (await getModules()).filter(m => !m.isExtra) : [];
 
     const safeUser = session
         ? {
