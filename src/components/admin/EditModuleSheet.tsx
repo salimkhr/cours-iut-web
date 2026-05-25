@@ -10,6 +10,7 @@ import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
 import {Checkbox} from '@/components/ui/checkbox';
+import {Switch} from '@/components/ui/switch';
 import {cn} from '@/lib/utils';
 import Module from '@/types/Module';
 import {
@@ -47,6 +48,7 @@ export default function EditModuleSheet({
         instructors: module.instructors?.length
             ? module.instructors
             : [{firstName: '', lastName: '', email: ''}],
+        isExtra: module.isExtra ?? false,
     }), [module]);
 
     const {
@@ -159,6 +161,22 @@ export default function EditModuleSheet({
                                 <Label htmlFor="em-desc" className={labelCn}>Description</Label>
                                 <Textarea id="em-desc" rows={3} className={inputCn} {...register('description')}/>
                             </div>
+                            <Controller
+                                control={control}
+                                name="isExtra"
+                                render={({field}) => (
+                                    <div className="flex items-center gap-3">
+                                        <Switch
+                                            id="em-isExtra"
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                        <Label htmlFor="em-isExtra" className={cn(labelCn, 'cursor-pointer font-normal')}>
+                                            Hors programme
+                                        </Label>
+                                    </div>
+                                )}
+                            />
                         </section>
 
                         <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
