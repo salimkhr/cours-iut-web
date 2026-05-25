@@ -1,7 +1,7 @@
 'use client';
 
 import {useEffect, useState} from 'react';
-import {Controller, useForm, useWatch} from 'react-hook-form';
+import {Controller, useFieldArray, useForm, useWatch} from 'react-hook-form';
 import {Sheet, SheetContent, SheetTitle, SheetDescription} from "@/components/ui/sheet";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
@@ -64,7 +64,8 @@ export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChan
     });
 
     const title = useWatch({control, name: "title"});
-    const instructors = useWatch({control, name: "instructors"});
+    const {fields: instructorFields, append: appendInstructor, remove: removeInstructor} =
+        useFieldArray({control, name: 'instructors'});
 
     useEffect(() => {
         if (!defaultPath && title) {
@@ -221,14 +222,33 @@ export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChan
                             <div>
                                 <Label className={labelCn}>Enseignants</Label>
                                 <div className="space-y-2 mt-1">
-                                    {instructors.map((_, index) => (
-                                        <div key={index} className="grid grid-cols-3 gap-2">
+                                    {instructorFields.map((field, index) => (
+                                        <div key={field.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 items-center">
                                             <Input placeholder="Prénom" className={inputCn} {...register(`instructors.${index}.firstName` as const)}/>
                                             <Input placeholder="Nom" className={inputCn} {...register(`instructors.${index}.lastName` as const)}/>
                                             <Input placeholder="Email" type="email" className={inputCn} {...register(`instructors.${index}.email` as const)}/>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 text-bridge-500 hover:text-red-500"
+                                                onClick={() => removeInstructor(index)}
+                                                aria-label="Supprimer l'intervenant"
+                                            >
+                                                ×
+                                            </Button>
                                         </div>
                                     ))}
                                 </div>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="self-start text-bridge-600 dark:text-bridge-300 hover:text-bridge-800 mt-1"
+                                    onClick={() => appendInstructor({firstName: '', lastName: '', email: ''})}
+                                >
+                                    + Ajouter un intervenant
+                                </Button>
                             </div>
 
                             {/* SAÉ */}
