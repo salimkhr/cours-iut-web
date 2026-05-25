@@ -135,26 +135,26 @@ export default function EditModuleSheet({
                                     )}
                                 </div>
                                 <div className="w-36">
-                                    <Label htmlFor="em-icon" className={labelCn}>Icône *</Label>
+                                    <Label htmlFor="em-path" className={labelCn}>Path</Label>
                                     <Input
-                                        id="em-icon"
-                                        className={inputCn}
-                                        {...register('iconName')}
-                                        aria-invalid={errors.iconName ? 'true' : 'false'}
+                                        id="em-path"
+                                        className={cn(inputCn, 'opacity-60 cursor-not-allowed')}
+                                        {...register('path')}
+                                        readOnly
                                     />
-                                    {errors.iconName && (
-                                        <p className="text-red-500 text-xs mt-1">{errors.iconName.message}</p>
-                                    )}
                                 </div>
                             </div>
-                            <div className="w-36">
-                                <Label htmlFor="em-path" className={labelCn}>Path</Label>
+                            <div>
+                                <Label htmlFor="em-icon" className={labelCn}>Icône *</Label>
                                 <Input
-                                    id="em-path"
-                                    className={cn(inputCn, 'opacity-60 cursor-not-allowed')}
-                                    {...register('path')}
-                                    readOnly
+                                    id="em-icon"
+                                    className={inputCn}
+                                    {...register('iconName')}
+                                    aria-invalid={errors.iconName ? 'true' : 'false'}
                                 />
+                                {errors.iconName && (
+                                    <p className="text-red-500 text-xs mt-1">{errors.iconName.message}</p>
+                                )}
                             </div>
                             <div>
                                 <Label htmlFor="em-desc" className={labelCn}>Description</Label>
@@ -281,28 +281,15 @@ export default function EditModuleSheet({
                         {/* SAÉ */}
                         <section className="flex flex-col gap-3">
                             <Eyebrow>SAÉ associées</Eyebrow>
-                            <div className="flex flex-col gap-2">
-                                {FIXED_SAES.map((sae) => (
-                                    <label key={sae} className="flex items-center gap-2 cursor-pointer">
-                                        <Controller
-                                            control={control}
-                                            name="associatedSae"
-                                            render={({field}) => (
-                                                <Checkbox
-                                                    checked={field.value?.includes(sae)}
-                                                    onCheckedChange={(checked) => {
-                                                        const next = checked
-                                                            ? [...(field.value ?? []), sae]
-                                                            : (field.value ?? []).filter((s) => s !== sae);
-                                                        field.onChange(next);
-                                                    }}
-                                                />
-                                            )}
-                                        />
-                                        <span className="text-sm text-brand-dark dark:text-bridge-100">{sae}</span>
-                                    </label>
+                            <select
+                                multiple
+                                className="border border-bridge-500/45 rounded-md p-2 w-full bg-bridge-100/60 dark:bg-bridge-800/60"
+                                {...register('associatedSae')}
+                            >
+                                {FIXED_SAES.map((sae, index) => (
+                                    <option key={index} value={sae}>{sae}</option>
                                 ))}
-                            </div>
+                            </select>
                         </section>
                     </div>
 
