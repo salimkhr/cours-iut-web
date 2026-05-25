@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import {Plus, RefreshCw, Wrench} from 'lucide-react';
+import {Plus, RefreshCw, Wrench, ArrowUpDown} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import AddModuleButton from '@/components/admin/AddModuleButton';
 import SyncSheet from '@/components/admin/SyncSheet';
+import ExportImportSheet from '@/components/admin/ExportImportSheet';
 import useAdminApi from '@/hook/admin/useAdminApi';
 import Module from '@/types/Module';
 import type {SyncResponse} from '@/app/api/admin/sync/route';
@@ -20,6 +21,7 @@ export default function AdminHomeFab() {
     const [addModuleOpen, setAddModuleOpen] = useState(false);
     const [syncSheetOpen, setSyncSheetOpen] = useState(false);
     const [syncData, setSyncData] = useState<SyncResponse>({missingModules: [], missingSections: []});
+    const [exportImportOpen, setExportImportOpen] = useState(false);
     const router = useRouter();
     const {addModule} = useAdminApi();
 
@@ -95,6 +97,13 @@ export default function AdminHomeFab() {
                             </span>
                         )}
                     </DropdownMenuItem>
+                    <DropdownMenuItem
+                        className="gap-2 cursor-pointer"
+                        onClick={() => setExportImportOpen(true)}
+                    >
+                        <ArrowUpDown className="w-4 h-4"/>
+                        Exporter / Importer
+                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
 
@@ -110,6 +119,11 @@ export default function AdminHomeFab() {
                 missingModules={syncData.missingModules}
                 missingSections={syncData.missingSections}
                 onCreated={fetchSync}
+            />
+
+            <ExportImportSheet
+                open={exportImportOpen}
+                onOpenChange={setExportImportOpen}
             />
         </>
     );
