@@ -4,6 +4,7 @@ import { withAdmin } from "@/lib/withAdmin";
 
 type SectionData = {
     path: string;
+    order?: number;
     [key: string]: unknown;
 };
 
@@ -26,8 +27,13 @@ export const POST = withAdmin(async (req: Request): Promise<Response> => {
     }
 
     const modules = body as ModuleData[];
-    if (modules.some(m => typeof m.path !== "string" || !m.path)) {
+    if (modules.some(m => m === null || typeof m !== "object" || typeof m.path !== "string" || !m.path)) {
         return NextResponse.json({ error: "Chaque module doit avoir un champ path" }, { status: 400 });
+    }
+
+    const paths = modules.map(m => m.path);
+    if (new Set(paths).size !== paths.length) {
+        return NextResponse.json({ error: "Paths dupliqués dans le payload" }, { status: 400 });
     }
 
     try {
@@ -38,7 +44,8 @@ export const POST = withAdmin(async (req: Request): Promise<Response> => {
         let updated = 0;
 
         for (const moduleData of modules) {
-            const { sections = [], ...moduleFields } = moduleData;
+            const { _id, sections = [], ...moduleFields } = moduleData;
+            void _id;
 
             const existing = await col.findOne({ path: moduleFields.path });
 
@@ -50,7 +57,8 @@ export const POST = withAdmin(async (req: Request): Promise<Response> => {
                 const existingSections: SectionData[] = existing.sections ?? [];
                 const importedPaths = new Set(sections.map((s) => s.path));
                 const keptSections = existingSections.filter((s) => !importedPaths.has(s.path));
-                const mergedSections = [...keptSections, ...sections];
+                const mergedSections = [...keptSections, ...sections]
+                    .sort((a, b) => ((a.order as number) ?? 0) - ((b.order as number) ?? 0));
 
                 await col.updateOne(
                     { path: moduleFields.path },

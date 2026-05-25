@@ -128,6 +128,12 @@ describe("POST /api/admin/import", () => {
         expect(res.status).toBe(400);
     });
 
+    test("400 si paths dupliqués dans le payload", async () => {
+        session = ADMIN_SESSION;
+        const res = await importModules(makePostReq([VALID_MODULE, VALID_MODULE]), {});
+        expect(res.status).toBe(400);
+    });
+
     test("200 — insère un nouveau module", async () => {
         session = ADMIN_SESSION;
         const res = await importModules(makePostReq([VALID_MODULE]), {});
