@@ -14,4 +14,5 @@ export default interface Module {
     instructors?: Instructor[];
     manager?: Instructor;
     associatedSae: string[];
+    isExtra?: boolean;
 }

@@ -35,6 +35,7 @@ export const moduleFormSchema = z.object({
     })),
     manager: instructorSchema.optional(),
     instructors: z.array(instructorSchema).default([]),
+    isExtra: z.boolean().default(false),
 });
 
 export type ModuleFormValues = z.infer<typeof moduleFormSchema>;
