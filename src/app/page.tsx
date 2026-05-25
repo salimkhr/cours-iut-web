@@ -8,6 +8,7 @@ import CoursesSection from "@/components/page/CoursesSection";
 import AboutSection from "@/components/page/AboutSection";
 import AuthCTAPair from "@/components/page/AuthCTAPair";
 import PageFooter from "@/components/page/PageFooter";
+import ExtraModulesSection from "@/components/page/ExtraModulesSection";
 import {Button} from "@/components/ui/button";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {Metadata} from "next";
@@ -23,10 +24,8 @@ export default async function Home() {
     const isAuthed = !!session;
 
     const allModules = await getModules();
-    // Brainfuck est un easter egg — non listé dans la vitrine publique non-authed.
-    const visibleModules = isAuthed
-        ? allModules
-        : allModules.filter((m) => m.path !== 'brainfuck');
+    const programModules = isAuthed ? allModules.filter(m => !m.isExtra) : [];
+    const extraModules   = isAuthed ? allModules.filter(m => m.isExtra)  : [];
 
     return (
         <main className="flex flex-col w-full items-center justify-start min-h-screen bg-brand-light dark:bg-brand-dark">
@@ -61,10 +60,9 @@ export default async function Home() {
             <div id="cours" className="w-full mt-8">
                 <CoursesSection
                     title="Liste des cours"
-                    // On utilise grid pour forcer des colonnes strictement égales
                     containerClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full"
                 >
-                    {visibleModules.map((currentModule, index) => (
+                    {programModules.map((currentModule, index) => (
                         <div
                             key={`${currentModule.path}_${index}`}
                             className="opacity-0 animate-fade-in-up w-full"
@@ -75,6 +73,10 @@ export default async function Home() {
                     ))}
                 </CoursesSection>
             </div>
+
+            {isAuthed && extraModules.length > 0 && (
+                <ExtraModulesSection modules={extraModules} />
+            )}
 
             {!isAuthed && (
                 <section className="w-full max-w-7xl mx-auto px-6 lg:px-12 -mt-8 lg:-mt-12 mb-16 lg:mb-24 flex flex-col items-center gap-5">
