@@ -46,6 +46,7 @@ const VALID_MODULE = {
     associatedSae: [],
     coefficients: [{ competenceName: "1/ Réaliser un développement", value: 10 }],
     instructors: [],
+    isExtra: false,
 };
 
 function makePostReq(body: unknown) {
