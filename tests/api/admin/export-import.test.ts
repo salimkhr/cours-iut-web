@@ -71,6 +71,19 @@ describe("GET /api/admin/export", () => {
         const res = await exportModules(makeGetReq(), {});
         expect(res.headers.get("Content-Disposition")).toBe('attachment; filename="modules-export.json"');
     });
+
+    test("200 — sections sans _id", async () => {
+        session = ADMIN_SESSION;
+        await db.collection("modules").insertOne({
+            title: "JS", path: "javascript", iconName: "code",
+            sections: [{ title: "Intro", path: "1-intro", order: 1 }],
+            isExtra: false, associatedSae: [], coefficients: [], instructors: [],
+        });
+        const res = await exportModules(makeGetReq(), {});
+        expect(res.status).toBe(200);
+        const body = await res.json();
+        expect(body[0].sections[0]._id).toBeUndefined();
+    });
 });
 
 function makePostReq(body: unknown) {
@@ -114,6 +127,18 @@ describe("POST /api/admin/import", () => {
         session = null;
         const res = await importModules(makePostReq([VALID_MODULE]), {});
         expect(res.status).toBe(403);
+    });
+
+    test("400 si body n'est pas du JSON valide", async () => {
+        session = ADMIN_SESSION;
+        const res = await importModules(
+            new Request("http://localhost/api/admin/import", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: "not json",
+            }), {}
+        );
+        expect(res.status).toBe(400);
     });
 
     test("400 si body n'est pas un tableau", async () => {

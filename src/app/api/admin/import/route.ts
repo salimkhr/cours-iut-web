@@ -56,7 +56,9 @@ export const POST = withAdmin(async (req: Request): Promise<Response> => {
                 // Conserver les sections prod non présentes dans l'import
                 const existingSections: SectionData[] = existing.sections ?? [];
                 const importedPaths = new Set(sections.map((s) => s.path));
-                const keptSections = existingSections.filter((s) => !importedPaths.has(s.path));
+                const keptSections = existingSections
+                    .filter((s) => !importedPaths.has(s.path))
+                    .map(({ _id: _sid, ...sec }) => sec as SectionData);
                 const mergedSections = [...keptSections, ...sections]
                     .sort((a, b) => ((a.order as number) ?? 0) - ((b.order as number) ?? 0));
 
