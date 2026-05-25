@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useReducer, useRef, useEffect } from 'react';
 import { ArrowUpDown, Download, Upload } from 'lucide-react';
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -12,18 +12,77 @@ interface ExportImportSheetProps {
     onOpenChange: (open: boolean) => void;
 }
 
+interface SheetState {
+    exportLoading: boolean;
+    importLoading: boolean;
+    preview: { modules: number; sections: number } | null;
+    importResult: { inserted: number; updated: number } | null;
+    error: string | null;
+    fileData: unknown[] | null;
+}
+
+type SheetAction =
+    | { type: 'reset' }
+    | { type: 'export_start' }
+    | { type: 'export_end' }
+    | { type: 'export_error'; error: string }
+    | { type: 'file_clear' }
+    | { type: 'file_ready'; preview: { modules: number; sections: number }; fileData: unknown[] }
+    | { type: 'file_error'; error: string }
+    | { type: 'import_start' }
+    | { type: 'import_done'; result: { inserted: number; updated: number } }
+    | { type: 'import_error'; error: string };
+
+const initial: SheetState = {
+    exportLoading: false,
+    importLoading: false,
+    preview: null,
+    importResult: null,
+    error: null,
+    fileData: null,
+};
+
+function reducer(state: SheetState, action: SheetAction): SheetState {
+    switch (action.type) {
+        case 'reset':
+            return initial;
+        case 'export_start':
+            return { ...state, exportLoading: true, error: null };
+        case 'export_end':
+            return { ...state, exportLoading: false };
+        case 'export_error':
+            return { ...state, exportLoading: false, error: action.error };
+        case 'file_clear':
+            return { ...state, preview: null, importResult: null, error: null, fileData: null };
+        case 'file_ready':
+            return { ...state, preview: action.preview, fileData: action.fileData, error: null, importResult: null };
+        case 'file_error':
+            return { ...state, error: action.error, preview: null, fileData: null };
+        case 'import_start':
+            return { ...state, importLoading: true, error: null };
+        case 'import_done':
+            return { ...state, importLoading: false, importResult: action.result, fileData: null, preview: null };
+        case 'import_error':
+            return { ...state, importLoading: false, error: action.error };
+        default:
+            return state;
+    }
+}
+
 export default function ExportImportSheet({ open, onOpenChange }: ExportImportSheetProps) {
-    const [exportLoading, setExportLoading] = useState(false);
-    const [importLoading, setImportLoading] = useState(false);
-    const [preview, setPreview] = useState<{ modules: number; sections: number } | null>(null);
-    const [importResult, setImportResult] = useState<{ inserted: number; updated: number } | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const [fileData, setFileData] = useState<unknown[] | null>(null);
+    const [state, dispatch] = useReducer(reducer, initial);
+    const { exportLoading, importLoading, preview, importResult, error, fileData } = state;
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const readerRef = useRef<FileReader | null>(null);
+
+    useEffect(() => {
+        if (!open) return;
+        dispatch({ type: 'reset' });
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    }, [open]);
 
     async function handleExport() {
-        setExportLoading(true);
-        setError(null);
+        dispatch({ type: 'export_start' });
         try {
             const res = await fetch('/api/admin/export');
             if (!res.ok) throw new Error('Export échoué');
@@ -34,32 +93,29 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
             a.download = 'modules-export.json';
             a.click();
             URL.revokeObjectURL(url);
+            dispatch({ type: 'export_end' });
         } catch (e) {
-            setError(e instanceof Error ? e.message : 'Erreur export');
-        } finally {
-            setExportLoading(false);
+            dispatch({ type: 'export_error', error: e instanceof Error ? e.message : 'Erreur export' });
         }
     }
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        readerRef.current?.abort();
         const file = e.target.files?.[0];
-        setPreview(null);
-        setImportResult(null);
-        setError(null);
-        setFileData(null);
+        dispatch({ type: 'file_clear' });
         if (!file) return;
 
         const reader = new FileReader();
+        readerRef.current = reader;
         reader.onload = (ev) => {
             try {
                 const json = JSON.parse(ev.target?.result as string);
                 if (!Array.isArray(json)) throw new Error('Le fichier doit contenir un tableau JSON');
                 const totalSections = (json as { sections?: unknown[] }[])
                     .reduce((sum, m) => sum + (m.sections?.length ?? 0), 0);
-                setPreview({ modules: json.length, sections: totalSections });
-                setFileData(json);
+                dispatch({ type: 'file_ready', preview: { modules: json.length, sections: totalSections }, fileData: json });
             } catch (err) {
-                setError(err instanceof Error ? err.message : 'Fichier invalide');
+                dispatch({ type: 'file_error', error: err instanceof Error ? err.message : 'Fichier invalide' });
             }
         };
         reader.readAsText(file);
@@ -67,8 +123,7 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
 
     async function handleImport() {
         if (!fileData) return;
-        setImportLoading(true);
-        setError(null);
+        dispatch({ type: 'import_start' });
         try {
             const res = await fetch('/api/admin/import', {
                 method: 'POST',
@@ -80,11 +135,10 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
                 throw new Error(body.error ?? 'Import échoué');
             }
             const result = await res.json() as { inserted: number; updated: number };
-            setImportResult(result);
+            dispatch({ type: 'import_done', result });
+            if (fileInputRef.current) fileInputRef.current.value = '';
         } catch (e) {
-            setError(e instanceof Error ? e.message : 'Erreur import');
-        } finally {
-            setImportLoading(false);
+            dispatch({ type: 'import_error', error: e instanceof Error ? e.message : 'Erreur import' });
         }
     }
 
@@ -134,7 +188,7 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
                             onClick={handleExport}
                             disabled={exportLoading}
                         >
-                            <Download className="w-4 h-4" />
+                            <Download className="w-4 h-4" aria-hidden="true" />
                             {exportLoading ? 'Export en cours…' : "Télécharger l'export JSON"}
                         </Button>
                     </section>
@@ -159,7 +213,7 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
                             className="self-start gap-2 border-bridge-500/45"
                             onClick={() => fileInputRef.current?.click()}
                         >
-                            <Upload className="w-4 h-4" />
+                            <Upload className="w-4 h-4" aria-hidden="true" />
                             Choisir un fichier…
                         </Button>
 
@@ -170,7 +224,7 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
                             </p>
                         )}
 
-                        {error && <p className="text-sm text-red-500">{error}</p>}
+                        {error && <p className="text-sm text-red-500" role="alert">{error}</p>}
 
                         {importResult && (
                             <p className="text-sm text-green-600 dark:text-green-400">
