@@ -1,11 +1,12 @@
 'use client';
 
 import {useEffect, useState} from 'react';
-import {useForm, useWatch} from 'react-hook-form';
+import {Controller, useForm, useWatch} from 'react-hook-form';
 import {Sheet, SheetContent, SheetTitle, SheetDescription} from "@/components/ui/sheet";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
+import {Switch} from "@/components/ui/switch";
 import Section from "@/types/Section";
 import Coefficient from "@/types/Coefficient";
 import Instructor from "@/types/Instructor";
@@ -24,6 +25,7 @@ interface AddModuleButtonProps {
         manager?: Instructor;
         instructors?: Instructor[];
         sections: Section[];
+        isExtra?: boolean;
     }) => void;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
@@ -39,6 +41,7 @@ type FormData = {
     coefficients: Coefficient[];
     manager: Instructor;
     instructors: Instructor[];
+    isExtra: boolean;
 };
 
 const inputCn = "bg-bridge-100/60 dark:bg-bridge-800/60 border-bridge-500/45 focus-visible:ring-bridge-500/50";
@@ -55,7 +58,8 @@ export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChan
             path: defaultPath ?? '',
             coefficients: FIXED_COMPETENCES.map(c => ({competenceName: c, value: 0})),
             instructors: [{firstName: "", lastName: "", email: ""}],
-            manager: {firstName: "", lastName: "", email: ""}
+            manager: {firstName: "", lastName: "", email: ""},
+            isExtra: false,
         }
     });
 
@@ -164,6 +168,24 @@ export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChan
                                 <Label htmlFor="am-description" className={labelCn}>Description</Label>
                                 <Textarea id="am-description" className={inputCn} {...register("description")}/>
                             </div>
+
+                            {/* Hors programme */}
+                            <Controller
+                                control={control}
+                                name="isExtra"
+                                render={({field}) => (
+                                    <div className="flex items-center gap-3">
+                                        <Switch
+                                            id="am-isExtra"
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                        <Label htmlFor="am-isExtra" className={cn(labelCn, 'cursor-pointer font-normal')}>
+                                            Hors programme
+                                        </Label>
+                                    </div>
+                                )}
+                            />
 
                             {/* Coefficients */}
                             <div>
