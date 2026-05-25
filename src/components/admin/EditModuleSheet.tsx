@@ -10,7 +10,6 @@ import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
 import {Checkbox} from '@/components/ui/checkbox';
-import {Switch} from '@/components/ui/switch';
 import {cn} from '@/lib/utils';
 import Module from '@/types/Module';
 import {
@@ -165,16 +164,13 @@ export default function EditModuleSheet({
                                 control={control}
                                 name="isExtra"
                                 render={({field}) => (
-                                    <div className="flex items-center gap-3">
-                                        <Switch
-                                            id="em-isExtra"
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <Checkbox
                                             checked={field.value}
                                             onCheckedChange={field.onChange}
                                         />
-                                        <Label htmlFor="em-isExtra" className={cn(labelCn, 'cursor-pointer font-normal')}>
-                                            Hors programme
-                                        </Label>
-                                    </div>
+                                        <span className="text-sm text-brand-dark dark:text-bridge-100">Hors programme</span>
+                                    </label>
                                 )}
                             />
                         </section>

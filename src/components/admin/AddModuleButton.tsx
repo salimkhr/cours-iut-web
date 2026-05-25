@@ -6,7 +6,7 @@ import {Sheet, SheetContent, SheetTitle, SheetDescription} from "@/components/ui
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
-import {Switch} from "@/components/ui/switch";
+import {Checkbox} from "@/components/ui/checkbox";
 import Section from "@/types/Section";
 import Coefficient from "@/types/Coefficient";
 import Instructor from "@/types/Instructor";
@@ -174,16 +174,13 @@ export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChan
                                 control={control}
                                 name="isExtra"
                                 render={({field}) => (
-                                    <div className="flex items-center gap-3">
-                                        <Switch
-                                            id="am-isExtra"
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <Checkbox
                                             checked={field.value}
                                             onCheckedChange={field.onChange}
                                         />
-                                        <Label htmlFor="am-isExtra" className={cn(labelCn, 'cursor-pointer font-normal')}>
-                                            Hors programme
-                                        </Label>
-                                    </div>
+                                        <span className="text-sm text-brand-dark dark:text-bridge-100">Hors programme</span>
+                                    </label>
                                 )}
                             />
 
