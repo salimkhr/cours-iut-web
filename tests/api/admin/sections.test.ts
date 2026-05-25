@@ -111,7 +111,7 @@ describe("POST /api/admin/[moduleId]/sections", () => {
         expect(body.section.title).toBe("Introduction");
 
         const doc = await db.collection("modules").findOne({ _id });
-        expect((doc as any)?.sections).toHaveLength(1);
+        expect(doc?.sections).toHaveLength(1);
     });
 });
 

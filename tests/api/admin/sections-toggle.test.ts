@@ -108,7 +108,7 @@ describe("PUT /api/admin/[moduleId]/sections/[order]", () => {
         expect(body.key).toBe("isAvailable");
         expect(body.value).toBe(true);
 
-        const doc = await db.collection("modules").findOne({ _id }) as any;
+        const doc = await db.collection("modules").findOne({ _id });
         expect(doc?.sections[0].isAvailable).toBe(true);
     });
 
@@ -119,7 +119,7 @@ describe("PUT /api/admin/[moduleId]/sections/[order]", () => {
 
         const res = await PUT(makeReq(moduleId, "1", { key: "examenIsLock", value: true }), makeContext(moduleId, "1"));
         expect(res.status).toBe(200);
-        const doc = await db.collection("modules").findOne({ _id }) as any;
+        const doc = await db.collection("modules").findOne({ _id });
         expect(doc?.sections[0].examenIsLock).toBe(true);
     });
 });
