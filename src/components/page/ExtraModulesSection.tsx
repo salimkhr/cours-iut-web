@@ -13,7 +13,7 @@ export default function ExtraModulesSection({ modules }: Props) {
     const [open, setOpen] = useState(false);
 
     return (
-        <div className="w-full max-w-7xl mx-auto px-6 lg:px-12 mt-2 mb-8 flex flex-col items-center gap-4">
+        <div className="w-full px-6 lg:pl-12 lg:pr-6 mt-2 mb-8 flex flex-col items-center gap-4">
             <button
                 onClick={() => setOpen(o => !o)}
                 className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-dark/60 dark:text-bridge-200/60 hover:text-brand-dark dark:hover:text-bridge-100 transition-colors"
