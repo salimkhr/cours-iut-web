@@ -68,6 +68,6 @@ describe("GET /api/admin/export", () => {
     test("header Content-Disposition présent", async () => {
         session = ADMIN_SESSION;
         const res = await exportModules(makeGetReq(), {});
-        expect(res.headers.get("Content-Disposition")).toContain("attachment");
+        expect(res.headers.get("Content-Disposition")).toBe('attachment; filename="modules-export.json"');
     });
 });
