@@ -4,7 +4,8 @@ import {useCallback, useEffect} from 'react';
 import {Controller, useFieldArray, useForm, type Resolver} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Settings} from 'lucide-react';
-import {Sheet, SheetContent, SheetTitle} from '@/components/ui/sheet';
+import {Sheet, SheetContent} from '@/components/ui/sheet';
+import AdminSheetHeader from '@/components/admin/AdminSheetHeader';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
@@ -84,32 +85,16 @@ export default function EditModuleSheet({
                     'p-0 gap-0 overflow-hidden flex flex-col sm:max-w-[520px]',
                     'bg-[#f7ebd9] dark:bg-[#13110d]',
                     'border-l border-bridge-500/45',
-                    '[&>button]:text-white/80 [&>button:hover]:text-white',
+                    '[&>button]:text-white/80 [&>button:hover]:text-white dark:[&>button]:text-brand-dark/80 dark:[&>button:hover]:text-brand-dark',
                 )}
             >
                 {/* Header */}
-                <div
-                    className={cn(
-                        'relative flex items-center gap-4 px-6 py-5 pr-14 overflow-hidden shrink-0',
-                        `bg-${module.path}`,
-                    )}
-                >
-                    <div
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                    />
-                    <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 shrink-0">
-                        <Settings className="w-5 h-5 text-white" aria-hidden="true"/>
-                    </div>
-                    <div className="flex flex-col gap-0.5">
-                        <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/60">
-                            Module
-                        </p>
-                        <SheetTitle className="text-white font-bold text-xl leading-tight p-0 m-0">
-                            Modifier le module
-                        </SheetTitle>
-                    </div>
-                </div>
+                <AdminSheetHeader
+                    icon={Settings}
+                    eyebrow="Module"
+                    title="Modifier le module"
+                    className={`bg-${module.path}`}
+                />
 
                 {/* Body + Footer */}
                 <form
@@ -306,7 +291,7 @@ export default function EditModuleSheet({
                         <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className={cn('text-white font-semibold', `bg-${module.path} hover:opacity-90`)}
+                            className={cn('text-white dark:text-brand-dark font-semibold', `bg-${module.path} hover:opacity-90`)}
                         >
                             {isSubmitting ? 'Enregistrement…' : 'Enregistrer'}
                         </Button>

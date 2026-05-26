@@ -2,7 +2,9 @@
 
 import {useEffect, useState} from 'react';
 import {Controller, useFieldArray, useForm, useWatch} from 'react-hook-form';
-import {Sheet, SheetContent, SheetTitle, SheetDescription} from "@/components/ui/sheet";
+import {Package} from 'lucide-react';
+import {Sheet, SheetContent} from "@/components/ui/sheet";
+import AdminSheetHeader from '@/components/admin/AdminSheetHeader';
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
@@ -13,6 +15,7 @@ import Instructor from "@/types/Instructor";
 import {Textarea} from "@/components/ui/textarea";
 import {cn} from "@/lib/utils";
 import {FIXED_COMPETENCES, FIXED_SAES} from "@/lib/schemas/module.schema";
+import Eyebrow from '@/components/admin/ui/Eyebrow';
 
 interface AddModuleButtonProps {
     onAdd: (module: {
@@ -88,7 +91,7 @@ export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChan
                 <div className="flex justify-end">
                     <Button
                         onClick={() => setOpen(true)}
-                        className="bg-brand-primary text-white hover:bg-brand-accent-dark"
+                        className="bg-brand-primary text-white dark:text-brand-dark hover:bg-brand-accent-dark dark:hover:bg-brand-primary/80"
                     >
                         Ajouter un module
                     </Button>
@@ -102,168 +105,161 @@ export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChan
                         'p-0 gap-0 overflow-hidden flex flex-col sm:max-w-[520px]',
                         'bg-[#f7ebd9] dark:bg-[#13110d]',
                         'border-l border-bridge-500/45',
-                        '[&>button]:text-white/80 [&>button:hover]:text-white',
+                        '[&>button]:text-white/80 [&>button:hover]:text-white dark:[&>button]:text-brand-dark/80 dark:[&>button:hover]:text-brand-dark',
                     )}
                 >
                     {/* Header */}
-                    <div className="relative flex items-center gap-4 px-6 py-5 pr-14 overflow-hidden shrink-0 bg-brand-primary">
-                        <div
-                            aria-hidden="true"
-                            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                        />
-                        <div className="flex flex-col gap-0.5">
-                            <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/60">
-                                Module
-                            </p>
-                            <SheetTitle className="text-white font-bold text-xl leading-tight p-0 m-0">
-                                Ajouter un nouveau module
-                            </SheetTitle>
-                        </div>
-                        <SheetDescription className="sr-only">
-                            Formulaire de création d&apos;un nouveau module
-                        </SheetDescription>
-                    </div>
+                    <AdminSheetHeader
+                        icon={Package}
+                        eyebrow="Module"
+                        title="Ajouter un nouveau module"
+                        srDescription="Formulaire de création d'un nouveau module"
+                        className="bg-brand-primary"
+                    />
 
                     {/* Body + Footer */}
                     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 overflow-hidden">
-                        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+                        <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-5">
 
-                            {/* Titre + Path */}
-                            <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
-                                <div className="flex-1">
-                                    <Label htmlFor="am-title" className={labelCn}>Titre *</Label>
-                                    <Input
-                                        id="am-title"
-                                        className={inputCn}
-                                        {...register("title", {required: "Le titre est obligatoire"})}
-                                        aria-invalid={errors.title ? "true" : "false"}
-                                    />
-                                    {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
-                                </div>
-                                <div className="w-36">
-                                    <Label htmlFor="am-path" className={labelCn}>Path *</Label>
-                                    <Input
-                                        id="am-path"
-                                        className={inputCn}
-                                        {...register("path", {required: "Le path est obligatoire"})}
-                                        aria-invalid={errors.path ? "true" : "false"}
-                                    />
-                                    {errors.path && <p className="text-red-500 text-xs mt-1">{errors.path.message}</p>}
-                                </div>
-                            </div>
-
-                            {/* Icon */}
-                            <div>
-                                <Label htmlFor="am-icon" className={labelCn}>Icon Name *</Label>
-                                <Input
-                                    id="am-icon"
-                                    className={inputCn}
-                                    {...register("iconName", {required: "L'icône est obligatoire"})}
-                                    aria-invalid={errors.iconName ? "true" : "false"}
-                                />
-                                {errors.iconName && <p className="text-red-500 text-xs mt-1">{errors.iconName.message}</p>}
-                            </div>
-
-                            {/* Description */}
-                            <div>
-                                <Label htmlFor="am-description" className={labelCn}>Description</Label>
-                                <Textarea id="am-description" className={inputCn} {...register("description")}/>
-                            </div>
-
-                            {/* Hors programme */}
-                            <Controller
-                                control={control}
-                                name="isExtra"
-                                render={({field}) => (
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <Checkbox
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
+                            {/* Identification */}
+                            <section className="flex flex-col gap-3">
+                                <Eyebrow>Identification</Eyebrow>
+                                <div className="flex gap-3">
+                                    <div className="flex-1">
+                                        <Label htmlFor="am-title" className={labelCn}>Titre *</Label>
+                                        <Input
+                                            id="am-title"
+                                            className={inputCn}
+                                            {...register("title", {required: "Le titre est obligatoire"})}
+                                            aria-invalid={errors.title ? "true" : "false"}
                                         />
-                                        <span className="text-sm text-brand-dark dark:text-bridge-100">Hors programme</span>
-                                    </label>
-                                )}
-                            />
+                                        {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
+                                    </div>
+                                    <div className="w-36">
+                                        <Label htmlFor="am-path" className={labelCn}>Path *</Label>
+                                        <Input
+                                            id="am-path"
+                                            className={inputCn}
+                                            {...register("path", {required: "Le path est obligatoire"})}
+                                            aria-invalid={errors.path ? "true" : "false"}
+                                        />
+                                        {errors.path && <p className="text-red-500 text-xs mt-1">{errors.path.message}</p>}
+                                    </div>
+                                </div>
+                                <div>
+                                    <Label htmlFor="am-icon" className={labelCn}>Icône *</Label>
+                                    <Input
+                                        id="am-icon"
+                                        className={inputCn}
+                                        {...register("iconName", {required: "L'icône est obligatoire"})}
+                                        aria-invalid={errors.iconName ? "true" : "false"}
+                                    />
+                                    {errors.iconName && <p className="text-red-500 text-xs mt-1">{errors.iconName.message}</p>}
+                                </div>
+                                <div>
+                                    <Label htmlFor="am-description" className={labelCn}>Description</Label>
+                                    <Textarea id="am-description" className={inputCn} {...register("description")}/>
+                                </div>
+                                <Controller
+                                    control={control}
+                                    name="isExtra"
+                                    render={({field}) => (
+                                        <label className="flex items-center gap-2 cursor-pointer">
+                                            <Checkbox
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
+                                            <span className="text-sm text-brand-dark dark:text-bridge-100">Hors programme</span>
+                                        </label>
+                                    )}
+                                />
+                            </section>
+
+                            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
 
                             {/* Coefficients */}
-                            <div>
-                                <Label className={labelCn}>Coefficients</Label>
-                                <div className="space-y-2 mt-1">
-                                    {FIXED_COMPETENCES.map((competence, index) => (
-                                        <div key={index} className="flex gap-2 items-center">
-                                            <span className="flex-1 text-sm text-brand-dark dark:text-bridge-100">{competence}</span>
-                                            <Input
-                                                type="number"
-                                                step="1"
-                                                className={cn(inputCn, "w-20 text-center")}
-                                                {...register(`coefficients.${index}.value` as const, {valueAsNumber: true})}
-                                            />
-                                            <input
-                                                type="hidden"
-                                                {...register(`coefficients.${index}.competenceName` as const)}
-                                                value={competence}
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                            <section className="flex flex-col gap-3">
+                                <Eyebrow>Coefficients des compétences</Eyebrow>
+                                {FIXED_COMPETENCES.map((competence, index) => (
+                                    <div key={competence} className="flex items-center gap-3">
+                                        <span className="flex-1 text-sm text-brand-dark dark:text-bridge-100 min-w-0">
+                                            {competence}
+                                        </span>
+                                        <input
+                                            type="hidden"
+                                            {...register(`coefficients.${index}.competenceName` as const)}
+                                            value={competence}
+                                        />
+                                        <Input
+                                            type="number"
+                                            step="1"
+                                            className={cn(inputCn, "w-20 text-center")}
+                                            {...register(`coefficients.${index}.value` as const, {valueAsNumber: true})}
+                                        />
+                                    </div>
+                                ))}
+                            </section>
+
+                            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
 
                             {/* Responsable */}
-                            <div>
-                                <Label className={labelCn}>Responsable du module</Label>
-                                <div className="grid grid-cols-3 gap-2 mt-1">
+                            <section className="flex flex-col gap-3">
+                                <Eyebrow>Responsable</Eyebrow>
+                                <div className="grid grid-cols-3 gap-2">
                                     <Input placeholder="Prénom" className={inputCn} {...register("manager.firstName")}/>
                                     <Input placeholder="Nom" className={inputCn} {...register("manager.lastName")}/>
                                     <Input placeholder="Email" type="email" className={inputCn} {...register("manager.email")}/>
                                 </div>
-                            </div>
+                            </section>
 
-                            {/* Enseignants */}
-                            <div>
-                                <Label className={labelCn}>Enseignants</Label>
-                                <div className="space-y-2 mt-1">
-                                    {instructorFields.map((field, index) => (
-                                        <div key={field.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 items-center">
-                                            <Input placeholder="Prénom" className={inputCn} {...register(`instructors.${index}.firstName` as const)}/>
-                                            <Input placeholder="Nom" className={inputCn} {...register(`instructors.${index}.lastName` as const)}/>
-                                            <Input placeholder="Email" type="email" className={inputCn} {...register(`instructors.${index}.email` as const)}/>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 text-bridge-500 hover:text-red-500"
-                                                onClick={() => removeInstructor(index)}
-                                                aria-label="Supprimer l'intervenant"
-                                            >
-                                                ×
-                                            </Button>
-                                        </div>
-                                    ))}
-                                </div>
+                            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+
+                            {/* Intervenants */}
+                            <section className="flex flex-col gap-3">
+                                <Eyebrow>Intervenants</Eyebrow>
+                                {instructorFields.map((field, index) => (
+                                    <div key={field.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 items-center">
+                                        <Input placeholder="Prénom" className={inputCn} {...register(`instructors.${index}.firstName` as const)}/>
+                                        <Input placeholder="Nom" className={inputCn} {...register(`instructors.${index}.lastName` as const)}/>
+                                        <Input placeholder="Email" type="email" className={inputCn} {...register(`instructors.${index}.email` as const)}/>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8 text-bridge-500 hover:text-red-500"
+                                            onClick={() => removeInstructor(index)}
+                                            aria-label="Supprimer l'intervenant"
+                                        >
+                                            ×
+                                        </Button>
+                                    </div>
+                                ))}
                                 <Button
                                     type="button"
                                     variant="ghost"
                                     size="sm"
-                                    className="self-start text-bridge-600 dark:text-bridge-300 hover:text-bridge-800 mt-1"
+                                    className="self-start text-bridge-600 dark:text-bridge-300 hover:text-bridge-800"
                                     onClick={() => appendInstructor({firstName: '', lastName: '', email: ''})}
                                 >
                                     + Ajouter un intervenant
                                 </Button>
-                            </div>
+                            </section>
+
+                            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
 
                             {/* SAÉ */}
-                            <div>
-                                <Label className={labelCn}>SAÉ associées</Label>
+                            <section className="flex flex-col gap-3">
+                                <Eyebrow>SAÉ associées</Eyebrow>
                                 <select
                                     multiple
-                                    className="mt-1 border border-bridge-500/45 rounded-md p-2 w-full bg-bridge-100/60 dark:bg-bridge-800/60"
+                                    className="border border-bridge-500/45 rounded-md p-2 w-full bg-bridge-100/60 dark:bg-bridge-800/60"
                                     {...register("associatedSae")}
                                 >
                                     {FIXED_SAES.map((sae, index) => (
                                         <option key={index} value={sae}>{sae}</option>
                                     ))}
                                 </select>
-                            </div>
+                            </section>
                         </div>
 
                         {/* Footer sticky */}
@@ -278,7 +274,7 @@ export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChan
                             </Button>
                             <Button
                                 type="submit"
-                                className="bg-brand-primary text-white hover:bg-brand-accent-dark"
+                                className="bg-brand-primary text-white dark:text-brand-dark hover:bg-brand-accent-dark dark:hover:bg-brand-primary/80"
                             >
                                 Ajouter
                             </Button>

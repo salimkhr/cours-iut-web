@@ -2,9 +2,10 @@
 name: Cours IUT Web
 description: Plateforme pédagogique BUT Informatique — cours, TP, slides, examens (HTML/CSS, JS, PHP, Brainfuck).
 colors:
-  brand-primary: "#E85D04"
+  # Light mode — accessible sur fond crème bridge-50 #f7ebd9 (≥4.5:1 texte et bg w/ texte blanc)
+  brand-primary: "#C2410C"
   brand-accent: "#FB923C"
-  brand-accent-dark: "#C2410C"
+  brand-accent-dark: "#8D2F09"
   brand-dark: "#221e18"
   brand-light: "#f0d5b7"
   brand-gray-100: "#F1F5F9"
@@ -23,9 +24,16 @@ colors:
   bridge-900: "#2a1d12"
   module-html-css: "#C13B1A"
   module-php: "#3B3F7A"
-  module-javascript: "#C9A800"
+  module-javascript: "#7A6200"
   module-brainfuck: "#6B21A8"
   module-login: "#1338A0"
+  # Dark mode — accessibles sur fond bridge-800 #3f2818 (≥5:1 texte et bg w/ texte brand-dark)
+  module-html-css-dark: "#FF8568"
+  module-php-dark: "#9198E5"
+  module-javascript-dark: "#FFD93D"
+  module-brainfuck-dark: "#C07AF8"
+  module-login-dark: "#6B9FFF"
+  brand-primary-dark: "#FB923C"
 typography:
   display:
     fontFamily: "IBM Plex Sans, ui-sans-serif, system-ui, sans-serif"
@@ -122,9 +130,9 @@ La palette respire le bois et la lumière de fin d'après-midi. Les neutres tire
 
 ### Primary
 
-- **Brûlot Orange** (`#E85D04`, `brand-primary`) : la signature du système. CTA primaires (« Continuer le cours »), tab actif du switcher, point d'accent après les titres en l'absence de couleur module. Rare, jamais un grand aplat.
-- **Orange Doré** (`#FB923C`, `brand-accent`) : variante éclaircie, principalement pour le dark mode (Clerk auth, accents lisibles sur bridge-800).
-- **Brique Cuite** (`#C2410C`, `brand-accent-dark`) : variante foncée, états pressés ou bordures appuyées.
+- **Brique Vive** (`#C2410C`, `brand-primary`) : la signature du système en light mode. Ratio ≥4.5:1 sur fond crème et avec texte blanc — utilisable comme texte ET comme fond de bouton. CTA primaires, tab actif, accent après titre. Dark mode : `#FB923C` via `.dark { --color-brand-primary }`.
+- **Orange Doré** (`#FB923C`, `brand-accent`) : la signature en dark mode (texte sur fond sombre 6.2:1). Aussi pour Clerk auth, accents sur bridge-800.
+- **Brique Profonde** (`#8D2F09`, `brand-accent-dark`) : hover/pressed sur fond brand-primary en light mode (visuellement distinct de `#C2410C`). Ratio texte blanc 8.9:1.
 
 ### Secondary — La Palette Pont
 
@@ -143,13 +151,15 @@ Surface principale du système. Utilisée pour les cards, les barres sticky, les
 
 ### Tertiary — Identités Modulaires
 
-Une couleur par discipline, utilisée exclusivement dans le scope `.header-${modulePath}`. Texte blanc validé sur chaque (ratios ≥5.2:1, cf. `globals.css`).
+Une couleur par discipline, utilisée exclusivement dans le scope `.header-${modulePath}`. Deux valeurs par module (light / dark) définies dans `globals.css`. En light : texte blanc ≥5.9:1 et texte sur fond crème ≥5.3:1. En dark : texte sur fond bridge-800 ≥5.2:1 et fond avec texte brand-dark ≥7.8:1. Le badge SectionCard utilise `text-white dark:text-black` ; l'onglet ContentSidebarNav utilise `text-white dark:text-brand-dark`.
 
-- **Rouge Balise** (`#C13B1A`, `module-html-css`) : HTML5 / CSS — le rouge institutionnel HTML.
-- **Indigo Dollar** (`#3B3F7A`, `module-php`) : PHP — indigo officiel, sobre et autoritaire.
-- **Or Compilé** (`#C9A800`, `module-javascript`) : JavaScript — jaune assombri pour rester lisible sur fond clair (en light), `#F7DF1E` officiel sur fond bridge-800 en dark.
-- **Violet Labyrinthe** (`#6B21A8`, `module-brainfuck`) : Brainfuck — violet foncé, pour la cryptique élégance des esoteric languages.
-- **Bleu Profond** (`#1338A0`, `module-login`) : auth uniquement (login/register). Distinct des modules pédagogiques.
+Chaque module a une couleur light (sombre, texte blanc ET texte sur crème ≥5:1) et une couleur dark (lumineuse, texte sur fond sombre ET fond avec texte brand-dark ≥5:1). La même variable CSS `--color-xxx` bascule via `.dark {}`.
+
+- **Rouge Balise** — light `#C13B1A` / dark `#FF8568` (corail). HTML5 / CSS — le rouge institutionnel HTML.
+- **Indigo Dollar** — light `#3B3F7A` / dark `#9198E5` (lavande). PHP — indigo officiel, sobre et autoritaire.
+- **Or Compilé** — light `#7A6200` / dark `#FFD93D` (or vif). JavaScript — or foncé en light (visible sur crème 5.3:1), or éclatant en dark (8.3:1). Remplace `#E6C84A` qui était illisible sur fond clair (1.6:1).
+- **Violet Labyrinthe** — light `#6B21A8` / dark `#C07AF8` (violet clair). Brainfuck — violet foncé en light, violet pâle en dark.
+- **Bleu Profond** — light `#1338A0` / dark `#6B9FFF` (bleu ciel). Auth uniquement (login/register). Distinct des modules pédagogiques.
 
 ### Neutral
 

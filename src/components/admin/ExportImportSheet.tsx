@@ -2,7 +2,8 @@
 
 import { useReducer, useRef, useEffect } from 'react';
 import { ArrowUpDown, Download, Upload } from 'lucide-react';
-import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
+import AdminSheetHeader from '@/components/admin/AdminSheetHeader';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import Eyebrow from '@/components/admin/ui/Eyebrow';
@@ -150,28 +151,17 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
                     'p-0 gap-0 overflow-hidden flex flex-col sm:max-w-[440px]',
                     'bg-[#f7ebd9] dark:bg-[#13110d]',
                     'border-l border-bridge-500/45',
-                    '[&>button]:text-white/80 [&>button:hover]:text-white',
+                    '[&>button]:text-white/80 [&>button:hover]:text-white dark:[&>button]:text-brand-dark/80 dark:[&>button:hover]:text-brand-dark',
                 )}
             >
                 {/* Header */}
-                <div className="relative flex items-center gap-4 px-6 py-5 pr-14 overflow-hidden shrink-0 bg-brand-primary">
-                    <div
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                    />
-                    <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 shrink-0">
-                        <ArrowUpDown className="w-5 h-5 text-white" aria-hidden="true" />
-                    </div>
-                    <div className="flex flex-col gap-0.5">
-                        <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/60">Admin</p>
-                        <SheetTitle className="text-white font-bold text-xl leading-tight p-0 m-0">
-                            Exporter / Importer
-                        </SheetTitle>
-                        <SheetDescription className="text-white/70 text-sm mt-0.5">
-                            Transférez vos modules entre environnements
-                        </SheetDescription>
-                    </div>
-                </div>
+                <AdminSheetHeader
+                    icon={ArrowUpDown}
+                    eyebrow="Admin"
+                    title="Exporter / Importer"
+                    description="Transférez vos modules entre environnements"
+                    className="bg-brand-primary"
+                />
 
                 {/* Body */}
                 <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-6">
@@ -234,7 +224,7 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
                         )}
 
                         <Button
-                            className="self-start gap-2 bg-brand-primary text-white hover:opacity-90"
+                            className="self-start gap-2 bg-brand-primary text-white dark:text-brand-dark hover:opacity-90"
                             onClick={handleImport}
                             disabled={!fileData || importLoading}
                         >

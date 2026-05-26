@@ -41,7 +41,7 @@ export default function EditModuleFab({module}: EditModuleFabProps) {
                 aria-label="Modifier le module"
                 title="Modifier le module"
                 className={cn(
-                    'fixed bottom-6 right-6 z-40 h-12 w-12 rounded-full p-0 shadow-lg text-white',
+                    'fixed bottom-6 right-6 z-40 h-12 w-12 rounded-full p-0 shadow-lg text-white dark:text-brand-dark',
                     `bg-${module.path} hover:opacity-90`,
                 )}
             >

@@ -51,7 +51,7 @@ export default function UserRow({ user, onDeleted }: UserRowProps) {
             <td className="px-4 py-3 whitespace-nowrap">
                 <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
                     isAdmin
-                        ? 'bg-brand-primary text-white'
+                        ? 'bg-brand-primary text-white dark:text-brand-dark'
                         : 'bg-bridge-200/60 dark:bg-bridge-700/60 text-bridge-700 dark:text-bridge-300'
                 }`}>
                     {isAdmin ? 'Admin' : 'Étudiant'}

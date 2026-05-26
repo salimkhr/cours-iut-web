@@ -20,7 +20,7 @@ export default function AddSectionButton({modData, onAdd}: AddSectionButtonProps
             <div className="flex justify-end mb-2">
                 <Button
                     onClick={() => setOpen(true)}
-                    className={`bg-${modData.path} text-white hover:opacity-90 border-transparent`}
+                    className={`bg-${modData.path} text-white dark:text-brand-dark hover:opacity-90 border-transparent`}
                 >
                     <PlusSquare/> Ajouter un nouveau cours
                 </Button>

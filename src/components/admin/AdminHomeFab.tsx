@@ -63,7 +63,7 @@ export default function AdminHomeFab() {
                 <DropdownMenuTrigger asChild>
                     <Button
                         aria-label="Actions admin"
-                        className="fixed bottom-6 right-6 z-40 h-12 w-12 rounded-full p-0 shadow-lg bg-brand-primary text-white hover:bg-brand-accent-dark"
+                        className="fixed bottom-6 right-6 z-40 h-12 w-12 rounded-full p-0 shadow-lg bg-brand-primary text-white dark:text-brand-dark hover:bg-brand-accent-dark dark:hover:bg-brand-primary/80"
                     >
                         <Wrench className="w-5 h-5"/>
                         {totalMissing > 0 && (

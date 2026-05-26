@@ -207,7 +207,7 @@ export default function TableOfContents({
             <button
                 type="button"
                 onClick={() => setIsOpen((p) => !p)}
-                className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg text-white transition-opacity hover:opacity-90"
+                className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg text-white dark:text-brand-dark transition-opacity hover:opacity-90"
                 style={{ backgroundColor: moduleColor }}
                 aria-label="Table des matières"
             >

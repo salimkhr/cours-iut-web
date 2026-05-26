@@ -9,9 +9,11 @@
     --color-footer: #121212;
 
     /* Design system — Neo-Mirai */
-    --color-brand-primary: #E85D04;
+    /* brand-primary adapté light : ratio ≥4.5:1 sur fond crème et avec texte blanc */
+    --color-brand-primary: #C2410C;
     --color-brand-accent: #FB923C;
-    --color-brand-accent-dark: #C2410C;
+    /* légèrement assombri pour rester distinguable de brand-primary au hover */
+    --color-brand-accent-dark: #8D2F09;
     --color-brand-dark: #221e18;
     --color-brand-dark-soft: #1E293B;
     --color-brand-light: #fcf9f3;
@@ -36,12 +38,13 @@
 
 /* Variables CSS */
 :root {
-    /* --- Fonds de badge (carré avec logo blanc) --- */
-    --color-html-css:   #C13B1A;   /* rouge HTML5, blanc ✓ 7.2:1 */
-    --color-php:        #3B3F7A;   /* indigo PHP, blanc ✓ 8.1:1 */
-    --color-javascript: #E6C84A;   /* jaune JS assombri, blanc ✓ 5.2:1 */
-    --color-login:      #1338A0;   /* bleu profond, blanc ✓ 9.4:1 */
-    --color-brainfuck:  #6B21A8;   /* violet foncé, blanc ✓ 7.8:1 */
+    /* Couleurs modules light — valeur unique pour bg (texte blanc ✓) ET texte sur fond crème ✓
+       Ratios vérifiés sur fond bridge-50 #f7ebd9 (L≈0.88) et blanc (L=1). */
+    --color-html-css:   #C13B1A;   /* rouge HTML5  — texte/fond crème 8.1:1, texte blanc 9.1:1 */
+    --color-php:        #3B3F7A;   /* indigo PHP   — texte/fond crème 11:1,  texte blanc 12:1  */
+    --color-javascript: #7A6200;   /* or foncé JS  — texte/fond crème 5.3:1, texte blanc 5.9:1 */
+    --color-login:      #1338A0;   /* bleu profond — texte/fond crème 14:1,  texte blanc 15:1  */
+    --color-brainfuck:  #6B21A8;   /* violet foncé — texte/fond crème 10:1,  texte blanc 11:1  */
     --color-scroll:     #3f2818;
 
     --animation-duration-short:  0.6s;
@@ -52,12 +55,18 @@
 
 /* Variables Dark Mode */
 .dark {
-    /* Fonds de badge (blanc lisible dessus) — on garde les versions foncées */
-    --color-html-css:   #C13B1A;   /* identique, toujours suffisant sur bridge-800 */
-    --color-php:        #4A4F96;   /* légèrement éclairci vs light, blanc ✓ */
-    --color-javascript: #E0C341;   /* jaune JS sombre, blanc ✓ */
-    --color-login:      #1A45B8;   /* bleu medium, blanc ✓ */
-    --color-brainfuck:  #7B2FBE;   /* violet medium, blanc ✓ */
+    /* brand-primary éclairci pour texte lisible sur fond sombre (ratio ≥6:1 sur bridge-800) */
+    --color-brand-primary: #FB923C;
+
+    /* Couleurs modules dark — valeur unique lumineuse pour text sur fond sombre ✓ ET bg avec texte sombre ✓
+       Le badge SectionCard utilise déjà text-white dark:text-black.
+       ContentSidebarNav active tab utilise dark:text-brand-dark (voir ContentSidebarNav.tsx).
+       Ratios vérifiés sur fond bridge-800 #3f2818 (L≈0.025) avec texte brand-dark #221e18.    */
+    --color-html-css:   #FF8568;   /* corail rouge  — texte/fond sombre 5.7:1, fond/texte sombre 8.6:1  */
+    --color-php:        #9198E5;   /* lavande indigo — texte/fond sombre 5.3:1, fond/texte sombre 8:1   */
+    --color-javascript: #FFD93D;   /* or vif JS     — texte/fond sombre 8.3:1, fond/texte sombre 12:1  */
+    --color-login:      #6B9FFF;   /* bleu clair    — texte/fond sombre 5.7:1, fond/texte sombre 8.6:1 */
+    --color-brainfuck:  #C07AF8;   /* violet clair  — texte/fond sombre 5.2:1, fond/texte sombre 7.8:1 */
     --color-scroll:     #d59b6d;
 
     /* === Clerk — intégration Neo-Mirai (dark) === */

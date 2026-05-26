@@ -63,7 +63,7 @@ export default function ContentSidebarNav({
                             "shrink-0 inline-flex items-center gap-0.5 px-1.5 h-7 text-sm font-medium rounded-md",
                             "transition-colors duration-200",
                             isActive
-                                ? "text-white"
+                                ? "text-white dark:text-brand-dark"
                                 : "text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark dark:hover:text-bridge-100 hover:bg-bridge-300/40 dark:hover:bg-bridge-700/40"
                         )}
                         style={isActive ? {backgroundColor: `var(--color-${moduleSlug})`} : undefined}

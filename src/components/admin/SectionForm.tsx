@@ -4,7 +4,8 @@ import {useCallback, useEffect} from 'react';
 import {Controller, useForm, useWatch} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Pencil, Plus} from 'lucide-react';
-import {Sheet, SheetContent, SheetDescription, SheetTitle} from '@/components/ui/sheet';
+import {Sheet, SheetContent} from '@/components/ui/sheet';
+import AdminSheetHeader from '@/components/admin/AdminSheetHeader';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
@@ -172,37 +173,17 @@ export default function SectionForm({
                     'p-0 gap-0 overflow-hidden flex flex-col sm:max-w-[480px]',
                     'bg-[#f7ebd9] dark:bg-[#13110d]',
                     'border-l border-bridge-500/45',
+                    '[&>button]:text-white/80 [&>button:hover]:text-white dark:[&>button]:text-brand-dark/80 dark:[&>button:hover]:text-brand-dark',
                 )}
             >
                 {/* Header */}
-                <div
-                    className={cn(
-                        'relative flex items-center gap-4 px-6 py-5 pr-14 overflow-hidden shrink-0',
-                        `bg-${modData.path}`,
-                    )}
-                >
-                    <div
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                    />
-                    <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 shrink-0">
-                        {isEditMode
-                            ? <Pencil className="w-5 h-5 text-white" aria-hidden="true"/>
-                            : <Plus className="w-5 h-5 text-white" aria-hidden="true"/>
-                        }
-                    </div>
-                    <div className="flex flex-col gap-0.5">
-                        <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/60">
-                            Section
-                        </p>
-                        <SheetTitle className="text-white font-bold text-xl leading-tight p-0 m-0">
-                            {isEditMode ? 'Modifier la section' : 'Ajouter une section'}
-                        </SheetTitle>
-                        <SheetDescription className="sr-only">
-                            {isEditMode ? 'Modifier les paramètres de la section' : 'Ajouter une nouvelle section au module'}
-                        </SheetDescription>
-                    </div>
-                </div>
+                <AdminSheetHeader
+                    icon={isEditMode ? Pencil : Plus}
+                    eyebrow="Section"
+                    title={isEditMode ? 'Modifier la section' : 'Ajouter une section'}
+                    srDescription={isEditMode ? 'Modifier les paramètres de la section' : 'Ajouter une nouvelle section au module'}
+                    className={`bg-${modData.path}`}
+                />
 
                 {/* Body + Footer */}
                 <form
@@ -369,7 +350,7 @@ export default function SectionForm({
                         </Button>
                         <Button
                             type="submit"
-                            className={cn('text-white font-semibold', `bg-${modData.path} hover:opacity-90`)}
+                            className={cn('text-white dark:text-brand-dark font-semibold', `bg-${modData.path} hover:opacity-90`)}
                         >
                             {isEditMode ? 'Enregistrer' : 'Ajouter'}
                         </Button>

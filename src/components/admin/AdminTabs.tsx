@@ -18,7 +18,7 @@ export default function AdminTabs({ users, modules }: AdminTabsProps) {
             <TabsList className="mb-6 bg-bridge-100/60 dark:bg-bridge-800/60 border border-bridge-500/30">
                 <TabsTrigger
                     value="users"
-                    className="flex items-center gap-2 data-[state=active]:bg-brand-primary data-[state=active]:text-white"
+                    className="flex items-center gap-2 data-[state=active]:bg-brand-primary data-[state=active]:text-white dark:data-[state=active]:text-brand-dark"
                 >
                     <Users className="w-4 h-4" />
                     Utilisateurs
@@ -26,7 +26,7 @@ export default function AdminTabs({ users, modules }: AdminTabsProps) {
                 </TabsTrigger>
                 <TabsTrigger
                     value="content"
-                    className="flex items-center gap-2 data-[state=active]:bg-brand-primary data-[state=active]:text-white"
+                    className="flex items-center gap-2 data-[state=active]:bg-brand-primary data-[state=active]:text-white dark:data-[state=active]:text-brand-dark"
                 >
                     <BookOpen className="w-4 h-4" />
                     Contenu
