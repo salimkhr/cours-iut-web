@@ -15,6 +15,7 @@ import {cn} from "@/lib/utils";
 import {CONTENT_DESC, CONTENT_ICON, ContentKey} from "@/lib/contentMeta";
 import {Metadata} from "next";
 import {getServerSession} from "@/lib/auth";
+import QuizTrigger from "@/components/quiz/QuizTrigger";
 
 const SPLIT_SLUG = 'split';
 
@@ -183,6 +184,16 @@ export default async function Content({params}: ContentPageProps) {
                             sectionSlug={sectionSlug}
                             sectionContents={currentSection.contents}
                         />
+                    )}
+                    {currentContent === 'TP' && (currentSection.quiz?.questions?.length ?? 0) > 0 && session && (
+                        <div className="w-full max-w-7xl mx-auto px-3 lg:px-4 pb-12 flex justify-center">
+                            <QuizTrigger
+                                moduleSlug={moduleSlug}
+                                sectionSlug={sectionSlug}
+                                modulePath={currentModule.path}
+                                questionCount={currentSection.quiz!.questions.length}
+                            />
+                        </div>
                     )}
                 </>
             )}
