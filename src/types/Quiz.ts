@@ -1,10 +1,10 @@
-import {ObjectId} from 'bson';
+import {ObjectId} from "bson";
 
 export type QuizQuestionType = 'mcq' | 'multi' | 'truefalse';
 
 // Stocké en DB — correct et explanation ne quittent jamais le serveur
 export interface QuizQuestion {
-    id: string;
+    id: string;    // UUID généré — distinct du _id MongoDB
     type: QuizQuestionType;
     text: string;
     choices?: string[];
