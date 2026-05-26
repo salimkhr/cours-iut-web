@@ -22,7 +22,3 @@ export const quizQuestionsSchema = z.array(z.object({
     correct: answerSchema,
     explanation: z.string().min(1),
 }));
-
-export type QuizCheckInput = z.infer<typeof quizCheckSchema>;
-export type QuizCompleteInput = z.infer<typeof quizCompleteSchema>;
-export type QuizQuestion = z.infer<typeof quizQuestionsSchema>[number];
