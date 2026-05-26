@@ -107,7 +107,7 @@ export default function QuizDialog({
             setScore(data);
             setState("summary");
         } catch {
-            setErrorMsg("Erreur lors de l&apos;enregistrement. Réessayez.");
+            setErrorMsg("Erreur lors de l'enregistrement. Réessayez.");
             setState("error");
         }
     }

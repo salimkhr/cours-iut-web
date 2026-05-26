@@ -48,7 +48,14 @@ export async function POST(
         section.quiz.questions.map((q) => [q.id, q])
     );
 
-    const validatedAnswers = answers.map(({ questionId, answer }) => {
+    const seenIds = new Set<string>();
+    const validatedAnswers = answers
+        .filter(({ questionId }) => {
+            if (seenIds.has(questionId) || !questionsMap.has(questionId)) return false;
+            seenIds.add(questionId);
+            return true;
+        })
+        .map(({ questionId, answer }) => {
         const question = questionsMap.get(questionId);
         if (!question)
             return { questionId, answer, isCorrect: false };
