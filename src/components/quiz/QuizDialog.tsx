@@ -21,7 +21,6 @@ interface QuizDialogProps {
     moduleSlug: string;
     sectionSlug: string;
     modulePath: string;
-    questionCount: number;
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }
@@ -30,7 +29,6 @@ export default function QuizDialog({
     moduleSlug,
     sectionSlug,
     modulePath,
-    questionCount,
     open,
     onOpenChange,
 }: QuizDialogProps) {
