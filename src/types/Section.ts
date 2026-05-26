@@ -1,4 +1,5 @@
 import {ObjectId} from "bson";
+import {QuizQuestion} from "@/types/Quiz";
 
 export default interface Section {
     _id?: string | ObjectId;
@@ -15,4 +16,5 @@ export default interface Section {
     correctionIsAvailable?: boolean;
     order: number;
     examenIsLock?: boolean;
+    quiz?: { questions: QuizQuestion[] };
 }
