@@ -6,6 +6,7 @@ import {Switch} from "@/components/ui/switch";
 import {useState} from "react";
 import updateSectionState from "@/hook/admin/updateSectionState";
 import EditSectionButton from "@/components/admin/EditSectionButton";
+import QuizEditorButton from "@/components/admin/QuizEditorButton";
 import Module from "@/types/Module";
 import {Section as SectionFrom} from "@/components/admin/SectionForm";
 import useAdminApi from "@/hook/admin/useAdminApi";
@@ -46,7 +47,10 @@ export default function AdminSection({
         <div className="rounded-lg border p-3 space-y-3 bg-muted/40">
             <div className="flex items-center justify-between">
                 <h3 className="text-xl font-medium leading-tight">{currentSection.order}. {currentSection.title}</h3>
-                <EditSectionButton section={currentSection} modData={modData} onAdd={editSection}/>
+                <div className="flex items-center gap-2">
+                    <QuizEditorButton section={currentSection} modData={modData}/>
+                    <EditSectionButton section={currentSection} modData={modData} onAdd={editSection}/>
+                </div>
             </div>
             <div className="space-y-3">
                 <div className="flex items-center justify-between">
