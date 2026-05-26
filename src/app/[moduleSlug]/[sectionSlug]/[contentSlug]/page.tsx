@@ -1,3 +1,4 @@
+import type {ComponentType, CSSProperties, ReactNode} from "react";
 import {notFound} from "next/navigation";
 import {BookOpen, CodeXml, Columns2, Target} from "lucide-react";
 
@@ -61,7 +62,7 @@ export default async function Content({params}: ContentPageProps) {
         notFound();
     }
 
-    type AnyComponent = React.ComponentType;
+    type AnyComponent = ComponentType;
     let CoursComponent: AnyComponent | null = null;
     let TPComponent: AnyComponent | null = null;
     let ComponentToRender: AnyComponent | null = null;
@@ -205,10 +206,10 @@ export default async function Content({params}: ContentPageProps) {
 
 interface SplitPaneProps {
     label: string;
-    Icon: React.ComponentType<{className?: string; style?: React.CSSProperties}>;
+    Icon: ComponentType<{className?: string; style?: CSSProperties}>;
     modulePath: string;
     side: 'left' | 'right';
-    children: React.ReactNode;
+    children: ReactNode;
 }
 
 function SplitPane({label, Icon, modulePath, side, children}: SplitPaneProps) {
