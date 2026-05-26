@@ -1,6 +1,7 @@
 import axios from "axios";
 import {Section as SectionFrom} from "@/components/admin/SectionForm";
 import Module from "@/types/Module";
+import {QuizQuestion} from "@/types/Quiz";
 
 // Hook regroupant les appels API d'administration (modules/sections)
 export default function useAdminApi() {
@@ -38,5 +39,15 @@ export default function useAdminApi() {
         return res.data.section;
     }
 
-    return {addModule, addSection, editSection};
+    // Sauvegarder les questions d'un quiz de section
+    async function saveQuiz(moduleSlug: string, sectionSlug: string, questions: QuizQuestion[]) {
+        const res = await axios.put(
+            `/api/admin/quiz/${moduleSlug}/${sectionSlug}`,
+            questions,
+            {headers: {"Content-Type": "application/json"}}
+        );
+        return res.data as {ok: boolean};
+    }
+
+    return {addModule, addSection, editSection, saveQuiz};
 }
