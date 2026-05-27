@@ -24,6 +24,7 @@ export interface QuizQuestionClient {
 export interface QuizCheckResult {
     isCorrect: boolean;
     explanation: string;
+    correctAnswer: QuizAnswer;
 }
 
 // Document dans la collection quiz_attempts

@@ -43,5 +43,5 @@ export async function POST(
         isCorrect = answer === correct;
     }
 
-    return NextResponse.json({ isCorrect, explanation: question.explanation });
+    return NextResponse.json({ isCorrect, explanation: question.explanation, correctAnswer: correct });
 }
