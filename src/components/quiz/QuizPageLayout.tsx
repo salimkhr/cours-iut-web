@@ -82,7 +82,7 @@ export default function QuizPageLayout({moduleSlug, sectionSlug, modulePath, sec
                         "shadow-[0_12px_32px_-12px_rgba(147,97,58,0.45)]",
                         "dark:shadow-[0_12px_32px_-12px_rgba(0,0,0,0.7)]",
                         "backdrop-blur-md",
-                        "lg:max-w-[480px]",
+                        "lg:max-w-[560px]",
                     )}>
                         {children}
                     </div>
