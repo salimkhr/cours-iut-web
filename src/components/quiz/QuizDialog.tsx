@@ -1,19 +1,15 @@
 "use client";
 
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import type {CSSProperties} from "react";
 import axios from "axios";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogFooter,
-} from "@/components/ui/dialog";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
+import {CheckCircle2, ClipboardCheck, XCircle} from "lucide-react";
+import {Dialog, DialogContent, DialogTitle} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
-import QuizProgress from "@/components/quiz/QuizProgress";
 import QuizQuestion from "@/components/quiz/QuizQuestion";
-import QuizFeedback from "@/components/quiz/QuizFeedback";
 import {QuizAnswer, QuizCheckResult, QuizQuestionClient} from "@/types/Quiz";
+import {cn} from "@/lib/utils";
 
 type QuizState = "loading" | "answering" | "checking" | "feedback" | "completing" | "summary" | "error";
 
@@ -25,13 +21,7 @@ interface QuizDialogProps {
     onOpenChange: (open: boolean) => void;
 }
 
-export default function QuizDialog({
-    moduleSlug,
-    sectionSlug,
-    modulePath,
-    open,
-    onOpenChange,
-}: QuizDialogProps) {
+export default function QuizDialog({moduleSlug, sectionSlug, modulePath, open, onOpenChange}: QuizDialogProps) {
     const [state, setState] = useState<QuizState>("loading");
     const [questions, setQuestions] = useState<QuizQuestionClient[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -39,20 +29,22 @@ export default function QuizDialog({
     const [feedback, setFeedback] = useState<QuizCheckResult | null>(null);
     const [collectedAnswers, setCollectedAnswers] = useState<{questionId: string; answer: QuizAnswer}[]>([]);
     const [score, setScore] = useState<{score: number; total: number} | null>(null);
+    const [questionResults, setQuestionResults] = useState<boolean[]>([]);
     const [errorMsg, setErrorMsg] = useState("");
+
+    const moduleColor = `var(--color-${modulePath})`;
 
     async function loadQuestions() {
         setState("loading");
         try {
-            const {data} = await axios.get<QuizQuestionClient[]>(
-                `/api/quiz/${moduleSlug}/${sectionSlug}`
-            );
+            const {data} = await axios.get<QuizQuestionClient[]>(`/api/quiz/${moduleSlug}/${sectionSlug}`);
             setQuestions(data);
             setCurrentIndex(0);
             setCurrentAnswer(null);
             setFeedback(null);
             setCollectedAnswers([]);
             setScore(null);
+            setQuestionResults([]);
             setState("answering");
         } catch {
             setErrorMsg("Impossible de charger le quiz. Réessayez plus tard.");
@@ -60,12 +52,11 @@ export default function QuizDialog({
         }
     }
 
-    function handleOpenChange(nextOpen: boolean) {
-        onOpenChange(nextOpen);
-        if (nextOpen && (state === "loading" || state === "summary" || questions.length === 0)) {
-            loadQuestions();
-        }
-    }
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        if (open) loadQuestions();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
 
     async function handleVerify() {
         if (currentAnswer === null) return;
@@ -78,6 +69,7 @@ export default function QuizDialog({
             );
             setFeedback(data);
             setCollectedAnswers(prev => [...prev, {questionId: question.id, answer: currentAnswer}]);
+            setQuestionResults(prev => [...prev, data.isCorrect]);
             setState("feedback");
         } catch {
             setErrorMsg("Erreur lors de la vérification. Réessayez.");
@@ -93,149 +85,210 @@ export default function QuizDialog({
             setFeedback(null);
             setState("answering");
         } else {
-            await handleComplete();
+            setState("completing");
+            try {
+                const {data} = await axios.post<{score: number; total: number}>(
+                    `/api/quiz/${moduleSlug}/${sectionSlug}/complete`,
+                    {answers: collectedAnswers}
+                );
+                setScore(data);
+                setState("summary");
+            } catch {
+                setErrorMsg("Erreur lors de l'enregistrement. Réessayez.");
+                setState("error");
+            }
         }
-    }
-
-    async function handleComplete() {
-        setState("completing");
-        try {
-            const {data} = await axios.post<{score: number; total: number}>(
-                `/api/quiz/${moduleSlug}/${sectionSlug}/complete`,
-                {answers: collectedAnswers}
-            );
-            setScore(data);
-            setState("summary");
-        } catch {
-            setErrorMsg("Erreur lors de l'enregistrement. Réessayez.");
-            setState("error");
-        }
-    }
-
-    function handleRetry() {
-        loadQuestions();
     }
 
     const isLastQuestion = currentIndex === questions.length - 1;
-    const moduleColor = `var(--color-${modulePath})`;
     const currentQuestion = questions[currentIndex];
+    const inQuiz = state === "answering" || state === "checking" || state === "feedback";
+
+    const segmentFilled = (i: number) =>
+        state === "feedback" ? i <= currentIndex : i < currentIndex;
+
+    const headerSubtitle = inQuiz
+        ? `Question ${currentIndex + 1} / ${questions.length}`
+        : state === "summary" && score
+            ? `${score.score} / ${score.total}`
+            : state === "error" ? "Erreur" : null;
+
+    const header = (
+        <div className={cn("relative flex items-center gap-4 px-6 py-4 pr-14 overflow-hidden", `bg-${modulePath}`)}>
+            <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"/>
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 shrink-0">
+                <ClipboardCheck className="w-5 h-5 text-white" aria-hidden="true"/>
+            </div>
+            <div className="flex-1 min-w-0">
+                <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/60">Quiz</p>
+                {headerSubtitle && (
+                    <p className="text-white font-bold text-xl leading-tight">{headerSubtitle}</p>
+                )}
+            </div>
+        </div>
+    );
+
+    const progressBar = (total: number, filledCount: number, results?: boolean[]) => (
+        <div className="flex gap-1 px-6" aria-hidden="true">
+            {Array.from({length: total}).map((_, i) => {
+                let segColor: string | undefined;
+                if (results && i < results.length) {
+                    segColor = results[i] ? "#22c55e" : "#ef4444";
+                } else if (i < filledCount) {
+                    segColor = moduleColor;
+                }
+                return (
+                    <div
+                        key={i}
+                        className={cn(
+                            "h-1.5 flex-1 rounded-full transition-colors duration-300",
+                            segColor ? "" : "bg-bridge-700/20 dark:bg-bridge-500/20"
+                        )}
+                        style={segColor ? {backgroundColor: segColor} : {}}
+                    />
+                );
+            })}
+        </div>
+    );
 
     return (
-        <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogContent showCloseButton className="flex flex-col gap-4 max-w-lg">
-                {/* Loading */}
+        <Dialog open={open} onOpenChange={(v) => onOpenChange(v)}>
+            <DialogContent
+                className={cn(
+                    "max-w-md p-0 overflow-hidden",
+                    "bg-[#f7ebd9] dark:bg-[#13110d]",
+                    "border border-bridge-500/45 dark:border-bridge-500/35",
+                    "shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
+                    "[&>button]:text-white [&>button]:ring-offset-transparent [&>button:focus-visible]:ring-white/50",
+                )}
+                style={{"--module-color": moduleColor} as CSSProperties}
+            >
+                {/* LOADING */}
                 {state === "loading" && (
-                    <div className="py-8 text-center text-sm text-brand-dark/60 dark:text-bridge-300/60">
-                        Chargement du quiz…
-                    </div>
+                    <>
+                        <VisuallyHidden.Root><DialogTitle>Chargement du quiz</DialogTitle></VisuallyHidden.Root>
+                        {header}
+                        <div className="px-6 py-10 flex flex-col items-center gap-3">
+                            <div className="flex gap-1.5">
+                                {[0, 1, 2].map(i => (
+                                    <span key={i} className="w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: moduleColor, animationDelay: `${i * 150}ms`}}/>
+                                ))}
+                            </div>
+                            <p className="text-sm text-bridge-600 dark:text-bridge-400">Chargement du quiz…</p>
+                        </div>
+                    </>
                 )}
 
-                {/* Error */}
+                {/* ERROR */}
                 {state === "error" && (
                     <>
-                        <DialogHeader>
-                            <DialogTitle>Erreur</DialogTitle>
-                        </DialogHeader>
-                        <p className="text-sm text-red-600 dark:text-red-400">{errorMsg}</p>
-                        <DialogFooter>
-                            <Button onClick={handleRetry} style={{backgroundColor: moduleColor}}>
-                                Réessayer
-                            </Button>
-                        </DialogFooter>
+                        {header}
+                        <div className="px-6 py-5 flex flex-col gap-4">
+                            <DialogTitle className="text-base font-semibold text-brand-dark dark:text-bridge-100">
+                                Quelque chose s&apos;est mal passé
+                            </DialogTitle>
+                            <p className="text-sm text-red-600 dark:text-red-400">{errorMsg}</p>
+                            <div className="flex justify-end">
+                                <Button onClick={() => loadQuestions()} style={{backgroundColor: moduleColor}} className="text-white dark:text-brand-dark">
+                                    Réessayer
+                                </Button>
+                            </div>
+                        </div>
                     </>
                 )}
 
-                {/* Answering / Checking / Feedback */}
-                {(state === "answering" || state === "checking" || state === "feedback") && currentQuestion && (
+                {/* QUIZ — answering / checking / feedback */}
+                {inQuiz && currentQuestion && (
                     <>
-                        <DialogHeader>
-                            <div className="flex flex-col gap-2">
-                                <QuizProgress
-                                    current={currentIndex}
-                                    total={questions.length}
-                                    modulePath={modulePath}
-                                />
-                                <p className="text-xs text-brand-dark/50 dark:text-bridge-300/50">
-                                    Question {currentIndex + 1} / {questions.length}
-                                </p>
-                            </div>
-                            <DialogTitle className="text-base leading-snug mt-1">
+                        {header}
+                        {progressBar(questions.length, segmentFilled(currentIndex) ? currentIndex + 1 : currentIndex)}
+                        <div className="px-6 pb-6 pt-4 flex flex-col gap-4">
+                            <DialogTitle className="text-base font-semibold leading-snug text-brand-dark dark:text-bridge-100">
                                 {currentQuestion.text}
                             </DialogTitle>
-                        </DialogHeader>
 
-                        <QuizQuestion
-                            key={currentQuestion.id}
-                            question={currentQuestion}
-                            onAnswer={(answer) => setCurrentAnswer(answer)}
-                            disabled={state === "checking" || state === "feedback"}
-                        />
+                            <QuizQuestion
+                                key={currentQuestion.id}
+                                question={currentQuestion}
+                                onAnswer={(answer) => setCurrentAnswer(answer)}
+                                disabled={state === "checking" || state === "feedback"}
+                                feedbackIsCorrect={state === "feedback" && feedback ? feedback.isCorrect : undefined}
+                                moduleColor={moduleColor}
+                            />
 
-                        {state === "feedback" && feedback && (
-                            <QuizFeedback isCorrect={feedback.isCorrect} explanation={feedback.explanation}/>
-                        )}
-
-                        <DialogFooter>
-                            {state === "feedback" ? (
-                                <Button
-                                    onClick={handleNext}
-                                    style={{backgroundColor: moduleColor}}
-                                    className="text-white dark:text-brand-dark"
-                                >
-                                    {isLastQuestion ? "Terminer" : "Suivant →"}
-                                </Button>
-                            ) : (
-                                <Button
-                                    onClick={handleVerify}
-                                    disabled={currentAnswer === null || state === "checking"}
-                                    style={currentAnswer !== null ? {backgroundColor: moduleColor} : {}}
-                                    className="text-white dark:text-brand-dark"
-                                >
-                                    {state === "checking" ? "Vérification…" : "Vérifier"}
-                                </Button>
+                            {state === "feedback" && feedback && (
+                                <div className={cn(
+                                    "flex items-start gap-2.5 rounded-lg px-3.5 py-3 text-sm",
+                                    feedback.isCorrect
+                                        ? "bg-green-50 dark:bg-green-950/25 text-green-900 dark:text-green-100"
+                                        : "bg-red-50 dark:bg-red-950/25 text-red-900 dark:text-red-100"
+                                )}>
+                                    {feedback.isCorrect
+                                        ? <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5"/>
+                                        : <XCircle className="w-4 h-4 text-red-500 dark:text-red-400 shrink-0 mt-0.5"/>
+                                    }
+                                    <p>{feedback.explanation}</p>
+                                </div>
                             )}
-                        </DialogFooter>
+
+                            <div className="flex justify-end pt-1">
+                                {state === "feedback" ? (
+                                    <Button onClick={handleNext} style={{backgroundColor: moduleColor}} className="text-white dark:text-brand-dark">
+                                        {isLastQuestion ? "Terminer" : "Suivant →"}
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        onClick={handleVerify}
+                                        disabled={currentAnswer === null || state === "checking"}
+                                        style={currentAnswer !== null ? {backgroundColor: moduleColor} : {}}
+                                        className="text-white dark:text-brand-dark"
+                                    >
+                                        {state === "checking" ? "Vérification…" : "Vérifier"}
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
                     </>
                 )}
 
-                {/* Completing */}
+                {/* COMPLETING */}
                 {state === "completing" && (
-                    <div className="py-8 text-center text-sm text-brand-dark/60 dark:text-bridge-300/60">
-                        Enregistrement des résultats…
-                    </div>
+                    <>
+                        <VisuallyHidden.Root><DialogTitle>Enregistrement des résultats</DialogTitle></VisuallyHidden.Root>
+                        {header}
+                        <div className="px-6 py-10 flex flex-col items-center gap-3">
+                            <div className="flex gap-1.5">
+                                {[0, 1, 2].map(i => (
+                                    <span key={i} className="w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: moduleColor, animationDelay: `${i * 150}ms`}}/>
+                                ))}
+                            </div>
+                            <p className="text-sm text-bridge-600 dark:text-bridge-400">Enregistrement des résultats…</p>
+                        </div>
+                    </>
                 )}
 
-                {/* Summary */}
+                {/* SUMMARY */}
                 {state === "summary" && score && (
                     <>
-                        <DialogHeader>
-                            <DialogTitle>Résultats</DialogTitle>
-                        </DialogHeader>
-                        <div className="flex flex-col items-center gap-3 py-4">
-                            <QuizProgress current={score.score} total={score.total} modulePath={modulePath}/>
-                            <p className="text-2xl font-bold" style={{color: moduleColor}}>
-                                {score.score} / {score.total}
-                            </p>
-                            <p className="text-sm text-brand-dark/60 dark:text-bridge-300/60">
+                        <VisuallyHidden.Root><DialogTitle>Résultats du quiz</DialogTitle></VisuallyHidden.Root>
+                        {header}
+                        {progressBar(score.total, score.total, questionResults)}
+                        <div className="px-6 py-5 flex flex-col gap-4">
+                            <p className="text-sm text-bridge-600 dark:text-bridge-400 text-center py-1">
                                 {score.score === score.total
                                     ? "Parfait ! Toutes les réponses sont correctes."
                                     : score.score >= score.total / 2
                                         ? "Bon travail, continuez à pratiquer."
                                         : "Revoyez le cours avant de réessayer."}
                             </p>
+                            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+                            <div className="flex justify-between">
+                                <Button variant="ghost" onClick={() => onOpenChange(false)}>Fermer</Button>
+                                <Button onClick={() => loadQuestions()} style={{backgroundColor: moduleColor}} className="text-white dark:text-brand-dark">
+                                    Réessayer
+                                </Button>
+                            </div>
                         </div>
-                        <DialogFooter className="flex gap-2 sm:justify-between">
-                            <Button variant="ghost" onClick={() => onOpenChange(false)}>
-                                Fermer
-                            </Button>
-                            <Button
-                                onClick={handleRetry}
-                                style={{backgroundColor: moduleColor}}
-                                className="text-white dark:text-brand-dark"
-                            >
-                                Réessayer
-                            </Button>
-                        </DialogFooter>
                     </>
                 )}
             </DialogContent>
