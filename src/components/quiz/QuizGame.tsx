@@ -1,6 +1,6 @@
 "use client";
 
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import type {CSSProperties} from "react";
 import axios from "axios";
 import {useRouter} from "next/navigation";
@@ -20,7 +20,6 @@ interface QuizGameProps {
 
 export default function QuizGame({moduleSlug, sectionSlug, modulePath}: QuizGameProps) {
     const router = useRouter();
-    const hasInitializedRef = useRef(false);
     const [state, setState] = useState<QuizState>("loading");
     const [questions, setQuestions] = useState<QuizQuestionClient[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -35,6 +34,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath}: QuizGame
     const tpHref = `/${moduleSlug}/${sectionSlug}/TP`;
 
     const loadQuestions = useCallback(async () => {
+        setState("loading");
         try {
             const {data} = await axios.get<QuizQuestionClient[]>(`/api/quiz/${moduleSlug}/${sectionSlug}`);
             setQuestions(data);
@@ -52,10 +52,8 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath}: QuizGame
     }, [moduleSlug, sectionSlug]);
 
     useEffect(() => {
-        if (!hasInitializedRef.current) {
-            hasInitializedRef.current = true;
-            loadQuestions();
-        }
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        loadQuestions();
     }, [loadQuestions]);
 
     async function handleVerify() {
