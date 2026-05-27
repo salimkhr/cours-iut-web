@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import type {CSSProperties} from "react";
 import axios from "axios";
 import {useRouter} from "next/navigation";
@@ -20,6 +20,7 @@ interface QuizGameProps {
 
 export default function QuizGame({moduleSlug, sectionSlug, modulePath}: QuizGameProps) {
     const router = useRouter();
+    const hasInitializedRef = useRef(false);
     const [state, setState] = useState<QuizState>("loading");
     const [questions, setQuestions] = useState<QuizQuestionClient[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -33,8 +34,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath}: QuizGame
     const moduleColor = `var(--color-${modulePath})`;
     const tpHref = `/${moduleSlug}/${sectionSlug}/TP`;
 
-    async function loadQuestions() {
-        setState("loading");
+    const loadQuestions = useCallback(async () => {
         try {
             const {data} = await axios.get<QuizQuestionClient[]>(`/api/quiz/${moduleSlug}/${sectionSlug}`);
             setQuestions(data);
@@ -49,13 +49,14 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath}: QuizGame
             setErrorMsg("Impossible de charger le quiz. Réessayez plus tard.");
             setState("error");
         }
-    }
+    }, [moduleSlug, sectionSlug]);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        loadQuestions();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        if (!hasInitializedRef.current) {
+            hasInitializedRef.current = true;
+            loadQuestions();
+        }
+    }, [loadQuestions]);
 
     async function handleVerify() {
         if (currentAnswer === null) return;
@@ -103,8 +104,6 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath}: QuizGame
     const currentQuestion = questions[currentIndex];
     const inQuiz = state === "answering" || state === "checking" || state === "feedback";
 
-    const segmentFilled = (i: number) =>
-        state === "feedback" ? i <= currentIndex : i < currentIndex;
 
     const headerSubtitle = inQuiz
         ? `Question ${currentIndex + 1} / ${questions.length}`
@@ -189,7 +188,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath}: QuizGame
             {inQuiz && currentQuestion && (
                 <>
                     {header}
-                    {progressBar(questions.length, segmentFilled(currentIndex) ? currentIndex + 1 : currentIndex)}
+                    {progressBar(questions.length, state === "feedback" ? currentIndex + 1 : currentIndex)}
                     <div className="px-6 pb-6 pt-4 flex flex-col gap-4">
                         <h2 className="text-base font-semibold leading-snug text-brand-dark dark:text-bridge-100">
                             {currentQuestion.text}
