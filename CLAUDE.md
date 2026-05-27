@@ -127,6 +127,10 @@ les parcours e2e (login, navigation cours, admin).
 - Inventer un composant qui existe déjà : vérifier `src/components/ui/` et `src/components/Cards/`
   avant d'écrire un nouveau composant.
 - Skip les hooks pre-commit (`--no-verify`).
+- Ajouter un commentaire `eslint-disable` (ligne ou bloc) sans avoir d'abord demandé validation et
+  fourni une justification explicite : pourquoi la règle ne peut pas être respectée par une
+  refactorisation du code (et non juste contournée). Chercher toujours la correction structurelle
+  avant le disable.
 
 ## 10. Cours pédagogiques
 

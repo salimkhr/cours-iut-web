@@ -34,27 +34,46 @@ export default function QuizDialog({moduleSlug, sectionSlug, modulePath, open, o
 
     const moduleColor = `var(--color-${modulePath})`;
 
-    async function loadQuestions() {
-        setState("loading");
-        try {
-            const {data} = await axios.get<QuizQuestionClient[]>(`/api/quiz/${moduleSlug}/${sectionSlug}`);
-            setQuestions(data);
+    function fetchQuestions() {
+        return axios.get<QuizQuestionClient[]>(`/api/quiz/${moduleSlug}/${sectionSlug}`)
+            .then(({data}) => {
+                setQuestions(data);
+                setCurrentIndex(0);
+                setCurrentAnswer(null);
+                setFeedback(null);
+                setCollectedAnswers([]);
+                setScore(null);
+                setQuestionResults([]);
+                setState("answering");
+            })
+            .catch(() => {
+                setErrorMsg("Impossible de charger le quiz. Réessayez plus tard.");
+                setState("error");
+            });
+    }
+
+    function handleOpenChange(v: boolean) {
+        if (!v) {
+            setState("loading");
+            setQuestions([]);
             setCurrentIndex(0);
             setCurrentAnswer(null);
             setFeedback(null);
             setCollectedAnswers([]);
             setScore(null);
             setQuestionResults([]);
-            setState("answering");
-        } catch {
-            setErrorMsg("Impossible de charger le quiz. Réessayez plus tard.");
-            setState("error");
+            setErrorMsg("");
         }
+        onOpenChange(v);
+    }
+
+    function handleRetry() {
+        setState("loading");
+        fetchQuestions();
     }
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        if (open) loadQuestions();
+        if (open) fetchQuestions();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
 
@@ -152,7 +171,7 @@ export default function QuizDialog({moduleSlug, sectionSlug, modulePath, open, o
     );
 
     return (
-        <Dialog open={open} onOpenChange={(v) => onOpenChange(v)}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent
                 className={cn(
                     "max-w-md p-0 overflow-hidden",
@@ -189,7 +208,7 @@ export default function QuizDialog({moduleSlug, sectionSlug, modulePath, open, o
                             </DialogTitle>
                             <p className="text-sm text-red-600 dark:text-red-400">{errorMsg}</p>
                             <div className="flex justify-end">
-                                <Button onClick={() => loadQuestions()} style={{backgroundColor: moduleColor}} className="text-white dark:text-brand-dark">
+                                <Button onClick={handleRetry} style={{backgroundColor: moduleColor}} className="text-white dark:text-brand-dark">
                                     Réessayer
                                 </Button>
                             </div>
@@ -284,7 +303,7 @@ export default function QuizDialog({moduleSlug, sectionSlug, modulePath, open, o
                             <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
                             <div className="flex justify-between">
                                 <Button variant="ghost" onClick={() => onOpenChange(false)}>Fermer</Button>
-                                <Button onClick={() => loadQuestions()} style={{backgroundColor: moduleColor}} className="text-white dark:text-brand-dark">
+                                <Button onClick={handleRetry} style={{backgroundColor: moduleColor}} className="text-white dark:text-brand-dark">
                                     Réessayer
                                 </Button>
                             </div>

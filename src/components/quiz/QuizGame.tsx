@@ -1,6 +1,6 @@
 "use client";
 
-import {useCallback, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import type {CSSProperties} from "react";
 import axios from "axios";
 import {useRouter} from "next/navigation";
@@ -33,28 +33,42 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath}: QuizGame
     const moduleColor = `var(--color-${modulePath})`;
     const tpHref = `/${moduleSlug}/${sectionSlug}/TP`;
 
-    const loadQuestions = useCallback(async () => {
+    function handleRetry() {
         setState("loading");
-        try {
-            const {data} = await axios.get<QuizQuestionClient[]>(`/api/quiz/${moduleSlug}/${sectionSlug}`);
-            setQuestions(data);
-            setCurrentIndex(0);
-            setCurrentAnswer(null);
-            setFeedback(null);
-            setCollectedAnswers([]);
-            setScore(null);
-            setQuestionResults([]);
-            setState("answering");
-        } catch {
-            setErrorMsg("Impossible de charger le quiz. Réessayez plus tard.");
-            setState("error");
-        }
-    }, [moduleSlug, sectionSlug]);
+        axios.get<QuizQuestionClient[]>(`/api/quiz/${moduleSlug}/${sectionSlug}`)
+            .then(({data}) => {
+                setQuestions(data);
+                setCurrentIndex(0);
+                setCurrentAnswer(null);
+                setFeedback(null);
+                setCollectedAnswers([]);
+                setScore(null);
+                setQuestionResults([]);
+                setState("answering");
+            })
+            .catch(() => {
+                setErrorMsg("Impossible de charger le quiz. Réessayez plus tard.");
+                setState("error");
+            });
+    }
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        loadQuestions();
-    }, [loadQuestions]);
+        axios.get<QuizQuestionClient[]>(`/api/quiz/${moduleSlug}/${sectionSlug}`)
+            .then(({data}) => {
+                setQuestions(data);
+                setCurrentIndex(0);
+                setCurrentAnswer(null);
+                setFeedback(null);
+                setCollectedAnswers([]);
+                setScore(null);
+                setQuestionResults([]);
+                setState("answering");
+            })
+            .catch(() => {
+                setErrorMsg("Impossible de charger le quiz. Réessayez plus tard.");
+                setState("error");
+            });
+    }, [moduleSlug, sectionSlug]);
 
     async function handleVerify() {
         if (currentAnswer === null) return;
@@ -174,7 +188,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath}: QuizGame
                         </h2>
                         <p className="text-sm text-red-600 dark:text-red-400">{errorMsg}</p>
                         <div className="flex justify-end">
-                            <Button onClick={() => loadQuestions()} style={{backgroundColor: moduleColor}} className="text-white dark:text-brand-dark">
+                            <Button onClick={handleRetry} style={{backgroundColor: moduleColor}} className="text-white dark:text-brand-dark">
                                 Réessayer
                             </Button>
                         </div>
@@ -269,7 +283,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath}: QuizGame
                             <Button variant="ghost" onClick={() => router.push(tpHref)}>
                                 Retour au TP
                             </Button>
-                            <Button onClick={() => loadQuestions()} style={{backgroundColor: moduleColor}} className="text-white dark:text-brand-dark">
+                            <Button onClick={handleRetry} style={{backgroundColor: moduleColor}} className="text-white dark:text-brand-dark">
                                 Réessayer
                             </Button>
                         </div>
