@@ -3,7 +3,6 @@
 import {useEffect, useState} from "react";
 import Link from "next/link";
 import axios from "axios";
-import {useRouter} from "next/navigation";
 import {ArrowLeft, ClipboardCheck} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import QuizQuestion from "@/components/quiz/QuizQuestion";
@@ -20,7 +19,6 @@ interface QuizGameProps {
 }
 
 export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTitle}: QuizGameProps) {
-    const router = useRouter();
     const [state, setState] = useState<QuizState>("loading");
     const [questions, setQuestions] = useState<QuizQuestionClient[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -229,36 +227,31 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
             <div className="flex flex-col pt-(--navbar-h)">
                 {progressBar}
 
-                {/* Lien retour — affiché dans toutes les phases */}
-                <div className="px-12 lg:px-20 pt-8 pb-0">
-                    <Link
-                        href={tpHref}
-                        className="inline-flex items-center gap-1.5 text-sm text-brand-gray-700 dark:text-brand-gray-300 hover:text-brand-dark dark:hover:text-brand-light transition-colors"
-                    >
-                        <ArrowLeft className="w-4 h-4"/>
-                        Retour au TP
-                    </Link>
-                </div>
-
                 {/* LOADING */}
                 {state === "loading" && (
-                    <div className="flex-1 flex flex-col items-center justify-center gap-3">
-                        <div className="flex gap-1.5">
-                            {[0, 1, 2].map(i => (
-                                <span
-                                    key={i}
-                                    className="w-2 h-2 rounded-full animate-pulse"
-                                    style={{backgroundColor: moduleColor, animationDelay: `${i * 150}ms`}}
-                                />
-                            ))}
+                    <div className="flex flex-col flex-1">
+                        <div className="px-12 lg:px-20 pt-8">
+                            <Link href={tpHref} className="inline-flex items-center gap-1.5 text-sm text-brand-gray-700 dark:text-brand-gray-300 hover:text-brand-dark dark:hover:text-brand-light transition-colors">
+                                <ArrowLeft className="w-4 h-4"/>Retour au TP
+                            </Link>
                         </div>
-                        <p className="text-sm text-bridge-600 dark:text-bridge-400">Chargement du quiz…</p>
+                        <div className="flex-1 flex flex-col items-center justify-center gap-3">
+                            <div className="flex gap-1.5">
+                                {[0, 1, 2].map(i => (
+                                    <span key={i} className="w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: moduleColor, animationDelay: `${i * 150}ms`}}/>
+                                ))}
+                            </div>
+                            <p className="text-sm text-bridge-600 dark:text-bridge-400">Chargement du quiz…</p>
+                        </div>
                     </div>
                 )}
 
                 {/* ERROR */}
                 {state === "error" && (
-                    <div className="px-12 lg:px-20 py-12 flex flex-col gap-4">
+                    <div className="px-12 lg:px-20 py-12 flex flex-col gap-6">
+                        <Link href={tpHref} className="inline-flex items-center gap-1.5 text-sm text-brand-gray-700 dark:text-brand-gray-300 hover:text-brand-dark dark:hover:text-brand-light transition-colors">
+                            <ArrowLeft className="w-4 h-4"/>Retour au TP
+                        </Link>
                         <h2 className="text-base font-semibold text-brand-dark dark:text-bridge-100">
                             Quelque chose s&apos;est mal passé
                         </h2>
@@ -274,6 +267,14 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
                 {/* QUIZ — answering / checking / feedback */}
                 {inQuiz && currentQuestion && (
                     <div className="flex flex-col flex-1 justify-center px-12 lg:px-20 py-12 gap-8">
+                        <Link
+                            href={tpHref}
+                            className="inline-flex items-center gap-1.5 text-sm text-brand-gray-700 dark:text-brand-gray-300 hover:text-brand-dark dark:hover:text-brand-light transition-colors w-fit"
+                        >
+                            <ArrowLeft className="w-4 h-4"/>
+                            Retour au TP
+                        </Link>
+
                         <span
                             className="text-xs font-extrabold uppercase tracking-[0.22em]"
                             style={{color: moduleColor}}
@@ -298,12 +299,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
 
                         <div className="flex justify-end max-w-3xl">
                             {state === "feedback" ? (
-                                <Button
-                                    onClick={handleNext}
-                                    size="lg"
-                                    style={{backgroundColor: moduleColor}}
-                                    className="text-white dark:text-brand-dark"
-                                >
+                                <Button onClick={handleNext} size="lg" style={{backgroundColor: moduleColor}} className="text-white dark:text-brand-dark">
                                     {isLastQuestion ? "Terminer" : "Suivant →"}
                                 </Button>
                             ) : (
@@ -323,23 +319,33 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
 
                 {/* COMPLETING */}
                 {state === "completing" && (
-                    <div className="flex-1 flex flex-col items-center justify-center gap-3">
-                        <div className="flex gap-1.5">
-                            {[0, 1, 2].map(i => (
-                                <span
-                                    key={i}
-                                    className="w-2 h-2 rounded-full animate-pulse"
-                                    style={{backgroundColor: moduleColor, animationDelay: `${i * 150}ms`}}
-                                />
-                            ))}
+                    <div className="flex flex-col flex-1">
+                        <div className="px-12 lg:px-20 pt-8">
+                            <Link href={tpHref} className="inline-flex items-center gap-1.5 text-sm text-brand-gray-700 dark:text-brand-gray-300 hover:text-brand-dark dark:hover:text-brand-light transition-colors">
+                                <ArrowLeft className="w-4 h-4"/>Retour au TP
+                            </Link>
                         </div>
-                        <p className="text-sm text-bridge-600 dark:text-bridge-400">Enregistrement des résultats…</p>
+                        <div className="flex-1 flex flex-col items-center justify-center gap-3">
+                            <div className="flex gap-1.5">
+                                {[0, 1, 2].map(i => (
+                                    <span key={i} className="w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: moduleColor, animationDelay: `${i * 150}ms`}}/>
+                                ))}
+                            </div>
+                            <p className="text-sm text-bridge-600 dark:text-bridge-400">Enregistrement des résultats…</p>
+                        </div>
                     </div>
                 )}
 
                 {/* SUMMARY */}
                 {state === "summary" && score && (
                     <div className="flex flex-col flex-1 justify-between px-12 lg:px-20 py-12">
+                        <Link
+                            href={tpHref}
+                            className="inline-flex items-center gap-1.5 text-sm text-brand-gray-700 dark:text-brand-gray-300 hover:text-brand-dark dark:hover:text-brand-light transition-colors w-fit mb-4"
+                        >
+                            <ArrowLeft className="w-4 h-4"/>
+                            Retour au TP
+                        </Link>
                         <div className="flex flex-col gap-1">
                             <span
                                 className="text-xs font-extrabold uppercase tracking-[0.22em]"
@@ -383,10 +389,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
 
                         <div className="h-px bg-bridge-700/15 dark:bg-bridge-500/15 max-w-3xl"/>
 
-                        <div className="flex gap-3">
-                            <Button size="lg" variant="ghost" onClick={() => router.push(tpHref)}>
-                                Retour au TP
-                            </Button>
+                        <div className="flex justify-end">
                             <Button
                                 size="lg"
                                 onClick={handleRetry}
