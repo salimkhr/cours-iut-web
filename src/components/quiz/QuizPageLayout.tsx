@@ -1,8 +1,6 @@
 "use client";
 
 import {ReactNode} from "react";
-import Link from "next/link";
-import {ArrowLeft} from "lucide-react";
 import {useIsDark} from "@/hook/useIsDark";
 import {useMounted} from "@/hook/useMounted";
 import {cn} from "@/lib/utils";
@@ -15,7 +13,13 @@ interface QuizPageLayoutProps {
     children: ReactNode;
 }
 
-export default function QuizPageLayout({moduleSlug, sectionSlug, modulePath, sectionTitle, children}: QuizPageLayoutProps) {
+export default function QuizPageLayout({
+    moduleSlug: _moduleSlug,
+    sectionSlug: _sectionSlug,
+    modulePath,
+    sectionTitle: _sectionTitle,
+    children,
+}: QuizPageLayoutProps) {
     const mounted = useMounted();
     const isDark = useIsDark();
     const heroImage = mounted && isDark
@@ -23,7 +27,6 @@ export default function QuizPageLayout({moduleSlug, sectionSlug, modulePath, sec
         : "/images/header/escalier-light.png";
 
     const moduleColor = `var(--color-${modulePath})`;
-    const tpHref = `/${moduleSlug}/${sectionSlug}/TP`;
 
     return (
         <section
@@ -52,41 +55,20 @@ export default function QuizPageLayout({moduleSlug, sectionSlug, modulePath, sec
                 <div className="absolute top-[70%] left-[44%] w-2 h-2 rounded-full opacity-25" style={{backgroundColor: moduleColor}}/>
             </div>
 
-            <div className="relative z-10 mx-auto w-full max-w-7xl min-h-screen flex items-start lg:items-center justify-center lg:justify-start px-6 lg:pl-12 lg:pr-6 py-12 lg:py-20 opacity-0 animate-fade-in">
-                <div className="w-full">
-                    <Link
-                        href={tpHref}
-                        aria-label={`Retour au TP — ${sectionTitle}`}
-                        className="inline-flex items-center gap-1.5 text-sm text-brand-gray-700 dark:text-brand-gray-300 hover:text-brand-dark dark:hover:text-brand-light mb-6 transition-colors"
-                    >
-                        <ArrowLeft className="w-4 h-4"/>
-                        Retour au TP
-                    </Link>
+            {/* "Quiz." watermark */}
+            <div
+                aria-hidden="true"
+                className="absolute right-6 lg:right-10 z-20 pointer-events-none select-none"
+                style={{top: "calc(var(--navbar-h) + 1.5rem)"}}
+            >
+                <span className="font-extrabold tracking-tight text-4xl sm:text-5xl lg:text-6xl text-brand-dark/[0.06] dark:text-brand-light/[0.06]">
+                    Quiz<span style={{color: moduleColor, opacity: 0.18}}>.</span>
+                </span>
+            </div>
 
-                    <h1 className="font-extrabold tracking-tight leading-[0.95] text-brand-dark dark:text-brand-light text-4xl sm:text-5xl lg:text-6xl text-center lg:text-left">
-                        Quiz<span style={{color: moduleColor}}>.</span>
-                    </h1>
-                    <span
-                        aria-hidden="true"
-                        className="block h-1 w-16 mt-4 rounded-full mx-auto lg:mx-0"
-                        style={{backgroundColor: moduleColor}}
-                    />
-                    <p className="leading-relaxed text-brand-gray-700 dark:text-brand-gray-300 mt-4 text-sm sm:text-base max-w-prose mx-auto lg:mx-0 text-center lg:text-left">
-                        {sectionTitle}
-                    </p>
-
-                    <div className={cn(
-                        "mt-7 rounded-2xl overflow-hidden",
-                        "bg-bridge-50/85 border border-bridge-400/40",
-                        "dark:bg-bridge-800/80 dark:border-bridge-500/45",
-                        "shadow-[0_12px_32px_-12px_rgba(147,97,58,0.45)]",
-                        "dark:shadow-[0_12px_32px_-12px_rgba(0,0,0,0.7)]",
-                        "backdrop-blur-md",
-                        "lg:max-w-[560px]",
-                    )}>
-                        {children}
-                    </div>
-                </div>
+            {/* Contenu plein écran */}
+            <div className="relative z-10 min-h-screen">
+                {children}
             </div>
         </section>
     );
