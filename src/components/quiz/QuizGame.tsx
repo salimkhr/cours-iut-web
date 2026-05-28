@@ -168,26 +168,26 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
         >
             <div aria-hidden="true" className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"/>
 
-            <div className="flex flex-col items-center w-full pt-(--navbar-h) pb-4 gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-                    <ClipboardCheck className="w-4 h-4 text-white" aria-hidden="true"/>
+            <div className="flex flex-col items-center w-full pt-(--navbar-h) pb-6 gap-4">
+                <div className="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
+                    <ClipboardCheck className="w-5 h-5 text-white" aria-hidden="true"/>
                 </div>
 
-                <p className="text-[8px] font-extrabold uppercase tracking-widest text-white/55 text-center px-1 leading-tight">
+                <p className="text-[10px] font-extrabold uppercase tracking-widest text-white/60 text-center px-2 leading-snug">
                     {moduleTitle}
                 </p>
 
                 <div
-                    className="w-11 h-11 rounded-full flex items-center justify-center relative shrink-0"
+                    className="w-16 h-16 rounded-full flex items-center justify-center relative shrink-0"
                     style={{background: `conic-gradient(rgba(255,255,255,0.85) 0deg ${arcDeg}deg, rgba(255,255,255,0.2) ${arcDeg}deg 360deg)`}}
                     aria-label={`Progression : ${arcLabel}`}
                 >
-                    <div className="absolute w-8 h-8 rounded-full" style={{backgroundColor: moduleColor}}/>
-                    <span className="relative z-10 text-[8px] font-black text-white leading-none select-none">{arcLabel}</span>
+                    <div className="absolute w-12 h-12 rounded-full" style={{backgroundColor: moduleColor}}/>
+                    <span className="relative z-10 text-xs font-black text-white leading-none select-none">{arcLabel}</span>
                 </div>
 
                 {questions.length > 0 && (
-                    <div className="flex flex-col gap-1" aria-hidden="true">
+                    <div className="flex flex-col gap-1.5" aria-hidden="true">
                         {questions.map((_, i) => {
                             const isDone = i < currentIndex || state === "summary" || state === "completing";
                             const isCurr = i === currentIndex && state !== "summary" && state !== "completing";
@@ -196,7 +196,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
                                     key={i}
                                     style={isDone ? {color: moduleColor} : {}}
                                     className={cn(
-                                        "w-6 h-5 rounded-md flex items-center justify-center text-[8px] font-bold select-none",
+                                        "w-14 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold select-none",
                                         isDone ? "bg-white/85"
                                             : isCurr ? "bg-white/40 text-white"
                                             : "bg-white/20 text-white/50"
@@ -212,11 +212,11 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
                 <div className="flex-1"/>
 
                 <div
-                    className="w-9 h-9 rounded-full border-2 border-white/25 bg-black/10 flex flex-col items-center justify-center"
+                    className="w-12 h-12 rounded-full border-2 border-white/25 bg-black/10 flex flex-col items-center justify-center"
                     aria-label={`${correctCount} bonne${correctCount > 1 ? "s" : ""} réponse${correctCount > 1 ? "s" : ""}`}
                 >
-                    <span className="text-sm font-black text-white leading-none">{correctCount}</span>
-                    <span className="text-[6px] text-white/55 uppercase tracking-wider">pts</span>
+                    <span className="text-base font-black text-white leading-none">{correctCount}</span>
+                    <span className="text-[8px] text-white/55 uppercase tracking-wider">pts</span>
                 </div>
             </div>
         </aside>
