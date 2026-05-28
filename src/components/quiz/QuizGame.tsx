@@ -230,7 +230,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
                 {progressBar}
 
                 {/* Lien retour — affiché dans toutes les phases */}
-                <div className="px-10 lg:px-16 pt-6 pb-0">
+                <div className="px-12 lg:px-20 pt-8 pb-0">
                     <Link
                         href={tpHref}
                         className="inline-flex items-center gap-1.5 text-sm text-brand-gray-700 dark:text-brand-gray-300 hover:text-brand-dark dark:hover:text-brand-light transition-colors"
@@ -258,7 +258,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
 
                 {/* ERROR */}
                 {state === "error" && (
-                    <div className="px-10 lg:px-16 py-10 flex flex-col gap-4">
+                    <div className="px-12 lg:px-20 py-12 flex flex-col gap-4">
                         <h2 className="text-base font-semibold text-brand-dark dark:text-bridge-100">
                             Quelque chose s&apos;est mal passé
                         </h2>
@@ -273,20 +273,20 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
 
                 {/* QUIZ — answering / checking / feedback */}
                 {inQuiz && currentQuestion && (
-                    <div className="flex flex-col gap-6 px-10 lg:px-16 pt-8 pb-12">
+                    <div className="flex flex-col flex-1 gap-10 px-12 lg:px-20 pt-12 pb-16">
                         <div className="flex items-center justify-between">
                             <span
-                                className="text-sm font-extrabold uppercase tracking-[0.16em]"
+                                className="text-xs font-extrabold uppercase tracking-[0.22em]"
                                 style={{color: moduleColor}}
                             >
-                                Question
+                                Question {currentIndex + 1}
                             </span>
-                            <span className="text-sm text-bridge-500 dark:text-bridge-400">
+                            <span className="text-xs text-bridge-500 dark:text-bridge-400 font-medium">
                                 {currentIndex + 1} / {questions.length}
                             </span>
                         </div>
 
-                        <h2 className="text-xl lg:text-2xl font-bold leading-snug text-brand-dark dark:text-bridge-100">
+                        <h2 className="text-2xl lg:text-3xl xl:text-4xl font-bold leading-snug text-brand-dark dark:text-bridge-100 max-w-3xl">
                             {currentQuestion.text}
                         </h2>
 
@@ -301,10 +301,11 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
                             correctAnswer={state === "feedback" && feedback ? feedback.correctAnswer : undefined}
                         />
 
-                        <div className="flex justify-end pt-1">
+                        <div className="flex justify-end">
                             {state === "feedback" ? (
                                 <Button
                                     onClick={handleNext}
+                                    size="lg"
                                     style={{backgroundColor: moduleColor}}
                                     className="text-white dark:text-brand-dark"
                                 >
@@ -313,6 +314,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
                             ) : (
                                 <Button
                                     onClick={handleVerify}
+                                    size="lg"
                                     disabled={currentAnswer === null || state === "checking"}
                                     style={currentAnswer !== null ? {backgroundColor: moduleColor} : {}}
                                     className="text-white dark:text-brand-dark"
@@ -342,39 +344,56 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
 
                 {/* SUMMARY */}
                 {state === "summary" && score && (
-                    <div className="flex flex-col gap-5 px-10 lg:px-16 pt-8 pb-12">
-                        <span
-                            className="text-sm font-extrabold uppercase tracking-widest"
-                            style={{color: moduleColor}}
-                        >
-                            Récapitulatif
-                        </span>
+                    <div className="flex flex-col flex-1 gap-10 px-12 lg:px-20 pt-12 pb-16">
+                        <div className="flex flex-col gap-1">
+                            <span
+                                className="text-xs font-extrabold uppercase tracking-[0.22em]"
+                                style={{color: moduleColor}}
+                            >
+                                Récapitulatif
+                            </span>
+                            <p className="text-4xl lg:text-5xl font-black text-brand-dark dark:text-bridge-100 leading-none mt-3">
+                                {score.score}
+                                <span className="text-2xl lg:text-3xl font-bold text-bridge-400 dark:text-bridge-500">
+                                    {" "}/ {score.total}
+                                </span>
+                            </p>
+                            <p className="text-base text-bridge-600 dark:text-bridge-400 mt-1">
+                                {score.score === score.total
+                                    ? "Parfait, toutes les réponses sont correctes !"
+                                    : score.score === 0
+                                        ? "Aucune bonne réponse — réessaie !"
+                                        : `${score.score} bonne${score.score > 1 ? "s" : ""} réponse${score.score > 1 ? "s" : ""} sur ${score.total}`
+                                }
+                            </p>
+                        </div>
 
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-3 max-w-3xl">
                             {questions.map((q, i) => (
-                                <div key={q.id} className="flex items-center gap-3">
+                                <div key={q.id} className="flex items-start gap-3">
                                     <span className={cn(
-                                        "w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0",
+                                        "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5",
                                         questionResults[i]
                                             ? "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-400"
                                             : "bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400"
                                     )}>
                                         {questionResults[i] ? "✓" : "✗"}
                                     </span>
-                                    <span className="text-sm text-brand-dark dark:text-bridge-200 truncate leading-snug">
+                                    <span className="text-base text-brand-dark dark:text-bridge-200 leading-snug">
                                         {q.text}
                                     </span>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="h-px bg-bridge-700/15 dark:bg-bridge-500/15"/>
+                        <div className="h-px bg-bridge-700/15 dark:bg-bridge-500/15 max-w-3xl"/>
 
-                        <div className="flex justify-between items-center">
-                            <Button variant="ghost" onClick={() => router.push(tpHref)}>
+                        <div className="flex gap-3">
+                            <Button size="lg" variant="ghost" onClick={() => router.push(tpHref)}>
                                 Retour au TP
                             </Button>
                             <Button
+                                size="lg"
                                 onClick={handleRetry}
                                 style={{backgroundColor: moduleColor}}
                                 className="text-white dark:text-brand-dark"
