@@ -273,18 +273,13 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
 
                 {/* QUIZ — answering / checking / feedback */}
                 {inQuiz && currentQuestion && (
-                    <div className="flex flex-col flex-1 gap-10 px-12 lg:px-20 pt-12 pb-16">
-                        <div className="flex items-center justify-between">
-                            <span
-                                className="text-xs font-extrabold uppercase tracking-[0.22em]"
-                                style={{color: moduleColor}}
-                            >
-                                Question {currentIndex + 1}
-                            </span>
-                            <span className="text-xs text-bridge-500 dark:text-bridge-400 font-medium">
-                                {currentIndex + 1} / {questions.length}
-                            </span>
-                        </div>
+                    <div className="flex flex-col flex-1 justify-center px-12 lg:px-20 py-12 gap-8">
+                        <span
+                            className="text-xs font-extrabold uppercase tracking-[0.22em]"
+                            style={{color: moduleColor}}
+                        >
+                            Question {currentIndex + 1} / {questions.length}
+                        </span>
 
                         <h2 className="text-2xl lg:text-3xl xl:text-4xl font-bold leading-snug text-brand-dark dark:text-bridge-100 max-w-3xl">
                             {currentQuestion.text}
@@ -301,7 +296,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
                             correctAnswer={state === "feedback" && feedback ? feedback.correctAnswer : undefined}
                         />
 
-                        <div className="flex justify-end">
+                        <div className="flex justify-end max-w-3xl">
                             {state === "feedback" ? (
                                 <Button
                                     onClick={handleNext}
@@ -344,7 +339,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
 
                 {/* SUMMARY */}
                 {state === "summary" && score && (
-                    <div className="flex flex-col flex-1 gap-10 px-12 lg:px-20 pt-12 pb-16">
+                    <div className="flex flex-col flex-1 justify-between px-12 lg:px-20 py-12">
                         <div className="flex flex-col gap-1">
                             <span
                                 className="text-xs font-extrabold uppercase tracking-[0.22em]"
