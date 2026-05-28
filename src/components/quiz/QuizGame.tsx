@@ -223,7 +223,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
     );
 
     return (
-        <div className="grid grid-cols-[56px_1fr] min-h-screen">
+        <div className="grid grid-cols-[112px_1fr] min-h-screen">
             {sidebar}
 
             <div className="flex flex-col pt-(--navbar-h)">
