@@ -43,6 +43,7 @@ export default async function QuizPage({params}: QuizPageProps) {
                 moduleSlug={moduleSlug}
                 sectionSlug={sectionSlug}
                 modulePath={currentModule.path}
+                moduleTitle={currentModule.title}
             />
         </QuizPageLayout>
     );

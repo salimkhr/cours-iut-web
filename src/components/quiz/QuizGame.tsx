@@ -16,9 +16,10 @@ interface QuizGameProps {
     moduleSlug: string;
     sectionSlug: string;
     modulePath: string;
+    moduleTitle: string;
 }
 
-export default function QuizGame({moduleSlug, sectionSlug, modulePath}: QuizGameProps) {
+export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTitle: _moduleTitle}: QuizGameProps) {
     const router = useRouter();
     const [state, setState] = useState<QuizState>("loading");
     const [questions, setQuestions] = useState<QuizQuestionClient[]>([]);
