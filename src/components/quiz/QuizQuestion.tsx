@@ -67,7 +67,7 @@ export default function QuizQuestion({
         }
 
         return (
-            <div role="radiogroup" aria-label="Choix de réponse" className="flex gap-2">
+            <div role="radiogroup" aria-label="Choix de réponse" className="flex gap-2 max-w-2xl">
                 {opts.map(({label, value}) => {
                     const s = tfState(value);
                     return (
@@ -107,7 +107,7 @@ export default function QuizQuestion({
         }
 
         return (
-            <div role="radiogroup" aria-label="Choix de réponse" className="flex flex-col gap-1.5">
+            <div role="radiogroup" aria-label="Choix de réponse" className="flex flex-col gap-1.5 max-w-2xl">
                 {(question.choices ?? []).map((choice, idx) => {
                     const s = mcqState(idx);
                     return (
@@ -146,7 +146,7 @@ export default function QuizQuestion({
     }
 
     return (
-        <div aria-label="Choix de réponse (plusieurs réponses possibles)" className="flex flex-col gap-1.5">
+        <div aria-label="Choix de réponse (plusieurs réponses possibles)" className="flex flex-col gap-1.5 max-w-2xl">
             {(question.choices ?? []).map((choice, idx) => {
                 const s = multiState(idx);
                 const isSel = multiSelected.includes(idx);
