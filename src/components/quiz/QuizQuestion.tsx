@@ -37,8 +37,8 @@ export default function QuizQuestion({
             case "correct": return "border-green-500 bg-green-50 dark:bg-green-950/25 text-green-900 dark:text-green-100";
             case "wrong":   return "border-red-500 bg-red-50 dark:bg-red-950/25 text-red-900 dark:text-red-100";
             case "dimmed":  return "border-border opacity-35 cursor-not-allowed";
-            case "selected": return "border-2 bg-bridge-50 dark:bg-bridge-900/60";
-            default:        return "border-border bg-white/65 dark:bg-bridge-800/30 hover:bg-bridge-50 dark:hover:bg-bridge-800/50 cursor-pointer";
+            case "selected": return "border-2 bg-bridge-50/90 dark:bg-bridge-900/90";
+            default:        return "border-border bg-white/75 dark:bg-bridge-800/75 hover:bg-white/90 dark:hover:bg-bridge-800/90 cursor-pointer";
         }
     }
 
