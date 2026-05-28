@@ -1,7 +1,6 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import type {CSSProperties} from "react";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 import {ClipboardCheck} from "lucide-react";
@@ -228,7 +227,6 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
 
     return (
         <div
-            style={{"--module-color": moduleColor} as CSSProperties}
             className="grid grid-cols-1 sm:grid-cols-[72px_1fr]"
         >
             {sidebar}
