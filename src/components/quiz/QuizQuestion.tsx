@@ -107,12 +107,13 @@ export default function QuizQuestion({
         }
 
         return (
-            <div role="radiogroup" aria-label="Choix de réponse" className="flex flex-col gap-1.5 max-w-2xl">
-                {(question.choices ?? []).map((choice, idx) => {
-                    const s = mcqState(idx);
-                    return (
-                        <div key={idx} className="flex flex-col">
+            <div className="flex flex-col gap-2 max-w-2xl">
+                <div role="radiogroup" aria-label="Choix de réponse" className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    {(question.choices ?? []).map((choice, idx) => {
+                        const s = mcqState(idx);
+                        return (
                             <button
+                                key={idx}
                                 type="button"
                                 role="radio"
                                 aria-checked={selected === String(idx)}
@@ -124,14 +125,14 @@ export default function QuizQuestion({
                                 <span className="flex-1">{choice}</span>
                                 {stateIcon(s)}
                             </button>
-                            {s === "correct" && hasFeedback && explanation && (
-                                <p className="text-xs pl-5 py-1 leading-relaxed text-green-800/80 dark:text-green-300/70">
-                                    {explanation}
-                                </p>
-                            )}
-                        </div>
-                    );
-                })}
+                        );
+                    })}
+                </div>
+                {hasFeedback && explanation && (
+                    <p className="text-xs px-3 py-2 leading-relaxed text-green-800/80 dark:text-green-300/70 bg-green-50/50 dark:bg-green-950/20 rounded-lg">
+                        {explanation}
+                    </p>
+                )}
             </div>
         );
     }
@@ -146,48 +147,50 @@ export default function QuizQuestion({
     }
 
     return (
-        <div aria-label="Choix de réponse (plusieurs réponses possibles)" className="flex flex-col gap-1.5 max-w-2xl">
-            {(question.choices ?? []).map((choice, idx) => {
-                const s = multiState(idx);
-                const isSel = multiSelected.includes(idx);
-                return (
-                    <button
-                        key={idx}
-                        type="button"
-                        aria-pressed={isSel}
-                        aria-disabled={s === "dimmed" ? true : undefined}
-                        onClick={() => {
-                            if (disabled) return;
-                            const next = isSel
-                                ? multiSelected.filter(i => i !== idx)
-                                : [...multiSelected, idx];
-                            setMultiSelected(next);
-                            onAnswer(next);
-                        }}
-                        className={cn(base, stateClass(s))}
-                        style={stateStyle(s)}
-                    >
-                        <span className="flex items-center gap-2.5 flex-1">
-                            <span
-                                className={cn(
-                                    "w-4 h-4 rounded border-[1.5px] flex items-center justify-center shrink-0 transition-colors",
-                                    s === "correct" ? "border-green-500 bg-green-500"
-                                    : s === "wrong" ? "border-red-500 bg-red-500"
-                                    : isSel ? "border-current"
-                                    : "border-border"
-                                )}
-                                style={s === "selected" ? {borderColor: moduleColor, backgroundColor: moduleColor} : {}}
-                            >
-                                {(isSel || s === "correct") && <Check className="w-2 h-2 text-white"/>}
+        <div aria-label="Choix de réponse (plusieurs réponses possibles)" className="flex flex-col gap-2 max-w-2xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                {(question.choices ?? []).map((choice, idx) => {
+                    const s = multiState(idx);
+                    const isSel = multiSelected.includes(idx);
+                    return (
+                        <button
+                            key={idx}
+                            type="button"
+                            aria-pressed={isSel}
+                            aria-disabled={s === "dimmed" ? true : undefined}
+                            onClick={() => {
+                                if (disabled) return;
+                                const next = isSel
+                                    ? multiSelected.filter(i => i !== idx)
+                                    : [...multiSelected, idx];
+                                setMultiSelected(next);
+                                onAnswer(next);
+                            }}
+                            className={cn(base, stateClass(s))}
+                            style={stateStyle(s)}
+                        >
+                            <span className="flex items-center gap-2.5 flex-1">
+                                <span
+                                    className={cn(
+                                        "w-4 h-4 rounded border-[1.5px] flex items-center justify-center shrink-0 transition-colors",
+                                        s === "correct" ? "border-green-500 bg-green-500"
+                                        : s === "wrong" ? "border-red-500 bg-red-500"
+                                        : isSel ? "border-current"
+                                        : "border-border"
+                                    )}
+                                    style={s === "selected" ? {borderColor: moduleColor, backgroundColor: moduleColor} : {}}
+                                >
+                                    {(isSel || s === "correct") && <Check className="w-2 h-2 text-white"/>}
+                                </span>
+                                {choice}
                             </span>
-                            {choice}
-                        </span>
-                        {stateIcon(s)}
-                    </button>
-                );
-            })}
+                            {stateIcon(s)}
+                        </button>
+                    );
+                })}
+            </div>
             {hasFeedback && explanation && (
-                <p className="text-xs px-3 py-2 leading-relaxed text-green-800/80 dark:text-green-300/70 bg-green-50/50 dark:bg-green-950/20 rounded-lg mt-0.5">
+                <p className="text-xs px-3 py-2 leading-relaxed text-green-800/80 dark:text-green-300/70 bg-green-50/50 dark:bg-green-950/20 rounded-lg">
                     {explanation}
                 </p>
             )}
