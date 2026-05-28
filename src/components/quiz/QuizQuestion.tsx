@@ -27,8 +27,8 @@ export default function QuizQuestion({
     const hasFeedback = feedbackIsCorrect !== undefined;
 
     const base = [
-        "w-full text-left px-3 py-2 rounded-lg border-[1.5px] text-xs",
-        "flex items-center gap-2 transition-colors duration-150",
+        "w-full text-left px-4 py-3 rounded-xl border-[1.5px] text-sm",
+        "flex items-center gap-3 transition-colors duration-150",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
     ].join(" ");
 
@@ -48,8 +48,8 @@ export default function QuizQuestion({
     }
 
     function stateIcon(state: ChoiceState) {
-        if (state === "correct") return <CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0"/>;
-        if (state === "wrong")   return <XCircle className="w-3.5 h-3.5 text-red-500 shrink-0"/>;
+        if (state === "correct") return <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0"/>;
+        if (state === "wrong")   return <XCircle className="w-4 h-4 text-red-500 shrink-0"/>;
         return null;
     }
 
@@ -85,7 +85,7 @@ export default function QuizQuestion({
                                 {stateIcon(s)}
                             </button>
                             {s === "correct" && hasFeedback && explanation && (
-                                <p className="text-[10px] px-2 pb-1 leading-relaxed text-green-800/80 dark:text-green-300/70">
+                                <p className="text-xs px-2 pb-1 leading-relaxed text-green-800/80 dark:text-green-300/70">
                                     {explanation}
                                 </p>
                             )}
@@ -125,7 +125,7 @@ export default function QuizQuestion({
                                 {stateIcon(s)}
                             </button>
                             {s === "correct" && hasFeedback && explanation && (
-                                <p className="text-[10px] pl-5 py-1 leading-relaxed text-green-800/80 dark:text-green-300/70">
+                                <p className="text-xs pl-5 py-1 leading-relaxed text-green-800/80 dark:text-green-300/70">
                                     {explanation}
                                 </p>
                             )}
@@ -170,7 +170,7 @@ export default function QuizQuestion({
                         <span className="flex items-center gap-2.5 flex-1">
                             <span
                                 className={cn(
-                                    "w-3.5 h-3.5 rounded border-[1.5px] flex items-center justify-center shrink-0 transition-colors",
+                                    "w-4 h-4 rounded border-[1.5px] flex items-center justify-center shrink-0 transition-colors",
                                     s === "correct" ? "border-green-500 bg-green-500"
                                     : s === "wrong" ? "border-red-500 bg-red-500"
                                     : isSel ? "border-current"
@@ -187,7 +187,7 @@ export default function QuizQuestion({
                 );
             })}
             {hasFeedback && explanation && (
-                <p className="text-[10px] px-2 py-1 leading-relaxed text-green-800/80 dark:text-green-300/70 bg-green-50/50 dark:bg-green-950/20 rounded-lg mt-0.5">
+                <p className="text-xs px-3 py-2 leading-relaxed text-green-800/80 dark:text-green-300/70 bg-green-50/50 dark:bg-green-950/20 rounded-lg mt-0.5">
                     {explanation}
                 </p>
             )}

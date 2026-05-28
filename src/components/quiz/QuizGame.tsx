@@ -230,7 +230,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
                 {progressBar}
 
                 {/* Lien retour — affiché dans toutes les phases */}
-                <div className="px-8 lg:px-12 pt-5 pb-0">
+                <div className="px-10 lg:px-16 pt-6 pb-0">
                     <Link
                         href={tpHref}
                         className="inline-flex items-center gap-1.5 text-sm text-brand-gray-700 dark:text-brand-gray-300 hover:text-brand-dark dark:hover:text-brand-light transition-colors"
@@ -258,7 +258,7 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
 
                 {/* ERROR */}
                 {state === "error" && (
-                    <div className="px-8 lg:px-12 py-8 flex flex-col gap-4 max-w-2xl">
+                    <div className="px-10 lg:px-16 py-10 flex flex-col gap-4">
                         <h2 className="text-base font-semibold text-brand-dark dark:text-bridge-100">
                             Quelque chose s&apos;est mal passé
                         </h2>
@@ -273,20 +273,20 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
 
                 {/* QUIZ — answering / checking / feedback */}
                 {inQuiz && currentQuestion && (
-                    <div className="flex flex-col gap-5 px-8 lg:px-12 pt-6 pb-10 max-w-2xl">
+                    <div className="flex flex-col gap-6 px-10 lg:px-16 pt-8 pb-12">
                         <div className="flex items-center justify-between">
                             <span
-                                className="text-xs font-extrabold uppercase tracking-[0.16em]"
+                                className="text-sm font-extrabold uppercase tracking-[0.16em]"
                                 style={{color: moduleColor}}
                             >
                                 Question
                             </span>
-                            <span className="text-xs text-bridge-500 dark:text-bridge-400">
+                            <span className="text-sm text-bridge-500 dark:text-bridge-400">
                                 {currentIndex + 1} / {questions.length}
                             </span>
                         </div>
 
-                        <h2 className="text-base lg:text-lg font-bold leading-snug text-brand-dark dark:text-bridge-100">
+                        <h2 className="text-xl lg:text-2xl font-bold leading-snug text-brand-dark dark:text-bridge-100">
                             {currentQuestion.text}
                         </h2>
 
@@ -342,9 +342,9 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
 
                 {/* SUMMARY */}
                 {state === "summary" && score && (
-                    <div className="flex flex-col gap-5 px-8 lg:px-12 pt-6 pb-10 max-w-2xl">
+                    <div className="flex flex-col gap-5 px-10 lg:px-16 pt-8 pb-12">
                         <span
-                            className="text-xs font-extrabold uppercase tracking-widest"
+                            className="text-sm font-extrabold uppercase tracking-widest"
                             style={{color: moduleColor}}
                         >
                             Récapitulatif
