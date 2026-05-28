@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import type {CSSProperties} from "react";
 import axios from "axios";
 import {useRouter} from "next/navigation";
-import {CheckCircle2, ClipboardCheck, XCircle} from "lucide-react";
+import {ClipboardCheck} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import QuizQuestion from "@/components/quiz/QuizQuestion";
 import {QuizAnswer, QuizCheckResult, QuizQuestionClient} from "@/types/Quiz";
@@ -19,7 +19,7 @@ interface QuizGameProps {
     moduleTitle: string;
 }
 
-export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTitle: _moduleTitle}: QuizGameProps) {
+export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTitle}: QuizGameProps) {
     const router = useRouter();
     const [state, setState] = useState<QuizState>("loading");
     const [questions, setQuestions] = useState<QuizQuestionClient[]>([]);
@@ -116,74 +116,147 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
     const isLastQuestion = currentIndex === questions.length - 1;
     const currentQuestion = questions[currentIndex];
     const inQuiz = state === "answering" || state === "checking" || state === "feedback";
+    const correctCount = questionResults.filter(Boolean).length;
 
+    // Arc de progression — degré de remplissage du conic-gradient
+    const arcDeg = (() => {
+        if (questions.length === 0) return 0;
+        switch (state) {
+            case "feedback":   return Math.round(((currentIndex + 1) / questions.length) * 360);
+            case "completing":
+            case "summary":    return 360;
+            default:           return Math.round((currentIndex / questions.length) * 360);
+        }
+    })();
 
-    const headerSubtitle = inQuiz
-        ? `Question ${currentIndex + 1} / ${questions.length}`
-        : state === "summary" && score
-            ? `${score.score} / ${score.total}`
-            : state === "error" ? "Erreur" : null;
+    const arcLabel = (() => {
+        if (questions.length === 0) return "—";
+        if (state === "summary" || state === "completing") return `${questions.length}/${questions.length}`;
+        if (state === "feedback") return `${currentIndex + 1}/${questions.length}`;
+        return `${currentIndex}/${questions.length}`;
+    })();
 
-    const header = (
-        <div className={cn("relative flex items-center gap-4 px-6 py-4 overflow-hidden", `bg-${modulePath}`)}>
-            <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"/>
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 shrink-0">
-                <ClipboardCheck className="w-5 h-5 text-white" aria-hidden="true"/>
+    // ── Sidebar (visible sm+) ─────────────────────────────────────
+    const sidebar = (
+        <aside
+            className="hidden sm:flex flex-col items-center py-4 gap-2.5 relative overflow-hidden"
+            style={{backgroundColor: moduleColor}}
+            aria-label="Progression du quiz"
+        >
+            <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"/>
+
+            {/* Icône */}
+            <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                <ClipboardCheck className="w-4 h-4 text-white" aria-hidden="true"/>
             </div>
-            <div className="flex-1 min-w-0">
-                <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/60">Quiz</p>
-                {headerSubtitle && (
-                    <p className="text-white font-bold text-xl leading-tight">{headerSubtitle}</p>
-                )}
+
+            {/* Nom du module */}
+            <p className="text-[8px] font-extrabold uppercase tracking-widest text-white/55 text-center px-1 leading-tight">
+                {moduleTitle}
+            </p>
+
+            {/* Arc de progression */}
+            <div
+                className="w-11 h-11 rounded-full flex items-center justify-center relative shrink-0"
+                style={{background: `conic-gradient(rgba(255,255,255,0.85) 0deg ${arcDeg}deg, rgba(255,255,255,0.2) ${arcDeg}deg 360deg)`}}
+                aria-label={`Progression : ${arcLabel}`}
+            >
+                <div className="absolute w-8 h-8 rounded-full" style={{backgroundColor: moduleColor}}/>
+                <span className="relative z-10 text-[8px] font-black text-white leading-none select-none">{arcLabel}</span>
             </div>
-        </div>
+
+            {/* Étapes */}
+            {questions.length > 0 && (
+                <div className="flex flex-col gap-1" aria-hidden="true">
+                    {questions.map((_, i) => {
+                        const isDone = i < currentIndex || state === "summary" || state === "completing";
+                        const isCurr = i === currentIndex && state !== "summary" && state !== "completing";
+                        return (
+                            <div
+                                key={i}
+                                style={isDone ? {color: moduleColor} : {}}
+                                className={cn(
+                                    "w-6 h-5 rounded-md flex items-center justify-center text-[8px] font-bold select-none",
+                                    isDone ? "bg-white/85"
+                                        : isCurr ? "bg-white/40 text-white"
+                                        : "bg-white/20 text-white/50"
+                                )}
+                            >
+                                {isDone ? "✓" : i + 1}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            <div className="flex-1"/>
+
+            {/* Score live */}
+            <div
+                className="w-9 h-9 rounded-full border-2 border-white/25 bg-black/10 flex flex-col items-center justify-center"
+                aria-label={`${correctCount} bonne${correctCount > 1 ? "s" : ""} réponse${correctCount > 1 ? "s" : ""}`}
+            >
+                <span className="text-sm font-black text-white leading-none">{correctCount}</span>
+                <span className="text-[6px] text-white/55 uppercase tracking-wider">pts</span>
+            </div>
+        </aside>
     );
 
-    const progressBar = (total: number, filledCount: number, results?: boolean[]) => (
-        <div className="flex gap-1 px-6" aria-hidden="true">
-            {Array.from({length: total}).map((_, i) => {
-                let segColor: string | undefined;
-                if (results && i < results.length) {
-                    segColor = results[i] ? "#22c55e" : "#ef4444";
-                } else if (i < filledCount) {
-                    segColor = moduleColor;
-                }
+    // ── Barre de progression mobile (cachée sm+) ──────────────────
+    const mobileProgress = questions.length > 0 ? (
+        <div className="sm:hidden flex gap-1 px-4 pt-2" aria-hidden="true">
+            {questions.map((_, i) => {
+                const filledCount = state === "feedback" ? currentIndex + 1 : currentIndex;
+                const isSummary = state === "summary";
                 return (
                     <div
                         key={i}
                         className={cn(
                             "h-1.5 flex-1 rounded-full transition-colors duration-300",
-                            segColor ? "" : "bg-bridge-700/20 dark:bg-bridge-500/20"
+                            !isSummary && i >= filledCount ? "bg-bridge-700/20 dark:bg-bridge-500/20" : ""
                         )}
-                        style={segColor ? {backgroundColor: segColor} : {}}
+                        style={
+                            isSummary
+                                ? {backgroundColor: questionResults[i] ? "#22c55e" : "#ef4444"}
+                                : i < filledCount ? {backgroundColor: moduleColor} : {}
+                        }
                     />
                 );
             })}
         </div>
-    );
+    ) : null;
 
     return (
-        <div style={{"--module-color": moduleColor} as CSSProperties}>
-            {/* LOADING */}
-            {state === "loading" && (
-                <>
-                    {header}
-                    <div className="px-6 py-10 flex flex-col items-center gap-3">
-                        <div className="flex gap-1.5">
-                            {[0, 1, 2].map(i => (
-                                <span key={i} className="w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: moduleColor, animationDelay: `${i * 150}ms`}}/>
-                            ))}
-                        </div>
-                        <p className="text-sm text-bridge-600 dark:text-bridge-400">Chargement du quiz…</p>
-                    </div>
-                </>
-            )}
+        <div
+            style={{"--module-color": moduleColor} as CSSProperties}
+            className="grid grid-cols-1 sm:grid-cols-[72px_1fr]"
+        >
+            {sidebar}
 
-            {/* ERROR */}
-            {state === "error" && (
-                <>
-                    {header}
-                    <div className="px-6 py-5 flex flex-col gap-4">
+            <div className="flex flex-col">
+
+                {/* LOADING */}
+                {state === "loading" && (
+                    <>
+                        {mobileProgress}
+                        <div className="px-4 py-10 flex flex-col items-center gap-3">
+                            <div className="flex gap-1.5">
+                                {[0, 1, 2].map(i => (
+                                    <span
+                                        key={i}
+                                        className="w-2 h-2 rounded-full animate-pulse"
+                                        style={{backgroundColor: moduleColor, animationDelay: `${i * 150}ms`}}
+                                    />
+                                ))}
+                            </div>
+                            <p className="text-sm text-bridge-600 dark:text-bridge-400">Chargement du quiz…</p>
+                        </div>
+                    </>
+                )}
+
+                {/* ERROR */}
+                {state === "error" && (
+                    <div className="px-4 py-5 flex flex-col gap-4">
                         <h2 className="text-base font-semibold text-brand-dark dark:text-bridge-100">
                             Quelque chose s&apos;est mal passé
                         </h2>
@@ -194,103 +267,131 @@ export default function QuizGame({moduleSlug, sectionSlug, modulePath, moduleTit
                             </Button>
                         </div>
                     </div>
-                </>
-            )}
+                )}
 
-            {/* QUIZ — answering / checking / feedback */}
-            {inQuiz && currentQuestion && (
-                <>
-                    {header}
-                    {progressBar(questions.length, state === "feedback" ? currentIndex + 1 : currentIndex)}
-                    <div className="px-6 pb-6 pt-4 flex flex-col gap-4">
-                        <h2 className="text-base font-semibold leading-snug text-brand-dark dark:text-bridge-100">
-                            {currentQuestion.text}
-                        </h2>
-
-                        <QuizQuestion
-                            key={currentQuestion.id}
-                            question={currentQuestion}
-                            onAnswer={(answer) => setCurrentAnswer(answer)}
-                            disabled={state === "checking" || state === "feedback"}
-                            feedbackIsCorrect={state === "feedback" && feedback ? feedback.isCorrect : undefined}
-                            moduleColor={moduleColor}
-                        />
-
-                        {state === "feedback" && feedback && (
-                            <div className={cn(
-                                "flex items-start gap-2.5 rounded-lg px-3.5 py-3 text-sm",
-                                feedback.isCorrect
-                                    ? "bg-green-50 dark:bg-green-950/25 text-green-900 dark:text-green-100"
-                                    : "bg-red-50 dark:bg-red-950/25 text-red-900 dark:text-red-100"
-                            )}>
-                                {feedback.isCorrect
-                                    ? <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5"/>
-                                    : <XCircle className="w-4 h-4 text-red-500 dark:text-red-400 shrink-0 mt-0.5"/>
-                                }
-                                <p>{feedback.explanation}</p>
+                {/* QUIZ — answering / checking / feedback */}
+                {inQuiz && currentQuestion && (
+                    <>
+                        {mobileProgress}
+                        <div className="px-4 pt-3 pb-4 flex flex-col gap-3">
+                            <div className="flex items-center justify-between">
+                                <span
+                                    className="text-[9px] font-extrabold uppercase tracking-[0.16em]"
+                                    style={{color: moduleColor}}
+                                >
+                                    Question
+                                </span>
+                                <span className="text-[9px] text-bridge-500 dark:text-bridge-400">
+                                    {currentIndex + 1} / {questions.length}
+                                </span>
                             </div>
-                        )}
 
-                        <div className="flex justify-end pt-1">
-                            {state === "feedback" ? (
-                                <Button onClick={handleNext} style={{backgroundColor: moduleColor}} className="text-white dark:text-brand-dark">
-                                    {isLastQuestion ? "Terminer" : "Suivant →"}
+                            <h2 className="text-sm font-bold leading-snug text-brand-dark dark:text-bridge-100">
+                                {currentQuestion.text}
+                            </h2>
+
+                            <QuizQuestion
+                                key={currentQuestion.id}
+                                question={currentQuestion}
+                                onAnswer={(answer) => setCurrentAnswer(answer)}
+                                disabled={state === "checking" || state === "feedback"}
+                                feedbackIsCorrect={state === "feedback" && feedback ? feedback.isCorrect : undefined}
+                                moduleColor={moduleColor}
+                                explanation={state === "feedback" && feedback ? feedback.explanation : undefined}
+                                correctAnswer={state === "feedback" && feedback ? feedback.correctAnswer : undefined}
+                            />
+
+                            <div className="flex justify-end pt-1">
+                                {state === "feedback" ? (
+                                    <Button
+                                        onClick={handleNext}
+                                        style={{backgroundColor: moduleColor}}
+                                        className="text-white dark:text-brand-dark"
+                                    >
+                                        {isLastQuestion ? "Terminer" : "Suivant →"}
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        onClick={handleVerify}
+                                        disabled={currentAnswer === null || state === "checking"}
+                                        style={currentAnswer !== null ? {backgroundColor: moduleColor} : {}}
+                                        className="text-white dark:text-brand-dark"
+                                    >
+                                        {state === "checking" ? "Vérification…" : "Vérifier"}
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {/* COMPLETING */}
+                {state === "completing" && (
+                    <>
+                        {mobileProgress}
+                        <div className="px-4 py-10 flex flex-col items-center gap-3">
+                            <div className="flex gap-1.5">
+                                {[0, 1, 2].map(i => (
+                                    <span
+                                        key={i}
+                                        className="w-2 h-2 rounded-full animate-pulse"
+                                        style={{backgroundColor: moduleColor, animationDelay: `${i * 150}ms`}}
+                                    />
+                                ))}
+                            </div>
+                            <p className="text-sm text-bridge-600 dark:text-bridge-400">Enregistrement des résultats…</p>
+                        </div>
+                    </>
+                )}
+
+                {/* SUMMARY */}
+                {state === "summary" && score && (
+                    <>
+                        {mobileProgress}
+                        <div className="px-4 py-4 flex flex-col gap-3">
+                            <span
+                                className="text-[9px] font-extrabold uppercase tracking-widest"
+                                style={{color: moduleColor}}
+                            >
+                                Récapitulatif
+                            </span>
+
+                            <div className="flex flex-col gap-1.5">
+                                {questions.map((q, i) => (
+                                    <div key={q.id} className="flex items-center gap-2">
+                                        <span className={cn(
+                                            "w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold shrink-0",
+                                            questionResults[i]
+                                                ? "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-400"
+                                                : "bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400"
+                                        )}>
+                                            {questionResults[i] ? "✓" : "✗"}
+                                        </span>
+                                        <span className="text-[11px] text-brand-dark dark:text-bridge-200 truncate leading-snug">
+                                            {q.text}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="h-px bg-bridge-700/15 dark:bg-bridge-500/15 -mx-4"/>
+
+                            <div className="flex justify-between items-center">
+                                <Button variant="ghost" onClick={() => router.push(tpHref)}>
+                                    Retour au TP
                                 </Button>
-                            ) : (
                                 <Button
-                                    onClick={handleVerify}
-                                    disabled={currentAnswer === null || state === "checking"}
-                                    style={currentAnswer !== null ? {backgroundColor: moduleColor} : {}}
+                                    onClick={handleRetry}
+                                    style={{backgroundColor: moduleColor}}
                                     className="text-white dark:text-brand-dark"
                                 >
-                                    {state === "checking" ? "Vérification…" : "Vérifier"}
+                                    Réessayer
                                 </Button>
-                            )}
+                            </div>
                         </div>
-                    </div>
-                </>
-            )}
-
-            {/* COMPLETING */}
-            {state === "completing" && (
-                <>
-                    {header}
-                    <div className="px-6 py-10 flex flex-col items-center gap-3">
-                        <div className="flex gap-1.5">
-                            {[0, 1, 2].map(i => (
-                                <span key={i} className="w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: moduleColor, animationDelay: `${i * 150}ms`}}/>
-                            ))}
-                        </div>
-                        <p className="text-sm text-bridge-600 dark:text-bridge-400">Enregistrement des résultats…</p>
-                    </div>
-                </>
-            )}
-
-            {/* SUMMARY */}
-            {state === "summary" && score && (
-                <>
-                    {header}
-                    {progressBar(score.total, score.total, questionResults)}
-                    <div className="px-6 py-5 flex flex-col gap-4">
-                        <p className="text-sm text-bridge-600 dark:text-bridge-400 text-center py-1">
-                            {score.score === score.total
-                                ? "Parfait ! Toutes les réponses sont correctes."
-                                : score.score >= score.total / 2
-                                    ? "Bon travail, continuez à pratiquer."
-                                    : "Revoyez le cours avant de réessayer."}
-                        </p>
-                        <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
-                        <div className="flex justify-between">
-                            <Button variant="ghost" onClick={() => router.push(tpHref)}>
-                                Retour au TP
-                            </Button>
-                            <Button onClick={handleRetry} style={{backgroundColor: moduleColor}} className="text-white dark:text-brand-dark">
-                                Réessayer
-                            </Button>
-                        </div>
-                    </div>
-                </>
-            )}
+                    </>
+                )}
+            </div>
         </div>
     );
 }
