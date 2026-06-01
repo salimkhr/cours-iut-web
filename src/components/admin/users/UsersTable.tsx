@@ -10,6 +10,8 @@ export interface AdminUser {
     image?: string | null;
     role: string;
     group?: string | null;
+    username?: string | null;
+    banned?: boolean | null;
     createdAt: string;
 }
 

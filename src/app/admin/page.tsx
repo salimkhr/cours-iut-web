@@ -19,13 +19,25 @@ export default async function AdminPage() {
             query: { limit: "200", sortBy: "createdAt", sortDirection: "desc" },
         });
         users = (result?.users ?? []).map(
-            (u: { id: string; name: string; email: string; image?: string | null; role?: string; group?: string | null; createdAt: Date | string }) => ({
+            (u: {
+                id: string;
+                name: string;
+                email: string;
+                image?: string | null;
+                role?: string;
+                group?: string | null;
+                username?: string | null;
+                banned?: boolean | null;
+                createdAt: Date | string;
+            }) => ({
                 id: u.id,
                 name: u.name,
                 email: u.email,
                 image: u.image ?? null,
                 role: u.role ?? 'user',
                 group: u.group ?? null,
+                username: u.username ?? null,
+                banned: u.banned ?? false,
                 createdAt: u.createdAt instanceof Date ? u.createdAt.toISOString() : String(u.createdAt),
             })
         );
