@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import UserRow from './UserRow';
+import EditUserDialog from './EditUserDialog';
 
 export interface AdminUser {
     id: string;
@@ -19,9 +20,14 @@ const EYEBROW = "text-[11px] uppercase tracking-[0.18em] font-semibold text-bran
 
 export default function UsersTable({ users: initialUsers }: { users: AdminUser[] }) {
     const [users, setUsers] = useState<AdminUser[]>(initialUsers);
+    const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
 
     const handleDeleted = (userId: string) => {
         setUsers(prev => prev.filter(u => u.id !== userId));
+    };
+
+    const handleUpdated = (updated: AdminUser) => {
+        setUsers(prev => prev.map(u => u.id === updated.id ? updated : u));
     };
 
     if (users.length === 0) {
@@ -33,23 +39,39 @@ export default function UsersTable({ users: initialUsers }: { users: AdminUser[]
     }
 
     return (
-        <div className="rounded-xl border border-bridge-500/45 overflow-hidden bg-[#f7ebd9] dark:bg-[#13110d]">
-            <table className="w-full">
-                <thead>
-                    <tr className="border-b border-bridge-700/20 dark:border-bridge-500/20">
-                        <th className={`px-4 py-2.5 ${EYEBROW}`}>Utilisateur</th>
-                        <th className={`px-4 py-2.5 ${EYEBROW}`}>Groupe</th>
-                        <th className={`px-4 py-2.5 ${EYEBROW}`}>Rôle</th>
-                        <th className={`px-4 py-2.5 ${EYEBROW}`}>Inscrit le</th>
-                        <th className={`px-4 py-2.5 ${EYEBROW}`}>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users.map(user => (
-                        <UserRow key={user.id} user={user} onDeleted={handleDeleted} />
-                    ))}
-                </tbody>
-            </table>
-        </div>
+        <>
+            <div className="rounded-xl border border-bridge-500/45 overflow-hidden bg-[#f7ebd9] dark:bg-[#13110d]">
+                <table className="w-full">
+                    <thead>
+                        <tr className="border-b border-bridge-700/20 dark:border-bridge-500/20">
+                            <th className={`px-4 py-2.5 ${EYEBROW}`}>Utilisateur</th>
+                            <th className={`px-4 py-2.5 ${EYEBROW}`}>Groupe</th>
+                            <th className={`px-4 py-2.5 ${EYEBROW}`}>Rôle</th>
+                            <th className={`px-4 py-2.5 ${EYEBROW}`}>Inscrit le</th>
+                            <th className={`px-4 py-2.5 ${EYEBROW}`}>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {users.map(user => (
+                            <UserRow
+                                key={user.id}
+                                user={user}
+                                onDeleted={handleDeleted}
+                                onEdit={setEditingUser}
+                            />
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {editingUser && (
+                <EditUserDialog
+                    user={editingUser}
+                    open={!!editingUser}
+                    onOpenChange={(open) => { if (!open) setEditingUser(null); }}
+                    onUpdated={handleUpdated}
+                />
+            )}
+        </>
     );
 }

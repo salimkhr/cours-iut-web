@@ -1,6 +1,8 @@
 'use client';
 
+import { Pencil } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { avatarColor, avatarInitials } from '@/lib/utils';
 import DeleteUserDialog from './DeleteUserDialog';
 import type { AdminUser } from './UsersTable';
@@ -16,9 +18,10 @@ function formatDate(dateStr: string): string {
 interface UserRowProps {
     user: AdminUser;
     onDeleted: (userId: string) => void;
+    onEdit: (user: AdminUser) => void;
 }
 
-export default function UserRow({ user, onDeleted }: UserRowProps) {
+export default function UserRow({ user, onDeleted, onEdit }: UserRowProps) {
     const isAdmin = user.role === 'admin';
     const initials = avatarInitials(user.name);
     const color = avatarColor(user.name);
@@ -63,7 +66,18 @@ export default function UserRow({ user, onDeleted }: UserRowProps) {
                 </p>
             </td>
             <td className="px-4 py-3">
-                <DeleteUserDialog userId={user.id} userName={user.name} onDeleted={onDeleted} />
+                <div className="flex items-center gap-1">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-bridge-400 hover:text-brand-primary hover:bg-brand-primary/10"
+                        aria-label={`Modifier ${user.name}`}
+                        onClick={() => onEdit(user)}
+                    >
+                        <Pencil className="w-4 h-4"/>
+                    </Button>
+                    <DeleteUserDialog userId={user.id} userName={user.name} onDeleted={onDeleted} />
+                </div>
             </td>
         </tr>
     );
