@@ -16,7 +16,10 @@ export async function POST(
 
     let banned: boolean;
     try {
-        const body = await req.json() as { banned: boolean };
+        const body = await req.json() as { banned: unknown };
+        if (typeof body.banned !== "boolean") {
+            return NextResponse.json({ error: "Corps invalide" }, { status: 400 });
+        }
         banned = body.banned;
     } catch {
         return NextResponse.json({ error: "Corps invalide" }, { status: 400 });
