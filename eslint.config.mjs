@@ -7,7 +7,7 @@ const nextTypescript = require("eslint-config-next/typescript");
 
 const eslintConfig = [
     {
-        ignores: [".pnp.cjs", ".pnp.loader.mjs", ".yarn/**", ".agents/**", ".claude/**"],
+        ignores: [".pnp.cjs", ".pnp.loader.mjs", ".yarn/**", ".agents/**", ".claude/**", ".next/**"],
     },
     ...nextCoreWebVitals,
     ...nextTypescript,
