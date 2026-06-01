@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — 3 options de layout</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; background: #0f172a; color: #f1f5f9; padding: 32px 24px 48px; }
+  h1 { text-align: center; font-size: 12px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: #475569; margin-bottom: 36px; }
+
+  .col-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1600px; margin: 0 auto; }
+
+  /* ── CARD ── */
+  .card { background: #1e293b; border-radius: 14px; overflow: hidden; border: 1px solid #334155; }
+  .card-header { padding: 12px 16px; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #94a3b8; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+  .tag { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 9px; font-weight: 700; }
+  .tag-rec { background: rgba(124,58,237,.3); color: #a78bfa; }
+  .tag-alt { background: rgba(148,163,184,.12); color: #64748b; }
+  .state-sep { padding: 8px 16px; font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #334155; background: #1e293b; border-top: 1px solid #1e293b; border-bottom: 1px dashed #334155; display: flex; gap: 10px; }
+  .state-label { padding: 2px 8px; border-radius: 4px; font-size: 8px; font-weight: 700; }
+  .state-answering { background: rgba(148,163,184,.12); color: #64748b; }
+  .state-feedback { background: rgba(34,197,94,.12); color: #4ade80; }
+
+  /* ── MOCKUP ── */
+  .mockup { aspect-ratio: 16/9; display: flex; overflow: hidden; position: relative; width: 100%; }
+
+  /* sidebar */
+  .sb { width: 72px; background: #7c3aed; display: flex; flex-direction: column; align-items: center; padding: 36px 0 14px; gap: 8px; flex-shrink: 0; position: relative; }
+  .sb::after { content:''; position:absolute; top:0; right:0; width:1px; height:100%; background: linear-gradient(transparent, rgba(255,255,255,.15), transparent); }
+  .sb-icon { width: 30px; height: 30px; border-radius: 9px; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; }
+  .sb-icon svg { width: 14px; height: 14px; fill: none; stroke: white; stroke-width: 2; }
+  .sb-label { font-size: 7px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.45); text-align: center; padding: 0 4px; line-height: 1.3; }
+  .sb-arc { width: 44px; height: 44px; border-radius: 50%; position: relative; background: conic-gradient(rgba(255,255,255,.85) 0deg 120deg, rgba(255,255,255,.2) 120deg 360deg); display: flex; align-items: center; justify-content: center; }
+  .sb-arc-in { position:absolute; width: 33px; height: 33px; border-radius: 50%; background: #7c3aed; display:flex; align-items:center; justify-content:center; }
+  .sb-arc span { position:relative; z-index:1; font-size:7px; font-weight:900; color:white; }
+  .sb-pills { display:flex; flex-direction:column; gap:4px; }
+  .sp { width:40px; height:20px; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:7px; font-weight:700; }
+  .sp.done { background:rgba(255,255,255,.85); color:#7c3aed; }
+  .sp.curr { background:rgba(255,255,255,.4); color:white; }
+  .sp.todo { background:rgba(255,255,255,.15); color:rgba(255,255,255,.35); }
+  .sb-sp { flex:1; }
+  .sb-score { width:32px; height:32px; border-radius:50%; border:2px solid rgba(255,255,255,.25); background:rgba(0,0,0,.1); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .sb-score span { font-size:12px; font-weight:900; color:white; line-height:1; }
+  .sb-score small { font-size:5px; color:rgba(255,255,255,.45); text-transform:uppercase; }
+
+  /* bg + escalier */
+  .bg { flex:1; display:flex; flex-direction:column; position:relative; overflow:hidden; }
+  .esc { position:absolute; right:0; top:0; bottom:0; width:52%; z-index:1; background: linear-gradient(to left, transparent 0%, rgba(15,23,42,.55) 55%, #1e293b 100%); }
+  .esc::before { content:''; position:absolute; inset:0; background: repeating-linear-gradient(173deg, transparent 0px, transparent 16px, rgba(148,163,184,.05) 16px, rgba(148,163,184,.05) 17px); }
+  .fig { position:absolute; right:20%; top:18%; z-index:2; }
+  .fig-h { width:9px; height:9px; background:rgba(148,163,184,.3); border-radius:50%; margin:0 auto 3px; }
+  .fig-b { width:7px; height:28px; background:rgba(148,163,184,.3); border-radius:3px; margin:0 auto; }
+  .pbar { height:3px; display:flex; z-index:3; position:relative; flex-shrink:0; }
+  .ps { flex:1; }
+
+  /* shared choice styles */
+  .choice { padding: 8px 11px; border-radius: 7px; border: 1.5px solid rgba(148,163,184,.2); background: rgba(255,255,255,.06); font-size: 8.5px; color: #94a3b8; }
+  .choice.correct { border-color: #22c55e; background: rgba(34,197,94,.12); color: #86efac; }
+  .choice.wrong   { border-color: #ef4444; background: rgba(239,68,68,.12); color: #fca5a5; }
+  .choice.dimmed  { opacity: .35; }
+  .explanation { padding: 8px 11px; border-radius: 7px; background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.2); font-size: 8px; color: #86efac; line-height: 1.6; }
+  .btn-verify { padding: 6px 16px; border-radius: 7px; background: #7c3aed; color: white; font-size: 8.5px; font-weight: 700; display:inline-block; }
+  .btn-next   { padding: 6px 16px; border-radius: 7px; background: #22c55e; color: #052e16; font-size: 8.5px; font-weight: 700; display:inline-block; }
+  .btn-ghost  { padding: 6px 16px; border-radius: 7px; border: 1px solid rgba(148,163,184,.2); color: #64748b; font-size: 8.5px; display:inline-block; }
+  .back-link { font-size: 8px; color: rgba(148,163,184,.6); display:flex; align-items:center; gap:3px; }
+  .back-link svg { width:9px; height:9px; stroke:currentColor; fill:none; stroke-width:2; }
+  .qlabel { font-size: 7.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .18em; color: #a78bfa; }
+  .qtext { font-size: 15px; font-weight: 800; color: #f1f5f9; line-height: 1.35; }
+
+  /* ── OPTION A ── */
+  .a-wrap { position:relative; z-index:3; flex:1; display:flex; flex-direction:column; justify-content:center; padding: 18px 26px; gap:12px; }
+  .a-choices { display:grid; grid-template-columns:1fr 1fr; gap:5px; max-width:310px; }
+  .a-foot { display:flex; justify-content:flex-end; max-width:310px; }
+
+  /* ── OPTION B ── */
+  .b-wrap { position:relative; z-index:3; flex:1; display:flex; flex-direction:column; padding: 14px 24px; gap:0; }
+  .b-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .b-mid { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:start; }
+  .b-left { display:flex; flex-direction:column; gap:8px; }
+  .b-right { display:flex; flex-direction:column; gap:5px; }
+  .b-foot { display:flex; justify-content:flex-end; margin-top:12px; }
+
+  /* ── OPTION C ── */
+  .c-wrap { position:relative; z-index:3; flex:1; display:flex; flex-direction:column; }
+  .c-top { padding:12px 22px 10px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(148,163,184,.08); }
+  .c-hero { padding:14px 22px 12px; border-bottom:1px solid rgba(148,163,184,.08); }
+  .c-body { flex:1; padding:12px 22px; display:flex; flex-direction:column; gap:5px; overflow:hidden; }
+  .c-foot { padding:10px 22px; border-top:1px solid rgba(148,163,184,.08); display:flex; justify-content:space-between; align-items:center; }
+  .c-hint { font-size:7.5px; color:rgba(148,163,184,.45); }
+
+  /* desc */
+  .desc { padding: 12px 16px; font-size: 10.5px; color: #475569; line-height: 1.75; border-top: 1px solid #334155; }
+  .desc strong { color: #64748b; }
+</style>
+</head>
+<body>
+<h1>Quiz — 3 options de layout · avec état feedback + explication</h1>
+<div class="col-grid">
+
+  <!-- ═══════════════════ OPTION A ═══════════════════ -->
+  <div class="card">
+    <div class="card-header">Option A — Bloc centré <span class="tag tag-rec">Recommandé</span></div>
+
+    <!-- answering -->
+    <div class="state-sep"><span class="state-label state-answering">Avant vérification</span></div>
+    <div class="mockup">
+      <div class="sb">
+        <div class="sb-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+        <div class="sb-label">PHP</div>
+        <div class="sb-arc"><div class="sb-arc-in"><span>3/16</span></div></div>
+        <div class="sb-pills"><div class="sp done">✓</div><div class="sp done">✓</div><div class="sp curr">3</div><div class="sp todo">4</div><div class="sp todo">5</div><div class="sp todo" style="opacity:.5">···</div></div>
+        <div class="sb-sp"></div>
+        <div class="sb-score"><span>2</span><small>pts</small></div>
+      </div>
+      <div class="bg">
+        <div class="pbar"><div class="ps" style="background:rgba(124,58,237,.35)"></div><div class="ps" style="background:rgba(148,163,184,.1)"></div><div class="ps" style="background:rgba(148,163,184,.1)"></div></div>
+        <div class="esc"><div class="fig"><div class="fig-h"></div><div class="fig-b"></div></div></div>
+        <div class="a-wrap">
+          <div class="back-link"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Retour au TP</div>
+          <div class="qlabel">Question 3 / 16</div>
+          <div class="qtext">Quelle fonction PHP retourne la taille d'un tableau ?</div>
+          <div class="a-choices">
+            <div class="choice">sizeof()</div>
+            <div class="choice">count()</div>
+            <div class="choice">length()</div>
+            <div class="choice">array_size()</div>
+          </div>
+          <div class="a-foot"><div class="btn-verify">Vérifier</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- feedback -->
+    <div class="state-sep"><span class="state-label state-feedback">Après vérification — explication</span></div>
+    <div class="mockup">
+      <div class="sb">
+        <div class="sb-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+        <div class="sb-label">PHP</div>
+        <div class="sb-arc"><div class="sb-arc-in"><span>3/16</span></div></div>
+        <div class="sb-pills"><div class="sp done">✓</div><div class="sp done">✓</div><div class="sp done">✓</div><div class="sp todo">4</div><div class="sp todo">5</div><div class="sp todo" style="opacity:.5">···</div></div>
+        <div class="sb-sp"></div>
+        <div class="sb-score"><span>3</span><small>pts</small></div>
+      </div>
+      <div class="bg">
+        <div class="pbar"><div class="ps" style="background:#7c3aed"></div><div class="ps" style="background:rgba(148,163,184,.1)"></div><div class="ps" style="background:rgba(148,163,184,.1)"></div></div>
+        <div class="esc"><div class="fig"><div class="fig-h"></div><div class="fig-b"></div></div></div>
+        <div class="a-wrap">
+          <div class="back-link"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Retour au TP</div>
+          <div class="qlabel">Question 3 / 16</div>
+          <div class="qtext">Quelle fonction PHP retourne la taille d'un tableau ?</div>
+          <div class="a-choices">
+            <div class="choice dimmed">sizeof()</div>
+            <div class="choice correct">count() ✓</div>
+            <div class="choice dimmed">length()</div>
+            <div class="choice dimmed">array_size()</div>
+          </div>
+          <div class="explanation">count() retourne le nombre d'éléments d'un tableau. sizeof() est un alias de count() mais count() est la forme canonique recommandée.</div>
+          <div class="a-foot"><div class="btn-next">Suivant →</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="desc"><strong>Back link intégré dans le bloc centré.</strong> Explication juste sous les choix, dans la même colonne. Le "Suivant" remplace "Vérifier" — lecture naturelle de haut en bas. Passage fluide entre les états.</div>
+  </div>
+
+  <!-- ═══════════════════ OPTION B ═══════════════════ -->
+  <div class="card">
+    <div class="card-header">Option B — 2 colonnes Q/R <span class="tag tag-alt">Alternative</span></div>
+
+    <!-- answering -->
+    <div class="state-sep"><span class="state-label state-answering">Avant vérification</span></div>
+    <div class="mockup">
+      <div class="sb">
+        <div class="sb-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+        <div class="sb-label">PHP</div>
+        <div class="sb-arc"><div class="sb-arc-in"><span>3/16</span></div></div>
+        <div class="sb-pills"><div class="sp done">✓</div><div class="sp done">✓</div><div class="sp curr">3</div><div class="sp todo">4</div><div class="sp todo">5</div><div class="sp todo" style="opacity:.5">···</div></div>
+        <div class="sb-sp"></div>
+        <div class="sb-score"><span>2</span><small>pts</small></div>
+      </div>
+      <div class="bg">
+        <div class="pbar"><div class="ps" style="background:rgba(124,58,237,.35)"></div><div class="ps" style="background:rgba(148,163,184,.1)"></div><div class="ps" style="background:rgba(148,163,184,.1)"></div></div>
+        <div class="esc"><div class="fig"><div class="fig-h"></div><div class="fig-b"></div></div></div>
+        <div class="b-wrap">
+          <div class="b-top">
+            <div class="back-link"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Retour au TP</div>
+            <div class="qlabel">Question 3 / 16</div>
+          </div>
+          <div class="b-mid">
+            <div class="b-left">
+              <div class="qtext">Quelle fonction PHP retourne la taille d'un tableau ?</div>
+            </div>
+            <div class="b-right">
+              <div class="choice">sizeof()</div>
+              <div class="choice">count()</div>
+              <div class="choice">length()</div>
+              <div class="choice">array_size()</div>
+            </div>
+          </div>
+          <div class="b-foot"><div class="btn-verify">Vérifier</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- feedback -->
+    <div class="state-sep"><span class="state-label state-feedback">Après vérification — explication</span></div>
+    <div class="mockup">
+      <div class="sb">
+        <div class="sb-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+        <div class="sb-label">PHP</div>
+        <div class="sb-arc"><div class="sb-arc-in"><span>3/16</span></div></div>
+        <div class="sb-pills"><div class="sp done">✓</div><div class="sp done">✓</div><div class="sp done">✓</div><div class="sp todo">4</div><div class="sp todo">5</div><div class="sp todo" style="opacity:.5">···</div></div>
+        <div class="sb-sp"></div>
+        <div class="sb-score"><span>3</span><small>pts</small></div>
+      </div>
+      <div class="bg">
+        <div class="pbar"><div class="ps" style="background:#7c3aed"></div><div class="ps" style="background:rgba(148,163,184,.1)"></div><div class="ps" style="background:rgba(148,163,184,.1)"></div></div>
+        <div class="esc"><div class="fig"><div class="fig-h"></div><div class="fig-b"></div></div></div>
+        <div class="b-wrap">
+          <div class="b-top">
+            <div class="back-link"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Retour au TP</div>
+            <div class="qlabel">Question 3 / 16</div>
+          </div>
+          <div class="b-mid">
+            <div class="b-left">
+              <div class="qtext">Quelle fonction PHP retourne la taille d'un tableau ?</div>
+              <div class="explanation" style="margin-top:8px">count() retourne le nombre d'éléments d'un tableau. sizeof() est un alias mais count() est la forme canonique.</div>
+            </div>
+            <div class="b-right">
+              <div class="choice dimmed">sizeof()</div>
+              <div class="choice correct">count() ✓</div>
+              <div class="choice dimmed">length()</div>
+              <div class="choice dimmed">array_size()</div>
+            </div>
+          </div>
+          <div class="b-foot"><div class="btn-next">Suivant →</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="desc"><strong>Explication à gauche sous la question.</strong> Question + explication côte à côte avec les choix. Bon usage de l'espace horizontal. Peut créer un saut visuel gauche/droite sur mobile.</div>
+  </div>
+
+  <!-- ═══════════════════ OPTION C ═══════════════════ -->
+  <div class="card">
+    <div class="card-header">Option C — Hero + réponses <span class="tag tag-alt">Alternative</span></div>
+
+    <!-- answering -->
+    <div class="state-sep"><span class="state-label state-answering">Avant vérification</span></div>
+    <div class="mockup">
+      <div class="sb">
+        <div class="sb-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+        <div class="sb-label">PHP</div>
+        <div class="sb-arc"><div class="sb-arc-in"><span>3/16</span></div></div>
+        <div class="sb-pills"><div class="sp done">✓</div><div class="sp done">✓</div><div class="sp curr">3</div><div class="sp todo">4</div><div class="sp todo">5</div><div class="sp todo" style="opacity:.5">···</div></div>
+        <div class="sb-sp"></div>
+        <div class="sb-score"><span>2</span><small>pts</small></div>
+      </div>
+      <div class="bg">
+        <div class="pbar"><div class="ps" style="background:rgba(124,58,237,.35)"></div><div class="ps" style="background:rgba(148,163,184,.1)"></div><div class="ps" style="background:rgba(148,163,184,.1)"></div></div>
+        <div class="esc"><div class="fig"><div class="fig-h"></div><div class="fig-b"></div></div></div>
+        <div class="c-wrap">
+          <div class="c-top">
+            <div class="back-link"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Retour au TP</div>
+            <div class="qlabel">Q 3 / 16</div>
+          </div>
+          <div class="c-hero">
+            <div class="qtext">Quelle fonction PHP retourne la taille d'un tableau ?</div>
+          </div>
+          <div class="c-body">
+            <div class="choice">sizeof()</div>
+            <div class="choice" style="border-color:#7c3aed;background:rgba(124,58,237,.12);color:#c4b5fd">count()</div>
+            <div class="choice">length()</div>
+            <div class="choice">array_size()</div>
+          </div>
+          <div class="c-foot">
+            <div class="c-hint">1 réponse sélectionnée</div>
+            <div class="btn-verify">Vérifier</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- feedback -->
+    <div class="state-sep"><span class="state-label state-feedback">Après vérification — explication</span></div>
+    <div class="mockup">
+      <div class="sb">
+        <div class="sb-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+        <div class="sb-label">PHP</div>
+        <div class="sb-arc"><div class="sb-arc-in"><span>3/16</span></div></div>
+        <div class="sb-pills"><div class="sp done">✓</div><div class="sp done">✓</div><div class="sp done">✓</div><div class="sp todo">4</div><div class="sp todo">5</div><div class="sp todo" style="opacity:.5">···</div></div>
+        <div class="sb-sp"></div>
+        <div class="sb-score"><span>3</span><small>pts</small></div>
+      </div>
+      <div class="bg">
+        <div class="pbar"><div class="ps" style="background:#7c3aed"></div><div class="ps" style="background:rgba(148,163,184,.1)"></div><div class="ps" style="background:rgba(148,163,184,.1)"></div></div>
+        <div class="esc"><div class="fig"><div class="fig-h"></div><div class="fig-b"></div></div></div>
+        <div class="c-wrap">
+          <div class="c-top">
+            <div class="back-link"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Retour au TP</div>
+            <div class="qlabel">Q 3 / 16</div>
+          </div>
+          <div class="c-hero">
+            <div class="qtext">Quelle fonction PHP retourne la taille d'un tableau ?</div>
+          </div>
+          <div class="c-body">
+            <div class="choice dimmed">sizeof()</div>
+            <div class="choice correct">count() ✓</div>
+            <div class="choice dimmed">length()</div>
+            <div class="choice dimmed">array_size()</div>
+            <div class="explanation" style="margin-top:4px">count() retourne le nombre d'éléments d'un tableau. sizeof() est un alias mais count() est la forme canonique recommandée.</div>
+          </div>
+          <div class="c-foot">
+            <div class="c-hint">Bonne réponse !</div>
+            <div class="btn-next">Suivant →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="desc"><strong>Explication dans la zone scrollable des réponses.</strong> Le footer reste ancré — bouton toujours accessible. L'explication apparaît sous les choix, dans le flux naturel. Inspiré des apps mobile quiz (Duolingo, Kahoot).</div>
+  </div>
+
+</div>
+</body>
+</html>

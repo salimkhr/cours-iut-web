@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sidebar — contenu</title>
+<script src="../../../../../.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/brainstorming/scripts/helper.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #f1f5f9; padding: 28px 16px 48px; }
+h1 { font-size: 17px; font-weight: 700; text-align: center; margin-bottom: 4px; }
+.sub { font-size: 12px; color: #94a3b8; text-align: center; margin-bottom: 28px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; max-width: 700px; margin: 0 auto; }
+
+.opt {
+  border-radius: 14px; overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer; transition: border-color 0.2s, transform 0.15s;
+  background: #1e293b;
+}
+.opt:hover { transform: translateY(-2px); }
+.opt.selected { border-color: #6366f1; }
+.opt.selected .opt-label { background: #6366f1; }
+
+.opt-label { padding: 9px 14px; background: #334155; }
+.opt-label h2 { font-size: 12px; font-weight: 700; color: #f1f5f9; }
+
+.opt-preview { padding: 14px; display: flex; justify-content: center; }
+
+/* Sidebar commune */
+.sb {
+  width: 68px;
+  min-height: 280px;
+  border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 14px 0 12px;
+  background: #e24d32;
+  position: relative;
+  gap: 0;
+}
+.sb::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.09) 0%, transparent 50%);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+/* Elements */
+.sb-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.18); border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+.sb-module-name { font-size: 7px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.55); margin-bottom: 12px; }
+.sb-sep { width: 28px; height: 1px; background: rgba(255,255,255,0.15); margin: 8px 0; }
+.sb-steps-col { display: flex; flex-direction: column; gap: 4px; }
+.sb-step { width: 26px; height: 20px; border-radius: 5px; background: rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.55); }
+.sb-step.done { background: rgba(255,255,255,0.85); color: #e24d32; }
+.sb-step.curr { background: rgba(255,255,255,0.42); color: white; }
+.sb-spacer { flex: 1; }
+.sb-score { width: 38px; height: 38px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); background: rgba(0,0,0,0.12); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.sb-score-val { font-size: 13px; font-weight: 900; color: white; line-height: 1; }
+.sb-score-lbl { font-size: 6px; color: rgba(255,255,255,0.55); }
+.sb-section-label { font-size: 7px; color: rgba(255,255,255,0.5); text-align: center; padding: 0 6px; writing-mode: vertical-lr; transform: rotate(180deg); max-height: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 8px 0; }
+.sb-progress-arc {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: conic-gradient(rgba(255,255,255,0.85) 0deg 144deg, rgba(255,255,255,0.2) 144deg 360deg);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.sb-progress-arc::before { content: ''; position: absolute; width: 30px; height: 30px; border-radius: 50%; background: #e24d32; }
+.sb-arc-val { font-size: 10px; font-weight: 900; color: white; position: relative; z-index: 1; }
+
+.opt-desc { padding: 8px 12px; background: #0f172a; border-top: 1px solid #334155; }
+.opt-desc p { font-size: 10px; color: #64748b; line-height: 1.45; }
+</style>
+</head>
+<body>
+
+<h1>Que contient la sidebar ?</h1>
+<p class="sub">Choisissez la version qui correspond à ce que vous voulez montrer</p>
+
+<div class="grid">
+
+  <!-- A : Minimal -->
+  <div class="opt" data-choice="a" onclick="toggleSelect(this)">
+    <div class="opt-label"><h2>A — Minimaliste</h2></div>
+    <div class="opt-preview">
+      <div class="sb">
+        <div class="sb-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
+        </div>
+        <div class="sb-steps-col">
+          <div class="sb-step done">✓</div>
+          <div class="sb-step curr">2</div>
+          <div class="sb-step">3</div>
+          <div class="sb-step">4</div>
+          <div class="sb-step">5</div>
+        </div>
+        <div class="sb-spacer"></div>
+        <div class="sb-score">
+          <div class="sb-score-val">1</div>
+          <div class="sb-score-lbl">pts</div>
+        </div>
+      </div>
+    </div>
+    <div class="opt-desc"><p>Icône module + étapes numérotées + score. Rien de plus. Sidebar fine (72px).</p></div>
+  </div>
+
+  <!-- B : Module + section -->
+  <div class="opt" data-choice="b" onclick="toggleSelect(this)">
+    <div class="opt-label"><h2>B — Module + section</h2></div>
+    <div class="opt-preview">
+      <div class="sb">
+        <div class="sb-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
+        </div>
+        <div class="sb-module-name">CSS</div>
+        <div class="sb-section-label">Mise en forme</div>
+        <div class="sb-sep"></div>
+        <div class="sb-steps-col">
+          <div class="sb-step done">✓</div>
+          <div class="sb-step curr">2</div>
+          <div class="sb-step">3</div>
+          <div class="sb-step">4</div>
+          <div class="sb-step">5</div>
+        </div>
+        <div class="sb-spacer"></div>
+        <div class="sb-score">
+          <div class="sb-score-val">1</div>
+          <div class="sb-score-lbl">pts</div>
+        </div>
+      </div>
+    </div>
+    <div class="opt-desc"><p>Icône + nom module + titre section (vertical) + étapes + score. Sidebar un peu plus large (88px).</p></div>
+  </div>
+
+  <!-- C : Arc de progression -->
+  <div class="opt" data-choice="c" onclick="toggleSelect(this)">
+    <div class="opt-label"><h2>C — Arc de progression</h2></div>
+    <div class="opt-preview">
+      <div class="sb">
+        <div class="sb-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
+        </div>
+        <div class="sb-module-name">CSS</div>
+        <div class="sb-progress-arc">
+          <span class="sb-arc-val">2/5</span>
+        </div>
+        <div class="sb-sep"></div>
+        <div class="sb-steps-col">
+          <div class="sb-step done">✓</div>
+          <div class="sb-step curr">2</div>
+          <div class="sb-step">3</div>
+          <div class="sb-step">4</div>
+          <div class="sb-step">5</div>
+        </div>
+        <div class="sb-spacer"></div>
+        <div class="sb-score">
+          <div class="sb-score-val">1</div>
+          <div class="sb-score-lbl">pts</div>
+        </div>
+      </div>
+    </div>
+    <div class="opt-desc"><p>Icône + nom module + arc circulaire (progression %) + étapes + score. Le plus visuel.</p></div>
+  </div>
+
+</div>
+
+</body>
+</html>

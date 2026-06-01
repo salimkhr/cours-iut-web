@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — split sidebar avec escalier</title>
+<script src="../../../../../.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/brainstorming/scripts/helper.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0f172a;
+  color: #f1f5f9;
+  padding: 24px 16px 48px;
+}
+h1 { font-size: 17px; font-weight: 700; text-align: center; margin-bottom: 4px; }
+.sub { font-size: 12px; color: #94a3b8; text-align: center; margin-bottom: 24px; }
+
+/* ---- Page simulée avec escalier ---- */
+.page {
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  min-height: 520px;
+  /* Simule le fond escalier light */
+  background:
+    linear-gradient(to right, #f5f0eb 0%, #f0ebe4 42%, rgba(240,235,228,0.82) 58%, transparent 100%),
+    repeating-linear-gradient(-48deg, rgba(160,130,100,0.07) 0px, rgba(160,130,100,0.07) 1px, transparent 1px, transparent 28px),
+    linear-gradient(135deg, #d8c9b4 0%, #c0a882 40%, #a08060 100%);
+  display: flex;
+  align-items: center;
+  padding: 32px 28px;
+}
+/* Glow ambiant module */
+.page::before {
+  content: '';
+  position: absolute;
+  top: -60px; left: -80px;
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, rgba(226,77,50,0.12) 0%, transparent 65%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.page::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: 60px;
+  width: 240px; height: 240px;
+  background: radial-gradient(circle, rgba(226,77,50,0.06) 0%, transparent 65%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.back-link {
+  position: absolute;
+  top: 18px; left: 28px;
+  font-size: 11px;
+  color: #8a7060;
+  display: flex; align-items: center; gap: 4px;
+  z-index: 2;
+}
+.page-title {
+  position: absolute;
+  top: 40px; left: 28px;
+  z-index: 2;
+}
+.page-title h1 { font-size: 38px; font-weight: 900; color: #1a1210; line-height: 0.9; letter-spacing: -1px; }
+.page-title h1 span { color: #e24d32; }
+.page-title .bar { width: 40px; height: 3px; background: #e24d32; border-radius: 99px; margin-top: 8px; }
+.page-title .section-name { font-size: 11px; color: #8a7060; margin-top: 5px; }
+
+/* ---- Card split ---- */
+.split-card {
+  position: relative;
+  z-index: 2;
+  margin-top: 100px;
+  width: 100%;
+  max-width: 580px;
+  border-radius: 18px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+}
+
+/* Sidebar */
+.sidebar {
+  background: #e24d32;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0 14px;
+  gap: 0;
+  position: relative;
+}
+.sidebar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+.sb-module {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px;
+}
+.sb-label { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(255,255,255,0.55); writing-mode: vertical-lr; transform: rotate(180deg); margin-bottom: 12px; }
+.sb-steps { display: flex; flex-direction: column; gap: 4px; width: 24px; margin-bottom: auto; }
+.sb-step {
+  height: 18px; width: 100%;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.5);
+}
+.sb-step.done { background: rgba(255,255,255,0.85); color: #e24d32; }
+.sb-step.curr { background: rgba(255,255,255,0.45); color: white; }
+.sb-score {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(0,0,0,0.1);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  margin-top: 12px;
+}
+.sb-score-val { font-size: 14px; font-weight: 900; color: white; line-height: 1; }
+.sb-score-lbl { font-size: 7px; color: rgba(255,255,255,0.6); }
+
+/* Main area */
+.main {
+  background: rgba(250,246,241,0.95);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+}
+.main-header {
+  padding: 12px 16px 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.q-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.16em; color: #e24d32; }
+.q-count { font-size: 9px; color: #a89080; }
+.q-text { font-size: 14px; font-weight: 700; color: #1a1210; line-height: 1.35; padding: 8px 16px 0; }
+.choices { display: flex; flex-direction: column; gap: 5px; padding: 10px 16px; }
+.choice {
+  padding: 9px 12px; border-radius: 9px;
+  border: 1.5px solid rgba(180,155,130,0.3);
+  background: rgba(255,255,255,0.65);
+  font-size: 12px; color: #2d2420;
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer;
+}
+.choice.sel { border-color: #e24d32; background: rgba(226,77,50,0.07); }
+.choice.correct { border-color: #22c55e; background: rgba(34,197,94,0.08); color: #14532d; }
+.choice.wrong { border-color: #ef4444; background: rgba(239,68,68,0.08); color: #7f1d1d; }
+.choice-indicator {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1.5px solid rgba(180,155,130,0.35);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.choice.sel .choice-indicator { background: #e24d32; border-color: #e24d32; }
+.feedback-banner {
+  margin: 0 16px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  display: flex; align-items: flex-start; gap: 7px;
+  line-height: 1.4;
+}
+.feedback-banner.wrong { background: rgba(239,68,68,0.08); color: #7f1d1d; border: 1px solid rgba(239,68,68,0.2); }
+.feedback-banner.correct { background: rgba(34,197,94,0.08); color: #14532d; border: 1px solid rgba(34,197,94,0.2); }
+.footer {
+  padding: 10px 16px 14px;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+}
+.btn-primary { padding: 8px 18px; border-radius: 9px; background: #e24d32; color: white; font-size: 12px; font-weight: 700; border: none; cursor: pointer; }
+.btn-ghost { padding: 8px 12px; border-radius: 9px; background: transparent; border: 1.5px solid rgba(180,155,130,0.3); color: #6b5848; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+/* ---- Résultat ---- */
+.result-sidebar {
+  background: #e24d32;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0;
+  gap: 8px;
+}
+.result-trophy {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.result-score-big { font-size: 22px; font-weight: 900; color: white; line-height: 1; }
+.result-score-total { font-size: 9px; color: rgba(255,255,255,0.65); }
+.result-stars { display: flex; gap: 2px; }
+.result-star { font-size: 9px; }
+.result-main {
+  background: rgba(250,246,241,0.95);
+  backdrop-filter: blur(12px);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.result-segs { display: flex; gap: 3px; }
+.rseg { height: 7px; flex: 1; border-radius: 99px; }
+.result-title { font-size: 15px; font-weight: 800; color: #1a1210; }
+.result-msg { font-size: 11px; color: #8a7060; line-height: 1.4; }
+.result-btns { display: flex; justify-content: space-between; align-items: center; padding-top: 4px; }
+
+/* Tabs */
+.phase-toggle { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+.ptab {
+  padding: 6px 14px; border-radius: 8px;
+  font-size: 11px; font-weight: 600;
+  border: 1.5px solid rgba(255,255,255,0.12);
+  background: transparent; color: #94a3b8;
+  cursor: pointer; transition: all 0.15s;
+}
+.ptab.active { background: #e24d32; border-color: #e24d32; color: white; }
+
+.phase { display: none; }
+.phase.active { display: block; }
+
+/* Question mobile (sous la carte mobile) */
+.mobile-note { font-size: 10px; color: #64748b; text-align: center; margin-top: 14px; padding: 8px 16px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); max-width: 580px; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<h1>Direction B — split sidebar + escalier</h1>
+<p class="sub">Bascule entre les phases avec les boutons ci-dessous</p>
+
+<div class="phase-toggle">
+  <button class="ptab active" onclick="showPhase('phase-q', this)">Question</button>
+  <button class="ptab" onclick="showPhase('phase-fb', this)">Feedback</button>
+  <button class="ptab" onclick="showPhase('phase-r', this)">Résultat</button>
+</div>
+
+<!-- ── PHASE QUESTION ── -->
+<div id="phase-q" class="phase active">
+  <div class="page">
+    <div class="back-link">← Retour au TP</div>
+    <div class="page-title">
+      <h1>Quiz<span>.</span></h1>
+      <div class="bar"></div>
+      <div class="section-name">Sélection &amp; mise en forme CSS</div>
+    </div>
+    <div class="split-card">
+      <div class="sidebar">
+        <div class="sb-module">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="sb-label">CSS</div>
+        <div class="sb-steps">
+          <div class="sb-step done">✓</div>
+          <div class="sb-step curr">2</div>
+          <div class="sb-step">3</div>
+          <div class="sb-step">4</div>
+          <div class="sb-step">5</div>
+        </div>
+        <div class="sb-score">
+          <div class="sb-score-val">1</div>
+          <div class="sb-score-lbl">pts</div>
+        </div>
+      </div>
+      <div class="main">
+        <div class="main-header">
+          <div class="q-label">Question</div>
+          <div class="q-count">2 / 5</div>
+        </div>
+        <div class="q-text">Quelle propriété CSS permet de centrer horizontalement un élément flex ?</div>
+        <div class="choices">
+          <div class="choice">
+            <div class="choice-indicator"></div>
+            justify-content: center
+          </div>
+          <div class="choice sel">
+            <div class="choice-indicator">
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><circle cx="4" cy="4" r="3" fill="white"/></svg>
+            </div>
+            align-items: center
+          </div>
+          <div class="choice">
+            <div class="choice-indicator"></div>
+            margin: auto
+          </div>
+          <div class="choice">
+            <div class="choice-indicator"></div>
+            text-align: center
+          </div>
+        </div>
+        <div class="footer">
+          <button class="btn-primary">Vérifier</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE FEEDBACK ── -->
+<div id="phase-fb" class="phase">
+  <div class="page">
+    <div class="back-link">← Retour au TP</div>
+    <div class="page-title">
+      <h1>Quiz<span>.</span></h1>
+      <div class="bar"></div>
+      <div class="section-name">Sélection &amp; mise en forme CSS</div>
+    </div>
+    <div class="split-card">
+      <div class="sidebar">
+        <div class="sb-module">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="sb-label">CSS</div>
+        <div class="sb-steps">
+          <div class="sb-step done">✓</div>
+          <div class="sb-step done">✓</div>
+          <div class="sb-step">3</div>
+          <div class="sb-step">4</div>
+          <div class="sb-step">5</div>
+        </div>
+        <div class="sb-score">
+          <div class="sb-score-val">1</div>
+          <div class="sb-score-lbl">pts</div>
+        </div>
+      </div>
+      <div class="main">
+        <div class="main-header">
+          <div class="q-label">Question</div>
+          <div class="q-count">2 / 5</div>
+        </div>
+        <div class="q-text">Quelle propriété CSS permet de centrer horizontalement un élément flex ?</div>
+        <div class="choices">
+          <div class="choice" style="opacity:0.45;cursor:not-allowed;">
+            <div class="choice-indicator"></div>
+            justify-content: center
+          </div>
+          <div class="choice wrong">
+            <div class="choice-indicator" style="background:#ef4444;border-color:#ef4444;">
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><line x1="2" y1="2" x2="6" y2="6" stroke="white" stroke-width="1.5"/><line x1="6" y1="2" x2="2" y2="6" stroke="white" stroke-width="1.5"/></svg>
+            </div>
+            align-items: center
+          </div>
+          <div class="choice" style="opacity:0.45;cursor:not-allowed;">
+            <div class="choice-indicator"></div>
+            margin: auto
+          </div>
+          <div class="choice" style="opacity:0.45;cursor:not-allowed;">
+            <div class="choice-indicator"></div>
+            text-align: center
+          </div>
+        </div>
+        <div class="feedback-banner wrong">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          Pour centrer <em>horizontalement</em> dans un flex container, c&apos;est <strong>justify-content: center</strong>.
+        </div>
+        <div class="footer">
+          <button class="btn-primary">Suivant →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE RÉSULTAT ── -->
+<div id="phase-r" class="phase">
+  <div class="page">
+    <div class="back-link">← Retour au TP</div>
+    <div class="page-title">
+      <h1>Quiz<span>.</span></h1>
+      <div class="bar"></div>
+      <div class="section-name">Sélection &amp; mise en forme CSS</div>
+    </div>
+    <div class="split-card">
+      <div class="result-sidebar">
+        <div class="result-trophy">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="rgba(255,255,255,0.3)"/></svg>
+        </div>
+        <div class="result-score-big">4</div>
+        <div class="result-score-total">sur 5</div>
+        <div class="result-stars">
+          <span class="result-star" style="color:rgba(255,255,255,0.9);">★</span>
+          <span class="result-star" style="color:rgba(255,255,255,0.9);">★</span>
+          <span class="result-star" style="color:rgba(255,255,255,0.9);">★</span>
+          <span class="result-star" style="color:rgba(255,255,255,0.9);">★</span>
+          <span class="result-star" style="color:rgba(255,255,255,0.3);">★</span>
+        </div>
+      </div>
+      <div class="result-main">
+        <div class="result-title">Bon travail !</div>
+        <div class="result-segs">
+          <div class="rseg" style="background:#22c55e;"></div>
+          <div class="rseg" style="background:#ef4444;"></div>
+          <div class="rseg" style="background:#22c55e;"></div>
+          <div class="rseg" style="background:#22c55e;"></div>
+          <div class="rseg" style="background:#22c55e;"></div>
+        </div>
+        <div class="result-msg">4 bonnes réponses sur 5. Continuez à pratiquer les sélecteurs et la mise en forme.</div>
+        <div class="result-btns">
+          <button class="btn-ghost">Retour au TP</button>
+          <button class="btn-primary">Réessayer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mobile-note">
+  📱 Sur mobile, la sidebar se réduit à une barre de progression horizontale en haut de la card — le layout split ne s'applique qu'à partir de 480px.
+</div>
+
+<script>
+function showPhase(id, btn) {
+  document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

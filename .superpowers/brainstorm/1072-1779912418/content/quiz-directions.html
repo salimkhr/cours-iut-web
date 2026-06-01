@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — 3 directions de design</title>
+<script src="../../../../../.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/brainstorming/scripts/helper.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #f1f5f9; min-height: 100vh; padding: 32px 24px 48px; }
+
+h1 { font-size: 20px; font-weight: 700; text-align: center; color: #f1f5f9; margin-bottom: 6px; }
+.subtitle { font-size: 13px; color: #94a3b8; text-align: center; margin-bottom: 32px; }
+
+.directions { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; max-width: 1160px; margin: 0 auto; }
+
+.dir-card {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+  background: #1e293b;
+}
+.dir-card:hover { transform: translateY(-2px); }
+.dir-card.selected { border-color: #6366f1; }
+.dir-card.selected .dir-label { background: #6366f1; }
+
+.dir-label {
+  padding: 10px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: #334155;
+  transition: background 0.2s;
+}
+.dir-label h2 { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+.dir-label .badge { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 99px; background: rgba(255,255,255,0.15); color: white; }
+
+.dir-preview { padding: 16px; min-height: 420px; display: flex; align-items: flex-start; justify-content: center; }
+
+/* ============================================
+   DIRECTION A — Centré + card large
+   ============================================ */
+.dir-a-page {
+  width: 100%;
+  min-height: 390px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f172a 100%);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  gap: 14px;
+}
+.dir-a-page::before {
+  content: '';
+  position: absolute;
+  top: -40px; left: -40px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.dir-a-page::after {
+  content: '';
+  position: absolute;
+  bottom: -30px; right: -30px;
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.dir-a-back { font-size: 10px; color: #64748b; align-self: flex-start; display: flex; align-items: center; gap: 4px; }
+.dir-a-header { text-align: center; }
+.dir-a-header h1 { font-size: 22px; font-weight: 900; color: #f1f5f9; letter-spacing: -0.5px; }
+.dir-a-header h1 span { color: #6366f1; }
+.dir-a-header p { font-size: 11px; color: #64748b; margin-top: 3px; }
+.a-card {
+  width: 100%;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+.a-progress { display: flex; gap: 3px; padding: 12px 14px 0; }
+.a-seg { height: 4px; flex: 1; border-radius: 99px; }
+.a-q-num { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #6366f1; padding: 10px 14px 4px; }
+.a-q-text { font-size: 13px; font-weight: 600; color: #f1f5f9; padding: 0 14px 10px; line-height: 1.4; }
+.a-choices { display: flex; flex-direction: column; gap: 5px; padding: 0 14px 10px; }
+.a-choice { padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); font-size: 11px; color: #94a3b8; }
+.a-choice.sel { border-color: #6366f1; background: rgba(99,102,241,0.15); color: #c7d2fe; }
+.a-footer { padding: 8px 14px 12px; display: flex; justify-content: flex-end; }
+.a-btn { padding: 6px 14px; border-radius: 7px; background: #6366f1; color: white; font-size: 11px; font-weight: 600; border: none; }
+
+/* ============================================
+   DIRECTION B — Split layout game
+   ============================================ */
+.dir-b-page {
+  width: 100%;
+  min-height: 390px;
+  background: #0f172a;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  overflow: hidden;
+}
+.b-sidebar {
+  background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.b-module-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.b-module-icon svg { color: white; }
+.b-sidebar-label { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.6); margin-top: 4px; }
+.b-progress-steps { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+.b-step { width: 100%; height: 4px; border-radius: 99px; background: rgba(255,255,255,0.2); }
+.b-step.done { background: white; }
+.b-step.active { background: rgba(255,255,255,0.7); }
+.b-score-circle { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; margin-top: auto; }
+.b-score-val { font-size: 13px; font-weight: 800; color: white; text-align: center; }
+.b-score-lbl { font-size: 7px; color: rgba(255,255,255,0.6); text-align: center; margin-top: 2px; }
+.b-main { padding: 16px 14px; display: flex; flex-direction: column; gap: 10px; }
+.b-eyebrow { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: #6366f1; }
+.b-q-text { font-size: 13px; font-weight: 600; color: #f1f5f9; line-height: 1.4; }
+.b-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.b-choice { padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); font-size: 10px; color: #94a3b8; text-align: left; }
+.b-choice.sel { border-color: #6366f1; background: rgba(99,102,241,0.2); color: #c7d2fe; }
+.b-footer { display: flex; justify-content: flex-end; margin-top: auto; }
+.b-btn { padding: 6px 14px; border-radius: 7px; background: #6366f1; color: white; font-size: 11px; font-weight: 600; }
+
+/* ============================================
+   DIRECTION C — Minimal / centré blanc
+   ============================================ */
+.dir-c-page {
+  width: 100%;
+  min-height: 390px;
+  background: #f8fafc;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  gap: 12px;
+  position: relative;
+}
+.c-top-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #6366f1 0%, #6366f1 40%, #e2e8f0 40%); border-radius: 12px 12px 0 0; }
+.c-back { font-size: 10px; color: #94a3b8; align-self: flex-start; display: flex; align-items: center; gap: 4px; }
+.c-num { font-size: 10px; font-weight: 800; color: #6366f1; letter-spacing: 0.1em; text-transform: uppercase; align-self: flex-start; }
+.c-q-text { font-size: 16px; font-weight: 700; color: #0f172a; line-height: 1.3; align-self: flex-start; }
+.c-choices { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.c-choice { padding: 10px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: white; font-size: 11px; color: #334155; text-align: left; cursor: pointer; }
+.c-choice.sel { border-color: #6366f1; background: #eef2ff; color: #4338ca; font-weight: 600; }
+.c-footer { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.c-counter { font-size: 10px; color: #94a3b8; }
+.c-btn { padding: 8px 16px; border-radius: 8px; background: #0f172a; color: white; font-size: 11px; font-weight: 700; border: none; }
+
+/* Descriptions */
+.dir-desc { padding: 12px 16px; background: #0f172a; border-top: 1px solid #334155; }
+.dir-desc p { font-size: 11px; color: #94a3b8; line-height: 1.5; }
+.dir-desc ul { margin-top: 6px; padding-left: 14px; }
+.dir-desc li { font-size: 11px; color: #64748b; margin-bottom: 2px; }
+.dir-desc strong { color: #cbd5e1; }
+</style>
+</head>
+<body>
+
+<h1>Quiz — 3 directions de design</h1>
+<p class="subtitle">Cliquez sur une direction pour la sélectionner</p>
+
+<div class="directions">
+
+  <!-- Direction A -->
+  <div class="dir-card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="dir-label">
+      <h2>A — Centré + immersif dark</h2>
+      <span class="badge">Recommandé</span>
+    </div>
+    <div class="dir-preview">
+      <div class="dir-a-page">
+        <div class="dir-a-back">← Retour au TP</div>
+        <div class="dir-a-header">
+          <h1>Quiz<span>.</span></h1>
+          <p>Sélection et mise en forme CSS</p>
+        </div>
+        <div class="a-card">
+          <div class="a-progress">
+            <div class="a-seg" style="background:#6366f1;"></div>
+            <div class="a-seg" style="background:#6366f1;opacity:0.5;"></div>
+            <div class="a-seg" style="background:rgba(255,255,255,0.1);"></div>
+            <div class="a-seg" style="background:rgba(255,255,255,0.1);"></div>
+            <div class="a-seg" style="background:rgba(255,255,255,0.1);"></div>
+          </div>
+          <div class="a-q-num">Question 2 / 5</div>
+          <div class="a-q-text">Quelle propriété CSS permet de centrer un élément avec Flexbox ?</div>
+          <div class="a-choices">
+            <div class="a-choice">justify-content: center</div>
+            <div class="a-choice sel">align-items: center</div>
+            <div class="a-choice">margin: auto</div>
+            <div class="a-choice">text-align: center</div>
+          </div>
+          <div class="a-footer">
+            <div class="a-btn">Vérifier</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dir-desc">
+      <p><strong>Fond sombre + card centrale + focus total sur le contenu.</strong></p>
+      <ul>
+        <li>Card large (100% mobile, 560px desktop) centrée à l'écran</li>
+        <li>Background sombre ambiant avec glow module color</li>
+        <li>Progress intégrée dans la card (pas de header coloré séparé)</li>
+        <li>Écran de résultat : grand score animé + barre verte/rouge</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Direction B -->
+  <div class="dir-card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="dir-label">
+      <h2>B — Split sidebar / jeu</h2>
+      <span class="badge">Game feel</span>
+    </div>
+    <div class="dir-preview">
+      <div class="dir-b-page">
+        <div class="b-sidebar">
+          <div class="b-module-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="b-sidebar-label">CSS</div>
+          <div class="b-progress-steps">
+            <div class="b-step done"></div>
+            <div class="b-step active"></div>
+            <div class="b-step"></div>
+            <div class="b-step"></div>
+            <div class="b-step"></div>
+          </div>
+          <div>
+            <div class="b-score-circle">
+              <div>
+                <div class="b-score-val">1</div>
+                <div class="b-score-lbl">pts</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="b-main">
+          <div class="b-eyebrow">Question 2 sur 5</div>
+          <div class="b-q-text">Quelle propriété CSS permet de centrer un élément avec Flexbox ?</div>
+          <div class="b-choices">
+            <div class="b-choice">justify-content: center</div>
+            <div class="b-choice sel">align-items: center</div>
+            <div class="b-choice">margin: auto</div>
+            <div class="b-choice">text-align: center</div>
+          </div>
+          <div class="b-footer">
+            <div class="b-btn">Vérifier</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dir-desc">
+      <p><strong>Layout split : sidebar colorée + zone question.</strong></p>
+      <ul>
+        <li>Sidebar en module color : icône, étapes, score live</li>
+        <li>Zone principale : question large, réponses en grille</li>
+        <li>Score incrémental visible en temps réel dans la sidebar</li>
+        <li>Écran résultat : sidebar devient un podium avec le score final</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Direction C -->
+  <div class="dir-card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="dir-label">
+      <h2>C — Minimaliste / focus question</h2>
+      <span class="badge">Épuré</span>
+    </div>
+    <div class="dir-preview">
+      <div class="dir-c-page">
+        <div class="c-top-bar"></div>
+        <div class="c-back">← Retour au TP</div>
+        <div class="c-num">02 / 05</div>
+        <div class="c-q-text">Quelle propriété CSS permet de centrer un élément avec Flexbox ?</div>
+        <div class="c-choices">
+          <div class="c-choice">justify-content: center</div>
+          <div class="c-choice sel">align-items: center</div>
+          <div class="c-choice">margin: auto</div>
+          <div class="c-choice">text-align: center</div>
+        </div>
+        <div class="c-footer">
+          <div class="c-counter">2 sur 5</div>
+          <div class="c-btn">Vérifier →</div>
+        </div>
+      </div>
+    </div>
+    <div class="dir-desc">
+      <p><strong>Fond blanc/light, max focus sur la question.</strong></p>
+      <ul>
+        <li>Barre de progression top-of-page (barre pleine width, pas de card)</li>
+        <li>Pas de header coloré : juste la question et les choix</li>
+        <li>Compatible avec le thème light existant du site</li>
+        <li>Écran résultat : page blanche, grand chiffre, message court</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

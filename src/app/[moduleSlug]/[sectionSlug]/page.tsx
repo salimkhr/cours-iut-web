@@ -6,7 +6,7 @@ import Stat from "@/components/page/Stat";
 import ContentCard from "@/components/Cards/ContentCard";
 import SectionNavCard from "@/components/Cards/SectionNavCard";
 import PageFooter from "@/components/page/PageFooter";
-import EditSectionFab from "@/components/admin/EditSectionFab";
+import AdminSectionFabs from "@/components/admin/AdminSectionFabs";
 import {List, ListItem} from "@/components/ui/List";
 import {getModuleData} from "@/hook/getModuleData";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
@@ -206,7 +206,7 @@ export default async function SectionPage({params}: SectionPageProps) {
             <PageFooter path={currentModule.path}/>
 
             {isAdmin && currentSection && (
-                <EditSectionFab modData={currentModule} section={currentSection}/>
+                <AdminSectionFabs modData={currentModule} section={currentSection}/>
             )}
         </div>
     );

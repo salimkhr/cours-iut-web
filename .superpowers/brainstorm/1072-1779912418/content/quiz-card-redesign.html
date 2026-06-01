@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz card — redesign</title>
+<script src="../../../../../.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/brainstorming/scripts/helper.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0f172a;
+  color: #f1f5f9;
+  padding: 32px 16px 48px;
+  min-height: 100vh;
+}
+h1 { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 6px; }
+.subtitle { font-size: 12px; color: #94a3b8; text-align: center; margin-bottom: 32px; }
+
+/* Page simulée avec l'escalier */
+.page-sim {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  min-height: 420px;
+  background:
+    linear-gradient(to right, #f5f0eb 0%, #f5f0eb 55%, transparent 100%),
+    linear-gradient(135deg, #c8b9a0 0%, #a8947a 50%, #8a7560 100%);
+  display: flex;
+  align-items: center;
+  padding: 20px 18px;
+}
+.page-sim.dark-mode {
+  background:
+    linear-gradient(to right, #1c1512 0%, #1c1512 55%, transparent 100%),
+    linear-gradient(135deg, #2d241c 0%, #1c1512 100%);
+}
+/* Simule l'escalier côté droit */
+.page-sim::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 45%;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(120,100,80,0.08) 0px,
+    rgba(120,100,80,0.08) 1px,
+    transparent 1px,
+    transparent 20px
+  );
+}
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px; max-width: 1100px; margin: 0 auto; }
+
+.option-wrap {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+  background: #1e293b;
+}
+.option-wrap:hover { transform: translateY(-2px); }
+.option-wrap.selected { border-color: #6366f1; }
+
+.opt-label {
+  padding: 10px 16px;
+  background: #334155;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.opt-label h2 { font-size: 12px; font-weight: 700; color: #f1f5f9; }
+.opt-badge { font-size: 9px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: rgba(255,255,255,0.15); color: #cbd5e1; }
+
+.opt-preview { padding: 12px; }
+
+/* ── OPTION A : card glassmorphism repensée ── */
+.card-a {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(245,240,235,0.88);
+  border: 1px solid rgba(180,155,130,0.45);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  backdrop-filter: blur(12px);
+}
+.a-progress-top {
+  height: 4px;
+  background: rgba(180,155,130,0.2);
+  position: relative;
+}
+.a-progress-fill {
+  height: 100%;
+  background: #e24d32;
+  border-radius: 0 99px 99px 0;
+  transition: width 0.4s ease;
+}
+.a-inner { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.a-meta { display: flex; align-items: center; justify-content: space-between; }
+.a-num { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.14em; color: #e24d32; }
+.a-dots { display: flex; gap: 3px; }
+.a-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(180,100,60,0.2); }
+.a-dot.done { background: #e24d32; }
+.a-dot.curr { background: #e24d32; opacity: 0.55; }
+.a-q-text { font-size: 14px; font-weight: 700; color: #1a1210; line-height: 1.35; }
+.a-choices { display: flex; flex-direction: column; gap: 5px; }
+.a-ch { padding: 9px 12px; border-radius: 9px; border: 1.5px solid rgba(180,155,130,0.35); background: rgba(255,255,255,0.5); font-size: 12px; color: #2d2420; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+.a-ch.sel { border-color: #e24d32; background: rgba(226,77,50,0.08); color: #8b2312; font-weight: 600; }
+.a-footer { display: flex; justify-content: flex-end; }
+.a-btn { padding: 7px 16px; border-radius: 8px; background: #e24d32; color: white; font-size: 12px; font-weight: 700; border: none; cursor: pointer; }
+
+/* résultat A */
+.a-result-inner { padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.a-score-ring {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: conic-gradient(#22c55e 0deg 288deg, rgba(180,155,130,0.25) 288deg 360deg);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.a-score-ring::before {
+  content: '';
+  position: absolute;
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  background: rgba(245,240,235,0.95);
+}
+.a-score-val { font-size: 18px; font-weight: 900; color: #1a1210; position: relative; z-index: 1; }
+.a-score-val span { font-size: 11px; font-weight: 600; color: #6b6058; }
+.a-result-segs { display: flex; gap: 3px; }
+.a-rseg { width: 22px; height: 6px; border-radius: 99px; }
+.a-result-msg { font-size: 11px; color: #6b6058; text-align: center; }
+.a-result-btns { display: flex; gap: 8px; }
+.a-btn-ghost { padding: 7px 12px; border-radius: 8px; background: transparent; border: 1.5px solid rgba(180,155,130,0.35); color: #4b4038; font-size: 11px; font-weight: 600; }
+
+/* ── OPTION B : card avec header restructuré + feedback inline ── */
+.card-b {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(245,240,235,0.88);
+  border: 1px solid rgba(180,155,130,0.45);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.b-header { background: #e24d32; padding: 12px 16px 10px; }
+.b-header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.b-header-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 700; color: rgba(255,255,255,0.65); }
+.b-header-num { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.65); }
+.b-header-segs { display: flex; gap: 2px; }
+.b-hseg { height: 3px; flex: 1; border-radius: 99px; background: rgba(255,255,255,0.25); }
+.b-hseg.done { background: rgba(255,255,255,0.85); }
+.b-hseg.curr { background: rgba(255,255,255,0.55); }
+.b-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.b-q { font-size: 14px; font-weight: 700; color: #1a1210; line-height: 1.35; }
+.b-choices { display: flex; flex-direction: column; gap: 5px; }
+.b-ch {
+  padding: 9px 12px; border-radius: 9px;
+  border: 1.5px solid rgba(180,155,130,0.35);
+  background: rgba(255,255,255,0.5);
+  font-size: 12px; color: #2d2420;
+  display: flex; align-items: center; gap: 8px;
+}
+.b-ch.sel { border-color: #e24d32; background: rgba(226,77,50,0.08); }
+.b-ch.correct { border-color: #22c55e; background: rgba(34,197,94,0.1); color: #14532d; }
+.b-ch.wrong { border-color: #ef4444; background: rgba(239,68,68,0.1); color: #7f1d1d; }
+.b-circle { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid rgba(180,155,130,0.4); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.b-circle.filled { background: #e24d32; border-color: #e24d32; }
+.b-footer { display: flex; justify-content: flex-end; }
+.b-btn { padding: 7px 16px; border-radius: 8px; background: #e24d32; color: white; font-size: 12px; font-weight: 700; border: none; }
+/* résultat B */
+.b-result-score { background: #e24d32; padding: 20px; text-align: center; }
+.b-result-big { font-size: 40px; font-weight: 900; color: white; line-height: 1; }
+.b-result-sub { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 3px; }
+.b-result-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.b-result-segs { display: flex; gap: 3px; }
+.b-rseg { height: 8px; flex: 1; border-radius: 99px; }
+.b-result-msg { font-size: 11px; color: #6b6058; text-align: center; }
+.b-result-btns { display: flex; justify-content: space-between; }
+.b-btn-ghost { padding: 7px 12px; border-radius: 8px; background: transparent; border: 1.5px solid rgba(180,155,130,0.35); color: #4b4038; font-size: 11px; font-weight: 600; }
+
+/* ── OPTION C : card épurée, question dominante ── */
+.card-c {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(245,240,235,0.92);
+  border: 1px solid rgba(180,155,130,0.45);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.c-top { padding: 12px 16px; border-bottom: 1px solid rgba(180,155,130,0.2); display: flex; align-items: center; justify-content: space-between; }
+.c-module { display: flex; align-items: center; gap: 6px; }
+.c-dot { width: 8px; height: 8px; border-radius: 50%; background: #e24d32; }
+.c-module-name { font-size: 10px; font-weight: 700; color: #e24d32; text-transform: uppercase; letter-spacing: 0.1em; }
+.c-steps { display: flex; gap: 2px; }
+.c-step { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid rgba(180,155,130,0.3); background: transparent; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: #a89080; }
+.c-step.done { background: #e24d32; border-color: #e24d32; color: white; }
+.c-step.curr { border-color: #e24d32; color: #e24d32; }
+.c-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.c-q { font-size: 15px; font-weight: 700; color: #1a1210; line-height: 1.35; }
+.c-choices { display: flex; flex-direction: column; gap: 5px; }
+.c-ch {
+  padding: 10px 13px; border-radius: 10px;
+  border: 1.5px solid rgba(180,155,130,0.3);
+  background: rgba(255,255,255,0.55);
+  font-size: 12px; color: #2d2420;
+  display: flex; align-items: center; gap: 9px;
+}
+.c-ch.sel { border-color: #e24d32; background: rgba(226,77,50,0.07); }
+.c-letter { width: 18px; height: 18px; border-radius: 4px; background: rgba(180,155,130,0.2); font-size: 9px; font-weight: 800; color: #8b7060; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.c-ch.sel .c-letter { background: #e24d32; color: white; }
+.c-footer { display: flex; justify-content: space-between; align-items: center; }
+.c-hint { font-size: 10px; color: #a89080; }
+.c-btn { padding: 8px 18px; border-radius: 9px; background: #e24d32; color: white; font-size: 12px; font-weight: 700; border: none; }
+/* résultat C */
+.c-result { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.c-result-header { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(180,155,130,0.2); }
+.c-result-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(226,77,50,0.12); border: 1.5px solid rgba(226,77,50,0.3); display: flex; align-items: center; justify-content: center; }
+.c-result-score-text { font-size: 28px; font-weight: 900; color: #1a1210; }
+.c-result-score-text span { font-size: 14px; font-weight: 600; color: #a89080; }
+.c-result-segs { display: flex; gap: 3px; }
+.c-rseg { height: 6px; flex: 1; border-radius: 99px; }
+.c-result-msg { font-size: 11px; color: #6b6058; }
+.c-result-btns { display: flex; justify-content: space-between; }
+.c-btn-ghost { padding: 7px 12px; border-radius: 8px; background: transparent; border: 1.5px solid rgba(180,155,130,0.35); color: #4b4038; font-size: 11px; font-weight: 600; }
+
+/* Tabs */
+.tabs { display: flex; gap: 0; border-radius: 8px; overflow: hidden; border: 1px solid rgba(180,155,130,0.3); margin-bottom: 10px; }
+.tab { flex: 1; padding: 6px 8px; font-size: 10px; font-weight: 600; text-align: center; cursor: pointer; background: rgba(255,255,255,0.3); color: #6b6058; transition: background 0.15s; }
+.tab.active { background: #e24d32; color: white; }
+
+.phase { display: none; }
+.phase.active { display: block; }
+
+.opt-desc { padding: 10px 14px; background: #0f172a; border-top: 1px solid #334155; }
+.opt-desc ul { padding-left: 14px; }
+.opt-desc li { font-size: 10px; color: #64748b; margin-bottom: 2px; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<h1>Quiz — redesign de la card (escalier conservé)</h1>
+<p class="subtitle">3 directions pour la card + écran résultat — cliquez pour sélectionner</p>
+
+<div class="grid">
+
+  <!-- ── OPTION A ── -->
+  <div class="option-wrap" data-choice="a" onclick="toggleSelect(this)">
+    <div class="opt-label">
+      <h2>A — Progress en haut + anneau score</h2>
+      <span class="opt-badge">Recommandé</span>
+    </div>
+    <div style="padding:12px;">
+      <div class="tabs">
+        <div class="tab active" onclick="event.stopPropagation();showTab(this,'a-q')">Question</div>
+        <div class="tab" onclick="event.stopPropagation();showTab(this,'a-r')">Résultat</div>
+      </div>
+      <div class="page-sim">
+        <div style="width:100%;max-width:320px;">
+          <!-- Question phase -->
+          <div id="a-q" class="phase active">
+            <div class="card-a">
+              <div class="a-progress-top"><div class="a-progress-fill" style="width:40%;"></div></div>
+              <div class="a-inner">
+                <div class="a-meta">
+                  <div class="a-num">Question 2 / 5</div>
+                  <div class="a-dots">
+                    <div class="a-dot done"></div>
+                    <div class="a-dot curr"></div>
+                    <div class="a-dot"></div>
+                    <div class="a-dot"></div>
+                    <div class="a-dot"></div>
+                  </div>
+                </div>
+                <div class="a-q-text">Quelle propriété CSS centre un flex item horizontalement ?</div>
+                <div class="a-choices">
+                  <div class="a-ch">justify-content: center</div>
+                  <div class="a-ch sel">align-items: center <span style="color:#e24d32;font-size:11px;">●</span></div>
+                  <div class="a-ch">margin: auto</div>
+                  <div class="a-ch">text-align: center</div>
+                </div>
+                <div class="a-footer"><div class="a-btn">Vérifier</div></div>
+              </div>
+            </div>
+          </div>
+          <!-- Result phase -->
+          <div id="a-r" class="phase">
+            <div class="card-a">
+              <div class="a-progress-top"><div class="a-progress-fill" style="width:100%;background:#22c55e;"></div></div>
+              <div class="a-result-inner">
+                <div class="a-score-ring">
+                  <div class="a-score-val">4<span>/5</span></div>
+                </div>
+                <div class="a-result-segs">
+                  <div class="a-rseg" style="background:#22c55e;"></div>
+                  <div class="a-rseg" style="background:#ef4444;"></div>
+                  <div class="a-rseg" style="background:#22c55e;"></div>
+                  <div class="a-rseg" style="background:#22c55e;"></div>
+                  <div class="a-rseg" style="background:#22c55e;"></div>
+                </div>
+                <div class="a-result-msg">Bon travail, continuez à pratiquer.</div>
+                <div class="a-result-btns">
+                  <div class="a-btn-ghost">Retour au TP</div>
+                  <div class="a-btn">Réessayer</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="opt-desc">
+      <ul>
+        <li>Barre de progression pleine largeur en haut de card (remplace header coloré cassé)</li>
+        <li>Dots + "Question X/Y" en ligne — lisible d'un coup d'œil</li>
+        <li>Résultat : anneau circulaire de progression + segments vert/rouge</li>
+        <li>Correction du bug <code>bg-${modulePath}</code> → inline style CSS variable</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── OPTION B ── -->
+  <div class="option-wrap" data-choice="b" onclick="toggleSelect(this)">
+    <div class="opt-label">
+      <h2>B — Header repensé + feedback inline</h2>
+      <span class="opt-badge">Bold</span>
+    </div>
+    <div style="padding:12px;">
+      <div class="tabs">
+        <div class="tab active" onclick="event.stopPropagation();showTab(this,'b-q')">Question</div>
+        <div class="tab" onclick="event.stopPropagation();showTab(this,'b-r')">Résultat</div>
+      </div>
+      <div class="page-sim">
+        <div style="width:100%;max-width:320px;">
+          <div id="b-q" class="phase active">
+            <div class="card-b">
+              <div class="b-header">
+                <div class="b-header-top">
+                  <div class="b-header-label">Quiz — CSS</div>
+                  <div class="b-header-num">2 / 5</div>
+                </div>
+                <div class="b-header-segs">
+                  <div class="b-hseg done"></div>
+                  <div class="b-hseg curr"></div>
+                  <div class="b-hseg"></div>
+                  <div class="b-hseg"></div>
+                  <div class="b-hseg"></div>
+                </div>
+              </div>
+              <div class="b-body">
+                <div class="b-q">Quelle propriété CSS centre un flex item horizontalement ?</div>
+                <div class="b-choices">
+                  <div class="b-ch">
+                    <div class="b-circle"></div>
+                    justify-content: center
+                  </div>
+                  <div class="b-ch sel">
+                    <div class="b-circle filled"></div>
+                    align-items: center
+                  </div>
+                  <div class="b-ch">
+                    <div class="b-circle"></div>
+                    margin: auto
+                  </div>
+                </div>
+                <div class="b-footer"><div class="b-btn">Vérifier</div></div>
+              </div>
+            </div>
+          </div>
+          <div id="b-r" class="phase">
+            <div class="card-b">
+              <div class="b-result-score">
+                <div class="b-result-big">4/5</div>
+                <div class="b-result-sub">Bon travail !</div>
+              </div>
+              <div class="b-result-body">
+                <div class="b-result-segs">
+                  <div class="b-rseg" style="background:#22c55e;"></div>
+                  <div class="b-rseg" style="background:#ef4444;"></div>
+                  <div class="b-rseg" style="background:#22c55e;"></div>
+                  <div class="b-rseg" style="background:#22c55e;"></div>
+                  <div class="b-rseg" style="background:#22c55e;"></div>
+                </div>
+                <div class="b-result-msg">Continuez à pratiquer pour maîtriser le sujet.</div>
+                <div class="b-result-btns">
+                  <div class="b-btn-ghost">Retour au TP</div>
+                  <div class="b-btn">Réessayer</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="opt-desc">
+      <ul>
+        <li>Header garde le fond coloré mais avec progress <strong>intégrée dedans</strong> (plus de flottant)</li>
+        <li>Choix avec indicateur radio visuel (cercle) — plus affordant</li>
+        <li>Résultat : grand score en header coloré (même visuel que question), impression de cohérence</li>
+        <li>Approche la plus proche de l'existant — refactoring minimal</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── OPTION C ── -->
+  <div class="option-wrap" data-choice="c" onclick="toggleSelect(this)">
+    <div class="opt-label">
+      <h2>C — Étapes numérotées + score lettré</h2>
+      <span class="opt-badge">Académique</span>
+    </div>
+    <div style="padding:12px;">
+      <div class="tabs">
+        <div class="tab active" onclick="event.stopPropagation();showTab(this,'c-q')">Question</div>
+        <div class="tab" onclick="event.stopPropagation();showTab(this,'c-r')">Résultat</div>
+      </div>
+      <div class="page-sim">
+        <div style="width:100%;max-width:320px;">
+          <div id="c-q" class="phase active">
+            <div class="card-c">
+              <div class="c-top">
+                <div class="c-module"><div class="c-dot"></div><div class="c-module-name">HTML — CSS</div></div>
+                <div class="c-steps">
+                  <div class="c-step done">1</div>
+                  <div class="c-step curr">2</div>
+                  <div class="c-step">3</div>
+                  <div class="c-step">4</div>
+                  <div class="c-step">5</div>
+                </div>
+              </div>
+              <div class="c-body">
+                <div class="c-q">Quelle propriété CSS centre un flex item horizontalement ?</div>
+                <div class="c-choices">
+                  <div class="c-ch"><div class="c-letter">A</div>justify-content: center</div>
+                  <div class="c-ch sel"><div class="c-letter">B</div>align-items: center</div>
+                  <div class="c-ch"><div class="c-letter">C</div>margin: auto</div>
+                  <div class="c-ch"><div class="c-letter">D</div>text-align: center</div>
+                </div>
+                <div class="c-footer">
+                  <div class="c-hint">Sélectionnez une réponse</div>
+                  <div class="c-btn">Vérifier</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="c-r" class="phase">
+            <div class="card-c">
+              <div class="c-result">
+                <div class="c-result-header">
+                  <div class="c-result-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e24d32" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  </div>
+                  <div>
+                    <div class="c-result-score-text">4 <span>/ 5</span></div>
+                    <div style="font-size:10px;color:#a89080;">Sélection & mise en forme CSS</div>
+                  </div>
+                </div>
+                <div class="c-result-segs">
+                  <div class="c-rseg" style="background:#22c55e;"></div>
+                  <div class="c-rseg" style="background:#ef4444;"></div>
+                  <div class="c-rseg" style="background:#22c55e;"></div>
+                  <div class="c-rseg" style="background:#22c55e;"></div>
+                  <div class="c-rseg" style="background:#22c55e;"></div>
+                </div>
+                <div class="c-result-msg">Bon travail — continuez à pratiquer pour maîtriser les sélecteurs.</div>
+                <div class="c-result-btns">
+                  <div class="c-btn-ghost">Retour au TP</div>
+                  <div class="c-btn" style="padding:7px 14px;border-radius:8px;background:#e24d32;color:white;font-size:11px;font-weight:700;">Réessayer</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="opt-desc">
+      <ul>
+        <li>Navigation : cercles numérotés (1→5) dans la topbar — progression très lisible</li>
+        <li>Réponses avec lettres A/B/C/D — style QCM académique IUT</li>
+        <li>Résultat : icône étoile + score grand format + nom de la section</li>
+        <li>Cohérent avec le contexte universitaire</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showTab(el, targetId) {
+  const parent = el.closest('.option-wrap') || el.closest('[data-choice]') || el.closest('div[style]');
+  const tabs = el.closest('.tabs').querySelectorAll('.tab');
+  tabs.forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  // find all phases in this card
+  const phases = el.closest('.option-wrap').querySelectorAll('.phase');
+  phases.forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(targetId);
+  if (target) target.classList.add('active');
+}
+</script>
+</body>
+</html>
