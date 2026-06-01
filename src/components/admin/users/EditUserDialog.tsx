@@ -186,13 +186,13 @@ function EditForm({ user, onOpenChange, onUpdated }: EditFormProps) {
                                 />
                             </div>
                             <div>
-                                <Label className={labelCn}>Rôle *</Label>
+                                <Label htmlFor="eu-role" className={labelCn}>Rôle *</Label>
                                 <Controller
                                     control={control}
                                     name="role"
                                     render={({ field }) => (
                                         <Select onValueChange={field.onChange} value={field.value}>
-                                            <SelectTrigger className={cn(inputCn, "w-full")}>
+                                            <SelectTrigger id="eu-role" className={cn(inputCn, "w-full")}>
                                                 <SelectValue/>
                                             </SelectTrigger>
                                             <SelectContent>
