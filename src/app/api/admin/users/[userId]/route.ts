@@ -53,7 +53,8 @@ export async function PATCH(
         return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
 
-    const { name, email, username, group, role } = parsed.data;
+    const { firstName, lastName, email, username, group, role } = parsed.data;
+    const name = `${firstName} ${lastName}`;
 
     try {
         // Mise à jour nom + email via better-auth admin

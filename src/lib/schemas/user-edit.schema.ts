@@ -1,7 +1,8 @@
 import {z} from "zod";
 
 export const userEditSchema = z.object({
-    name: z.string().min(1, "Requis"),
+    firstName: z.string().min(2, "2 caractères min."),
+    lastName: z.string().min(2, "2 caractères min."),
     email: z.string().email("Email invalide"),
     username: z.string().min(3, "3 caractères min.").max(32, "32 caractères max.").optional(),
     group: z.string().optional(),

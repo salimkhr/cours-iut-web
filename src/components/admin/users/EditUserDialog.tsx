@@ -51,7 +51,8 @@ function EditForm({ user, onOpenChange, onUpdated }: EditFormProps) {
     } = useForm<UserEditValues>({
         resolver: zodResolver(userEditSchema),
         defaultValues: {
-            name: user.name,
+            firstName: user.name.split(' ').slice(0, -1).join(' ') || user.name,
+            lastName: user.name.split(' ').slice(-1)[0] ?? '',
             email: user.email,
             username: user.username ?? undefined,
             group: user.group ?? '',
@@ -75,7 +76,7 @@ function EditForm({ user, onOpenChange, onUpdated }: EditFormProps) {
 
         onUpdated({
             ...user,
-            name: data.name,
+            name: `${data.firstName} ${data.lastName}`,
             email: data.email,
             username: data.username || null,
             group: data.group || null,
@@ -136,15 +137,27 @@ function EditForm({ user, onOpenChange, onUpdated }: EditFormProps) {
                     <section>
                         <Eyebrow>Profil</Eyebrow>
                         <div className="flex flex-col gap-3">
-                            <div>
-                                <Label htmlFor="eu-name" className={labelCn}>Nom affiché *</Label>
-                                <Input
-                                    id="eu-name"
-                                    className={inputCn}
-                                    aria-invalid={errors.name ? 'true' : 'false'}
-                                    {...register('name')}
-                                />
-                                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <Label htmlFor="eu-firstname" className={labelCn}>Prénom *</Label>
+                                    <Input
+                                        id="eu-firstname"
+                                        className={inputCn}
+                                        aria-invalid={errors.firstName ? 'true' : 'false'}
+                                        {...register('firstName')}
+                                    />
+                                    {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName.message}</p>}
+                                </div>
+                                <div>
+                                    <Label htmlFor="eu-lastname" className={labelCn}>Nom *</Label>
+                                    <Input
+                                        id="eu-lastname"
+                                        className={inputCn}
+                                        aria-invalid={errors.lastName ? 'true' : 'false'}
+                                        {...register('lastName')}
+                                    />
+                                    {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>}
+                                </div>
                             </div>
                             <div>
                                 <Label htmlFor="eu-email" className={labelCn}>Email *</Label>
