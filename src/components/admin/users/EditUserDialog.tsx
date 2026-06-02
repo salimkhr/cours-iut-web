@@ -76,7 +76,7 @@ function EditForm({ user, onOpenChange, onUpdated }: EditFormProps) {
 
         onUpdated({
             ...user,
-            name: `${data.firstName} ${data.lastName}`,
+            name: data.lastName ? `${data.firstName} ${data.lastName}` : data.firstName,
             email: data.email,
             username: data.username || null,
             group: data.group || null,
@@ -149,7 +149,7 @@ function EditForm({ user, onOpenChange, onUpdated }: EditFormProps) {
                                     {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName.message}</p>}
                                 </div>
                                 <div>
-                                    <Label htmlFor="eu-lastname" className={labelCn}>Nom *</Label>
+                                    <Label htmlFor="eu-lastname" className={labelCn}>Nom</Label>
                                     <Input
                                         id="eu-lastname"
                                         className={inputCn}

@@ -54,25 +54,23 @@ export async function PATCH(
     }
 
     const { firstName, lastName, email, username, group, role } = parsed.data;
-    const name = `${firstName} ${lastName}`;
+    const name = lastName ? `${firstName} ${lastName}` : firstName;
 
     try {
-        // Mise à jour nom + email via better-auth admin
+        // reason: better-auth admin plugin types not exposed for adminUpdateUser method
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (auth.api as any).updateUser({
+        await (auth.api as any).adminUpdateUser({
             body: { userId, data: { name, email } },
             headers: await headers(),
         });
 
-        // Mise à jour du rôle
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (auth.api as any).setRole({
             body: { userId, role },
             headers: await headers(),
         });
 
-        // username et group mis à jour directement en MongoDB
-        // (username plugin et champ custom non exposés via updateUser)
+        // username et group : champs custom/plugin non gérés par adminUpdateUser
         const db = await connectToDB();
         await db.collection("user").updateOne(
             { id: userId },

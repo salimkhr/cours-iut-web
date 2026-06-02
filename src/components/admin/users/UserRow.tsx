@@ -37,9 +37,16 @@ export default function UserRow({ user, onDeleted, onEdit }: UserRowProps) {
                         </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
-                        <p className="text-sm font-semibold text-brand-dark dark:text-bridge-100 truncate">
-                            {user.name}
-                        </p>
+                        <div className="flex items-center gap-1.5">
+                            <p className="text-sm font-semibold text-brand-dark dark:text-bridge-100 truncate">
+                                {user.name}
+                            </p>
+                            {user.banned && (
+                                <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-500/15 text-red-500">
+                                    Banni
+                                </span>
+                            )}
+                        </div>
                         <p className="text-xs text-bridge-500 dark:text-bridge-400 truncate">
                             {user.email}
                         </p>
