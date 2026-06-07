@@ -15,5 +15,5 @@ export default interface Module {
     manager?: Instructor;
     associatedSae: string[];
     isExtra?: boolean;
-    updatedAt?: Date;
+    updatedAt?: string;
 }
