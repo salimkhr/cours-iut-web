@@ -1,5 +1,6 @@
 'use client'
 import { useMemo } from "react";
+import Image from "next/image";
 import { useIsDark } from "@/hook/useIsDark";
 import Module from "@/types/Module";
 
@@ -49,15 +50,23 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
         ? "/images/header/escalier-dark.png"
         : "/images/header/escalier-light.png";
 
+    // Extended solid zone (55%) and longer transition (75→90%) so text at max-width 560px
+    // stays inside a covered zone on viewports ≥1024px, and partially covered on smaller ones.
     const imageFade = isDark
-        ? `linear-gradient(to right, #171512 0%, #171512 45%, rgba(23,21,18,0.6) 65%, transparent 100%)`
-        : `linear-gradient(to right, #faf8f5 0%, #faf8f5 45%, rgba(250,248,245,0.6) 65%, transparent 100%)`;
+        ? `linear-gradient(to right, #171512 0%, #171512 55%, rgba(23,21,18,0.55) 75%, transparent 90%)`
+        : `linear-gradient(to right, #faf8f5 0%, #faf8f5 55%, rgba(250,248,245,0.55) 75%, transparent 90%)`;
 
     const textColor = isDark ? "#faf8f5" : "#1a1916";
 
     return (
         <>
             <style>{`
+        :root {
+          --about-mobile-overlay: rgba(250,248,245,0.9);
+        }
+        .dark {
+          --about-mobile-overlay: rgba(23,21,18,0.9);
+        }
         .about-section {
           position: relative;
           width: 100%;
@@ -70,17 +79,22 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
           inset: 0;
           z-index: 0;
         }
-        .about-image-wrap img {
-          display: block;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: right center;
-        }
         .about-image-fade {
           position: absolute;
           inset: 0;
           pointer-events: none;
+        }
+        .about-mobile-overlay {
+          display: none;
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+        }
+        @media (max-width: 639px) {
+          .about-mobile-overlay {
+            display: block;
+            background: var(--about-mobile-overlay);
+          }
         }
         .about-text {
           position: relative;
@@ -97,7 +111,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
           display: block;
           width: 2.5rem;
           height: 2px;
-          background: var(--color-brand-primary, #c8a96e);
+          background: var(--color-brand-primary, #C2410C);
           border-radius: 2px;
           margin-bottom: 1.5rem;
         }
@@ -106,7 +120,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
           font-family: var(--font-mono, monospace);
           letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: var(--color-brand-primary, #c8a96e);
+          color: var(--color-brand-primary, #C2410C);
           margin: 0 0 1rem;
         }
         .update-list {
@@ -127,20 +141,25 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
           width: 5px;
           height: 5px;
           border-radius: 50%;
-          background: var(--color-brand-primary, #c8a96e);
+          background: var(--color-brand-primary, #C2410C);
           flex-shrink: 0;
           margin-top: 0.35rem;
         }
         .update-name {
           flex: 1;
+          min-width: 0;
           font-weight: 500;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         .update-date {
           font-family: var(--font-mono, monospace);
-          font-size: 0.68rem;
+          font-size: 0.7rem;
           letter-spacing: 0.06em;
           color: var(--color-brand-gray-500, #9b9189);
           white-space: nowrap;
+          flex-shrink: 0;
         }
         .block-separator {
           border: none;
@@ -162,13 +181,13 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
         }
         .progress-bar-fill {
           height: 100%;
-          background: var(--color-brand-primary, #c8a96e);
+          background: var(--color-brand-primary, #C2410C);
           border-radius: 4px;
           transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .progress-sub {
           font-family: var(--font-mono, monospace);
-          font-size: 0.68rem;
+          font-size: 0.7rem;
           letter-spacing: 0.06em;
           color: var(--color-brand-gray-500, #9b9189);
         }
@@ -179,16 +198,23 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
                 aria-label="Dernières mises à jour du programme"
             >
                 <div className="about-image-wrap" aria-hidden="true">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={heroImage} alt="" />
+                    <Image
+                        src={heroImage}
+                        alt=""
+                        fill
+                        priority={false}
+                        sizes="100vw"
+                        style={{ objectFit: 'cover', objectPosition: 'right center' }}
+                    />
                     <div className="about-image-fade" style={{ background: imageFade }} />
+                    <div className="about-mobile-overlay" />
                 </div>
 
                 <div className="about-text" style={{ color: textColor }}>
                     {/* Bloc 1 — Dernières mises à jour */}
                     <span className="about-rule" aria-hidden="true" />
-                    <p className="about-label" aria-hidden="true">Dernières mises à jour</p>
-                    <ul className="update-list">
+                    <p id="updates-label" className="about-label">Dernières mises à jour</p>
+                    <ul className="update-list" aria-labelledby="updates-label">
                         {recentModules.map(mod => (
                             <li key={mod._id} className="update-item">
                                 <span className="update-dot" aria-hidden="true" />
@@ -212,8 +238,8 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
                     {isAuthed && totalSections > 0 && (
                         <>
                             <hr className="block-separator" aria-hidden="true" />
-                            <p className="about-label" aria-hidden="true">Ma progression</p>
-                            <p className="progress-text">
+                            <p id="progress-label" className="about-label">Ma progression</p>
+                            <p className="progress-text" aria-describedby="progress-label">
                                 {availableSections} / {totalSections} sections déverrouillées
                             </p>
                             <div
