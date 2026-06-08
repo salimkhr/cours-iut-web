@@ -205,7 +205,7 @@ function SplitPane({label, Icon, modulePath, side, children}: SplitPaneProps) {
         <section
             aria-label={label}
             className={cn(
-                "lg:w-1/2 lg:overflow-y-auto",
+                "max-h-[70dvh] overflow-y-auto lg:max-h-none lg:w-1/2",
                 side === 'left'
                     ? "lg:pr-2"
                     : "lg:pl-2 lg:border-l lg:border-bridge-500/30 lg:dark:border-bridge-500/25",
