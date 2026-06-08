@@ -14,7 +14,7 @@ const api = (path: string, opts?: RequestInit) =>
     fetch(`${BASE}/api/admin/content/${path}`, {
         ...opts,
         headers: {
-            "Authorization": `Bearer ${TOKEN}`,
+            "Cookie": `better-auth.session_token=${TOKEN}`,
             "Content-Type": "application/json",
             ...opts?.headers,
         },
