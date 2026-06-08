@@ -9,7 +9,7 @@ import type { Block, CourseContent } from "@/types/CourseContent";
 
 export const runtime = "nodejs";
 
-type RawBlock = { id: string; type: string; props: Record<string, unknown>; colSpan?: string };
+type RawBlock = { id: string; type: string; props: Record<string, unknown>; colSpan?: "full" | "half" };
 
 // ── Validation du Bearer token ────────────────────────────────────────────────
 
@@ -253,11 +253,26 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             }
             blocks.splice(insertAt, 0, block as RawBlock);
 
-            await db.collection<CourseContent>("course_content").updateOne(
+            const upsertResult = await db.collection<CourseContent>("course_content").updateOne(
                 { moduleSlug: module, sectionSlug: section, contentType: type },
                 { $set: { blocks: blocks as Block[], updatedAt: new Date() }, $inc: { version: 1 } },
                 { upsert: true }
             );
+
+            if (upsertResult.upsertedId) {
+                const contentId = upsertResult.upsertedId.toString();
+                await db.collection("modules").updateOne(
+                    { path: module },
+                    {
+                        $set: {
+                            "sections.$[s].contents.$[c].source":    "db",
+                            "sections.$[s].contents.$[c].contentId": contentId,
+                        },
+                    },
+                    { arrayFilters: [{ "s.path": section }, { "c.type": type }] }
+                );
+            }
+
             revalidateTag(`content:${module}:${section}:${type}`, { expire: 0 });
             return {
                 content: [{
