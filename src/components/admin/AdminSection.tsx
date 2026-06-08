@@ -7,6 +7,7 @@ import {useState} from "react";
 import updateSectionState from "@/hook/admin/updateSectionState";
 import EditSectionButton from "@/components/admin/EditSectionButton";
 import Module from "@/types/Module";
+import { getContentTypes, hasContentType } from "@/types/CourseContent";
 import {Section as SectionFrom} from "@/components/admin/SectionForm";
 import useAdminApi from "@/hook/admin/useAdminApi";
 
@@ -51,7 +52,7 @@ export default function AdminSection({
             <div className="space-y-3">
                 <div className="flex items-center justify-between">
                     <Label htmlFor={`${currentSection.path}-available`} className="text-sm">
-                        {currentSection.contents.map(content => content.charAt(0).toUpperCase() + content.slice(1)).join(', ')}
+                        {getContentTypes(currentSection.contents).map(content => content.charAt(0).toUpperCase() + content.slice(1)).join(', ')}
                     </Label>
                     <Switch
                         id={`${currentSection.path}-available`}
@@ -70,7 +71,7 @@ export default function AdminSection({
                         disabled={!currentSection.hasCorrection}
                     />
                 </div>
-                {currentSection.contents.includes('examen') && (
+                {hasContentType(currentSection.contents, 'examen') && (
                     <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t mt-2">
                         <span>Code d&apos;accès :</span>
                         <code

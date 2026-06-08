@@ -1,6 +1,7 @@
 import {BookOpen, CheckCircle2, Clock} from "lucide-react";
 import Module from "@/types/Module";
 import Section from "@/types/Section";
+import { hasContentType } from "@/types/CourseContent";
 import Stat from "@/components/page/Stat";
 import {cn} from "@/lib/utils";
 
@@ -16,7 +17,7 @@ export default function ProgressSection({
                                             totalAvailableSections,
                                         }: ProgressSectionProps) {
     const totalSeances = (currentModule.sections ?? [])
-        .filter((s: Section) => !s.contents.includes("examen"))
+        .filter((s: Section) => !hasContentType(s.contents, "examen"))
         .reduce((sum, s) => sum + (s.totalDuration || 1), 0);
 
     return (

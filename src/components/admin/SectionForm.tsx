@@ -13,6 +13,7 @@ import {Checkbox} from '@/components/ui/checkbox';
 import {Textarea} from '@/components/ui/textarea';
 import {cn} from '@/lib/utils';
 import Module from '@/types/Module';
+import { ContentRef } from '@/types/CourseContent';
 import {
     sectionFormSchema,
     type SectionFormValues,
@@ -32,7 +33,7 @@ export type Section = {
     isAvailable?: boolean;
     correctionIsAvailable?: boolean;
     order: number;
-    contents: string[];
+    contents: ContentRef[] | string[];
     examenIsLock?: boolean;
 };
 
@@ -82,9 +83,9 @@ export default function SectionForm({
                 isAvailable: section!.isAvailable ?? true,
                 correctionIsAvailable: section!.correctionIsAvailable ?? true,
                 order: section!.order,
-                contents: section!.contents.filter(
-                    (c): c is typeof AVAILABLE_CONTENTS[number] => (AVAILABLE_CONTENTS as readonly string[]).includes(c)
-                ) as SectionFormValues['contents'],
+                contents: section!.contents
+                    .map(c => typeof c === "string" ? c : c.type)
+                    .filter((c): c is typeof AVAILABLE_CONTENTS[number] => (AVAILABLE_CONTENTS as readonly string[]).includes(c)) as SectionFormValues['contents'],
                 examenIsLock: section!.examenIsLock ?? false,
             };
         }

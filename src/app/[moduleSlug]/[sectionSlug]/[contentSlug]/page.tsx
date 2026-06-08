@@ -13,6 +13,7 @@ import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getContentComponent} from "@/lib/getContentComponent";
 import {cn} from "@/lib/utils";
 import {CONTENT_DESC, CONTENT_ICON, ContentKey} from "@/lib/contentMeta";
+import {getContentTypes, hasContentType} from "@/types/CourseContent";
 import {Metadata} from "next";
 import {getServerSession} from "@/lib/auth";
 
@@ -53,7 +54,7 @@ export default async function Content({params}: ContentPageProps) {
     if (!isAdmin && currentSection.isAvailable === false) notFound();
 
     if (isSplit) {
-        if (!currentSection.contents.includes('cours') || !currentSection.contents.includes('TP')) {
+        if (!hasContentType(currentSection.contents, 'cours') || !hasContentType(currentSection.contents, 'TP')) {
             notFound();
         }
     } else if (!currentContent) {
@@ -132,7 +133,7 @@ export default async function Content({params}: ContentPageProps) {
             <div className="flex sticky top-(--navbar-h) z-[25] w-full justify-end">
                 <div className={cn("flex px-1 border-l border-b border-border rounded-bl-xl bg-transparent backdrop-blur-xs", isSplit ? "py-1" : "pt-1 pb-1")}>
                     <ContentSidebarNav
-                        contents={currentSection.contents}
+                        contents={getContentTypes(currentSection.contents)}
                         currentContent={isSplit ? SPLIT_SLUG : currentContent!}
                         moduleSlug={moduleSlug}
                         sectionSlug={sectionSlug}
@@ -181,7 +182,7 @@ export default async function Content({params}: ContentPageProps) {
                             currentContent={currentContent as ContentKey}
                             moduleSlug={moduleSlug}
                             sectionSlug={sectionSlug}
-                            sectionContents={currentSection.contents}
+                            sectionContents={getContentTypes(currentSection.contents)}
                         />
                     )}
                 </>

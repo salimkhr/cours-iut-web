@@ -9,6 +9,7 @@ import Section from "@/types/Section";
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
 import {CONTENT_ICON, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
+import { getContentTypes } from "@/types/CourseContent";
 import {Button} from "@/components/ui/button";
 import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
 import updateSectionState from "@/hook/admin/updateSectionState";
@@ -30,7 +31,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
 
     const prefersReducedMotion = useReducedMotion();
 
-    const sortedContents = [...section.contents].sort(
+    const sortedContents = getContentTypes(section.contents).sort(
         (a, b) => CONTENT_ORDER.indexOf(a as ContentKey) - CONTENT_ORDER.indexOf(b as ContentKey)
     );
 
