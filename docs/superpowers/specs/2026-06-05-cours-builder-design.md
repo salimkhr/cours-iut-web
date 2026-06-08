@@ -72,26 +72,64 @@ La propriété `colSpan` est universelle (présente sur tout bloc). Deux blocs `
 | `heading` | `level: 2 \| 3`, `text: string` | Titres de section |
 | `list` | `ordered: boolean`, `items: string[]` | Liste ordonnée ou non |
 | `image-card` | `src: string`, `alt: string`, `caption?: string` | Image avec légende |
-| `diagram-card` | `content: string`, `type: "mermaid"` | Diagramme Mermaid |
 | `table` | `headers: string[]`, `rows: string[][]` | Tableau de données |
 | `section-card` | `title: string`, `href: string`, `description?: string` | Lien de section |
 | `named-component` | `name: string` | Référence un composant `.tsx` interactif par son nom |
 
-**Phase 2** (hors scope) : `code-card`, `code-with-preview`, `slide`.
+**Phase 2** (hors scope) : `diagram-card` (Mermaid), `code-card`, `code-with-preview`.  
+**Phase 3** (hors scope) : `slide`.
 
 ### 2.4 Registre de blocs
 
 Chaque type de bloc est une entrée dans un registre central (`src/lib/blockRegistry.ts`). Ajouter un nouveau type = ajouter une entrée, zéro code ailleurs.
 
 ```typescript
+interface FieldDef {
+  key:          string;
+  label:        string;
+  type:         "text" | "textarea" | "number" | "select" | "boolean" | "array-of-strings";
+  options?:     string[];    // pour type "select"
+  placeholder?: string;
+}
+
 interface BlockDefinition {
   type:         string;
   label:        string;
   defaultProps: Record<string, unknown>;
-  schema:       ZodSchema;                         // validation côté serveur
+  schema:       ZodSchema;                              // validation côté serveur
+  fields:       FieldDef[];                             // pilote le formulaire dynamique
   render:       React.ComponentType<BlockRenderProps>;  // affichage
-  editor:       React.ComponentType<BlockEditorProps>;  // formulaire dans le panneau
+  editor?:      React.ComponentType<BlockEditorProps>;  // override optionnel (cas complexes)
 }
+```
+
+Un seul composant `DynamicPropsEditor` lit `blockDef.fields` et génère automatiquement le formulaire. Pas de composant editor à écrire par type de bloc. L'`editor` optionnel sert uniquement pour les blocs nécessitant une UI spéciale (ex : `diagram-card` avec preview Mermaid live en phase 2).
+
+**Exemples de définitions** :
+
+```typescript
+// heading
+fields: [
+  { key: "level", label: "Niveau", type: "select", options: ["2", "3"] },
+  { key: "text",  label: "Texte",  type: "text" }
+]
+
+// text
+fields: [
+  { key: "content", label: "Contenu",       type: "textarea" },
+  { key: "strong",  label: "Parties gras",  type: "array-of-strings" }
+]
+
+// list
+fields: [
+  { key: "ordered", label: "Ordonnée",  type: "boolean" },
+  { key: "items",   label: "Éléments",  type: "array-of-strings" }
+]
+
+// named-component
+fields: [
+  { key: "name", label: "Nom du composant", type: "text", placeholder: "ColorClickableBox" }
+]
 ```
 
 ### 2.5 Évolution de `Section.contents`
@@ -156,7 +194,77 @@ Les deux systèmes coexistent pendant la migration. La migration se fait cours p
 
 ---
 
-## 4. API Routes
+## 4. Cache — lecture des blocs
+
+### Principe
+
+La query MongoDB (lecture des blocs) est la seule opération coûteuse (~20–50ms). Le rendu React des blocs en HTML est négligeable (~1–2ms, pur JavaScript sans I/O). On cache donc uniquement la query.
+
+Les pages cours sont dynamiques (auth via `proxy.ts`) → pas de Full Route Cache Next.js. On utilise `unstable_cache` (Data Cache Next.js) sur la fonction de lecture.
+
+### Implémentation
+
+```typescript
+// src/lib/getContentBlocks.ts
+import { unstable_cache } from "next/cache";
+
+export function getContentBlocks(moduleSlug: string, sectionSlug: string, contentType: string) {
+  return unstable_cache(
+    async () => {
+      const db = await connectToDB();
+      return db.collection<CourseContent>("course_content").findOne(
+        { moduleSlug, sectionSlug, contentType }
+      );
+    },
+    [`content-${moduleSlug}-${sectionSlug}-${contentType}`],
+    { tags: [`content:${moduleSlug}:${sectionSlug}:${contentType}`] }
+  )();
+}
+```
+
+### Invalidation
+
+La route `PUT /api/admin/content/[module]/[section]/[type]` appelle `revalidateTag` après chaque upsert réussi :
+
+```typescript
+import { revalidateTag } from "next/cache";
+
+// À la fin du PUT handler, après l'upsert MongoDB
+revalidateTag(`content:${moduleSlug}:${sectionSlug}:${contentType}`);
+```
+
+La route `DELETE` fait de même.
+
+### Flux
+
+```
+Visite étudiant
+      ↓
+  proxy.ts — vérifie session ✓
+      ↓
+  SSR page (dynamique, à chaque requête)
+      ↓
+  getContentBlocks() — unstable_cache
+      ├─ cache chaud → blocs en mémoire (0 query DB, ~0ms)
+      └─ cache froid → query MongoDB (~20–50ms) → mis en cache
+      ↓
+  React : blocs[] → HTML (~1–2ms)
+      ↓
+  HTML envoyé
+
+Admin sauvegarde via builder
+      ↓
+  PUT /api/admin/content/...
+      ↓
+  revalidateTag("content:...") → cache invalidé
+      ↓
+  Prochaine visite étudiant → cache froid → query MongoDB → recache
+```
+
+---
+
+## 5. API Routes
+
 
 Toutes sous `/api/admin/content/`, protégées par `withAdmin`.
 
@@ -198,7 +306,7 @@ Toutes sous `/api/admin/content/`, protégées par `withAdmin`.
 
 ---
 
-## 5. MCP Server
+## 6. MCP Server
 
 ### Architecture
 
@@ -288,7 +396,7 @@ Claude : passe au cours suivant → répète
 
 ---
 
-## 6. Builder UI
+## 7. Builder UI
 
 ### Layout
 
@@ -333,7 +441,7 @@ Implémentation : `shadcn/ui Sheet` avec `side="right"`. Un hook `useBuilderLayo
 **Sélectionner / éditer un bloc** :
 - Survol → outline léger + poignée `⠿` visible
 - Clic → outline accent + badge type + ouverture du panneau props
-- Panneau affiche les champs éditables du bloc (générés depuis `BlockDefinition.editor`)
+- Panneau affiche les champs éditables du bloc via `DynamicPropsEditor` (piloté par `blockDef.fields`). Si `blockDef.editor` est défini, il est utilisé à la place.
 - "Appliquer" → mise à jour de l'état local → rendu mis à jour instantanément
 - Pas de sauvegarde automatique
 
@@ -389,7 +497,7 @@ Chaque action de Claude met à jour l'état Zustand → rendu live mis à jour.
 
 ---
 
-## 7. Renderer de blocs
+## 8. Renderer de blocs
 
 Composant `BlockRenderer` (`src/components/builder/BlockRenderer.tsx`) :
 
@@ -437,7 +545,7 @@ export const namedComponents: Record<string, React.ComponentType> = {
 
 ---
 
-## 8. Découpage en phases
+## 9. Découpage en phases
 
 ### Phase 1 (ce spec)
 - [ ] Schéma `Block`, `ContentRef`, `CourseContent`
@@ -453,30 +561,30 @@ export const namedComponents: Record<string, React.ComponentType> = {
 - [ ] Migration des cours existants via MCP
 
 ### Phase 2 (hors scope)
-- Slides
-- Types de blocs `code-card` et `code-with-preview`
+- Types de blocs `diagram-card` (Mermaid), `code-card`, `code-with-preview`
 - Suppression du fallback `.tsx` et de `contentImports.ts`
 - Responsive mobile (<600px)
 
+### Phase 3 (hors scope)
+- Slides
+
 ---
 
-## 9. Fichiers créés / modifiés
+## 10. Fichiers créés / modifiés
 
 ### Nouveaux fichiers
 ```
 src/types/CourseContent.ts          — interfaces Block, ContentRef, CourseContent
 src/lib/blockRegistry.ts            — registre des types de blocs
+src/lib/getContentBlocks.ts         — query MongoDB avec unstable_cache + revalidateTag
 src/lib/namedComponents.ts          — map nom → composant interactif
 src/components/builder/
   BlockRenderer.tsx                 — renderer de production
   BuilderCanvas.tsx                 — zone de rendu éditable (avec handles)
   BlockPalette.tsx                  — palette d'ajout de blocs
   PropsPanel.tsx                    — panneau propriétés latéral
+  DynamicPropsEditor.tsx            — formulaire générique piloté par FieldDef[]
   AiAssistantPanel.tsx              — panneau assistant IA flottant
-  editors/                          — un composant editor par type de bloc
-    TextEditor.tsx
-    HeadingEditor.tsx
-    ...
 src/lib/store/builderStore.ts       — état Zustand du builder
 src/app/admin/content/
   [moduleSlug]/[sectionSlug]/
@@ -497,7 +605,7 @@ src/app/admin/page.tsx              — liens vers le builder par section
 
 ---
 
-## 10. Décisions de design
+## 11. Décisions de design
 
 | Décision | Choix | Raison |
 |----------|-------|--------|
@@ -509,4 +617,6 @@ src/app/admin/page.tsx              — liens vers le builder par section
 | Sauvegarde | Manuelle (bouton) | Évite les sauvegardes accidentelles |
 | edit_block props | Replace entier (pas merge) | Prévisible, pas d'état caché |
 | Migration | Via MCP (Claude lit .tsx) | Valide les tools, pas de script à maintenir |
-| Slides | Phase 2 | Complexité différente, pas bloquant pour le reste |
+| Cache | `unstable_cache` sur query MongoDB + `revalidateTag` au PUT | Compatible auth, pas d'infra supplémentaire |
+| diagram-card | Phase 2 | Complexité Mermaid séparable du reste |
+| Slides | Phase 3 | Complexité différente, pas bloquant pour le reste |

@@ -1,4 +1,5 @@
 'use client'
+import { useMemo } from "react";
 import { useIsDark } from "@/hook/useIsDark";
 import Module from "@/types/Module";
 
@@ -21,21 +22,28 @@ function relativeDate(date: string): string {
 export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
     const isDark = useIsDark();
 
-    const recentModules = [...modules]
-        .filter(m => !m.isExtra)
-        .sort((a, b) => {
-            const aT = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
-            const bT = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
-            return bT - aT;
-        })
-        .slice(0, 3);
+    const recentModules = useMemo(() =>
+        [...modules]
+            .filter(m => !m.isExtra)
+            .sort((a, b) => {
+                const aT = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+                const bT = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+                return bT - aT;
+            })
+            .slice(0, 3),
+        [modules]
+    );
 
-    const allSections = modules.flatMap(m => m.sections);
-    const totalSections = allSections.length;
-    const availableSections = allSections.filter(s => s.isAvailable).length;
-    const progressPct = totalSections > 0
-        ? Math.round((availableSections / totalSections) * 100)
-        : 0;
+    const { totalSections, availableSections, progressPct } = useMemo(() => {
+        const allSections = modules.flatMap(m => m.sections);
+        const total = allSections.length;
+        const available = allSections.filter(s => s.isAvailable).length;
+        return {
+            totalSections: total,
+            availableSections: available,
+            progressPct: total > 0 ? Math.round((available / total) * 100) : 0,
+        };
+    }, [modules]);
 
     const heroImage = isDark
         ? "/images/header/escalier-dark.png"

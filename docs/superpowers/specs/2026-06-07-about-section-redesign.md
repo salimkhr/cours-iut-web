@@ -29,7 +29,7 @@ Remplacer les citations par deux blocs utiles à l'étudiant, superposés sur l'
 
 **Contrainte à résoudre à l'implémentation :** le type `Module` n'expose pas de champ `updatedAt`. Deux options :
 1. Ajouter `updatedAt?: Date` au type `Module` et alimenter ce champ en base (préféré)
-2. Fallback : afficher les modules dans leur ordre de retour MongoDB sans date relative
+2. Fallback : afficher les 3 premiers modules dans leur ordre de retour MongoDB, sans date relative
 
 ### Séparateur
 
@@ -42,7 +42,10 @@ Ligne `width: 100%`, `height: 1px`, `background: rgba(200,169,110,0.2)` — visi
 - Contenu : barre de progression dorée (`#c8a96e`) + texte "X / Y modules déverrouillés" + sous-texte "Z modules en attente"
 - Label : `MA PROGRESSION` (même style)
 
-**Contrainte à résoudre à l'implémentation :** le type `Module` n'a pas de champ `locked`. La définition de "déverrouillé" est à confirmer en lisant le schéma MongoDB réel. Hypothèse de travail : modules où `isExtra === false` = programme principal, modules `isExtra === true` = extra (potentiellement liés à un déblocage). À affiner selon la logique métier réelle.
+**Mécanisme de verrouillage confirmé :** le verrou est au niveau des **sections** via `section.isAvailable?: boolean` (type `Section`). La progression est donc calculée sur les sections :
+- Total : `allModules.flatMap(m => m.sections).length`
+- Disponibles : `allModules.flatMap(m => m.sections).filter(s => s.isAvailable).length`
+- Affichage : "X / Y sections déverrouillées"
 
 ---
 
@@ -52,7 +55,7 @@ Ligne `width: 100%`, `height: 1px`, `background: rgba(200,169,110,0.2)` — visi
 |---|---|
 | `src/components/page/AboutSection.tsx` | Suppression de `QUOTES` et `<blockquote>`. Ajout props `modules: (Module & { _id: string })[]` et `isAuthed: boolean`. Deux blocs empilés en remplacement. |
 | `src/app/page.tsx` | `<AboutSection/>` → `<AboutSection modules={allModules} isAuthed={isAuthed}/>` |
-| `src/types/Module.ts` | Ajout optionnel `updatedAt?: Date` selon option retenue |
+| `src/types/Module.ts` | Ajout optionnel `updatedAt?: Date` selon option retenue pour le bloc Nouveautés |
 
 ---
 
