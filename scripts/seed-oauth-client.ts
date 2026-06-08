@@ -45,7 +45,7 @@ async function hashClientSecret(secret: string): Promise<string> {
         .replace(/=+$/, "");
 }
 
-const client = new MongoClient(MONGODB_URI);
+const client = new MongoClient(MONGODB_URI!);
 
 try {
     await client.connect();

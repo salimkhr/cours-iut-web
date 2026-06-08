@@ -2,25 +2,34 @@
 
 import { useSearchParams } from "next/navigation";
 import { useState, Suspense } from "react";
+import { Button } from "@/components/ui/button";
 
 function ConsentForm() {
     const params = useSearchParams();
     const clientId = params.get("client_id") ?? "Application inconnue";
     const scope = params.get("scope") ?? "";
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     async function handleConsent(accept: boolean) {
         setLoading(true);
-        const res = await fetch("/api/auth/oauth2/consent", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ accept }),
-        });
-        const data = await res.json() as { redirectURI?: string };
-        if (data.redirectURI) {
-            window.location.href = data.redirectURI;
-        } else {
+        setError(null);
+        try {
+            const res = await fetch("/api/auth/oauth2/consent", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ accept }),
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json() as { redirect?: boolean; url?: string };
+            if (data.url) {
+                window.location.href = data.url;
+            } else {
+                setLoading(false);
+            }
+        } catch {
             setLoading(false);
+            setError("Une erreur est survenue. Veuillez réessayer.");
         }
     }
 
@@ -36,21 +45,27 @@ function ConsentForm() {
                         Portées : <code className="text-xs bg-muted px-1 rounded">{scope}</code>
                     </p>
                 )}
+                {error && (
+                    <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded">
+                        {error}
+                    </p>
+                )}
                 <div className="flex gap-3 pt-2">
-                    <button
+                    <Button
                         onClick={() => handleConsent(true)}
                         disabled={loading}
-                        className="flex-1 bg-primary text-primary-foreground rounded px-4 py-2 text-sm font-medium disabled:opacity-50"
+                        className="flex-1"
                     >
                         Autoriser
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={() => handleConsent(false)}
                         disabled={loading}
-                        className="flex-1 border rounded px-4 py-2 text-sm font-medium disabled:opacity-50"
+                        variant="outline"
+                        className="flex-1"
                     >
                         Refuser
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>
