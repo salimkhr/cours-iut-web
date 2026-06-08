@@ -162,7 +162,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
         }
         .block-separator {
           border: none;
-          border-top: 1px solid rgba(200, 169, 110, 0.2);
+          border-top: 1px solid color-mix(in srgb, var(--color-brand-primary) 20%, transparent);
           margin: 1.75rem 0;
           width: 100%;
         }
@@ -173,7 +173,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
         }
         .progress-bar-bg {
           height: 4px;
-          background: rgba(128, 128, 128, 0.15);
+          background: color-mix(in srgb, var(--color-brand-gray-500) 20%, transparent);
           border-radius: 4px;
           overflow: hidden;
           margin-bottom: 0.4rem;
