@@ -101,6 +101,10 @@ export const auth = betterAuth({
         },
     },
 
+    silenceWarnings: {
+        oauthAuthServerConfig: true,
+    },
+
     plugins: [
         // Plugin admin : ajoute un champ `role` sur user (default: "user"),
         // un champ `banned` et expose les endpoints de management
