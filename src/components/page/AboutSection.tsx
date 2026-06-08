@@ -52,26 +52,25 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
 
     // Extended solid zone (55%) and longer transition (75→90%) so text at max-width 560px
     // stays inside a covered zone on viewports ≥1024px, and partially covered on smaller ones.
-    const imageFade = isDark
-        ? `linear-gradient(to right, #171512 0%, #171512 55%, rgba(23,21,18,0.55) 75%, transparent 90%)`
-        : `linear-gradient(to right, #faf8f5 0%, #faf8f5 55%, rgba(250,248,245,0.55) 75%, transparent 90%)`;
+    const bgVar = isDark ? "var(--color-brand-dark)" : "var(--color-brand-light)";
+    const imageFade = `linear-gradient(to right, ${bgVar} 0%, ${bgVar} 55%, color-mix(in srgb, ${bgVar} 55%, transparent) 75%, transparent 90%)`;
 
-    const textColor = isDark ? "#faf8f5" : "#1a1916";
+    const textColor = isDark ? "var(--color-brand-light)" : "var(--color-brand-dark)";
 
     return (
         <>
             <style>{`
         :root {
-          --about-mobile-overlay: rgba(250,248,245,0.9);
+          --about-mobile-overlay: color-mix(in srgb, var(--color-brand-light) 90%, transparent);
         }
         .dark {
-          --about-mobile-overlay: rgba(23,21,18,0.9);
+          --about-mobile-overlay: color-mix(in srgb, var(--color-brand-dark) 90%, transparent);
         }
         .about-section {
           position: relative;
           width: 100%;
           overflow: hidden;
-          border-top: 1px solid var(--color-brand-gray-300, #e2ddd6);
+          border-top: 1px solid var(--color-brand-gray-300);
           min-height: clamp(260px, 40vw, 560px);
         }
         .about-image-wrap {
@@ -111,7 +110,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
           display: block;
           width: 2.5rem;
           height: 2px;
-          background: var(--color-brand-primary, #C2410C);
+          background: var(--color-brand-primary);
           border-radius: 2px;
           margin-bottom: 1.5rem;
         }
@@ -120,7 +119,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
           font-family: var(--font-mono, monospace);
           letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: var(--color-brand-primary, #C2410C);
+          color: var(--color-brand-primary);
           margin: 0 0 1rem;
         }
         .update-list {
@@ -141,7 +140,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
           width: 5px;
           height: 5px;
           border-radius: 50%;
-          background: var(--color-brand-primary, #C2410C);
+          background: var(--color-brand-primary);
           flex-shrink: 0;
           margin-top: 0.35rem;
         }
@@ -157,7 +156,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
           font-family: var(--font-mono, monospace);
           font-size: 0.7rem;
           letter-spacing: 0.06em;
-          color: var(--color-brand-gray-500, #9b9189);
+          color: var(--color-brand-gray-500);
           white-space: nowrap;
           flex-shrink: 0;
         }
@@ -181,7 +180,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
         }
         .progress-bar-fill {
           height: 100%;
-          background: var(--color-brand-primary, #C2410C);
+          background: var(--color-brand-primary);
           border-radius: 4px;
           transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
@@ -189,7 +188,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
           font-family: var(--font-mono, monospace);
           font-size: 0.7rem;
           letter-spacing: 0.06em;
-          color: var(--color-brand-gray-500, #9b9189);
+          color: var(--color-brand-gray-500);
         }
       `}</style>
 
