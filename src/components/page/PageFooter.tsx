@@ -39,12 +39,12 @@ export default async function PageFooter({}: PageFooterProps = {}) {
                     <h3 className="text-xs md:text-sm font-semibold uppercase tracking-[0.2em] text-brand-light">
                         Navigation
                     </h3>
-                    <ul className="flex flex-row flex-wrap gap-x-4 gap-y-1 md:flex-col md:gap-2">
+                    <ul className="flex flex-row flex-wrap gap-x-2 gap-y-0 md:flex-col md:gap-1">
                         {navItems.map((item) => (
                             <li key={item.href}>
                                 <Link
                                     href={item.href}
-                                    className="text-sm text-brand-light/60 hover:text-brand-accent transition-colors"
+                                    className="inline-flex items-center py-2 px-1 text-sm text-brand-light/60 hover:text-brand-accent transition-colors"
                                 >
                                     {item.label}
                                 </Link>
@@ -57,16 +57,16 @@ export default async function PageFooter({}: PageFooterProps = {}) {
                     <h3 className="text-xs md:text-sm font-semibold uppercase tracking-[0.2em] text-brand-light">
                         Réseaux
                     </h3>
-                    <ul className="flex flex-row flex-wrap gap-x-4 gap-y-1 md:flex-col md:gap-2">
+                    <ul className="flex flex-row flex-wrap gap-x-1 gap-y-0 md:flex-col md:gap-1">
                         {socialItems.map(({label, href, icon: Icon}) => (
                             <li key={href}>
                                 <Link
                                     href={href}
                                     target={href.startsWith("http") ? "_blank" : undefined}
                                     rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                                    className="inline-flex items-center gap-2 text-sm text-brand-light/60 hover:text-brand-accent transition-colors"
+                                    className="inline-flex items-center gap-2 py-2 px-2 min-w-[44px] text-sm text-brand-light/60 hover:text-brand-accent transition-colors"
                                 >
-                                    <Icon size={16}/>
+                                    <Icon size={18}/>
                                     <span className="hidden sm:inline">{label}</span>
                                 </Link>
                             </li>

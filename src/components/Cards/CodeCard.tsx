@@ -93,7 +93,7 @@ export default function CodeCard({
                 {collapsible && isLongFile && (
                     <button
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="flex items-center gap-1.5 px-2 py-1 rounded text-xs text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                        className="flex items-center gap-1.5 px-2 py-2 sm:py-1 min-h-[36px] rounded text-xs text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                         title={isExpanded ? "Masquer" : "Afficher"}
                     >
                         {isExpanded
@@ -105,7 +105,7 @@ export default function CodeCard({
                 {filename && (
                     <button
                         onClick={handleDownload}
-                        className="p-1.5 rounded text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+                        className="p-2 min-h-[36px] rounded text-white/60 hover:text-white hover:bg-white/10 transition-colors"
                         title="Télécharger"
                         aria-label="Télécharger le fichier"
                     >
@@ -114,7 +114,7 @@ export default function CodeCard({
                 )}
                 <button
                     onClick={handleCopy}
-                    className="flex items-center gap-1.5 px-2 py-1 rounded text-xs text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                    className="flex items-center gap-1.5 px-2 py-2 sm:py-1 min-h-[36px] rounded text-xs text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                     aria-label="Copier le code"
                 >
                     <ClipboardCopy className="w-3.5 h-3.5"/>

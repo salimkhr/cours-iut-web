@@ -18,11 +18,11 @@ function DiagramSkeleton() {
             role="status"
             aria-label="Chargement du diagramme"
         >
-            <div className="h-12 w-20 rounded bg-gray-200 dark:bg-gray-700"/>
-            <div className="h-px w-8 bg-gray-300 dark:bg-gray-600"/>
-            <div className="h-12 w-20 rounded bg-gray-200 dark:bg-gray-700"/>
-            <div className="h-px w-8 bg-gray-300 dark:bg-gray-600"/>
-            <div className="h-12 w-20 rounded bg-gray-200 dark:bg-gray-700"/>
+            <div className="h-12 w-20 rounded bg-bridge-300/50 dark:bg-bridge-700/50"/>
+            <div className="h-px w-8 bg-bridge-400/50 dark:bg-bridge-600/50"/>
+            <div className="h-12 w-20 rounded bg-bridge-300/50 dark:bg-bridge-700/50"/>
+            <div className="h-px w-8 bg-bridge-400/50 dark:bg-bridge-600/50"/>
+            <div className="h-12 w-20 rounded bg-bridge-300/50 dark:bg-bridge-700/50"/>
         </div>
     );
 }
@@ -83,7 +83,7 @@ export default function DiagramCard({header, chart}: DiagramCardProps) {
             header={<Text className="text-white">{header}</Text>}
             content={
                 svg ? (
-                    <div dangerouslySetInnerHTML={{__html: svg}} className="w-full mx-auto"/>
+                    <div dangerouslySetInnerHTML={{__html: svg}} className="w-full mx-auto overflow-x-auto [&_svg]:max-w-full"/>
                 ) : (
                     <DiagramSkeleton/>
                 )

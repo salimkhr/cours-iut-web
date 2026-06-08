@@ -40,8 +40,8 @@ export default function UsersTable({ users: initialUsers }: { users: AdminUser[]
 
     return (
         <>
-            <div className="rounded-xl border border-bridge-500/45 overflow-hidden bg-[#f7ebd9] dark:bg-[#13110d]">
-                <table className="w-full">
+            <div className="rounded-xl border border-bridge-500/45 overflow-x-auto bg-bridge-50 dark:bg-bridge-900">
+                <table className="w-full min-w-[560px]">
                     <thead>
                         <tr className="border-b border-bridge-700/20 dark:border-bridge-500/20">
                             <th className={`px-4 py-2.5 ${EYEBROW}`}>Utilisateur</th>
