@@ -85,3 +85,112 @@
 - Copie de `.next/standalone` et `.next/static`; lancement via `node server.js`
 
 Si vous souhaitez, je peux transformer ce résumé en un `README.md` complet avec badges, instructions d’installation et sections d’usage/tests/déploiement.
+
+---
+
+## 🤖 MCP — Serveur de contenu pour IA
+
+Le projet expose un serveur MCP (Model Context Protocol) avec 8 tools permettant à une IA de lire et modifier le contenu pédagogique stocké dans MongoDB.
+
+### Deux modes
+
+| Mode | Fichier | Client | Auth |
+|------|---------|--------|------|
+| **stdio** | `src/mcp/server.ts` | Claude Desktop / Claude Code | Cookie de session admin |
+| **HTTP** | `src/app/api/mcp/route.ts` | Claude.ai web | OAuth 2.0 (Bearer token) |
+
+---
+
+### Mode stdio (Claude Desktop)
+
+```json
+// ~/Library/Application Support/Claude/claude_desktop_config.json
+{
+  "mcpServers": {
+    "cours-iut": {
+      "command": "npx",
+      "args": ["tsx", "src/mcp/server.ts"],
+      "env": {
+        "NEXT_URL": "http://localhost:3000",
+        "MCP_ADMIN_TOKEN": "<session token better-auth d’un compte admin>"
+      }
+    }
+  }
+}
+```
+
+```bash
+# .env.local
+MCP_ADMIN_TOKEN=<session token better-auth d’un compte admin>
+NEXT_URL=http://localhost:3000
+```
+
+---
+
+### Mode HTTP (Claude.ai web)
+
+#### Architecture OAuth 2.0
+
+```
+Claude.ai
+  ├─ GET  /.well-known/oauth-authorization-server/api/auth  → découverte
+  ├─ GET  /api/auth/oauth2/authorize                         → login + consentement
+  ├─ POST /api/auth/oauth2/token                             → access_token
+  └─ POST /api/mcp  (Authorization: Bearer <token>)          → tools MCP
+```
+
+#### Variables d’environnement
+
+```bash
+# .env.local
+BETTER_AUTH_SECRET=<secret 32 octets — générer avec: node -e "console.log(require(‘crypto’).randomBytes(32).toString(‘hex’))">
+MCP_CLIENT_ID=<uuid>
+MCP_CLIENT_SECRET=<uuid>
+```
+
+#### Enregistrement du client OAuth (à faire une fois)
+
+```bash
+bun run seed-oauth-client
+```
+
+Ce script insère le client Claude.ai dans la collection `oauthClient` avec `skipConsent: true`.
+
+#### Configuration du connecteur Claude.ai
+
+Dans **claude.ai → Paramètres → Connecteurs personnalisés** :
+
+| Champ | Valeur |
+|-------|--------|
+| URL | `https://<domaine-prod>/api/mcp` |
+| Client ID | valeur de `MCP_CLIENT_ID` |
+| Client secret | valeur de `MCP_CLIENT_SECRET` |
+
+---
+
+### Contrôle d’accès des tools
+
+| Tool | Accès |
+|------|-------|
+| `get_migration_status` | Tout utilisateur authentifié |
+| `list_block_types` | Tout utilisateur authentifié |
+| `get_content` | Tout utilisateur authentifié |
+| `save_content` | Admin uniquement |
+| `delete_content` | Admin uniquement |
+| `insert_block` | Admin uniquement |
+| `edit_block` | Admin uniquement |
+| `delete_block` | Admin uniquement |
+
+---
+
+### Scénario de migration (contenu fichier → MongoDB)
+
+```
+Vous  : "Migre tous les cours JavaScript"
+Claude: appelle get_migration_status
+        → voit javascript/1-le-dom/cours = "file"
+Claude: lit src/cours/javascript/1-le-dom/Cours.tsx
+        → convertit les composants JSX en blocs JSON
+Claude: appelle save_content("javascript", "1-le-dom", "cours", [...blocks])
+        → passe au cours suivant, répète
+```
