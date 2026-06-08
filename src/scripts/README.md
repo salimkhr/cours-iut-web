@@ -13,6 +13,8 @@ Le script est idempotent : relancer sur une DB déjà migrée ne change rien.
 
 ### Commande
 
+**Depuis la racine du projet** (bun charge `.env.local` depuis le répertoire courant) :
+
 ```bash
 # Windows (PowerShell) — charge le .env et lance le script
 $envContent = Get-Content .env | Where-Object { $_ -match '^[A-Z]' -and $_ -match '=' }
@@ -72,6 +74,8 @@ Idempotent — relancer ne casse rien si l'index existe déjà.
 
 ### Commande
 
+**Depuis la racine du projet** :
+
 ```bash
 bunx tsx src/scripts/create-content-index.ts
 ```
@@ -106,6 +110,8 @@ MCP_CLIENT_SECRET=<uuid — générer une fois et conserver>
 ```
 
 ### Commande
+
+**Depuis la racine du projet** (bun charge `.env.local` depuis le répertoire courant) :
 
 ```bash
 bun run seed-oauth-client
