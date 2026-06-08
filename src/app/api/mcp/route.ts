@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { revalidateTag } from "next/cache";
+import { createHash } from "crypto";
 import { z } from "zod";
 import { connectToDB } from "@/lib/mongodb";
 import { getAllBlockDefinitions, getBlockDefinition } from "@/lib/blockRegistry";
@@ -12,24 +13,38 @@ type RawBlock = { id: string; type: string; props: Record<string, unknown>; colS
 
 // ── Validation du Bearer token ────────────────────────────────────────────────
 
+/**
+ * Hash an opaque access token the same way @better-auth/oauth-provider does:
+ * SHA-256 → base64url (no padding).
+ */
+function hashToken(token: string): string {
+    return createHash("sha256").update(token).digest("base64url");
+}
+
 async function validateToken(req: Request): Promise<{ id: string; role: string } | null> {
     const auth = req.headers.get("Authorization");
     if (!auth?.startsWith("Bearer ")) return null;
     const token = auth.slice(7);
+    const hashedToken = hashToken(token);
 
     const db = await connectToDB();
     const now = new Date();
 
+    // Field names from @better-auth/oauth-provider schema:
+    //   token  (hashed, SHA-256 base64url)  — NOT "accessToken"
+    //   expiresAt                            — NOT "accessTokenExpiresAt"
     const tokenDoc = await db.collection("oauthAccessToken").findOne({
-        accessToken: token,
-        accessTokenExpiresAt: { $gt: now },
+        token: hashedToken,
+        expiresAt: { $gt: now },
     });
     if (!tokenDoc) return null;
 
-    const user = await db.collection("user").findOne({ id: tokenDoc.userId });
+    // tokenDoc.userId is an ObjectId (the mongo-adapter serialises reference fields
+    // to ObjectId on write).  Query user by _id directly — no separate "id" field.
+    const user = await db.collection("user").findOne({ _id: tokenDoc.userId });
     if (!user) return null;
 
-    return { id: String(user.id), role: String(user.role ?? "user") };
+    return { id: String(user._id), role: String(user.role ?? "user") };
 }
 
 // ── Factory McpServer ─────────────────────────────────────────────────────────
@@ -84,14 +99,14 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         {
             module:  z.string().describe("Slug du module, ex: javascript"),
             section: z.string().describe("Slug de la section, ex: 1-le-dom"),
-            type:    z.string().describe("Type de contenu : cours | TP | examen"),
+            type:    z.enum(["cours", "TP", "examen"]).describe("Type de contenu : cours | TP | examen"),
         },
         async ({ module, section, type }) => {
             const db = await connectToDB();
             const doc = await db.collection<CourseContent>("course_content").findOne({
                 moduleSlug:  module,
                 sectionSlug: section,
-                contentType: type as CourseContent["contentType"],
+                contentType: type,
             });
             const result = doc
                 ? { contentId: doc._id?.toString(), blocks: doc.blocks, version: doc.version, source: "db" }
@@ -107,7 +122,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         {
             module:  z.string(),
             section: z.string(),
-            type:    z.string(),
+            type:    z.enum(["cours", "TP", "examen"]).describe("Type de contenu : cours | TP | examen"),
             blocks:  z.array(z.object({
                 id:      z.string(),
                 type:    z.string(),
@@ -129,10 +144,9 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
 
             const db = await connectToDB();
             const now = new Date();
-            const typedType = type as CourseContent["contentType"];
 
             const existing = await db.collection<CourseContent>("course_content").findOne({
-                moduleSlug: module, sectionSlug: section, contentType: typedType,
+                moduleSlug: module, sectionSlug: section, contentType: type,
             });
 
             let contentId: string;
@@ -144,7 +158,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 contentId = existing._id!.toString();
             } else {
                 const r = await db.collection<CourseContent>("course_content").insertOne({
-                    moduleSlug: module, sectionSlug: section, contentType: typedType,
+                    moduleSlug: module, sectionSlug: section, contentType: type,
                     blocks: blocks as Block[], version: 1, createdAt: now, updatedAt: now,
                 });
                 contentId = r.insertedId.toString();
@@ -164,7 +178,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             revalidateTag(`content:${module}:${section}:${type}`, { expire: 0 });
 
             const updated = await db.collection<CourseContent>("course_content").findOne({
-                moduleSlug: module, sectionSlug: section, contentType: typedType,
+                moduleSlug: module, sectionSlug: section, contentType: type,
             });
             return {
                 content: [{
@@ -179,13 +193,16 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     server.tool(
         "delete_content",
         "Supprime un contenu de la DB et repasse son ref à source: 'file'. Réservé aux admins.",
-        { module: z.string(), section: z.string(), type: z.string() },
+        {
+            module:  z.string(),
+            section: z.string(),
+            type:    z.enum(["cours", "TP", "examen"]).describe("Type de contenu : cours | TP | examen"),
+        },
         async ({ module, section, type }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
-            const typedType = type as CourseContent["contentType"];
             await db.collection<CourseContent>("course_content").deleteOne({
-                moduleSlug: module, sectionSlug: section, contentType: typedType,
+                moduleSlug: module, sectionSlug: section, contentType: type,
             });
             await db.collection("modules").updateOne(
                 { path: module },
@@ -207,7 +224,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         {
             module:  z.string(),
             section: z.string(),
-            type:    z.string(),
+            type:    z.enum(["cours", "TP", "examen"]).describe("Type de contenu : cours | TP | examen"),
             block: z.object({
                 id:      z.string().describe("UUID v4 unique"),
                 type:    z.string(),
@@ -220,9 +237,8 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         async ({ module, section, type, block, position, afterBlockId }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
-            const typedType = type as CourseContent["contentType"];
             const doc = await db.collection<CourseContent>("course_content").findOne({
-                moduleSlug: module, sectionSlug: section, contentType: typedType,
+                moduleSlug: module, sectionSlug: section, contentType: type,
             });
             const blocks: RawBlock[] = (doc?.blocks ?? []) as RawBlock[];
 
@@ -238,7 +254,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             blocks.splice(insertAt, 0, block as RawBlock);
 
             await db.collection<CourseContent>("course_content").updateOne(
-                { moduleSlug: module, sectionSlug: section, contentType: typedType },
+                { moduleSlug: module, sectionSlug: section, contentType: type },
                 { $set: { blocks: blocks as Block[], updatedAt: new Date() }, $inc: { version: 1 } },
                 { upsert: true }
             );
@@ -259,7 +275,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         {
             module:  z.string(),
             section: z.string(),
-            type:    z.string(),
+            type:    z.enum(["cours", "TP", "examen"]).describe("Type de contenu : cours | TP | examen"),
             blockId: z.string().describe("ID du bloc à modifier"),
             props:   z.record(z.string(), z.unknown()).describe("Nouvelles props complètes"),
             colSpan: z.enum(["full", "half"]).optional(),
@@ -267,9 +283,8 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         async ({ module, section, type, blockId, props, colSpan }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
-            const typedType = type as CourseContent["contentType"];
             const doc = await db.collection<CourseContent>("course_content").findOne({
-                moduleSlug: module, sectionSlug: section, contentType: typedType,
+                moduleSlug: module, sectionSlug: section, contentType: type,
             });
             const blocks: RawBlock[] = (doc?.blocks ?? []) as RawBlock[];
             const idx = blocks.findIndex(b => b.id === blockId);
@@ -278,7 +293,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             blocks[idx] = { ...blocks[idx], props, ...(colSpan ? { colSpan } : {}) };
 
             await db.collection<CourseContent>("course_content").updateOne(
-                { moduleSlug: module, sectionSlug: section, contentType: typedType },
+                { moduleSlug: module, sectionSlug: section, contentType: type },
                 { $set: { blocks: blocks as Block[], updatedAt: new Date() }, $inc: { version: 1 } }
             );
             revalidateTag(`content:${module}:${section}:${type}`, { expire: 0 });
@@ -293,20 +308,19 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         {
             module:  z.string(),
             section: z.string(),
-            type:    z.string(),
+            type:    z.enum(["cours", "TP", "examen"]).describe("Type de contenu : cours | TP | examen"),
             blockId: z.string().describe("ID du bloc à supprimer"),
         },
         async ({ module, section, type, blockId }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
-            const typedType = type as CourseContent["contentType"];
             const doc = await db.collection<CourseContent>("course_content").findOne({
-                moduleSlug: module, sectionSlug: section, contentType: typedType,
+                moduleSlug: module, sectionSlug: section, contentType: type,
             });
             const blocks = ((doc?.blocks ?? []) as RawBlock[]).filter(b => b.id !== blockId);
 
             await db.collection<CourseContent>("course_content").updateOne(
-                { moduleSlug: module, sectionSlug: section, contentType: typedType },
+                { moduleSlug: module, sectionSlug: section, contentType: type },
                 { $set: { blocks: blocks as Block[], updatedAt: new Date() }, $inc: { version: 1 } }
             );
             revalidateTag(`content:${module}:${section}:${type}`, { expire: 0 });
