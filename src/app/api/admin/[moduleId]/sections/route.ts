@@ -84,10 +84,7 @@ export const PUT = withAdmin(async (
 
         // Mettre à jour la section dans la base de données
         const result = await db.collection<Module>('modules').updateOne(
-            {
-                _id: new ObjectId(moduleId),
-                'sections._id': sectionId
-            },
+            { _id: new ObjectId(moduleId) },
             {
                 $set: {
                     [`sections.${oldSectionIndex}.title`]: updatedSection.title,
