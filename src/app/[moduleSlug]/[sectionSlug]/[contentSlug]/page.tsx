@@ -8,6 +8,7 @@ import ReadingProgress from "@/components/page/ReadingProgress";
 import ContentSidebarNav from "@/components/page/ContentSidebarNav";
 import ExamenWrapper from "@/components/ExamenWrapper";
 import TableOfContents from "@/components/TableOfContents";
+import EditContentFab from "@/components/admin/EditContentFab";
 import {getModuleData} from "@/hook/getModuleData";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getContentComponent} from "@/lib/getContentComponent";
@@ -189,6 +190,15 @@ export default async function Content({params}: ContentPageProps) {
             )}
 
             {!isSplit && <PageFooter path={currentModule.path}/>}
+
+            {isAdmin && !isSplit && currentContent && (
+                <EditContentFab
+                    moduleSlug={moduleSlug}
+                    sectionSlug={sectionSlug}
+                    contentType={currentContent}
+                    modulePath={currentModule.path}
+                />
+            )}
         </div>
     );
 }
