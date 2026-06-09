@@ -2,6 +2,7 @@
 
 import {useState} from "react";
 import {useRouter} from "next/navigation";
+import {toast} from "sonner";
 import {Pencil} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import SectionForm, {Section as SectionForm_} from "@/components/admin/SectionForm";
@@ -21,8 +22,13 @@ export default function EditSectionFab({modData, section}: EditSectionFabProps) 
     const {editSection} = useAdminApi();
 
     const handleSubmit = async (updated: SectionForm_) => {
-        await editSection(modData._id as unknown as string, String(section._id), updated);
-        router.refresh();
+        try {
+            await editSection(modData._id as unknown as string, String(section._id), updated);
+            toast.success("Section mise à jour.");
+            router.refresh();
+        } catch {
+            toast.error("Erreur lors de la mise à jour de la section.");
+        }
     };
 
     return (

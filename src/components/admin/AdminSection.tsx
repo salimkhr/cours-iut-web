@@ -4,6 +4,7 @@ import Section from "@/types/Section";
 import {Label} from "@/components/ui/label";
 import {Switch} from "@/components/ui/switch";
 import {useState} from "react";
+import {toast} from "sonner";
 import updateSectionState from "@/hook/admin/updateSectionState";
 import EditSectionButton from "@/components/admin/EditSectionButton";
 import Module from "@/types/Module";
@@ -31,8 +32,13 @@ export default function AdminSection({
     const {editSection: editSectionApi} = useAdminApi();
 
     const editSection = async (updatedSection: SectionFrom) => {
-        const saved = await editSectionApi(modData._id as unknown as string, String(currentSection._id), updatedSection);
-        setCurrentSection(saved);
+        try {
+            const saved = await editSectionApi(modData._id as unknown as string, String(currentSection._id), updatedSection);
+            setCurrentSection(saved);
+            toast.success("Section mise à jour.");
+        } catch {
+            toast.error("Erreur lors de la mise à jour de la section.");
+        }
     };
 
     const handleToggle = (
