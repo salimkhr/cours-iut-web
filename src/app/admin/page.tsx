@@ -1,9 +1,13 @@
 import { auth, getServerSession } from "@/lib/auth";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import UsersTable from "@/components/admin/users/UsersTable";
 import type { AdminUser } from "@/components/admin/users/UsersTable";
 import SetupActions from "@/components/admin/SetupActions";
+import { connectToDB } from "@/lib/mongodb";
+import { getContentTypes } from "@/types/CourseContent";
+import type Module from "@/types/Module";
 
 export default async function AdminPage() {
     const session = await getServerSession();
@@ -46,6 +50,14 @@ export default async function AdminPage() {
         console.error("[admin] listUsers error:", error);
     }
 
+    let modules: Module[] = [];
+    try {
+        const db = await connectToDB();
+        modules = await db.collection<Module>("modules").find({}).sort({ order: 1 }).toArray();
+    } catch (error) {
+        console.error("[admin] modules error:", error);
+    }
+
     return (
         <div className="p-6 max-w-5xl mx-auto">
             <div className="mb-6">
@@ -63,6 +75,35 @@ export default async function AdminPage() {
                 <SetupActions />
             </div>
             <UsersTable users={users} />
+
+            <div className="mt-10">
+                <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark/55 dark:text-bridge-200/55 mb-2">
+                    Builder de contenu
+                </p>
+                <h2 className="text-xl font-bold text-brand-dark dark:text-bridge-100 mb-4">
+                    Modules
+                </h2>
+                <div className="flex flex-col gap-4">
+                    {modules.map((mod) => (
+                        <div key={mod.path} className="border rounded-lg p-4">
+                            <div className="font-semibold mb-2">{mod.title}</div>
+                            <div className="flex flex-col gap-1">
+                                {mod.sections?.map((section) =>
+                                    getContentTypes(section.contents ?? []).map((ct) => (
+                                        <Link
+                                            key={`${section.path}-${ct}`}
+                                            href={`/admin/content/${mod.path}/${section.path}/${ct}`}
+                                            className="text-sm text-primary hover:underline"
+                                        >
+                                            {section.title} — {ct}
+                                        </Link>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }
