@@ -1,14 +1,9 @@
 import { notFound } from "next/navigation";
-import dynamic from "next/dynamic";
 import { getServerSession } from "@/lib/auth";
 import { connectToDB } from "@/lib/mongodb";
+import { BuilderPageDynamic } from "@/components/builder/BuilderPageDynamic";
 import type { Block, ContentRef } from "@/types/CourseContent";
 import type Module from "@/types/Module";
-
-const BuilderPage = dynamic(
-    () => import("@/components/builder/BuilderPage").then((m) => m.BuilderPage),
-    { ssr: false }
-);
 
 interface PageProps {
     params: Promise<{
@@ -40,13 +35,13 @@ export default async function ContentBuilderPage({ params }: PageProps) {
     const source = (ref?.source === "db" ? "db" : "file") as "file" | "db";
 
     return (
-        <BuilderPage
+        <BuilderPageDynamic
             moduleSlug={moduleSlug}
             sectionSlug={sectionSlug}
             contentType={contentType}
             moduleTitle={mod.title ?? moduleSlug}
             sectionTitle={section.title ?? sectionSlug}
-            initialBlocks={doc?.blocks ?? []}
+            initialBlocks={(doc?.blocks ?? []) as Block[]}
             source={source}
         />
     );
