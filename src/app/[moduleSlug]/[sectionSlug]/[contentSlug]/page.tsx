@@ -1,4 +1,4 @@
-import {notFound} from "next/navigation";
+import {notFound, redirect} from "next/navigation";
 import {BookOpen, CodeXml, Columns2, Target} from "lucide-react";
 
 import HeroSection from "@/components/page/HeroSection";
@@ -78,6 +78,12 @@ export default async function Content({params}: ContentPageProps) {
             currentSection,
             currentContent: currentContent!,
         });
+        if (!ComponentToRender) {
+            if (isAdmin) {
+                redirect(`/admin/content/${moduleSlug}/${sectionSlug}/${currentContent}`);
+            }
+            notFound();
+        }
     }
 
     const contentKey = currentContent as ContentKey;

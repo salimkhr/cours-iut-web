@@ -44,12 +44,12 @@ export async function getContentComponent({
         contentImports?.[currentModule.path]?.[currentSection.path]?.[componentKey];
 
     if (typeof importFunc !== "function") {
-        notFound();
+        return null;
     }
 
     const Component = (await importFunc()).default;
 
-    if (!Component) notFound();
+    if (!Component) return null;
 
     return Component;
 }
