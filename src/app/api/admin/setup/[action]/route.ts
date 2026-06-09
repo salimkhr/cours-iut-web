@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server";
-import { withAdmin } from "@/lib/withAdmin";
+import { getServerSession } from "@/lib/auth";
 import { connectToDB } from "@/lib/mongodb";
 import { createHash } from "crypto";
 import type { ContentRef } from "@/types/CourseContent";
 
-export const POST = withAdmin<{ params: Promise<{ action: string }> }>(
-    async (_req, { params }) => {
-        const { action } = await params;
+export const runtime = "nodejs";
+
+type Ctx = { params: Promise<{ action: string }> };
+
+export async function POST(_req: Request, { params }: Ctx) {
+    const session = await getServerSession();
+    if (session?.user.role !== "admin") {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const { action } = await params;
 
     try {
         if (action === "migrate-contents-refs") {
@@ -90,4 +98,4 @@ export const POST = withAdmin<{ params: Promise<{ action: string }> }>(
         console.error(`[setup/${action}]`, error);
         return NextResponse.json({ error: String(error) }, { status: 500 });
     }
-});
+}
