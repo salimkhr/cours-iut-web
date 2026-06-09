@@ -1,9 +1,14 @@
 import { notFound } from "next/navigation";
+import dynamic from "next/dynamic";
 import { getServerSession } from "@/lib/auth";
 import { connectToDB } from "@/lib/mongodb";
-import { BuilderPage } from "@/components/builder/BuilderPage";
 import type { Block, ContentRef } from "@/types/CourseContent";
 import type Module from "@/types/Module";
+
+const BuilderPage = dynamic(
+    () => import("@/components/builder/BuilderPage").then((m) => m.BuilderPage),
+    { ssr: false }
+);
 
 interface PageProps {
     params: Promise<{
