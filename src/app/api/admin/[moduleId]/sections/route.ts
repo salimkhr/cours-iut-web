@@ -74,7 +74,13 @@ export const PUT = withAdmin(async (
             return NextResponse.json({error: 'Section introuvable'}, {status: 404});
         }
 
-        const _oldSection = currentModule.sections[oldSectionIndex];
+        const oldSection = currentModule.sections[oldSectionIndex];
+
+        // Préserver les sources existantes (ne pas écraser source:"db" par "file")
+        const mergedContents = updatedSection.contents.map((type): ContentRef => {
+            const existing = (oldSection.contents ?? []).find((c) => c.type === type);
+            return existing ?? { type, source: "file" };
+        });
 
         // Mettre à jour la section dans la base de données
         const result = await db.collection<Module>('modules').updateOne(
@@ -94,7 +100,7 @@ export const PUT = withAdmin(async (
                     [`sections.${oldSectionIndex}.isAvailable`]: updatedSection.isAvailable,
                     [`sections.${oldSectionIndex}.correctionIsAvailable`]: updatedSection.correctionIsAvailable,
                     [`sections.${oldSectionIndex}.order`]: updatedSection.order,
-                    [`sections.${oldSectionIndex}.contents`]: updatedSection.contents.map((type): ContentRef => ({ type, source: "file" })),
+                    [`sections.${oldSectionIndex}.contents`]: mergedContents,
                     [`sections.${oldSectionIndex}.examenIsLock`]: updatedSection.examenIsLock,
                 }
             }

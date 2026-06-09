@@ -21,7 +21,7 @@ export default function EditSectionFab({modData, section}: EditSectionFabProps) 
     const {editSection} = useAdminApi();
 
     const handleSubmit = async (updated: SectionForm_) => {
-        await editSection(modData._id as unknown as string, updated);
+        await editSection(modData._id as unknown as string, String(section._id), updated);
         router.refresh();
     };
 

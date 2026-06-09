@@ -31,7 +31,7 @@ export default function AdminSection({
     const {editSection: editSectionApi} = useAdminApi();
 
     const editSection = async (updatedSection: SectionFrom) => {
-        const saved = await editSectionApi(modData._id as unknown as string, updatedSection);
+        const saved = await editSectionApi(modData._id as unknown as string, String(currentSection._id), updatedSection);
         setCurrentSection(saved);
     };
 
