@@ -4,8 +4,6 @@ import { useState } from "react";
 import {
     Sheet,
     SheetContent,
-    SheetHeader,
-    SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -109,18 +107,18 @@ export function PropsPanel({ isFixed }: PropsPanelProps) {
 
     const content = (
         <div className="flex flex-col h-full">
-            <SheetHeader className="px-4 pt-4 pb-2">
+            <div className="px-4 pt-4 pb-2 flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                    <SheetTitle className="text-sm font-semibold uppercase tracking-wider text-primary">
+                    <p className="text-sm font-semibold uppercase tracking-wider text-primary">
                         {def?.label ?? block?.type ?? "—"}
-                    </SheetTitle>
+                    </p>
                     {block && (
                         <Badge variant="outline" className="text-xs">
                             {block.type}
                         </Badge>
                     )}
                 </div>
-            </SheetHeader>
+            </div>
 
             <Separator />
 
