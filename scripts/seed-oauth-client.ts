@@ -13,7 +13,6 @@
  *                       matching the oauthProvider default storeClientSecret strategy)
  */
 
-import "../src/scripts/load-env";
 import { MongoClient } from "mongodb";
 
 const MONGODB_URI = process.env.MONGODB_URI;

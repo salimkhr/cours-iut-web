@@ -1,4 +1,3 @@
-import "./load-env";
 import { connectToDB } from "@/lib/mongodb";
 import { ContentRef } from "@/types/CourseContent";
 
