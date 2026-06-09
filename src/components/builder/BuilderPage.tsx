@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ChevronLeft, ChevronRight, Save, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { BuilderCanvas } from "@/components/builder/BuilderCanvas";
 import { PropsPanel } from "@/components/builder/PropsPanel";
@@ -68,32 +70,73 @@ export function BuilderPage({
     }
 
     return (
-        <div className="flex flex-col h-screen overflow-hidden">
-            <header className="flex items-center gap-3 px-4 py-3 border-b bg-card flex-shrink-0">
-                <Link href="/admin" className="text-muted-foreground hover:text-foreground text-sm">
-                    ← Admin
-                </Link>
-                <span className="text-muted-foreground">/</span>
-                <span className="text-sm font-medium">{moduleTitle}</span>
-                <span className="text-muted-foreground">/</span>
-                <span className="text-sm font-medium">{sectionTitle}</span>
-                <span className="text-muted-foreground">/</span>
-                <span className="text-sm font-medium capitalize">{contentType}</span>
+        <div className="flex flex-col h-[calc(100dvh-var(--navbar-h))] overflow-hidden">
 
-                <Badge variant={source === "db" ? "default" : "secondary"} className="ml-2">
-                    {source === "db" ? "DB ✓" : "Fichier"}
+            {/* Toolbar */}
+            <header className="flex items-center gap-1.5 px-4 py-2 flex-shrink-0 border-b border-bridge-500/20 dark:border-bridge-500/35 bg-bridge-50/90 dark:bg-bridge-900/90 backdrop-blur-sm">
+
+                {/* Breadcrumb */}
+                <Link
+                    href="/admin"
+                    className="flex items-center gap-0.5 text-sm text-bridge-600 dark:text-bridge-400 hover:text-brand-primary dark:hover:text-brand-primary transition-colors"
+                >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                    Admin
+                </Link>
+
+                <ChevronRight className="w-3.5 h-3.5 text-bridge-400/60 dark:text-bridge-600/60 shrink-0" />
+                <span className="text-sm text-bridge-700 dark:text-bridge-300 font-medium truncate max-w-[100px] lg:max-w-[160px]">
+                    {moduleTitle}
+                </span>
+
+                <ChevronRight className="w-3.5 h-3.5 text-bridge-400/60 dark:text-bridge-600/60 shrink-0" />
+                <span className="text-sm text-bridge-700 dark:text-bridge-300 font-medium truncate max-w-[100px] lg:max-w-[160px]">
+                    {sectionTitle}
+                </span>
+
+                <ChevronRight className="w-3.5 h-3.5 text-bridge-400/60 dark:text-bridge-600/60 shrink-0" />
+                <span className="text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-primary dark:text-brand-primary">
+                    {contentType}
+                </span>
+
+                <Badge
+                    variant="outline"
+                    className={cn(
+                        "ml-1 text-[10px] font-mono border h-5 px-1.5",
+                        source === "db"
+                            ? "border-emerald-500/40 text-emerald-700 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-900/20"
+                            : "border-bridge-400/50 text-bridge-600 dark:text-bridge-400"
+                    )}
+                >
+                    {source === "db" ? "DB" : "fichier"}
                 </Badge>
 
                 <div className="flex-1" />
 
                 {isDirty && (
-                    <span className="text-xs text-muted-foreground">Modifications non sauvegardées</span>
+                    <span className="hidden sm:flex items-center gap-1 text-xs text-bridge-500 dark:text-bridge-400">
+                        <AlertCircle className="w-3 h-3" />
+                        Non sauvegardé
+                    </span>
                 )}
-                <Button size="sm" onClick={() => void handleSave()} disabled={!isDirty}>
+
+                <Button
+                    size="sm"
+                    onClick={() => void handleSave()}
+                    disabled={!isDirty}
+                    className={cn(
+                        "gap-1.5 h-7 text-xs transition-all",
+                        isDirty
+                            ? "bg-brand-primary hover:bg-brand-accent-dark text-brand-light"
+                            : "opacity-40 cursor-default"
+                    )}
+                >
+                    <Save className="w-3.5 h-3.5" />
                     Sauvegarder
                 </Button>
             </header>
 
+            {/* Builder area */}
             <div className="flex flex-1 min-h-0">
                 <BuilderCanvas
                     moduleSlug={moduleSlug}

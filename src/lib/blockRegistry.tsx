@@ -151,10 +151,18 @@ const blockDefinitions: BlockDefinition[] = [
             { key: "description", label: "Description", type: "text" },
         ],
         render: ({ title, href, description }: BlockRenderProps) => (
-            <a href={String(href ?? "")} className="block p-4 border rounded-lg hover:bg-accent/5">
-                <strong>{String(title ?? "")}</strong>
+            <a
+                href={String(href ?? "")}
+                style={{ textDecoration: "none" }}
+                className="block p-4 border border-bridge-300/50 dark:border-bridge-600/30 rounded-xl bg-bridge-50 dark:bg-bridge-800/60 hover:bg-bridge-100 dark:hover:bg-bridge-700/60 transition-colors"
+            >
+                <strong className="font-semibold">
+                    {String(title ?? "")}
+                </strong>
                 {Boolean(description) && (
-                    <p className="text-sm text-muted-foreground mt-1">{String(description)}</p>
+                    <p className="text-sm text-bridge-600 dark:text-bridge-400 mt-1">
+                        {String(description)}
+                    </p>
                 )}
             </a>
         ),

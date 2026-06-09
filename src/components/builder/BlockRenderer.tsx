@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import type { Block } from "@/types/CourseContent";
 import { getBlockDefinition } from "@/lib/blockRegistry";
@@ -52,14 +54,14 @@ export function BlockRenderer({ blocks }: { blocks: Block[] }) {
     const groups = groupByColSpan(blocks);
 
     return (
-        <article>
+        <article className="flex flex-col gap-6">
             {groups.map((group, groupIndex) =>
                 group.length === 1 ? (
                     <BlockItem key={group[0].id} block={group[0]} />
                 ) : (
                     <div
                         key={`group-${groupIndex}`}
-                        className="grid grid-cols-2 gap-4"
+                        className="grid grid-cols-2 gap-6"
                     >
                         {group.map((b) => (
                             <BlockItem key={b.id} block={b} />

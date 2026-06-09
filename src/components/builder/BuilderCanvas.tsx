@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
+import { GripVertical } from "lucide-react";
 import {
     DndContext,
     closestCenter,
@@ -25,10 +26,30 @@ import type { Block } from "@/types/CourseContent";
 import type { BlockDefinition } from "@/lib/blockRegistry";
 import { v4 as uuidv4 } from "uuid";
 
+function groupByColSpan(blocks: Block[]): Block[][] {
+    const groups: Block[][] = [];
+    let i = 0;
+    while (i < blocks.length) {
+        const block = blocks[i];
+        if (block.colSpan === "half" && blocks[i + 1]?.colSpan === "half") {
+            groups.push([block, blocks[i + 1]]);
+            i += 2;
+        } else {
+            groups.push([block]);
+            i += 1;
+        }
+    }
+    return groups;
+}
+
 function NamedBlockContent({ name }: { name: string }) {
     const Component = getNamedComponent(name);
     if (!Component) {
-        return <div className="text-muted-foreground text-sm border border-dashed rounded p-3">{name}</div>;
+        return (
+            <div className="text-bridge-500 dark:text-bridge-400 text-sm border border-dashed border-bridge-400/40 dark:border-bridge-500/30 rounded p-3">
+                Composant introuvable : {name}
+            </div>
+        );
     }
     return React.createElement(Component);
 }
@@ -39,10 +60,31 @@ function BlockContent({ block }: { block: Block }) {
     }
     const def = getBlockDefinition(block.type);
     if (!def) {
-        return <div className="text-muted-foreground text-sm">Bloc inconnu : {block.type}</div>;
+        return (
+            <div className="text-bridge-500 dark:text-bridge-400 text-sm">
+                Bloc inconnu : {block.type}
+            </div>
+        );
     }
     const Render = def.render;
     return <Render {...block.props} />;
+}
+
+function InsertLine({ onClick }: { onClick: () => void }) {
+    return (
+        <div className="flex items-center gap-2 my-1 opacity-0 hover:opacity-100 transition-opacity duration-150">
+            <div className="flex-1 h-px bg-bridge-400/30 dark:bg-bridge-500/25" />
+            <button
+                className="bg-brand-primary text-brand-light rounded-full w-5 h-5 text-xs flex items-center justify-center hover:bg-brand-accent-dark transition-colors cursor-pointer"
+                onClick={onClick}
+                title="Insérer un bloc ici"
+                aria-label="Insérer un bloc ici"
+            >
+                +
+            </button>
+            <div className="flex-1 h-px bg-bridge-400/30 dark:bg-bridge-500/25" />
+        </div>
+    );
 }
 
 function SortableBlock({
@@ -63,52 +105,47 @@ function SortableBlock({
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
-        opacity: isDragging ? 0.4 : 1,
+        opacity: isDragging ? 0.35 : 1,
     };
 
     return (
         <div ref={setNodeRef} style={style}>
-            <div className="flex items-center gap-2 my-1 opacity-0 hover:opacity-100 transition-opacity">
-                <div className="flex-1 h-px bg-border" />
-                <button
-                    className="bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center hover:scale-110 transition-transform"
-                    onClick={() => onInsertAfter(block.id)}
-                    title="Insérer un bloc ici"
-                >
-                    +
-                </button>
-                <div className="flex-1 h-px bg-border" />
-            </div>
+            <InsertLine onClick={() => onInsertAfter(block.id)} />
 
             <div
                 className={[
-                    "relative group rounded-lg transition-all cursor-pointer",
+                    "relative group rounded-lg transition-all duration-150 cursor-pointer",
                     isSelected
-                        ? "ring-2 ring-primary ring-offset-1"
-                        : "ring-1 ring-transparent hover:ring-border",
+                        ? "ring-2 ring-brand-primary ring-offset-2 ring-offset-bridge-100 dark:ring-offset-bridge-900"
+                        : "ring-1 ring-transparent hover:ring-bridge-400/40 dark:hover:ring-bridge-500/35",
                 ].join(" ")}
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
                 onClick={() => onSelect(block.id)}
             >
+                {/* Block type label */}
                 {(hovered || isSelected) && (
-                    <div className="absolute -top-2 left-2 z-10 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded font-mono">
+                    <div className="absolute -top-2.5 left-2 z-10 bg-brand-primary text-brand-light text-[10px] px-1.5 py-0.5 rounded font-mono tracking-wide select-none">
                         {block.type}
                     </div>
                 )}
 
+                {/* Drag handle */}
                 {(hovered || isSelected) && (
                     <button
-                        className="absolute right-2 top-2 z-10 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing text-sm"
+                        className="absolute right-1.5 top-1.5 z-10 text-bridge-500 dark:text-bridge-400 hover:text-brand-primary cursor-grab active:cursor-grabbing transition-colors p-0.5 rounded"
                         {...attributes}
                         {...listeners}
                         title="Déplacer"
+                        aria-label="Déplacer le bloc"
                     >
-                        &#8943;
+                        <GripVertical className="w-4 h-4" />
                     </button>
                 )}
 
-                <div className="p-2"><BlockContent block={block} /></div>
+                <div className="p-3">
+                    <BlockContent block={block} />
+                </div>
             </div>
         </div>
     );
@@ -121,7 +158,7 @@ interface BuilderCanvasProps {
 }
 
 export function BuilderCanvas({ moduleSlug, sectionSlug, contentType }: BuilderCanvasProps) {
-    void moduleSlug; void sectionSlug; void contentType;
+    void sectionSlug; void contentType;
     const { blocks, selectedId, selectBlock, insertBlock, reorderBlocks } = useBuilderStore();
     const [paletteOpen, setPaletteOpen] = useState(false);
     const [insertAfterIndex, setInsertAfterIndex] = useState<number | undefined>(undefined);
@@ -172,7 +209,7 @@ export function BuilderCanvas({ moduleSlug, sectionSlug, contentType }: BuilderC
     );
 
     return (
-        <div className="flex-1 overflow-y-auto p-4 min-h-0">
+        <div className={`flex-1 overflow-y-auto p-4 min-h-0 bg-bridge-100/20 dark:bg-bridge-900/40 header-${moduleSlug}`}>
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -184,36 +221,53 @@ export function BuilderCanvas({ moduleSlug, sectionSlug, contentType }: BuilderC
                 >
                     {blocks.length === 0 && (
                         <div
-                            className="border-2 border-dashed rounded-lg p-8 text-center text-muted-foreground cursor-pointer hover:border-primary transition-colors"
+                            className="border-2 border-dashed border-bridge-400/40 dark:border-bridge-500/30 rounded-xl p-12 text-center text-bridge-500 dark:text-bridge-400 cursor-pointer hover:border-brand-primary dark:hover:border-brand-primary hover:text-brand-primary transition-colors duration-200"
                             onClick={openPaletteAtEnd}
                         >
-                            Cliquez pour ajouter le premier bloc
+                            <div className="text-sm font-medium">Aucun bloc pour l&apos;instant</div>
+                            <div className="text-xs mt-1 opacity-70">Cliquez pour ajouter le premier bloc</div>
                         </div>
                     )}
 
-                    {blocks.map((block) => (
-                        <SortableBlock
-                            key={block.id}
-                            block={block}
-                            isSelected={selectedId === block.id}
-                            onSelect={selectBlock}
-                            onInsertAfter={openPaletteAfter}
-                        />
-                    ))}
+                    {groupByColSpan(blocks).map((group, gi) =>
+                        group.length === 1 ? (
+                            <SortableBlock
+                                key={group[0].id}
+                                block={group[0]}
+                                isSelected={selectedId === group[0].id}
+                                onSelect={selectBlock}
+                                onInsertAfter={openPaletteAfter}
+                            />
+                        ) : (
+                            <div key={`group-${gi}`} className="grid grid-cols-2 gap-4">
+                                {group.map((block) => (
+                                    <SortableBlock
+                                        key={block.id}
+                                        block={block}
+                                        isSelected={selectedId === block.id}
+                                        onSelect={selectBlock}
+                                        onInsertAfter={openPaletteAfter}
+                                    />
+                                ))}
+                            </div>
+                        )
+                    )}
                 </SortableContext>
             </DndContext>
 
+            {/* Bouton d'ajout bas de liste */}
             {blocks.length > 0 && (
                 <div className="flex items-center gap-2 mt-2">
-                    <div className="flex-1 h-px bg-border" />
+                    <div className="flex-1 h-px bg-bridge-400/30 dark:bg-bridge-500/25" />
                     <button
-                        className="bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center hover:scale-110 transition-transform"
+                        className="bg-brand-primary text-brand-light rounded-full w-5 h-5 text-xs flex items-center justify-center hover:bg-brand-accent-dark transition-colors cursor-pointer"
                         onClick={openPaletteAtEnd}
                         title="Ajouter un bloc à la fin"
+                        aria-label="Ajouter un bloc à la fin"
                     >
                         +
                     </button>
-                    <div className="flex-1 h-px bg-border" />
+                    <div className="flex-1 h-px bg-bridge-400/30 dark:bg-bridge-500/25" />
                 </div>
             )}
 
