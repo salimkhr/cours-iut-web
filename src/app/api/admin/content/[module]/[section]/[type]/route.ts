@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { connectToDB } from "@/lib/mongodb";
 import { withAdmin } from "@/lib/withAdmin";
-import { getBlockDefinition } from "@/lib/blockRegistry";
 import type { Block, CourseContent } from "@/types/CourseContent";
 
 type Ctx = { params: Promise<{ module: string; section: string; type: string }> };
@@ -54,17 +53,9 @@ export const PUT = withAdmin<Ctx>(async (
         }
 
         for (const block of body.blocks) {
-            const def = getBlockDefinition(block.type);
-            if (!def) {
+            if (!block.id || !block.type || typeof block.props !== "object") {
                 return NextResponse.json(
-                    { error: `Type de bloc inconnu : ${block.type}` },
-                    { status: 400 }
-                );
-            }
-            const result = def.schema.safeParse(block.props);
-            if (!result.success) {
-                return NextResponse.json(
-                    { error: `Bloc ${block.id} invalide`, details: result.error.flatten() },
+                    { error: "Chaque bloc doit avoir id, type et props." },
                     { status: 400 }
                 );
             }
