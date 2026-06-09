@@ -101,10 +101,6 @@ export const auth = betterAuth({
         },
     },
 
-    silenceWarnings: {
-        oauthAuthServerConfig: true,
-    },
-
     plugins: [
         // Plugin admin : ajoute un champ `role` sur user (default: "user"),
         // un champ `banned` et expose les endpoints de management
@@ -143,6 +139,9 @@ export const auth = betterAuth({
         oauthProvider({
             loginPage: "/login",
             consentPage: "/oauth/consent",
+            silenceWarnings: {
+                oauthAuthServerConfig: true,
+            },
         }),
     ],
 });
