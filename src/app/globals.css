@@ -241,6 +241,10 @@
     border-color: var(--color-html-css);
 }
 
+.header-html-css .text-module {
+    color: var(--color-html-css);
+}
+
 .header-html-css a {
     color: var(--color-html-css);
     text-decoration: underline;
@@ -277,6 +281,10 @@
 
 .header-php .border-module {
     border-color: var(--color-php);
+}
+
+.header-php .text-module {
+    color: var(--color-php);
 }
 
 .header-php a {
@@ -317,6 +325,10 @@
     border-color: var(--color-javascript);
 }
 
+.header-javascript .text-module {
+    color: var(--color-javascript);
+}
+
 .header-javascript a {
     color: var(--color-javascript);
     text-decoration: underline;
@@ -355,6 +367,10 @@
     border-color: var(--color-login);
 }
 
+.header-login .text-module {
+    color: var(--color-login);
+}
+
 .header-login a {
     color: var(--color-login);
     text-decoration: underline;
@@ -387,6 +403,10 @@
 
 .header-brainfuck .border-module {
     border-color: var(--color-brainfuck);
+}
+
+.header-brainfuck .text-module {
+    color: var(--color-brainfuck);
 }
 
 .header-brainfuck a {

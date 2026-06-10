@@ -3,20 +3,11 @@
 import React, { useCallback, useState } from "react";
 import { GripVertical } from "lucide-react";
 import {
-    DndContext,
-    closestCenter,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
-    type DragEndEvent,
-} from "@dnd-kit/core";
-import {
     SortableContext,
-    sortableKeyboardCoordinates,
     useSortable,
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { useDroppable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { getBlockDefinition } from "@/lib/blockRegistry";
@@ -70,6 +61,16 @@ function BlockContent({ block }: { block: Block }) {
     return <Render {...block.props} />;
 }
 
+function InsertPreview() {
+    return (
+        <div className="flex items-center gap-1 my-1.5 pointer-events-none">
+            <div className="w-2 h-2 rounded-full bg-brand-primary shrink-0" />
+            <div className="flex-1 h-0.5 bg-brand-primary rounded-full" />
+            <div className="w-2 h-2 rounded-full bg-brand-primary shrink-0" />
+        </div>
+    );
+}
+
 function InsertLine({ onClick }: { onClick: () => void }) {
     return (
         <div className="flex items-center gap-2 my-1 opacity-0 hover:opacity-100 transition-opacity duration-150">
@@ -121,7 +122,7 @@ function SortableBlock({
                 ].join(" ")}
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
-                onClick={() => onSelect(block.id)}
+                onClick={(e) => { e.stopPropagation(); onSelect(block.id); }}
             >
                 {/* Block type label */}
                 {(hovered || isSelected) && (
@@ -155,33 +156,16 @@ interface BuilderCanvasProps {
     moduleSlug: string;
     sectionSlug: string;
     contentType: string;
+    insertPreviewAfter?: string | null;
 }
 
-export function BuilderCanvas({ moduleSlug, sectionSlug, contentType }: BuilderCanvasProps) {
+export function BuilderCanvas({ moduleSlug, sectionSlug, contentType, insertPreviewAfter }: BuilderCanvasProps) {
     void sectionSlug; void contentType;
-    const { blocks, selectedId, selectBlock, insertBlock, reorderBlocks } = useBuilderStore();
+    const { blocks, selectedId, selectBlock, insertBlock } = useBuilderStore();
     const [paletteOpen, setPaletteOpen] = useState(false);
     const [insertAfterIndex, setInsertAfterIndex] = useState<number | undefined>(undefined);
 
-    const sensors = useSensors(
-        useSensor(PointerSensor),
-        useSensor(KeyboardSensor, {
-            coordinateGetter: sortableKeyboardCoordinates,
-        })
-    );
-
-    function handleDragEnd(event: DragEndEvent) {
-        const { active, over } = event;
-        if (!over || active.id === over.id) return;
-        const oldIds = blocks.map((b) => b.id);
-        const oldIndex = oldIds.indexOf(String(active.id));
-        const newIndex = oldIds.indexOf(String(over.id));
-        if (oldIndex === -1 || newIndex === -1) return;
-        const newIds = [...oldIds];
-        newIds.splice(oldIndex, 1);
-        newIds.splice(newIndex, 0, String(active.id));
-        reorderBlocks(newIds);
-    }
+    const { setNodeRef: setCanvasRef } = useDroppable({ id: "canvas" });
 
     function openPaletteAfter(blockId: string) {
         const idx = blocks.findIndex((b) => b.id === blockId);
@@ -209,51 +193,57 @@ export function BuilderCanvas({ moduleSlug, sectionSlug, contentType }: BuilderC
     );
 
     return (
-        <div className={`flex-1 overflow-y-auto p-4 min-h-0 bg-bridge-100/20 dark:bg-bridge-900/40 header-${moduleSlug}`}>
-            <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
+        <div
+            ref={setCanvasRef}
+            className="flex-1 overflow-y-auto p-4 min-h-0 bg-bridge-100/20 dark:bg-bridge-900/40"
+            onClick={() => selectBlock(null)}
+        >
+            <SortableContext
+                items={blocks.map((b) => b.id)}
+                strategy={verticalListSortingStrategy}
             >
-                <SortableContext
-                    items={blocks.map((b) => b.id)}
-                    strategy={verticalListSortingStrategy}
-                >
-                    {blocks.length === 0 && (
-                        <div
-                            className="border-2 border-dashed border-bridge-400/40 dark:border-bridge-500/30 rounded-xl p-12 text-center text-bridge-500 dark:text-bridge-400 cursor-pointer hover:border-brand-primary dark:hover:border-brand-primary hover:text-brand-primary transition-colors duration-200"
-                            onClick={openPaletteAtEnd}
-                        >
-                            <div className="text-sm font-medium">Aucun bloc pour l&apos;instant</div>
-                            <div className="text-xs mt-1 opacity-70">Cliquez pour ajouter le premier bloc</div>
-                        </div>
-                    )}
+                {blocks.length === 0 && (
+                    <div
+                        className="border-2 border-dashed border-bridge-400/40 dark:border-bridge-500/30 rounded-xl p-12 text-center text-bridge-500 dark:text-bridge-400 cursor-pointer hover:border-brand-primary dark:hover:border-brand-primary hover:text-brand-primary transition-colors duration-200"
+                        onClick={openPaletteAtEnd}
+                    >
+                        <div className="text-sm font-medium">Aucun bloc pour l&apos;instant</div>
+                        <div className="text-xs mt-1 opacity-70">Cliquez pour ajouter le premier bloc</div>
+                    </div>
+                )}
 
-                    {groupByColSpan(blocks).map((group, gi) =>
-                        group.length === 1 ? (
-                            <SortableBlock
-                                key={group[0].id}
-                                block={group[0]}
-                                isSelected={selectedId === group[0].id}
-                                onSelect={selectBlock}
-                                onInsertAfter={openPaletteAfter}
-                            />
-                        ) : (
-                            <div key={`group-${gi}`} className="grid grid-cols-2 gap-4">
-                                {group.map((block) => (
-                                    <SortableBlock
-                                        key={block.id}
-                                        block={block}
-                                        isSelected={selectedId === block.id}
-                                        onSelect={selectBlock}
-                                        onInsertAfter={openPaletteAfter}
-                                    />
-                                ))}
-                            </div>
-                        )
-                    )}
-                </SortableContext>
-            </DndContext>
+                {groupByColSpan(blocks).map((group, gi) => {
+                    const showPreview = group.some((b) => b.id === insertPreviewAfter);
+                    return (
+                        <React.Fragment key={group.length === 1 ? group[0].id : `group-${gi}`}>
+                            {group.length === 1 ? (
+                                <SortableBlock
+                                    block={group[0]}
+                                    isSelected={selectedId === group[0].id}
+                                    onSelect={selectBlock}
+                                    onInsertAfter={openPaletteAfter}
+                                />
+                            ) : (
+                                <div className="grid grid-cols-2 gap-4">
+                                    {group.map((block) => (
+                                        <SortableBlock
+                                            key={block.id}
+                                            block={block}
+                                            isSelected={selectedId === block.id}
+                                            onSelect={selectBlock}
+                                            onInsertAfter={openPaletteAfter}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                            {showPreview && <InsertPreview />}
+                        </React.Fragment>
+                    );
+                })}
+            </SortableContext>
+
+            {/* Preview en fin de liste (canvas vide ou zone sous les blocs) */}
+            {insertPreviewAfter === "canvas" && <InsertPreview />}
 
             {/* Bouton d'ajout bas de liste */}
             {blocks.length > 0 && (
@@ -275,6 +265,7 @@ export function BuilderCanvas({ moduleSlug, sectionSlug, contentType }: BuilderC
                 open={paletteOpen}
                 onClose={() => setPaletteOpen(false)}
                 onSelect={handlePaletteSelect}
+                moduleSlug={moduleSlug}
             />
         </div>
     );
