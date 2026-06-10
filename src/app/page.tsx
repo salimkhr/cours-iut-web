@@ -90,7 +90,7 @@ export default async function Home() {
 
             {session?.user.role === 'admin' && <AdminHomeFab />}
 
-            <AboutSection/>
+            <AboutSection modules={allModules} isAuthed={isAuthed} />
 
             <PageFooter/>
         </main>

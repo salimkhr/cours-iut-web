@@ -1,5 +1,6 @@
 import Module from "@/types/Module";
 import Section from "@/types/Section";
+import { hasContentType } from "@/types/CourseContent";
 
 export interface ModuleProgress {
     totalSections: number;
@@ -11,7 +12,7 @@ export interface ModuleProgress {
 
 export default function getModuleProgress(currentModule: Module): ModuleProgress {
     const nonExamenSections = (currentModule.sections ?? []).filter(
-        (s: Section) => !s.contents.includes('examen')
+        (s: Section) => !hasContentType(s.contents, 'examen')
     );
 
     const totalSections = nonExamenSections.length;

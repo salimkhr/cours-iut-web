@@ -9,6 +9,7 @@ import Section from "@/types/Section";
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
 import {CONTENT_ICON, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
+import { getContentTypes } from "@/types/CourseContent";
 import {Button} from "@/components/ui/button";
 import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
 import updateSectionState from "@/hook/admin/updateSectionState";
@@ -30,7 +31,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
 
     const prefersReducedMotion = useReducedMotion();
 
-    const sortedContents = [...section.contents].sort(
+    const sortedContents = getContentTypes(section.contents).sort(
         (a, b) => CONTENT_ORDER.indexOf(a as ContentKey) - CONTENT_ORDER.indexOf(b as ContentKey)
     );
 
@@ -53,7 +54,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
             style={{'--module-color': `var(--color-${modulePath})`} as React.CSSProperties}
             className={cn(
                 "group relative h-full flex flex-col p-7 lg:p-9 rounded-2xl overflow-hidden",
-                "bg-[#f7ebd9] dark:bg-[#13110d]",
+                "bg-bridge-50 dark:bg-bridge-900",
                 "border border-bridge-500/45 dark:border-bridge-500/35",
                 "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)]",
                 "dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
@@ -112,7 +113,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                                 disabled={pending}
                                 aria-busy={pending}
                                 className={cn(
-                                    "pointer-events-auto inline-flex items-center gap-1 rounded-md px-2 py-0.5",
+                                    "pointer-events-auto inline-flex items-center gap-1 rounded-md px-2 py-1.5",
                                     "text-[10px] uppercase tracking-[0.18em] font-semibold",
                                     "transition-colors duration-200 cursor-pointer",
                                     available
@@ -171,7 +172,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                         const Icon = CONTENT_ICON[item as ContentKey] ?? BookOpen;
                         const disabled = isLocked;
                         const buttonClassName = cn(
-                            "group/btn flex-1 min-w-[88px] rounded-lg",
+                            "group/btn flex-1 min-w-[88px] min-h-[44px] rounded-lg",
                             "text-xs font-semibold tracking-wide uppercase",
                             "border-2 border-(--module-color) text-brand-dark dark:text-bridge-50",
                             "bg-transparent shadow-none",
@@ -208,7 +209,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                     {section.hasCorrection && (() => {
                         const correctionDisabled = !isAdmin && !section.correctionIsAvailable;
                         const correctionClassName = cn(
-                            "group/btn flex-1 min-w-[88px] rounded-lg",
+                            "group/btn flex-1 min-w-[88px] min-h-[44px] rounded-lg",
                             "text-xs font-semibold tracking-wide uppercase",
                             "border-2 border-dashed border-(--module-color) text-brand-dark dark:text-bridge-50",
                             "bg-transparent shadow-none",

@@ -12,6 +12,7 @@ import {getModuleData} from "@/hook/getModuleData";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {cn} from "@/lib/utils";
 import Section from "@/types/Section";
+import { getContentTypes } from "@/types/CourseContent";
 import {Metadata} from "next";
 
 interface SectionPageProps {
@@ -184,7 +185,7 @@ export default async function SectionPage({params}: SectionPageProps) {
             <section className="w-full max-w-7xl mx-auto px-6 lg:px-12 pb-12 lg:pb-16">
                 <h2 className="sr-only">Les cours</h2>
                 <div className="flex flex-wrap justify-center gap-4 lg:gap-6">
-                    {currentSection?.contents.map((content, index) => (
+                    {currentSection && getContentTypes(currentSection.contents).map((content, index) => (
                         <div
                             key={content}
                             className={cn(

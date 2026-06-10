@@ -39,7 +39,7 @@ export const SlidesActions = ({className}: { className?: string }) => {
             <div
                 className={cn(
                     "flex items-center gap-2 p-2 rounded-xl border backdrop-blur-md transition-opacity",
-                    hovered ? "opacity-100 bg-background/70" : "opacity-0 bg-background/40"
+                    hovered ? "opacity-100 bg-background/70" : "opacity-40 bg-background/40"
                 )}
             >
                 <Button

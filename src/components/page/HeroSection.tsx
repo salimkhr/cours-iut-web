@@ -58,8 +58,8 @@ export default function HeroSection({
             className={cn(
                 "relative w-full bg-no-repeat bg-right-bottom bg-cover overflow-hidden border-b border-brand-dark/15 dark:border-brand-light/15 -mt-(--navbar-h)",
                 compact
-                    ? "min-h-[26vh] lg:min-h-[34vh]"
-                    : "min-h-[60vh] lg:min-h-[80vh]"
+                    ? "min-h-[20dvh] sm:min-h-[26vh] lg:min-h-[34vh]"
+                    : "min-h-[50dvh] sm:min-h-[60vh] lg:min-h-[80vh]"
             )}
             style={{backgroundImage: `url(${heroImage})`}}
         >
@@ -90,10 +90,10 @@ export default function HeroSection({
 
             <div
                 className={cn(
-                    "relative z-10 mx-auto w-full max-w-7xl flex flex-col lg:flex-row items-center lg:items-center justify-center lg:justify-between px-6 lg:pl-12 lg:pr-6 opacity-0 animate-fade-in",
+                    "relative z-10 mx-auto w-full max-w-7xl flex flex-col lg:flex-row items-center lg:items-center justify-center lg:justify-between px-6 sm:px-8 md:px-10 lg:pl-12 lg:pr-6 opacity-0 animate-fade-in",
                     compact
-                        ? "py-7 lg:py-10 min-h-[26vh] lg:min-h-[34vh]"
-                        : "py-16 lg:py-24 min-h-[60vh] lg:min-h-[80vh]"
+                        ? "py-7 lg:py-10 min-h-[20dvh] sm:min-h-[26vh] lg:min-h-[34vh]"
+                        : "py-16 lg:py-24 min-h-[50dvh] sm:min-h-[60vh] lg:min-h-[80vh]"
                 )}>
                 <div className="w-full max-w-[640px]">
                     {backHref && (

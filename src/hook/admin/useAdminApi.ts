@@ -26,8 +26,8 @@ export default function useAdminApi() {
     }
 
     // Éditer une section
-    async function editSection(moduleId: string, updatedSection: SectionFrom) {
-        const res = await axios.put(`/api/admin/${moduleId}/sections`, updatedSection, {
+    async function editSection(moduleId: string, sectionId: string, updatedSection: SectionFrom) {
+        const res = await axios.put(`/api/admin/${moduleId}/sections`, { ...updatedSection, sectionId }, {
             headers: {"Content-Type": "application/json"},
         });
 

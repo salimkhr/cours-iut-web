@@ -1,84 +1,100 @@
 'use client'
-import {useIsDark} from "@/hook/useIsDark";
+import { useMemo } from "react";
+import Image from "next/image";
+import { useIsDark } from "@/hook/useIsDark";
+import Module from "@/types/Module";
 
-const QUOTES = [
-    { text: "Le code, comme l'architecture, se construit pas à pas.", author: "Claude Sonnet" },
-    { text: "Bâtir, c'est choisir l'essentiel et laisser le reste au silence.", author: "Le Corbusier" },
-    { text: "Toute grande structure commence par une ligne tracée dans le vide.", author: "Tadao Ando" },
-    { text: "L'élégance n'est pas un ornement — c'est une absence de superflu.", author: "Coco Chanel" },
-    { text: "La forme suit la fonction, et la beauté suit l'honnêteté.", author: "Louis Sullivan" },
-    { text: "Un escalier ne mène nulle part si l'on refuse de monter la première marche.", author: "Zaha Hadid" },
-    { text: "Chaque projet est une promesse faite à ceux qui n'ont pas encore regardé.", author: "Renzo Piano" },
-    { text: "Ce qui dure est toujours plus simple qu'il n'y paraît.", author: "Mies van der Rohe" },
-    { text: "Le meilleur code est celui qu'on comprend six mois plus tard.", author: "Robert C. Martin" },
-    { text: "Avant d'optimiser, fais fonctionner.", author: "Kent Beck" },
-    { text: "La simplicité est la sophistication suprême.", author: "Léonard de Vinci" },
-    { text: "Un bug est souvent une idée incomplète.", author: "Alan Turing" },
-    { text: "Apprendre à coder, c'est apprendre à penser avec rigueur.", author: "Grace Hopper" },
-    { text: "Le code propre raconte une histoire sans commentaires inutiles.", author: "Robert C. Martin" },
-    { text: "Chaque erreur est une étape vers une meilleure version.", author: "Ada Lovelace" },
-    { text: "Un programme élégant résout beaucoup avec peu.", author: "Donald Knuth" },
-    { text: "La constance transforme la complexité en maîtrise.", author: "Claude Sonnet" },
-    { text: "Les fondations invisibles sont celles qui soutiennent les plus grands projets.", author: "Linus Torvalds" },
-    { text: "Un développeur ne mémorise pas tout, il sait où chercher.", author: "Bjarne Stroustrup" },
-    { text: "Le progrès naît de l'expérimentation et de la correction.", author: "Margaret Hamilton" },
-    { text: "Chaque ligne de code est une décision de conception.", author: "John Carmack" },
-    { text: "La clarté vaut toujours mieux que l'ingéniosité obscure.", author: "Guido van Rossum" },
-    { text: "Le vrai pouvoir du code est de transformer les idées en réalité.", author: "Steve Jobs" },
-    { text: "Construire lentement vaut mieux que reconstruire sans fin.", author: "Claude Sonnet" },
-    { text: "Le code est un artisanat autant qu'une science.", author: "Sandi Metz" },
-    { text: "Un système solide repose sur des abstractions simples.", author: "Barbara Liskov" },
-    { text: "La discipline quotidienne produit les applications exceptionnelles.", author: "Claude Sonnet" },
-    { text: "La perfection est atteinte lorsqu'il n'y a plus rien à retirer.", author: "Antoine de Saint-Exupéry" },
-    { text: "Ce que l'on conçoit bien s'énonce clairement, et les mots pour le dire arrivent aisément.", author: "Nicolas Boileau" },
-    { text: "L'architecture est la volonté d'une époque traduite en espace.", author: "Ludwig Mies van der Rohe" },
-    { text: "Toute chose difficile est simple dès qu'on l'a comprise.", author: "Claude Sonnet" },
-];
+interface AboutSectionProps {
+    modules: (Module & { _id: string })[];
+    isAuthed: boolean;
+}
 
+function relativeDate(date: string): string {
+    const diff = Date.now() - new Date(date).getTime();
+    const days = Math.floor(diff / 86400000);
+    if (days === 0) return "aujourd'hui";
+    if (days === 1) return "hier";
+    if (days < 7) return `il y a ${days} j`;
+    const weeks = Math.floor(days / 7);
+    if (weeks < 5) return `il y a ${weeks} sem.`;
+    return `il y a ${Math.floor(days / 30)} mois`;
+}
 
-export default function AboutSection() {
+export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
     const isDark = useIsDark();
 
-    const dayOfMonth = new Date().getDate(); // 1 à 31
-    const quote = QUOTES[(dayOfMonth - 1) % QUOTES.length];
+    const recentModules = useMemo(() =>
+        [...modules]
+            .filter(m => !m.isExtra)
+            .sort((a, b) => {
+                const aT = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+                const bT = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+                return bT - aT;
+            })
+            .slice(0, 3),
+        [modules]
+    );
+
+    const { totalSections, availableSections, progressPct } = useMemo(() => {
+        const allSections = modules.flatMap(m => m.sections);
+        const total = allSections.length;
+        const available = allSections.filter(s => s.isAvailable).length;
+        return {
+            totalSections: total,
+            availableSections: available,
+            progressPct: total > 0 ? Math.round((available / total) * 100) : 0,
+        };
+    }, [modules]);
 
     const heroImage = isDark
         ? "/images/header/escalier-dark.png"
         : "/images/header/escalier-light.png";
 
-    const imageFade = isDark
-        ? `linear-gradient(to right, #171512 0%, #171512 45%, rgba(23,21,18,0.6) 65%, transparent 100%)`
-        : `linear-gradient(to right, #faf8f5 0%, #faf8f5 45%, rgba(250,248,245,0.6) 65%, transparent 100%)`;
+    // Extended solid zone (55%) and longer transition (75→90%) so text at max-width 560px
+    // stays inside a covered zone on viewports ≥1024px, and partially covered on smaller ones.
+    const bgVar = isDark ? "var(--color-brand-dark)" : "var(--color-brand-light)";
+    const imageFade = `linear-gradient(to right, ${bgVar} 0%, ${bgVar} 55%, color-mix(in srgb, ${bgVar} 55%, transparent) 75%, transparent 90%)`;
+
+    const textColor = isDark ? "var(--color-brand-light)" : "var(--color-brand-dark)";
 
     return (
         <>
             <style>{`
+        :root {
+          --about-mobile-overlay: color-mix(in srgb, var(--color-brand-light) 90%, transparent);
+        }
+        .dark {
+          --about-mobile-overlay: color-mix(in srgb, var(--color-brand-dark) 90%, transparent);
+        }
         .about-section {
           position: relative;
           width: 100%;
           overflow: hidden;
-          border-top: 1px solid var(--color-brand-gray-300, #e2ddd6);
+          border-top: 1px solid var(--color-brand-gray-300);
           min-height: clamp(260px, 40vw, 560px);
         }
-
         .about-image-wrap {
           position: absolute;
           inset: 0;
           z-index: 0;
-        }
-        .about-image-wrap img {
-          display: block;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: right center;
         }
         .about-image-fade {
           position: absolute;
           inset: 0;
           pointer-events: none;
         }
-
+        .about-mobile-overlay {
+          display: none;
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+        }
+        @media (max-width: 639px) {
+          .about-mobile-overlay {
+            display: block;
+            background: var(--about-mobile-overlay);
+          }
+        }
         .about-text {
           position: relative;
           z-index: 10;
@@ -88,88 +104,163 @@ export default function AboutSection() {
           padding: clamp(2.5rem, 6vw, 5rem) clamp(1.5rem, 4vw, 3.5rem);
           width: 100%;
           box-sizing: border-box;
+          max-width: 560px;
         }
-
-        .quote-rule {
+        .about-rule {
           display: block;
           width: 2.5rem;
           height: 2px;
-          background: var(--color-brand-primary, #c8a96e);
+          background: var(--color-brand-primary);
           border-radius: 2px;
           margin-bottom: 1.5rem;
         }
-
-        .quote-label {
+        .about-label {
           font-size: 0.7rem;
           font-family: var(--font-mono, monospace);
           letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: var(--color-brand-primary, #c8a96e);
-          margin: 0 0 1.25rem;
+          color: var(--color-brand-primary);
+          margin: 0 0 1rem;
         }
-
-        .quote-block {
-          opacity: 0;
-          transform: translateY(12px);
-          transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-                      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .quote-block.visible {
-          opacity: 1;
-          transform: translateY(0);
-        }
-
-        .quote-text {
-          font-family: var(--font-serif, Georgia, serif);
-          font-size: clamp(1.45rem, 3vw, 2.6rem);
-          font-weight: 400;
-          font-style: italic;
-          line-height: 1.2;
-          letter-spacing: -0.015em;
+        .update-list {
+          list-style: none;
           margin: 0;
-          max-width: 100%;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.55rem;
         }
-
-        .quote-author {
-          display: block;
-          margin-top: 1.5rem;
+        .update-item {
+          display: flex;
+          align-items: baseline;
+          gap: 0.6rem;
+          font-size: 0.85rem;
+        }
+        .update-dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: var(--color-brand-primary);
+          flex-shrink: 0;
+          margin-top: 0.35rem;
+        }
+        .update-name {
+          flex: 1;
+          min-width: 0;
+          font-weight: 500;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .update-date {
           font-family: var(--font-mono, monospace);
-          font-size: 0.75rem;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: var(--color-brand-primary, #c8a96e);
-          font-style: normal;
+          font-size: 0.7rem;
+          letter-spacing: 0.06em;
+          color: var(--color-brand-gray-500);
+          white-space: nowrap;
+          flex-shrink: 0;
         }
-        .quote-author::before {
-          content: "— ";
+        .block-separator {
+          border: none;
+          border-top: 1px solid color-mix(in srgb, var(--color-brand-primary) 20%, transparent);
+          margin: 1.75rem 0;
+          width: 100%;
+        }
+        .progress-text {
+          font-size: 0.85rem;
+          font-weight: 500;
+          margin-bottom: 0.5rem;
+        }
+        .progress-bar-bg {
+          height: 4px;
+          background: color-mix(in srgb, var(--color-brand-gray-500) 20%, transparent);
+          border-radius: 4px;
+          overflow: hidden;
+          margin-bottom: 0.4rem;
+        }
+        .progress-bar-fill {
+          height: 100%;
+          background: var(--color-brand-primary);
+          border-radius: 4px;
+          transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .progress-sub {
+          font-family: var(--font-mono, monospace);
+          font-size: 0.7rem;
+          letter-spacing: 0.06em;
+          color: var(--color-brand-gray-500);
         }
       `}</style>
 
-            <section className="about-section" aria-label="Architecture moderne — escalier avec citation inspirante">
-
-                {/* Image en fond pleine largeur */}
+            <section
+                className="about-section"
+                aria-label="Dernières mises à jour du programme"
+            >
                 <div className="about-image-wrap" aria-hidden="true">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={heroImage} alt="" />
+                    <Image
+                        src={heroImage}
+                        alt=""
+                        fill
+                        priority={false}
+                        sizes="100vw"
+                        style={{ objectFit: 'cover', objectPosition: 'right center' }}
+                    />
                     <div className="about-image-fade" style={{ background: imageFade }} />
+                    <div className="about-mobile-overlay" />
                 </div>
 
-                {/* Texte en overlay, sans contrainte de colonne */}
-                <div className="about-text">
-                    <div className="quote-block visible">
-                        <span className="quote-rule" aria-hidden="true" />
-                        <p className="quote-label" aria-hidden="true">Philosophie</p>
+                <div className="about-text" style={{ color: textColor }}>
+                    {/* Bloc 1 — Dernières mises à jour */}
+                    <span className="about-rule" aria-hidden="true" />
+                    <p id="updates-label" className="about-label">Dernières mises à jour</p>
+                    <ul className="update-list" aria-labelledby="updates-label">
+                        {recentModules.map(mod => (
+                            <li key={mod._id} className="update-item">
+                                <span className="update-dot" aria-hidden="true" />
+                                <span className="update-name">{mod.title}</span>
+                                {mod.updatedAt && (
+                                    <span className="update-date">
+                                        {relativeDate(mod.updatedAt)}
+                                    </span>
+                                )}
+                            </li>
+                        ))}
+                        {recentModules.length === 0 && (
+                            <li className="update-item" style={{ opacity: 0.5 }}>
+                                <span className="update-dot" aria-hidden="true" />
+                                <span className="update-name">Aucun module disponible</span>
+                            </li>
+                        )}
+                    </ul>
 
-                        <blockquote
-                            className="quote-text"
-                            style={{ color: isDark ? "#faf8f5" : "#1a1916" }}
-                        >
-                            &laquo;&nbsp;{quote.text}&nbsp;&raquo;
-                            <footer className="quote-author">{quote.author}</footer>
-                        </blockquote>
-                    </div>
+                    {/* Séparateur + Bloc 2 — Ma progression (connecté uniquement) */}
+                    {isAuthed && totalSections > 0 && (
+                        <>
+                            <hr className="block-separator" aria-hidden="true" />
+                            <p id="progress-label" className="about-label">Ma progression</p>
+                            <p className="progress-text" aria-describedby="progress-label">
+                                {availableSections} / {totalSections} sections déverrouillées
+                            </p>
+                            <div
+                                className="progress-bar-bg"
+                                role="progressbar"
+                                aria-valuenow={progressPct}
+                                aria-valuemin={0}
+                                aria-valuemax={100}
+                                aria-label={`${progressPct}% du programme déverrouillé`}
+                            >
+                                <div
+                                    className="progress-bar-fill"
+                                    style={{ width: `${progressPct}%` }}
+                                />
+                            </div>
+                            <p className="progress-sub">
+                                {totalSections - availableSections} section
+                                {totalSections - availableSections !== 1 ? 's' : ''} en attente
+                            </p>
+                        </>
+                    )}
                 </div>
-
             </section>
         </>
     );

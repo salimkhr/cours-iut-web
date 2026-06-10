@@ -5,6 +5,7 @@ import {ObjectId} from "bson";
 import {withAdmin} from "@/lib/withAdmin";
 import {sectionApiSchema} from "@/lib/schemas/section.schema";
 import {z} from "zod";
+import { ContentRef } from "@/types/CourseContent";
 
 export const POST = withAdmin(async (
     req: Request,
@@ -17,7 +18,11 @@ export const POST = withAdmin(async (
         if (!parsed.success) {
             return NextResponse.json({error: parsed.error.flatten()}, {status: 400});
         }
-        const section = parsed.data;
+        const rawSection = parsed.data;
+        const section = {
+            ...rawSection,
+            contents: rawSection.contents.map((type): ContentRef => ({ type, source: "file" })),
+        };
 
         const db = await connectToDB();
 
@@ -69,14 +74,17 @@ export const PUT = withAdmin(async (
             return NextResponse.json({error: 'Section introuvable'}, {status: 404});
         }
 
-        const _oldSection = currentModule.sections[oldSectionIndex];
+        const oldSection = currentModule.sections[oldSectionIndex];
+
+        // Préserver les sources existantes (ne pas écraser source:"db" par "file")
+        const mergedContents = updatedSection.contents.map((type): ContentRef => {
+            const existing = (oldSection.contents ?? []).find((c) => c.type === type);
+            return existing ?? { type, source: "file" };
+        });
 
         // Mettre à jour la section dans la base de données
         const result = await db.collection<Module>('modules').updateOne(
-            {
-                _id: new ObjectId(moduleId),
-                'sections._id': sectionId
-            },
+            { _id: new ObjectId(moduleId) },
             {
                 $set: {
                     [`sections.${oldSectionIndex}.title`]: updatedSection.title,
@@ -89,7 +97,7 @@ export const PUT = withAdmin(async (
                     [`sections.${oldSectionIndex}.isAvailable`]: updatedSection.isAvailable,
                     [`sections.${oldSectionIndex}.correctionIsAvailable`]: updatedSection.correctionIsAvailable,
                     [`sections.${oldSectionIndex}.order`]: updatedSection.order,
-                    [`sections.${oldSectionIndex}.contents`]: updatedSection.contents,
+                    [`sections.${oldSectionIndex}.contents`]: mergedContents,
                     [`sections.${oldSectionIndex}.examenIsLock`]: updatedSection.examenIsLock,
                 }
             }

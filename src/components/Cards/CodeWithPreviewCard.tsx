@@ -151,7 +151,7 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
                         {codePanelDark}
                     </div>
                 ) : (
-                    <div className="p-4 text-left">
+                    <div className="p-4 text-left max-h-[60dvh] overflow-auto">
                         {previewContent}
                     </div>
                 )}

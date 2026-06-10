@@ -1,4 +1,4 @@
-import {notFound} from "next/navigation";
+import {notFound, redirect} from "next/navigation";
 import {BookOpen, CodeXml, Columns2, Target} from "lucide-react";
 
 import HeroSection from "@/components/page/HeroSection";
@@ -8,11 +8,13 @@ import ReadingProgress from "@/components/page/ReadingProgress";
 import ContentSidebarNav from "@/components/page/ContentSidebarNav";
 import ExamenWrapper from "@/components/ExamenWrapper";
 import TableOfContents from "@/components/TableOfContents";
+import EditContentFab from "@/components/admin/EditContentFab";
 import {getModuleData} from "@/hook/getModuleData";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getContentComponent} from "@/lib/getContentComponent";
 import {cn} from "@/lib/utils";
 import {CONTENT_DESC, CONTENT_ICON, ContentKey} from "@/lib/contentMeta";
+import {getContentTypes, hasContentType} from "@/types/CourseContent";
 import {Metadata} from "next";
 import {getServerSession} from "@/lib/auth";
 
@@ -53,7 +55,7 @@ export default async function Content({params}: ContentPageProps) {
     if (!isAdmin && currentSection.isAvailable === false) notFound();
 
     if (isSplit) {
-        if (!currentSection.contents.includes('cours') || !currentSection.contents.includes('TP')) {
+        if (!hasContentType(currentSection.contents, 'cours') || !hasContentType(currentSection.contents, 'TP')) {
             notFound();
         }
     } else if (!currentContent) {
@@ -76,6 +78,12 @@ export default async function Content({params}: ContentPageProps) {
             currentSection,
             currentContent: currentContent!,
         });
+        if (!ComponentToRender) {
+            if (isAdmin) {
+                redirect(`/admin/content/${moduleSlug}/${sectionSlug}/${currentContent}`);
+            }
+            notFound();
+        }
     }
 
     const contentKey = currentContent as ContentKey;
@@ -132,7 +140,7 @@ export default async function Content({params}: ContentPageProps) {
             <div className="flex sticky top-(--navbar-h) z-[25] w-full justify-end">
                 <div className={cn("flex px-1 border-l border-b border-border rounded-bl-xl bg-transparent backdrop-blur-xs", isSplit ? "py-1" : "pt-1 pb-1")}>
                     <ContentSidebarNav
-                        contents={currentSection.contents}
+                        contents={getContentTypes(currentSection.contents)}
                         currentContent={isSplit ? SPLIT_SLUG : currentContent!}
                         moduleSlug={moduleSlug}
                         sectionSlug={sectionSlug}
@@ -181,13 +189,22 @@ export default async function Content({params}: ContentPageProps) {
                             currentContent={currentContent as ContentKey}
                             moduleSlug={moduleSlug}
                             sectionSlug={sectionSlug}
-                            sectionContents={currentSection.contents}
+                            sectionContents={getContentTypes(currentSection.contents)}
                         />
                     )}
                 </>
             )}
 
             {!isSplit && <PageFooter path={currentModule.path}/>}
+
+            {isAdmin && !isSplit && currentContent && (
+                <EditContentFab
+                    moduleSlug={moduleSlug}
+                    sectionSlug={sectionSlug}
+                    contentType={currentContent}
+                    modulePath={currentModule.path}
+                />
+            )}
         </div>
     );
 }
@@ -205,7 +222,7 @@ function SplitPane({label, Icon, modulePath, side, children}: SplitPaneProps) {
         <section
             aria-label={label}
             className={cn(
-                "lg:w-1/2 lg:overflow-y-auto",
+                "max-h-[70dvh] overflow-y-auto lg:max-h-none lg:w-1/2",
                 side === 'left'
                     ? "lg:pr-2"
                     : "lg:pl-2 lg:border-l lg:border-bridge-500/30 lg:dark:border-bridge-500/25",

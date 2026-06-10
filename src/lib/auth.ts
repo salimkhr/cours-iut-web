@@ -1,6 +1,7 @@
 import {betterAuth} from "better-auth";
 import {mongodbAdapter} from "better-auth/adapters/mongodb";
-import {admin, captcha, username} from "better-auth/plugins";
+import {admin, captcha, jwt, username} from "better-auth/plugins";
+import {oauthProvider} from "@better-auth/oauth-provider";
 import {MongoClient} from "mongodb";
 import {headers} from "next/headers";
 import {Resend} from "resend";
@@ -104,6 +105,8 @@ export const auth = betterAuth({
         // Plugin admin : ajoute un champ `role` sur user (default: "user"),
         // un champ `banned` et expose les endpoints de management
         // (/admin/list-users, /admin/set-role, etc.).
+        jwt(),
+
         admin({
             defaultRole: "user",
             adminRoles: ["admin"],
@@ -127,6 +130,19 @@ export const auth = betterAuth({
                 }),
             ]
             : []),
+
+        // OAuth 2.0 provider : expose les endpoints pour OAuth clients (e.g., Claude.ai).
+        // Ajoute /.well-known/openid-configuration, /api/auth/oauth2/authorize,
+        // /api/auth/oauth2/token, /api/auth/oauth2/userinfo.
+        // Les clients sont enregistrés dynamiquement via /api/auth/oauth2/register
+        // ou créés directement en base de données.
+        oauthProvider({
+            loginPage: "/login",
+            consentPage: "/oauth/consent",
+            silenceWarnings: {
+                oauthAuthServerConfig: true,
+            },
+        }),
     ],
 });
 

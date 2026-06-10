@@ -1,7 +1,11 @@
-import {contentImports} from "@/lib/contentImports";
-import {notFound} from "next/navigation";
-import Module from "@/types/Module";
-import Section from "@/types/Section";
+import { contentImports } from "@/lib/contentImports";
+import { notFound } from "next/navigation";
+import type Module from "@/types/Module";
+import type Section from "@/types/Section";
+import { getContentRef } from "@/types/CourseContent";
+import { getContentBlocks } from "@/lib/getContentBlocks";
+import { BlockRenderer } from "@/components/builder/BlockRenderer";
+import React from "react";
 
 interface GetContentComponentArgs {
     currentModule: Module;
@@ -9,15 +13,30 @@ interface GetContentComponentArgs {
     currentContent: string;
 }
 
-/**
- * Renvoie une référence de composant React correspondant au contenu demandé.
- * Ne renvoie jamais du JSX directement.
- */
 export async function getContentComponent({
-                                              currentModule,
-                                              currentSection,
-                                              currentContent,
-                                          }: GetContentComponentArgs) {
+    currentModule,
+    currentSection,
+    currentContent,
+}: GetContentComponentArgs) {
+    const ref = getContentRef(currentSection.contents, currentContent);
+
+    if (!ref) notFound();
+
+    if (ref.source === "db") {
+        const doc = await getContentBlocks(
+            currentModule.path,
+            currentSection.path,
+            currentContent
+        );
+
+        if (!doc) notFound();
+
+        const blocks = doc.blocks;
+        return function DbContent() {
+            return React.createElement(BlockRenderer, { blocks });
+        };
+    }
+
     const componentKey =
         currentContent.charAt(0).toUpperCase() + currentContent.slice(1);
 
@@ -25,12 +44,12 @@ export async function getContentComponent({
         contentImports?.[currentModule.path]?.[currentSection.path]?.[componentKey];
 
     if (typeof importFunc !== "function") {
-        notFound();
+        return null;
     }
 
     const Component = (await importFunc()).default;
 
-    if (!Component) notFound();
+    if (!Component) return null;
 
     return Component;
 }

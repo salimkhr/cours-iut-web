@@ -25,13 +25,15 @@ export default function Heading({
 
     const isDark = useIsDark();
 
+    const textColor = isDark ? "text-brand-light" : "text-brand-dark";
+    const textColorMuted = isDark ? "text-brand-light/90" : "text-brand-dark/90";
     const styles: Record<number, string> = {
-        1: `text-5xl font-bold my-6 ${isDark ? "text-gray-100" : "text-gray-900"}`,
-        2: `text-3xl font-bold mt-5 mb-2 ${isDark ? "text-gray-100" : "text-gray-900"}`,
-        3: `text-2xl font-bold mt-4 mb-2 ${isDark ? "text-gray-100" : "text-gray-900"}`,
-        4: `text-xl font-semibold mt-3 mb-2 ${isDark ? "text-gray-200" : "text-gray-800"}`,
-        5: `text-lg font-semibold my-2 ${isDark ? "text-gray-200" : "text-gray-800"}`,
-        6: `text-base font-medium my-2 ${isDark ? "text-gray-200" : "text-gray-800"}`,
+        1: `text-3xl sm:text-4xl md:text-5xl font-bold my-6 ${textColor}`,
+        2: `text-2xl sm:text-3xl font-bold mt-5 mb-2 ${textColor}`,
+        3: `text-xl sm:text-2xl font-bold mt-4 mb-2 ${textColor}`,
+        4: `text-lg sm:text-xl font-semibold mt-3 mb-2 ${textColorMuted}`,
+        5: `text-base sm:text-lg font-semibold my-2 ${textColorMuted}`,
+        6: `text-sm sm:text-base font-medium my-2 ${textColorMuted}`,
     };
 
     return (

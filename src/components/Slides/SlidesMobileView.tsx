@@ -21,15 +21,15 @@ export const SlidesMobileView = () => {
     const maxStep = slideSteps[currentSlide] || 0;
 
     return (
-        <div className="flex flex-col h-full relative bg-gray-50">
+        <div className="flex flex-col h-full relative bg-bridge-50 dark:bg-bridge-900">
             {/* Header */}
             <div
-                className="px-6 py-3 border-b text-sm font-bold uppercase bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+                className="px-6 py-3 border-b text-sm font-bold uppercase bg-bridge-50/80 dark:bg-bridge-900/80 backdrop-blur-sm sticky top-0 z-10">
                 Slide {currentSlide + 1} / {slidesCount}
             </div>
 
             {/* Notes */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-6 pb-[calc(8rem+env(safe-area-inset-bottom,0px))]">
                 {currentNotes ? (
                     <NotesRenderer notes={currentNotes} variant="mobile"/>
                 ) : (
@@ -41,7 +41,7 @@ export const SlidesMobileView = () => {
 
             {/* Controls */}
             <div
-                className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-sm border-t z-20 flex flex-col gap-3">
+                className="fixed bottom-0 left-0 right-0 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] bg-bridge-50/90 dark:bg-bridge-900/90 backdrop-blur-sm border-t z-20 flex flex-col gap-3">
                 {/* Ligne du haut : Précédent + Fullscreen */}
                 <div className="flex gap-3">
                     <Button

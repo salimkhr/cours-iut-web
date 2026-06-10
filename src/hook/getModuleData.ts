@@ -21,7 +21,8 @@ export async function getModuleData({moduleSlug, sectionSlug, contentSlug}: UseM
         if (!currentSection) notFound();
 
         if (contentSlug) {
-            currentContent = currentSection.contents.find(c => c === contentSlug);
+            const ref = currentSection.contents.find(c => c.type === contentSlug);
+            currentContent = ref ? ref.type : null;
             if (!currentContent) notFound();
         }
     }
