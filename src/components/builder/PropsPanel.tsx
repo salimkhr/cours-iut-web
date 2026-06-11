@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button";
 import { findBlock } from "@/lib/blockTreeUtils";
 import { SlidersHorizontal, Plus, Trash2, MousePointerClick } from "lucide-react";
 import { DynamicPropsEditor } from "@/components/builder/DynamicPropsEditor";
+import { ColumnsEditor } from "@/components/builder/ColumnsEditor";
 import { BlockPaletteGrid } from "@/components/builder/BlockPaletteGrid";
+import { Separator } from "@/components/ui/separator";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { getBlockDefinition } from "@/lib/blockRegistry";
 import type { Block } from "@/types/CourseContent";
@@ -67,6 +69,12 @@ export function PropsPanel({ isFixed, moduleSlug }: PropsPanelProps) {
                                 updateBlock(block.id, newProps)
                             }
                         />
+                        {block.type === "columns" && (
+                            <>
+                                <Separator className="my-4 bg-bridge-400/20 dark:bg-bridge-500/25" />
+                                <ColumnsEditor block={block} />
+                            </>
+                        )}
                     </>
                 ) : (
                     <div className="flex flex-col -mx-4 -my-4 h-full">
