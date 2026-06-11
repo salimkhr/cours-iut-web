@@ -3,6 +3,7 @@ import { revalidateTag } from "next/cache";
 import { connectToDB } from "@/lib/mongodb";
 import { withAdmin } from "@/lib/withAdmin";
 import type { Block, CourseContent } from "@/types/CourseContent";
+import { validateBlockTree } from "@/lib/validateBlockTree";
 
 type Ctx = { params: Promise<{ module: string; section: string; type: string }> };
 
@@ -46,20 +47,16 @@ export const PUT = withAdmin<Ctx>(async (
     try {
         const { module: moduleSlug, section: sectionSlug, type: contentType } = await params;
         const typedType = contentType as CourseContent["contentType"];
-        const body = await req.json() as { blocks: Block[] };
+        const body = await req.json() as { blocks: unknown };
 
-        if (!Array.isArray(body?.blocks)) {
-            return NextResponse.json({ error: "blocks[] requis" }, { status: 400 });
+        const validation = validateBlockTree(body?.blocks);
+        if (!validation.valid) {
+            return NextResponse.json(
+                { error: "Blocs invalides", details: validation.errors },
+                { status: 422 }
+            );
         }
-
-        for (const block of body.blocks) {
-            if (!block.id || !block.type || typeof block.props !== "object") {
-                return NextResponse.json(
-                    { error: "Chaque bloc doit avoir id, type et props." },
-                    { status: 400 }
-                );
-            }
-        }
+        const blocks = body.blocks as Block[];
 
         const db = await connectToDB();
         const now = new Date();
@@ -74,7 +71,7 @@ export const PUT = withAdmin<Ctx>(async (
             await db.collection<CourseContent>("course_content").updateOne(
                 { _id: existing._id },
                 {
-                    $set: { blocks: body.blocks, updatedAt: now },
+                    $set: { blocks, updatedAt: now },
                     $inc: { version: 1 },
                 }
             );
@@ -84,7 +81,7 @@ export const PUT = withAdmin<Ctx>(async (
                 moduleSlug,
                 sectionSlug,
                 contentType: typedType,
-                blocks: body.blocks,
+                blocks,
                 version: 1,
                 createdAt: now,
                 updatedAt: now,
