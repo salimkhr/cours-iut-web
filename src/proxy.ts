@@ -6,6 +6,7 @@ const PUBLIC_PATHS = [
     "/login",
     "/register",
     "/api/health",
+    "/oauth/token",
     "/api/auth", // tous les endpoints better-auth
     "/.well-known", // OAuth discovery endpoints (openid-configuration, oauth-authorization-server)
     "/mentions-legales",
