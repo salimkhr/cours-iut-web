@@ -75,7 +75,6 @@ export function BuilderPage({
         useBuilderStore();
 
     const [activeDragDef, setActiveDragDef] = useState<BlockDefinition | null>(null);
-    const [paletteOverId, setPaletteOverId] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const [pendingHref, setPendingHref] = useState<string | null>(null);
     const router = useRouter();
@@ -108,21 +107,17 @@ export function BuilderPage({
         }
     }
 
-    function handleDragOver(event: DragOverEvent) {
-        const data = event.active.data.current as { origin?: string } | undefined;
-        if (data?.origin !== "palette") return;
-        setPaletteOverId(event.over ? String(event.over.id) : null);
+    function handleDragOver(_event: DragOverEvent) {
+        // Task 8 : gestion DnD inter-niveaux
     }
 
     function handleDragCancel() {
         setActiveDragDef(null);
-        setPaletteOverId(null);
     }
 
     function handleDragEnd(event: DragEndEvent) {
         const { active, over } = event;
         setActiveDragDef(null);
-        setPaletteOverId(null);
 
         if (!over) return;
 
@@ -280,7 +275,6 @@ export function BuilderPage({
                         moduleSlug={moduleSlug}
                         sectionSlug={sectionSlug}
                         contentType={contentType}
-                        insertPreviewAfter={activeDragDef ? paletteOverId : null}
                     />
                     <PropsPanel isFixed={isFixed} moduleSlug={moduleSlug} />
                 </div>

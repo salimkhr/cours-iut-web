@@ -15,9 +15,10 @@ interface BlockPaletteProps {
     onClose: () => void;
     onSelect: (def: BlockDefinition) => void;
     moduleSlug: string;
+    allowedTypes?: string[];
 }
 
-export function BlockPalette({ open, onClose, onSelect, moduleSlug }: BlockPaletteProps) {
+export function BlockPalette({ open, onClose, onSelect, moduleSlug, allowedTypes }: BlockPaletteProps) {
     function handleSelect(def: BlockDefinition) {
         onSelect(def);
         onClose();
@@ -47,7 +48,7 @@ export function BlockPalette({ open, onClose, onSelect, moduleSlug }: BlockPalet
 
                 {/* Grille */}
                 <div className="p-4 overflow-y-auto max-h-[60vh]">
-                    <BlockPaletteGrid onSelect={handleSelect} autoFocusSearch />
+                    <BlockPaletteGrid onSelect={handleSelect} autoFocusSearch allowedTypes={allowedTypes} />
                 </div>
 
             </DialogContent>
