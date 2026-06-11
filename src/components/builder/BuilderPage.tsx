@@ -2,20 +2,24 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Save, AlertCircle, Puzzle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChevronLeft, ChevronRight, Save, AlertCircle, Puzzle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
     DndContext,
-    closestCenter,
+    pointerWithin,
+    rectIntersection,
     KeyboardSensor,
     PointerSensor,
     useSensor,
     useSensors,
     DragOverlay,
+    type CollisionDetection,
     type DragEndEvent,
     type DragStartEvent,
     type DragOverEvent,
+    type Over,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useBuilderStore } from "@/lib/store/builderStore";
@@ -25,9 +29,57 @@ import { AiAssistantPanel } from "@/components/builder/AiAssistantPanel";
 import { BLOCK_META } from "@/components/builder/BlockPaletteGrid";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import type { Block } from "@/types/CourseContent";
 import type { BlockDefinition } from "@/lib/blockRegistry";
-import { v4 as uuidv4 } from "uuid";
+import { createBlockInstance } from "@/lib/blockRegistry";
+import { canDrop } from "@/lib/blockSchemas";
+import { isDescendant, findBlock } from "@/lib/blockTreeUtils";
+
+// Conteneurs imbriqués : pointerWithin d'abord (sinon le parent gagne
+// toujours sur ses enfants), rectIntersection en secours (drag clavier).
+const collisionDetection: CollisionDetection = (args) => {
+    const pointer = pointerWithin(args);
+    return pointer.length > 0 ? pointer : rectIntersection(args);
+};
+
+interface DropTarget {
+    parentId: string | null;
+    parentType: string | null;
+    index: number;
+}
+
+function resolveDropTarget(over: Over | null): DropTarget | null {
+    if (!over) return null;
+    const d = over.data.current as {
+        dropZone?: boolean;
+        parentId?: string | null;
+        parentType?: string | null;
+        index?: number;
+        sortable?: { index: number };
+    } | undefined;
+
+    if (d?.dropZone) {
+        return { parentId: d.parentId ?? null, parentType: d.parentType ?? null, index: d.index ?? 0 };
+    }
+    if (d?.sortable) {
+        return {
+            parentId: d.parentId ?? null,
+            parentType: d.parentType ?? null,
+            index: d.sortable.index,
+        };
+    }
+    return null;
+}
 
 interface BuilderPageProps {
     moduleSlug: string;
@@ -60,11 +112,16 @@ export function BuilderPage({
     source,
 }: BuilderPageProps) {
     const isFixed = useBuilderLayout();
-    const { blocks, isDirty, setBlocks, markSaved, insertBlock, selectBlock, reorderBlocks } =
+    const { blocks, isDirty, setBlocks, markSaved, insertBlock, selectBlock, moveBlock } =
         useBuilderStore();
 
     const [activeDragDef, setActiveDragDef] = useState<BlockDefinition | null>(null);
-    const [paletteOverId, setPaletteOverId] = useState<string | null>(null);
+    const [activeBlock, setActiveBlock] = useState<Block | null>(null);
+    const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
+    const [dropAllowed, setDropAllowed] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [pendingHref, setPendingHref] = useState<string | null>(null);
+    const router = useRouter();
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -77,64 +134,81 @@ export function BuilderPage({
         setBlocks(initialBlocks);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+    useEffect(() => {
+        if (!isDirty) return;
+        function handleBeforeUnload(e: BeforeUnloadEvent) {
+            e.preventDefault();
+            e.returnValue = "";
+        }
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [isDirty]);
+
     function handleDragStart(event: DragStartEvent) {
-        const data = event.active.data.current as { origin?: string; def?: BlockDefinition } | undefined;
+        const data = event.active.data.current as
+            | { origin?: string; def?: BlockDefinition; blockType?: string }
+            | undefined;
         if (data?.origin === "palette" && data.def) {
             setActiveDragDef(data.def);
+        } else if (data?.origin === "canvas") {
+            setActiveBlock(findBlock(blocks, String(event.active.id)) ?? null);
         }
     }
 
     function handleDragOver(event: DragOverEvent) {
-        const data = event.active.data.current as { origin?: string } | undefined;
-        if (data?.origin !== "palette") return;
-        setPaletteOverId(event.over ? String(event.over.id) : null);
+        const target = resolveDropTarget(event.over);
+        const data = event.active.data.current as
+            | { origin?: string; def?: BlockDefinition; blockType?: string }
+            | undefined;
+        const draggedType = data?.origin === "palette" ? data.def?.type : data?.blockType;
+
+        if (!target || !draggedType) {
+            setDropTarget(null);
+            return;
+        }
+
+        let allowed = canDrop(draggedType, target.parentType);
+        if (allowed && data?.origin === "canvas") {
+            const id = String(event.active.id);
+            if (target.parentId === id || (target.parentId && isDescendant(blocks, id, target.parentId))) {
+                allowed = false;
+            }
+        }
+        setDropTarget(target);
+        setDropAllowed(allowed);
     }
 
     function handleDragCancel() {
         setActiveDragDef(null);
-        setPaletteOverId(null);
+        setActiveBlock(null);
+        setDropTarget(null);
     }
 
     function handleDragEnd(event: DragEndEvent) {
         const { active, over } = event;
+        const target = resolveDropTarget(over);
+        const wasAllowed = dropAllowed;
+        const data = active.data.current as
+            | { origin?: string; def?: BlockDefinition; blockType?: string }
+            | undefined;
+
         setActiveDragDef(null);
-        setPaletteOverId(null);
+        setActiveBlock(null);
+        setDropTarget(null);
 
-        if (!over) return;
-
-        const data = active.data.current as { origin?: string; def?: BlockDefinition } | undefined;
+        if (!target || !wasAllowed) return;
 
         if (data?.origin === "palette" && data.def) {
-            const def = data.def;
-            const newBlock: Block = {
-                id: uuidv4(),
-                type: def.type,
-                props: { ...def.defaultProps },
-                colSpan: "full",
-            };
-
-            if (over.id === "canvas") {
-                insertBlock(newBlock, undefined);
-            } else {
-                const idx = blocks.findIndex((b) => b.id === String(over.id));
-                insertBlock(newBlock, idx !== -1 ? idx + 1 : undefined);
-            }
+            const newBlock = createBlockInstance(data.def);
+            insertBlock(newBlock, target.parentId, target.index);
             selectBlock(newBlock.id);
-        } else {
-            // Réordonnancement des blocs du canvas
-            if (active.id === over.id) return;
-            const oldIds = blocks.map((b) => b.id);
-            const oldIndex = oldIds.indexOf(String(active.id));
-            const newIndex = oldIds.indexOf(String(over.id));
-            if (oldIndex === -1 || newIndex === -1) return;
-            const newIds = [...oldIds];
-            newIds.splice(oldIndex, 1);
-            newIds.splice(newIndex, 0, String(active.id));
-            reorderBlocks(newIds);
+        } else if (data?.origin === "canvas") {
+            moveBlock(String(active.id), target.parentId, target.index);
         }
     }
 
     async function handleSave() {
+        setSaving(true);
         try {
             const res = await fetch(
                 `/api/admin/content/${moduleSlug}/${sectionSlug}/${contentType}`,
@@ -144,12 +218,18 @@ export function BuilderPage({
                     body: JSON.stringify({ blocks }),
                 }
             );
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            if (!res.ok) {
+                const body = await res.json().catch(() => null) as { error?: string } | null;
+                throw new Error(body?.error ?? `HTTP ${res.status} ${res.statusText}`);
+            }
             markSaved();
             toast.success("Contenu sauvegardé.");
         } catch (err) {
-            toast.error("Erreur lors de la sauvegarde.");
+            const message = err instanceof Error ? err.message : "Erreur inconnue";
+            toast.error("Échec de la sauvegarde", { description: message });
             console.error(err);
+        } finally {
+            setSaving(false);
         }
     }
 
@@ -159,7 +239,7 @@ export function BuilderPage({
     return (
         <DndContext
             sensors={sensors}
-            collisionDetection={closestCenter}
+            collisionDetection={collisionDetection}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
@@ -176,6 +256,12 @@ export function BuilderPage({
                         <Link
                             href="/admin"
                             style={{ textDecoration: "none" }}
+                            onClick={(e) => {
+                                if (isDirty) {
+                                    e.preventDefault();
+                                    setPendingHref("/admin");
+                                }
+                            }}
                             className="flex items-center gap-1 text-xs font-medium text-bridge-500 dark:text-bridge-400 hover:text-brand-primary dark:hover:text-brand-primary transition-colors shrink-0 whitespace-nowrap"
                         >
                             <ChevronLeft className="w-3.5 h-3.5" />
@@ -227,7 +313,7 @@ export function BuilderPage({
                         <Button
                             size="sm"
                             onClick={() => void handleSave()}
-                            disabled={!isDirty}
+                            disabled={!isDirty || saving}
                             className={cn(
                                 "gap-1.5 h-8 text-xs transition-all",
                                 isDirty
@@ -235,8 +321,10 @@ export function BuilderPage({
                                     : "opacity-40 cursor-default"
                             )}
                         >
-                            <Save className="w-3.5 h-3.5" />
-                            Sauvegarder
+                            {saving
+                                ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Sauvegarde…</>
+                                : <><Save className="w-3.5 h-3.5" /> Sauvegarder</>
+                            }
                         </Button>
                     </div>
                 </header>
@@ -247,7 +335,8 @@ export function BuilderPage({
                         moduleSlug={moduleSlug}
                         sectionSlug={sectionSlug}
                         contentType={contentType}
-                        insertPreviewAfter={activeDragDef ? paletteOverId : null}
+                        dropTarget={dropTarget}
+                        dropAllowed={dropAllowed}
                     />
                     <PropsPanel isFixed={isFixed} moduleSlug={moduleSlug} />
                 </div>
@@ -259,7 +348,44 @@ export function BuilderPage({
                 />
             </div>
 
-            {/* Ghost visuel pendant le drag depuis la palette */}
+            {/* Confirmation avant navigation avec modifications non sauvegardées */}
+            <AlertDialog
+                open={pendingHref !== null}
+                onOpenChange={(open) => { if (!open) setPendingHref(null); }}
+            >
+                <AlertDialogContent
+                    className={cn(
+                        "bg-[#f7ebd9] dark:bg-[#13110d]",
+                        "border border-bridge-500/45",
+                        "shadow-[0_22px_44px_-14px_rgba(147,97,58,0.45)] dark:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.7)]",
+                    )}
+                >
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-brand-dark dark:text-bridge-100">
+                            Modifications non sauvegardées
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-bridge-600 dark:text-bridge-400">
+                            Si vous quittez maintenant, les modifications en cours seront perdues.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel className="border-bridge-500/45">
+                            Rester
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => {
+                                if (pendingHref) router.push(pendingHref);
+                                setPendingHref(null);
+                            }}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                            Quitter sans sauvegarder
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Ghost visuel pendant le drag */}
             <DragOverlay dropAnimation={{ duration: 150, easing: "ease" }}>
                 {activeDragDef && (
                     <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 border border-brand-primary/50 bg-bridge-50 dark:bg-bridge-900 shadow-xl select-none cursor-grabbing">
@@ -268,6 +394,14 @@ export function BuilderPage({
                         </div>
                         <span className="text-xs font-semibold text-bridge-800 dark:text-bridge-100">
                             {activeDragDef.label}
+                        </span>
+                    </div>
+                )}
+                {!activeDragDef && activeBlock && (
+                    <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 border border-brand-primary/50 bg-bridge-50 dark:bg-bridge-900 shadow-xl select-none cursor-grabbing max-w-xs">
+                        <span className="text-xs font-mono text-brand-primary shrink-0">{activeBlock.type}</span>
+                        <span className="text-xs text-bridge-600 dark:text-bridge-300 truncate">
+                            {String(activeBlock.props.content ?? activeBlock.props.text ?? activeBlock.props.title ?? "")}
                         </span>
                     </div>
                 )}

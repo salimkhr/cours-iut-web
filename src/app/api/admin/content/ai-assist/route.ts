@@ -1,31 +1,36 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { withAdmin } from "@/lib/withAdmin";
 import { connectToDB } from "@/lib/mongodb";
 import type { Block, CourseContent } from "@/types/CourseContent";
-import { getBlockDefinition } from "@/lib/blockRegistry";
+import { containerRules, blockPropsSchemas } from "@/lib/blockSchemas";
+import { validateBlockTree } from "@/lib/validateBlockTree";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY ?? "";
 
 const TOOLS = [
     {
         name: "update_blocks",
-        description: "Remplace entièrement la liste de blocs du contenu ouvert dans le builder.",
+        description: "Remplace entièrement l'arbre de blocs du contenu ouvert dans le builder.",
         input_schema: {
             type: "object",
+            $defs: {
+                block: {
+                    type: "object",
+                    properties: {
+                        id:       { type: "string" },
+                        type:     { type: "string" },
+                        props:    { type: "object" },
+                        children: { type: "array", items: { $ref: "#/$defs/block" } },
+                    },
+                    required: ["id", "type", "props"],
+                },
+            },
             properties: {
                 blocks: {
                     type: "array",
-                    description: "Nouveau tableau complet de blocs",
-                    items: {
-                        type: "object",
-                        properties: {
-                            id:      { type: "string" },
-                            type:    { type: "string" },
-                            props:   { type: "object" },
-                            colSpan: { type: "string", enum: ["full", "half"] },
-                        },
-                        required: ["id", "type", "props"],
-                    },
+                    description: "Nouvel arbre complet de blocs",
+                    items: { $ref: "#/$defs/block" },
                 },
             },
             required: ["blocks"],
@@ -56,9 +61,22 @@ export const POST = withAdmin(async (req: Request) => {
     try {
         const body = await req.json() as AiAssistBody;
 
+        const NESTING_DOC = Object.entries(containerRules)
+            .map(([type, rule]) => {
+                const children = rule.allowedChildren === "any" ? "tout type (sauf columns)" : rule.allowedChildren.join(", ");
+                const parents = rule.allowedParents
+                    ? rule.allowedParents.map((p) => p ?? "racine").join(", ")
+                    : "partout";
+                return `- ${type} : enfants = ${children} ; parents = ${parents}`;
+            })
+            .join("\n");
+
         const systemPrompt = `Tu es un assistant qui aide à construire du contenu pédagogique.
-Tu as accès au tool update_blocks pour modifier les blocs du cours ouvert.
-Types de blocs disponibles : text, heading, list, image-card, table, section-card, named-component.
+Tu as accès au tool update_blocks pour modifier l'arbre de blocs du cours ouvert.
+Types de blocs disponibles : ${Object.keys(blockPropsSchemas).join(", ")}.
+Les conteneurs portent leurs enfants dans "children" :
+${NESTING_DOC}
+Contraintes : columns a 2 à 4 enfants column dont la somme des props.span fait 12 (valeurs : 3, 4, 6, 8, 9) ; list ne contient que des list-item ; chaque bloc a un id unique (uuid).
 Blocs actuels :
 ${JSON.stringify(body.currentBlocks, null, 2)}`;
 
@@ -93,17 +111,18 @@ ${JSON.stringify(body.currentBlocks, null, 2)}`;
                 assistantText = part.text;
             }
             if (part.type === "tool_use" && part.name === "update_blocks" && part.input) {
+                const validation = validateBlockTree(part.input.blocks);
+                if (!validation.valid) {
+                    return NextResponse.json({
+                        text: assistantText,
+                        blocks: null,
+                        error: `Blocs générés invalides : ${validation.errors.map((e) => `${e.path}: ${e.message}`).join(" ; ")}`,
+                    }, { status: 422 });
+                }
                 newBlocks = part.input.blocks;
 
                 const db = await connectToDB();
                 const now = new Date();
-
-                for (const block of newBlocks) {
-                    const def = getBlockDefinition(block.type);
-                    if (def) {
-                        def.schema.safeParse(block.props);
-                    }
-                }
 
                 const existing = await db
                     .collection<CourseContent>("course_content")
@@ -113,13 +132,16 @@ ${JSON.stringify(body.currentBlocks, null, 2)}`;
                         contentType: body.contentType as CourseContent["contentType"],
                     });
 
+                let contentId: string;
+
                 if (existing) {
                     await db.collection<CourseContent>("course_content").updateOne(
                         { _id: existing._id },
                         { $set: { blocks: newBlocks, updatedAt: now }, $inc: { version: 1 } }
                     );
+                    contentId = existing._id!.toString();
                 } else {
-                    await db.collection<CourseContent>("course_content").insertOne({
+                    const insertResult = await db.collection<CourseContent>("course_content").insertOne({
                         moduleSlug: body.moduleSlug,
                         sectionSlug: body.sectionSlug,
                         contentType: body.contentType as "cours" | "TP" | "examen",
@@ -128,7 +150,26 @@ ${JSON.stringify(body.currentBlocks, null, 2)}`;
                         createdAt: now,
                         updatedAt: now,
                     });
+                    contentId = insertResult.insertedId.toString();
                 }
+
+                await db.collection("modules").updateOne(
+                    { path: body.moduleSlug },
+                    {
+                        $set: {
+                            "sections.$[s].contents.$[c].source": "db",
+                            "sections.$[s].contents.$[c].contentId": contentId,
+                        },
+                    },
+                    {
+                        arrayFilters: [
+                            { "s.path": body.sectionSlug },
+                            { "c.type": body.contentType },
+                        ],
+                    }
+                );
+
+                revalidateTag(`content:${body.moduleSlug}:${body.sectionSlug}:${body.contentType}`, { expire: 0 });
             }
         }
 

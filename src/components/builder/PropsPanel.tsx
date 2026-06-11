@@ -5,18 +5,12 @@ import {
     SheetContent,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { SlidersHorizontal, Plus, ArrowUp, ArrowDown, Trash2, MousePointerClick } from "lucide-react";
+import { findBlock } from "@/lib/blockTreeUtils";
+import { SlidersHorizontal, Plus, Trash2, MousePointerClick } from "lucide-react";
 import { DynamicPropsEditor } from "@/components/builder/DynamicPropsEditor";
+import { ColumnsEditor } from "@/components/builder/ColumnsEditor";
 import { BlockPaletteGrid } from "@/components/builder/BlockPaletteGrid";
+import { Separator } from "@/components/ui/separator";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { getBlockDefinition } from "@/lib/blockRegistry";
 import type { Block } from "@/types/CourseContent";
@@ -29,10 +23,10 @@ interface PropsPanelProps {
 }
 
 export function PropsPanel({ isFixed, moduleSlug }: PropsPanelProps) {
-    const { blocks, selectedId, selectBlock, insertBlock, updateBlock, deleteBlock, moveBlock } =
+    const { blocks, selectedId, selectBlock, insertBlock, updateBlock, deleteBlock } =
         useBuilderStore();
 
-    const block = blocks.find((b) => b.id === selectedId) as Block | undefined;
+    const block = selectedId ? findBlock(blocks, selectedId) : undefined;
     const def = block ? getBlockDefinition(block.type) : undefined;
 
     function handleDelete() {
@@ -72,31 +66,15 @@ export function PropsPanel({ isFixed, moduleSlug }: PropsPanelProps) {
                             fields={def.fields}
                             props={block.props}
                             onChange={(newProps) =>
-                                updateBlock(block.id, newProps, block.colSpan ?? "full")
+                                updateBlock(block.id, newProps)
                             }
                         />
-
-                        <Separator className="my-4 bg-bridge-400/20 dark:bg-bridge-500/25" />
-
-                        <div className="flex flex-col gap-1.5">
-                            <Label className="text-[11px] uppercase tracking-[0.15em] font-semibold text-bridge-600 dark:text-bridge-400">
-                                Largeur
-                            </Label>
-                            <Select
-                                value={block.colSpan ?? "full"}
-                                onValueChange={(v) =>
-                                    updateBlock(block.id, block.props, v as "full" | "half")
-                                }
-                            >
-                                <SelectTrigger className="h-8 text-sm border-bridge-400/40 dark:border-bridge-500/40 bg-bridge-50 dark:bg-bridge-900">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="bg-bridge-50 dark:bg-bridge-900 border-bridge-400/40 dark:border-bridge-500/40">
-                                    <SelectItem value="full">Pleine largeur</SelectItem>
-                                    <SelectItem value="half">Moitié</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
+                        {block.type === "columns" && (
+                            <>
+                                <Separator className="my-4 bg-bridge-400/20 dark:bg-bridge-500/25" />
+                                <ColumnsEditor block={block} />
+                            </>
+                        )}
                     </>
                 ) : (
                     <div className="flex flex-col -mx-4 -my-4 h-full">
@@ -127,9 +105,8 @@ export function PropsPanel({ isFixed, moduleSlug }: PropsPanelProps) {
                                         id: uuidv4(),
                                         type: def.type,
                                         props: { ...def.defaultProps },
-                                        colSpan: "full",
                                     };
-                                    insertBlock(newBlock, undefined);
+                                    insertBlock(newBlock, null);
                                     selectBlock(newBlock.id);
                                 }}
                             />
@@ -140,25 +117,7 @@ export function PropsPanel({ isFixed, moduleSlug }: PropsPanelProps) {
 
             {/* Footer actions */}
             {block && (
-                <div className="shrink-0 border-t border-bridge-400/20 dark:border-bridge-500/25 px-3 py-3 flex flex-col gap-2">
-                    <div className="flex gap-1.5">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex-1 h-7 text-xs gap-1 bg-bridge-50 dark:bg-bridge-900/60 border-bridge-300/60 dark:border-bridge-600/40 text-bridge-700 dark:text-bridge-300 hover:bg-bridge-200/70 dark:hover:bg-bridge-700/60 hover:border-bridge-400/60"
-                            onClick={() => moveBlock(block.id, "up")}
-                        >
-                            <ArrowUp className="w-3 h-3" /> Monter
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex-1 h-7 text-xs gap-1 bg-bridge-50 dark:bg-bridge-900/60 border-bridge-300/60 dark:border-bridge-600/40 text-bridge-700 dark:text-bridge-300 hover:bg-bridge-200/70 dark:hover:bg-bridge-700/60 hover:border-bridge-400/60"
-                            onClick={() => moveBlock(block.id, "down")}
-                        >
-                            <ArrowDown className="w-3 h-3" /> Descendre
-                        </Button>
-                    </div>
+                <div className="shrink-0 border-t border-bridge-400/20 dark:border-bridge-500/25 px-3 py-3">
                     <Button
                         variant="outline"
                         size="sm"

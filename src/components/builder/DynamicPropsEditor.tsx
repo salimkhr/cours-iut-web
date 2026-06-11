@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, X } from "lucide-react";
 import type { FieldDef } from "@/lib/blockRegistry";
+import { InlineTextEditor } from "@/components/builder/InlineTextEditor";
 
 interface DynamicPropsEditorProps {
     fields: FieldDef[];
@@ -38,14 +39,25 @@ export function DynamicPropsEditor({ fields, props, onChange }: DynamicPropsEdit
                     return (
                         <div key={field.key} className="flex flex-col gap-1.5">
                             <Label htmlFor={field.key} className={labelCls}>{field.label}</Label>
-                            <Textarea
-                                id={field.key}
-                                value={String(value ?? "")}
-                                placeholder={field.placeholder}
-                                onChange={(e) => set(field.key, e.target.value)}
-                                rows={4}
-                                className={`${inputCls} h-auto resize-none`}
-                            />
+                            {field.inlineMarkdown ? (
+                                <InlineTextEditor
+                                    id={field.key}
+                                    multiline
+                                    value={String(value ?? "")}
+                                    placeholder={field.placeholder}
+                                    onChange={(next) => set(field.key, next)}
+                                    className={`${inputCls} h-auto resize-none`}
+                                />
+                            ) : (
+                                <Textarea
+                                    id={field.key}
+                                    value={String(value ?? "")}
+                                    placeholder={field.placeholder}
+                                    onChange={(e) => set(field.key, e.target.value)}
+                                    rows={4}
+                                    className={`${inputCls} h-auto resize-none`}
+                                />
+                            )}
                         </div>
                     );
                 }
@@ -108,15 +120,28 @@ export function DynamicPropsEditor({ fields, props, onChange }: DynamicPropsEdit
                             <Label className={labelCls}>{field.label}</Label>
                             {items.map((item, i) => (
                                 <div key={i} className="flex gap-1.5">
-                                    <Input
-                                        value={item}
-                                        onChange={(e) => {
-                                            const next = [...items];
-                                            next[i] = e.target.value;
-                                            set(field.key, next);
-                                        }}
-                                        className={inputCls}
-                                    />
+                                    {field.inlineMarkdown ? (
+                                        <InlineTextEditor
+                                            value={item}
+                                            onChange={(next) => {
+                                                const nextItems = [...items];
+                                                nextItems[i] = next;
+                                                set(field.key, nextItems);
+                                            }}
+                                            className={inputCls}
+                                            aria-label={`${field.label} ${i + 1}`}
+                                        />
+                                    ) : (
+                                        <Input
+                                            value={item}
+                                            onChange={(e) => {
+                                                const next = [...items];
+                                                next[i] = e.target.value;
+                                                set(field.key, next);
+                                            }}
+                                            className={inputCls}
+                                        />
+                                    )}
                                     <Button
                                         variant="outline"
                                         size="sm"
