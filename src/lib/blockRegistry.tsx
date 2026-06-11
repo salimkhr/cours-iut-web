@@ -7,6 +7,11 @@ import Heading from "@/components/ui/Heading";
 import { List, ListItem } from "@/components/ui/List";
 import ImageCard from "@/components/Cards/ImageCard";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { renderInline } from "@/lib/inlineMarkdown";
+import CodeCard from "@/components/Cards/CodeCard";
+import CodeWithPreviewCard, { CodePanel, PreviewPanel } from "@/components/Cards/CodeWithPreviewCard";
+import DiagramCard from "@/components/Cards/DiagramCard";
+import { DownloadCodeButton } from "@/components/DownloadCodeButton";
 
 export interface FieldDef {
     key: string;
@@ -14,6 +19,9 @@ export interface FieldDef {
     type: "text" | "textarea" | "number" | "select" | "boolean" | "array-of-strings";
     options?: string[];
     placeholder?: string;
+    /** Si vrai, le champ accepte du markdown inline (**gras**, _em_, `code`, [lien](url)).
+     *  Utilisé par DynamicPropsEditor pour router vers InlineTextEditor. */
+    inlineMarkdown?: boolean;
 }
 
 export interface BlockRenderProps {
@@ -33,24 +41,33 @@ export interface BlockDefinition {
     fields: FieldDef[];
     render: React.ComponentType<BlockRenderProps>;
     editor?: React.ComponentType<BlockEditorProps>;
+    /** Clé d'une prop éditable directement dans le canvas via double-click.
+     *  Doit correspondre à une entrée de `fields`. Le multiline/placeholder
+     *  sont récupérés depuis ce FieldDef. */
+    inlineEditField?: string;
 }
 
 const blockDefinitions: BlockDefinition[] = [
     {
         type: "text",
         label: "Texte",
-        defaultProps: { content: "", strong: [] },
+        defaultProps: { content: "" },
         schema: z.object({
             content: z.string().min(1),
-            strong: z.array(z.string()).optional(),
         }),
         fields: [
-            { key: "content", label: "Contenu", type: "textarea" },
-            { key: "strong", label: "Parties en gras", type: "array-of-strings" },
+            {
+                key: "content",
+                label: "Contenu",
+                type: "textarea",
+                inlineMarkdown: true,
+                placeholder: "Markdown inline : **gras**, _italique_, `code`, [lien](url)",
+            },
         ],
         render: ({ content }: BlockRenderProps) => (
-            <Text>{String(content ?? "")}</Text>
+            <Text>{renderInline(String(content ?? ""))}</Text>
         ),
+        inlineEditField: "content",
     },
     {
         type: "heading",
@@ -62,11 +79,18 @@ const blockDefinitions: BlockDefinition[] = [
         }),
         fields: [
             { key: "level", label: "Niveau", type: "select", options: ["2", "3"] },
-            { key: "text", label: "Texte", type: "text" },
+            {
+                key: "text",
+                label: "Texte",
+                type: "text",
+                inlineMarkdown: true,
+                placeholder: "Transformer un tableau avec `map`",
+            },
         ],
         render: ({ level, text }: BlockRenderProps) => (
-            <Heading level={Number(level) as 2 | 3}>{String(text ?? "")}</Heading>
+            <Heading level={Number(level) as 2 | 3}>{renderInline(String(text ?? ""))}</Heading>
         ),
+        inlineEditField: "text",
     },
     {
         type: "list",
@@ -78,12 +102,12 @@ const blockDefinitions: BlockDefinition[] = [
         }),
         fields: [
             { key: "ordered", label: "Ordonnée", type: "boolean" },
-            { key: "items", label: "Éléments", type: "array-of-strings" },
+            { key: "items", label: "Éléments", type: "array-of-strings", inlineMarkdown: true },
         ],
         render: ({ ordered, items }: BlockRenderProps) => (
             <List ordered={Boolean(ordered)}>
                 {(items as string[] ?? []).map((item, i) => (
-                    <ListItem key={i}>{item}</ListItem>
+                    <ListItem key={i}>{renderInline(item)}</ListItem>
                 ))}
             </List>
         ),
@@ -168,20 +192,141 @@ const blockDefinitions: BlockDefinition[] = [
         ),
     },
     {
-        type: "named-component",
-        label: "Composant interactif",
-        defaultProps: { name: "" },
+        type: "code",
+        label: "Code",
+        defaultProps: { language: "javascript", code: "", filename: "", showLineNumbers: true, collapsible: false },
         schema: z.object({
-            name: z.string().min(1),
+            language: z.string(),
+            code: z.string(),
+            filename: z.string().optional(),
+            showLineNumbers: z.boolean().optional(),
+            collapsible: z.boolean().optional(),
+            highlightLines: z.string().optional(),
         }),
         fields: [
-            { key: "name", label: "Nom du composant", type: "text", placeholder: "ColorClickableBox" },
+            { key: "language", label: "Langage", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx"] },
+            { key: "code", label: "Code", type: "textarea", placeholder: "const x = 42;" },
+            { key: "filename", label: "Nom de fichier", type: "text", placeholder: "app.js" },
+            { key: "showLineNumbers", label: "Numéros de ligne", type: "boolean" },
+            { key: "collapsible", label: "Repliable", type: "boolean" },
+            { key: "highlightLines", label: "Lignes en surbrillance", type: "text", placeholder: "2,5-7" },
         ],
-        // Le render réel utilise namedComponents — voir BlockRenderer.tsx
-        render: ({ name }: BlockRenderProps) => (
-            <div className="border border-dashed rounded p-4 text-muted-foreground text-sm">
-                ⚡ {String(name ?? "")}
-            </div>
+        render: ({ language, code, filename, showLineNumbers, collapsible, highlightLines }: BlockRenderProps) => (
+            <CodeCard
+                language={String(language ?? "javascript")}
+                filename={filename ? String(filename) : undefined}
+                showLineNumbers={showLineNumbers !== false}
+                collapsible={Boolean(collapsible)}
+                highlightLines={highlightLines ? String(highlightLines) : undefined}
+            >
+                {String(code ?? "")}
+            </CodeCard>
+        ),
+    },
+    {
+        type: "code-with-preview",
+        label: "Code + aperçu",
+        defaultProps: { language: "html", code: "" },
+        schema: z.object({
+            language: z.string(),
+            code: z.string(),
+        }),
+        fields: [
+            { key: "language", label: "Langage", type: "select", options: ["html", "css"] },
+            { key: "code", label: "Code", type: "textarea", placeholder: "<button>Cliquez</button>" },
+        ],
+        render: ({ language, code }: BlockRenderProps) => (
+            <CodeWithPreviewCard language={String(language ?? "html")}>
+                <CodePanel>{String(code ?? "")}</CodePanel>
+                <PreviewPanel>
+                    {/* sandbox="" : aucun script, aucune navigation — le HTML vient de la base */}
+                    <iframe
+                        srcDoc={String(code ?? "")}
+                        sandbox=""
+                        title="Aperçu du code"
+                        className="w-full min-h-40 border-0 bg-white"
+                    />
+                </PreviewPanel>
+            </CodeWithPreviewCard>
+        ),
+    },
+    {
+        type: "diagram",
+        label: "Diagramme",
+        defaultProps: { header: "", chart: "" },
+        schema: z.object({
+            header: z.string().optional(),
+            chart: z.string(),
+        }),
+        fields: [
+            { key: "header", label: "Titre", type: "text" },
+            { key: "chart", label: "Diagramme (syntaxe Mermaid)", type: "textarea", placeholder: "graph LR\n    A --> B" },
+        ],
+        render: ({ header, chart }: BlockRenderProps) => (
+            <DiagramCard header={header ? String(header) : undefined} chart={String(chart ?? "")} />
+        ),
+    },
+    {
+        type: "download-file",
+        label: "Fichier à télécharger",
+        defaultProps: { language: "html", filename: "", code: "" },
+        schema: z.object({
+            language: z.string(),
+            filename: z.string(),
+            code: z.string(),
+        }),
+        fields: [
+            { key: "language", label: "Langage", type: "select", options: ["html", "css", "javascript", "php", "sql", "json"] },
+            { key: "filename", label: "Nom de fichier", type: "text", placeholder: "game.html" },
+            { key: "code", label: "Contenu du fichier", type: "textarea" },
+        ],
+        render: ({ language, filename, code }: BlockRenderProps) => (
+            <DownloadCodeButton
+                language={String(language ?? "html")}
+                filename={String(filename ?? "fichier.txt")}
+            >
+                {String(code ?? "")}
+            </DownloadCodeButton>
+        ),
+    },
+    {
+        type: "quote",
+        label: "Citation",
+        defaultProps: { text: "", source: "" },
+        schema: z.object({
+            text: z.string(),
+            source: z.string().optional(),
+        }),
+        fields: [
+            {
+                key: "text",
+                label: "Citation",
+                type: "textarea",
+                inlineMarkdown: true,
+                placeholder: "La simplicité est la sophistication suprême.",
+            },
+            { key: "source", label: "Source", type: "text", placeholder: "Léonard de Vinci" },
+        ],
+        render: ({ text, source }: BlockRenderProps) => (
+            <blockquote className="border-l-4 border-brand-primary/40 pl-4 py-1 italic text-bridge-700 dark:text-bridge-300">
+                {renderInline(String(text ?? ""))}
+                {Boolean(source) && (
+                    <footer className="mt-1.5 text-sm not-italic text-bridge-500 dark:text-bridge-400">
+                        — {String(source)}
+                    </footer>
+                )}
+            </blockquote>
+        ),
+        inlineEditField: "text",
+    },
+    {
+        type: "divider",
+        label: "Séparateur",
+        defaultProps: {},
+        schema: z.object({}),
+        fields: [],
+        render: () => (
+            <hr className="border-t border-bridge-400/30 dark:border-bridge-500/25 my-2" />
         ),
     },
 ];

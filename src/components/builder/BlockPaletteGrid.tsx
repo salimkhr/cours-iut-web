@@ -10,6 +10,12 @@ import {
     Link2,
     Puzzle,
     Search,
+    Code2,
+    Eye,
+    GitBranch,
+    Download,
+    Quote,
+    Minus,
 } from "lucide-react";
 import { useDraggable } from "@dnd-kit/core";
 import { getAllBlockDefinitions } from "@/lib/blockRegistry";
@@ -25,7 +31,12 @@ export const BLOCK_META: Record<string, {
     "image-card":      { icon: ImageIcon,  description: "Illustration avec titre et légende" },
     "table":           { icon: Table2,     description: "Tableau de données tabulaires" },
     "section-card":    { icon: Link2,      description: "Lien vers une autre section du cours" },
-    "named-component": { icon: Puzzle,     description: "Composant interactif réutilisable" },
+    "code":              { icon: Code2,     description: "Bloc de code avec coloration syntaxique" },
+    "code-with-preview": { icon: Eye,       description: "Code HTML/CSS avec aperçu rendu" },
+    "diagram":           { icon: GitBranch, description: "Diagramme Mermaid (flowchart, séquence…)" },
+    "download-file":     { icon: Download,  description: "Fichier de démarrage à télécharger" },
+    "quote":             { icon: Quote,     description: "Citation avec source optionnelle" },
+    "divider":           { icon: Minus,     description: "Séparateur horizontal" },
 };
 
 interface BlockPaletteGridProps {
