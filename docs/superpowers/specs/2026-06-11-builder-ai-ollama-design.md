@@ -120,9 +120,10 @@ Réponse : `{ text, blocks, changesCount }`.
 
 ## 5. Tests
 
-`src/lib/ai/treeOps.ts` est un module pur (zéro DB, zéro fetch) : c'est l'endroit retenu
-pour introduire les **premiers tests Vitest du repo** — add/update/remove/move, positions
-limites, rollback sur arbre invalide.
+`src/lib/ai/treeOps.ts` est un module pur (zéro DB, zéro fetch) : tests Vitest dans
+`tests/lib/treeOps.test.ts`, dans la continuité des suites existantes
+(`tests/lib/validateBlockTree.test.ts`, `tests/lib/blockTreeUtils.test.ts`) —
+add/update/remove/move, positions limites, rollback sur arbre invalide.
 
 ## Hors scope
 
