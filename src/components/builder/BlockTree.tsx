@@ -194,11 +194,13 @@ const SortableBlock = memo(function SortableBlock({
         />
     ) : undefined;
 
+    const isDropTargetBlocked = def.container && dropTarget?.parentId === block.id && !dropAllowed;
+
     // column : cellule structurelle — pas de chrome de sélection ni de drag handle,
     // juste la zone droppable + les enfants
     if (isColumn) {
         return (
-            <div ref={setNodeRef} style={style} className={wrapperCls}>
+            <div ref={setNodeRef} style={style} className={[wrapperCls, isDropTargetBlocked ? "cursor-not-allowed" : ""].filter(Boolean).join(" ")}>
                 <div className="rounded-lg border border-dashed border-bridge-400/25 dark:border-bridge-500/20 p-2 h-full">
                     {renderedChildren}
                 </div>
@@ -207,7 +209,7 @@ const SortableBlock = memo(function SortableBlock({
     }
 
     return (
-        <div ref={setNodeRef} style={style}>
+        <div ref={setNodeRef} style={style} className={isDropTargetBlocked ? "cursor-not-allowed" : undefined}>
             <InsertLine onClick={() => onInsertRequest({ parentId, parentType, index })} />
 
             <div
