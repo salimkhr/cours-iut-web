@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { withAdmin } from "@/lib/withAdmin";
 import { connectToDB } from "@/lib/mongodb";
 import type { Block, CourseContent } from "@/types/CourseContent";
@@ -131,13 +132,16 @@ ${JSON.stringify(body.currentBlocks, null, 2)}`;
                         contentType: body.contentType as CourseContent["contentType"],
                     });
 
+                let contentId: string;
+
                 if (existing) {
                     await db.collection<CourseContent>("course_content").updateOne(
                         { _id: existing._id },
                         { $set: { blocks: newBlocks, updatedAt: now }, $inc: { version: 1 } }
                     );
+                    contentId = existing._id!.toString();
                 } else {
-                    await db.collection<CourseContent>("course_content").insertOne({
+                    const insertResult = await db.collection<CourseContent>("course_content").insertOne({
                         moduleSlug: body.moduleSlug,
                         sectionSlug: body.sectionSlug,
                         contentType: body.contentType as "cours" | "TP" | "examen",
@@ -146,7 +150,26 @@ ${JSON.stringify(body.currentBlocks, null, 2)}`;
                         createdAt: now,
                         updatedAt: now,
                     });
+                    contentId = insertResult.insertedId.toString();
                 }
+
+                await db.collection("modules").updateOne(
+                    { path: body.moduleSlug },
+                    {
+                        $set: {
+                            "sections.$[s].contents.$[c].source": "db",
+                            "sections.$[s].contents.$[c].contentId": contentId,
+                        },
+                    },
+                    {
+                        arrayFilters: [
+                            { "s.path": body.sectionSlug },
+                            { "c.type": body.contentType },
+                        ],
+                    }
+                );
+
+                revalidateTag(`content:${body.moduleSlug}:${body.sectionSlug}:${body.contentType}`, { expire: 0 });
             }
         }
 
