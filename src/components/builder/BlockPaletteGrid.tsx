@@ -16,10 +16,14 @@ import {
     Download,
     Quote,
     Minus,
+    Columns2,
+    Megaphone,
+    ChevronsDownUp,
 } from "lucide-react";
 import { useDraggable } from "@dnd-kit/core";
 import { getAllBlockDefinitions } from "@/lib/blockRegistry";
 import type { BlockDefinition } from "@/lib/blockRegistry";
+import { containerRules } from "@/lib/blockSchemas";
 
 export const BLOCK_META: Record<string, {
     icon: React.ComponentType<{ className?: string }>;
@@ -35,9 +39,19 @@ export const BLOCK_META: Record<string, {
     "code-with-preview": { icon: Eye,       description: "Code HTML/CSS avec aperçu rendu" },
     "diagram":           { icon: GitBranch, description: "Diagramme Mermaid (flowchart, séquence…)" },
     "download-file":     { icon: Download,  description: "Fichier de démarrage à télécharger" },
-    "quote":             { icon: Quote,     description: "Citation avec source optionnelle" },
-    "divider":           { icon: Minus,     description: "Séparateur horizontal" },
+    "quote":             { icon: Quote,        description: "Citation avec source optionnelle" },
+    "divider":           { icon: Minus,        description: "Séparateur horizontal" },
+    "list-item":         { icon: List,         description: "Élément d'une liste (créé par la liste parente)" },
+    "columns":           { icon: Columns2,     description: "Mise en page en 2 à 4 colonnes" },
+    "column":            { icon: Columns2,     description: "Colonne (créée par le bloc colonnes parent)" },
+    "callout":           { icon: Megaphone,    description: "Encadré info, attention, astuce ou rappel" },
+    "collapsible":       { icon: ChevronsDownUp, description: "Bloc dépliable (prérequis, aparté)" },
 };
+
+// Types réservés : créés par leur conteneur parent, jamais via la palette principale
+const HIDDEN_TYPES = Object.entries(containerRules)
+    .filter(([, rule]) => rule.allowedParents !== undefined && !rule.allowedParents.includes(null))
+    .map(([type]) => type); // → ["column", "list-item"]
 
 interface BlockPaletteGridProps {
     onSelect: (def: BlockDefinition) => void;
@@ -46,6 +60,8 @@ interface BlockPaletteGridProps {
     autoFocusSearch?: boolean;
     /** draggable : active le drag & drop vers le canvas */
     draggable?: boolean;
+    /** Types insérables dans le contexte courant (canDrop). Absent = racine. */
+    allowedTypes?: string[];
 }
 
 function DraggableCompactItem({ def, onSelect }: { def: BlockDefinition; onSelect: (def: BlockDefinition) => void }) {
@@ -87,11 +103,15 @@ function DraggableCompactItem({ def, onSelect }: { def: BlockDefinition; onSelec
     );
 }
 
-export function BlockPaletteGrid({ onSelect, compact = false, autoFocusSearch = false, draggable = false }: BlockPaletteGridProps) {
+export function BlockPaletteGrid({ onSelect, compact = false, autoFocusSearch = false, draggable = false, allowedTypes }: BlockPaletteGridProps) {
     const [search, setSearch] = useState("");
     const definitions = getAllBlockDefinitions();
 
-    const filtered = definitions.filter(
+    const visible = allowedTypes
+        ? definitions.filter((d) => allowedTypes.includes(d.type))
+        : definitions.filter((d) => !HIDDEN_TYPES.includes(d.type));
+
+    const filtered = visible.filter(
         (d) =>
             d.label.toLowerCase().includes(search.toLowerCase()) ||
             d.type.toLowerCase().includes(search.toLowerCase()) ||

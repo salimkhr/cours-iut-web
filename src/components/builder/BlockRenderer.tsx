@@ -15,7 +15,11 @@ function BlockItem({ block }: { block: Block }) {
     }
 
     const Render = def.render;
-    return <Render {...block.props} />;
+    const children = block.children?.map((child) => (
+        <BlockItem key={child.id} block={child} />
+    ));
+
+    return <Render {...block.props}>{children}</Render>;
 }
 
 export function BlockRenderer({ blocks }: { blocks: Block[] }) {

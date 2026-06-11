@@ -12,6 +12,14 @@ import CodeCard from "@/components/Cards/CodeCard";
 import CodeWithPreviewCard, { CodePanel, PreviewPanel } from "@/components/Cards/CodeWithPreviewCard";
 import DiagramCard from "@/components/Cards/DiagramCard";
 import { DownloadCodeButton } from "@/components/DownloadCodeButton";
+import { v4 as uuidv4 } from "uuid";
+import { Info, TriangleAlert, Lightbulb } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import CourseReminder from "@/components/CourseReminder";
+import CoursePrerequisites from "@/components/CoursePrerequisites";
+import { COL_SPAN_CLASS, containerRules } from "@/lib/blockSchemas";
+import type { ContainerRule } from "@/lib/blockSchemas";
+import type { Block } from "@/types/CourseContent";
 
 export interface FieldDef {
     key: string;
@@ -25,6 +33,7 @@ export interface FieldDef {
 }
 
 export interface BlockRenderProps {
+    children?: React.ReactNode;
     [key: string]: unknown;
 }
 
@@ -45,6 +54,10 @@ export interface BlockDefinition {
      *  Doit correspondre à une entrée de `fields`. Le multiline/placeholder
      *  sont récupérés depuis ce FieldDef. */
     inlineEditField?: string;
+    /** Règle conteneur (depuis blockSchemas). Absent = feuille. */
+    container?: ContainerRule;
+    /** Enfants créés à l'instanciation depuis la palette. */
+    initialChildren?: () => Block[];
 }
 
 const blockDefinitions: BlockDefinition[] = [
@@ -95,21 +108,123 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "list",
         label: "Liste",
-        defaultProps: { ordered: false, items: [] },
-        schema: z.object({
-            ordered: z.boolean(),
-            items: z.array(z.string()),
-        }),
+        defaultProps: { ordered: false },
+        schema: z.object({ ordered: z.boolean() }),
         fields: [
             { key: "ordered", label: "Ordonnée", type: "boolean" },
-            { key: "items", label: "Éléments", type: "array-of-strings", inlineMarkdown: true },
         ],
-        render: ({ ordered, items }: BlockRenderProps) => (
-            <List ordered={Boolean(ordered)}>
-                {(items as string[] ?? []).map((item, i) => (
-                    <ListItem key={i}>{renderInline(item)}</ListItem>
-                ))}
-            </List>
+        container: containerRules["list"],
+        initialChildren: () => [
+            { id: uuidv4(), type: "list-item", props: { text: "" }, children: [] },
+        ],
+        render: ({ ordered, children }: BlockRenderProps) => (
+            <List ordered={Boolean(ordered)}>{children}</List>
+        ),
+    },
+    {
+        type: "list-item",
+        label: "Élément de liste",
+        defaultProps: { text: "" },
+        schema: z.object({ text: z.string() }),
+        fields: [
+            { key: "text", label: "Texte", type: "text", inlineMarkdown: true },
+        ],
+        container: containerRules["list-item"],
+        render: ({ text, children }: BlockRenderProps) => (
+            <ListItem>
+                {renderInline(String(text ?? ""))}
+                {children}
+            </ListItem>
+        ),
+        inlineEditField: "text",
+    },
+    {
+        type: "columns",
+        label: "Colonnes",
+        defaultProps: {},
+        schema: z.object({}),
+        fields: [],
+        container: containerRules["columns"],
+        initialChildren: () => [
+            { id: uuidv4(), type: "column", props: { span: 6 }, children: [] },
+            { id: uuidv4(), type: "column", props: { span: 6 }, children: [] },
+        ],
+        render: ({ children }: BlockRenderProps) => (
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">{children}</div>
+        ),
+    },
+    {
+        type: "column",
+        label: "Colonne",
+        defaultProps: { span: 6 },
+        schema: z.object({ span: z.number() }),
+        fields: [],
+        container: containerRules["column"],
+        render: ({ span, children }: BlockRenderProps) => (
+            <div className={`${COL_SPAN_CLASS[Number(span)] ?? "md:col-span-6"} flex flex-col gap-6 min-w-0`}>
+                {children}
+            </div>
+        ),
+    },
+    {
+        type: "callout",
+        label: "Encadré",
+        defaultProps: { variant: "info", title: "" },
+        schema: z.object({
+            variant: z.enum(["info", "warning", "tip", "reminder"]),
+            title: z.string().optional(),
+        }),
+        fields: [
+            { key: "variant", label: "Type", type: "select", options: ["info", "warning", "tip", "reminder"] },
+            { key: "title", label: "Titre", type: "text" },
+        ],
+        container: containerRules["callout"],
+        render: ({ variant, title, children }: BlockRenderProps) => {
+            const v = String(variant ?? "info");
+            if (v === "reminder") {
+                return (
+                    <CourseReminder title={title ? String(title) : undefined}>
+                        {children}
+                    </CourseReminder>
+                );
+            }
+            const styles: Record<string, { cls: string; icon: React.ReactNode }> = {
+                info: {
+                    cls: "border-sky-500/40 bg-sky-50/60 dark:bg-sky-900/20 [&>svg]:text-sky-600",
+                    icon: <Info className="h-4 w-4" />,
+                },
+                warning: {
+                    cls: "border-amber-500/40 bg-amber-50/60 dark:bg-amber-900/20 [&>svg]:text-amber-600",
+                    icon: <TriangleAlert className="h-4 w-4" />,
+                },
+                tip: {
+                    cls: "border-emerald-500/40 bg-emerald-50/60 dark:bg-emerald-900/20 [&>svg]:text-emerald-600",
+                    icon: <Lightbulb className="h-4 w-4" />,
+                },
+            };
+            const style = styles[v] ?? styles.info;
+            return (
+                <Alert className={style.cls}>
+                    {style.icon}
+                    {Boolean(title) && <AlertTitle>{String(title)}</AlertTitle>}
+                    <AlertDescription>{children}</AlertDescription>
+                </Alert>
+            );
+        },
+    },
+    {
+        type: "collapsible",
+        label: "Bloc dépliable",
+        defaultProps: { title: "À savoir pour ce cours" },
+        schema: z.object({ title: z.string() }),
+        fields: [
+            { key: "title", label: "Titre", type: "text" },
+        ],
+        container: containerRules["collapsible"],
+        render: ({ title, children }: BlockRenderProps) => (
+            <CoursePrerequisites title={String(title ?? "")}>
+                {children}
+            </CoursePrerequisites>
         ),
     },
     {
@@ -344,3 +459,14 @@ export function getAllBlockDefinitions(): BlockDefinition[] {
 }
 
 export default registry;
+
+/** Instancie un nouveau bloc depuis sa définition (id, defaultProps,
+ *  enfants initiaux pour les conteneurs). */
+export function createBlockInstance(def: BlockDefinition): Block {
+    return {
+        id: uuidv4(),
+        type: def.type,
+        props: { ...def.defaultProps },
+        ...(def.container ? { children: def.initialChildren?.() ?? [] } : {}),
+    };
+}
