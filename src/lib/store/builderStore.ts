@@ -1,5 +1,13 @@
 import { create } from "zustand";
 import type { Block } from "@/types/CourseContent";
+import {
+    findBlock,
+    insertBlock as insertInTree,
+    removeBlock,
+    updateBlockProps,
+    updateBlockChildren,
+    moveBlock as moveInTree,
+} from "@/lib/blockTreeUtils";
 
 interface BuilderStore {
     blocks: Block[];
@@ -7,11 +15,11 @@ interface BuilderStore {
     isDirty: boolean;
     setBlocks: (blocks: Block[]) => void;
     selectBlock: (id: string | null) => void;
-    updateBlock: (id: string, props: Record<string, unknown>, colSpan?: "full" | "half") => void;
-    insertBlock: (block: Block, position?: number) => void;
+    updateBlock: (id: string, props: Record<string, unknown>) => void;
+    updateChildren: (id: string, children: Block[]) => void;
+    insertBlock: (block: Block, parentId: string | null, index?: number) => void;
     deleteBlock: (id: string) => void;
-    moveBlock: (id: string, direction: "up" | "down") => void;
-    reorderBlocks: (orderedIds: string[]) => void;
+    moveBlock: (id: string, targetParentId: string | null, targetIndex: number) => void;
     markSaved: () => void;
 }
 
@@ -24,49 +32,42 @@ export const useBuilderStore = create<BuilderStore>()((set) => ({
 
     selectBlock: (id) => set({ selectedId: id }),
 
-    updateBlock: (id, props, colSpan) =>
+    updateBlock: (id, props) =>
         set((state) => ({
-            blocks: state.blocks.map((b) =>
-                b.id === id
-                    ? { ...b, props, ...(colSpan !== undefined ? { colSpan } : {}) }
-                    : b
-            ),
+            blocks: updateBlockProps(state.blocks, id, props),
             isDirty: true,
         })),
 
-    insertBlock: (block, position) =>
+    updateChildren: (id, children) =>
+        set((state) => ({
+            blocks: updateBlockChildren(state.blocks, id, children),
+            isDirty: true,
+        })),
+
+    insertBlock: (block, parentId, index) =>
         set((state) => {
-            const next = [...state.blocks];
-            const idx = position !== undefined
-                ? Math.min(position, next.length)
-                : next.length;
-            next.splice(idx, 0, block);
-            return { blocks: next, isDirty: true };
+            const idx = index ?? Number.MAX_SAFE_INTEGER; // clampé par le helper
+            return {
+                blocks: insertInTree(state.blocks, block, parentId, idx),
+                isDirty: true,
+            };
         }),
 
     deleteBlock: (id) =>
-        set((state) => ({
-            blocks: state.blocks.filter((b) => b.id !== id),
-            selectedId: state.selectedId === id ? null : state.selectedId,
-            isDirty: true,
-        })),
-
-    moveBlock: (id, direction) =>
         set((state) => {
-            const idx = state.blocks.findIndex((b) => b.id === id);
-            if (idx === -1) return state;
-            const next = [...state.blocks];
-            const targetIdx = direction === "up" ? idx - 1 : idx + 1;
-            if (targetIdx < 0 || targetIdx >= next.length) return state;
-            [next[idx], next[targetIdx]] = [next[targetIdx], next[idx]];
-            return { blocks: next, isDirty: true };
+            const blocks = removeBlock(state.blocks, id);
+            // Le bloc sélectionné peut être dans le sous-arbre supprimé.
+            const selectedId = state.selectedId && findBlock(blocks, state.selectedId)
+                ? state.selectedId
+                : null;
+            return { blocks, selectedId, isDirty: true };
         }),
 
-    reorderBlocks: (orderedIds) =>
+    moveBlock: (id, targetParentId, targetIndex) =>
         set((state) => {
-            const map = new Map(state.blocks.map((b) => [b.id, b]));
-            const next = orderedIds.map((id) => map.get(id)).filter(Boolean) as Block[];
-            return { blocks: next, isDirty: true };
+            const blocks = moveInTree(state.blocks, id, targetParentId, targetIndex);
+            if (blocks === state.blocks) return state; // déplacement refusé
+            return { blocks, isDirty: true };
         }),
 
     markSaved: () => set({ isDirty: false }),

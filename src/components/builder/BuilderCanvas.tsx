@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { GripVertical } from "lucide-react";
 import {
     SortableContext,
@@ -11,44 +11,13 @@ import { useDroppable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { getBlockDefinition } from "@/lib/blockRegistry";
-import { getNamedComponent } from "@/lib/namedComponents";
 import { BlockPalette } from "@/components/builder/BlockPalette";
+import { InlineTextEditor } from "@/components/builder/InlineTextEditor";
 import type { Block } from "@/types/CourseContent";
 import type { BlockDefinition } from "@/lib/blockRegistry";
 import { v4 as uuidv4 } from "uuid";
 
-function groupByColSpan(blocks: Block[]): Block[][] {
-    const groups: Block[][] = [];
-    let i = 0;
-    while (i < blocks.length) {
-        const block = blocks[i];
-        if (block.colSpan === "half" && blocks[i + 1]?.colSpan === "half") {
-            groups.push([block, blocks[i + 1]]);
-            i += 2;
-        } else {
-            groups.push([block]);
-            i += 1;
-        }
-    }
-    return groups;
-}
-
-function NamedBlockContent({ name }: { name: string }) {
-    const Component = getNamedComponent(name);
-    if (!Component) {
-        return (
-            <div className="text-bridge-500 dark:text-bridge-400 text-sm border border-dashed border-bridge-400/40 dark:border-bridge-500/30 rounded p-3">
-                Composant introuvable : {name}
-            </div>
-        );
-    }
-    return React.createElement(Component);
-}
-
 function BlockContent({ block }: { block: Block }) {
-    if (block.type === "named-component") {
-        return <NamedBlockContent name={String(block.props?.name ?? "")} />;
-    }
     const def = getBlockDefinition(block.type);
     if (!def) {
         return (
@@ -88,7 +57,7 @@ function InsertLine({ onClick }: { onClick: () => void }) {
     );
 }
 
-function SortableBlock({
+const SortableBlock = memo(function SortableBlock({
     block,
     isSelected,
     onSelect,
@@ -100,14 +69,39 @@ function SortableBlock({
     onInsertAfter: (afterId: string) => void;
 }) {
     const [hovered, setHovered] = useState(false);
+    const [editingInline, setEditingInline] = useState(false);
+    const updateBlock = useBuilderStore((s) => s.updateBlock);
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
         useSortable({ id: block.id });
+
+    const def = getBlockDefinition(block.type);
+    const editFieldKey = def?.inlineEditField;
+    const editFieldDef = editFieldKey ? def?.fields.find((f) => f.key === editFieldKey) : undefined;
+    const editValue = editFieldKey ? String(block.props[editFieldKey] ?? "") : "";
 
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.35 : 1,
     };
+
+    function handleInlineChange(next: string) {
+        if (!editFieldKey) return;
+        updateBlock(block.id, { ...block.props, [editFieldKey]: next });
+    }
+
+    function handleDoubleClick(e: React.MouseEvent) {
+        if (!editFieldKey || editingInline) return;
+        e.stopPropagation();
+        setEditingInline(true);
+    }
+
+    function handleInlineKeyDown(e: React.KeyboardEvent) {
+        if (e.key === "Escape") {
+            e.preventDefault();
+            setEditingInline(false);
+        }
+    }
 
     return (
         <div ref={setNodeRef} style={style}>
@@ -123,10 +117,14 @@ function SortableBlock({
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
                 onClick={(e) => { e.stopPropagation(); onSelect(block.id); }}
+                onDoubleClick={handleDoubleClick}
             >
                 {/* Block type label */}
                 {(hovered || isSelected) && (
-                    <div className="absolute -top-2.5 left-2 z-10 bg-brand-primary text-brand-light text-[10px] px-1.5 py-0.5 rounded font-mono tracking-wide select-none">
+                    <div
+                        className="absolute -top-2.5 left-2 z-10 max-w-[calc(100%-3rem)] bg-brand-primary text-brand-light text-[10px] px-1.5 py-0.5 rounded font-mono tracking-wide select-none truncate"
+                        title={block.type}
+                    >
                         {block.type}
                     </div>
                 )}
@@ -145,12 +143,25 @@ function SortableBlock({
                 )}
 
                 <div className="p-3">
-                    <BlockContent block={block} />
+                    {editingInline && editFieldKey ? (
+                        <InlineTextEditor
+                            value={editValue}
+                            onChange={handleInlineChange}
+                            multiline={editFieldDef?.type === "textarea"}
+                            placeholder={editFieldDef?.placeholder}
+                            autoFocus
+                            onBlur={() => setEditingInline(false)}
+                            onKeyDown={handleInlineKeyDown}
+                            aria-label={`Édition inline : ${editFieldDef?.label ?? editFieldKey}`}
+                        />
+                    ) : (
+                        <BlockContent block={block} />
+                    )}
                 </div>
             </div>
         </div>
     );
-}
+});
 
 interface BuilderCanvasProps {
     moduleSlug: string;
@@ -167,11 +178,11 @@ export function BuilderCanvas({ moduleSlug, sectionSlug, contentType, insertPrev
 
     const { setNodeRef: setCanvasRef } = useDroppable({ id: "canvas" });
 
-    function openPaletteAfter(blockId: string) {
+    const openPaletteAfter = useCallback((blockId: string) => {
         const idx = blocks.findIndex((b) => b.id === blockId);
         setInsertAfterIndex(idx + 1);
         setPaletteOpen(true);
-    }
+    }, [blocks]);
 
     function openPaletteAtEnd() {
         setInsertAfterIndex(undefined);
@@ -184,9 +195,8 @@ export function BuilderCanvas({ moduleSlug, sectionSlug, contentType, insertPrev
                 id: uuidv4(),
                 type: def.type,
                 props: { ...def.defaultProps },
-                colSpan: "full",
             };
-            insertBlock(newBlock, insertAfterIndex);
+            insertBlock(newBlock, null, insertAfterIndex);
             selectBlock(newBlock.id);
         },
         [insertBlock, selectBlock, insertAfterIndex]
@@ -212,34 +222,17 @@ export function BuilderCanvas({ moduleSlug, sectionSlug, contentType, insertPrev
                     </div>
                 )}
 
-                {groupByColSpan(blocks).map((group, gi) => {
-                    const showPreview = group.some((b) => b.id === insertPreviewAfter);
-                    return (
-                        <React.Fragment key={group.length === 1 ? group[0].id : `group-${gi}`}>
-                            {group.length === 1 ? (
-                                <SortableBlock
-                                    block={group[0]}
-                                    isSelected={selectedId === group[0].id}
-                                    onSelect={selectBlock}
-                                    onInsertAfter={openPaletteAfter}
-                                />
-                            ) : (
-                                <div className="grid grid-cols-2 gap-4">
-                                    {group.map((block) => (
-                                        <SortableBlock
-                                            key={block.id}
-                                            block={block}
-                                            isSelected={selectedId === block.id}
-                                            onSelect={selectBlock}
-                                            onInsertAfter={openPaletteAfter}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-                            {showPreview && <InsertPreview />}
-                        </React.Fragment>
-                    );
-                })}
+                {blocks.map((block) => (
+                    <React.Fragment key={block.id}>
+                        <SortableBlock
+                            block={block}
+                            isSelected={selectedId === block.id}
+                            onSelect={selectBlock}
+                            onInsertAfter={openPaletteAfter}
+                        />
+                        {insertPreviewAfter === block.id && <InsertPreview />}
+                    </React.Fragment>
+                ))}
             </SortableContext>
 
             {/* Preview en fin de liste (canvas vide ou zone sous les blocs) */}

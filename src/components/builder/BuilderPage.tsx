@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Save, AlertCircle, Puzzle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChevronLeft, ChevronRight, Save, AlertCircle, Puzzle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -25,6 +26,16 @@ import { AiAssistantPanel } from "@/components/builder/AiAssistantPanel";
 import { BLOCK_META } from "@/components/builder/BlockPaletteGrid";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import type { Block } from "@/types/CourseContent";
 import type { BlockDefinition } from "@/lib/blockRegistry";
 import { v4 as uuidv4 } from "uuid";
@@ -60,11 +71,14 @@ export function BuilderPage({
     source,
 }: BuilderPageProps) {
     const isFixed = useBuilderLayout();
-    const { blocks, isDirty, setBlocks, markSaved, insertBlock, selectBlock, reorderBlocks } =
+    const { blocks, isDirty, setBlocks, markSaved, insertBlock, selectBlock, moveBlock } =
         useBuilderStore();
 
     const [activeDragDef, setActiveDragDef] = useState<BlockDefinition | null>(null);
     const [paletteOverId, setPaletteOverId] = useState<string | null>(null);
+    const [saving, setSaving] = useState(false);
+    const [pendingHref, setPendingHref] = useState<string | null>(null);
+    const router = useRouter();
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -76,6 +90,16 @@ export function BuilderPage({
     useEffect(() => {
         setBlocks(initialBlocks);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        if (!isDirty) return;
+        function handleBeforeUnload(e: BeforeUnloadEvent) {
+            e.preventDefault();
+            e.returnValue = "";
+        }
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [isDirty]);
 
     function handleDragStart(event: DragStartEvent) {
         const data = event.active.data.current as { origin?: string; def?: BlockDefinition } | undefined;
@@ -110,31 +134,26 @@ export function BuilderPage({
                 id: uuidv4(),
                 type: def.type,
                 props: { ...def.defaultProps },
-                colSpan: "full",
             };
 
             if (over.id === "canvas") {
-                insertBlock(newBlock, undefined);
+                insertBlock(newBlock, null);
             } else {
                 const idx = blocks.findIndex((b) => b.id === String(over.id));
-                insertBlock(newBlock, idx !== -1 ? idx + 1 : undefined);
+                insertBlock(newBlock, null, idx !== -1 ? idx + 1 : undefined);
             }
             selectBlock(newBlock.id);
         } else {
-            // Réordonnancement des blocs du canvas
+            // Réordonnancement racine (inter-niveaux arrive en Task 8)
             if (active.id === over.id) return;
-            const oldIds = blocks.map((b) => b.id);
-            const oldIndex = oldIds.indexOf(String(active.id));
-            const newIndex = oldIds.indexOf(String(over.id));
-            if (oldIndex === -1 || newIndex === -1) return;
-            const newIds = [...oldIds];
-            newIds.splice(oldIndex, 1);
-            newIds.splice(newIndex, 0, String(active.id));
-            reorderBlocks(newIds);
+            const newIndex = blocks.findIndex((b) => b.id === String(over.id));
+            if (newIndex === -1) return;
+            moveBlock(String(active.id), null, newIndex);
         }
     }
 
     async function handleSave() {
+        setSaving(true);
         try {
             const res = await fetch(
                 `/api/admin/content/${moduleSlug}/${sectionSlug}/${contentType}`,
@@ -144,12 +163,18 @@ export function BuilderPage({
                     body: JSON.stringify({ blocks }),
                 }
             );
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            if (!res.ok) {
+                const body = await res.json().catch(() => null) as { error?: string } | null;
+                throw new Error(body?.error ?? `HTTP ${res.status} ${res.statusText}`);
+            }
             markSaved();
             toast.success("Contenu sauvegardé.");
         } catch (err) {
-            toast.error("Erreur lors de la sauvegarde.");
+            const message = err instanceof Error ? err.message : "Erreur inconnue";
+            toast.error("Échec de la sauvegarde", { description: message });
             console.error(err);
+        } finally {
+            setSaving(false);
         }
     }
 
@@ -176,6 +201,12 @@ export function BuilderPage({
                         <Link
                             href="/admin"
                             style={{ textDecoration: "none" }}
+                            onClick={(e) => {
+                                if (isDirty) {
+                                    e.preventDefault();
+                                    setPendingHref("/admin");
+                                }
+                            }}
                             className="flex items-center gap-1 text-xs font-medium text-bridge-500 dark:text-bridge-400 hover:text-brand-primary dark:hover:text-brand-primary transition-colors shrink-0 whitespace-nowrap"
                         >
                             <ChevronLeft className="w-3.5 h-3.5" />
@@ -227,7 +258,7 @@ export function BuilderPage({
                         <Button
                             size="sm"
                             onClick={() => void handleSave()}
-                            disabled={!isDirty}
+                            disabled={!isDirty || saving}
                             className={cn(
                                 "gap-1.5 h-8 text-xs transition-all",
                                 isDirty
@@ -235,8 +266,10 @@ export function BuilderPage({
                                     : "opacity-40 cursor-default"
                             )}
                         >
-                            <Save className="w-3.5 h-3.5" />
-                            Sauvegarder
+                            {saving
+                                ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Sauvegarde…</>
+                                : <><Save className="w-3.5 h-3.5" /> Sauvegarder</>
+                            }
                         </Button>
                     </div>
                 </header>
@@ -258,6 +291,43 @@ export function BuilderPage({
                     contentType={contentType}
                 />
             </div>
+
+            {/* Confirmation avant navigation avec modifications non sauvegardées */}
+            <AlertDialog
+                open={pendingHref !== null}
+                onOpenChange={(open) => { if (!open) setPendingHref(null); }}
+            >
+                <AlertDialogContent
+                    className={cn(
+                        "bg-[#f7ebd9] dark:bg-[#13110d]",
+                        "border border-bridge-500/45",
+                        "shadow-[0_22px_44px_-14px_rgba(147,97,58,0.45)] dark:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.7)]",
+                    )}
+                >
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-brand-dark dark:text-bridge-100">
+                            Modifications non sauvegardées
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-bridge-600 dark:text-bridge-400">
+                            Si vous quittez maintenant, les modifications en cours seront perdues.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel className="border-bridge-500/45">
+                            Rester
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => {
+                                if (pendingHref) router.push(pendingHref);
+                                setPendingHref(null);
+                            }}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                            Quitter sans sauvegarder
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
 
             {/* Ghost visuel pendant le drag depuis la palette */}
             <DragOverlay dropAnimation={{ duration: 150, easing: "ease" }}>

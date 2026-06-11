@@ -8,7 +8,10 @@ export interface Block {
     id: string;
     type: string;
     props: Record<string, unknown>;
-    colSpan?: "full" | "half";
+    /** Blocs enfants pour les types conteneurs (columns, column, list,
+     *  list-item, callout, collapsible). Helpers : src/lib/blockTreeUtils.ts.
+     *  Règles d'imbrication : src/lib/blockSchemas.ts. */
+    children?: Block[];
 }
 
 export interface CourseContent {
