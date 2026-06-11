@@ -8,15 +8,18 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
     DndContext,
-    closestCenter,
+    pointerWithin,
+    rectIntersection,
     KeyboardSensor,
     PointerSensor,
     useSensor,
     useSensors,
     DragOverlay,
+    type CollisionDetection,
     type DragEndEvent,
     type DragStartEvent,
     type DragOverEvent,
+    type Over,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useBuilderStore } from "@/lib/store/builderStore";
@@ -38,7 +41,45 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { Block } from "@/types/CourseContent";
 import type { BlockDefinition } from "@/lib/blockRegistry";
-import { v4 as uuidv4 } from "uuid";
+import { createBlockInstance } from "@/lib/blockRegistry";
+import { canDrop } from "@/lib/blockSchemas";
+import { isDescendant, findBlock } from "@/lib/blockTreeUtils";
+
+// Conteneurs imbriqués : pointerWithin d'abord (sinon le parent gagne
+// toujours sur ses enfants), rectIntersection en secours (drag clavier).
+const collisionDetection: CollisionDetection = (args) => {
+    const pointer = pointerWithin(args);
+    return pointer.length > 0 ? pointer : rectIntersection(args);
+};
+
+interface DropTarget {
+    parentId: string | null;
+    parentType: string | null;
+    index: number;
+}
+
+function resolveDropTarget(over: Over | null): DropTarget | null {
+    if (!over) return null;
+    const d = over.data.current as {
+        dropZone?: boolean;
+        parentId?: string | null;
+        parentType?: string | null;
+        index?: number;
+        sortable?: { index: number };
+    } | undefined;
+
+    if (d?.dropZone) {
+        return { parentId: d.parentId ?? null, parentType: d.parentType ?? null, index: d.index ?? 0 };
+    }
+    if (d?.sortable) {
+        return {
+            parentId: d.parentId ?? null,
+            parentType: d.parentType ?? null,
+            index: d.sortable.index,
+        };
+    }
+    return null;
+}
 
 interface BuilderPageProps {
     moduleSlug: string;
@@ -75,6 +116,9 @@ export function BuilderPage({
         useBuilderStore();
 
     const [activeDragDef, setActiveDragDef] = useState<BlockDefinition | null>(null);
+    const [activeBlock, setActiveBlock] = useState<Block | null>(null);
+    const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
+    const [dropAllowed, setDropAllowed] = useState(true);
     const [saving, setSaving] = useState(false);
     const [pendingHref, setPendingHref] = useState<string | null>(null);
     const router = useRouter();
@@ -101,49 +145,65 @@ export function BuilderPage({
     }, [isDirty]);
 
     function handleDragStart(event: DragStartEvent) {
-        const data = event.active.data.current as { origin?: string; def?: BlockDefinition } | undefined;
+        const data = event.active.data.current as
+            | { origin?: string; def?: BlockDefinition; blockType?: string }
+            | undefined;
         if (data?.origin === "palette" && data.def) {
             setActiveDragDef(data.def);
+        } else if (data?.origin === "canvas") {
+            setActiveBlock(findBlock(blocks, String(event.active.id)) ?? null);
         }
     }
 
-    function handleDragOver(_event: DragOverEvent) {
-        // Task 8 : gestion DnD inter-niveaux
+    function handleDragOver(event: DragOverEvent) {
+        const target = resolveDropTarget(event.over);
+        const data = event.active.data.current as
+            | { origin?: string; def?: BlockDefinition; blockType?: string }
+            | undefined;
+        const draggedType = data?.origin === "palette" ? data.def?.type : data?.blockType;
+
+        if (!target || !draggedType) {
+            setDropTarget(null);
+            return;
+        }
+
+        let allowed = canDrop(draggedType, target.parentType);
+        if (allowed && data?.origin === "canvas") {
+            const id = String(event.active.id);
+            if (target.parentId === id || (target.parentId && isDescendant(blocks, id, target.parentId))) {
+                allowed = false;
+            }
+        }
+        setDropTarget(target);
+        setDropAllowed(allowed);
     }
 
     function handleDragCancel() {
         setActiveDragDef(null);
+        setActiveBlock(null);
+        setDropTarget(null);
     }
 
     function handleDragEnd(event: DragEndEvent) {
         const { active, over } = event;
+        const target = resolveDropTarget(over);
+        const wasAllowed = dropAllowed;
+        const data = active.data.current as
+            | { origin?: string; def?: BlockDefinition; blockType?: string }
+            | undefined;
+
         setActiveDragDef(null);
+        setActiveBlock(null);
+        setDropTarget(null);
 
-        if (!over) return;
-
-        const data = active.data.current as { origin?: string; def?: BlockDefinition } | undefined;
+        if (!target || !wasAllowed) return;
 
         if (data?.origin === "palette" && data.def) {
-            const def = data.def;
-            const newBlock: Block = {
-                id: uuidv4(),
-                type: def.type,
-                props: { ...def.defaultProps },
-            };
-
-            if (over.id === "canvas") {
-                insertBlock(newBlock, null);
-            } else {
-                const idx = blocks.findIndex((b) => b.id === String(over.id));
-                insertBlock(newBlock, null, idx !== -1 ? idx + 1 : undefined);
-            }
+            const newBlock = createBlockInstance(data.def);
+            insertBlock(newBlock, target.parentId, target.index);
             selectBlock(newBlock.id);
-        } else {
-            // Réordonnancement racine (inter-niveaux arrive en Task 8)
-            if (active.id === over.id) return;
-            const newIndex = blocks.findIndex((b) => b.id === String(over.id));
-            if (newIndex === -1) return;
-            moveBlock(String(active.id), null, newIndex);
+        } else if (data?.origin === "canvas") {
+            moveBlock(String(active.id), target.parentId, target.index);
         }
     }
 
@@ -179,7 +239,7 @@ export function BuilderPage({
     return (
         <DndContext
             sensors={sensors}
-            collisionDetection={closestCenter}
+            collisionDetection={collisionDetection}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
@@ -275,6 +335,8 @@ export function BuilderPage({
                         moduleSlug={moduleSlug}
                         sectionSlug={sectionSlug}
                         contentType={contentType}
+                        dropTarget={dropTarget}
+                        dropAllowed={dropAllowed}
                     />
                     <PropsPanel isFixed={isFixed} moduleSlug={moduleSlug} />
                 </div>
@@ -323,7 +385,7 @@ export function BuilderPage({
                 </AlertDialogContent>
             </AlertDialog>
 
-            {/* Ghost visuel pendant le drag depuis la palette */}
+            {/* Ghost visuel pendant le drag */}
             <DragOverlay dropAnimation={{ duration: 150, easing: "ease" }}>
                 {activeDragDef && (
                     <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 border border-brand-primary/50 bg-bridge-50 dark:bg-bridge-900 shadow-xl select-none cursor-grabbing">
@@ -332,6 +394,14 @@ export function BuilderPage({
                         </div>
                         <span className="text-xs font-semibold text-bridge-800 dark:text-bridge-100">
                             {activeDragDef.label}
+                        </span>
+                    </div>
+                )}
+                {!activeDragDef && activeBlock && (
+                    <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 border border-brand-primary/50 bg-bridge-50 dark:bg-bridge-900 shadow-xl select-none cursor-grabbing max-w-xs">
+                        <span className="text-xs font-mono text-brand-primary shrink-0">{activeBlock.type}</span>
+                        <span className="text-xs text-bridge-600 dark:text-bridge-300 truncate">
+                            {String(activeBlock.props.content ?? activeBlock.props.text ?? activeBlock.props.title ?? "")}
                         </span>
                     </div>
                 )}

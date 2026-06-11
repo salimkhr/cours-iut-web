@@ -28,6 +28,8 @@ interface BlockTreeProps {
     parentType: string | null;
     depth: number;
     onInsertRequest: (ctx: InsertContext) => void;
+    dropTarget?: { parentId: string | null; index: number } | null;
+    dropAllowed?: boolean;
 }
 
 function InsertLine({ onClick }: { onClick: () => void }) {
@@ -43,6 +45,30 @@ function InsertLine({ onClick }: { onClick: () => void }) {
                 +
             </button>
             <div className="flex-1 h-px bg-bridge-400/30 dark:bg-bridge-500/25" />
+        </div>
+    );
+}
+
+function DropPreviewLine({
+    atIndex,
+    parentId,
+    dropTarget,
+    dropAllowed,
+}: {
+    atIndex: number;
+    parentId: string | null;
+    dropTarget?: { parentId: string | null; index: number } | null;
+    dropAllowed?: boolean;
+}) {
+    if (!dropTarget || dropTarget.parentId !== parentId || dropTarget.index !== atIndex) return null;
+    return (
+        <div className={[
+            "flex items-center gap-1 my-1.5 pointer-events-none",
+            dropAllowed ? "" : "opacity-50",
+        ].join(" ")}>
+            <div className={`w-2 h-2 rounded-full shrink-0 ${dropAllowed ? "bg-brand-primary" : "bg-destructive"}`} />
+            <div className={`flex-1 h-0.5 rounded-full ${dropAllowed ? "bg-brand-primary" : "bg-destructive"}`} />
+            <div className={`w-2 h-2 rounded-full shrink-0 ${dropAllowed ? "bg-brand-primary" : "bg-destructive"}`} />
         </div>
     );
 }
@@ -92,6 +118,8 @@ const SortableBlock = memo(function SortableBlock({
     index,
     depth,
     onInsertRequest,
+    dropTarget,
+    dropAllowed,
 }: {
     block: Block;
     parentId: string | null;
@@ -99,6 +127,8 @@ const SortableBlock = memo(function SortableBlock({
     index: number;
     depth: number;
     onInsertRequest: (ctx: InsertContext) => void;
+    dropTarget?: { parentId: string | null; index: number } | null;
+    dropAllowed?: boolean;
 }) {
     const [hovered, setHovered] = useState(false);
     const [editingInline, setEditingInline] = useState(false);
@@ -159,6 +189,8 @@ const SortableBlock = memo(function SortableBlock({
             parentType={block.type}
             depth={depth + 1}
             onInsertRequest={onInsertRequest}
+            dropTarget={dropTarget}
+            dropAllowed={dropAllowed}
         />
     ) : undefined;
 
@@ -237,22 +269,27 @@ const SortableBlock = memo(function SortableBlock({
     );
 });
 
-export function BlockTree({ blocks, parentId, parentType, depth, onInsertRequest }: BlockTreeProps) {
+export function BlockTree({ blocks, parentId, parentType, depth, onInsertRequest, dropTarget, dropAllowed }: BlockTreeProps) {
     const items = blocks.map((b) => b.id);
     const isColumnsContainer = parentType === "columns";
 
     const content = (
         <>
+            <DropPreviewLine atIndex={0} parentId={parentId} dropTarget={dropTarget} dropAllowed={dropAllowed} />
             {blocks.map((block, index) => (
-                <SortableBlock
-                    key={block.id}
-                    block={block}
-                    parentId={parentId}
-                    parentType={parentType}
-                    index={index}
-                    depth={depth}
-                    onInsertRequest={onInsertRequest}
-                />
+                <React.Fragment key={block.id}>
+                    <SortableBlock
+                        block={block}
+                        parentId={parentId}
+                        parentType={parentType}
+                        index={index}
+                        depth={depth}
+                        onInsertRequest={onInsertRequest}
+                        dropTarget={dropTarget}
+                        dropAllowed={dropAllowed}
+                    />
+                    <DropPreviewLine atIndex={index + 1} parentId={parentId} dropTarget={dropTarget} dropAllowed={dropAllowed} />
+                </React.Fragment>
             ))}
             {parentId !== null && !isColumnsContainer && (
                 <ContainerTail

@@ -13,9 +13,11 @@ interface BuilderCanvasProps {
     moduleSlug: string;
     sectionSlug: string;
     contentType: string;
+    dropTarget: { parentId: string | null; parentType: string | null; index: number } | null;
+    dropAllowed: boolean;
 }
 
-export function BuilderCanvas({ moduleSlug, sectionSlug, contentType }: BuilderCanvasProps) {
+export function BuilderCanvas({ moduleSlug, sectionSlug, contentType, dropTarget, dropAllowed }: BuilderCanvasProps) {
     void sectionSlug; void contentType;
     const { blocks, selectBlock, insertBlock } = useBuilderStore();
     const [paletteCtx, setPaletteCtx] = useState<InsertContext | null>(null);
@@ -67,6 +69,8 @@ export function BuilderCanvas({ moduleSlug, sectionSlug, contentType }: BuilderC
                 parentType={null}
                 depth={1}
                 onInsertRequest={handleInsertRequest}
+                dropTarget={dropTarget}
+                dropAllowed={dropAllowed}
             />
 
             {blocks.length > 0 && (
