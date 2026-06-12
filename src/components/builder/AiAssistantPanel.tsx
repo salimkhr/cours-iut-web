@@ -169,7 +169,18 @@ export function AiAssistantPanel({
                             </div>
                         )}
                         {chat.messages.map((msg, i) => (
-                            <div key={i} className={cn("flex", msg.role === "user" ? "justify-end" : "justify-start")}>
+                            <div key={i} className={cn("flex flex-col", msg.role === "user" ? "items-end" : "items-start")}>
+                                {msg.role === "assistant" && msg.thinking && (
+                                    <details className="mb-1 group max-w-[82%]">
+                                        <summary className="text-[10px] text-bridge-400 dark:text-bridge-500 cursor-pointer select-none list-none flex items-center gap-1 hover:text-bridge-500 dark:hover:text-bridge-400 transition-colors">
+                                            <span className="inline-block transition-transform duration-150 group-open:rotate-90">▶</span>
+                                            Réflexion
+                                        </summary>
+                                        <div className="mt-1 pl-2.5 border-l-2 border-bridge-300 dark:border-bridge-600 text-[10px] leading-relaxed text-bridge-500 dark:text-bridge-400 italic whitespace-pre-wrap max-h-48 overflow-y-auto">
+                                            {msg.thinking}
+                                        </div>
+                                    </details>
+                                )}
                                 <div className={cn(
                                     "max-w-[82%] rounded-xl px-3 py-2 text-xs leading-relaxed whitespace-pre-wrap",
                                     msg.role === "user"

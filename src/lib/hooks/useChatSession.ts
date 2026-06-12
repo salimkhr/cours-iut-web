@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import type { Block } from "@/types/CourseContent";
 
 export type OllamaStatus = "checking" | "connected" | "disconnected";
-export type ChatMessage = { role: "user" | "assistant"; content: string };
+export type ChatMessage = { role: "user" | "assistant"; content: string; thinking?: string };
 
 interface AiStatusResponse {
     connected: boolean;
@@ -14,6 +14,7 @@ interface AiStatusResponse {
 
 type SseEvent =
     | { type: "chunk"; content: string }
+    | { type: "thinking"; content: string }
     | { type: "done"; blocks: Block[] | null }
     | { type: "error"; message: string };
 
@@ -110,6 +111,7 @@ export function useChatSession({
             const decoder = new TextDecoder();
             let lineBuffer = "";
             let firstChunk = true;
+            let pendingThinking = "";
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -124,11 +126,18 @@ export function useChatSession({
                     let event: SseEvent;
                     try { event = JSON.parse(line.slice(6)) as SseEvent; } catch { continue; }
 
-                    if (event.type === "chunk") {
+                    if (event.type === "thinking") {
+                        pendingThinking += event.content;
+                    } else if (event.type === "chunk") {
                         if (firstChunk) {
                             firstChunk = false;
                             setLoading(false);
-                            setMessages((prev) => [...prev, { role: "assistant", content: event.content }]);
+                            setMessages((prev) => [...prev, {
+                                role: "assistant",
+                                content: event.content,
+                                ...(pendingThinking ? { thinking: pendingThinking } : {}),
+                            }]);
+                            pendingThinking = "";
                         } else {
                             setMessages((prev) => {
                                 const last = prev[prev.length - 1];
@@ -147,7 +156,11 @@ export function useChatSession({
             }
 
             if (firstChunk) {
-                setMessages((prev) => [...prev, { role: "assistant", content: "Pas de réponse." }]);
+                setMessages((prev) => [...prev, {
+                    role: "assistant",
+                    content: "Pas de réponse.",
+                    ...(pendingThinking ? { thinking: pendingThinking } : {}),
+                }]);
             }
         } catch {
             setMessages((prev) => [...prev, { role: "assistant", content: "Erreur de communication avec Ollama." }]);

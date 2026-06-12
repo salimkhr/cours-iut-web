@@ -94,6 +94,15 @@ const TOOLS = [
     },
 ];
 
+function extractThinking(text: string): { thinking: string; content: string } {
+    const thinkParts: string[] = [];
+    const cleaned = text.replace(/<think>([\s\S]*?)<\/think>/gi, (_, inner: string) => {
+        thinkParts.push(inner.trim());
+        return "";
+    });
+    return { thinking: thinkParts.join("\n\n"), content: cleaned.trim() };
+}
+
 function blocksSummary(blocks: Block[]): string {
     if (!blocks.length) return "Aucun bloc (contenu vide).";
     return blocks
@@ -188,23 +197,70 @@ async function streamOllamaText(
     const decoder = new TextDecoder();
     let lineBuffer = "";
 
+    let inThinking = false;
+    let thinkBuf = "";
+    let tagBuf = "";
+    let outBuf = "";
+
+    function flushOut() {
+        if (outBuf) {
+            controller.enqueue(sseEvent({ type: "chunk", content: outBuf }));
+            outBuf = "";
+        }
+    }
+
+    function processToken(token: string) {
+        for (let ci = 0; ci < token.length; ci++) {
+            const ch = token[ci];
+            const targetTag = inThinking ? "</think>" : "<think>";
+            const candidate = tagBuf + ch;
+            if (targetTag.startsWith(candidate)) {
+                tagBuf = candidate;
+                if (candidate === targetTag) {
+                    if (inThinking) {
+                        controller.enqueue(sseEvent({ type: "thinking", content: thinkBuf }));
+                        thinkBuf = "";
+                        inThinking = false;
+                    } else {
+                        flushOut();
+                        inThinking = true;
+                    }
+                    tagBuf = "";
+                }
+            } else {
+                if (tagBuf) {
+                    if (inThinking) thinkBuf += tagBuf; else outBuf += tagBuf;
+                    tagBuf = "";
+                }
+                const freshTag = inThinking ? "</think>" : "<think>";
+                if (freshTag.startsWith(ch)) {
+                    tagBuf = ch;
+                } else {
+                    if (inThinking) thinkBuf += ch; else outBuf += ch;
+                }
+            }
+        }
+        flushOut();
+    }
+
     try {
         while (true) {
             const { done, value } = await reader.read();
             if (done) break;
-
             lineBuffer += decoder.decode(value, { stream: true });
             const lines = lineBuffer.split("\n");
             lineBuffer = lines.pop() ?? "";
-
             for (const line of lines) {
                 if (!line.trim()) continue;
                 let chunk: OllamaStreamChunk;
                 try { chunk = JSON.parse(line) as OllamaStreamChunk; } catch { continue; }
                 const token = chunk.message?.content ?? "";
-                if (token) controller.enqueue(sseEvent({ type: "chunk", content: token }));
+                if (token) processToken(token);
             }
         }
+        if (tagBuf) { if (inThinking) thinkBuf += tagBuf; else outBuf += tagBuf; }
+        flushOut();
+        if (thinkBuf) controller.enqueue(sseEvent({ type: "thinking", content: thinkBuf }));
     } finally {
         reader.releaseLock();
     }
@@ -240,6 +296,9 @@ RÈGLES :
 
     const stream = new ReadableStream({
         async start(controller) {
+            // Ping initial : garde la connexion ouverte côté Cloudflare/proxy pendant que Ollama réfléchit
+            controller.enqueue(enc.encode(": ping\n\n"));
+
             // ── Appel 1 : non-streaming avec tools pour détecter les tool_calls ──
             let firstRes: Response;
             try {
@@ -270,11 +329,15 @@ RÈGLES :
             const assistantMsg = firstData.message;
             let finalBlocks: Block[] | null = null;
 
+            // Extraire et émettre le thinking avant tout contenu
+            const { thinking: firstThinking, content: firstContent } = extractThinking(assistantMsg.content ?? "");
+            if (firstThinking) controller.enqueue(sseEvent({ type: "thinking", content: firstThinking }));
+
             if (assistantMsg.tool_calls?.length) {
                 // ── Exécuter les tool_calls ──────────────────────────────────────
                 const followUpMessages: ChatMessage[] = [
                     ...messages,
-                    { role: "assistant", content: assistantMsg.content ?? "" },
+                    { role: "assistant", content: firstContent || (assistantMsg.content ?? "") },
                 ];
 
                 for (const toolCall of assistantMsg.tool_calls) {
@@ -313,8 +376,7 @@ RÈGLES :
 
             } else {
                 // ── Pas de tool_calls : émettre le texte directement ────────────
-                const text = assistantMsg.content ?? "";
-                if (text) controller.enqueue(sseEvent({ type: "chunk", content: text }));
+                if (firstContent) controller.enqueue(sseEvent({ type: "chunk", content: firstContent }));
             }
 
             controller.enqueue(sseEvent({ type: "done", blocks: finalBlocks }));
