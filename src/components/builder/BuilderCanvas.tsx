@@ -5,6 +5,7 @@ import { useDroppable } from "@dnd-kit/core";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { createBlockInstance, getAllBlockDefinitions } from "@/lib/blockRegistry";
 import { canDrop } from "@/lib/blockSchemas";
+import { useMediaQuery } from "@/hook/useMediaQuery";
 import { BlockPalette } from "@/components/builder/BlockPalette";
 import { BlockTree, type InsertContext } from "@/components/builder/BlockTree";
 import type { BlockDefinition } from "@/lib/blockRegistry";
@@ -15,36 +16,50 @@ interface BuilderCanvasProps {
     contentType: string;
     dropTarget: { parentId: string | null; parentType: string | null; index: number } | null;
     dropAllowed: boolean;
+    /** Contexte d'insertion déclenché depuis l'extérieur (bouton toolbar). */
+    externalInsertCtx?: InsertContext | null;
+    onExternalInsertHandled?: () => void;
 }
 
-export function BuilderCanvas({ moduleSlug, sectionSlug, contentType, dropTarget, dropAllowed }: BuilderCanvasProps) {
+export function BuilderCanvas({ moduleSlug, sectionSlug, contentType, dropTarget, dropAllowed, externalInsertCtx, onExternalInsertHandled }: BuilderCanvasProps) {
     void sectionSlug; void contentType;
     const { blocks, selectBlock, insertBlock } = useBuilderStore();
     const [paletteCtx, setPaletteCtx] = useState<InsertContext | null>(null);
+
+    const isMobile = useMediaQuery("(max-width: 767px)");
+    const coarsePointer = useMediaQuery("(pointer: coarse)");
 
     const { setNodeRef: setCanvasRef } = useDroppable({
         id: "canvas",
         data: { dropZone: true, parentId: null, parentType: null, index: blocks.length },
     });
 
+    // Le contexte effectif : local (lignes +, état vide) ou externe (bouton toolbar)
+    const effectivePaletteCtx = paletteCtx ?? externalInsertCtx ?? null;
+
     const handleInsertRequest = useCallback((ctx: InsertContext) => {
         setPaletteCtx(ctx);
     }, []);
 
+    function closePalette() {
+        setPaletteCtx(null);
+        if (externalInsertCtx) onExternalInsertHandled?.();
+    }
+
     const handlePaletteSelect = useCallback(
         (def: BlockDefinition) => {
-            if (!paletteCtx) return;
+            if (!effectivePaletteCtx) return;
             const newBlock = createBlockInstance(def);
-            insertBlock(newBlock, paletteCtx.parentId, paletteCtx.index);
+            insertBlock(newBlock, effectivePaletteCtx.parentId, effectivePaletteCtx.index);
             selectBlock(newBlock.id);
         },
-        [insertBlock, selectBlock, paletteCtx]
+        [insertBlock, selectBlock, effectivePaletteCtx]
     );
 
-    const allowedTypes = paletteCtx
+    const allowedTypes = effectivePaletteCtx
         ? getAllBlockDefinitions()
             .map((d) => d.type)
-            .filter((t) => canDrop(t, paletteCtx.parentType))
+            .filter((t) => canDrop(t, effectivePaletteCtx.parentType))
         : undefined;
 
     return (
@@ -71,6 +86,8 @@ export function BuilderCanvas({ moduleSlug, sectionSlug, contentType, dropTarget
                 onInsertRequest={handleInsertRequest}
                 dropTarget={dropTarget}
                 dropAllowed={dropAllowed}
+                coarsePointer={coarsePointer}
+                isMobile={isMobile}
             />
 
             {blocks.length > 0 && (
@@ -89,8 +106,8 @@ export function BuilderCanvas({ moduleSlug, sectionSlug, contentType, dropTarget
             )}
 
             <BlockPalette
-                open={paletteCtx !== null}
-                onClose={() => setPaletteCtx(null)}
+                open={effectivePaletteCtx !== null}
+                onClose={closePalette}
                 onSelect={handlePaletteSelect}
                 moduleSlug={moduleSlug}
                 allowedTypes={allowedTypes}

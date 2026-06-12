@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Save, AlertCircle, Puzzle, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Save, AlertCircle, Puzzle, Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -91,17 +91,6 @@ interface BuilderPageProps {
     source: "file" | "db";
 }
 
-function useBuilderLayout() {
-    const [isFixed, setIsFixed] = useState(true);
-    useEffect(() => {
-        function check() { setIsFixed(window.innerWidth >= 1024); }
-        check();
-        window.addEventListener("resize", check);
-        return () => window.removeEventListener("resize", check);
-    }, []);
-    return isFixed;
-}
-
 export function BuilderPage({
     moduleSlug,
     sectionSlug,
@@ -111,7 +100,6 @@ export function BuilderPage({
     initialBlocks,
     source,
 }: BuilderPageProps) {
-    const isFixed = useBuilderLayout();
     const { blocks, isDirty, setBlocks, markSaved, insertBlock, selectBlock, moveBlock } =
         useBuilderStore();
 
@@ -121,6 +109,8 @@ export function BuilderPage({
     const [dropAllowed, setDropAllowed] = useState(true);
     const [saving, setSaving] = useState(false);
     const [pendingHref, setPendingHref] = useState<string | null>(null);
+    /** Contexte d'insertion déclenché par le bouton toolbar « Ajouter un bloc ». */
+    const [rootInsertCtx, setRootInsertCtx] = useState<{ parentId: null; parentType: null; index: number } | null>(null);
     const router = useRouter();
 
     const sensors = useSensors(
@@ -312,6 +302,14 @@ export function BuilderPage({
                         )}
                         <Button
                             size="sm"
+                            variant="outline"
+                            className="hidden md:flex gap-1.5 h-8 text-xs border-bridge-400/40 dark:border-bridge-500/40 text-bridge-600 dark:text-bridge-300 hover:border-brand-primary/50 hover:text-brand-primary"
+                            onClick={() => setRootInsertCtx({ parentId: null, parentType: null, index: blocks.length })}
+                        >
+                            <Plus className="w-3.5 h-3.5" /> Ajouter un bloc
+                        </Button>
+                        <Button
+                            size="sm"
                             onClick={() => void handleSave()}
                             disabled={!isDirty || saving}
                             className={cn(
@@ -337,8 +335,14 @@ export function BuilderPage({
                         contentType={contentType}
                         dropTarget={dropTarget}
                         dropAllowed={dropAllowed}
+                        externalInsertCtx={rootInsertCtx}
+                        onExternalInsertHandled={() => setRootInsertCtx(null)}
                     />
-                    <PropsPanel isFixed={isFixed} moduleSlug={moduleSlug} />
+                    <PropsPanel
+                        moduleSlug={moduleSlug}
+                        onSave={handleSave}
+                        saving={saving}
+                    />
                 </div>
 
                 <AiAssistantPanel

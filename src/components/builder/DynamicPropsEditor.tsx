@@ -20,19 +20,23 @@ interface DynamicPropsEditorProps {
     fields: FieldDef[];
     props: Record<string, unknown>;
     onChange: (props: Record<string, unknown>) => void;
+    /** Filtre les types de champs affichés. Absent = tous les champs. */
+    filterTypes?: Array<FieldDef["type"]>;
 }
 
-const labelCls = "text-[11px] uppercase tracking-[0.15em] font-semibold text-bridge-600 dark:text-bridge-400";
-const inputCls = "h-8 text-sm border-bridge-400/40 dark:border-bridge-500/40 bg-bridge-50 dark:bg-bridge-900 text-bridge-800 dark:text-bridge-100 placeholder:text-bridge-400 dark:placeholder:text-bridge-500 focus-visible:ring-1 focus-visible:ring-brand-primary/40 focus-visible:border-brand-primary/50";
+const labelCls = "text-sm font-semibold text-brand-dark dark:text-bridge-200";
+const inputCls = "bg-bridge-100/60 dark:bg-bridge-800/60 border-bridge-500/45 focus-visible:ring-1 focus-visible:ring-bridge-500/50";
 
-export function DynamicPropsEditor({ fields, props, onChange }: DynamicPropsEditorProps) {
+export function DynamicPropsEditor({ fields, props, onChange, filterTypes }: DynamicPropsEditorProps) {
+    const visibleFields = filterTypes ? fields.filter((f) => filterTypes.includes(f.type)) : fields;
+
     function set(key: string, value: unknown) {
         onChange({ ...props, [key]: value });
     }
 
     return (
         <div className="flex flex-col gap-4">
-            {fields.map((field) => {
+            {visibleFields.map((field) => {
                 const value = props[field.key];
 
                 if (field.type === "textarea") {

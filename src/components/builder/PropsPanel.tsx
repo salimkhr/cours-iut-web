@@ -6,25 +6,27 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { findBlock } from "@/lib/blockTreeUtils";
-import { SlidersHorizontal, Plus, Trash2, MousePointerClick } from "lucide-react";
+import { SlidersHorizontal, Trash2 } from "lucide-react";
 import { DynamicPropsEditor } from "@/components/builder/DynamicPropsEditor";
 import { ColumnsEditor } from "@/components/builder/ColumnsEditor";
-import { BlockPaletteGrid } from "@/components/builder/BlockPaletteGrid";
-import { Separator } from "@/components/ui/separator";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { getBlockDefinition } from "@/lib/blockRegistry";
-import type { Block } from "@/types/CourseContent";
-import type { BlockDefinition } from "@/lib/blockRegistry";
-import { v4 as uuidv4 } from "uuid";
+import { useMediaQuery } from "@/hook/useMediaQuery";
+import { cn } from "@/lib/utils";
+import AdminSheetHeader from "@/components/admin/AdminSheetHeader";
+import type { FieldDef } from "@/lib/blockRegistry";
 
 interface PropsPanelProps {
-    isFixed: boolean;
     moduleSlug: string;
+    onSave: () => Promise<void>;
+    saving: boolean;
 }
 
-export function PropsPanel({ isFixed, moduleSlug }: PropsPanelProps) {
-    const { blocks, selectedId, selectBlock, insertBlock, updateBlock, deleteBlock } =
-        useBuilderStore();
+const TEXT_FIELD_TYPES: Array<FieldDef["type"]> = ["text", "textarea"];
+
+export function PropsPanel({ moduleSlug, onSave, saving }: PropsPanelProps) {
+    const { blocks, selectedId, selectBlock, updateBlock, deleteBlock } = useBuilderStore();
+    const isMobile = useMediaQuery("(max-width: 767px)");
 
     const block = selectedId ? findBlock(blocks, selectedId) : undefined;
     const def = block ? getBlockDefinition(block.type) : undefined;
@@ -35,117 +37,111 @@ export function PropsPanel({ isFixed, moduleSlug }: PropsPanelProps) {
         selectBlock(null);
     }
 
-    const content = (
-        <div className="flex flex-col h-full">
-            {/* Header */}
-            <div className="bg-module px-4 py-3 flex items-center gap-3 border-b border-white/15 shrink-0">
-                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-                    {block
-                        ? <SlidersHorizontal className="w-4 h-4 text-white" />
-                        : <Plus className="w-4 h-4 text-white" />
-                    }
-                </div>
-                <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-                    <p style={{ color: "rgba(255,255,255,0.92)" }} className="text-[11px] uppercase tracking-[0.2em] font-semibold leading-none truncate">
-                        {def?.label ?? (block ? block.type : "Ajouter un bloc")}
-                    </p>
-                    {block && (
-                        <span className="text-[10px] font-mono text-white/55 leading-none">
-                            {block.type}
-                        </span>
-                    )}
-                </div>
-            </div>
-
-            {/* Body */}
-            <div className="flex-1 overflow-y-auto px-4 py-4">
-                {block && def ? (
-                    <>
-                        <DynamicPropsEditor
-                            key={block.id}
-                            fields={def.fields}
-                            props={block.props}
-                            onChange={(newProps) =>
-                                updateBlock(block.id, newProps)
-                            }
-                        />
-                        {block.type === "columns" && (
-                            <>
-                                <Separator className="my-4 bg-bridge-400/20 dark:bg-bridge-500/25" />
-                                <ColumnsEditor block={block} />
-                            </>
-                        )}
-                    </>
-                ) : (
-                    <div className="flex flex-col -mx-4 -my-4 h-full">
-                        {/* Hint sélection */}
-                        <div className="flex flex-col items-center gap-2 pt-6 pb-4 px-4">
-                            <div className="w-9 h-9 rounded-xl bg-bridge-200/60 dark:bg-bridge-700/40 flex items-center justify-center">
-                                <MousePointerClick className="w-4 h-4 text-bridge-400 dark:text-bridge-500" />
-                            </div>
-                            <p className="text-xs text-bridge-400 dark:text-bridge-500 text-center leading-relaxed">
-                                Sélectionnez un bloc<br />pour l&apos;éditer.
-                            </p>
-                        </div>
-
-                        {/* Séparateur "ou" */}
-                        <div className="flex items-center gap-2.5 px-4 py-1">
-                            <div className="flex-1 h-px bg-bridge-400/20 dark:bg-bridge-500/20" />
-                            <span className="text-[10px] uppercase tracking-[0.18em] font-medium text-bridge-400 dark:text-bridge-500">ou</span>
-                            <div className="flex-1 h-px bg-bridge-400/20 dark:bg-bridge-500/20" />
-                        </div>
-
-                        {/* Palette d'ajout */}
-                        <div className="flex-1 overflow-y-auto px-4 pt-3 pb-4">
-                            <BlockPaletteGrid
-                                compact
-                                draggable
-                                onSelect={(def: BlockDefinition) => {
-                                    const newBlock: Block = {
-                                        id: uuidv4(),
-                                        type: def.type,
-                                        props: { ...def.defaultProps },
-                                    };
-                                    insertBlock(newBlock, null);
-                                    selectBlock(newBlock.id);
-                                }}
-                            />
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Footer actions */}
-            {block && (
-                <div className="shrink-0 border-t border-bridge-400/20 dark:border-bridge-500/25 px-3 py-3">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full h-7 text-xs gap-1.5 bg-destructive/5 border-destructive/25 text-destructive hover:bg-destructive/12 hover:border-destructive/40 transition-colors"
-                        onClick={handleDelete}
-                    >
-                        <Trash2 className="w-3 h-3" /> Supprimer le bloc
-                    </Button>
-                </div>
-            )}
-        </div>
-    );
-
-    if (isFixed) {
-        return (
-            <div className="w-64 border-l border-bridge-500/20 dark:border-bridge-500/35 bg-bridge-50/80 dark:bg-bridge-900/80 flex-shrink-0 h-full overflow-hidden">
-                {content}
-            </div>
-        );
+    async function handleMobileSave() {
+        await onSave();
+        selectBlock(null);
     }
+
+    const mobileTextFields = def?.fields.filter((f) => TEXT_FIELD_TYPES.includes(f.type)) ?? [];
 
     return (
         <Sheet open={!!selectedId} onOpenChange={(open) => !open && selectBlock(null)}>
             <SheetContent
-                side="right"
-                className={`w-72 p-0 bg-bridge-50 dark:bg-bridge-900 border-l border-bridge-500/20 dark:border-bridge-500/35 header-${moduleSlug}`}
+                side={isMobile ? "bottom" : "right"}
+                className={cn(
+                    "p-0 gap-0 flex flex-col overflow-hidden",
+                    isMobile ? "h-[85dvh] rounded-t-2xl sm:max-w-none" : "sm:max-w-[480px]",
+                    "bg-[#f7ebd9] dark:bg-[#13110d]",
+                    "border-bridge-500/45",
+                    "[&>button]:text-white/80 [&>button:hover]:text-white",
+                    `header-${moduleSlug}`,
+                )}
             >
-                {content}
+                <AdminSheetHeader
+                    icon={SlidersHorizontal}
+                    eyebrow={block?.type ?? "Propriétés"}
+                    title={def?.label ?? (block?.type ?? "Bloc")}
+                    srDescription="Éditer les propriétés du bloc sélectionné"
+                    className="bg-module"
+                />
+
+                {/* Corps */}
+                <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-5">
+                    {block && def ? (
+                        isMobile ? (
+                            mobileTextFields.length > 0 ? (
+                                <DynamicPropsEditor
+                                    key={block.id}
+                                    fields={def.fields}
+                                    props={block.props}
+                                    onChange={(newProps) => updateBlock(block.id, newProps)}
+                                    filterTypes={TEXT_FIELD_TYPES}
+                                />
+                            ) : (
+                                <p className="text-sm text-bridge-500 dark:text-bridge-400">
+                                    Ce bloc n&apos;a pas de texte modifiable.
+                                </p>
+                            )
+                        ) : (
+                            <>
+                                <DynamicPropsEditor
+                                    key={block.id}
+                                    fields={def.fields}
+                                    props={block.props}
+                                    onChange={(newProps) => updateBlock(block.id, newProps)}
+                                />
+                                {block.type === "columns" && (
+                                    <>
+                                        <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6" />
+                                        <ColumnsEditor block={block} />
+                                    </>
+                                )}
+                            </>
+                        )
+                    ) : null}
+                </div>
+
+                {/* Footer */}
+                <div className="shrink-0 border-t border-bridge-700/20 dark:border-bridge-500/20 px-6 py-4 flex items-center justify-between gap-3">
+                    {isMobile ? (
+                        <>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                className="text-brand-dark dark:text-bridge-200"
+                                onClick={() => selectBlock(null)}
+                            >
+                                Annuler
+                            </Button>
+                            <Button
+                                onClick={() => void handleMobileSave()}
+                                disabled={saving}
+                                className="bg-module text-white font-semibold hover:opacity-90 transition-opacity"
+                            >
+                                {saving ? "Enregistrement…" : "Enregistrer"}
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                className="text-brand-dark dark:text-bridge-200"
+                                onClick={() => selectBlock(null)}
+                            >
+                                Terminé
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-1.5 bg-destructive/5 border-destructive/25 text-destructive hover:bg-destructive/12 hover:border-destructive/40 transition-colors"
+                                onClick={handleDelete}
+                            >
+                                <Trash2 className="w-3.5 h-3.5" /> Supprimer
+                            </Button>
+                        </>
+                    )}
+                </div>
             </SheetContent>
         </Sheet>
     );
