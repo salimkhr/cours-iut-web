@@ -106,50 +106,83 @@ const TOOLS = [
 
 // Certains modèles (Mistral) écrivent les tool_calls comme JSON dans content
 // au lieu de remplir le champ tool_calls structuré.
-// Format : [{"name":"...","arguments":{...}}] ou {"name":...,"arguments":...}
-// Le JSON peut être précédé de prose (ex. "Voici la commande :\n[{...}]").
-function parseTextToolCalls(content: string): { calls: ToolCall[]; prose: string } | null {
-    // Chercher le début d'un tableau JSON dans le texte
-    const jsonStart = content.indexOf("[{");
-    const candidate = jsonStart !== -1 ? content.slice(jsonStart) : content.trim();
-    if (!candidate.startsWith("[") && !candidate.startsWith("{")) return null;
+// Le contenu peut contenir N fragments séparés, chacun potentiellement malformé
+// (accolades fermantes manquantes — ex. liste numérotée générée par Mistral).
 
-    // Extraire le bloc JSON complet en suivant la profondeur des accolades/crochets
+function extractJsonBlock(text: string, start: number): { slice: string; end: number } | null {
     let depth = 0;
-    let end = -1;
-    for (let i = 0; i < candidate.length; i++) {
-        if (candidate[i] === "[" || candidate[i] === "{") depth++;
-        else if (candidate[i] === "]" || candidate[i] === "}") {
+    for (let i = start; i < text.length; i++) {
+        if (text[i] === "[" || text[i] === "{") depth++;
+        else if (text[i] === "]" || text[i] === "}") {
             depth--;
-            if (depth === 0) { end = i + 1; break; }
+            if (depth === 0) return { slice: text.slice(start, i + 1), end: i + 1 };
         }
     }
-    if (end === -1) return null;
+    return null;
+}
 
-    const jsonSlice = candidate.slice(0, end);
-    const jsonAbsEnd = (jsonStart !== -1 ? jsonStart : 0) + end;
-    const proseBefore = (jsonStart > 0 ? content.slice(0, jsonStart) : "").trim();
-    const proseAfter = content.slice(jsonAbsEnd).trim();
-    const prose = [proseBefore, proseAfter].filter(Boolean).join("\n").trim();
+function autoFixJson(json: string): string {
+    const opens = (json.match(/\{/g) ?? []).length;
+    const closes = (json.match(/\}/g) ?? []).length;
+    const missing = opens - closes;
+    if (missing > 0 && json.endsWith("]")) {
+        return json.slice(0, -1) + "}".repeat(missing) + "]";
+    }
+    return json;
+}
 
-    try {
-        const raw = JSON.parse(jsonSlice) as unknown;
-        const items = Array.isArray(raw) ? raw : [raw];
-        const calls: ToolCall[] = [];
-        for (const item of items) {
-            const obj = item as Record<string, unknown>;
-            if (typeof obj.name === "string" && obj.arguments !== undefined) {
-                calls.push({ function: { name: obj.name, arguments: obj.arguments as Record<string, unknown> } });
-            } else if (obj.function && typeof (obj.function as Record<string, unknown>).name === "string") {
-                calls.push(obj as unknown as ToolCall);
-            } else {
-                return null;
+function tryParseJsonCalls(json: string): ToolCall[] | null {
+    const parse = (s: string): ToolCall[] | null => {
+        try {
+            const raw = JSON.parse(s) as unknown;
+            const items = Array.isArray(raw) ? raw : [raw];
+            const calls: ToolCall[] = [];
+            for (const item of items) {
+                const obj = item as Record<string, unknown>;
+                if (typeof obj.name === "string" && obj.arguments !== undefined) {
+                    calls.push({ function: { name: obj.name, arguments: obj.arguments as Record<string, unknown> } });
+                } else if (obj.function && typeof (obj.function as Record<string, unknown>).name === "string") {
+                    calls.push(obj as unknown as ToolCall);
+                } else {
+                    return null;
+                }
             }
-        }
-        return calls.length > 0 ? { calls, prose } : null;
-    } catch {
-        return null;
+            return calls.length > 0 ? calls : null;
+        } catch { return null; }
+    };
+    return parse(json) ?? parse(autoFixJson(json));
+}
+
+function parseTextToolCalls(content: string): { calls: ToolCall[]; prose: string } | null {
+    const allCalls: ToolCall[] = [];
+    const proseRanges: [number, number][] = [];
+    let searchPos = 0;
+    let lastEnd = 0;
+
+    while (searchPos < content.length) {
+        const jsonStart = content.indexOf("[{", searchPos);
+        if (jsonStart === -1) break;
+        const block = extractJsonBlock(content, jsonStart);
+        if (!block) break;
+
+        proseRanges.push([lastEnd, jsonStart]);
+        lastEnd = block.end;
+        searchPos = block.end;
+
+        const calls = tryParseJsonCalls(block.slice);
+        if (calls) allCalls.push(...calls);
     }
+
+    if (allCalls.length === 0) return null;
+
+    proseRanges.push([lastEnd, content.length]);
+    const prose = proseRanges
+        .map(([s, e]) => content.slice(s, e).trim())
+        .filter(Boolean)
+        .join("\n")
+        .trim();
+
+    return { calls: allCalls, prose };
 }
 
 function extractThinking(text: string): { thinking: string; content: string } {
