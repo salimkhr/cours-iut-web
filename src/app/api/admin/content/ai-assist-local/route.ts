@@ -98,29 +98,56 @@ const TOOLS = [
             },
         },
     },
+    {
+        type: "function",
+        function: {
+            name: "delete_all_blocks",
+            description: "Supprime TOUS les blocs du cours d'un seul coup. À utiliser quand l'utilisateur demande de tout effacer.",
+            parameters: { type: "object", properties: {} },
+        },
+    },
 ];
 
 // Certains modèles (Mistral) écrivent les tool_calls comme JSON dans content
 // au lieu de remplir le champ tool_calls structuré.
-// Format attendu : [{"name":"...","arguments":{...}}] ou {"name":...,"arguments":...}
-function parseTextToolCalls(content: string): ToolCall[] | null {
-    const t = content.trim();
-    if (!t.startsWith("[") && !t.startsWith("{")) return null;
+// Format : [{"name":"...","arguments":{...}}] ou {"name":...,"arguments":...}
+// Le JSON peut être précédé de prose (ex. "Voici la commande :\n[{...}]").
+function parseTextToolCalls(content: string): { calls: ToolCall[]; prose: string } | null {
+    // Chercher le début d'un tableau JSON dans le texte
+    const jsonStart = content.indexOf("[{");
+    const candidate = jsonStart !== -1 ? content.slice(jsonStart) : content.trim();
+    if (!candidate.startsWith("[") && !candidate.startsWith("{")) return null;
+
+    // Extraire le bloc JSON complet en suivant la profondeur des accolades/crochets
+    let depth = 0;
+    let end = -1;
+    for (let i = 0; i < candidate.length; i++) {
+        if (candidate[i] === "[" || candidate[i] === "{") depth++;
+        else if (candidate[i] === "]" || candidate[i] === "}") {
+            depth--;
+            if (depth === 0) { end = i + 1; break; }
+        }
+    }
+    if (end === -1) return null;
+
+    const jsonSlice = candidate.slice(0, end);
+    const prose = (jsonStart > 0 ? content.slice(0, jsonStart) : "").trim();
+
     try {
-        const raw = JSON.parse(t) as unknown;
+        const raw = JSON.parse(jsonSlice) as unknown;
         const items = Array.isArray(raw) ? raw : [raw];
         const calls: ToolCall[] = [];
         for (const item of items) {
             const obj = item as Record<string, unknown>;
             if (typeof obj.name === "string" && obj.arguments !== undefined) {
                 calls.push({ function: { name: obj.name, arguments: obj.arguments as Record<string, unknown> } });
-            } else if (obj.function && typeof (obj.function as Record<string,unknown>).name === "string") {
+            } else if (obj.function && typeof (obj.function as Record<string, unknown>).name === "string") {
                 calls.push(obj as unknown as ToolCall);
             } else {
                 return null;
             }
         }
-        return calls.length > 0 ? calls : null;
+        return calls.length > 0 ? { calls, prose } : null;
     } catch {
         return null;
     }
@@ -197,6 +224,9 @@ async function runTool(
         );
         blocks = blocks.filter((b) => !toDelete.has(b.id));
 
+    } else if (name === "delete_all_blocks") {
+        blocks = [];
+
     } else {
         return { result: `Outil inconnu : ${name}`, updatedBlocks: blocks as Block[] };
     }
@@ -229,7 +259,7 @@ async function runTool(
 async function streamOllamaText(
     ollamaBody: ReadableStream<Uint8Array>,
     controller: ReadableStreamDefaultController<Uint8Array>,
-): Promise<void> {
+): Promise<boolean> {
     const reader = ollamaBody.getReader();
     const decoder = new TextDecoder();
     let lineBuffer = "";
@@ -238,10 +268,12 @@ async function streamOllamaText(
     let thinkBuf = "";
     let tagBuf = "";
     let outBuf = "";
+    let emittedChunk = false;
 
     function flushOut() {
         if (outBuf) {
             controller.enqueue(sseEvent({ type: "chunk", content: outBuf }));
+            emittedChunk = true;
             outBuf = "";
         }
     }
@@ -301,6 +333,7 @@ async function streamOllamaText(
     } finally {
         reader.releaseLock();
     }
+    return emittedChunk;
 }
 
 function aiLog(step: string, data: Record<string, unknown>) {
@@ -396,19 +429,24 @@ RÈGLES :
 
             // Certains modèles (Mistral) écrivent les tool_calls en JSON dans content
             // plutôt que dans le champ tool_calls structuré — on les détecte ici.
+            // parseTextToolCalls gère aussi le JSON encapsulé dans de la prose.
             const structuredCalls = assistantMsg.tool_calls?.length ? assistantMsg.tool_calls : null;
-            const textCalls = !structuredCalls ? parseTextToolCalls(firstContent) : null;
-            const effectiveCalls = structuredCalls ?? textCalls;
+            const parsedText = !structuredCalls ? parseTextToolCalls(firstContent) : null;
+            const effectiveCalls = structuredCalls ?? parsedText?.calls ?? null;
+            // Prose avant le JSON (ex. "Je vais supprimer ces blocs :") à émettre séparément
+            const proseBeforeCalls = parsedText?.prose ?? "";
 
             aiLog("response1", {
                 hasThinking: !!firstThinking,
                 thinkingLength: firstThinking.length,
                 contentPreview: firstContent.slice(0, 150),
-                toolCallsSource: structuredCalls ? "structured" : textCalls ? "text" : "none",
+                toolCallsSource: structuredCalls ? "structured" : parsedText ? "text" : "none",
                 toolCalls: effectiveCalls?.map((t) => t.function.name) ?? [],
             });
 
             if (firstThinking) controller.enqueue(sseEvent({ type: "thinking", content: firstThinking }));
+            // Prose avant le JSON de tool_calls (ex. "Je vais faire X :") → affiché avant la confirmation
+            if (proseBeforeCalls) controller.enqueue(sseEvent({ type: "chunk", content: proseBeforeCalls }));
 
             if (effectiveCalls?.length) {
                 // ── Exécuter les tool_calls ──────────────────────────────────────
@@ -460,8 +498,12 @@ RÈGLES :
                     aiLog("error:response2", { status: secondRes.status, body: errText });
                 } else if (secondRes.body) {
                     aiLog("stream2:start", {});
-                    await streamOllamaText(secondRes.body, controller);
-                    aiLog("stream2:done", {});
+                    const emitted = await streamOllamaText(secondRes.body, controller);
+                    aiLog("stream2:done", { emittedChunk: emitted });
+                    if (!emitted) {
+                        const toolNames = effectiveCalls.map((t) => t.function.name).join(", ");
+                        controller.enqueue(sseEvent({ type: "chunk", content: `Opération effectuée (${toolNames}).` }));
+                    }
                 }
 
             } else {
