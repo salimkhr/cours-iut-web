@@ -100,6 +100,32 @@ const TOOLS = [
     },
 ];
 
+// Certains modèles (Mistral) écrivent les tool_calls comme JSON dans content
+// au lieu de remplir le champ tool_calls structuré.
+// Format attendu : [{"name":"...","arguments":{...}}] ou {"name":...,"arguments":...}
+function parseTextToolCalls(content: string): ToolCall[] | null {
+    const t = content.trim();
+    if (!t.startsWith("[") && !t.startsWith("{")) return null;
+    try {
+        const raw = JSON.parse(t) as unknown;
+        const items = Array.isArray(raw) ? raw : [raw];
+        const calls: ToolCall[] = [];
+        for (const item of items) {
+            const obj = item as Record<string, unknown>;
+            if (typeof obj.name === "string" && obj.arguments !== undefined) {
+                calls.push({ function: { name: obj.name, arguments: obj.arguments as Record<string, unknown> } });
+            } else if (obj.function && typeof (obj.function as Record<string,unknown>).name === "string") {
+                calls.push(obj as unknown as ToolCall);
+            } else {
+                return null;
+            }
+        }
+        return calls.length > 0 ? calls : null;
+    } catch {
+        return null;
+    }
+}
+
 function extractThinking(text: string): { thinking: string; content: string } {
     const thinkParts: string[] = [];
     const cleaned = text.replace(/<think>([\s\S]*?)<\/think>/gi, (_, inner: string) => {
@@ -368,25 +394,34 @@ RÈGLES :
             // Extraire et émettre le thinking avant tout contenu
             const { thinking: firstThinking, content: firstContent } = extractThinking(assistantMsg.content ?? "");
 
+            // Certains modèles (Mistral) écrivent les tool_calls en JSON dans content
+            // plutôt que dans le champ tool_calls structuré — on les détecte ici.
+            const structuredCalls = assistantMsg.tool_calls?.length ? assistantMsg.tool_calls : null;
+            const textCalls = !structuredCalls ? parseTextToolCalls(firstContent) : null;
+            const effectiveCalls = structuredCalls ?? textCalls;
+
             aiLog("response1", {
                 hasThinking: !!firstThinking,
                 thinkingLength: firstThinking.length,
                 contentPreview: firstContent.slice(0, 150),
-                toolCalls: assistantMsg.tool_calls?.map((t) => t.function.name) ?? [],
+                toolCallsSource: structuredCalls ? "structured" : textCalls ? "text" : "none",
+                toolCalls: effectiveCalls?.map((t) => t.function.name) ?? [],
             });
 
             if (firstThinking) controller.enqueue(sseEvent({ type: "thinking", content: firstThinking }));
 
-            if (assistantMsg.tool_calls?.length) {
+            if (effectiveCalls?.length) {
                 // ── Exécuter les tool_calls ──────────────────────────────────────
                 // content vide : certains modèles (Mistral) mettent le JSON des tool_calls
                 // dans content — le ré-émettre ferait apparaître ce JSON dans le stream.
                 const followUpMessages: OllamaMessage[] = [
                     ...messages,
-                    { role: "assistant", content: "", tool_calls: assistantMsg.tool_calls },
+                    // Pour les text-calls (Mistral), on passe content vide sans tool_calls
+                    // pour éviter que le modèle ré-émette le JSON dans la confirmation.
+                    { role: "assistant", content: "", ...(structuredCalls ? { tool_calls: structuredCalls } : {}) },
                 ];
 
-                for (const toolCall of assistantMsg.tool_calls) {
+                for (const toolCall of effectiveCalls) {
                     aiLog("tool:call", { name: toolCall.function.name, args: toolCall.function.arguments });
                     const { result, updatedBlocks } = await runTool(
                         toolCall,
