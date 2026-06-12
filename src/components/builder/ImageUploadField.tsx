@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { ImageIcon, X, RefreshCw } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,11 @@ export function ImageUploadField({ value, onChange, label }: ImageUploadFieldPro
     const [error, setError] = useState<string | null>(null);
     const [dragOver, setDragOver] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+    const xhrRef = useRef<XMLHttpRequest | null>(null);
+
+    useEffect(() => {
+        return () => { xhrRef.current?.abort(); };
+    }, []);
 
     function upload(file: File) {
         setState("uploading");
@@ -39,9 +44,14 @@ export function ImageUploadField({ value, onChange, label }: ImageUploadFieldPro
 
         xhr.addEventListener("load", () => {
             if (xhr.status >= 200 && xhr.status < 300) {
-                const data = JSON.parse(xhr.responseText) as { url: string };
-                onChange(data.url);
-                setState("success");
+                try {
+                    const data = JSON.parse(xhr.responseText) as { url: string };
+                    onChange(data.url);
+                    setState("success");
+                } catch {
+                    setError("Format de réponse invalide");
+                    setState("error");
+                }
             } else {
                 let msg = "Erreur lors de l'envoi";
                 try {
@@ -59,6 +69,7 @@ export function ImageUploadField({ value, onChange, label }: ImageUploadFieldPro
         });
 
         xhr.open("POST", "/api/admin/content/upload-image");
+        xhrRef.current = xhr;
         xhr.send(formData);
     }
 
