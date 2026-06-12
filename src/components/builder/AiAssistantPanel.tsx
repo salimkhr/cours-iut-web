@@ -24,11 +24,10 @@ interface AiStatusResponse {
     version: string | null;
 }
 
-interface AiAssistResponse {
-    text?: string;
-    blocks?: Block[];
-    error?: string;
-}
+type SseEvent =
+    | { type: "chunk"; content: string }
+    | { type: "done"; blocks: Block[] | null }
+    | { type: "error"; message: string };
 
 interface AiAssistantPanelProps {
     moduleSlug: string;
@@ -120,12 +119,65 @@ export function AiAssistantPanel({ moduleSlug, sectionSlug, contentType }: AiAss
                     contentType,
                 }),
             });
-            const data = await res.json() as AiAssistResponse;
-            setMessages((prev) => [
-                ...prev,
-                { role: "assistant", content: data.error ?? data.text ?? "Pas de réponse." },
-            ]);
-            if (data.blocks) setBlocks(data.blocks);
+
+            if (!res.ok || !res.body) {
+                setMessages((prev) => [
+                    ...prev,
+                    { role: "assistant", content: "Erreur de communication avec Ollama." },
+                ]);
+                return;
+            }
+
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let lineBuffer = "";
+            let firstChunk = true;
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                lineBuffer += decoder.decode(value, { stream: true });
+                const lines = lineBuffer.split("\n");
+                lineBuffer = lines.pop() ?? "";
+
+                for (const line of lines) {
+                    if (!line.startsWith("data: ")) continue;
+                    let event: SseEvent;
+                    try {
+                        event = JSON.parse(line.slice(6)) as SseEvent;
+                    } catch {
+                        continue;
+                    }
+
+                    if (event.type === "chunk") {
+                        if (firstChunk) {
+                            firstChunk = false;
+                            setLoading(false);
+                            setMessages((prev) => [...prev, { role: "assistant", content: event.content }]);
+                        } else {
+                            setMessages((prev) => {
+                                const last = prev[prev.length - 1];
+                                return [
+                                    ...prev.slice(0, -1),
+                                    { ...last, content: last.content + event.content },
+                                ];
+                            });
+                        }
+                    } else if (event.type === "done") {
+                        if (event.blocks) setBlocks(event.blocks);
+                    } else if (event.type === "error") {
+                        if (firstChunk) {
+                            setLoading(false);
+                            setMessages((prev) => [...prev, { role: "assistant", content: event.message }]);
+                        }
+                    }
+                }
+            }
+
+            if (firstChunk) {
+                setMessages((prev) => [...prev, { role: "assistant", content: "Pas de réponse." }]);
+            }
         } catch {
             setMessages((prev) => [
                 ...prev,
