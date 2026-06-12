@@ -150,6 +150,7 @@ const SortableBlock = memo(function SortableBlock({
         });
 
     const def = getBlockDefinition(block.type);
+    const Editor = (isSelected && def?.editor && def.noPropsPanel) ? def.editor : null;
     const editFieldKey = def?.inlineEditField;
     const editFieldDef = editFieldKey ? def?.fields.find((f) => f.key === editFieldKey) : undefined;
     const editValue = editFieldKey ? String(block.props[editFieldKey] ?? "") : "";
@@ -172,7 +173,7 @@ const SortableBlock = memo(function SortableBlock({
     }
 
     function handleDoubleClick(e: React.MouseEvent) {
-        if (!editFieldKey || editingInline) return;
+        if (!editFieldKey || editingInline || def?.noPropsPanel) return;
         e.stopPropagation();
         setEditingInline(true);
     }
@@ -223,7 +224,7 @@ const SortableBlock = memo(function SortableBlock({
             <div
                 className={[
                     "relative group rounded-lg transition-all duration-150",
-                    editFieldKey && !editingInline ? "cursor-text" : "cursor-pointer",
+                    editFieldKey && !editingInline && !def?.noPropsPanel ? "cursor-text" : "cursor-pointer",
                     isSelected
                         ? "ring-2 ring-brand-primary ring-offset-2 ring-offset-bridge-100 dark:ring-offset-bridge-900"
                         : "ring-1 ring-transparent hover:ring-bridge-400/40 dark:hover:ring-bridge-500/35",
@@ -256,7 +257,12 @@ const SortableBlock = memo(function SortableBlock({
                 )}
 
                 <div className="p-3">
-                    {editingInline && editFieldKey ? (
+                    {Editor ? (
+                        <Editor
+                            props={block.props}
+                            onChange={(newProps) => updateBlock(block.id, newProps)}
+                        />
+                    ) : editingInline && editFieldKey ? (
                         <InlineTextEditor
                             value={editValue}
                             onChange={handleInlineChange}
