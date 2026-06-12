@@ -18,6 +18,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import CourseReminder from "@/components/CourseReminder";
 import CoursePrerequisites from "@/components/CoursePrerequisites";
 import { COL_SPAN_CLASS, containerRules } from "@/lib/blockSchemas";
+import { TableBlockEditor } from "@/components/builder/TableBlockEditor";
 import type { ContainerRule } from "@/lib/blockSchemas";
 import type { Block } from "@/types/CourseContent";
 
@@ -248,20 +249,20 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "table",
         label: "Tableau",
-        defaultProps: { headers: [], rows: [] },
+        noPropsPanel: true,
+        defaultProps: { headers: ["En-tête 1", "En-tête 2"], rows: [["", ""]] },
         schema: z.object({
             headers: z.array(z.string()),
             rows: z.array(z.array(z.string())),
         }),
-        fields: [
-            { key: "headers", label: "En-têtes (une par ligne)", type: "array-of-strings" },
-        ],
+        fields: [],
+        editor: TableBlockEditor,
         render: ({ headers, rows }: BlockRenderProps) => (
             <Table>
                 <TableHeader>
                     <TableRow>
                         {(headers as string[] ?? []).map((h, i) => (
-                            <TableHead key={i}>{h}</TableHead>
+                            <TableHead key={i}>{renderInline(h)}</TableHead>
                         ))}
                     </TableRow>
                 </TableHeader>
@@ -269,7 +270,7 @@ const blockDefinitions: BlockDefinition[] = [
                     {(rows as string[][] ?? []).map((row, i) => (
                         <TableRow key={i}>
                             {row.map((cell, j) => (
-                                <TableCell key={j}>{cell}</TableCell>
+                                <TableCell key={j}>{renderInline(cell)}</TableCell>
                             ))}
                         </TableRow>
                     ))}
