@@ -2,7 +2,6 @@
 import { describe, it, expect } from "bun:test";
 import {
     blockPropsSchemas,
-    containerRules,
     isContainer,
     canDrop,
     COLUMN_PRESETS,
