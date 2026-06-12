@@ -30,6 +30,8 @@ interface BlockTreeProps {
     onInsertRequest: (ctx: InsertContext) => void;
     dropTarget?: { parentId: string | null; index: number } | null;
     dropAllowed?: boolean;
+    coarsePointer?: boolean;
+    isMobile?: boolean;
 }
 
 function InsertLine({ onClick }: { onClick: () => void }) {
@@ -120,6 +122,8 @@ const SortableBlock = memo(function SortableBlock({
     onInsertRequest,
     dropTarget,
     dropAllowed,
+    coarsePointer,
+    isMobile,
 }: {
     block: Block;
     parentId: string | null;
@@ -129,6 +133,8 @@ const SortableBlock = memo(function SortableBlock({
     onInsertRequest: (ctx: InsertContext) => void;
     dropTarget?: { parentId: string | null; index: number } | null;
     dropAllowed?: boolean;
+    coarsePointer?: boolean;
+    isMobile?: boolean;
 }) {
     const [hovered, setHovered] = useState(false);
     const [editingInline, setEditingInline] = useState(false);
@@ -191,6 +197,8 @@ const SortableBlock = memo(function SortableBlock({
             onInsertRequest={onInsertRequest}
             dropTarget={dropTarget}
             dropAllowed={dropAllowed}
+            coarsePointer={coarsePointer}
+            isMobile={isMobile}
         />
     ) : undefined;
 
@@ -214,17 +222,19 @@ const SortableBlock = memo(function SortableBlock({
 
             <div
                 className={[
-                    "relative group rounded-lg transition-all duration-150 cursor-pointer",
+                    "relative group rounded-lg transition-all duration-150",
+                    editFieldKey && !editingInline ? "cursor-text" : "cursor-pointer",
                     isSelected
                         ? "ring-2 ring-brand-primary ring-offset-2 ring-offset-bridge-100 dark:ring-offset-bridge-900"
                         : "ring-1 ring-transparent hover:ring-bridge-400/40 dark:hover:ring-bridge-500/35",
                 ].join(" ")}
+                title={editFieldKey && !editingInline ? "Double-cliquez pour éditer" : undefined}
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
                 onClick={(e) => { e.stopPropagation(); selectBlock(block.id); }}
                 onDoubleClick={handleDoubleClick}
             >
-                {(hovered || isSelected) && (
+                {(hovered || isSelected || (coarsePointer && !isMobile)) && (
                     <div
                         className="absolute -top-2.5 left-2 z-10 max-w-[calc(100%-3rem)] bg-brand-primary text-brand-light text-[10px] px-1.5 py-0.5 rounded font-mono tracking-wide select-none truncate"
                         title={block.type}
@@ -233,7 +243,7 @@ const SortableBlock = memo(function SortableBlock({
                     </div>
                 )}
 
-                {(hovered || isSelected) && (
+                {(hovered || isSelected || (coarsePointer && !isMobile)) && (
                     <button
                         className="absolute right-1.5 top-1.5 z-10 text-bridge-500 dark:text-bridge-400 hover:text-brand-primary cursor-grab active:cursor-grabbing transition-colors p-0.5 rounded"
                         {...attributes}
@@ -271,7 +281,7 @@ const SortableBlock = memo(function SortableBlock({
     );
 });
 
-export function BlockTree({ blocks, parentId, parentType, depth, onInsertRequest, dropTarget, dropAllowed }: BlockTreeProps) {
+export function BlockTree({ blocks, parentId, parentType, depth, onInsertRequest, dropTarget, dropAllowed, coarsePointer, isMobile }: BlockTreeProps) {
     const items = blocks.map((b) => b.id);
     const isColumnsContainer = parentType === "columns";
 
@@ -289,6 +299,8 @@ export function BlockTree({ blocks, parentId, parentType, depth, onInsertRequest
                         onInsertRequest={onInsertRequest}
                         dropTarget={dropTarget}
                         dropAllowed={dropAllowed}
+                        coarsePointer={coarsePointer}
+                        isMobile={isMobile}
                     />
                     <DropPreviewLine atIndex={index + 1} parentId={parentId} dropTarget={dropTarget} dropAllowed={dropAllowed} />
                 </React.Fragment>

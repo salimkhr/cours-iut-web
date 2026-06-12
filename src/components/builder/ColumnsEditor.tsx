@@ -43,7 +43,7 @@ export function ColumnsEditor({ block }: ColumnsEditorProps) {
 
     return (
         <div className="flex flex-col gap-1.5">
-            <Label className="text-[11px] uppercase tracking-[0.15em] font-semibold text-bridge-600 dark:text-bridge-400">
+            <Label className="text-sm font-semibold text-brand-dark dark:text-bridge-200">
                 Disposition
             </Label>
             <div className="grid grid-cols-2 gap-1.5">
@@ -59,7 +59,7 @@ export function ColumnsEditor({ block }: ColumnsEditorProps) {
                                 "h-8 text-xs",
                                 isActive
                                     ? "border-brand-primary/60 bg-brand-primary/10 text-brand-primary"
-                                    : "border-bridge-300/60 dark:border-bridge-600/40 text-bridge-600 dark:text-bridge-400",
+                                    : "border-bridge-500/45 text-brand-dark dark:text-bridge-300 bg-bridge-100/60 dark:bg-bridge-800/60 hover:border-brand-primary/40 hover:text-brand-primary",
                             ].join(" ")}
                         >
                             {preset.label}
@@ -67,7 +67,7 @@ export function ColumnsEditor({ block }: ColumnsEditorProps) {
                     );
                 })}
             </div>
-            <p className="text-[10px] text-bridge-400 dark:text-bridge-500 mt-1">
+            <p className="text-xs text-bridge-500 dark:text-bridge-400 mt-1">
                 Réduire le nombre de colonnes fusionne leur contenu dans la dernière colonne.
             </p>
         </div>
