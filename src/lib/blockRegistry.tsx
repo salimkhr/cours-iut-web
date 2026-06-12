@@ -50,6 +50,8 @@ export interface BlockDefinition {
     fields: FieldDef[];
     render: React.ComponentType<BlockRenderProps>;
     editor?: React.ComponentType<BlockEditorProps>;
+    /** Si true : supprime le PropsPanel Sheet et rend `editor` inline dans le canvas quand sélectionné. */
+    noPropsPanel?: boolean;
     /** Clé d'une prop éditable directement dans le canvas via double-click.
      *  Doit correspondre à une entrée de `fields`. Le multiline/placeholder
      *  sont récupérés depuis ce FieldDef. */
