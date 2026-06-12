@@ -131,7 +131,10 @@ function parseTextToolCalls(content: string): { calls: ToolCall[]; prose: string
     if (end === -1) return null;
 
     const jsonSlice = candidate.slice(0, end);
-    const prose = (jsonStart > 0 ? content.slice(0, jsonStart) : "").trim();
+    const jsonAbsEnd = (jsonStart !== -1 ? jsonStart : 0) + end;
+    const proseBefore = (jsonStart > 0 ? content.slice(0, jsonStart) : "").trim();
+    const proseAfter = content.slice(jsonAbsEnd).trim();
+    const prose = [proseBefore, proseAfter].filter(Boolean).join("\n").trim();
 
     try {
         const raw = JSON.parse(jsonSlice) as unknown;
@@ -445,8 +448,6 @@ RÈGLES :
             });
 
             if (firstThinking) controller.enqueue(sseEvent({ type: "thinking", content: firstThinking }));
-            // Prose avant le JSON de tool_calls (ex. "Je vais faire X :") → affiché avant la confirmation
-            if (proseBeforeCalls) controller.enqueue(sseEvent({ type: "chunk", content: proseBeforeCalls }));
 
             if (effectiveCalls?.length) {
                 // ── Exécuter les tool_calls ──────────────────────────────────────
@@ -473,7 +474,7 @@ RÈGLES :
                     followUpMessages.push({ role: "tool", content: result });
                 }
 
-                // ── Appel 2 : streaming pour le texte de confirmation ────────────
+                // ── Appel 2 : non-streaming pour pouvoir filtrer le JSON répété ────
                 let secondRes: Response;
                 try {
                     secondRes = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
@@ -481,7 +482,7 @@ RÈGLES :
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
                             model: body.model,
-                            stream: true,
+                            stream: false,
                             messages: [{ role: "system", content: systemPrompt }, ...followUpMessages],
                         }),
                     });
@@ -496,14 +497,15 @@ RÈGLES :
                 if (!secondRes.ok) {
                     const errText = await secondRes.text();
                     aiLog("error:response2", { status: secondRes.status, body: errText });
-                } else if (secondRes.body) {
-                    aiLog("stream2:start", {});
-                    const emitted = await streamOllamaText(secondRes.body, controller);
-                    aiLog("stream2:done", { emittedChunk: emitted });
-                    if (!emitted) {
-                        const toolNames = effectiveCalls.map((t) => t.function.name).join(", ");
-                        controller.enqueue(sseEvent({ type: "chunk", content: `Opération effectuée (${toolNames}).` }));
-                    }
+                } else {
+                    const secondData = await secondRes.json() as { message?: OllamaMessage };
+                    const rawConfirm = secondData.message?.content ?? "";
+                    // Supprimer tout JSON de tool_calls que le modèle répète dans sa confirmation
+                    const { content: cleanedConfirm } = extractThinking(rawConfirm);
+                    const stripped = parseTextToolCalls(cleanedConfirm)?.prose ?? cleanedConfirm;
+                    aiLog("confirm", { raw: rawConfirm.slice(0, 200), stripped: stripped.slice(0, 200) });
+                    const confirmation = stripped.trim() || `Opération effectuée (${effectiveCalls.map((t) => t.function.name).join(", ")}).`;
+                    controller.enqueue(sseEvent({ type: "chunk", content: confirmation }));
                 }
 
             } else {
