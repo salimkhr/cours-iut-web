@@ -368,9 +368,11 @@ RÈGLES :
 
             if (assistantMsg.tool_calls?.length) {
                 // ── Exécuter les tool_calls ──────────────────────────────────────
-                const followUpMessages: ChatMessage[] = [
+                // content vide : certains modèles (Mistral) mettent le JSON des tool_calls
+                // dans content — le ré-émettre ferait apparaître ce JSON dans le stream.
+                const followUpMessages: OllamaMessage[] = [
                     ...messages,
-                    { role: "assistant", content: firstContent || (assistantMsg.content ?? "") },
+                    { role: "assistant", content: "", tool_calls: assistantMsg.tool_calls },
                 ];
 
                 for (const toolCall of assistantMsg.tool_calls) {
