@@ -15,6 +15,7 @@ import {
 import { Plus, X } from "lucide-react";
 import type { FieldDef } from "@/lib/blockRegistry";
 import { InlineTextEditor } from "@/components/builder/InlineTextEditor";
+import { ImageUploadField } from "@/components/builder/ImageUploadField";
 
 interface DynamicPropsEditorProps {
     fields: FieldDef[];
@@ -166,6 +167,17 @@ export function DynamicPropsEditor({ fields, props, onChange, filterTypes }: Dyn
                                 <Plus className="w-3 h-3" /> Ajouter
                             </Button>
                         </div>
+                    );
+                }
+
+                if (field.type === "image-upload") {
+                    return (
+                        <ImageUploadField
+                            key={field.key}
+                            value={String(props[field.key] ?? "")}
+                            onChange={(url) => set(field.key, url)}
+                            label={field.label}
+                        />
                     );
                 }
 
