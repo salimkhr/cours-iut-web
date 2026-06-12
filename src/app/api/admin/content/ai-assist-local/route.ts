@@ -35,10 +35,6 @@ type OllamaMessage = {
     tool_calls?: ToolCall[];
 };
 
-type OllamaStreamChunk = {
-    message?: { content: string };
-    done: boolean;
-};
 
 type RawBlock = { id: string; type: string; props: Record<string, unknown>; colSpan?: "full" | "half" };
 
@@ -259,85 +255,6 @@ async function runTool(
     return { result: `OK — ${name} exécuté.`, updatedBlocks: blocks as Block[] };
 }
 
-async function streamOllamaText(
-    ollamaBody: ReadableStream<Uint8Array>,
-    controller: ReadableStreamDefaultController<Uint8Array>,
-): Promise<boolean> {
-    const reader = ollamaBody.getReader();
-    const decoder = new TextDecoder();
-    let lineBuffer = "";
-
-    let inThinking = false;
-    let thinkBuf = "";
-    let tagBuf = "";
-    let outBuf = "";
-    let emittedChunk = false;
-
-    function flushOut() {
-        if (outBuf) {
-            controller.enqueue(sseEvent({ type: "chunk", content: outBuf }));
-            emittedChunk = true;
-            outBuf = "";
-        }
-    }
-
-    function processToken(token: string) {
-        for (let ci = 0; ci < token.length; ci++) {
-            const ch = token[ci];
-            const targetTag = inThinking ? "</think>" : "<think>";
-            const candidate = tagBuf + ch;
-            if (targetTag.startsWith(candidate)) {
-                tagBuf = candidate;
-                if (candidate === targetTag) {
-                    if (inThinking) {
-                        controller.enqueue(sseEvent({ type: "thinking", content: thinkBuf }));
-                        thinkBuf = "";
-                        inThinking = false;
-                    } else {
-                        flushOut();
-                        inThinking = true;
-                    }
-                    tagBuf = "";
-                }
-            } else {
-                if (tagBuf) {
-                    if (inThinking) thinkBuf += tagBuf; else outBuf += tagBuf;
-                    tagBuf = "";
-                }
-                const freshTag = inThinking ? "</think>" : "<think>";
-                if (freshTag.startsWith(ch)) {
-                    tagBuf = ch;
-                } else {
-                    if (inThinking) thinkBuf += ch; else outBuf += ch;
-                }
-            }
-        }
-        flushOut();
-    }
-
-    try {
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            lineBuffer += decoder.decode(value, { stream: true });
-            const lines = lineBuffer.split("\n");
-            lineBuffer = lines.pop() ?? "";
-            for (const line of lines) {
-                if (!line.trim()) continue;
-                let chunk: OllamaStreamChunk;
-                try { chunk = JSON.parse(line) as OllamaStreamChunk; } catch { continue; }
-                const token = chunk.message?.content ?? "";
-                if (token) processToken(token);
-            }
-        }
-        if (tagBuf) { if (inThinking) thinkBuf += tagBuf; else outBuf += tagBuf; }
-        flushOut();
-        if (thinkBuf) controller.enqueue(sseEvent({ type: "thinking", content: thinkBuf }));
-    } finally {
-        reader.releaseLock();
-    }
-    return emittedChunk;
-}
 
 function aiLog(step: string, data: Record<string, unknown>) {
     console.log(`[ai-assist] ${step}`, JSON.stringify(data));
@@ -436,8 +353,6 @@ RÈGLES :
             const structuredCalls = assistantMsg.tool_calls?.length ? assistantMsg.tool_calls : null;
             const parsedText = !structuredCalls ? parseTextToolCalls(firstContent) : null;
             const effectiveCalls = structuredCalls ?? parsedText?.calls ?? null;
-            // Prose avant le JSON (ex. "Je vais supprimer ces blocs :") à émettre séparément
-            const proseBeforeCalls = parsedText?.prose ?? "";
 
             aiLog("response1", {
                 hasThinking: !!firstThinking,
