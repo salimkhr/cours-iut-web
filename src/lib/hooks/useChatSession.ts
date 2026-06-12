@@ -103,7 +103,9 @@ export function useChatSession({
             });
 
             if (!res.ok || !res.body) {
-                setMessages((prev) => [...prev, { role: "assistant", content: "Erreur de communication avec Ollama." }]);
+                let detail = `HTTP ${res.status}`;
+                try { const j = await res.json() as { error?: string }; if (j.error) detail = j.error; } catch { /* ignore */ }
+                setMessages((prev) => [...prev, { role: "assistant", content: `Erreur : ${detail}` }]);
                 return;
             }
 
@@ -162,8 +164,9 @@ export function useChatSession({
                     ...(pendingThinking ? { thinking: pendingThinking } : {}),
                 }]);
             }
-        } catch {
-            setMessages((prev) => [...prev, { role: "assistant", content: "Erreur de communication avec Ollama." }]);
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            setMessages((prev) => [...prev, { role: "assistant", content: `Erreur réseau : ${msg}` }]);
         } finally {
             setLoading(false);
         }

@@ -266,6 +266,10 @@ async function streamOllamaText(
     }
 }
 
+function aiLog(step: string, data: Record<string, unknown>) {
+    console.log(`[ai-assist] ${step}`, JSON.stringify(data));
+}
+
 export const POST = withAdmin(async (req: Request) => {
     const body = await req.json() as AssistLocalBody;
 
@@ -294,6 +298,14 @@ RÈGLES :
         { role: "user", content: body.message },
     ];
 
+    aiLog("request", {
+        model: body.model,
+        module: `${body.moduleSlug}/${body.sectionSlug}/${body.contentType}`,
+        historyLength: body.history.length,
+        blocksCount: body.currentBlocks.length,
+        userMessage: body.message.slice(0, 200),
+    });
+
     const stream = new ReadableStream({
         async start(controller) {
             // Ping initial : garde la connexion ouverte côté Cloudflare/proxy pendant que Ollama réfléchit
@@ -312,25 +324,46 @@ RÈGLES :
                         tools: TOOLS,
                     }),
                 });
-            } catch {
-                controller.enqueue(sseEvent({ type: "error", message: "Impossible de joindre Ollama." }));
+            } catch (err) {
+                const msg = err instanceof Error ? err.message : String(err);
+                aiLog("error:fetch1", { error: msg });
+                controller.enqueue(sseEvent({ type: "error", message: `Impossible de joindre Ollama (${OLLAMA_BASE_URL}) : ${msg}` }));
                 controller.close();
                 return;
             }
 
             if (!firstRes.ok) {
-                const err = await firstRes.text();
-                controller.enqueue(sseEvent({ type: "error", message: `Ollama : ${err}` }));
+                const errText = await firstRes.text();
+                aiLog("error:response1", { status: firstRes.status, body: errText });
+                controller.enqueue(sseEvent({ type: "error", message: `Ollama HTTP ${firstRes.status} : ${errText}` }));
                 controller.close();
                 return;
             }
 
-            const firstData = await firstRes.json() as { message: OllamaMessage };
+            let firstData: { message: OllamaMessage };
+            try {
+                firstData = await firstRes.json() as { message: OllamaMessage };
+            } catch (err) {
+                const msg = err instanceof Error ? err.message : String(err);
+                aiLog("error:parse1", { error: msg });
+                controller.enqueue(sseEvent({ type: "error", message: `Réponse Ollama invalide (JSON) : ${msg}` }));
+                controller.close();
+                return;
+            }
+
             const assistantMsg = firstData.message;
             let finalBlocks: Block[] | null = null;
 
             // Extraire et émettre le thinking avant tout contenu
             const { thinking: firstThinking, content: firstContent } = extractThinking(assistantMsg.content ?? "");
+
+            aiLog("response1", {
+                hasThinking: !!firstThinking,
+                thinkingLength: firstThinking.length,
+                contentPreview: firstContent.slice(0, 150),
+                toolCalls: assistantMsg.tool_calls?.map((t) => t.function.name) ?? [],
+            });
+
             if (firstThinking) controller.enqueue(sseEvent({ type: "thinking", content: firstThinking }));
 
             if (assistantMsg.tool_calls?.length) {
@@ -341,6 +374,7 @@ RÈGLES :
                 ];
 
                 for (const toolCall of assistantMsg.tool_calls) {
+                    aiLog("tool:call", { name: toolCall.function.name, args: toolCall.function.arguments });
                     const { result, updatedBlocks } = await runTool(
                         toolCall,
                         body.currentBlocks,
@@ -348,6 +382,7 @@ RÈGLES :
                         body.sectionSlug,
                         body.contentType,
                     );
+                    aiLog("tool:result", { name: toolCall.function.name, result, newBlocksCount: updatedBlocks.length });
                     finalBlocks = updatedBlocks;
                     followUpMessages.push({ role: "tool", content: result });
                 }
@@ -364,14 +399,21 @@ RÈGLES :
                             messages: [{ role: "system", content: systemPrompt }, ...followUpMessages],
                         }),
                     });
-                } catch {
+                } catch (err) {
+                    const msg = err instanceof Error ? err.message : String(err);
+                    aiLog("error:fetch2", { error: msg });
                     controller.enqueue(sseEvent({ type: "done", blocks: finalBlocks }));
                     controller.close();
                     return;
                 }
 
-                if (secondRes.ok && secondRes.body) {
+                if (!secondRes.ok) {
+                    const errText = await secondRes.text();
+                    aiLog("error:response2", { status: secondRes.status, body: errText });
+                } else if (secondRes.body) {
+                    aiLog("stream2:start", {});
                     await streamOllamaText(secondRes.body, controller);
+                    aiLog("stream2:done", {});
                 }
 
             } else {
