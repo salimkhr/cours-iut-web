@@ -82,11 +82,17 @@ const TOOLS = [
         type: "function",
         function: {
             name: "delete_block",
-            description: "Supprime un bloc par son ID.",
+            description: "Supprime un ou plusieurs blocs. Passer un seul ID (string) ou un tableau d'IDs (array).",
             parameters: {
                 type: "object",
                 properties: {
-                    blockId: { type: "string", description: "ID du bloc à supprimer" },
+                    blockId: {
+                        description: "ID du bloc à supprimer, ou tableau d'IDs pour en supprimer plusieurs.",
+                        oneOf: [
+                            { type: "string" },
+                            { type: "array", items: { type: "string" } },
+                        ],
+                    },
                 },
                 required: ["blockId"],
             },
@@ -158,7 +164,12 @@ async function runTool(
         };
 
     } else if (name === "delete_block") {
-        blocks = blocks.filter((b) => b.id !== args.blockId);
+        const toDelete = new Set(
+            Array.isArray(args.blockId)
+                ? (args.blockId as string[])
+                : [String(args.blockId)],
+        );
+        blocks = blocks.filter((b) => !toDelete.has(b.id));
 
     } else {
         return { result: `Outil inconnu : ${name}`, updatedBlocks: blocks as Block[] };
