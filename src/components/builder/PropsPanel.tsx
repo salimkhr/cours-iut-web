@@ -45,7 +45,7 @@ export function PropsPanel({ moduleSlug, onSave, saving }: PropsPanelProps) {
     const mobileTextFields = def?.fields.filter((f) => TEXT_FIELD_TYPES.includes(f.type)) ?? [];
 
     return (
-        <Sheet open={!!selectedId} onOpenChange={(open) => !open && selectBlock(null)}>
+        <Sheet open={!!selectedId && !def?.noPropsPanel} onOpenChange={(open) => !open && selectBlock(null)}>
             <SheetContent
                 side={isMobile ? "bottom" : "right"}
                 className={cn(
