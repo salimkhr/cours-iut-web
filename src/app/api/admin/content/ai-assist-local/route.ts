@@ -110,12 +110,14 @@ const TOOLS = [
 // (accolades fermantes manquantes — ex. liste numérotée générée par Mistral).
 
 function extractJsonBlock(text: string, start: number): { slice: string; end: number } | null {
-    let depth = 0;
+    // On suit arrayDepth séparément pour clore au premier ] qui ferme le tableau,
+    // même si des accolades { sont encore ouvertes (JSON malformé de Mistral).
+    let arrayDepth = 0;
     for (let i = start; i < text.length; i++) {
-        if (text[i] === "[" || text[i] === "{") depth++;
-        else if (text[i] === "]" || text[i] === "}") {
-            depth--;
-            if (depth === 0) return { slice: text.slice(start, i + 1), end: i + 1 };
+        if (text[i] === "[") arrayDepth++;
+        else if (text[i] === "]") {
+            arrayDepth--;
+            if (arrayDepth === 0) return { slice: text.slice(start, i + 1), end: i + 1 };
         }
     }
     return null;
