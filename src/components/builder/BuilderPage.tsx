@@ -109,6 +109,7 @@ export function BuilderPage({
     const [dropAllowed, setDropAllowed] = useState(true);
     const [saving, setSaving] = useState(false);
     const [pendingHref, setPendingHref] = useState<string | null>(null);
+    const [chatMode, setChatMode] = useState<"float" | "docked">("float");
     /** Contexte d'insertion déclenché par le bouton toolbar « Ajouter un bloc ». */
     const [rootInsertCtx, setRootInsertCtx] = useState<{ parentId: null; parentType: null; index: number } | null>(null);
     const router = useRouter();
@@ -343,13 +344,26 @@ export function BuilderPage({
                         onSave={handleSave}
                         saving={saving}
                     />
+                    {chatMode === "docked" && (
+                        <AiAssistantPanel
+                            moduleSlug={moduleSlug}
+                            sectionSlug={sectionSlug}
+                            contentType={contentType}
+                            mode="docked"
+                            onModeChange={setChatMode}
+                        />
+                    )}
                 </div>
 
-                <AiAssistantPanel
-                    moduleSlug={moduleSlug}
-                    sectionSlug={sectionSlug}
-                    contentType={contentType}
-                />
+                {chatMode === "float" && (
+                    <AiAssistantPanel
+                        moduleSlug={moduleSlug}
+                        sectionSlug={sectionSlug}
+                        contentType={contentType}
+                        mode="float"
+                        onModeChange={setChatMode}
+                    />
+                )}
             </div>
 
             {/* Confirmation avant navigation avec modifications non sauvegardées */}
