@@ -25,7 +25,7 @@ import type { Block } from "@/types/CourseContent";
 export interface FieldDef {
     key: string;
     label: string;
-    type: "text" | "textarea" | "number" | "select" | "boolean" | "array-of-strings";
+    type: "text" | "textarea" | "number" | "select" | "boolean" | "array-of-strings" | "image-upload";
     options?: string[];
     placeholder?: string;
     /** Si vrai, le champ accepte du markdown inline (**gras**, _em_, `code`, [lien](url)).
@@ -239,7 +239,7 @@ const blockDefinitions: BlockDefinition[] = [
             title: z.string().optional(),
         }),
         fields: [
-            { key: "src", label: "URL de l'image", type: "text", placeholder: "/images/..." },
+            { key: "src", label: "Image", type: "image-upload" },
             { key: "title", label: "Titre / légende", type: "text" },
         ],
         render: ({ src, title }: BlockRenderProps) => (
