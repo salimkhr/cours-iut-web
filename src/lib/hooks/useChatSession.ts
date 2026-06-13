@@ -26,6 +26,18 @@ type SseEvent =
     | { type: "done"; blocks: Block[] | null }
     | { type: "error"; message: string };
 
+// timestamp arrive comme string depuis JSON.parse — on le rehydrate en Date
+type SerializedMessage = Omit<ChatMessage, "timestamp"> & { timestamp: string };
+
+function deserializeMessage(m: SerializedMessage): ChatMessage {
+    return { ...m, timestamp: new Date(m.timestamp) };
+}
+
+function toStoredMessage(msg: ChatMessage): Omit<ChatMessage, "isError"> {
+    const { isError: _isError, ...rest } = msg;
+    return rest;
+}
+
 interface UseChatSessionProps {
     moduleSlug: string;
     sectionSlug: string;
@@ -51,6 +63,8 @@ export function useChatSession({
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [historyLoading, setHistoryLoading] = useState(false);
+    const [confirmClear, setConfirmClear] = useState(false);
 
     useEffect(() => {
         if (!enabled) return;
@@ -82,18 +96,64 @@ export function useChatSession({
         return () => { cancelled = true; };
     }, [enabled, refreshKey]);
 
+    useEffect(() => {
+        if (!enabled) return;
+        // setTimeout(0) : interdit d'appeler setState synchronement dans le corps d'un effet (ESLint react-hooks/set-state-in-effect)
+        const timer = setTimeout(() => setHistoryLoading(true), 0);
+        fetch(
+            `/api/admin/content/ai-chat-history?module=${encodeURIComponent(moduleSlug)}&section=${encodeURIComponent(sectionSlug)}&type=${encodeURIComponent(contentType)}`,
+        )
+            .then((r) => r.json() as Promise<{ messages: SerializedMessage[] }>)
+            .then((data) => { setMessages(data.messages.map(deserializeMessage)); })
+            .catch(() => { /* démarrer vide si erreur réseau */ })
+            .finally(() => {
+                clearTimeout(timer);
+                setHistoryLoading(false);
+            });
+        return () => { clearTimeout(timer); };
+    }, [enabled, moduleSlug, sectionSlug, contentType]);
+
     function retry() {
         setStatus("checking");
         setRefreshKey((k) => k + 1);
     }
 
+    function persistExchange(userMsg: ChatMessage, assistantMsg: ChatMessage) {
+        fetch("/api/admin/content/ai-chat-history", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                moduleSlug,
+                sectionSlug,
+                contentType,
+                messages: [toStoredMessage(userMsg), toStoredMessage(assistantMsg)],
+            }),
+        }).catch(() => { /* best-effort — silencieux en cas d'échec réseau */ });
+    }
+
+    async function clearHistory() {
+        await fetch("/api/admin/content/ai-chat-history", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ moduleSlug, sectionSlug, contentType }),
+        });
+        setMessages([]);
+        setConfirmClear(false);
+    }
+
     async function handleSend() {
         const text = input.trim();
-        if (!text || loading || !selectedModel) return;
+        if (!text || loading || historyLoading || !selectedModel) return;
 
-        setMessages((prev) => [...prev, { role: "user", content: text, timestamp: new Date() }]);
+        const userMsg: ChatMessage = { role: "user", content: text, timestamp: new Date() };
+        setMessages((prev) => [...prev, userMsg]);
         setInput("");
         setLoading(true);
+
+        // Variables pour la persistance — renseignées au fil du stream
+        let assistantMsg: ChatMessage | null = null;
+        let assistantContent = "";
+        let receivedDone = false;
 
         try {
             const res = await fetch("/api/admin/content/ai-assist-local", {
@@ -145,16 +205,19 @@ export function useChatSession({
                         if (firstChunk) {
                             firstChunk = false;
                             setLoading(false);
-                            setMessages((prev) => [...prev, {
+                            assistantMsg = {
                                 role: "assistant",
                                 content: event.content,
                                 timestamp: new Date(),
                                 ...(pendingThinking ? { thinking: pendingThinking } : {}),
                                 ...(pendingToolActions ? { toolActions: pendingToolActions } : {}),
-                            }]);
+                            };
+                            assistantContent = event.content;
+                            setMessages((prev) => [...prev, assistantMsg!]);
                             pendingThinking = "";
                             pendingToolActions = undefined;
                         } else {
+                            assistantContent += event.content;
                             setMessages((prev) => {
                                 const last = prev[prev.length - 1];
                                 return [...prev.slice(0, -1), { ...last, content: last.content + event.content }];
@@ -162,6 +225,7 @@ export function useChatSession({
                         }
                     } else if (event.type === "done") {
                         if (event.blocks) onBlocksUpdate(event.blocks);
+                        receivedDone = true;
                     } else if (event.type === "error") {
                         if (firstChunk) {
                             setLoading(false);
@@ -187,10 +251,16 @@ export function useChatSession({
         } finally {
             setLoading(false);
         }
+
+        // Persister uniquement les échanges complets (done reçu) sans erreur
+        if (assistantMsg && receivedDone) {
+            persistExchange(userMsg, { ...assistantMsg, content: assistantContent });
+        }
     }
 
     return {
         status, ollamaVersion, models, selectedModel, setSelectedModel,
         messages, input, setInput, loading, handleSend, retry,
+        historyLoading, confirmClear, setConfirmClear, clearHistory,
     };
 }
