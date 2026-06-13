@@ -86,27 +86,27 @@ const blockDefinitions: BlockDefinition[] = [
         inlineEditField: "content",
     },
     {
-        type: "heading",
-        label: "Titre",
-        defaultProps: { level: 2, text: "" },
-        schema: z.object({
-            level: z.union([z.literal(2), z.literal(3)]),
-            text: z.string().min(1),
-        }),
+        type: "section",
+        label: "Partie",
+        defaultProps: { title: "" },
+        schema: z.object({ title: z.string() }),
         fields: [
-            { key: "level", label: "Niveau", type: "select", options: ["2", "3"] },
-            {
-                key: "text",
-                label: "Texte",
-                type: "text",
-                inlineMarkdown: true,
-                placeholder: "Transformer un tableau avec `map`",
-            },
+            { key: "title", label: "Titre", type: "text", placeholder: "A — Introduction" },
         ],
-        render: ({ level, text }: BlockRenderProps) => (
-            <Heading level={Number(level) as 2 | 3}>{renderInline(String(text ?? ""))}</Heading>
-        ),
-        inlineEditField: "text",
+        container: containerRules["section"],
+        initialChildren: () => [
+            { id: uuidv4(), type: "text", props: { content: "" }, children: [] },
+        ],
+        render: ({ title, children, depth }: BlockRenderProps) => {
+            const level = Math.min(2 + (Number(depth) || 0), 4) as 2 | 3 | 4;
+            return (
+                <section className="flex flex-col gap-6">
+                    <Heading level={level}>{String(title ?? "")}</Heading>
+                    {children}
+                </section>
+            );
+        },
+        inlineEditField: "title",
     },
     {
         type: "list",
