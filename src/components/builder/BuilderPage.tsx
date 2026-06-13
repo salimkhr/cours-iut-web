@@ -1,9 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { toast } from "sonner";
+import { useBuilderStore } from "@/lib/store/builderStore";
+import { EditorToolbar } from "@/components/builder/EditorToolbar";
+import { EditorTree } from "@/components/builder/EditorTree";
+import { EditorPreview } from "@/components/builder/EditorPreview";
+import { BlockInsertDialog } from "@/components/builder/BlockInsertDialog";
+import { useEditorShortcuts } from "@/components/builder/hooks/useEditorShortcuts";
 import type { Block } from "@/types/CourseContent";
 
 interface BuilderPageProps {
@@ -16,49 +20,113 @@ interface BuilderPageProps {
     source: "file" | "db";
 }
 
-export function BuilderPage({ moduleTitle, sectionTitle, contentType, source }: BuilderPageProps) {
+export function BuilderPage({
+    moduleSlug,
+    sectionSlug,
+    contentType,
+    moduleTitle,
+    sectionTitle,
+    initialBlocks,
+    source,
+}: BuilderPageProps) {
+    const setBlocks = useBuilderStore((s) => s.setBlocks);
+    const isDirty = useBuilderStore((s) => s.isDirty);
+    const markSaved = useBuilderStore((s) => s.markSaved);
+    const undo = useBuilderStore((s) => s.undo);
+    const redo = useBuilderStore((s) => s.redo);
+
+    const [saving, setSaving] = useState(false);
+    const [insertDialogOpen, setInsertDialogOpen] = useState(false);
+    const previewRef = useRef<{ reload: () => void } | null>(null);
+
+    // Initialiser les blocs au montage
+    useEffect(() => {
+        setBlocks(initialBlocks);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Avertir avant de quitter si modifications non sauvegardées
+    useEffect(() => {
+        if (!isDirty) return;
+        function handleBeforeUnload(e: BeforeUnloadEvent) {
+            e.preventDefault();
+            e.returnValue = "";
+        }
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [isDirty]);
+
+    const handleSave = useCallback(async () => {
+        if (!isDirty || saving) return;
+        setSaving(true);
+        try {
+            const blocks = useBuilderStore.getState().blocks;
+            const res = await fetch(
+                `/api/admin/content/${moduleSlug}/${sectionSlug}/${contentType}`,
+                {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ blocks }),
+                }
+            );
+            if (!res.ok) {
+                const body = await res.json().catch(() => null) as { error?: string } | null;
+                throw new Error(body?.error ?? `HTTP ${res.status}`);
+            }
+            markSaved();
+            toast.success("Contenu sauvegardé.");
+            previewRef.current?.reload();
+        } catch (err) {
+            toast.error("Échec de la sauvegarde", {
+                description: err instanceof Error ? err.message : "Erreur inconnue",
+            });
+        } finally {
+            setSaving(false);
+        }
+    }, [isDirty, saving, moduleSlug, sectionSlug, contentType, markSaved]);
+
+    useEditorShortcuts({
+        onSave: handleSave,
+        onUndo: undo,
+        onRedo: redo,
+        onInsert: () => setInsertDialogOpen(true),
+    });
+
     return (
-        <div className="flex flex-col h-[calc(100dvh-var(--navbar-h))] overflow-hidden">
-            <header className="flex items-center gap-3 px-4 py-3 flex-shrink-0 border-b border-bridge-500/20 dark:border-bridge-500/35 bg-bridge-50/90 dark:bg-bridge-900/90 backdrop-blur-sm">
-                <Link
-                    href="/admin"
-                    className="flex items-center gap-1 text-xs font-medium text-bridge-500 dark:text-bridge-400 hover:text-brand-primary dark:hover:text-brand-primary transition-colors shrink-0"
-                >
-                    <ChevronLeft className="w-3.5 h-3.5" />
-                    Admin
-                </Link>
-                <div className="w-px h-8 bg-bridge-400/25 dark:bg-bridge-500/30 shrink-0" />
-                <div className="flex flex-col gap-0.5 min-w-0">
-                    <div className="flex items-center gap-1 text-xs leading-none">
-                        <span className="font-semibold text-bridge-700 dark:text-bridge-200 truncate max-w-[180px]">
-                            {moduleTitle}
-                        </span>
-                        <ChevronRight className="w-3 h-3 shrink-0 text-bridge-400/50" />
-                        <span className="text-bridge-500 dark:text-bridge-400 truncate max-w-[220px]">
-                            {sectionTitle}
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-2 leading-none">
-                        <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-brand-primary">
-                            {contentType}
-                        </span>
-                        <Badge
-                            variant="outline"
-                            className={cn(
-                                "text-[10px] font-mono h-4 px-1.5 rounded",
-                                source === "db"
-                                    ? "border-emerald-500/40 text-emerald-700 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-900/20"
-                                    : "border-bridge-400/50 text-bridge-500 dark:text-bridge-400"
-                            )}
-                        >
-                            {source === "db" ? "DB" : "fichier"}
-                        </Badge>
-                    </div>
+        <div className="flex flex-col h-[calc(100dvh-4rem)] overflow-hidden">
+            <EditorToolbar
+                moduleTitle={moduleTitle}
+                sectionTitle={sectionTitle}
+                contentType={contentType}
+                source={source}
+                saving={saving}
+                onSave={() => void handleSave()}
+            />
+
+            <div className="flex flex-1 min-h-0">
+                {/* Panneau gauche — arbre de blocs */}
+                <div className="w-[420px] min-w-[280px] max-w-[600px] flex flex-col border-r border-slate-200 dark:border-slate-700 overflow-hidden bg-slate-50/40 dark:bg-slate-900/40">
+                    <EditorTree onInsertAtRoot={() => setInsertDialogOpen(true)} />
                 </div>
-            </header>
-            <div className="flex-1 flex items-center justify-center text-bridge-500 dark:text-bridge-400 text-sm">
-                Éditeur en cours de migration — utilisez le MCP server ou attendez le fallback web.
+
+                {/* Panneau droit — prévisualisation */}
+                <div className="flex-1 min-w-0">
+                    <EditorPreview
+                        ref={previewRef}
+                        moduleSlug={moduleSlug}
+                        sectionSlug={sectionSlug}
+                        contentType={contentType}
+                    />
+                </div>
             </div>
+
+            {/* Dialog d'insertion globale (Ctrl+I) */}
+            <BlockInsertDialog
+                open={insertDialogOpen}
+                onClose={() => setInsertDialogOpen(false)}
+                parentId={null}
+                index={Number.MAX_SAFE_INTEGER}
+            />
         </div>
     );
 }
