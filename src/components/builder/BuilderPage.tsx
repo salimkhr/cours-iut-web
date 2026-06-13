@@ -100,7 +100,7 @@ export function BuilderPage({
     initialBlocks,
     source,
 }: BuilderPageProps) {
-    const { blocks, isDirty, setBlocks, markSaved, insertBlock, selectBlock, moveBlock } =
+    const { blocks, isDirty, setBlocks, markSaved, insertBlock, selectBlock } =
         useBuilderStore();
 
     const [activeDragDef, setActiveDragDef] = useState<BlockDefinition | null>(null);
@@ -194,7 +194,8 @@ export function BuilderPage({
             insertBlock(newBlock, target.parentId, target.index);
             selectBlock(newBlock.id);
         } else if (data?.origin === "canvas") {
-            moveBlock(String(active.id), target.parentId, target.index);
+            // TODO A6: DnD re-ordering à implémenter avec le nouvel UX
+            console.warn("Block reordering via DnD not yet implemented");
         }
     }
 
