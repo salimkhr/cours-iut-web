@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { InlineTextEditor } from "@/components/builder/InlineTextEditor";
 import { renderInline } from "@/lib/inlineMarkdown";
 import { cn } from "@/lib/utils";
 import type { BlockEditorProps } from "@/lib/blockRegistry";
@@ -219,14 +218,14 @@ export function TableBlockEditor({ props, onChange }: BlockEditorProps) {
                                     onKeyDown={(e) => handleCellKeyDown(e, -1, col)}
                                 >
                                     {isCellEditing(-1, col) ? (
-                                        <InlineTextEditor
+                                        <input
                                             value={getCellValue(-1, col)}
-                                            onChange={(v) => setCellValue(-1, col, v)}
+                                            onChange={(e) => setCellValue(-1, col, e.target.value)}
                                             onBlur={stopEditing}
-                                            onKeyDown={(e) => handleCellKeyDown(e, -1, col)}
+                                            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => handleCellKeyDown(e, -1, col)}
                                             autoFocus
                                             aria-label={`En-tête colonne ${col + 1}`}
-                                            className="w-full bg-transparent border-0 p-0 text-sm font-semibold h-auto shadow-none focus-visible:ring-0"
+                                            className="w-full bg-transparent border-0 p-0 text-sm font-semibold h-auto shadow-none outline-none"
                                         />
                                     ) : (
                                         <span>
@@ -268,14 +267,14 @@ export function TableBlockEditor({ props, onChange }: BlockEditorProps) {
                                         onKeyDown={(e) => handleCellKeyDown(e, rowIdx, col)}
                                     >
                                         {isCellEditing(rowIdx, col) ? (
-                                            <InlineTextEditor
+                                            <input
                                                 value={getCellValue(rowIdx, col)}
-                                                onChange={(v) => setCellValue(rowIdx, col, v)}
+                                                onChange={(e) => setCellValue(rowIdx, col, e.target.value)}
                                                 onBlur={stopEditing}
-                                                onKeyDown={(e) => handleCellKeyDown(e, rowIdx, col)}
+                                                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => handleCellKeyDown(e, rowIdx, col)}
                                                 autoFocus
                                                 aria-label={`Cellule ligne ${rowIdx + 1} colonne ${col + 1}`}
-                                                className="w-full bg-transparent border-0 p-0 text-sm h-auto shadow-none focus-visible:ring-0"
+                                                className="w-full bg-transparent border-0 p-0 text-sm h-auto shadow-none outline-none"
                                             />
                                         ) : (
                                             <span>
