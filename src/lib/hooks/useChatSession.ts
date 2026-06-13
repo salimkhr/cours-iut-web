@@ -4,7 +4,14 @@ import { useState, useEffect } from "react";
 import type { Block } from "@/types/CourseContent";
 
 export type OllamaStatus = "checking" | "connected" | "disconnected";
-export type ChatMessage = { role: "user" | "assistant"; content: string; thinking?: string };
+export type ChatMessage = {
+    role: "user" | "assistant";
+    content: string;
+    thinking?: string;
+    timestamp: Date;
+    toolActions?: { name: string; count: number }[];
+    isError?: boolean;
+};
 
 interface AiStatusResponse {
     connected: boolean;
@@ -15,6 +22,7 @@ interface AiStatusResponse {
 type SseEvent =
     | { type: "chunk"; content: string }
     | { type: "thinking"; content: string }
+    | { type: "action_summary"; tools: { name: string; count: number }[] }
     | { type: "done"; blocks: Block[] | null }
     | { type: "error"; message: string };
 
@@ -83,7 +91,7 @@ export function useChatSession({
         const text = input.trim();
         if (!text || loading || !selectedModel) return;
 
-        setMessages((prev) => [...prev, { role: "user", content: text }]);
+        setMessages((prev) => [...prev, { role: "user", content: text, timestamp: new Date() }]);
         setInput("");
         setLoading(true);
 
@@ -105,7 +113,7 @@ export function useChatSession({
             if (!res.ok || !res.body) {
                 let detail = `HTTP ${res.status}`;
                 try { const j = await res.json() as { error?: string }; if (j.error) detail = j.error; } catch { /* ignore */ }
-                setMessages((prev) => [...prev, { role: "assistant", content: `Erreur : ${detail}` }]);
+                setMessages((prev) => [...prev, { role: "assistant", content: `Erreur : ${detail}`, timestamp: new Date(), isError: true }]);
                 return;
             }
 
@@ -114,6 +122,7 @@ export function useChatSession({
             let lineBuffer = "";
             let firstChunk = true;
             let pendingThinking = "";
+            let pendingToolActions: { name: string; count: number }[] | undefined;
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -130,6 +139,8 @@ export function useChatSession({
 
                     if (event.type === "thinking") {
                         pendingThinking += event.content;
+                    } else if (event.type === "action_summary") {
+                        pendingToolActions = event.tools;
                     } else if (event.type === "chunk") {
                         if (firstChunk) {
                             firstChunk = false;
@@ -137,9 +148,12 @@ export function useChatSession({
                             setMessages((prev) => [...prev, {
                                 role: "assistant",
                                 content: event.content,
+                                timestamp: new Date(),
                                 ...(pendingThinking ? { thinking: pendingThinking } : {}),
+                                ...(pendingToolActions ? { toolActions: pendingToolActions } : {}),
                             }]);
                             pendingThinking = "";
+                            pendingToolActions = undefined;
                         } else {
                             setMessages((prev) => {
                                 const last = prev[prev.length - 1];
@@ -151,7 +165,7 @@ export function useChatSession({
                     } else if (event.type === "error") {
                         if (firstChunk) {
                             setLoading(false);
-                            setMessages((prev) => [...prev, { role: "assistant", content: event.message }]);
+                            setMessages((prev) => [...prev, { role: "assistant", content: event.message, timestamp: new Date(), isError: true }]);
                         }
                     }
                 }
@@ -161,12 +175,15 @@ export function useChatSession({
                 setMessages((prev) => [...prev, {
                     role: "assistant",
                     content: "Pas de réponse.",
+                    timestamp: new Date(),
+                    isError: true,
                     ...(pendingThinking ? { thinking: pendingThinking } : {}),
+                    ...(pendingToolActions ? { toolActions: pendingToolActions } : {}),
                 }]);
             }
         } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
-            setMessages((prev) => [...prev, { role: "assistant", content: `Erreur réseau : ${msg}` }]);
+            setMessages((prev) => [...prev, { role: "assistant", content: `Erreur réseau : ${msg}`, timestamp: new Date(), isError: true }]);
         } finally {
             setLoading(false);
         }
