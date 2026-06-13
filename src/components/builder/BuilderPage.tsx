@@ -25,7 +25,6 @@ import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { BuilderCanvas } from "@/components/builder/BuilderCanvas";
 import { PropsPanel } from "@/components/builder/PropsPanel";
-import { AiAssistantPanel } from "@/components/builder/AiAssistantPanel";
 import { BLOCK_META } from "@/components/builder/BlockPaletteGrid";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -109,7 +108,6 @@ export function BuilderPage({
     const [dropAllowed, setDropAllowed] = useState(true);
     const [saving, setSaving] = useState(false);
     const [pendingHref, setPendingHref] = useState<string | null>(null);
-    const [chatMode, setChatMode] = useState<"float" | "docked">("float");
     /** Contexte d'insertion déclenché par le bouton toolbar « Ajouter un bloc ». */
     const [rootInsertCtx, setRootInsertCtx] = useState<{ parentId: null; parentType: null; index: number } | null>(null);
     const router = useRouter();
@@ -345,26 +343,7 @@ export function BuilderPage({
                         onSave={handleSave}
                         saving={saving}
                     />
-                    {chatMode === "docked" && (
-                        <AiAssistantPanel
-                            moduleSlug={moduleSlug}
-                            sectionSlug={sectionSlug}
-                            contentType={contentType}
-                            mode="docked"
-                            onModeChange={setChatMode}
-                        />
-                    )}
                 </div>
-
-                {chatMode === "float" && (
-                    <AiAssistantPanel
-                        moduleSlug={moduleSlug}
-                        sectionSlug={sectionSlug}
-                        contentType={contentType}
-                        mode="float"
-                        onModeChange={setChatMode}
-                    />
-                )}
             </div>
 
             {/* Confirmation avant navigation avec modifications non sauvegardées */}
