@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Loader2, Sparkles, X, WifiOff, RefreshCw, Send, ExternalLink, PanelRightOpen, PanelRightClose } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { Loader2, Sparkles, X, WifiOff, RefreshCw, Send, ExternalLink, PanelRightOpen, PanelRightClose, Copy, Check, Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -33,8 +33,12 @@ export function AiAssistantPanel({
 }: AiAssistantPanelProps) {
     const { blocks, setBlocks } = useBuilderStore();
     const [open, setOpen] = useState(false);
+    const [elapsedSecs, setElapsedSecs] = useState(0);
+    const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const confirmTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const chat = useChatSession({
         moduleSlug, sectionSlug, contentType,
@@ -55,14 +59,42 @@ export function AiAssistantPanel({
     }, [setBlocks]);
 
     useEffect(() => {
+        if (!chat.loading) return;
+        let count = 0;
+        const resetTimer = setTimeout(() => setElapsedSecs(0), 0);
+        timerRef.current = setInterval(() => setElapsedSecs(++count), 1000);
+        return () => {
+            clearTimeout(resetTimer);
+            if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+        };
+    }, [chat.loading]);
+
+    useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [chat.messages, chat.loading]);
+
+    async function handleCopy(content: string, idx: number) {
+        await navigator.clipboard.writeText(content);
+        setCopiedIdx(idx);
+        setTimeout(() => setCopiedIdx(null), 1500);
+    }
 
     function handlePopOut() {
         const url = `/admin/chat/${moduleSlug}/${sectionSlug}/${contentType}`;
         window.open(url, "ai-chat", "width=440,height=720,menubar=no,toolbar=no,location=no,status=no");
         setOpen(false);
         if (mode === "docked") onModeChange?.("float");
+    }
+
+    function handleClearClick() {
+        if (chat.confirmClear) {
+            if (confirmTimeoutRef.current) clearTimeout(confirmTimeoutRef.current);
+            void chat.clearHistory();
+        } else {
+            chat.setConfirmClear(true);
+            if (confirmTimeoutRef.current) clearTimeout(confirmTimeoutRef.current);
+            confirmTimeoutRef.current = setTimeout(() => chat.setConfirmClear(false), 2500);
+        }
     }
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -158,7 +190,13 @@ export function AiAssistantPanel({
 
                     {/* Messages */}
                     <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3 min-h-0">
-                        {chat.messages.length === 0 && (
+                        {chat.historyLoading ? (
+                            <div className="flex flex-col gap-3 px-1 py-2 w-full">
+                                <div className="self-end h-7 rounded-xl bg-bridge-200 dark:bg-bridge-700 animate-pulse rounded-br-sm" style={{ width: "65%" }} />
+                                <div className="self-start h-10 rounded-xl bg-bridge-200 dark:bg-bridge-700 animate-pulse rounded-bl-sm" style={{ width: "78%" }} />
+                                <div className="self-end h-7 rounded-xl bg-bridge-200 dark:bg-bridge-700 animate-pulse rounded-br-sm" style={{ width: "52%" }} />
+                            </div>
+                        ) : chat.messages.length === 0 ? (
                             <div className="flex flex-col items-center justify-center gap-2 text-center py-8 flex-1">
                                 <div className="w-8 h-8 rounded-xl bg-brand-primary/10 flex items-center justify-center">
                                     <Sparkles className="w-4 h-4 text-brand-primary" />
@@ -167,19 +205,26 @@ export function AiAssistantPanel({
                                     Décrivez ce que vous souhaitez créer ou modifier dans le cours.
                                 </p>
                             </div>
-                        )}
+                        ) : null}
                         {chat.messages.map((msg, i) => (
-                            <div key={i} className={cn("flex flex-col", msg.role === "user" ? "items-end" : "items-start")}>
+                            <div key={i} className={cn("flex flex-col group", msg.role === "user" ? "items-end" : "items-start")}>
                                 {msg.role === "assistant" && msg.thinking && (
-                                    <details className="mb-1 group max-w-[82%]">
+                                    <details className="mb-1 max-w-[82%]">
                                         <summary className="text-[10px] text-bridge-400 dark:text-bridge-500 cursor-pointer select-none list-none flex items-center gap-1 hover:text-bridge-500 dark:hover:text-bridge-400 transition-colors">
-                                            <span className="inline-block transition-transform duration-150 group-open:rotate-90">▶</span>
+                                            <span className="inline-block transition-transform duration-150 [details[open]_&]:rotate-90">▶</span>
                                             Réflexion
                                         </summary>
                                         <div className="mt-1 pl-2.5 border-l-2 border-bridge-300 dark:border-bridge-600 text-[10px] leading-relaxed text-bridge-500 dark:text-bridge-400 italic whitespace-pre-wrap max-h-48 overflow-y-auto">
                                             {msg.thinking}
                                         </div>
                                     </details>
+                                )}
+                                {msg.role === "assistant" && msg.toolActions && msg.toolActions.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 mb-1.5 max-w-[82%]">
+                                        {msg.toolActions.map((action, ai) => (
+                                            <ToolActionPill key={ai} name={action.name} count={action.count} />
+                                        ))}
+                                    </div>
                                 )}
                                 <div className={cn(
                                     "max-w-[82%] rounded-xl px-3 py-2 text-xs leading-relaxed whitespace-pre-wrap",
@@ -189,14 +234,32 @@ export function AiAssistantPanel({
                                 )}>
                                     {msg.content}
                                 </div>
+                                <div className={cn("flex items-center gap-1.5 mt-0.5", msg.role === "user" ? "flex-row-reverse" : "flex-row")}>
+                                    <span className="text-[10px] text-bridge-400 dark:text-bridge-500 font-mono tabular-nums">
+                                        {formatTime(msg.timestamp)}
+                                    </span>
+                                    <button
+                                        onClick={() => void handleCopy(msg.content, i)}
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 cursor-pointer text-bridge-400 dark:text-bridge-500 hover:text-bridge-600 dark:hover:text-bridge-300"
+                                        aria-label="Copier le message"
+                                    >
+                                        {copiedIdx === i
+                                            ? <Check className="w-3 h-3 text-emerald-500" />
+                                            : <Copy className="w-3 h-3" />
+                                        }
+                                    </button>
+                                </div>
                             </div>
                         ))}
                         {chat.loading && (
                             <div className="flex justify-start">
-                                <div className="bg-bridge-100 dark:bg-bridge-800 border border-bridge-400/20 dark:border-bridge-500/25 rounded-xl rounded-bl-sm px-3 py-2.5 flex items-center gap-1">
+                                <div className="bg-bridge-100 dark:bg-bridge-800 border border-bridge-400/20 dark:border-bridge-500/25 rounded-xl rounded-bl-sm px-3 py-2.5 flex items-center gap-1.5">
                                     <span className="w-1.5 h-1.5 bg-bridge-400 dark:bg-bridge-500 rounded-full animate-bounce [animation-delay:0ms]" />
                                     <span className="w-1.5 h-1.5 bg-bridge-400 dark:bg-bridge-500 rounded-full animate-bounce [animation-delay:150ms]" />
                                     <span className="w-1.5 h-1.5 bg-bridge-400 dark:bg-bridge-500 rounded-full animate-bounce [animation-delay:300ms]" />
+                                    {elapsedSecs > 0 && (
+                                        <span className="text-[10px] text-bridge-400 dark:text-bridge-500 font-mono tabular-nums ml-0.5">{elapsedSecs}s</span>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -217,7 +280,7 @@ export function AiAssistantPanel({
                         <Button
                             size="icon"
                             onClick={() => void chat.handleSend()}
-                            disabled={chat.loading || !chat.input.trim() || !chat.selectedModel}
+                            disabled={chat.loading || chat.historyLoading || !chat.input.trim() || !chat.selectedModel}
                             aria-label="Envoyer"
                             className="h-8 w-8 flex-shrink-0 bg-brand-primary hover:bg-brand-accent-dark text-brand-light disabled:opacity-40 mb-px cursor-pointer"
                         >
@@ -242,6 +305,21 @@ export function AiAssistantPanel({
                         Assistant IA local
                     </span>
                     <OllamaIndicator status={chat.status} version={chat.ollamaVersion} />
+                    {chat.messages.length > 0 && !chat.historyLoading && (
+                        <button
+                            aria-label={chat.confirmClear ? "Confirmer la suppression" : "Vider la conversation"}
+                            title={chat.confirmClear ? "Cliquez pour confirmer" : "Vider la conversation"}
+                            onClick={handleClearClick}
+                            className={cn(
+                                "flex-shrink-0 transition-colors duration-200 cursor-pointer",
+                                chat.confirmClear
+                                    ? "text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300"
+                                    : "text-bridge-500 dark:text-bridge-400 hover:text-bridge-700 dark:hover:text-bridge-200",
+                            )}
+                        >
+                            <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                    )}
                     <button
                         aria-label="Ouvrir dans une fenêtre séparée"
                         onClick={handlePopOut}
@@ -290,6 +368,21 @@ export function AiAssistantPanel({
                             Assistant IA local
                         </span>
                         <OllamaIndicator status={chat.status} version={chat.ollamaVersion} />
+                        {chat.messages.length > 0 && !chat.historyLoading && (
+                            <button
+                                aria-label={chat.confirmClear ? "Confirmer la suppression" : "Vider la conversation"}
+                                title={chat.confirmClear ? "Cliquez pour confirmer" : "Vider la conversation"}
+                                onClick={handleClearClick}
+                                className={cn(
+                                    "flex-shrink-0 transition-colors duration-200 cursor-pointer",
+                                    chat.confirmClear
+                                        ? "text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300"
+                                        : "text-bridge-500 dark:text-bridge-400 hover:text-bridge-700 dark:hover:text-bridge-200",
+                                )}
+                            >
+                                <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                        )}
                         <button
                             aria-label="Ancrer le panel"
                             onClick={() => { onModeChange?.("docked"); setOpen(false); }}
@@ -319,6 +412,29 @@ export function AiAssistantPanel({
                 </div>
             )}
         </>
+    );
+}
+
+function formatTime(date: Date): string {
+    return date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+}
+
+type ToolPillConfig = { bg: string; text: string; icon: React.ReactNode; label: string };
+
+const TOOL_PILL: Record<string, ToolPillConfig> = {
+    insert_block:    { bg: "bg-emerald-100 dark:bg-emerald-900/30", text: "text-emerald-700 dark:text-emerald-300", icon: <Plus className="w-2.5 h-2.5" />, label: "Inséré" },
+    edit_block:      { bg: "bg-amber-100 dark:bg-amber-900/30",    text: "text-amber-700 dark:text-amber-300",    icon: <Pencil className="w-2.5 h-2.5" />,  label: "Modifié" },
+    delete_block:    { bg: "bg-red-100 dark:bg-red-900/30",        text: "text-red-700 dark:text-red-300",        icon: <Trash2 className="w-2.5 h-2.5" />,  label: "Supprimé" },
+    delete_all_blocks: { bg: "bg-red-100 dark:bg-red-900/30",      text: "text-red-700 dark:text-red-300",        icon: <Trash2 className="w-2.5 h-2.5" />,  label: "Tout effacé" },
+};
+
+function ToolActionPill({ name, count }: { name: string; count: number }) {
+    const cfg = TOOL_PILL[name] ?? { bg: "bg-bridge-100 dark:bg-bridge-800", text: "text-bridge-600 dark:text-bridge-400", icon: null, label: name };
+    return (
+        <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium", cfg.bg, cfg.text)}>
+            {cfg.icon}
+            {cfg.label}{count > 1 ? ` ×${count}` : ""}
+        </span>
     );
 }
 
