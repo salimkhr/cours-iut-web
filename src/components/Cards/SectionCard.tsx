@@ -1,18 +1,91 @@
 'use client';
 
-import {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import Link from "next/link";
 import {motion, useReducedMotion} from 'framer-motion';
-import {BookOpen, Clock, FolderGit, Lock, Unlock} from "lucide-react";
+import {Lock, Unlock} from "lucide-react";
+import {ClockIcon} from "@/components/icons/clock";
 
 import Section from "@/types/Section";
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
-import {CONTENT_ICON, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
-import { getContentTypes } from "@/types/CourseContent";
+import {CONTENT_LABELS, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
+import {getContentTypes} from "@/types/CourseContent";
 import {Button} from "@/components/ui/button";
 import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
 import updateSectionState from "@/hook/admin/updateSectionState";
+
+import {BookTextIcon} from "@/components/icons/book-text";
+import {TerminalIcon} from "@/components/icons/terminal";
+import {LayersIcon} from "@/components/icons/layers";
+import {RocketIcon} from "@/components/icons/rocket";
+import {GraduationCapIcon} from "@/components/icons/graduation-cap";
+import {TelescopeIcon} from "@/components/icons/telescope";
+import type {SectionIconHandle} from "@/components/icons/section-icons";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnimatedIcon = React.ComponentType<any>;
+
+const ANIMATED_CONTENT_ICON: Record<ContentKey, AnimatedIcon> = {
+    cours: BookTextIcon,
+    TP: TerminalIcon,
+    slide: LayersIcon,
+    projet: RocketIcon,
+    examen: GraduationCapIcon,
+};
+
+interface AnimatedActionButtonProps {
+    IconComp: AnimatedIcon;
+    label: string;
+    disabled: boolean;
+    href: string;
+    btnClassName: string;
+    iconClassName: string;
+    prefersReducedMotion: boolean | null;
+    external?: boolean;
+    dashed?: boolean;
+}
+
+function AnimatedActionButton({
+    IconComp,
+    label,
+    disabled,
+    href,
+    btnClassName,
+    iconClassName,
+    prefersReducedMotion,
+    external,
+}: AnimatedActionButtonProps) {
+    const iconRef = useRef<SectionIconHandle>(null);
+
+    const inner = (
+        <>
+            <IconComp ref={iconRef} size={16} className={iconClassName}/>
+            <span className="hidden md:inline">{label}</span>
+        </>
+    );
+
+    return (
+        <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className={btnClassName}
+            onMouseEnter={() => {
+                if (!prefersReducedMotion && !disabled) iconRef.current?.startAnimation();
+            }}
+            onMouseLeave={() => iconRef.current?.stopAnimation()}
+        >
+            {disabled ? (
+                <span aria-disabled="true">{inner}</span>
+            ) : external ? (
+                <Link href={href} target="_blank" rel="noopener noreferrer">{inner}</Link>
+            ) : (
+                <Link href={href}>{inner}</Link>
+            )}
+        </Button>
+    );
+}
 
 interface SectionCardProps {
     section: Section;
@@ -34,6 +107,16 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
     const sortedContents = getContentTypes(section.contents).sort(
         (a, b) => CONTENT_ORDER.indexOf(a as ContentKey) - CONTENT_ORDER.indexOf(b as ContentKey)
     );
+
+    const btnBase = cn(
+        "group/btn flex-1 min-w-[88px] min-h-[44px] rounded-lg",
+        "text-xs font-semibold tracking-wide uppercase",
+        "border-2 border-(--module-color) text-brand-dark dark:text-bridge-50",
+        "bg-transparent shadow-none",
+        "hover:bg-(--module-color) hover:text-white hover:shadow-md",
+        "transition-[color,border-color,background-color,box-shadow] duration-300",
+    );
+    const iconBase = "w-4 h-4 shrink-0 text-(--module-color) group-hover/btn:text-white transition-colors duration-300";
 
     async function handleToggleLock() {
         if (pending) return;
@@ -102,7 +185,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                     </h3>
                     <div className="flex items-center gap-2 shrink-0">
                         <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark dark:text-bridge-200/70 whitespace-nowrap">
-                            <Clock className="w-3.5 h-3.5"/>
+                            <ClockIcon size={14} className="shrink-0"/>
                             {section.totalDuration}
                             <span className="hidden sm:inline">&nbsp;séance{section.totalDuration > 1 ? 's' : ''}</span>
                         </span>
@@ -169,79 +252,38 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                 {/* Actions */}
                 <div className="flex flex-wrap gap-2.5 pt-3 mt-auto border-t border-bridge-700/20 dark:border-bridge-500/20 pointer-events-auto">
                     {sortedContents.map((item) => {
-                        const Icon = CONTENT_ICON[item as ContentKey] ?? BookOpen;
-                        const disabled = isLocked;
-                        const buttonClassName = cn(
-                            "group/btn flex-1 min-w-[88px] min-h-[44px] rounded-lg",
-                            "text-xs font-semibold tracking-wide uppercase",
-                            "border-2 border-(--module-color) text-brand-dark dark:text-bridge-50",
-                            "bg-transparent shadow-none",
-                            "hover:bg-(--module-color) hover:text-white hover:shadow-md hover:border-(--module-color)",
-                            "transition-[color,border-color,background-color,box-shadow] duration-300",
-                            disabled && "opacity-50 pointer-events-none cursor-not-allowed"
-                        );
-                        const iconClassName = "w-4 h-4 shrink-0 text-(--module-color) group-hover/btn:text-white transition-colors duration-300";
-                        const label = item.charAt(0).toUpperCase() + item.slice(1);
-
+                        const key = item as ContentKey;
                         return (
-                            <Button
+                            <AnimatedActionButton
                                 key={item}
-                                asChild
-                                variant="outline"
-                                size="sm"
-                                className={buttonClassName}
-                            >
-                                {disabled ? (
-                                    <span aria-disabled="true">
-                                        <Icon className={iconClassName}/>
-                                        <span className="hidden md:inline">{label}</span>
-                                    </span>
-                                ) : (
-                                    <Link href={`/${modulePath}/${section.path}/${item}`}>
-                                        <Icon className={iconClassName}/>
-                                        <span className="hidden md:inline">{label}</span>
-                                    </Link>
-                                )}
-                            </Button>
+                                IconComp={ANIMATED_CONTENT_ICON[key]}
+                                label={CONTENT_LABELS[key]}
+                                disabled={isLocked}
+                                href={`/${modulePath}/${section.path}/${item}`}
+                                btnClassName={cn(btnBase, isLocked && "opacity-50 pointer-events-none cursor-not-allowed")}
+                                iconClassName={iconBase}
+                                prefersReducedMotion={prefersReducedMotion}
+                            />
                         );
                     })}
 
                     {section.hasCorrection && (() => {
                         const correctionDisabled = !isAdmin && !section.correctionIsAvailable;
-                        const correctionClassName = cn(
-                            "group/btn flex-1 min-w-[88px] min-h-[44px] rounded-lg",
-                            "text-xs font-semibold tracking-wide uppercase",
-                            "border-2 border-dashed border-(--module-color) text-brand-dark dark:text-bridge-50",
-                            "bg-transparent shadow-none",
-                            "hover:border-solid hover:bg-(--module-color) hover:text-white hover:shadow-md hover:border-(--module-color)",
-                            "transition-[color,border-color,background-color,box-shadow] duration-300",
-                            correctionDisabled && "opacity-50 pointer-events-none cursor-not-allowed"
-                        );
-                        const correctionIconClass = "w-4 h-4 shrink-0 text-(--module-color) group-hover/btn:text-white transition-colors duration-300";
-
                         return (
-                            <Button
-                                asChild
-                                variant="outline"
-                                size="sm"
-                                className={correctionClassName}
-                            >
-                                {correctionDisabled ? (
-                                    <span aria-disabled="true">
-                                        <FolderGit className={correctionIconClass}/>
-                                        <span className="hidden md:inline">Correction</span>
-                                    </span>
-                                ) : (
-                                    <Link
-                                        href={`${process.env.NEXT_PUBLIC_GIT_URL}/${modulePath}/${section.path}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <FolderGit className={correctionIconClass}/>
-                                        <span className="hidden md:inline">Correction</span>
-                                    </Link>
+                            <AnimatedActionButton
+                                IconComp={TelescopeIcon}
+                                label="Correction"
+                                disabled={correctionDisabled}
+                                href={`${process.env.NEXT_PUBLIC_GIT_URL}/${modulePath}/${section.path}`}
+                                btnClassName={cn(
+                                    btnBase,
+                                    "border-dashed hover:border-solid",
+                                    correctionDisabled && "opacity-50 pointer-events-none cursor-not-allowed"
                                 )}
-                            </Button>
+                                iconClassName={iconBase}
+                                prefersReducedMotion={prefersReducedMotion}
+                                external
+                            />
                         );
                     })()}
                 </div>

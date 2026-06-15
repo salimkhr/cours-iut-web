@@ -1,6 +1,6 @@
 import {ReactNode} from "react"
 import BaseCard from "@/components/Cards/BaseCard";
-import {BookOpen} from "lucide-react";
+import {BookTextIcon} from "@/components/icons/book-text";
 
 type CourseReminderProps = {
     title?: string
@@ -15,7 +15,7 @@ export default function CourseReminder({
 
     const header = (
             <div className="flex gap-2">
-                <BookOpen className="text-white h-6 w-6" />
+                <BookTextIcon size={24} className="text-white" />
                 <span className="text-sm text-white font-mono">{title}</span>
             </div>
     );

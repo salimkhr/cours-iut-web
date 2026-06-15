@@ -1,7 +1,17 @@
 // src/lib/blockTreeUtils.ts
 // Helpers purs et immuables sur l'arbre de blocs. Les nœuds non touchés
 // par une opération conservent leur référence (perf re-render React).
+import { v4 as uuidv4 } from "uuid";
 import type { Block } from "@/types/CourseContent";
+
+export function cloneBlockDeep(block: Block): Block {
+    return {
+        id: uuidv4(),
+        type: block.type,
+        props: { ...block.props },
+        ...(block.children ? { children: block.children.map(cloneBlockDeep) } : {}),
+    };
+}
 
 export function findBlock(blocks: Block[], id: string): Block | undefined {
     for (const block of blocks) {
@@ -115,6 +125,15 @@ export function updateBlockChildren(
     children: Block[]
 ): Block[] {
     return mapChildrenOf(blocks, id, () => children);
+}
+
+export function findAllIds(blocks: Block[]): string[] {
+    const ids: string[] = [];
+    for (const block of blocks) {
+        ids.push(block.id);
+        if (block.children) ids.push(...findAllIds(block.children));
+    }
+    return ids;
 }
 
 export function moveBlock(

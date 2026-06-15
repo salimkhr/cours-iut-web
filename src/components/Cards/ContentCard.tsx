@@ -1,12 +1,50 @@
 'use client';
 
+import React, {useRef} from "react";
 import Link from "next/link";
 import {motion, useReducedMotion} from 'framer-motion';
-import {ArrowRight, BookOpen, CodeXml, FolderCode, GraduationCap, Lock, Presentation} from "lucide-react";
+import {ArrowRight, Lock} from "lucide-react";
 import Module from "@/types/Module";
 import Section from "@/types/Section";
 import {cn} from "@/lib/utils";
 import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
+import {BookTextIcon} from "@/components/icons/book-text";
+import {TerminalIcon} from "@/components/icons/terminal";
+import {LayersIcon} from "@/components/icons/layers";
+import {RocketIcon} from "@/components/icons/rocket";
+import {GraduationCapIcon} from "@/components/icons/graduation-cap";
+import type {SectionIconHandle} from "@/components/icons/section-icons";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnimatedIcon = React.ComponentType<any>;
+
+const CONTENT_CONFIG: Record<string, {label: string; description: string; IconComp: AnimatedIcon}> = {
+    cours: {
+        label: 'Cours',
+        description: 'Notions et concepts fondamentaux.',
+        IconComp: BookTextIcon,
+    },
+    TP: {
+        label: 'TP',
+        description: 'Mise en pratique guidée, pas à pas.',
+        IconComp: TerminalIcon,
+    },
+    slide: {
+        label: 'Slides',
+        description: 'Présentation visuelle, navigation au clavier.',
+        IconComp: LayersIcon,
+    },
+    projet: {
+        label: 'Projet',
+        description: 'Projet d\'application des acquis.',
+        IconComp: RocketIcon,
+    },
+    examen: {
+        label: 'Examen',
+        description: 'Évaluation des compétences acquises.',
+        IconComp: GraduationCapIcon,
+    },
+};
 
 interface ContentCardProps {
     content: string;
@@ -14,41 +52,14 @@ interface ContentCardProps {
     currentModule: Module;
 }
 
-const CONTENT_CONFIG: Record<string, {label: string; description: string; Icon: React.ComponentType<{className?: string}>;}> = {
-    cours: {
-        label: 'Cours',
-        description: 'Notions et concepts fondamentaux.',
-        Icon: BookOpen,
-    },
-    TP: {
-        label: 'TP',
-        description: 'Mise en pratique guidée, pas à pas.',
-        Icon: CodeXml,
-    },
-    slide: {
-        label: 'Slides',
-        description: 'Présentation visuelle, navigation au clavier.',
-        Icon: Presentation,
-    },
-    projet: {
-        label: 'Projet',
-        description: 'Projet d\'application des acquis.',
-        Icon: FolderCode,
-    },
-    examen: {
-        label: 'Examen',
-        description: 'Évaluation des compétences acquises.',
-        Icon: GraduationCap,
-    },
-};
-
 export default function ContentCard({content, section, currentModule}: ContentCardProps) {
     const config = CONTENT_CONFIG[content] ?? {
         label: content,
         description: '',
-        Icon: BookOpen,
+        IconComp: BookTextIcon,
     };
-    const {label, description, Icon} = config;
+    const {label, description, IconComp} = config;
+    const iconRef = useRef<SectionIconHandle>(null);
 
     const isLocked = !section.isAvailable;
     const href = isLocked ? '#' : `/${currentModule.path}/${section.path}/${content}`;
@@ -69,6 +80,10 @@ export default function ContentCard({content, section, currentModule}: ContentCa
             )}
             whileHover={!isLocked && !prefersReducedMotion ? {y: -6} : {}}
             transition={{duration: 0.3, ease: "easeOut"}}
+            onMouseEnter={() => {
+                if (!isLocked && !prefersReducedMotion) iconRef.current?.startAnimation();
+            }}
+            onMouseLeave={() => iconRef.current?.stopAnimation()}
         >
             <CardBridgeBackground/>
 
@@ -89,20 +104,16 @@ export default function ContentCard({content, section, currentModule}: ContentCa
                 className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-2xl bg-linear-to-r from-transparent via-bridge-100/70 to-transparent dark:via-bridge-500/30 z-10"
             />
 
-            {/* CONTENU — z-20 > overlay (z-10), pointer-events-none ;
-                la CTA réactive auto. */}
             <div className="relative z-20 flex flex-col gap-5 h-full pointer-events-none">
 
-                {/* Header: icon + title (same line) + lock badge */}
+                {/* Header: icon + title + lock badge */}
                 <header className="flex items-center gap-3">
-                    <div
-                        className={cn(
-                            "flex items-center justify-center w-12 h-12 rounded-xl shrink-0 text-white shadow-sm",
-                            "transition-transform duration-300 ease-out group-hover:scale-105 group-hover:rotate-[-3deg]",
-                            `bg-${modulePath}`
-                        )}
-                    >
-                        <Icon className="w-6 h-6"/>
+                    <div className={cn(
+                        "flex items-center justify-center w-12 h-12 rounded-xl shrink-0 text-white shadow-sm",
+                        "transition-transform duration-300 ease-out group-hover:scale-105 group-hover:rotate-[-3deg]",
+                        `bg-${modulePath}`
+                    )}>
+                        <IconComp ref={iconRef} size={24} className="text-white"/>
                     </div>
                     <h3 className={cn(
                         "text-2xl font-bold tracking-tight leading-tight flex-1 min-w-0",

@@ -10,12 +10,16 @@
     "cssVariables": true,
     "prefix": ""
   },
+  "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",
     "ui": "@/components/ui",
     "lib": "@/lib",
-    "hooks": "@/hooks"
+    "hooks": "@/hooks",
+    "icons": "@/components/icons"
   },
-  "iconLibrary": "lucide"
+  "registries": {
+    "@lucide-animated": "https://lucide-animated.com/r/{name}.json"
+  }
 }

@@ -2,8 +2,12 @@ import { create } from "zustand";
 import type { Block } from "@/types/CourseContent";
 import {
     findBlock,
+    findAllIds,
+    findParent,
+    cloneBlockDeep,
     insertBlock as insertInTree,
     removeBlock,
+    moveBlock as moveBlockInTree,
     updateBlockProps,
     updateBlockChildren,
 } from "@/lib/blockTreeUtils";
@@ -12,13 +16,23 @@ const MAX_HISTORY = 50;
 
 interface BuilderStore {
     blocks: Block[];
+    moduleSlug: string;
     selectedId: string | null;
     isDirty: boolean;
+    blockErrors: Record<string, string>;
+    collapsedIds: Record<string, true>;
     _history: Block[][];
     _future: Block[][];
 
-    setBlocks: (blocks: Block[]) => void;
+    setBlocks: (blocks: Block[], moduleSlug?: string) => void;
     selectBlock: (id: string | null) => void;
+    setBlockErrors: (errors: Record<string, string>) => void;
+    toggleCollapse: (id: string) => void;
+    collapseAll: () => void;
+    expandAll: () => void;
+    duplicateBlock: (id: string) => void;
+    moveBlockUp: (id: string) => void;
+    moveBlockDown: (id: string) => void;
     updateBlock: (id: string, props: Record<string, unknown>) => void;
     updateChildren: (id: string, children: Block[]) => void;
     insertBlock: (block: Block, parentId: string | null, index?: number) => void;
@@ -37,15 +51,77 @@ function pushHistory(
 
 export const useBuilderStore = create<BuilderStore>()((set) => ({
     blocks: [],
+    moduleSlug: "",
     selectedId: null,
     isDirty: false,
+    blockErrors: {},
+    collapsedIds: {},
     _history: [],
     _future: [],
 
-    setBlocks: (blocks) =>
-        set({ blocks, isDirty: false, _history: [], _future: [] }),
+    setBlocks: (blocks, moduleSlug) =>
+        set((s) => ({ blocks, moduleSlug: moduleSlug ?? s.moduleSlug, isDirty: false, _history: [], _future: [] })),
 
     selectBlock: (id) => set({ selectedId: id }),
+
+    setBlockErrors: (errors) => set({ blockErrors: errors }),
+
+    toggleCollapse: (id) =>
+        set((s) => {
+            const next = { ...s.collapsedIds };
+            if (next[id]) delete next[id];
+            else next[id] = true;
+            return { collapsedIds: next };
+        }),
+
+    collapseAll: () =>
+        set((s) => {
+            const ids = findAllIds(s.blocks);
+            return { collapsedIds: Object.fromEntries(ids.map((id) => [id, true as const])) };
+        }),
+
+    expandAll: () => set({ collapsedIds: {} }),
+
+    duplicateBlock: (id) =>
+        set((s) => {
+            const block = findBlock(s.blocks, id);
+            const loc = findParent(s.blocks, id);
+            if (!block || !loc) return s;
+            const cloned = cloneBlockDeep(block);
+            return {
+                blocks: insertInTree(s.blocks, cloned, loc.parent?.id ?? null, loc.index + 1),
+                selectedId: cloned.id,
+                _history: pushHistory(s.blocks, s._history),
+                _future: [],
+                isDirty: true,
+            };
+        }),
+
+    moveBlockUp: (id) =>
+        set((s) => {
+            const loc = findParent(s.blocks, id);
+            if (!loc || loc.index === 0) return s;
+            return {
+                blocks: moveBlockInTree(s.blocks, id, loc.parent?.id ?? null, loc.index - 1),
+                _history: pushHistory(s.blocks, s._history),
+                _future: [],
+                isDirty: true,
+            };
+        }),
+
+    moveBlockDown: (id) =>
+        set((s) => {
+            const loc = findParent(s.blocks, id);
+            if (!loc) return s;
+            const siblingCount = loc.parent ? (loc.parent.children?.length ?? 0) : s.blocks.length;
+            if (loc.index >= siblingCount - 1) return s;
+            return {
+                blocks: moveBlockInTree(s.blocks, id, loc.parent?.id ?? null, loc.index + 1),
+                _history: pushHistory(s.blocks, s._history),
+                _future: [],
+                isDirty: true,
+            };
+        }),
 
     updateBlock: (id, props) =>
         set((state) => ({
@@ -113,5 +189,5 @@ export const useBuilderStore = create<BuilderStore>()((set) => ({
             };
         }),
 
-    markSaved: () => set({ isDirty: false }),
+    markSaved: () => set({ isDirty: false, blockErrors: {} }),
 }));

@@ -1,8 +1,8 @@
-import {Clock, Hash, Layers, Target} from "lucide-react";
+import {TelescopeIcon} from "@/components/icons/telescope";
 import {getServerSession} from "@/lib/auth";
 
 import HeroSection from "@/components/page/HeroSection";
-import Stat from "@/components/page/Stat";
+import SectionStats from "@/components/page/SectionStats";
 import ContentCard from "@/components/Cards/ContentCard";
 import SectionNavCard from "@/components/Cards/SectionNavCard";
 import PageFooter from "@/components/page/PageFooter";
@@ -78,45 +78,12 @@ export default async function SectionPage({params}: SectionPageProps) {
 
                     {/* STATS — centré, taille fixe */}
                     <div className="relative max-w-2xl mx-auto">
-                        <div
-                            className={cn(
-                                "grid grid-cols-3 gap-2 sm:gap-4 rounded-2xl",
-                                // Même fond que les cards (sans le pont) :
-                                // couleurs pleines #f7ebd9 / #13110d.
-                                "bg-[#f7ebd9] dark:bg-[#13110d]",
-                                "border border-bridge-500/45 dark:border-bridge-500/35",
-                                "shadow-[0_8px_28px_-12px_rgba(147,97,58,0.45)]",
-                                "dark:shadow-[0_8px_28px_-12px_rgba(0,0,0,0.6)]",
-                                "p-5 sm:p-6 lg:p-7",
-                                "relative overflow-hidden"
-                            )}
-                        >
-                            <div
-                                aria-hidden="true"
-                                className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-2xl bg-linear-to-r from-transparent via-bridge-100/70 to-transparent dark:via-bridge-500/30"
-                            />
-
-                            <Stat
-                                Icon={Clock}
-                                label="Séances"
-                                value={currentSection.totalDuration}
-                                modulePath={currentModule.path}
-                            />
-                            <Stat
-                                Icon={Layers}
-                                label="Contenus"
-                                value={currentSection.contents.length}
-                                modulePath={currentModule.path}
-                                withDivider
-                            />
-                            <Stat
-                                Icon={Hash}
-                                label="Position"
-                                value={`${currentIndex >= 0 ? currentIndex + 1 : "?"} / ${orderedSections.length}`}
-                                modulePath={currentModule.path}
-                                withDivider
-                            />
-                        </div>
+                        <SectionStats
+                            totalDuration={currentSection.totalDuration}
+                            contentsCount={currentSection.contents.length}
+                            position={`${currentIndex >= 0 ? currentIndex + 1 : "?"} / ${orderedSections.length}`}
+                            modulePath={currentModule.path}
+                        />
                     </div>
 
                     {/* NAV — sous les stats sur mobile, latérale absolue sur desktop */}
@@ -162,7 +129,7 @@ export default async function SectionPage({params}: SectionPageProps) {
                         )}
                     >
                         <div className="flex items-center gap-2 mb-2">
-                            <Target className="w-4 h-4 text-brand-dark dark:text-bridge-100"/>
+                            <TelescopeIcon size={16} className="text-brand-dark dark:text-bridge-100"/>
                             <h2 className="text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-dark/70 dark:text-bridge-200/70">
                                 Objectifs du cours
                             </h2>

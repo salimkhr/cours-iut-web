@@ -13,7 +13,13 @@ import CodeWithPreviewCard, { CodePanel, PreviewPanel } from "@/components/Cards
 import DiagramCard from "@/components/Cards/DiagramCard";
 import { DownloadCodeButton } from "@/components/DownloadCodeButton";
 import { v4 as uuidv4 } from "uuid";
-import { Info, TriangleAlert, Lightbulb } from "lucide-react";
+import {
+    Info, TriangleAlert, Lightbulb,
+    AlignLeft, Layers, List as ListIcon, Dot,
+    LayoutPanelLeft, PanelLeft, MessageSquare, ChevronsUpDown,
+    Image, Table as TableIcon, Link, Code, Eye,
+    Share2, Download, Quote, Minus,
+} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import CourseReminder from "@/components/CourseReminder";
 import CoursePrerequisites from "@/components/CoursePrerequisites";
@@ -43,9 +49,13 @@ export interface BlockEditorProps {
     onChange: (props: Record<string, unknown>) => void;
 }
 
+export type BlockCategory = "Contenu" | "Structure" | "Listes" | "Code" | "Médias" | "Composants";
+
 export interface BlockDefinition {
     type: string;
     label: string;
+    category: BlockCategory;
+    icon?: React.ComponentType<{ className?: string }>;
     defaultProps: Record<string, unknown>;
     schema: z.ZodTypeAny;
     fields: FieldDef[];
@@ -67,6 +77,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "text",
         label: "Texte",
+        category: "Contenu",
+        icon: AlignLeft,
         defaultProps: { content: "" },
         schema: z.object({
             content: z.string().min(1),
@@ -88,20 +100,26 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "section",
         label: "Partie",
+        category: "Structure",
+        icon: Layers,
         defaultProps: { title: "" },
         schema: z.object({ title: z.string() }),
         fields: [
-            { key: "title", label: "Titre", type: "text", placeholder: "A — Introduction" },
+            { key: "title", label: "Titre", type: "text", placeholder: "Introduction" },
         ],
         container: containerRules["section"],
         initialChildren: () => [
             { id: uuidv4(), type: "text", props: { content: "" }, children: [] },
         ],
-        render: ({ title, children, depth }: BlockRenderProps) => {
+        render: ({ title, children, depth, sectionIndex }: BlockRenderProps) => {
             const level = Math.min(2 + (Number(depth) || 0), 4) as 2 | 3 | 4;
+            const idx = Number(sectionIndex ?? 0);
+            const prefix = Number(depth) === 0
+                ? String.fromCharCode(65 + idx) + " — "
+                : String(idx + 1) + ". ";
             return (
                 <section className="flex flex-col gap-6">
-                    <Heading level={level}>{String(title ?? "")}</Heading>
+                    <Heading level={level}>{prefix}{String(title ?? "")}</Heading>
                     {children}
                 </section>
             );
@@ -111,6 +129,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "list",
         label: "Liste",
+        category: "Listes",
+        icon: ListIcon,
         defaultProps: { ordered: false },
         schema: z.object({ ordered: z.boolean() }),
         fields: [
@@ -127,6 +147,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "list-item",
         label: "Élément de liste",
+        category: "Listes",
+        icon: Dot,
         defaultProps: { text: "" },
         schema: z.object({ text: z.string() }),
         fields: [
@@ -144,6 +166,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "columns",
         label: "Colonnes",
+        category: "Structure",
+        icon: LayoutPanelLeft,
         defaultProps: {},
         schema: z.object({}),
         fields: [],
@@ -159,6 +183,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "column",
         label: "Colonne",
+        category: "Structure",
+        icon: PanelLeft,
         defaultProps: { span: 6 },
         schema: z.object({ span: z.number() }),
         fields: [],
@@ -172,6 +198,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "callout",
         label: "Encadré",
+        category: "Composants",
+        icon: MessageSquare,
         defaultProps: { variant: "info", title: "" },
         schema: z.object({
             variant: z.enum(["info", "warning", "tip", "reminder"]),
@@ -218,6 +246,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "collapsible",
         label: "Bloc dépliable",
+        category: "Composants",
+        icon: ChevronsUpDown,
         defaultProps: { title: "À savoir pour ce cours" },
         schema: z.object({ title: z.string() }),
         fields: [
@@ -233,6 +263,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "image-card",
         label: "Image",
+        category: "Médias",
+        icon: Image,
         defaultProps: { src: "", title: "" },
         schema: z.object({
             src: z.string().min(1),
@@ -249,6 +281,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "table",
         label: "Tableau",
+        category: "Composants",
+        icon: TableIcon,
         noPropsPanel: true,
         defaultProps: { headers: ["En-tête 1", "En-tête 2"], rows: [["", ""]] },
         schema: z.object({
@@ -281,6 +315,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "section-card",
         label: "Lien de section",
+        category: "Composants",
+        icon: Link,
         defaultProps: { title: "", href: "", description: "" },
         schema: z.object({
             title: z.string().min(1),
@@ -312,6 +348,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "code",
         label: "Code",
+        category: "Code",
+        icon: Code,
         defaultProps: { language: "javascript", code: "", filename: "", showLineNumbers: true, collapsible: false },
         schema: z.object({
             language: z.string(),
@@ -344,6 +382,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "code-with-preview",
         label: "Code + aperçu",
+        category: "Code",
+        icon: Eye,
         defaultProps: { language: "html", code: "" },
         schema: z.object({
             language: z.string(),
@@ -371,6 +411,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "diagram",
         label: "Diagramme",
+        category: "Code",
+        icon: Share2,
         defaultProps: { header: "", chart: "" },
         schema: z.object({
             header: z.string().optional(),
@@ -387,6 +429,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "download-file",
         label: "Fichier à télécharger",
+        category: "Médias",
+        icon: Download,
         defaultProps: { language: "html", filename: "", code: "" },
         schema: z.object({
             language: z.string(),
@@ -410,6 +454,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "quote",
         label: "Citation",
+        category: "Contenu",
+        icon: Quote,
         defaultProps: { text: "", source: "" },
         schema: z.object({
             text: z.string(),
@@ -440,6 +486,8 @@ const blockDefinitions: BlockDefinition[] = [
     {
         type: "divider",
         label: "Séparateur",
+        category: "Contenu",
+        icon: Minus,
         defaultProps: {},
         schema: z.object({}),
         fields: [],

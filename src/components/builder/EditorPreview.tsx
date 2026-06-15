@@ -27,7 +27,7 @@ export const EditorPreview = forwardRef<EditorPreviewRef, EditorPreviewProps>(
         const previewUrl = `/${moduleSlug}/${sectionSlug}/${contentType}`;
 
         return (
-            <div className="flex flex-col h-full bg-white dark:bg-slate-950 border-l border-slate-300/40 dark:border-slate-600/30">
+            <div className="flex flex-col flex-1 min-h-0 bg-white dark:bg-slate-950 border-l border-slate-300/40 dark:border-slate-600/30">
                 <div className="flex items-center gap-2 px-3 py-1.5 border-b border-slate-300/30 dark:border-slate-600/20 bg-slate-50/80 dark:bg-slate-900/80">
                     <span className="text-[10px] uppercase tracking-widest font-semibold text-slate-400 dark:text-slate-500">
                         Aperçu

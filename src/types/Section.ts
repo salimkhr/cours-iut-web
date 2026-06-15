@@ -16,4 +16,5 @@ export default interface Section {
     correctionIsAvailable?: boolean;
     order: number;
     examenIsLock?: boolean;
+    icon?: string;
 }

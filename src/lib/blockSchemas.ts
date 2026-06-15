@@ -94,7 +94,7 @@ export interface ContainerRule {
 }
 
 export const containerRules: Record<string, ContainerRule> = {
-    "columns": { allowedChildren: ["column"], allowedParents: [null] },
+    "columns": { allowedChildren: ["column"], allowedParents: [null, "section", "callout", "collapsible"] },
     "column": { allowedChildren: "any", allowedParents: ["columns"] },
     "list": { allowedChildren: ["list-item"] },
     "list-item": { allowedChildren: "any", allowedParents: ["list"] },
