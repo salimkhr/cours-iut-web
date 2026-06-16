@@ -67,7 +67,10 @@ try {
         clientSecret: hashedSecret,
         name: "Claude.ai",
         // redirectUris is string[] in the schema
-        redirectUris: ["https://claude.ai/oauth/callback"],
+        // Valeur réelle observée lors du flow OAuth depuis Claude.ai (le
+        // formulaire de connecteur personnalisé) — différente de l'URL
+        // générique documentée par Anthropic.
+        redirectUris: ["https://claude.ai/api/mcp/auth_callback"],
         // Skip the consent page for Claude.ai (trusted first-party MCP client)
         skipConsent: true,
         disabled: false,
