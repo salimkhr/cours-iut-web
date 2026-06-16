@@ -193,6 +193,7 @@ export default function CodeCard({
 
     return (
         <div className="my-8">
+            <div hidden data-code-block data-code-lang={language}>{children}</div>
             <BaseCard
                 header={headerCard}
                 content={content}
