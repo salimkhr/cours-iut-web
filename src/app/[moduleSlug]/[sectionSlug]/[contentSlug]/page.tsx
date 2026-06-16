@@ -147,12 +147,13 @@ export default async function Content({params}: ContentPageProps) {
                         moduleSlug={moduleSlug}
                         sectionSlug={sectionSlug}
                     />
-                    {currentContent === 'cours' && !isSplit && (
+                    {(currentContent === 'cours' || currentContent === 'TP') && !isSplit && (
                         <>
                             <div className="h-4 w-px bg-border mx-0.5 shrink-0" />
                             <PromptModeButton
                                 modulePath={currentModule.path}
                                 sectionTitle={currentSection.title}
+                                contentType={currentContent as ContentKey}
                             />
                         </>
                     )}
