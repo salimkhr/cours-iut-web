@@ -26,3 +26,8 @@ export const CONTENT_ICON: Record<ContentKey, React.ComponentType<{className?: s
     projet: FolderCode,
     examen: GraduationCap,
 };
+
+export const CONTENT_COPY_PREFIX: Partial<Record<ContentKey, string>> = {
+    cours: `> **Contexte : Cours**\n> Explique les concepts, donne des exemples, vérifie la compréhension de l'étudiant.\n\n---\n\n`,
+    TP: `> **Contexte : TP — exercice pratique**\n> Tu es un professeur. Guide l'étudiant par des questions et stimule sa réflexion. Ne fournis jamais de solution directe ni de code complet.\n\n---\n\n`,
+};
