@@ -6,6 +6,8 @@ import ScrollRestore from "@/components/page/ScrollRestore";
 import PageFooter from "@/components/page/PageFooter";
 import ReadingProgress from "@/components/page/ReadingProgress";
 import ContentSidebarNav from "@/components/page/ContentSidebarNav";
+import CopyContextGuard from "@/components/page/CopyContextGuard";
+import PromptModeButton from "@/components/page/PromptModeButton";
 import ExamenWrapper from "@/components/ExamenWrapper";
 import TableOfContents from "@/components/TableOfContents";
 import EditContentFab from "@/components/admin/EditContentFab";
@@ -138,13 +140,22 @@ export default async function Content({params}: ContentPageProps) {
                 <ReadingProgress modulePath={currentModule.path}/>
             )}
             <div className="flex sticky top-(--navbar-h) z-[25] w-full justify-end">
-                <div className={cn("flex px-1 border-l border-b border-border rounded-bl-xl bg-transparent backdrop-blur-xs", isSplit ? "py-1" : "pt-1 pb-1")}>
+                <div className={cn("flex items-center px-1 border-l border-b border-border rounded-bl-xl bg-transparent backdrop-blur-xs", isSplit ? "py-1" : "pt-1 pb-1")}>
                     <ContentSidebarNav
                         contents={getContentTypes(currentSection.contents)}
                         currentContent={isSplit ? SPLIT_SLUG : currentContent!}
                         moduleSlug={moduleSlug}
                         sectionSlug={sectionSlug}
                     />
+                    {currentContent === 'cours' && !isSplit && (
+                        <>
+                            <div className="h-4 w-px bg-border mx-0.5 shrink-0" />
+                            <PromptModeButton
+                                modulePath={currentModule.path}
+                                sectionTitle={currentSection.title}
+                            />
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -175,13 +186,15 @@ export default async function Content({params}: ContentPageProps) {
                             `header-${currentModule.path}`
                         )}
                     >
-                        {currentContent === "examen" && currentSection.examenIsLock ? (
-                            <ExamenWrapper currentModule={currentModule}>
+                        <CopyContextGuard contentType={currentContent ?? ''}>
+                            {currentContent === "examen" && currentSection.examenIsLock ? (
+                                <ExamenWrapper currentModule={currentModule}>
+                                    <ComponentToRender/>
+                                </ExamenWrapper>
+                            ) : (
                                 <ComponentToRender/>
-                            </ExamenWrapper>
-                        ) : (
-                            <ComponentToRender/>
-                        )}
+                            )}
+                        </CopyContextGuard>
                     </main>
                     {(currentContent === 'cours' || currentContent === 'TP' || currentContent === 'examen') && (
                         <TableOfContents
