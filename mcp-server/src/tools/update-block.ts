@@ -12,7 +12,7 @@ export function registerUpdateBlock(server: McpServer): void {
             sectionSlug: z.string(),
             contentType: z.enum(["cours", "TP", "examen"]),
             blockId: z.string().describe("ID du bloc à mettre à jour"),
-            props: z.record(z.unknown()).describe("Props à mettre à jour (merge partiel)"),
+            props: z.record(z.string(), z.unknown()).describe("Props à mettre à jour (merge partiel)"),
         },
         async ({ moduleSlug, sectionSlug, contentType, blockId, props }) => {
             const key = { moduleSlug, sectionSlug, contentType };
