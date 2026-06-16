@@ -100,17 +100,20 @@ export default function PromptModeButton({ modulePath, sectionTitle }: PromptMod
             </Button>
 
             <Sheet open={open} onOpenChange={handleOpenChange}>
-                <SheetContent side="right" className="w-full sm:max-w-xl flex flex-col gap-0">
-                    <SheetHeader className="pb-4 border-b border-border">
+                <SheetContent
+                    side="right"
+                    className="w-full sm:max-w-2xl flex flex-col gap-0 bg-brand-light dark:bg-brand-dark text-brand-dark dark:text-brand-light"
+                >
+                    <SheetHeader className="px-4 pb-4 border-b border-bridge-300/40 dark:border-bridge-700/40">
                         <SheetTitle className="flex items-center gap-2 text-base">
                             <BotIcon size={16} />
                             Pour l&apos;IA — {sectionTitle}
                         </SheetTitle>
                     </SheetHeader>
 
-                    <div className="flex-1 overflow-y-auto min-h-0 py-4">
+                    <div className="flex-1 overflow-y-auto min-h-0 px-4 py-4">
                         {state === 'loading' && (
-                            <p className="text-sm text-muted-foreground animate-pulse">
+                            <p className="text-sm text-brand-dark/60 dark:text-bridge-100/60 animate-pulse">
                                 Génération du Markdown…
                             </p>
                         )}
@@ -121,7 +124,7 @@ export default function PromptModeButton({ modulePath, sectionTitle }: PromptMod
                         )}
                     </div>
 
-                    <SheetFooter className="pt-4 border-t border-border">
+                    <SheetFooter className="px-4 pt-4 border-t border-bridge-300/40 dark:border-bridge-700/40">
                         <Button
                             onClick={handleCopy}
                             disabled={state !== 'ready'}
