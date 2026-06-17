@@ -1,9 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { revalidateTag } from "next/cache";
-import { createHash } from "crypto";
+import { ObjectId } from "mongodb";
 import { z } from "zod";
 import { connectToDB } from "@/lib/mongodb";
+import { auth } from "@/lib/auth";
 import { getAllBlockDefinitions, getBlockDefinition, createBlockInstance } from "@/lib/blockRegistry";
 import { validateBlockTree } from "@/lib/validateBlockTree";
 import {
@@ -38,38 +39,33 @@ interface ModuleDoc {
 
 // ── Validation du Bearer token ────────────────────────────────────────────────
 
-/**
- * Hash an opaque access token the same way @better-auth/oauth-provider does:
- * SHA-256 → base64url (no padding).
- */
-function hashToken(token: string): string {
-    return createHash("sha256").update(token).digest("base64url");
-}
-
 async function validateToken(req: Request): Promise<{ id: string; role: string } | null> {
-    const auth = req.headers.get("Authorization");
-    if (!auth?.startsWith("Bearer ")) return null;
-    const token = auth.slice(7);
-    const hashedToken = hashToken(token);
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) return null;
 
-    const db = await connectToDB();
-    const now = new Date();
+    // Délègue la validation au endpoint /oauth2/userinfo de better-auth.
+    // Cela gère à la fois les JWT (vérifiés via JWKS) et les tokens opaques
+    // (lookup DB avec le bon hachage SHA-256), sans dupliquer la logique.
+    const { origin } = new URL(req.url);
+    try {
+        const res = await auth.handler(
+            new Request(`${origin}/api/auth/oauth2/userinfo`, {
+                headers: new Headers({ Authorization: authHeader }),
+            })
+        );
+        if (!res.ok) return null;
 
-    // Field names from @better-auth/oauth-provider schema:
-    //   token  (hashed, SHA-256 base64url)  — NOT "accessToken"
-    //   expiresAt                            — NOT "accessTokenExpiresAt"
-    const tokenDoc = await db.collection("oauthAccessToken").findOne({
-        token: hashedToken,
-        expiresAt: { $gt: now },
-    });
-    if (!tokenDoc) return null;
+        const body = await res.json() as { sub?: string };
+        if (!body.sub) return null;
 
-    // tokenDoc.userId is an ObjectId (le mongo-adapter sérialise les champs de
-    // référence en ObjectId à l'écriture). On requête directement par _id.
-    const user = await db.collection("user").findOne({ _id: tokenDoc.userId });
-    if (!user) return null;
+        const db = await connectToDB();
+        const user = await db.collection("user").findOne({ _id: new ObjectId(body.sub) });
+        if (!user) return null;
 
-    return { id: String(user._id), role: String(user.role ?? "user") };
+        return { id: body.sub, role: String(user.role ?? "user") };
+    } catch {
+        return null;
+    }
 }
 
 // ── Helpers Mongo partagés (lecture/écriture de l'arbre de blocs) ──────────────
@@ -428,9 +424,15 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
 async function handleMcp(req: Request): Promise<Response> {
     const user = await validateToken(req);
     if (!user) {
+        const { origin } = new URL(req.url);
         return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 401,
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                // RFC 9728 : indique au client MCP où trouver les métadonnées
+                // du serveur de ressources protégées (auth server, scopes…).
+                "WWW-Authenticate": `Bearer resource_metadata="${origin}/.well-known/oauth-protected-resource/api/mcp"`,
+            },
         });
     }
 

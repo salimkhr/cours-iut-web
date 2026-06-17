@@ -147,6 +147,14 @@ export const auth = betterAuth({
             //   et ajoute "none" dans token_endpoint_auth_methods_supported
             allowDynamicClientRegistration: true,
             allowUnauthenticatedClientRegistration: true,
+            // validAudiences : accepte /api/mcp comme audience dans le paramètre
+            // `resource` de la requête de token (RFC 8707). Sans ça, better-auth
+            // rejette la demande de token quand le client MCP envoie
+            // resource=https://host/api/mcp (découvert via /.well-known/oauth-protected-resource).
+            // BETTER_AUTH_URL est de la forme https://host/api/auth ; on en déduit l'origin.
+            ...(process.env.BETTER_AUTH_URL
+                ? { validAudiences: [`${new URL(process.env.BETTER_AUTH_URL).origin}/api/mcp`] }
+                : {}),
             silenceWarnings: {
                 oauthAuthServerConfig: true,
             },
