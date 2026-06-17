@@ -150,6 +150,13 @@ export const auth = betterAuth({
             silenceWarnings: {
                 oauthAuthServerConfig: true,
             },
+            // RFC 9728 + RFC 8707 : claude.ai envoie resource=<origin>/api/mcp dans
+            // la requête de token. better-auth valide ce paramètre contre validAudiences
+            // (défaut = [baseURL] = /api/auth → rejet). On ajoute /api/mcp explicitement.
+            // Nécessite BETTER_AUTH_URL=https://<domaine> dans le .env de staging/prod.
+            validAudiences: process.env.BETTER_AUTH_URL
+                ? [`${process.env.BETTER_AUTH_URL}/api/mcp`]
+                : undefined,
         }),
     ],
 });
