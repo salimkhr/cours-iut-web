@@ -1,11 +1,8 @@
 export const runtime = "nodejs";
 
-// RFC 9728 — OAuth Protected Resource Metadata
-// Indique à claude.ai que l'auth server est sur le même origin que le MCP server.
-// Sans cet endpoint, le client MCP (spec 2025-11-25) ne sait pas où chercher
-// le serveur OAuth et fait ses requêtes MCP sans token Bearer.
 export async function GET(req: Request): Promise<Response> {
     const { origin } = new URL(req.url);
+    console.log("[DISCOVERY] oauth-protected-resource (base) appelé depuis", req.headers.get("user-agent"));
     return Response.json(
         {
             resource: `${origin}/api/mcp`,

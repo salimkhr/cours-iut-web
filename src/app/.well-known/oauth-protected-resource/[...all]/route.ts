@@ -1,9 +1,8 @@
 export const runtime = "nodejs";
 
-// RFC 9728 — catch-all pour /.well-known/oauth-protected-resource/{path}
-// Ex : /.well-known/oauth-protected-resource/api/mcp (RFC 9728 §3)
 export async function GET(req: Request): Promise<Response> {
-    const { origin } = new URL(req.url);
+    const { origin, pathname } = new URL(req.url);
+    console.log("[DISCOVERY] oauth-protected-resource catch-all path:", pathname, "ua:", req.headers.get("user-agent"));
     return Response.json(
         {
             resource: `${origin}/api/mcp`,

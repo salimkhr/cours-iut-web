@@ -28,7 +28,10 @@ function rewriteToDiscoveryPath(req: Request): Request {
 }
 
 export async function GET(req: Request): Promise<Response> {
-    return betterAuthHandler(rewriteToDiscoveryPath(req));
+    console.log("[DISCOVERY] oauth-authorization-server appelé depuis", req.headers.get("user-agent"));
+    const res = await betterAuthHandler(rewriteToDiscoveryPath(req));
+    console.log("[DISCOVERY] oauth-authorization-server status:", res.status);
+    return res;
 }
 
 export async function HEAD(req: Request): Promise<Response> {

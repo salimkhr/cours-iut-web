@@ -440,11 +440,14 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
 async function handleMcp(req: Request): Promise<Response> {
     const user = await validateToken(req);
     if (!user) {
+        const { origin } = new URL(req.url);
+        // RFC 9728 §5 : resource_metadata aide claude.ai à trouver l'auth server
+        // sans avoir à construire l'URL depuis le path de la resource.
         return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 401,
             headers: {
                 "Content-Type": "application/json",
-                "WWW-Authenticate": `Bearer realm="cours-iut"`,
+                "WWW-Authenticate": `Bearer realm="cours-iut", resource_metadata="${origin}/.well-known/oauth-protected-resource"`,
             },
         });
     }
