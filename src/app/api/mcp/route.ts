@@ -424,14 +424,11 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
 async function handleMcp(req: Request): Promise<Response> {
     const user = await validateToken(req);
     if (!user) {
-        const { origin } = new URL(req.url);
         return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 401,
             headers: {
                 "Content-Type": "application/json",
-                // RFC 9728 : indique au client MCP où trouver les métadonnées
-                // du serveur de ressources protégées (auth server, scopes…).
-                "WWW-Authenticate": `Bearer resource_metadata="${origin}/.well-known/oauth-protected-resource/api/mcp"`,
+                "WWW-Authenticate": `Bearer realm="cours-iut"`,
             },
         });
     }
