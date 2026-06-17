@@ -5,6 +5,7 @@
 
 # dependencies
 /node_modules
+mcp-server/nod  e_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -35,6 +36,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+
+# mcp config (contient MONGODB_URI en clair)
+.mcp.json
 
 # vercel
 .vercel

@@ -8,7 +8,7 @@ export function registerInsertBlock(server) {
         sectionSlug: z.string(),
         contentType: z.enum(["cours", "TP", "examen"]),
         blockType: z.string().describe("Type du bloc (ex: text, code, section, list, image-card...)"),
-        props: z.record(z.unknown()).describe("Props initiales du bloc"),
+        props: z.record(z.string(), z.unknown()).describe("Props initiales du bloc"),
         parentBlockId: z.string().nullable().optional().describe("ID du parent. null = racine"),
         afterBlockId: z.string().nullable().optional().describe("Insérer après ce bloc. null = fin"),
     }, async ({ moduleSlug, sectionSlug, contentType, blockType, props, parentBlockId, afterBlockId }) => {
