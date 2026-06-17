@@ -16,15 +16,15 @@ function ConsentForm() {
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`/api/auth/oauth2/consent?${params.toString()}`, {
+            const res = await fetch("/api/auth/oauth2/consent", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ accept }),
+                body: JSON.stringify({ accept, oauth_query: params.toString() }),
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json() as { redirect?: boolean; url?: string };
-            if (data.url) {
-                window.location.href = data.url;
+            const data = await res.json() as { redirect_uri?: string };
+            if (data.redirect_uri) {
+                window.location.href = data.redirect_uri;
             } else {
                 setLoading(false);
             }
@@ -57,19 +57,21 @@ function ConsentForm() {
                         {error}
                     </p>
                 )}
-                <div className="flex gap-3 pt-2">
+                <div className="flex flex-col gap-3 pt-2">
                     <Button
                         onClick={() => handleConsent(true)}
                         disabled={loading}
-                        className="flex-1"
+                        size="lg"
+                        className="w-full h-auto rounded-lg bg-brand-accent-dark text-white hover:bg-brand-accent-dark hover:-translate-y-0.5 border-2 border-brand-accent-dark px-6 py-3 text-sm font-semibold tracking-wide shadow-[0_8px_24px_-10px_rgba(194,65,12,0.55)] hover:shadow-[0_14px_36px_-12px_rgba(194,65,12,0.75)] transition-all duration-300"
                     >
-                        Autoriser
+                        {loading ? "Traitement…" : "Autoriser"}
                     </Button>
                     <Button
                         onClick={() => handleConsent(false)}
                         disabled={loading}
                         variant="outline"
-                        className="flex-1"
+                        size="lg"
+                        className="w-full h-auto rounded-lg border-2 border-brand-accent-dark/40 text-brand-accent-dark hover:bg-brand-accent-dark/10 px-6 py-3 text-sm font-semibold tracking-wide transition-all duration-300"
                     >
                         Refuser
                     </Button>
