@@ -139,6 +139,14 @@ export const auth = betterAuth({
         oauthProvider({
             loginPage: "/login",
             consentPage: "/oauth/consent",
+            // Requis pour le flow MCP de Claude.ai :
+            // - allowDynamicClientRegistration : expose /api/auth/oauth2/register
+            //   et ajoute registration_endpoint dans le discovery document
+            // - allowUnauthenticatedClientRegistration : permet aux clients publics
+            //   (PKCE, token_endpoint_auth_method=none) de s'enregistrer sans session,
+            //   et ajoute "none" dans token_endpoint_auth_methods_supported
+            allowDynamicClientRegistration: true,
+            allowUnauthenticatedClientRegistration: true,
             silenceWarnings: {
                 oauthAuthServerConfig: true,
             },
