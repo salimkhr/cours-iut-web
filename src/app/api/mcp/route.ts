@@ -41,29 +41,40 @@ interface ModuleDoc {
 
 async function validateToken(req: Request): Promise<{ id: string; role: string } | null> {
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) return null;
+    if (!authHeader?.startsWith("Bearer ")) {
+        console.error("[MCP] pas d'Authorization header Bearer");
+        return null;
+    }
 
-    // Délègue la validation au endpoint /oauth2/userinfo de better-auth.
-    // Cela gère à la fois les JWT (vérifiés via JWKS) et les tokens opaques
-    // (lookup DB avec le bon hachage SHA-256), sans dupliquer la logique.
     const { origin } = new URL(req.url);
+    const userinfoUrl = `${origin}/api/auth/oauth2/userinfo`;
+    console.log("[MCP] validateToken → appel userinfo", userinfoUrl);
+
     try {
         const res = await auth.handler(
-            new Request(`${origin}/api/auth/oauth2/userinfo`, {
+            new Request(userinfoUrl, {
                 headers: new Headers({ Authorization: authHeader }),
             })
         );
+        const bodyText = await res.text();
+        console.log("[MCP] userinfo status:", res.status, "body:", bodyText.slice(0, 200));
+
         if (!res.ok) return null;
 
-        const body = await res.json() as { sub?: string };
-        if (!body.sub) return null;
+        const body = JSON.parse(bodyText) as { sub?: string };
+        if (!body.sub) {
+            console.error("[MCP] userinfo sans sub:", bodyText.slice(0, 200));
+            return null;
+        }
 
         const db = await connectToDB();
         const user = await db.collection("user").findOne({ _id: new ObjectId(body.sub) });
+        console.log("[MCP] user trouvé:", !!user, "role:", user?.role ?? "(absent)");
         if (!user) return null;
 
         return { id: body.sub, role: String(user.role ?? "user") };
-    } catch {
+    } catch (err) {
+        console.error("[MCP] validateToken exception:", err);
         return null;
     }
 }
