@@ -1,8 +1,10 @@
+import { getPublicOrigin } from "@/lib/publicOrigin";
+
 export const runtime = "nodejs";
 
 export async function GET(req: Request): Promise<Response> {
-    const { origin } = new URL(req.url);
-    console.log("[DISCOVERY] oauth-protected-resource (base) appelé depuis", req.headers.get("user-agent"));
+    const origin = getPublicOrigin(req);
+    console.log("[DISCOVERY] oauth-protected-resource (base) origin:", origin, "ua:", req.headers.get("user-agent"));
     return Response.json(
         {
             resource: `${origin}/api/mcp`,

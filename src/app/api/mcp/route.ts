@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb";
 import { z } from "zod";
 import { connectToDB } from "@/lib/mongodb";
 import { auth } from "@/lib/auth";
+import { getPublicOrigin } from "@/lib/publicOrigin";
 import { getAllBlockDefinitions, getBlockDefinition, createBlockInstance } from "@/lib/blockRegistry";
 import { validateBlockTree } from "@/lib/validateBlockTree";
 import {
@@ -51,7 +52,7 @@ async function validateToken(req: Request): Promise<{ id: string; role: string }
         return null;
     }
 
-    const { origin } = new URL(req.url);
+    const origin = getPublicOrigin(req);
     const userinfoUrl = `${origin}/api/auth/oauth2/userinfo`;
     console.log("[MCP] validateToken → appel userinfo", userinfoUrl);
 
@@ -440,7 +441,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
 async function handleMcp(req: Request): Promise<Response> {
     const user = await validateToken(req);
     if (!user) {
-        const { origin } = new URL(req.url);
+        const origin = getPublicOrigin(req);
         // RFC 9728 §5 : resource_metadata aide claude.ai à trouver l'auth server
         // sans avoir à construire l'URL depuis le path de la resource.
         return new Response(JSON.stringify({ error: "Unauthorized" }), {
