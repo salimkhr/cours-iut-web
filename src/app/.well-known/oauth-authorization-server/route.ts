@@ -9,26 +9,28 @@ export const runtime = "nodejs";
 //
 // Le handler de @better-auth/oauth-provider ne reconnaît en interne que deux
 // formes de chemin absolu pour cet endpoint (cf. authServerMetadataPaths dans
-// le plugin) :
-//   - /.well-known/oauth-authorization-server{basePath}  (satisfait par la
-//     route voisine ./api/auth/route.ts, dont le chemin Next.js correspond
-//     littéralement à cette forme)
-//   - {basePath}/.well-known/oauth-authorization-server
-// Sans correspondance exacte, le plugin renvoie lui-même un 404, même si
-// Next.js a bien dispatché la requête vers ce fichier. On réécrit donc le
-// pathname de la requête vers la seconde forme avant de déléguer au handler.
+// le plugin), toutes deux dérivées de issuerPath = /api/auth :
+//   - /.well-known/oauth-authorization-server/api/auth
+//   - /api/auth/.well-known/oauth-authorization-server
+// Le chemin RFC nu (/.well-known/oauth-authorization-server) n'y figure pas :
+// le plugin le 404 lui-même, même si Next.js dispatche bien la requête ici.
+//
+// On réécrit donc le pathname vers /.well-known/oauth-authorization-server/api/auth
+// avant de déléguer : c'est la forme servie par la route voisine
+// ./api/auth/route.ts, dont on a vérifié en live qu'elle renvoie 200 avec les
+// métadonnées correctes. On délègue au même auth.handler par ce chemin éprouvé.
 const { GET: betterAuthHandler } = toNextJsHandler(auth);
 
-function rewriteToBasePath(req: Request): Request {
+function rewriteToDiscoveryPath(req: Request): Request {
     const url = new URL(req.url);
-    url.pathname = "/api/auth/.well-known/oauth-authorization-server";
+    url.pathname = "/.well-known/oauth-authorization-server/api/auth";
     return new Request(url, { method: req.method, headers: req.headers });
 }
 
 export async function GET(req: Request): Promise<Response> {
-    return betterAuthHandler(rewriteToBasePath(req));
+    return betterAuthHandler(rewriteToDiscoveryPath(req));
 }
 
 export async function HEAD(req: Request): Promise<Response> {
-    return betterAuthHandler(rewriteToBasePath(req));
+    return betterAuthHandler(rewriteToDiscoveryPath(req));
 }

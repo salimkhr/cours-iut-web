@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useState, Suspense } from "react";
 import { Button } from "@/components/ui/button";
+import AuthLayout from "@/components/login/AuthLayout";
 
 function ConsentForm() {
     const params = useSearchParams();
@@ -15,7 +16,7 @@ function ConsentForm() {
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch("/api/auth/oauth2/consent", {
+            const res = await fetch(`/api/auth/oauth2/consent?${params.toString()}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ accept }),
@@ -34,19 +35,25 @@ function ConsentForm() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4">
-            <div className="max-w-md w-full border rounded-lg p-6 space-y-4">
-                <h1 className="text-xl font-semibold">Autoriser l&apos;accès</h1>
-                <p className="text-sm text-muted-foreground">
-                    <strong>{clientId}</strong> demande l&apos;accès à votre compte.
+        <AuthLayout
+            title="Autoriser l'accès"
+            description="Accordez à une application tierce l'accès à votre compte."
+        >
+            <div className="space-y-4">
+                <p className="text-sm text-brand-gray-700 dark:text-brand-gray-300">
+                    <strong className="text-brand-dark dark:text-brand-light">{clientId}</strong>{" "}
+                    demande l&apos;accès à votre compte.
                 </p>
                 {scope && (
-                    <p className="text-sm">
-                        Portées : <code className="text-xs bg-muted px-1 rounded">{scope}</code>
+                    <p className="text-sm text-brand-gray-700 dark:text-brand-gray-300">
+                        Portées :{" "}
+                        <code className="text-xs bg-bridge-100 dark:bg-bridge-700 px-1.5 py-0.5 rounded">
+                            {scope}
+                        </code>
                     </p>
                 )}
                 {error && (
-                    <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded">
+                    <p className="text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg">
                         {error}
                     </p>
                 )}
@@ -68,7 +75,7 @@ function ConsentForm() {
                     </Button>
                 </div>
             </div>
-        </div>
+        </AuthLayout>
     );
 }
 
