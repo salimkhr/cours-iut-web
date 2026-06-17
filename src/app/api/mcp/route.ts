@@ -40,7 +40,12 @@ interface ModuleDoc {
 // ── Validation du Bearer token ────────────────────────────────────────────────
 
 async function validateToken(req: Request): Promise<{ id: string; role: string } | null> {
-    const authHeader = req.headers.get("Authorization");
+    // Log tous les headers pour diagnostiquer ce qui arrive
+    const allHeaders: Record<string, string> = {};
+    req.headers.forEach((v, k) => { allHeaders[k] = v.startsWith("Bearer ") ? v.slice(0, 20) + "…" : v; });
+    console.log("[MCP] method:", req.method, "headers:", JSON.stringify(allHeaders));
+
+    const authHeader = req.headers.get("Authorization") ?? req.headers.get("authorization");
     if (!authHeader?.startsWith("Bearer ")) {
         console.error("[MCP] pas d'Authorization header Bearer");
         return null;
