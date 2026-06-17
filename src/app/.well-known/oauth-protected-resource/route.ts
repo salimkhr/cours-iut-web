@@ -6,7 +6,11 @@ export async function GET(req: Request): Promise<Response> {
     return Response.json(
         {
             resource: `${origin}/api/mcp`,
-            authorization_servers: [origin],
+            // L'issuer better-auth est <origin>/api/auth (et non <origin>) : le
+            // document RFC 8414 renvoie issuer=<origin>/api/auth. authorization_servers
+            // DOIT donc pointer vers /api/auth, sinon claude.ai construit le well-known
+            // à la racine, obtient un issuer qui ne matche pas, et rejette (RFC 8414 §3.3).
+            authorization_servers: [`${origin}/api/auth`],
         },
         {
             headers: {

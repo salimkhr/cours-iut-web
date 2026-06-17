@@ -6,7 +6,9 @@ export async function GET(req: Request): Promise<Response> {
     return Response.json(
         {
             resource: `${origin}/api/mcp`,
-            authorization_servers: [origin],
+            // Voir route.ts (base) : authorization_servers doit pointer vers /api/auth
+            // pour que l'issuer du document RFC 8414 matche (RFC 8414 §3.3).
+            authorization_servers: [`${origin}/api/auth`],
         },
         {
             headers: {
