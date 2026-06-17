@@ -22,9 +22,9 @@ function ConsentForm() {
                 body: JSON.stringify({ accept, oauth_query: params.toString() }),
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json() as { redirect_uri?: string };
-            if (data.redirect_uri) {
-                window.location.href = data.redirect_uri;
+            const data = await res.json() as { redirect?: boolean; url?: string };
+            if (data.url) {
+                window.location.href = data.url;
             } else {
                 setLoading(false);
             }
