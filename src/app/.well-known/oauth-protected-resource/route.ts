@@ -4,15 +4,13 @@ export const runtime = "nodejs";
 
 export async function GET(req: Request): Promise<Response> {
     const origin = getPublicOrigin(req);
-    console.log("[DISCOVERY] oauth-protected-resource (base) origin:", origin, "ua:", req.headers.get("user-agent"));
+    const authServer = process.env.SCALEKIT_ENVIRONMENT_URL;
     return Response.json(
         {
             resource: `${origin}/api/mcp`,
-            // L'issuer better-auth est <origin>/api/auth (et non <origin>) : le
-            // document RFC 8414 renvoie issuer=<origin>/api/auth. authorization_servers
-            // DOIT donc pointer vers /api/auth, sinon claude.ai construit le well-known
-            // à la racine, obtient un issuer qui ne matche pas, et rejette (RFC 8414 §3.3).
-            authorization_servers: [`${origin}/api/auth`],
+            // L'Authorization Server est désormais Scalekit (broker devant better-auth).
+            // claude.ai découvre Scalekit ici, puis y fait sa DCR.
+            authorization_servers: authServer ? [authServer] : [],
         },
         {
             headers: {
