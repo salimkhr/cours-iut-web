@@ -1,10 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { revalidateTag } from "next/cache";
-import { ObjectId } from "mongodb";
 import { z } from "zod";
 import { connectToDB } from "@/lib/mongodb";
-import { auth } from "@/lib/auth";
+import { validateScalekitToken } from "@/lib/scalekit";
 import { getPublicOrigin } from "@/lib/publicOrigin";
 import { getAllBlockDefinitions, getBlockDefinition, createBlockInstance } from "@/lib/blockRegistry";
 import { validateBlockTree } from "@/lib/validateBlockTree";
@@ -38,51 +37,28 @@ interface ModuleDoc {
     }>;
 }
 
-// ── Validation du Bearer token ────────────────────────────────────────────────
+// ── Validation du Bearer token (Scalekit) ─────────────────────────────────────
+
+/** Emails admin autorisés à écrire (phase 1). Allowlist en env, séparée par virgules. */
+function adminEmails(): string[] {
+    return (process.env.MCP_ADMIN_EMAILS ?? "")
+        .split(",")
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean);
+}
 
 async function validateToken(req: Request): Promise<{ id: string; role: string } | null> {
-    // Log tous les headers pour diagnostiquer ce qui arrive
-    const allHeaders: Record<string, string> = {};
-    req.headers.forEach((v, k) => { allHeaders[k] = v.startsWith("Bearer ") ? v.slice(0, 20) + "…" : v; });
-    console.log("[MCP] method:", req.method, "headers:", JSON.stringify(allHeaders));
-
     const authHeader = req.headers.get("Authorization") ?? req.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-        console.error("[MCP] pas d'Authorization header Bearer");
-        return null;
-    }
+    if (!authHeader?.startsWith("Bearer ")) return null;
 
-    const origin = getPublicOrigin(req);
-    const userinfoUrl = `${origin}/api/auth/oauth2/userinfo`;
-    console.log("[MCP] validateToken → appel userinfo", userinfoUrl);
+    const identity = await validateScalekitToken(authHeader.slice("Bearer ".length));
+    if (!identity?.email) return null;
 
-    try {
-        const res = await auth.handler(
-            new Request(userinfoUrl, {
-                headers: new Headers({ Authorization: authHeader }),
-            })
-        );
-        const bodyText = await res.text();
-        console.log("[MCP] userinfo status:", res.status, "body:", bodyText.slice(0, 200));
-
-        if (!res.ok) return null;
-
-        const body = JSON.parse(bodyText) as { sub?: string };
-        if (!body.sub) {
-            console.error("[MCP] userinfo sans sub:", bodyText.slice(0, 200));
-            return null;
-        }
-
-        const db = await connectToDB();
-        const user = await db.collection("user").findOne({ _id: new ObjectId(body.sub) });
-        console.log("[MCP] user trouvé:", !!user, "role:", user?.role ?? "(absent)");
-        if (!user) return null;
-
-        return { id: body.sub, role: String(user.role ?? "user") };
-    } catch (err) {
-        console.error("[MCP] validateToken exception:", err);
-        return null;
-    }
+    // Pas d'accès aux collections d'auth (fragiles au schéma better-auth) :
+    // le rôle est dérivé de l'allowlist MCP_ADMIN_EMAILS. La résolution « réelle »
+    // (claim OIDC ou auth.api) sera traitée en phase 2 avec l'accès étudiant.
+    const role = adminEmails().includes(identity.email.toLowerCase()) ? "admin" : "user";
+    return { id: identity.sub, role };
 }
 
 // ── Helpers Mongo partagés (lecture/écriture de l'arbre de blocs) ──────────────
