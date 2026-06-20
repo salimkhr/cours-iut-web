@@ -23,7 +23,7 @@
 | `src/app/.well-known/oauth-protected-resource/route.ts` | Pointer l'AS vers Scalekit | **Modifier** |
 | `src/app/.well-known/oauth-protected-resource/[...all]/route.ts` | idem (catch-all) | **Modifier** |
 | `src/lib/auth.ts` | Retirer `validAudiences` MCP | **Modifier** |
-| `src/scripts/register-scalekit-oidc-client.ts` | Enregistrer Scalekit comme client OIDC statique dans better-auth | **Créer** |
+| `scripts/register-scalekit-oidc-client.ts` | Enregistrer Scalekit comme client OIDC de better-auth **via l'endpoint `/api/auth/oauth2/register`** (pas d'accès Mongo direct aux collections d'auth) | **Créer** |
 | `package.json` | Ajouter `@scalekit-sdk/node`, retirer scripts MCP morts | **Modifier** |
 
 ---
@@ -160,7 +160,13 @@ d'env) plus un script d'enregistrement du client OIDC côté better-auth. Pas de
 vérification par `curl` et par le test de connexion du dashboard Scalekit.
 
 **Files:**
-- Create: `src/scripts/register-scalekit-oidc-client.ts`
+- Create: `scripts/register-scalekit-oidc-client.ts`
+
+> **Principe (consigne utilisateur) : pas d'accès MongoDB direct aux collections d'auth.**
+> L'enregistrement du client OAuth passe par l'API better-auth (`/api/auth/oauth2/register`),
+> jamais par un insert dans la collection `oauthClient`. Idem pour la résolution du rôle (Task 5) :
+> via better-auth, pas via `db.collection("user")`. Seules les collections **de contenu**
+> (`course_content`, `modules`) — données applicatives, pas de l'auth — restent en Mongo direct.
 
 - [ ] **Step 1: Créer le compte/projet Scalekit et un serveur MCP**
 
@@ -174,11 +180,14 @@ Dans le dashboard Scalekit → **MCP servers** → New :
 
 Dans `.env.local` (dev) et la config Dokploy (staging/prod), ajouter :
 ```
+# Credentials API Scalekit (pour le SDK src/lib/scalekit.ts ; Scalekit → nous)
 SCALEKIT_ENVIRONMENT_URL=https://<env>.scalekit.dev
 SCALEKIT_CLIENT_ID=skc_...
 SCALEKIT_CLIENT_SECRET=...
 SCALEKIT_RESOURCE_ID=<resource id du serveur MCP>
 ```
+Le client_id/secret émis par better-auth POUR Scalekit ne sont **pas** pré-générés : ils sont
+retournés par l'endpoint d'enregistrement (Step 4) puis collés dans Scalekit (Step 5).
 Vérifier que `BETTER_AUTH_URL=https://<domaine-public>` est bien défini (requis pour que l'issuer
 OIDC vu par Scalekit soit correct).
 
@@ -190,24 +199,26 @@ Expected: un JSON dont `issuer`, `authorization_endpoint`, `token_endpoint`, `us
 `jwks_uri` pointent tous vers `https://<domaine-public>/api/auth/...` (pas `0.0.0.0:3000`).
 Si ce n'est pas le cas → corriger `BETTER_AUTH_URL` avant d'aller plus loin.
 
-- [ ] **Step 4: Créer le script d'enregistrement du client OIDC dans better-auth**
+- [ ] **Step 4: Enregistrer Scalekit comme client OIDC via l'API better-auth**
 
-`src/scripts/register-scalekit-oidc-client.ts` :
+Le script `scripts/register-scalekit-oidc-client.ts` appelle l'endpoint DCR de better-auth
+(`/api/auth/oauth2/register`, déjà activé via `allowUnauthenticatedClientRegistration`). **Aucun
+accès Mongo direct** : c'est better-auth qui crée le client et renvoie `client_id`/`client_secret`.
+
 ```ts
 /**
- * Enregistre Scalekit comme client OAuth statique de better-auth.
- * Utilise l'endpoint DCR (déjà activé : allowUnauthenticatedClientRegistration).
- * À lancer une seule fois. Affiche le client_id/client_secret à coller dans
- * la connexion OIDC du dashboard Scalekit.
+ * Enregistre Scalekit comme client OAuth de better-auth via son endpoint DCR.
+ * Aucun accès MongoDB direct : tout passe par l'API better-auth.
+ * Affiche le client_id/client_secret à coller dans la connexion OIDC Scalekit.
  *
  * Usage:
- *   BASE_URL=https://<domaine> SCALEKIT_REDIRECT_URI=https://<env>.scalekit.dev/oidc/callback \
- *   bun run src/scripts/register-scalekit-oidc-client.ts
+ *   BASE_URL=https://<domaine> SCALEKIT_OIDC_REDIRECT_URI=<callback Scalekit> \
+ *   bun run scripts/register-scalekit-oidc-client.ts
  */
 const base = process.env.BASE_URL ?? "http://localhost:3000";
-const redirectUri = process.env.SCALEKIT_REDIRECT_URI;
+const redirectUri = process.env.SCALEKIT_OIDC_REDIRECT_URI;
 if (!redirectUri) {
-    console.error("SCALEKIT_REDIRECT_URI manquant (URL de callback OIDC fournie par Scalekit)");
+    console.error("SCALEKIT_OIDC_REDIRECT_URI manquant (callback OIDC fourni par Scalekit)");
     process.exit(1);
 }
 
@@ -228,24 +239,21 @@ if (!res.ok) {
     console.error("Échec enregistrement:", res.status, await res.text());
     process.exit(1);
 }
-const data = await res.json();
-console.log("Client enregistré. À coller dans la connexion OIDC Scalekit :");
+const data = await res.json() as { client_id: string; client_secret: string };
+console.log("Client enregistré (via better-auth). À coller dans Scalekit :");
 console.log("  client_id     :", data.client_id);
 console.log("  client_secret :", data.client_secret);
 ```
 
-- [ ] **Step 5: Lancer le script et récupérer les identifiants**
-
-Run (en remplaçant le redirect URI par celui de ta connexion OIDC Scalekit) :
-`BASE_URL=https://<domaine> SCALEKIT_REDIRECT_URI=https://<env>.scalekit.dev/oidc/callback bun run src/scripts/register-scalekit-oidc-client.ts`
+Run: `BASE_URL=https://<domaine> SCALEKIT_OIDC_REDIRECT_URI=<callback Scalekit> bun run scripts/register-scalekit-oidc-client.ts`
 Expected: affichage d'un `client_id` et `client_secret`.
 
-- [ ] **Step 6: Créer la connexion OIDC dans Scalekit**
+- [ ] **Step 5: Créer la connexion OIDC dans Scalekit**
 
 Dashboard Scalekit → connexion **OIDC** (custom / generic) du serveur MCP :
 - Issuer : `https://<domaine-public>/api/auth`
 - Authorization / Token / Userinfo / JWKS : valeurs lues à l'étape 3.
-- client_id / client_secret : valeurs de l'étape 5.
+- client_id / client_secret : valeurs affichées à l'étape 4.
 - Scopes : `openid profile email`.
 - Lancer le **test de connexion** du dashboard.
 Expected: le test de connexion Scalekit réussit (login better-auth via /login, retour OK).
@@ -253,11 +261,11 @@ Expected: le test de connexion Scalekit réussit (login better-auth via /login, 
 > Risque §7.1 : si Scalekit n'accepte pas une connexion OIDC custom dans ton plan/offre,
 > repli documenté dans la spec (Google social phase 1). Confirmer ici avant de continuer.
 
-- [ ] **Step 7: Commit du script**
+- [ ] **Step 6: Commit du script**
 
 ```bash
-git add src/scripts/register-scalekit-oidc-client.ts
-git commit -m "feat(mcp): script d'enregistrement du client OIDC Scalekit dans better-auth
+git add scripts/register-scalekit-oidc-client.ts
+git commit -m "feat(mcp): enregistrer le client OIDC Scalekit via l'API better-auth
 
 Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 ```
@@ -329,16 +337,24 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 **Files:**
 - Modify: `src/app/api/mcp/route.ts` (fonction `validateToken`, lignes ~43-86)
 
-- [ ] **Step 1: Remplacer `validateToken` par la version Scalekit + rôle Mongo**
+- [ ] **Step 1: Remplacer `validateToken` par la version Scalekit + rôle par allowlist**
 
-Dans `src/app/api/mcp/route.ts`, remplacer entièrement la fonction `validateToken` (et retirer
-l'import `auth` et `getPublicOrigin` s'ils ne servent plus ailleurs — `getPublicOrigin` reste
-utilisé dans `handleMcp` pour le 401, donc le garder) :
+Dans `src/app/api/mcp/route.ts`, remplacer entièrement la fonction `validateToken`. **Pas d'accès
+Mongo** : le rôle est dérivé de l'allowlist `MCP_ADMIN_EMAILS` (consigne : ne pas lire la collection
+`user`, fragile au schéma better-auth). Retirer l'import `auth` s'il n'est plus référencé ; garder
+`getPublicOrigin` (utilisé par `handleMcp` pour le 401). L'import `connectToDB` reste utilisé par les
+outils (collections de contenu), donc on le garde.
 
 ```ts
 import { validateScalekitToken } from "@/lib/scalekit";
-// ... (conserver les autres imports ; retirer `import { auth } from "@/lib/auth";`
-//      uniquement s'il n'est plus référencé)
+// ... (retirer `import { auth } from "@/lib/auth";` uniquement s'il n'est plus référencé)
+
+function adminEmails(): string[] {
+    return (process.env.MCP_ADMIN_EMAILS ?? "")
+        .split(",")
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean);
+}
 
 async function validateToken(req: Request): Promise<{ id: string; role: string } | null> {
     const authHeader = req.headers.get("Authorization") ?? req.headers.get("authorization");
@@ -347,16 +363,14 @@ async function validateToken(req: Request): Promise<{ id: string; role: string }
     const identity = await validateScalekitToken(authHeader.slice("Bearer ".length));
     if (!identity?.email) return null;
 
-    const db = await connectToDB();
-    const user = await db.collection("user").findOne({ email: identity.email });
-    if (!user) return null;
-
-    return { id: identity.sub, role: String(user.role ?? "user") };
+    const role = adminEmails().includes(identity.email.toLowerCase()) ? "admin" : "user";
+    return { id: identity.sub, role };
 }
 ```
 
-> Le lookup se fait par **email vérifié** (clé stable entre Scalekit et better-auth).
-> `_id` n'est plus exposé ; on garde `identity.sub` comme id opaque.
+> Aucune lecture des collections d'auth : l'autorisation phase 1 repose sur l'email vérifié du JWT
+> Scalekit confronté à `MCP_ADMIN_EMAILS`. La résolution de rôle « réelle » (claim OIDC ou
+> `auth.api.*`) est un sujet de phase 2 (voir spec §5).
 
 - [ ] **Step 2: Vérifier le 401 sans token**
 
@@ -378,7 +392,7 @@ Expected: build OK, aucun import inutilisé (TypeScript strict).
 
 ```bash
 git add src/app/api/mcp/route.ts
-git commit -m "feat(mcp): valider le JWT Scalekit et résoudre le rôle via Mongo
+git commit -m "feat(mcp): valider le JWT Scalekit et résoudre le rôle via allowlist
 
 Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 ```

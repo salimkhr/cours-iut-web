@@ -24,13 +24,16 @@ dépendance fragile à `BETTER_AUTH_URL`). Voir les 6 derniers commits `debug(mc
 
 1. **Un seul MCP** maintenu (supprimer les deux variantes stdio).
 2. **Déléguer l'OAuth à un tiers** (Scalekit) pour sortir de la maintenance de l'AS maison.
-3. **Préserver la base d'utilisateurs better-auth/Mongo** comme source de vérité d'identité et de
-   rôle (le tiers est un *broker* devant better-auth, pas un IdP de remplacement).
+3. **Préserver la base d'utilisateurs better-auth** comme source de vérité d'identité (le login
+   reste better-auth ; le tiers est un *broker* devant lui, pas un IdP de remplacement). L'accès
+   se fait **via l'API better-auth**, jamais par lecture directe des collections (§4).
 
 ### Non-objectifs (YAGNI)
 
-- Pas de migration de la base utilisateurs vers le tiers.
-- Pas de gestion de rôles côté tiers : le rôle reste dans Mongo (`user.role`).
+- Pas de migration de la base utilisateurs vers le tiers (le login reste better-auth).
+- Pas d'accès MongoDB direct aux collections d'auth — voir le principe transversal en §4.
+- Pas de système de rôles complet en phase 1 : autorisation par allowlist d'emails admin
+  (`MCP_ADMIN_EMAILS`). La résolution de rôle « réelle » est un sujet de phase 2 (§5).
 - L'accès lecture étudiant est cadré mais **pas implémenté ici** (la route le permet déjà).
 
 ## 2. Décisions actées (brainstorming)
@@ -78,6 +81,12 @@ C'est ce qui rend l'accès étudiant (phase 2) purement additif.
 
 ## 4. Changements par fichier
 
+> **Principe transversal — pas d'accès MongoDB direct aux collections d'auth.**
+> better-auth fait évoluer son schéma interne entre versions ; lire/écrire `user`, `oauthClient`,
+> sessions en direct couple le code à un schéma instable. Toute opération d'auth passe par l'API
+> better-auth (endpoints `/api/auth/...` ou `auth.api.*`). Seules les collections **de contenu**
+> (`course_content`, `modules`) — données applicatives — restent en accès Mongo direct.
+
 ### À supprimer
 - `mcp-server/` (dossier + `package.json` + `node_modules` + `dist`).
 - `src/mcp/server.ts` et la variable `MCP_ADMIN_TOKEN`.
@@ -89,7 +98,10 @@ C'est ce qui rend l'accès étudiant (phase 2) purement additif.
   ```ts
   const { sub, email } = await scalekit.validateToken(token, { audience: [RESOURCE_ID] });
   ```
-- Conserver le lookup Mongo `user` pour récupérer `role` (clé = email vérifié, fallback `sub`).
+- **Supprimer le `db.collection("user").findOne(...)`** (accès Mongo direct à une collection
+  d'auth — fragile au schéma better-auth). En phase 1, le rôle est dérivé d'un **allowlist
+  d'emails admin** (`MCP_ADMIN_EMAILS`) : `role = MCP_ADMIN_EMAILS.includes(email) ? 'admin' : 'user'`.
+  Pas de Mongo, pas de couplage au schéma.
 - Conserver le reste : factory `buildMcpServer`, `isAdmin`, `validateBlockTree`, `revalidateTag`,
   transport `WebStandardStreamableHTTPServerTransport`.
 - `WWW-Authenticate` du 401 : `resource_metadata` continue de pointer vers
@@ -103,9 +115,12 @@ C'est ce qui rend l'accès étudiant (phase 2) purement additif.
 ### `src/lib/auth.ts`
 - Garder `oauthProvider` + `jwt`. Retirer la config `validAudiences` liée à `/api/mcp`
   (devient sans objet — Scalekit ne demande plus `resource=` à better-auth).
-- Enregistrer **Scalekit comme client OAuth statique** dans better-auth : `client_id`/`client_secret`
-  dédiés, `redirect_uri` = URL de callback Scalekit. (Création en base `oauth_application` ou via
-  l'endpoint d'enregistrement, une seule fois.)
+
+### Enregistrement du client Scalekit (via API better-auth)
+- Scalekit est un client OAuth de better-auth (`redirect_uri` = callback OIDC Scalekit). On
+  l'enregistre via l'**endpoint `/api/auth/oauth2/register`** (DCR déjà activé), **jamais** par un
+  insert direct dans `oauthClient`. Script one-shot `scripts/register-scalekit-oidc-client.ts` qui
+  affiche le `client_id`/`client_secret` à coller dans le dashboard Scalekit.
 
 ### Config Scalekit (dashboard, hors repo)
 - Créer un serveur MCP : Server URL = `https://<domaine>/api/mcp`, activer **DCR** et **CIMD**.
@@ -114,9 +129,10 @@ C'est ce qui rend l'accès étudiant (phase 2) purement additif.
 
 ### Variables d'environnement (serveur uniquement, jamais `NEXT_PUBLIC_`)
 - `SCALEKIT_ENVIRONMENT_URL`
-- `SCALEKIT_CLIENT_ID`
-- `SCALEKIT_CLIENT_SECRET`
+- `SCALEKIT_CLIENT_ID` (API Scalekit, pour le SDK)
+- `SCALEKIT_CLIENT_SECRET` (API Scalekit, pour le SDK)
 - `SCALEKIT_RESOURCE_ID` (audience attendue dans le JWT)
+- `MCP_ADMIN_EMAILS` (liste d'emails admin séparés par virgule — autorisation phase 1)
 - `BETTER_AUTH_URL` doit rester le domaine public (déjà requis pour que l'issuer OIDC vu par
   Scalekit soit correct).
 
@@ -131,8 +147,13 @@ C'est ce qui rend l'accès étudiant (phase 2) purement additif.
 | `list_modules`, `list_sections`, `get_content`, `get_migration_status`, `list_block_types` | tout utilisateur authentifié (prépare la lecture étudiante) |
 | `save_content`, `delete_content`, `insert_block`, `edit_block`, `delete_block`, `reorder_blocks` | `role === 'admin'` uniquement (logique existante `isAdmin`) |
 
-La résolution du rôle : JWT Scalekit → email → `db.collection('user').findOne({ email })` →
-`role`. Si aucun user Mongo ne matche, accès refusé (401/403).
+**Résolution du rôle, phase 1 (sans accès Mongo) :** JWT Scalekit → email vérifié →
+`role = MCP_ADMIN_EMAILS.includes(email) ? 'admin' : 'user'`. Un email absent du JWT ou un token
+invalide → 401. Un user non-admin (phase 2) garde l'accès lecture.
+
+**Phase 2 (hors scope) :** quand les rôles devront être lus depuis la vraie source (étudiants vs
+profs), deux options schema-safe : (a) `role` émis comme **claim OIDC** par better-auth et propagé
+par Scalekit, lu dans le JWT ; (b) `auth.api.*` (API better-auth). Jamais `db.collection('user')`.
 
 ## 6. Phasage
 
@@ -151,6 +172,11 @@ La résolution du rôle : JWT Scalekit → email → `db.collection('user').find
 3. **Forme de `validateToken`** du SDK (claims `email` vs `sub`) à confirmer sur la version
    installée de `@scalekit-sdk/node`.
 4. **Pricing / free tier Scalekit** pour l'usage MCP — à valider à la création du compte (projet IUT).
+5. **Produit Scalekit** : choisir « Auth for SaaS » (qui inclut **MCP OAuth 2.1**), pas « AgentKit »
+   (auth sortante vers des apps tierces — hors sujet).
+6. **Propagation de l'email** dans le JWT Scalekit : l'autorisation phase 1 dépend de la présence
+   d'un `email` vérifié dans le token émis par Scalekit (claim mappé depuis better-auth). À vérifier
+   au test de connexion (sinon fallback `sub` + mapping à définir).
 
 ## 8. Vérification
 
