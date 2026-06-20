@@ -92,38 +92,14 @@ Si vous souhaitez, je peux transformer ce résumé en un `README.md` complet ave
 
 Le projet expose un serveur MCP (Model Context Protocol) avec 8 tools permettant à une IA de lire et modifier le contenu pédagogique stocké dans MongoDB.
 
-### Deux modes
+### Serveur unique
 
-| Mode | Fichier | Client | Auth |
-|------|---------|--------|------|
-| **stdio** | `src/mcp/server.ts` | Claude Desktop / Claude Code | Cookie de session admin |
-| **HTTP** | `src/app/api/mcp/route.ts` | Claude.ai web | OAuth 2.0 (Bearer token) |
+| Fichier | Client | Auth |
+|---------|--------|------|
+| `src/app/api/mcp/route.ts` | Claude.ai web | OAuth 2.1 délégué à Scalekit (Bearer token) |
 
----
-
-### Mode stdio (Claude Desktop)
-
-```json
-// ~/Library/Application Support/Claude/claude_desktop_config.json
-{
-  "mcpServers": {
-    "cours-iut": {
-      "command": "npx",
-      "args": ["tsx", "src/mcp/server.ts"],
-      "env": {
-        "NEXT_URL": "http://localhost:3000",
-        "MCP_ADMIN_TOKEN": "<session token better-auth d’un compte admin>"
-      }
-    }
-  }
-}
-```
-
-```bash
-# .env.local
-MCP_ADMIN_TOKEN=<session token better-auth d’un compte admin>
-NEXT_URL=http://localhost:3000
-```
+> Les anciens serveurs stdio (`src/mcp/server.ts`, package `mcp-server/`) ont été supprimés au
+> profit de cette unique route HTTP, seule à invalider le cache Next via `revalidateTag`.
 
 ---
 

@@ -5,7 +5,6 @@
 
 # dependencies
 /node_modules
-mcp-server/nod  e_modules
 /.pnp
 .pnp.*
 .yarn/*
