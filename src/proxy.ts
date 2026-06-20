@@ -9,7 +9,7 @@ const PUBLIC_PATHS = [
     "/oauth/token",
     "/api/auth", // tous les endpoints better-auth
     "/api/mcp", // auth par Bearer token OAuth, gérée dans route.ts (pas de cookie de session)
-    "/.well-known", // OAuth discovery endpoints (openid-configuration, oauth-authorization-server)
+    "/.well-known", // OAuth discovery (openid-configuration + oauth-protected-resource → Scalekit)
     "/mentions-legales",
     "/politique-confidentialite",
     "/conditions-utilisation",

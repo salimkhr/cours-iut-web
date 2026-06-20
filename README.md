@@ -105,42 +105,49 @@ Le projet expose un serveur MCP (Model Context Protocol) avec 8 tools permettant
 
 ### Mode HTTP (Claude.ai web)
 
-#### Architecture OAuth 2.0
+#### Architecture OAuth 2.1 — Scalekit en broker
+
+L'Authorization Server est délégué à **Scalekit**, qui fédère le login vers better-auth :
 
 ```
 Claude.ai
-  ├─ GET  /.well-known/oauth-authorization-server/api/auth  → découverte
-  ├─ GET  /api/auth/oauth2/authorize                         → login + consentement
-  ├─ POST /api/auth/oauth2/token                             → access_token
-  └─ POST /api/mcp  (Authorization: Bearer <token>)          → tools MCP
+  ├─ GET  /.well-known/oauth-protected-resource  → pointe vers l'AS Scalekit
+  ├─ (OAuth 2.1 + DCR + PKCE chez Scalekit)      → Scalekit délègue le login à
+  │                                                 better-auth (connexion OIDC)
+  └─ POST /api/mcp  (Authorization: Bearer <JWT Scalekit>)  → tools MCP
 ```
+
+`/api/mcp` valide le JWT Scalekit (`validateScalekitToken`, JWKS + audience) et dérive le
+rôle de l'allowlist `MCP_ADMIN_EMAILS`. Aucune lecture directe des collections d'auth.
 
 #### Variables d’environnement
 
 ```bash
-# .env.local
-BETTER_AUTH_SECRET=<secret 32 octets — générer avec: node -e "console.log(require(‘crypto’).randomBytes(32).toString(‘hex’))">
-MCP_CLIENT_ID=<uuid>
-MCP_CLIENT_SECRET=<uuid>
+# .env.local — credentials API Scalekit (pour le SDK)
+SCALEKIT_ENVIRONMENT_URL=https://<env>.scalekit.dev
+SCALEKIT_CLIENT_ID=skc_...
+SCALEKIT_CLIENT_SECRET=...
+SCALEKIT_RESOURCE_ID=res_...           # audience des JWT (Server Id du serveur MCP Scalekit)
+MCP_ADMIN_EMAILS=prof@exemple.fr       # emails admin (écriture), séparés par virgules
+BETTER_AUTH_URL=https://<domaine>      # issuer OIDC public vu par Scalekit
 ```
 
-#### Enregistrement du client OAuth (à faire une fois)
+#### Fédération OIDC (à faire une fois)
+
+Enregistrer Scalekit comme client OIDC de better-auth, via l'API (pas d'insert Mongo) :
 
 ```bash
-bun run seed-oauth-client
+BASE_URL=https://<domaine> SCALEKIT_OIDC_REDIRECT_URI=<callback Scalekit> \
+  bun run scripts/register-scalekit-oidc-client.ts
 ```
 
-Ce script insère le client Claude.ai dans la collection `oauthClient` avec `skipConsent: true`.
+Coller le `client_id`/`client_secret` affichés dans la **connexion OIDC** du dashboard Scalekit
+(issuer = `https://<domaine>/api/auth`).
 
 #### Configuration du connecteur Claude.ai
 
-Dans **claude.ai → Paramètres → Connecteurs personnalisés** :
-
-| Champ | Valeur |
-|-------|--------|
-| URL | `https://<domaine-prod>/api/mcp` |
-| Client ID | valeur de `MCP_CLIENT_ID` |
-| Client secret | valeur de `MCP_CLIENT_SECRET` |
+Dans **claude.ai → Paramètres → Connecteurs personnalisés**, URL = `https://<domaine>/api/mcp`.
+L'enregistrement du client se fait automatiquement (DCR Scalekit) — pas de client_id/secret à saisir.
 
 ---
 
