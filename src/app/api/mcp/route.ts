@@ -17,6 +17,8 @@ import {
 import { moduleFormSchema } from "@/lib/schemas/module.schema";
 import { sectionApiSchema } from "@/lib/schemas/section.schema";
 import type { Block, CourseContent, ContentRef } from "@/types/CourseContent";
+import Module from "@/types/Module";
+import Section from "@/types/Section";
 
 export const runtime = "nodejs";
 
@@ -190,8 +192,9 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
             const slug = path ? slugify(path) : slugify(title);
+            if (!slug) throw new Error("Le titre ne peut pas produire un slug valide.");
 
-            if (await db.collection("modules").findOne({ path: slug })) {
+            if (await db.collection<Module>("modules").findOne({ path: slug })) {
                 throw new Error(`Un module avec le path "${slug}" existe déjà.`);
             }
 
@@ -209,7 +212,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 throw new Error(`Module invalide : ${JSON.stringify(parsed.error.flatten())}`);
             }
 
-            const r = await db.collection("modules").insertOne({
+            const r = await db.collection<Omit<Module, "_id">>("modules").insertOne({
                 ...parsed.data,
                 sections: [],
                 updatedAt: new Date().toISOString(),
@@ -243,11 +246,12 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
 
-            const mod = await db.collection<{ path: string; sections?: Array<{ path: string; order?: number }> }>("modules")
+            const mod = await db.collection<Module>("modules")
                 .findOne({ path: module });
             if (!mod) throw new Error(`Module "${module}" introuvable.`);
 
             const sectionPath = path ? slugify(path) : slugify(title);
+            if (!sectionPath) throw new Error("Le titre ne peut pas produire un slug de section valide.");
             const sections = mod.sections ?? [];
             if (sections.some((s) => s.path === sectionPath)) {
                 throw new Error(`Une section "${sectionPath}" existe déjà dans ce module.`);
@@ -288,7 +292,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 contents.push({ type, source: "db", contentId: r.insertedId.toString() });
             }
 
-            const section = {
+            const section: Section = {
                 title,
                 path: sectionPath,
                 order: nextOrder,
@@ -303,12 +307,9 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 ...(icon ? { icon } : {}),
             };
 
-            // reason: MongoDB driver types $push as PushOperator<TSchema>; on an untyped collection
-            //         (Document), the pushed value resolves to `never`. Intermediate cast to `unknown`
-            //         then `object` avoids `any` while satisfying the driver's UpdateFilter type.
-            await db.collection("modules").updateOne(
+            await db.collection<Module>("modules").updateOne(
                 { path: module },
-                { $push: { sections: section } } as unknown as object
+                { $push: { sections: section } }
             );
             for (const type of contentTypes) {
                 revalidateTag(`content:${module}:${sectionPath}:${type}`, { expire: 0 });
@@ -348,7 +349,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             const { module, sectionPath, newPath, addContentTypes } = args;
             const db = await connectToDB();
 
-            const mod = await db.collection<{ sections?: Array<{ path: string; contents?: ContentRef[] }> }>("modules")
+            const mod = await db.collection<Module>("modules")
                 .findOne({ path: module });
             if (!mod) throw new Error(`Module "${module}" introuvable.`);
             const sections = mod.sections ?? [];
@@ -369,6 +370,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
 
             // Slug effectif des nouveaux course_content (tient compte d'un rename simultané).
             const effectivePath = newPath ? slugify(newPath) : sectionPath;
+            if (newPath && !effectivePath) throw new Error("Le nouveau path ne peut pas produire un slug valide.");
 
             // addContentTypes : additif seul.
             const existingTypes = new Set((current.contents ?? []).map((c) => c.type));
@@ -401,7 +403,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             if (Object.keys(set).length === 0) {
                 return { content: [{ type: "text" as const, text: "Rien à modifier." }] };
             }
-            await db.collection("modules").updateOne({ path: module }, { $set: set });
+            await db.collection<Module>("modules").updateOne({ path: module }, { $set: set });
 
             // Invalide l'ancien et le nouveau slug pour tous les types concernés.
             const types = new Set<string>([...existingTypes, ...(addContentTypes ?? [])]);
