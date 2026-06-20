@@ -323,6 +323,104 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         }
     );
 
+    // ── edit_section ───────────────────────────────────────────────────────────
+    server.tool(
+        "edit_section",
+        "Édite les métadonnées d'une section (rename, nb séances, ordre, objectifs, flags). addContentTypes est ADDITIF (crée le squelette des types manquants) ; le retrait passe par delete_content. Réservé aux admins.",
+        {
+            module:                z.string(),
+            sectionPath:           z.string().describe("Slug de la section à éditer"),
+            title:                 z.string().optional(),
+            newPath:               z.string().optional().describe("Nouveau slug (cascade sur course_content)"),
+            order:                 z.number().int().min(1).optional(),
+            objectives:            z.array(z.string()).optional(),
+            totalDuration:         z.number().int().min(1).optional(),
+            tags:                  z.array(z.string()).optional(),
+            icon:                  z.string().optional(),
+            isAvailable:           z.boolean().optional(),
+            hasCorrection:         z.boolean().optional(),
+            correctionIsAvailable: z.boolean().optional(),
+            examenIsLock:          z.boolean().optional(),
+            addContentTypes:       z.array(CONTENT_TYPE).optional().describe("Types à AJOUTER (additif)"),
+        },
+        async (args) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const { module, sectionPath, newPath, addContentTypes } = args;
+            const db = await connectToDB();
+
+            const mod = await db.collection<{ sections?: Array<{ path: string; contents?: ContentRef[] }> }>("modules")
+                .findOne({ path: module });
+            if (!mod) throw new Error(`Module "${module}" introuvable.`);
+            const sections = mod.sections ?? [];
+            const idx = sections.findIndex((s) => s.path === sectionPath);
+            if (idx === -1) throw new Error(`Section "${sectionPath}" introuvable.`);
+            const current = sections[idx];
+
+            const set: Record<string, unknown> = {};
+            const meta: Array<[string, unknown]> = [
+                ["title", args.title], ["order", args.order], ["objectives", args.objectives],
+                ["totalDuration", args.totalDuration], ["tags", args.tags], ["icon", args.icon],
+                ["isAvailable", args.isAvailable], ["hasCorrection", args.hasCorrection],
+                ["correctionIsAvailable", args.correctionIsAvailable], ["examenIsLock", args.examenIsLock],
+            ];
+            for (const [field, value] of meta) {
+                if (value !== undefined) set[`sections.${idx}.${field}`] = value;
+            }
+
+            // Slug effectif des nouveaux course_content (tient compte d'un rename simultané).
+            const effectivePath = newPath ? slugify(newPath) : sectionPath;
+
+            // addContentTypes : additif seul.
+            const existingTypes = new Set((current.contents ?? []).map((c) => c.type));
+            if (addContentTypes?.length) {
+                const now = new Date();
+                const refs: ContentRef[] = [...(current.contents ?? [])];
+                for (const type of addContentTypes) {
+                    if (existingTypes.has(type)) continue;
+                    const r = await db.collection<CourseContent>("course_content").insertOne({
+                        moduleSlug: module, sectionSlug: effectivePath, contentType: type,
+                        blocks: [], version: 1, createdAt: now, updatedAt: now,
+                    });
+                    refs.push({ type, source: "db", contentId: r.insertedId.toString() });
+                }
+                set[`sections.${idx}.contents`] = refs;
+            }
+
+            // Rename de path : cascade sur les course_content existants.
+            if (newPath && effectivePath !== sectionPath) {
+                if (sections.some((s) => s.path === effectivePath)) {
+                    throw new Error(`Le path "${effectivePath}" est déjà pris dans ce module.`);
+                }
+                set[`sections.${idx}.path`] = effectivePath;
+                await db.collection("course_content").updateMany(
+                    { moduleSlug: module, sectionSlug: sectionPath },
+                    { $set: { sectionSlug: effectivePath } }
+                );
+            }
+
+            if (Object.keys(set).length === 0) {
+                return { content: [{ type: "text" as const, text: "Rien à modifier." }] };
+            }
+            await db.collection("modules").updateOne({ path: module }, { $set: set });
+
+            // Invalide l'ancien et le nouveau slug pour tous les types concernés.
+            const types = new Set<string>([...existingTypes, ...(addContentTypes ?? [])]);
+            for (const t of types) {
+                revalidateTag(`content:${module}:${sectionPath}:${t}`, { expire: 0 });
+                if (effectivePath !== sectionPath) {
+                    revalidateTag(`content:${module}:${effectivePath}:${t}`, { expire: 0 });
+                }
+            }
+
+            return {
+                content: [{
+                    type: "text" as const,
+                    text: `Section "${sectionPath}" mise à jour${effectivePath !== sectionPath ? ` (renommée en "${effectivePath}")` : ""}.`,
+                }],
+            };
+        }
+    );
+
     // ── list_modules ──────────────────────────────────────────────────────────
     server.tool(
         "list_modules",
