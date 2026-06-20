@@ -14,7 +14,9 @@ import {
     updateBlockProps,
     updateBlockChildren,
 } from "@/lib/blockTreeUtils";
-import type { Block, CourseContent } from "@/types/CourseContent";
+import { moduleFormSchema } from "@/lib/schemas/module.schema";
+import { sectionApiSchema } from "@/lib/schemas/section.schema";
+import type { Block, CourseContent, ContentRef } from "@/types/CourseContent";
 
 export const runtime = "nodejs";
 
@@ -119,6 +121,16 @@ function sortChildren(children: Block[], orderedIds: string[]): Block[] {
     return [...reordered, ...remaining];
 }
 
+/** Convertit un titre en slug kebab-case (a-z, 0-9, tirets). */
+function slugify(input: string): string {
+    return input
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")   // retire les accents
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+}
+
 // ── Factory McpServer ─────────────────────────────────────────────────────────
 
 function buildMcpServer(user: { id: string; role: string }): McpServer {
@@ -161,6 +173,54 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 type, label, defaultProps, fields,
             }));
             return { content: [{ type: "text" as const, text: JSON.stringify({ types: defs }, null, 2) }] };
+        }
+    );
+
+    // ── create_module ──────────────────────────────────────────────────────────
+    server.tool(
+        "create_module",
+        "Crée un nouveau module (structure pédagogique seule, isExtra:true). Réservé aux admins.",
+        {
+            title:       z.string().describe("Titre affiché du module, ex: Rust"),
+            iconName:    z.string().optional().describe("Nom d'icône lucide (défaut: Code)"),
+            path:        z.string().optional().describe("Slug du module (défaut: dérivé du titre)"),
+            description: z.string().optional(),
+        },
+        async ({ title, iconName, path, description }) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const db = await connectToDB();
+            const slug = path ? slugify(path) : slugify(title);
+
+            if (await db.collection("modules").findOne({ path: slug })) {
+                throw new Error(`Un module avec le path "${slug}" existe déjà.`);
+            }
+
+            const parsed = moduleFormSchema.safeParse({
+                title,
+                path: slug,
+                iconName: iconName ?? "Code",
+                description: description ?? "",
+                associatedSae: [],
+                coefficients: [],
+                instructors: [],
+                isExtra: true,
+            });
+            if (!parsed.success) {
+                throw new Error(`Module invalide : ${JSON.stringify(parsed.error.flatten())}`);
+            }
+
+            const r = await db.collection("modules").insertOne({
+                ...parsed.data,
+                sections: [],
+                updatedAt: new Date().toISOString(),
+            });
+
+            return {
+                content: [{
+                    type: "text" as const,
+                    text: `Module créé. moduleId=${r.insertedId.toString()}, path=${slug}`,
+                }],
+            };
         }
     );
 
