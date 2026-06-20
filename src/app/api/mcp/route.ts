@@ -224,6 +224,105 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         }
     );
 
+    // ── create_section ─────────────────────────────────────────────────────────
+    server.tool(
+        "create_section",
+        "Ajoute une section à un module + crée le squelette vide (course_content) de chaque type de contenu. Réservé aux admins.",
+        {
+            module:        z.string().describe("Slug du module"),
+            title:         z.string().describe("Titre de la section"),
+            contentTypes:  z.array(CONTENT_TYPE).min(1).describe("Types de contenu : cours | TP | examen"),
+            order:         z.number().int().min(1).optional().describe("Position (défaut: max+1)"),
+            path:          z.string().optional().describe("Slug de section (défaut: dérivé du titre)"),
+            objectives:    z.array(z.string()).optional(),
+            totalDuration: z.number().int().min(1).optional().describe("Nombre de séances (défaut: 1)"),
+            tags:          z.array(z.string()).optional(),
+            icon:          z.string().optional(),
+        },
+        async ({ module, title, contentTypes, order, path, objectives, totalDuration, tags, icon }) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const db = await connectToDB();
+
+            const mod = await db.collection<{ path: string; sections?: Array<{ path: string; order?: number }> }>("modules")
+                .findOne({ path: module });
+            if (!mod) throw new Error(`Module "${module}" introuvable.`);
+
+            const sectionPath = path ? slugify(path) : slugify(title);
+            const sections = mod.sections ?? [];
+            if (sections.some((s) => s.path === sectionPath)) {
+                throw new Error(`Une section "${sectionPath}" existe déjà dans ce module.`);
+            }
+            const nextOrder = order ?? (sections.reduce((m, s) => Math.max(m, s.order ?? 0), 0) + 1);
+
+            // Valide la "forme brute" (contents = types) via le schéma admin existant.
+            const rawCheck = sectionApiSchema.safeParse({
+                title,
+                path: sectionPath,
+                order: nextOrder,
+                totalDuration: totalDuration ?? 1,
+                hasCorrection: false,
+                isAvailable: false,
+                correctionIsAvailable: false,
+                examenIsLock: false,
+                contents: contentTypes,
+                objectives: objectives ?? [],
+                tags: tags ?? [],
+            });
+            if (!rawCheck.success) {
+                throw new Error(`Section invalide : ${JSON.stringify(rawCheck.error.flatten())}`);
+            }
+
+            // Crée un course_content vide par type, construit les ContentRef.
+            const now = new Date();
+            const contents: ContentRef[] = [];
+            for (const type of contentTypes) {
+                const r = await db.collection<CourseContent>("course_content").insertOne({
+                    moduleSlug: module,
+                    sectionSlug: sectionPath,
+                    contentType: type,
+                    blocks: [],
+                    version: 1,
+                    createdAt: now,
+                    updatedAt: now,
+                });
+                contents.push({ type, source: "db", contentId: r.insertedId.toString() });
+            }
+
+            const section = {
+                title,
+                path: sectionPath,
+                order: nextOrder,
+                contents,
+                objectives: objectives ?? [],
+                tags: tags ?? [],
+                totalDuration: totalDuration ?? 1,
+                hasCorrection: false,
+                isAvailable: false,
+                correctionIsAvailable: false,
+                examenIsLock: false,
+                ...(icon ? { icon } : {}),
+            };
+
+            // reason: MongoDB driver types $push as PushOperator<TSchema>; on an untyped collection
+            //         (Document), the pushed value resolves to `never`. Intermediate cast to `unknown`
+            //         then `object` avoids `any` while satisfying the driver's UpdateFilter type.
+            await db.collection("modules").updateOne(
+                { path: module },
+                { $push: { sections: section } } as unknown as object
+            );
+            for (const type of contentTypes) {
+                revalidateTag(`content:${module}:${sectionPath}:${type}`, { expire: 0 });
+            }
+
+            return {
+                content: [{
+                    type: "text" as const,
+                    text: `Section "${sectionPath}" créée (order ${nextOrder}) avec ${contentTypes.join(", ")}.`,
+                }],
+            };
+        }
+    );
+
     // ── list_modules ──────────────────────────────────────────────────────────
     server.tool(
         "list_modules",
