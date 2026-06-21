@@ -23,6 +23,10 @@ export const instructorSchema = z.object({
     email: z.union([z.string().email("Email invalide"), z.literal("")]),
 });
 
+export const hexColorSchema = z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}$/, "Couleur hex invalide (#rrggbb)");
+
 export const moduleFormSchema = z.object({
     title: z.string().min(1, "Le titre est obligatoire"),
     path: z.string().min(1, "Le path est obligatoire"),
@@ -36,6 +40,8 @@ export const moduleFormSchema = z.object({
     manager: instructorSchema.optional(),
     instructors: z.array(instructorSchema).default([]),
     isExtra: z.boolean().default(false),
+    colorLight: hexColorSchema.optional(),
+    colorDark: hexColorSchema.optional(),
 });
 
 export type ModuleFormValues = z.infer<typeof moduleFormSchema>;
