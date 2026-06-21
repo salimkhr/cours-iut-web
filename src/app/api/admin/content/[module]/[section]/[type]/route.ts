@@ -122,6 +122,55 @@ export const PUT = withAdmin<Ctx>(async (
     }
 });
 
+// ── PATCH ─────────────────────────────────────────────────────────────────────
+// Force la ref de la section en source:"db" (+ contentId) et revalide le cache,
+// sans re-sauvegarder les blocs. Utile quand une ref est restée "file" alors que
+// le contenu existe en base (créé via le MCP / le builder).
+
+export const PATCH = withAdmin<Ctx>(async (
+    _req: Request,
+    { params }: Ctx
+) => {
+    try {
+        const { module: moduleSlug, section: sectionSlug, type: contentType } = await params;
+        const typedType = contentType as CourseContent["contentType"];
+        const db = await connectToDB();
+
+        const doc = await db
+            .collection<CourseContent>("course_content")
+            .findOne({ moduleSlug, sectionSlug, contentType: typedType });
+
+        if (!doc) {
+            return NextResponse.json(
+                { error: "Aucun contenu en base pour ce type — rien à basculer." },
+                { status: 400 }
+            );
+        }
+
+        const result = await db.collection("modules").updateOne(
+            { path: moduleSlug },
+            {
+                $set: {
+                    "sections.$[s].contents.$[c].source": "db",
+                    "sections.$[s].contents.$[c].contentId": doc._id!.toString(),
+                },
+            },
+            { arrayFilters: [{ "s.path": sectionSlug }, { "c.type": contentType }] }
+        );
+
+        if (result.matchedCount === 0) {
+            return NextResponse.json({ error: "Module/section introuvable." }, { status: 404 });
+        }
+
+        revalidateTag(`content:${moduleSlug}:${sectionSlug}:${contentType}`, { expire: 0 });
+
+        return NextResponse.json({ success: true, source: "db" });
+    } catch (error) {
+        console.error("[content PATCH]", error);
+        return NextResponse.json({ error: "Erreur interne" }, { status: 500 });
+    }
+});
+
 // ── DELETE ────────────────────────────────────────────────────────────────────
 
 export const DELETE = withAdmin<Ctx>(async (

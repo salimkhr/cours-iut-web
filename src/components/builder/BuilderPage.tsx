@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { findBlock, findParent, findAllIds } from "@/lib/blockTreeUtils";
@@ -67,7 +68,9 @@ export function BuilderPage({
     const moveBlockUp = useBuilderStore((s) => s.moveBlockUp);
     const moveBlockDown = useBuilderStore((s) => s.moveBlockDown);
 
+    const router = useRouter();
     const [saving, setSaving] = useState(false);
+    const [switching, setSwitching] = useState(false);
     const [insertDialogOpen, setInsertDialogOpen] = useState(false);
     const [insertContext, setInsertContext] = useState<{ parentId: string | null; index: number }>(
         { parentId: null, index: Number.MAX_SAFE_INTEGER }
@@ -157,6 +160,32 @@ export function BuilderPage({
             setSaving(false);
         }
     }, [isDirty, saving, moduleSlug, sectionSlug, contentType, markSaved, setBlockErrors]);
+
+    const handleSwitchToDb = useCallback(async () => {
+        if (switching) return;
+        setSwitching(true);
+        try {
+            const res = await fetch(
+                `/api/admin/content/${moduleSlug}/${sectionSlug}/${contentType}`,
+                { method: "PATCH" }
+            );
+            if (!res.ok) {
+                const body = await res.json().catch(() => null) as { error?: string } | null;
+                toast.error("Échec du passage en DB", {
+                    description: body?.error ?? `HTTP ${res.status}`,
+                });
+                return;
+            }
+            toast.success("Contenu basculé en DB. Cache rafraîchi.");
+            router.refresh();
+        } catch (err) {
+            toast.error("Erreur réseau", {
+                description: err instanceof Error ? err.message : "Erreur inconnue",
+            });
+        } finally {
+            setSwitching(false);
+        }
+    }, [switching, moduleSlug, sectionSlug, contentType, router]);
 
     const openInsertWithContext = useCallback(() => {
         const { selectedId, blocks } = useBuilderStore.getState();
@@ -249,6 +278,8 @@ export function BuilderPage({
                 source={source}
                 saving={saving}
                 onSave={() => void handleSave()}
+                onSwitchToDb={source === "file" ? () => void handleSwitchToDb() : undefined}
+                switching={switching}
             />
 
             <div className="flex flex-1 min-h-0 overflow-hidden">

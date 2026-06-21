@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Save, Loader2, AlertCircle, Undo2, Redo2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Save, Loader2, AlertCircle, Undo2, Redo2, Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,9 @@ interface EditorToolbarProps {
     source: "file" | "db";
     saving: boolean;
     onSave: () => void;
+    /** Bascule la ref en source:"db" + revalide le cache (affiché si source === "file"). */
+    onSwitchToDb?: () => void;
+    switching?: boolean;
 }
 
 export function EditorToolbar({
@@ -23,6 +26,8 @@ export function EditorToolbar({
     source,
     saving,
     onSave,
+    onSwitchToDb,
+    switching,
 }: EditorToolbarProps) {
     const isDirty = useBuilderStore((s) => s.isDirty);
     const undo = useBuilderStore((s) => s.undo);
@@ -69,6 +74,21 @@ export function EditorToolbar({
             </div>
 
             <div className="flex items-center gap-1.5 shrink-0">
+                {source === "file" && onSwitchToDb && (
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1.5 h-8 text-xs"
+                        onClick={onSwitchToDb}
+                        disabled={switching}
+                        title="Publier ce contenu en base (DB) et rafraîchir le cache"
+                    >
+                        {switching
+                            ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Passage…</>
+                            : <><Database className="w-3.5 h-3.5" /> Passer en DB</>
+                        }
+                    </Button>
+                )}
                 {isDirty && (
                     <span className="hidden sm:flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500 mr-1">
                         <AlertCircle className="w-3 h-3" />

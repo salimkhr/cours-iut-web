@@ -22,29 +22,21 @@ export async function getContentComponent({
 
     if (!ref) notFound();
 
-    // Rend le contenu stocké en base (course_content) s'il existe, sinon null.
-    const renderDbIfPresent = async () => {
+    if (ref.source === "db") {
         const doc = await getContentBlocks(
             currentModule.path,
             currentSection.path,
             currentContent
         );
-        if (!doc) return null;
+
+        if (!doc) notFound();
+
         const blocks = doc.blocks;
         return function DbContent() {
             return React.createElement(BlockRenderer, { blocks });
         };
-    };
-
-    if (ref.source === "db") {
-        const Component = await renderDbIfPresent();
-        if (!Component) notFound();
-        return Component;
     }
 
-    // ref.source === "file" : on tente le composant .tsx ; à défaut (fichier
-    // absent), on retombe sur un éventuel contenu db — la ref peut indiquer
-    // "file" alors que le contenu vit en base (créé via le builder / le MCP).
     const componentKey =
         currentContent.charAt(0).toUpperCase() + currentContent.slice(1);
 
@@ -52,12 +44,12 @@ export async function getContentComponent({
         contentImports?.[currentModule.path]?.[currentSection.path]?.[componentKey];
 
     if (typeof importFunc !== "function") {
-        return await renderDbIfPresent();
+        return null;
     }
 
     const Component = (await importFunc()).default;
 
-    if (!Component) return await renderDbIfPresent();
+    if (!Component) return null;
 
     return Component;
 }
