@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { withAdmin } from "@/lib/withAdmin";
-import { getAllBlockDefinitions } from "@/lib/blockRegistry";
+import { blockDefs } from "@/lib/blockDefs";
 
 export const GET = withAdmin(async () => {
-    const definitions = getAllBlockDefinitions();
-    const types = definitions.map(({ type, label, defaultProps, fields }) => ({
+    const types = blockDefs.map(({ type, label, defaultProps, fields }) => ({
         type,
         label,
         defaultProps,

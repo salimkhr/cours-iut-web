@@ -5,7 +5,7 @@ import { z } from "zod";
 import { connectToDB } from "@/lib/mongodb";
 import { validateScalekitToken } from "@/lib/scalekit";
 import { getPublicOrigin } from "@/lib/publicOrigin";
-import { getAllBlockDefinitions, getBlockDefinition, createBlockInstance } from "@/lib/blockRegistry";
+import { blockDefs, getBlockDef, createBlockInstance } from "@/lib/blockDefs";
 import { validateBlockTree } from "@/lib/validateBlockTree";
 import {
     findBlock,
@@ -171,8 +171,10 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         "Retourne la liste des types de blocs disponibles dans le registre.",
         {},
         async () => {
-            const defs = getAllBlockDefinitions().map(({ type, label, defaultProps, fields }) => ({
+            const defs = blockDefs.map(({ type, label, defaultProps, fields, container }) => ({
                 type, label, defaultProps, fields,
+                isContainer: !!container,
+                allowedChildren: container?.allowedChildren,
             }));
             return { content: [{ type: "text" as const, text: JSON.stringify({ types: defs }, null, 2) }] };
         }
@@ -553,7 +555,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         },
         async ({ module, section, type, blockType, props, parentBlockId, afterBlockId }) => {
             if (!isAdmin) throw new Error("Forbidden");
-            const def = getBlockDefinition(blockType);
+            const def = getBlockDef(blockType);
             if (!def) throw new Error(`Type de bloc inconnu : ${blockType}`);
 
             const key: ContentKey = { moduleSlug: module, sectionSlug: section, contentType: type };
