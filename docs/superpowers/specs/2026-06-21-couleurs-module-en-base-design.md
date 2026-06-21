@@ -2,7 +2,17 @@
 
 **Date :** 2026-06-21
 **Statut :** Validé (brainstorming)
-**Approche retenue :** A — Variables CSS injectées au runtime + CSS générique
+**Approche retenue :** A-inject — les variables `--color-{path}` existantes sont **conservées**
+mais leurs **valeurs** sont injectées au runtime depuis Mongo via un `<style>` généré dans le
+layout racine, qui override `:root`/`.dark` de `globals.css`.
+
+> **Historique de décision :** l'approche A « pure » (renommage générique `--module-color` +
+> wrappers `[data-module-theme]` partout + suppression du boilerplate) avait été retenue, puis
+> abandonnée après cartographie : la couleur par-`path` est consommée de 3 façons dans ~25
+> fichiers (classes `bg/text/border-${path}`, styles inline `var(--color-${path})`, lectures
+> JS `getComputedStyle`), dont du hardcodé dans `src/cours/php/*`. A-inject livre le même
+> résultat fonctionnel (DB + picker admin + auto-couleur) avec ~3 fichiers touchés et zéro
+> régression. Le nettoyage du boilerplate CSS est reporté (hors périmètre).
 
 ## 1. Problème
 
@@ -44,65 +54,50 @@ colorDark?: string;   // hex 6 chars, ex. "#FF8568"
 Optionnels : si absents, fallback CSS sur `--color-brand-primary`. Validation
 `/^#[0-9a-fA-F]{6}$/` ajoutée à `moduleFormSchema` (`src/lib/schemas/module.schema.ts`).
 
-## 4. Système CSS générique
+## 4. Injection des couleurs au runtime
 
-Dans `globals.css`, suppression de tous les pavés par-`path` (sauf `login`, voir §7) et
-remplacement par **un seul** jeu de règles :
+`globals.css` est **inchangé** : ses définitions `:root { --color-{path} }` et
+`.dark { --color-{path} }` restent comme **valeurs par défaut/fallback**.
 
-```css
-[data-module-theme] {
-    --module-accent: var(--module-accent-l, var(--color-brand-primary));
-}
-.dark [data-module-theme] {
-    --module-accent: var(--module-accent-d, var(--color-brand-primary));
-}
-
-/* helpers génériques (remplacent .text-{path} / .bg-{path} / .border-{path}
-   et les .header-{path} .text-module / .bg-module / .border-module) */
-.text-module   { color: var(--module-accent); }
-.bg-module     { background: var(--module-accent); }
-.border-module { border-color: var(--module-accent); }
-
-/* auto-coloration du contenu pédagogique (ex .header-{path} h1/h2/h3/a) */
-.module-prose :is(h1, h2, h3) { color: var(--module-accent); }
-.module-prose h1 { text-align: center; }
-.module-prose a  { color: var(--module-accent); text-decoration: underline; }
-.module-prose [data-state="checked"].bg-module { background: var(--module-accent); }
-```
-
-**Astuce light/dark :** le wrapper porte les deux valeurs brutes en inline style
-(`--module-accent-l`, `--module-accent-d`). Comme `--module-accent` est résolu **sur le
-wrapper** (scope `[data-module-theme]`), le choix light/dark suit l'ancêtre `.dark` et chaque
-carte de la home reste indépendante.
-
-## 5. Application du thème (fichiers consommateurs)
-
-Partout où il y avait `header-${path}`, `bg-${path}` ou `text-${path}`, on enveloppe avec :
+Le layout racine (`src/app/layout.tsx`, passé en `async`) lit `getModules()` et rend un
+`<style>` qui **override** ces variables avec les valeurs de la base :
 
 ```tsx
-// On n'injecte la variable que si la couleur existe : mettre '' la rendrait
-// invalide à la résolution et le fallback var(..., brand-primary) ne s'appliquerait pas.
-const themeStyle = {
-    ...(m.colorLight ? { '--module-accent-l': m.colorLight } : {}),
-    ...(m.colorDark ? { '--module-accent-d': m.colorDark } : {}),
-} as React.CSSProperties;
+const modules = await getModules();
+const css = generateModuleThemeCss(modules); // chaîne CSS sanitizée
 
-<div data-module-theme style={themeStyle}>
+// premier enfant de <body> → après globals.css dans l'ordre source → override gagnant
+<style id="module-theme-vars" dangerouslySetInnerHTML={{ __html: css }} />
 ```
 
-Fichiers à adapter :
+CSS généré (exemple) :
 
-- `src/app/[moduleSlug]/[sectionSlug]/[contentSlug]/page.tsx` (lignes ~187, ~243) — wrapper + `module-prose`
-- `src/app/[moduleSlug]/[sectionSlug]/slide/page.tsx` (ligne ~40) — wrapper + `module-prose`
-- `src/components/admin/AdminModule.tsx` (ligne ~43) — wrapper (remplace `header-${path}`)
-- `src/components/Cards/ModuleCard.tsx` — wrapper + `.bg-module`/`.text-module` (remplace `bg-${path}`/`text-${path}`)
-- `src/components/admin/EditModuleSheet.tsx` — `AdminSheetHeader` et bouton submit : wrapper + `.bg-module`
-- Vérifier les autres usages de `text-{path}`/`bg-{path}`/`border-{path}` (ex. `SectionCard`,
-  `ContentSidebarNav`, `AdminSheetHeader`) et les basculer sur `.text-module`/`.bg-module` sous wrapper.
+```css
+:root{--color-html-css:#C13B1A;--color-php:#3B3F7A;…}
+.dark{--color-html-css:#FF8568;--color-php:#9198E5;…}
+```
 
-> Note : les composants de contenu utilisent déjà `.text-module`/`.bg-module`/`.border-module`.
-> Ces classes deviennent globales (plus besoin de l'ancêtre `.header-{path}`), donc **zéro
-> changement** dans ces composants tant qu'un ancêtre `[data-module-theme]` fournit l'accent.
+**Pourquoi ça override sans `!important` :** une balise `<style>` simple (sans `precedence`)
+n'est pas hissée par React 19 ; placée en **premier enfant de `<body>`**, elle vient après le
+CSS de `globals.css` (injecté dans `<head>`) dans l'ordre source. Spécificités égales
+(`:root` vs `:root`, `.dark` vs `.dark`) → la dernière règle gagne.
+
+**Sécurité :** `generateModuleThemeCss` sanitize strictement avant interpolation —
+`path` doit matcher `^[a-z0-9-]+$` et chaque couleur `^#[0-9a-fA-F]{6}$` ; toute entrée non
+conforme est ignorée (anti-injection CSS). Un module sans couleur n'émet aucune règle → il
+retombe sur le défaut de `globals.css`.
+
+## 5. Fichiers consommateurs
+
+**Aucun changement.** Tous les usages existants continuent de fonctionner tels quels car les
+noms de variables et de classes sont préservés :
+
+- classes `bg-${path}` / `text-${path}` / `border-${path}` (~30 sites, dont `src/cours/php/*`)
+- styles inline `var(--color-${path})` (~14 sites)
+- lectures JS `getComputedStyle().getPropertyValue('--color-${path}')` (`HeroSection`,
+  `SlideTitle`) — lisent désormais la valeur injectée par le layout
+
+> `login` n'est pas dans `getModules()` → `--color-login` n'est jamais override, reste statique.
 
 ## 6. Color picker admin
 
@@ -121,9 +116,8 @@ encore utilisée par un autre module ; si toutes sont prises, tirage aléatoire.
 - `src/app/api/admin/modules/route.ts` (POST) — avant `insertOne`
 - la branche `create_module` de `src/app/api/mcp/route.ts`
 
-**`login` :** reste statique. On conserve `--color-login` et un petit bloc dédié
-(`.header-login`/équivalent) dans `globals.css` pour les pages login/register, qui ne sont pas
-des modules Mongo.
+**`login` :** reste statique — `getModules()` ne le renvoie pas, donc `--color-login` n'est
+jamais override et `globals.css` reste la source pour les pages login/register.
 
 ## 8. Migration
 
@@ -143,12 +137,17 @@ visuel** attendu.
 - Pas de palette dérivée (nuances 50→900) par module.
 - Pas de contrôle de contraste **bloquant** (simple avertissement).
 - Pas de thématisation de `login` depuis la base.
+- **Nettoyage du boilerplate `globals.css`** (pavés par-`path`) : reporté. A-inject les garde
+  comme fallback ; un refactor générique ultérieur pourra les retirer.
+- Pas de cache sur `getModules()` dans le layout (appel direct ; optimisation possible plus tard).
 
 ## 10. Tests
 
-- Migration : après run, `findOne({path})` renvoie les couleurs attendues.
-- Schema : `moduleFormSchema` rejette un hex invalide, accepte un hex valide.
+- `generateModuleThemeCss` : émet `:root`/`.dark` pour un module valide ; ignore un `path` ou
+  une couleur non conforme (anti-injection) ; chaîne vide si aucun module n'a de couleur.
+- Schema : `moduleFormSchema` rejette un hex invalide, accepte un hex valide, accepte l'absence.
 - Assignation : deux créations successives n'obtiennent pas la même paire tant qu'il reste
   des paires libres.
+- Migration : après run, `findOne({path})` renvoie les couleurs attendues.
 - Visuel manuel : page module, slide, home cards, sheet admin — rendu identique en light/dark
   avant/après pour les 5 modules existants.
