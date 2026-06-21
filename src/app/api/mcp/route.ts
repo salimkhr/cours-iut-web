@@ -171,8 +171,8 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         "Retourne la liste des types de blocs disponibles dans le registre.",
         {},
         async () => {
-            const defs = blockDefs.map(({ type, label, defaultProps, fields, container }) => ({
-                type, label, defaultProps, fields,
+            const defs = blockDefs.map(({ type, label, description, defaultProps, fields, container }) => ({
+                type, label, description, defaultProps, fields,
                 isContainer: !!container,
                 allowedChildren: container?.allowedChildren,
             }));
