@@ -53,39 +53,15 @@ function adminEmails(): string[] {
 
 async function validateToken(req: Request): Promise<{ id: string; role: string } | null> {
     const authHeader = req.headers.get("Authorization") ?? req.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-        console.error("[MCP-DIAG] pas de Bearer header");
-        return null;
-    }
-    const token = authHeader.slice("Bearer ".length);
+    if (!authHeader?.startsWith("Bearer ")) return null;
 
-    // DIAG TEMPORAIRE : décode le payload (sans vérifier la signature) pour voir
-    // ce que Scalekit met réellement dans le token (aud / email / iss). À retirer.
-    try {
-        const payload = JSON.parse(
-            Buffer.from(token.split(".")[1] ?? "", "base64url").toString("utf8")
-        ) as Record<string, unknown>;
-        console.log("[MCP-DIAG] claims:", JSON.stringify({
-            aud: payload.aud, iss: payload.iss, sub: payload.sub,
-            email: payload.email, scope: payload.scope, exp: payload.exp,
-        }));
-    } catch (e) {
-        console.error("[MCP-DIAG] décodage token impossible:", e instanceof Error ? e.message : String(e));
-    }
-    console.log("[MCP-DIAG] audience attendue (SCALEKIT_RESOURCE_ID):", process.env.SCALEKIT_RESOURCE_ID);
-
-    const identity = await validateScalekitToken(token);
-    console.log("[MCP-DIAG] validateScalekitToken =>", JSON.stringify(identity));
-    if (!identity?.email) {
-        console.error("[MCP-DIAG] rejet: pas d'email dans l'identité validée");
-        return null;
-    }
+    const identity = await validateScalekitToken(authHeader.slice("Bearer ".length));
+    if (!identity?.email) return null;
 
     // Pas d'accès aux collections d'auth (fragiles au schéma better-auth) :
     // le rôle est dérivé de l'allowlist MCP_ADMIN_EMAILS. La résolution « réelle »
     // (claim OIDC ou auth.api) sera traitée en phase 2 avec l'accès étudiant.
     const role = adminEmails().includes(identity.email.toLowerCase()) ? "admin" : "user";
-    console.log("[MCP-DIAG] role:", role, "allowlist:", JSON.stringify(adminEmails()));
     return { id: identity.sub, role };
 }
 
