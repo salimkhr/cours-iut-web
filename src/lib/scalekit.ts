@@ -25,7 +25,29 @@ export interface McpIdentity {
 }
 
 /**
- * Valide un access token Scalekit (JWKS, issuer, audience, expiration).
+ * Récupère l'email via le userinfo endpoint Scalekit (resource-scoped).
+ * L'access token Scalekit ne porte PAS l'email dans ses claims, même quand le
+ * scope `email` est accordé : il faut le lire depuis userinfo (OIDC standard).
+ */
+async function fetchEmailFromUserinfo(token: string): Promise<string | null> {
+    const env = process.env.SCALEKIT_ENVIRONMENT_URL;
+    const resourceId = process.env.SCALEKIT_RESOURCE_ID;
+    if (!env || !resourceId) return null;
+    try {
+        const res = await fetch(`${env.replace(/\/+$/, "")}/resources/${resourceId}/userinfo`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return null;
+        const data = (await res.json()) as { email?: string };
+        return data.email ?? null;
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Valide un access token Scalekit (JWKS, issuer, audience, expiration) puis
+ * résout l'email via userinfo (absent des claims du token).
  * Retourne l'identité (sub + email) ou null si invalide.
  * `audience` doit matcher le Resource ID du serveur MCP (= SCALEKIT_RESOURCE_ID).
  */
@@ -37,7 +59,9 @@ export async function validateScalekitToken(token: string): Promise<McpIdentity 
             audience: [resourceId],
         })) as { sub?: string; email?: string };
         if (!claims.sub) return null;
-        return { sub: claims.sub, email: claims.email ?? null };
+
+        const email = claims.email ?? (await fetchEmailFromUserinfo(token));
+        return { sub: claims.sub, email };
     } catch (err) {
         // DIAG TEMPORAIRE : remonter la raison exacte de l'échec de validation.
         console.error("[MCP-DIAG] validateScalekitToken error:", err instanceof Error ? err.message : String(err));
