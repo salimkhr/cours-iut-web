@@ -165,7 +165,7 @@ export function BlockNode({ block, depth = 0, indexInParent, parentId }: BlockNo
             {/* Enfants */}
             {!collapsed && (hasChildren || isContainer(block.type)) && (
                 <div className="flex flex-col gap-2 p-2 border-t border-slate-300/30 dark:border-slate-600/20">
-                    {block.children!.map((child, i) => (
+                    {(block.children ?? []).map((child, i) => (
                         <BlockNode
                             key={child.id}
                             block={child}
