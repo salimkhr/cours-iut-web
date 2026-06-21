@@ -49,6 +49,8 @@ export default function EditModuleSheet({
             ? module.instructors
             : [{firstName: '', lastName: '', email: ''}],
         isExtra: module.isExtra ?? false,
+        colorLight: module.colorLight ?? '#C2410C',
+        colorDark: module.colorDark ?? '#FB923C',
     }), [module]);
 
     const {
@@ -158,6 +160,36 @@ export default function EditModuleSheet({
                                     </label>
                                 )}
                             />
+                        </section>
+
+                        <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+
+                        {/* Couleurs */}
+                        <section className="flex flex-col gap-3">
+                            <Eyebrow>Couleurs du module</Eyebrow>
+                            <div className="flex gap-6">
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        id="em-color-light"
+                                        type="color"
+                                        className="h-9 w-12 rounded-md border border-bridge-500/45 bg-transparent cursor-pointer"
+                                        {...register('colorLight')}
+                                    />
+                                    <Label htmlFor="em-color-light" className={labelCn}>Clair</Label>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        id="em-color-dark"
+                                        type="color"
+                                        className="h-9 w-12 rounded-md border border-bridge-500/45 bg-transparent cursor-pointer"
+                                        {...register('colorDark')}
+                                    />
+                                    <Label htmlFor="em-color-dark" className={labelCn}>Sombre</Label>
+                                </div>
+                            </div>
+                            {(errors.colorLight || errors.colorDark) && (
+                                <p className="text-red-500 text-xs">Couleur invalide (format #rrggbb).</p>
+                            )}
                         </section>
 
                         <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
