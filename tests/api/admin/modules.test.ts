@@ -94,6 +94,23 @@ describe("POST /api/admin/modules", () => {
         const doc = await db.collection("modules").findOne({ path: "javascript" });
         expect(doc?.title).toBe("JavaScript");
     });
+
+    test("POST assigne une couleur si absente", async () => {
+        session = ADMIN_SESSION;
+        const res = await postModule(makePostReq({ ...VALID_MODULE, sections: [] }), {});
+        expect(res.status).toBe(201);
+        const doc = await db.collection("modules").findOne({ path: "javascript" });
+        expect(doc?.colorLight).toMatch(/^#[0-9a-fA-F]{6}$/);
+        expect(doc?.colorDark).toMatch(/^#[0-9a-fA-F]{6}$/);
+    });
+
+    test("POST conserve une couleur fournie", async () => {
+        session = ADMIN_SESSION;
+        const res = await postModule(makePostReq({ ...VALID_MODULE, sections: [], colorLight: "#0F6E6E", colorDark: "#4FD1C5" }), {});
+        expect(res.status).toBe(201);
+        const doc = await db.collection("modules").findOne({ path: "javascript" });
+        expect(doc?.colorLight).toBe("#0F6E6E");
+    });
 });
 
 // ── PUT /api/admin/modules/[moduleId] ─────────────────────────────────────────

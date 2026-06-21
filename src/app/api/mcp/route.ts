@@ -15,6 +15,7 @@ import {
     updateBlockChildren,
 } from "@/lib/blockTreeUtils";
 import { moduleFormSchema } from "@/lib/schemas/module.schema";
+import { assignModuleColor } from "@/lib/assignModuleColor";
 import { sectionApiSchema } from "@/lib/schemas/section.schema";
 import type { Block, CourseContent, ContentRef } from "@/types/CourseContent";
 import Module from "@/types/Module";
@@ -214,8 +215,14 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 throw new Error(`Module invalide : ${JSON.stringify(parsed.error.flatten())}`);
             }
 
+            const colors = assignModuleColor(
+                await db.collection<Module>("modules")
+                    .find({}, {projection: {colorLight: 1}}).toArray(),
+            );
+
             const r = await db.collection<Omit<Module, "_id">>("modules").insertOne({
                 ...parsed.data,
+                ...colors,
                 sections: [],
                 updatedAt: new Date().toISOString(),
             });
