@@ -4,11 +4,13 @@ export const runtime = "nodejs";
 
 export async function GET(req: Request): Promise<Response> {
     const origin = getPublicOrigin(req);
-    const authServer = process.env.SCALEKIT_ENVIRONMENT_URL;
+    const env = process.env.SCALEKIT_ENVIRONMENT_URL;
+    const resourceId = process.env.SCALEKIT_RESOURCE_ID;
+    // Voir route.ts (base) : l'AS Scalekit est scopé ressource (<env>/resources/<resourceId>).
+    const authServer = env && resourceId ? `${env}/resources/${resourceId}` : env;
     return Response.json(
         {
             resource: `${origin}/api/mcp`,
-            // Voir route.ts (base) : l'Authorization Server est Scalekit.
             authorization_servers: authServer ? [authServer] : [],
         },
         {

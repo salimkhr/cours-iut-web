@@ -4,12 +4,15 @@ export const runtime = "nodejs";
 
 export async function GET(req: Request): Promise<Response> {
     const origin = getPublicOrigin(req);
-    const authServer = process.env.SCALEKIT_ENVIRONMENT_URL;
+    const env = process.env.SCALEKIT_ENVIRONMENT_URL;
+    const resourceId = process.env.SCALEKIT_RESOURCE_ID;
+    // Scalekit sert la métadonnée d'Authorization Server (avec registration_endpoint
+    // pour la DCR) à un chemin SCOPÉ RESSOURCE : <env>/resources/<resourceId>.
+    // Pointer vers l'URL nue renvoie 404 → claude.ai croit la DCR non supportée.
+    const authServer = env && resourceId ? `${env}/resources/${resourceId}` : env;
     return Response.json(
         {
             resource: `${origin}/api/mcp`,
-            // L'Authorization Server est désormais Scalekit (broker devant better-auth).
-            // claude.ai découvre Scalekit ici, puis y fait sa DCR.
             authorization_servers: authServer ? [authServer] : [],
         },
         {
