@@ -38,7 +38,9 @@ export async function validateScalekitToken(token: string): Promise<McpIdentity 
         })) as { sub?: string; email?: string };
         if (!claims.sub) return null;
         return { sub: claims.sub, email: claims.email ?? null };
-    } catch {
+    } catch (err) {
+        // DIAG TEMPORAIRE : remonter la raison exacte de l'échec de validation.
+        console.error("[MCP-DIAG] validateScalekitToken error:", err instanceof Error ? err.message : String(err));
         return null;
     }
 }
