@@ -4,6 +4,8 @@ import './globals.css';
 import NavBar from "@/components/NavBar";
 import {ThemeProvider} from "@/components/ThemeProvider";
 import {Toaster} from "@/components/ui/sonner";
+import getModules from "@/lib/getModules";
+import {generateModuleThemeCss} from "@/lib/generateModuleThemeCss";
 
 const jetbrainsMono = JetBrains_Mono({
     subsets: ['latin'],
@@ -30,10 +32,21 @@ export const metadata: Metadata = {
     }
 };
 
-export default function RootLayout({children}: { children: React.ReactNode }) {
+export default async function RootLayout({children}: { children: React.ReactNode }) {
+    // Tolérant à la phase de build (DB mockée) : pas de couleur → fallback globals.css.
+    let themeCss = "";
+    try {
+        themeCss = generateModuleThemeCss(await getModules());
+    } catch {
+        themeCss = "";
+    }
+
     return (
         <html lang="fr" className={`${jetbrainsMono.variable} ${ibmPlexSans.variable}`} suppressHydrationWarning>
             <body className="min-h-screen font-sans bg-brand-light dark:bg-brand-dark text-brand-dark dark:text-brand-light">
+                {themeCss && (
+                    <style id="module-theme-vars" dangerouslySetInnerHTML={{__html: themeCss}}/>
+                )}
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"
