@@ -11,8 +11,10 @@ const COLORS: Record<string, { colorLight: string; colorDark: string }> = {
 async function main() {
     const db = await connectToDB();
     for (const [path, colors] of Object.entries(COLORS)) {
+        // Idempotent : ne seed que si la couleur n'a pas déjà été posée
+        // (évite d'écraser une couleur réglée depuis l'admin lors d'un re-run).
         const res = await db.collection("modules").updateOne(
-            { path },
+            { path, colorLight: { $exists: false } },
             { $set: colors },
         );
         console.log(`${path}: matched=${res.matchedCount} modified=${res.modifiedCount}`);

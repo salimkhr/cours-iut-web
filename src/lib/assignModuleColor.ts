@@ -15,6 +15,7 @@ export function assignModuleColor(
     );
     const free = MODULE_COLOR_PALETTE.filter((p) => !usedLights.has(p.colorLight));
     const pool = free.length > 0 ? free : MODULE_COLOR_PALETTE;
-    const index = Math.floor(rng() * pool.length) % pool.length;
+    // rng ∈ [0, 1) → index toujours dans [0, pool.length - 1]
+    const index = Math.floor(rng() * pool.length);
     return pool[index];
 }
