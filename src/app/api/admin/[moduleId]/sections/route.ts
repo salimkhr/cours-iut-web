@@ -92,7 +92,6 @@ export const PUT = withAdmin(async (
                     [`sections.${oldSectionIndex}.description`]: updatedSection.description,
                     [`sections.${oldSectionIndex}.objectives`]: updatedSection.objectives,
                     [`sections.${oldSectionIndex}.tags`]: updatedSection.tags,
-                    [`sections.${oldSectionIndex}.icon`]: updatedSection.icon ?? null,
                     [`sections.${oldSectionIndex}.totalDuration`]: updatedSection.totalDuration,
                     [`sections.${oldSectionIndex}.hasCorrection`]: updatedSection.hasCorrection,
                     [`sections.${oldSectionIndex}.isAvailable`]: updatedSection.isAvailable,

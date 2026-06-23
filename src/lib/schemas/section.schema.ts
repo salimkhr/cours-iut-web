@@ -8,7 +8,6 @@ export const sectionFormSchema = z.object({
     description: z.string().optional(),
     objectives: z.string().optional(),
     tags: z.string().optional(),
-    icon: z.string().optional(),
     totalDuration: z.number().int().min(1, "Minimum 1 séance"),
     hasCorrection: z.boolean(),
     isAvailable: z.boolean(),

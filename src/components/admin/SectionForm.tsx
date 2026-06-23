@@ -20,7 +20,6 @@ import {
     AVAILABLE_CONTENTS,
 } from '@/lib/schemas/section.schema';
 import Eyebrow from '@/components/admin/ui/Eyebrow';
-import { SECTION_ICON_MAP, SECTION_ICON_LABELS } from '@/components/icons/section-icons';
 
 // Type exporté pour rétrocompatibilité avec EditSectionFab et AddSectionButton
 export type Section = {
@@ -29,7 +28,6 @@ export type Section = {
     description?: string;
     objectives?: string[] | string;
     tags: string[] | string;
-    icon?: string;
     totalDuration: number;
     hasCorrection: boolean;
     isAvailable?: boolean;
@@ -80,7 +78,6 @@ export default function SectionForm({
                 tags: Array.isArray(section!.tags)
                     ? section!.tags.join(',')
                     : (section!.tags ?? ''),
-                icon: section!.icon ?? '',
                 totalDuration: section!.totalDuration,
                 hasCorrection: section!.hasCorrection,
                 isAvailable: section!.isAvailable ?? true,
@@ -98,7 +95,6 @@ export default function SectionForm({
             description: '',
             objectives: '',
             tags: '',
-            icon: '',
             totalDuration: prefill?.totalDuration ?? 1,
             hasCorrection: prefill?.hasCorrection ?? true,
             isAvailable: prefill?.isAvailable ?? true,
@@ -162,7 +158,6 @@ export default function SectionForm({
             ...data,
             objectives: cleanedObjectives,
             tags: cleanedTags,
-            icon: data.icon || undefined,
         });
 
         onOpenChange(false);
@@ -231,46 +226,6 @@ export default function SectionForm({
                             <div>
                                 <Label htmlFor="sf-description" className={labelCn}>Description</Label>
                                 <Textarea id="sf-description" className={inputCn} {...register('description')}/>
-                            </div>
-                            <div>
-                                <Label className={labelCn}>Icône</Label>
-                                <Controller
-                                    name="icon"
-                                    control={control}
-                                    render={({field}) => (
-                                        <div className="grid grid-cols-4 gap-1.5 mt-1.5">
-                                            <button
-                                                type="button"
-                                                onClick={() => field.onChange('')}
-                                                className={cn(
-                                                    "flex flex-col items-center gap-1 py-2 px-1 rounded-lg border-2 text-[10px] font-medium transition-colors",
-                                                    !field.value
-                                                        ? `border-(--module-color) bg-(--module-color)/10 text-brand-dark dark:text-bridge-100`
-                                                        : "border-bridge-500/30 text-bridge-500 hover:border-bridge-500/60"
-                                                )}
-                                            >
-                                                <span className="text-base leading-none">—</span>
-                                                <span>Aucune</span>
-                                            </button>
-                                            {Object.entries(SECTION_ICON_MAP).map(([key, IconComp]) => (
-                                                <button
-                                                    key={key}
-                                                    type="button"
-                                                    onClick={() => field.onChange(key)}
-                                                    className={cn(
-                                                        "flex flex-col items-center gap-1 py-2 px-1 rounded-lg border-2 text-[10px] font-medium transition-colors",
-                                                        field.value === key
-                                                            ? `border-(--module-color) bg-(--module-color)/10 text-brand-dark dark:text-bridge-100`
-                                                            : "border-bridge-500/30 text-bridge-500 hover:border-bridge-500/60"
-                                                    )}
-                                                >
-                                                    <IconComp size={18} className={field.value === key ? "text-(--module-color)" : "text-bridge-400"} />
-                                                    <span className="text-center leading-tight">{SECTION_ICON_LABELS[key]}</span>
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
-                                />
                             </div>
                         </section>
 

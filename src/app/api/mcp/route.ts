@@ -249,9 +249,8 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             objectives:    z.array(z.string()).optional(),
             totalDuration: z.number().int().min(1).optional().describe("Nombre de séances (défaut: 1)"),
             tags:          z.array(z.string()).optional(),
-            icon:          z.string().optional(),
         },
-        async ({ module, title, contentTypes, order, path, objectives, totalDuration, tags, icon }) => {
+        async ({ module, title, contentTypes, order, path, objectives, totalDuration, tags }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
 
@@ -313,7 +312,6 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 isAvailable: false,
                 correctionIsAvailable: false,
                 examenIsLock: false,
-                ...(icon ? { icon } : {}),
             };
 
             await db.collection<Module>("modules").updateOne(
@@ -346,7 +344,6 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             objectives:            z.array(z.string()).optional(),
             totalDuration:         z.number().int().min(1).optional(),
             tags:                  z.array(z.string()).optional(),
-            icon:                  z.string().optional(),
             isAvailable:           z.boolean().optional(),
             hasCorrection:         z.boolean().optional(),
             correctionIsAvailable: z.boolean().optional(),
@@ -369,7 +366,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             const set: Record<string, unknown> = {};
             const meta: Array<[string, unknown]> = [
                 ["title", args.title], ["order", args.order], ["objectives", args.objectives],
-                ["totalDuration", args.totalDuration], ["tags", args.tags], ["icon", args.icon],
+                ["totalDuration", args.totalDuration], ["tags", args.tags],
                 ["isAvailable", args.isAvailable], ["hasCorrection", args.hasCorrection],
                 ["correctionIsAvailable", args.correctionIsAvailable], ["examenIsLock", args.examenIsLock],
             ];
