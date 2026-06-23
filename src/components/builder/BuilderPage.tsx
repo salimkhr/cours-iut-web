@@ -10,6 +10,7 @@ import { getBlockDefinition } from "@/lib/blockRegistry";
 import { EditorToolbar } from "@/components/builder/EditorToolbar";
 import { EditorTree } from "@/components/builder/EditorTree";
 import { EditorPreview } from "@/components/builder/EditorPreview";
+import { SlidePreviewList } from "@/components/builder/SlidePreviewList";
 import { BlockInsertDialog } from "@/components/builder/BlockInsertDialog";
 import { useEditorShortcuts } from "@/components/builder/hooks/useEditorShortcuts";
 import type { Block } from "@/types/CourseContent";
@@ -291,12 +292,16 @@ export function BuilderPage({
 
                 {/* Panneau droit — prévisualisation */}
                 <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
-                    <EditorPreview
-                        ref={previewRef}
-                        moduleSlug={moduleSlug}
-                        sectionSlug={sectionSlug}
-                        contentType={contentType}
-                    />
+                    {contentType === "slide" ? (
+                        <SlidePreviewList moduleSlug={moduleSlug} sectionSlug={sectionSlug} />
+                    ) : (
+                        <EditorPreview
+                            ref={previewRef}
+                            moduleSlug={moduleSlug}
+                            sectionSlug={sectionSlug}
+                            contentType={contentType}
+                        />
+                    )}
                 </div>
             </div>
 
