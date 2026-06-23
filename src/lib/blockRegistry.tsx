@@ -17,12 +17,16 @@ import {
     LayoutPanelLeft, PanelLeft, MessageSquare, ChevronsUpDown,
     Image, Table as TableIcon, Link, Code, Eye,
     Share2, Download, Quote, Minus,
+    Monitor, StickyNote,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import CourseReminder from "@/components/CourseReminder";
 import CoursePrerequisites from "@/components/CoursePrerequisites";
 import { COL_SPAN_CLASS } from "@/lib/blockSchemas";
 import { TableBlockEditor } from "@/components/builder/TableBlockEditor";
+import { SlideText } from "@/components/Slides/ui/SlideText";
+import { SlideList, SlideListItem } from "@/components/Slides/ui/SlideList";
+import { SlideNote } from "@/components/Slides/ui/SlideNote";
 import { blockDefs, getBlockDef, createBlockInstance } from "@/lib/blockDefs";
 import type { BlockDef, FieldDef, BlockCategory } from "@/lib/blockDefs";
 
@@ -264,6 +268,52 @@ const clientParts: Record<string, ClientPart> = {
         icon: Minus,
         render: () => (
             <hr className="border-t border-bridge-400/30 dark:border-bridge-500/25 my-2" />
+        ),
+    },
+    "slide": {
+        icon: Monitor,
+        render: ({ title, children }: BlockRenderProps) => (
+            <div className="border-2 border-dashed border-primary/30 rounded-xl p-4 bg-primary/5">
+                <p className="text-xs font-bold uppercase tracking-widest text-primary/60 mb-3">
+                    Slide — {String(title ?? "")}
+                </p>
+                <div className="space-y-3">{children}</div>
+            </div>
+        ),
+    },
+    "slide-text": {
+        icon: AlignLeft,
+        render: ({ content }: BlockRenderProps) => (
+            <SlideText>{renderInline(String(content ?? ""))}</SlideText>
+        ),
+    },
+    "slide-code": {
+        icon: Code,
+        render: ({ language, code, highlight }: BlockRenderProps) => (
+            <CodeCard
+                language={String(language ?? "javascript")}
+                highlightLines={highlight ? String(highlight) : undefined}
+            >
+                {String(code ?? "")}
+            </CodeCard>
+        ),
+    },
+    "slide-list": {
+        icon: ListIcon,
+        render: ({ ordered, children }: BlockRenderProps) => (
+            <SlideList ordered={Boolean(ordered)}>{children}</SlideList>
+        ),
+    },
+    "slide-list-item": {
+        icon: Dot,
+        render: ({ text }: BlockRenderProps) => (
+            <SlideListItem>{renderInline(String(text ?? ""))}</SlideListItem>
+        ),
+    },
+    "slide-note": {
+        icon: StickyNote,
+        render: ({ content }: BlockRenderProps) => (
+            <SlideNote>{String(content ?? "")}</SlideNote>
         ),
     },
 };
