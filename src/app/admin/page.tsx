@@ -3,7 +3,6 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import UsersTable from "@/components/admin/users/UsersTable";
 import type { AdminUser } from "@/components/admin/users/UsersTable";
-import SetupActions from "@/components/admin/SetupActions";
 
 export default async function AdminPage() {
     const session = await getServerSession();
@@ -58,9 +57,6 @@ export default async function AdminPage() {
                 <p className="text-sm text-bridge-500 dark:text-bridge-400 mt-1">
                     {users.length} compte{users.length !== 1 ? 's' : ''} enregistré{users.length !== 1 ? 's' : ''}
                 </p>
-            </div>
-            <div className="mb-6">
-                <SetupActions />
             </div>
             <UsersTable users={users} />
         </div>
