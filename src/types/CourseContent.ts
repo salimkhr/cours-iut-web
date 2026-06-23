@@ -18,7 +18,7 @@ export interface CourseContent {
     _id?: ObjectId | string;
     moduleSlug: string;
     sectionSlug: string;
-    contentType: "cours" | "TP" | "examen";
+    contentType: "cours" | "TP" | "examen" | "slide";
     blocks: Block[];
     version: number;
     createdAt: Date;

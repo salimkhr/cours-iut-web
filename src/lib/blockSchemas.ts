@@ -84,6 +84,16 @@ export const blockPropsSchemas: Record<string, z.ZodTypeAny> = {
         href: z.string(),
         description: z.string().optional(),
     }),
+    "slide": z.object({ title: z.string() }),
+    "slide-text": z.object({ content: z.string() }),
+    "slide-code": z.object({
+        language: z.string(),
+        code: z.string(),
+        highlight: z.string().optional(),
+    }),
+    "slide-list": z.object({ ordered: z.boolean() }),
+    "slide-list-item": z.object({ text: z.string() }),
+    "slide-note": z.object({ content: z.string() }),
 };
 
 export interface ContainerRule {
@@ -94,13 +104,24 @@ export interface ContainerRule {
 }
 
 export const containerRules: Record<string, ContainerRule> = {
-    "columns": { allowedChildren: ["column"], allowedParents: [null, "section", "callout", "collapsible"] },
+    "columns": { allowedChildren: ["column"], allowedParents: [null, "section", "callout", "collapsible", "slide"] },
     "column": { allowedChildren: "any", allowedParents: ["columns"] },
     "list": { allowedChildren: ["list-item"] },
     "list-item": { allowedChildren: "any", allowedParents: ["list"] },
     "callout": { allowedChildren: "any" },
     "collapsible": { allowedChildren: "any" },
     "section": { allowedChildren: "any" },
+    "slide": {
+        allowedChildren: ["slide-text", "slide-code", "slide-list", "slide-note", "columns"],
+        allowedParents: [null],
+    },
+    "slide-list": {
+        allowedChildren: ["slide-list-item"],
+    },
+    "slide-list-item": {
+        allowedChildren: "any",
+        allowedParents: ["slide-list"],
+    },
 };
 
 export function isContainer(type: string): boolean {
