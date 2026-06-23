@@ -13,9 +13,11 @@ interface ErrorLayoutProps {
     description: string;
     gifTag: string;
     action?: ReactNode;
+    /** Bloc optionnel de détails techniques (digest, message, stack). */
+    details?: ReactNode;
 }
 
-export default function ErrorLayout({code, description, gifTag, action}: ErrorLayoutProps) {
+export default function ErrorLayout({code, description, gifTag, action, details}: ErrorLayoutProps) {
     const {gifUrl, loading} = useRandomGif(gifTag);
 
     return (
@@ -37,6 +39,8 @@ export default function ErrorLayout({code, description, gifTag, action}: ErrorLa
                         <div className="absolute inset-0 animate-pulse bg-bridge-300/50 dark:bg-bridge-600/50 rounded-xl"/>
                     )}
                 </div>
+
+                {details}
 
                 <div className="flex flex-col sm:flex-row gap-3">
                     <Button asChild variant="outline" className="flex-1 gap-2">
