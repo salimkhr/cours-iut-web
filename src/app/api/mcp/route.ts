@@ -24,7 +24,7 @@ import Section from "@/types/Section";
 export const runtime = "nodejs";
 
 type ContentType = CourseContent["contentType"];
-const CONTENT_TYPE = z.enum(["cours", "TP", "examen"]);
+const CONTENT_TYPE = z.enum(["cours", "TP", "examen", "slide"]);
 
 interface ContentKey {
     moduleSlug: string;
@@ -143,7 +143,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     // ── get_migration_status ──────────────────────────────────────────────────
     server.tool(
         "get_migration_status",
-        "Retourne l'état de migration (file/db) de tous les cours, TPs et examens.",
+        "Retourne l'état de migration (file/db) de tous les cours, TPs, examens et slides.",
         {},
         async () => {
             const db = await connectToDB();
@@ -243,7 +243,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         {
             module:        z.string().describe("Slug du module"),
             title:         z.string().describe("Titre de la section"),
-            contentTypes:  z.array(CONTENT_TYPE).min(1).describe("Types de contenu : cours | TP | examen"),
+            contentTypes:  z.array(CONTENT_TYPE).min(1).describe("Types de contenu : cours | TP | examen | slide"),
             order:         z.number().int().min(1).optional().describe("Position (défaut: max+1)"),
             path:          z.string().optional().describe("Slug de section (défaut: dérivé du titre)"),
             objectives:    z.array(z.string()).optional(),
@@ -468,11 +468,11 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     // ── get_content ───────────────────────────────────────────────────────────
     server.tool(
         "get_content",
-        "Retourne l'arbre complet de blocs d'un contenu (cours, TP ou examen).",
+        "Retourne l'arbre complet de blocs d'un contenu (cours, TP, examen ou slide).",
         {
             module:  z.string().describe("Slug du module, ex: javascript"),
             section: z.string().describe("Slug de la section, ex: 1-le-dom"),
-            type:    CONTENT_TYPE.describe("Type de contenu : cours | TP | examen"),
+            type:    CONTENT_TYPE.describe("Type de contenu : cours | TP | examen | slide"),
         },
         async ({ module, section, type }) => {
             const db = await connectToDB();

@@ -43,6 +43,7 @@ interface BuilderPageProps {
     sectionTitle: string;
     initialBlocks: Block[];
     source: "file" | "db";
+    deckMode?: boolean;
 }
 
 export function BuilderPage({
