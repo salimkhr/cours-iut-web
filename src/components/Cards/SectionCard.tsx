@@ -253,11 +253,15 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                 <div className="flex flex-wrap gap-2.5 pt-3 mt-auto border-t border-bridge-700/20 dark:border-bridge-500/20 pointer-events-auto">
                     {sortedContents.map((item) => {
                         const key = item as ContentKey;
+                        // Type de contenu venant de la DB : un type inconnu (casse/typo/legacy)
+                        // ne doit pas rendre un composant undefined (crash React). Fallback
+                        // cohérent avec ContentSwitcher / ContentSidebarNav.
+                        const IconComp = ANIMATED_CONTENT_ICON[key] ?? BookTextIcon;
                         return (
                             <AnimatedActionButton
                                 key={item}
-                                IconComp={ANIMATED_CONTENT_ICON[key]}
-                                label={CONTENT_LABELS[key]}
+                                IconComp={IconComp}
+                                label={CONTENT_LABELS[key] ?? item}
                                 disabled={isLocked}
                                 href={`/${modulePath}/${section.path}/${item}`}
                                 btnClassName={cn(btnBase, isLocked && "opacity-50 pointer-events-none cursor-not-allowed")}
