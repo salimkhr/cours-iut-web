@@ -22,7 +22,7 @@ export interface FieldDef {
     inlineMarkdown?: boolean;
 }
 
-export type BlockCategory = "Contenu" | "Structure" | "Listes" | "Code" | "Médias" | "Composants";
+export type BlockCategory = "Contenu" | "Structure" | "Listes" | "Code" | "Médias" | "Composants" | "Slides";
 
 /** Moitié « données » d'un bloc (sans icône ni rendu React). */
 export interface BlockDef {
@@ -305,6 +305,97 @@ export const blockDefs: BlockDef[] = [
         defaultProps: {},
         schema: z.object({}),
         fields: [],
+    },
+    {
+        type: "slide",
+        label: "Slide",
+        category: "Slides",
+        description: "Un écran de présentation (titre + contenu). Conteneur direct des blocs slide-*. Chaque bloc `slide` = une diapositive dans le player.",
+        defaultProps: { title: "" },
+        schema: z.object({ title: z.string() }),
+        fields: [
+            { key: "title", label: "Titre de la slide", type: "text", placeholder: "A — Introduction" },
+        ],
+        container: containerRules["slide"],
+        initialChildren: () => [
+            { id: uuidv4(), type: "slide-text", props: { content: "" }, children: [] },
+        ],
+        inlineEditField: "title",
+    },
+    {
+        type: "slide-text",
+        label: "Texte slide",
+        category: "Slides",
+        description: "Paragraphe de texte dans une slide. Accepte le markdown inline (**gras**, _italique_, `code`, [lien](url)).",
+        defaultProps: { content: "" },
+        schema: z.object({ content: z.string() }),
+        fields: [
+            {
+                key: "content",
+                label: "Contenu",
+                type: "textarea",
+                inlineMarkdown: true,
+                placeholder: "Texte de la slide (markdown inline accepté)",
+            },
+        ],
+        inlineEditField: "content",
+    },
+    {
+        type: "slide-code",
+        label: "Code slide",
+        category: "Slides",
+        description: "Bloc de code dans une slide. `highlight` = étapes d'animation séparées par `|` (ex: \"1-3 | 5-7 | 9\"). Chaque groupe s'affiche à l'appui sur →.",
+        defaultProps: { language: "javascript", code: "", highlight: "" },
+        schema: z.object({
+            language: z.string(),
+            code: z.string(),
+            highlight: z.string().optional(),
+        }),
+        fields: [
+            { key: "language", label: "Langage", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx"] },
+            { key: "code", label: "Code", type: "textarea", placeholder: "const x = 42;" },
+            { key: "highlight", label: "Étapes (highlight)", type: "text", placeholder: "1-3 | 5-7 | 9" },
+        ],
+    },
+    {
+        type: "slide-list",
+        label: "Liste slide",
+        category: "Slides",
+        description: "Liste à puces ou numérotée dans une slide. Ne contient QUE des blocs `slide-list-item`.",
+        defaultProps: { ordered: false },
+        schema: z.object({ ordered: z.boolean() }),
+        fields: [
+            { key: "ordered", label: "Numérotée", type: "boolean" },
+        ],
+        container: containerRules["slide-list"],
+        initialChildren: () => [
+            { id: uuidv4(), type: "slide-list-item", props: { text: "" }, children: [] },
+        ],
+    },
+    {
+        type: "slide-list-item",
+        label: "Élément liste slide",
+        category: "Slides",
+        description: "Un élément d'une liste de slide (markdown inline dans `text`). Doit être enfant direct d'un `slide-list`.",
+        defaultProps: { text: "" },
+        schema: z.object({ text: z.string() }),
+        fields: [
+            { key: "text", label: "Texte", type: "text", inlineMarkdown: true },
+        ],
+        container: containerRules["slide-list-item"],
+        inlineEditField: "text",
+    },
+    {
+        type: "slide-note",
+        label: "Note présentateur",
+        category: "Slides",
+        description: "Note visible uniquement dans le panneau notes du player (touche N). Invisible dans la slide affichée aux étudiants.",
+        defaultProps: { content: "" },
+        schema: z.object({ content: z.string() }),
+        fields: [
+            { key: "content", label: "Note", type: "textarea", placeholder: "Points à aborder oralement..." },
+        ],
+        inlineEditField: "content",
     },
 ];
 
