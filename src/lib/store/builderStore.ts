@@ -17,6 +17,7 @@ const MAX_HISTORY = 50;
 interface BuilderStore {
     blocks: Block[];
     moduleSlug: string;
+    contentType: string;
     selectedId: string | null;
     isDirty: boolean;
     blockErrors: Record<string, string>;
@@ -24,7 +25,7 @@ interface BuilderStore {
     _history: Block[][];
     _future: Block[][];
 
-    setBlocks: (blocks: Block[], moduleSlug?: string) => void;
+    setBlocks: (blocks: Block[], moduleSlug?: string, contentType?: string) => void;
     selectBlock: (id: string | null) => void;
     setBlockErrors: (errors: Record<string, string>) => void;
     toggleCollapse: (id: string) => void;
@@ -52,6 +53,7 @@ function pushHistory(
 export const useBuilderStore = create<BuilderStore>()((set) => ({
     blocks: [],
     moduleSlug: "",
+    contentType: "",
     selectedId: null,
     isDirty: false,
     blockErrors: {},
@@ -59,8 +61,8 @@ export const useBuilderStore = create<BuilderStore>()((set) => ({
     _history: [],
     _future: [],
 
-    setBlocks: (blocks, moduleSlug) =>
-        set((s) => ({ blocks, moduleSlug: moduleSlug ?? s.moduleSlug, isDirty: false, _history: [], _future: [] })),
+    setBlocks: (blocks, moduleSlug, contentType) =>
+        set((s) => ({ blocks, moduleSlug: moduleSlug ?? s.moduleSlug, contentType: contentType ?? s.contentType, isDirty: false, _history: [], _future: [] })),
 
     selectBlock: (id) => set({ selectedId: id }),
 

@@ -80,7 +80,7 @@ export function BuilderPage({
 
     // Initialiser les blocs au montage
     useEffect(() => {
-        setBlocks(initialBlocks, moduleSlug);
+        setBlocks(initialBlocks, moduleSlug, contentType);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

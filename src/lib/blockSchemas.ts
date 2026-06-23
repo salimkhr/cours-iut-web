@@ -115,9 +115,13 @@ export const containerRules: Record<string, ContainerRule> = {
         allowedChildren: ["slide-text", "slide-code", "slide-list", "slide-note", "columns"],
         allowedParents: [null],
     },
+    "slide-text": { allowedChildren: [], allowedParents: ["slide", "column"] },
+    "slide-code": { allowedChildren: [], allowedParents: ["slide", "column"] },
     "slide-list": {
         allowedChildren: ["slide-list-item"],
+        allowedParents: ["slide", "column"],
     },
+    "slide-note": { allowedChildren: [], allowedParents: ["slide"] },
     "slide-list-item": {
         allowedChildren: "any",
         allowedParents: ["slide-list"],

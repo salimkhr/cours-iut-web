@@ -10,7 +10,7 @@ import { canDrop } from "@/lib/blockSchemas";
 import { Blocks } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const CATEGORY_ORDER: BlockCategory[] = [
+const CATEGORY_ORDER_DEFAULT: BlockCategory[] = [
     "Contenu",
     "Structure",
     "Listes",
@@ -18,6 +18,8 @@ const CATEGORY_ORDER: BlockCategory[] = [
     "Médias",
     "Composants",
 ];
+
+const CATEGORY_ORDER_SLIDE: BlockCategory[] = ["Slides"];
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
     return (
@@ -40,6 +42,7 @@ export function BlockInsertDialog({ open, onClose, parentId, index }: BlockInser
     const blocks = useBuilderStore((s) => s.blocks);
     const moduleSlug = useBuilderStore((s) => s.moduleSlug);
 
+    const contentType = useBuilderStore((s) => s.contentType);
     const allDefs = getAllBlockDefinitions();
 
     const parentBlock = parentId ? findBlock(blocks, parentId) : null;
@@ -47,7 +50,8 @@ export function BlockInsertDialog({ open, onClose, parentId, index }: BlockInser
 
     const defs = allDefs.filter((def) => canDrop(def.type, parentType));
 
-    const grouped = CATEGORY_ORDER.reduce<{ cat: BlockCategory; items: typeof defs }[]>(
+    const categoryOrder = contentType === "slide" ? CATEGORY_ORDER_SLIDE : CATEGORY_ORDER_DEFAULT;
+    const grouped = categoryOrder.reduce<{ cat: BlockCategory; items: typeof defs }[]>(
         (acc, cat) => {
             const items = defs.filter((d) => d.category === cat);
             if (items.length > 0) acc.push({ cat, items });
