@@ -1,5 +1,5 @@
 import {contentImports} from "@/lib/contentImports";
-import {notFound} from "next/navigation";
+import {notFound, redirect} from "next/navigation";
 import {getModuleData} from "@/hook/getModuleData";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getContentRef} from "@/types/CourseContent";
@@ -39,7 +39,10 @@ export default async function Content({params}: ContentPageProps) {
     // Branche DB
     if (ref?.source === "db") {
         const doc = await getContentBlocks(moduleSlug, sectionSlug, "slide");
-        if (!doc) notFound();
+        if (!doc) {
+            if (isAdmin) redirect(`/admin/content/${moduleSlug}/${sectionSlug}/slide`);
+            notFound();
+        }
 
         return (
             <div className={`header-${currentModule.path}`}>
@@ -62,10 +65,16 @@ export default async function Content({params}: ContentPageProps) {
 
     // Branche FILE (comportement existant)
     const importFunc = contentImports?.[moduleSlug]?.[sectionSlug]?.["Slide"];
-    if (!importFunc) notFound();
+    if (!importFunc) {
+        if (isAdmin) redirect(`/admin/content/${moduleSlug}/${sectionSlug}/slide`);
+        notFound();
+    }
 
     const ComponentToRender = (await importFunc()).default;
-    if (!ComponentToRender) notFound();
+    if (!ComponentToRender) {
+        if (isAdmin) redirect(`/admin/content/${moduleSlug}/${sectionSlug}/slide`);
+        notFound();
+    }
 
     return (
         <div className={`header-${currentModule.path}`}>
