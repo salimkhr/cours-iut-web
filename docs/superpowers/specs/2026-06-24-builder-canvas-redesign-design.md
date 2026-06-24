@@ -143,7 +143,7 @@ Vide quand aucun bloc n'est sélectionné. Affiche des contrôles spécifiques q
 |-------------|---------------------------|
 | `text`, `slide-text`, `heading`, `list-item`, `slide-list-item` | `Bold` · `Italic` · `Code` · `Link` (formatage markdown inline) |
 | `code`, `slide-code` | `Code2` sélecteur de langage ▾ · `Highlighter` champ `highlight` · `Maximize2` ouvre Monaco |
-| `image-card` | `ImagePlus` Remplacer · `Type` légende (champ inline) |
+| `image-card` | `ImagePlus` Remplacer · `Type` légende (champ inline) · `Text` alt (champ texte alternatif, distinct de la légende) |
 | `callout` | `Info`/`AlertTriangle`/`Lightbulb`/`BookMarked` sélecteur de variante ▾ |
 | `heading` | `Heading2`/`Heading3` sélecteur de niveau ▾ |
 | `list`, `slide-list` | `List` Puces · `ListOrdered` Numérotée (toggle `ordered`) |
@@ -168,13 +168,16 @@ interface EditableBlockProps {
 }
 ```
 
-### 3 états
+### 4 états
 
 | État | Visuel | Déclencheur |
 |------|--------|-------------|
 | **Repos** | rendu public normal | par défaut |
-| **Hover** | bordure `border-blue-300`, badge `✎ {type}` coin supérieur droit | `onMouseEnter` |
-| **Édition** | bordure `border-blue-500` + fond `bg-blue-50`, curseur actif | clic dans le contenu texte |
+| **Hover** | bordure `border-blue-300`, badge `Pencil {type}` coin supérieur droit | `onMouseEnter` |
+| **Focus clavier** | `focus-visible:ring-2 ring-blue-500 ring-offset-1` | `Tab` jusqu'au bloc |
+| **Édition** | bordure `border-blue-500` + fond `bg-blue-50`, curseur actif | `Enter` (focus) ou clic dans le contenu texte |
+
+> L'état **focus clavier** est distinct du hover : un utilisateur au clavier doit voir quel bloc est ciblé avant de l'éditer. `focus-visible` (et non `focus`) pour ne pas afficher le ring sur un clic souris.
 
 ### Curseurs
 
@@ -225,6 +228,8 @@ Les blocs `code` et `slide-code` n'ouvrent **pas** Monaco à l'échelle dans le 
 3. À la fermeture (✕ ou `Escape`) → auto-save vers `block.props.content`.
 
 Raison : Monaco à 60% de scale (mode slide) est illisible et le curseur est décalé.
+
+> **Contrainte technique impérative (stacking context) :** `ZoomedSlide` applique `transform: scale()`, ce qui crée un nouveau stacking context. Toute surface flottante ouverte depuis un bloc *à l'intérieur* d'une slide scalée (Monaco modal, popover langage/variante, tooltip) DOIT être rendue via **React Portal sur `document.body`** — sinon elle hérite du scale (0.65×) et se retrouve clippée par le conteneur. Le Dialog shadcn (`@radix-ui`) porte déjà son contenu via portal : utiliser ce comportement par défaut, ne pas l'overrider avec `container`.
 
 ---
 
@@ -389,6 +394,8 @@ Ces fichiers seront supprimés lors de l'implémentation. Leurs fonctionnalités
 | Monaco plein écran | `Maximize2` |
 | Remplacer image | `ImagePlus` |
 | Légende image | `Type` |
+| Texte alternatif image | `Text` |
+| Badge hover « éditer » | `Pencil` |
 | Callout info | `Info` |
 | Callout warning | `AlertTriangle` |
 | Callout tip | `Lightbulb` |
@@ -401,7 +408,66 @@ Ces fichiers seront supprimés lors de l'implémentation. Leurs fonctionnalités
 
 ---
 
-## 16. Non-périmètre
+## 16. Accessibilité & contraintes techniques
+
+Consolidation des règles ui-ux-pro-max applicables à un éditeur canvas-first.
+
+### 16.1 Navigation clavier (severity: High)
+
+L'éditeur doit être pilotable entièrement au clavier, ordre de tab = ordre visuel.
+
+| Touche | Action |
+|--------|--------|
+| `Tab` / `Shift+Tab` | Naviguer entre les blocs éditables (focus) |
+| `Enter` | Entrer en édition du bloc focalisé |
+| `Escape` | Sortir de l'édition (annule + restaure) ; en cascade ferme une modale ouverte |
+| `↑` / `↓` (mode slides) | Slide précédente / suivante dans `SlideThumbnailList` |
+| `Ctrl+Z` / `Ctrl+Y` | Undo / Redo |
+
+Pas de piège clavier : depuis une modale Monaco, `Escape` rend le focus au bloc d'origine.
+
+### 16.2 Focus visible (severity: High)
+
+`focus-visible:ring-2 ring-blue-500 ring-offset-1` sur tout élément interactif (blocs, boutons topbar, miniatures, drag handles). Ne jamais `outline-none` sans alternative. `focus-visible` plutôt que `focus` pour ne pas polluer l'interaction souris.
+
+### 16.3 Annonce des erreurs (severity: High)
+
+Le store expose déjà `blockErrors: Record<string, string>`. Chaque message d'erreur de bloc est rendu dans un conteneur `role="alert"` / `aria-live="polite"` afin d'être annoncé par les lecteurs d'écran — jamais une simple bordure rouge.
+
+### 16.4 Texte alternatif des images (severity: High)
+
+`image-card` expose deux champs distincts : `caption` (légende visible) et `alt` (texte alternatif). Le `alt` ne doit pas être dérivé de la légende. Champ vide autorisé seulement pour une image décorative (alt="").
+
+### 16.5 Échelle de z-index (severity: High)
+
+Échelle fixe plutôt que valeurs arbitraires :
+
+| z-index | Usage |
+|---------|-------|
+| `z-10` | Bordures/badges hover de bloc, drag handle |
+| `z-20` | `ContextualTopBar` (sticky) |
+| `z-30` | Popover langage / variante / fond |
+| `z-50` | `CodeEditorModal` (Monaco), block picker overlay |
+
+Rappel : `transform: scale()` (ZoomedSlide) crée un stacking context isolé → les surfaces `z-30`/`z-50` doivent être portées hors du conteneur scalé (cf. §6).
+
+### 16.6 Touch targets (severity: Critical)
+
+Les boutons icônes de la `ContextualTopBar` conservent une zone cliquable ≥ 44×44 px (padding autour de l'icône Lucide 16-20 px), même si l'icône est petite.
+
+### 16.7 `prefers-reduced-motion` (severity: Medium)
+
+- `scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth" })`.
+- Transitions de bordure / opacité (`duration-200`) désactivées sous `prefers-reduced-motion`.
+
+### 16.8 Performance du scale (severity: Medium)
+
+- `transform: scale()` est GPU-accelerated → préféré à une mise à l'échelle par largeur/hauteur.
+- Le recalcul du scale sur `ResizeObserver` est **débouncé** (~16-32 ms / `requestAnimationFrame`) pour éviter le thrash de layout au redimensionnement.
+
+---
+
+## 17. Non-périmètre
 
 - Le rendu public des slides (`/[moduleSlug]/[sectionSlug]/slide`) n'est pas modifié.
 - L'authentification, le middleware proxy et les routes API ne sont pas touchés.
