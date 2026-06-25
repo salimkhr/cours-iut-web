@@ -44,6 +44,7 @@ interface BuilderPageProps {
     sectionTitle: string;
     initialBlocks: Block[];
     source: "file" | "db";
+    // TODO(deck-mode): wire this when deck mode is implemented
     deckMode?: boolean;
 }
 

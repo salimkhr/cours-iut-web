@@ -32,7 +32,7 @@ export function CodeEditorModal({ open, initialValue, language, onClose, onSave 
                 }
             }}
         >
-            <DialogContent className="z-50 h-[85vh] w-[90vw] max-w-none gap-2 p-4 sm:max-w-none">
+            <DialogContent className="h-[85vh] w-[90vw] max-w-none gap-2 p-4 sm:max-w-none">
                 <DialogHeader>
                     <DialogTitle className="text-sm">Éditer le code — {language}</DialogTitle>
                 </DialogHeader>

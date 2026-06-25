@@ -66,7 +66,7 @@ export function EditableBlock({
     return (
         <div className="group/eb relative">
             <div
-                role="group"
+                role="article"
                 tabIndex={0}
                 aria-label={def?.label ?? block.type}
                 onClick={(e) => {

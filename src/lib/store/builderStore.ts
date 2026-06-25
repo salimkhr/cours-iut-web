@@ -174,16 +174,17 @@ export const useBuilderStore = create<BuilderStore>()((set) => ({
         })),
 
     deleteBlock: (id) =>
-        set((state) => {
-            const blocks = removeBlock(state.blocks, id);
+        set((s) => {
+            const blocks = removeBlock(s.blocks, id);
             const selectedId =
-                state.selectedId && findBlock(blocks, state.selectedId)
-                    ? state.selectedId
+                s.selectedId && findBlock(blocks, s.selectedId)
+                    ? s.selectedId
                     : null;
             return {
                 blocks,
                 selectedId,
-                _history: pushHistory(state.blocks, state._history),
+                editingBlockId: s.editingBlockId === id ? null : s.editingBlockId,
+                _history: pushHistory(s.blocks, s._history),
                 _future: [],
                 isDirty: true,
             };

@@ -26,13 +26,14 @@ interface ContextualTopBarProps {
 
 const TEXT_TYPES = new Set(["text", "slide-text", "heading", "list-item", "slide-list-item"]);
 
-function IconBtn({ label, onClick, children }: { label: string; onClick: () => void; children: React.ReactNode }) {
+function IconBtn({ label, onClick, onMouseDown, children }: { label: string; onClick: () => void; onMouseDown?: React.MouseEventHandler<HTMLButtonElement>; children: React.ReactNode }) {
     return (
         <button
             type="button"
             aria-label={label}
             title={label}
             onClick={onClick}
+            onMouseDown={onMouseDown}
             className="inline-flex size-11 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-slate-300 dark:hover:bg-slate-800"
         >
             {children}
@@ -59,16 +60,17 @@ export function ContextualTopBar({
         const t = selected.type;
 
         if (TEXT_TYPES.has(t)) {
+            const noBlur = (e: React.MouseEvent<HTMLButtonElement>) => e.preventDefault();
             return (
                 <>
-                    <IconBtn label="Gras" onClick={() => mark("bold")}><Bold className="size-4" /></IconBtn>
-                    <IconBtn label="Italique" onClick={() => mark("italic")}><Italic className="size-4" /></IconBtn>
-                    <IconBtn label="Code inline" onClick={() => mark("code")}><Code className="size-4" /></IconBtn>
-                    <IconBtn label="Lien" onClick={() => mark("link")}><Link className="size-4" /></IconBtn>
+                    <IconBtn label="Gras" onClick={() => mark("bold")} onMouseDown={noBlur}><Bold className="size-4" /></IconBtn>
+                    <IconBtn label="Italique" onClick={() => mark("italic")} onMouseDown={noBlur}><Italic className="size-4" /></IconBtn>
+                    <IconBtn label="Code inline" onClick={() => mark("code")} onMouseDown={noBlur}><Code className="size-4" /></IconBtn>
+                    <IconBtn label="Lien" onClick={() => mark("link")} onMouseDown={noBlur}><Link className="size-4" /></IconBtn>
                     {t === "heading" && (
                         <>
-                            <IconBtn label="Titre niveau 2" onClick={() => updateBlock(selected.id, { level: 2 })}><Heading2 className="size-4" /></IconBtn>
-                            <IconBtn label="Titre niveau 3" onClick={() => updateBlock(selected.id, { level: 3 })}><Heading3 className="size-4" /></IconBtn>
+                            <IconBtn label="Titre niveau 2" onClick={() => updateBlock(selected.id, { level: 2 })} onMouseDown={noBlur}><Heading2 className="size-4" /></IconBtn>
+                            <IconBtn label="Titre niveau 3" onClick={() => updateBlock(selected.id, { level: 3 })} onMouseDown={noBlur}><Heading3 className="size-4" /></IconBtn>
                         </>
                     )}
                 </>

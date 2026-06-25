@@ -63,7 +63,7 @@ function Thumbnail({
             onClick={onSelect}
             title={String(slide.props.title ?? "Sans titre")}
             aria-label={`Slide ${index + 1} : ${String(slide.props.title ?? "Sans titre")}`}
-            aria-current={active}
+            aria-current={active ? "step" : undefined}
             className={[
                 "block w-full overflow-hidden rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
                 active ? "ring-2 ring-blue-500" : "ring-1 ring-slate-200 dark:ring-slate-700",
