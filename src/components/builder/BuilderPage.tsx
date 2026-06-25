@@ -1,18 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { findBlock, findParent, findAllIds } from "@/lib/blockTreeUtils";
 import { isContainer } from "@/lib/blockSchemas";
-import { getBlockDefinition } from "@/lib/blockRegistry";
+import { getBlockDefinition, getBlockDef, createBlockInstance } from "@/lib/blockRegistry";
 import { EditorToolbar } from "@/components/builder/EditorToolbar";
-import { EditorTree } from "@/components/builder/EditorTree";
-import { EditorPreview } from "@/components/builder/EditorPreview";
-import { SlidePreviewList } from "@/components/builder/SlidePreviewList";
 import { BlockInsertDialog } from "@/components/builder/BlockInsertDialog";
 import { useEditorShortcuts } from "@/components/builder/hooks/useEditorShortcuts";
+import { CourseEditCanvas } from "@/components/builder/CourseEditCanvas";
+import { SlideEditCanvas } from "@/components/builder/SlideEditCanvas";
+import { SlideThumbnailList } from "@/components/builder/SlideThumbnailList";
 import type { Block } from "@/types/CourseContent";
 
 interface ApiValidationDetail { path: string; message: string }
@@ -70,6 +70,11 @@ export function BuilderPage({
     const moveBlockUp = useBuilderStore((s) => s.moveBlockUp);
     const moveBlockDown = useBuilderStore((s) => s.moveBlockDown);
 
+    const allBlocks = useBuilderStore((s) => s.blocks);
+    const activeSlideId = useBuilderStore((s) => s.activeSlideId);
+    const setActiveSlide = useBuilderStore((s) => s.setActiveSlide);
+    const insertBlock = useBuilderStore((s) => s.insertBlock);
+
     const router = useRouter();
     const [saving, setSaving] = useState(false);
     const [switching, setSwitching] = useState(false);
@@ -77,13 +82,22 @@ export function BuilderPage({
     const [insertContext, setInsertContext] = useState<{ parentId: string | null; index: number }>(
         { parentId: null, index: Number.MAX_SAFE_INTEGER }
     );
-    const previewRef = useRef<{ reload: () => void } | null>(null);
+
+    const isSlideMode = contentType === "slide";
+    const slides = isSlideMode ? allBlocks.filter((b) => b.type === "slide") : [];
+    const activeSlide = slides.find((s) => s.id === activeSlideId) ?? slides[0] ?? null;
 
     // Initialiser les blocs au montage
     useEffect(() => {
         setBlocks(initialBlocks, moduleSlug, contentType);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    // Auto-sélectionner la première slide en mode slide
+    useEffect(() => {
+        if (isSlideMode && !activeSlideId && slides.length > 0) setActiveSlide(slides[0].id);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isSlideMode, slides.length]);
 
     // Avertir avant de quitter si modifications non sauvegardées
     useEffect(() => {
@@ -153,7 +167,6 @@ export function BuilderPage({
             setBlockErrors({});
             markSaved();
             toast.success("Contenu sauvegardé.");
-            previewRef.current?.reload();
         } catch (err) {
             toast.error("Erreur réseau", {
                 description: err instanceof Error ? err.message : "Erreur inconnue",
@@ -208,10 +221,18 @@ export function BuilderPage({
         setInsertDialogOpen(true);
     }, []);
 
-    const openInsertAtRoot = useCallback(() => {
-        setInsertContext({ parentId: null, index: Number.MAX_SAFE_INTEGER });
+    const openInsertAt = useCallback((parentId: string | null, index: number) => {
+        setInsertContext({ parentId, index });
         setInsertDialogOpen(true);
     }, []);
+
+    const addSlide = useCallback(() => {
+        const def = getBlockDef("slide");
+        if (!def) return;
+        const blk = createBlockInstance(def);
+        insertBlock(blk, null, Number.MAX_SAFE_INTEGER);
+        setActiveSlide(blk.id);
+    }, [insertBlock, setActiveSlide]);
 
     const handleDelete = useCallback(() => {
         const { selectedId } = useBuilderStore.getState();
@@ -285,27 +306,32 @@ export function BuilderPage({
             />
 
             <div className="flex flex-1 min-h-0 overflow-hidden">
-                {/* Panneau gauche — arbre de blocs */}
-                <div className="w-[420px] min-w-[280px] max-w-[600px] flex flex-col border-r border-slate-200 dark:border-slate-700 overflow-hidden bg-slate-50/40 dark:bg-slate-900/40">
-                    <EditorTree onInsertAtRoot={openInsertAtRoot} />
-                </div>
-
-                {/* Panneau droit — prévisualisation */}
-                <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
-                    {contentType === "slide" ? (
-                        <SlidePreviewList moduleSlug={moduleSlug} sectionSlug={sectionSlug} />
-                    ) : (
-                        <EditorPreview
-                            ref={previewRef}
-                            moduleSlug={moduleSlug}
-                            sectionSlug={sectionSlug}
-                            contentType={contentType}
+                {isSlideMode ? (
+                    <>
+                        <SlideThumbnailList
+                            slides={slides}
+                            activeId={activeSlide?.id ?? null}
+                            onSelect={setActiveSlide}
+                            onAdd={addSlide}
                         />
-                    )}
-                </div>
+                        {activeSlide ? (
+                            <SlideEditCanvas
+                                slide={activeSlide}
+                                position={{ index: slides.findIndex((s) => s.id === activeSlide.id), total: slides.length }}
+                                onInsertAfter={openInsertAt}
+                            />
+                        ) : (
+                            <div className="flex flex-1 items-center justify-center text-slate-400">
+                                Aucune slide. Ajoutez-en une.
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <CourseEditCanvas onInsertAfter={openInsertAt} />
+                )}
             </div>
 
-            {/* Dialog d'insertion globale (Ctrl+I) */}
+            {/* Dialog d&apos;insertion globale (Ctrl+I) */}
             <BlockInsertDialog
                 open={insertDialogOpen}
                 onClose={() => setInsertDialogOpen(false)}
