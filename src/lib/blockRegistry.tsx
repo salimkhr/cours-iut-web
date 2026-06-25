@@ -157,7 +157,7 @@ const clientParts: Record<string, ClientPart> = {
     "image-card": {
         icon: Image,
         render: ({ src, title, alt }: BlockRenderProps) => (
-            <ImageCard src={String(src ?? "")} title={title ? String(title) : undefined} alt={alt ? String(alt) : undefined} />
+            <ImageCard src={String(src ?? "")} title={title ? String(title) : undefined} alt={String(alt ?? "")} />
         ),
     },
     "table": {
