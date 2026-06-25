@@ -17,6 +17,7 @@ interface ContextualTopBarProps {
     onInsert: () => void;
     onOpenBackground?: () => void;
     onOpenCodeModal?: (blockId: string) => void;
+    onEditImage?: (blockId: string) => void;
     /** Handle de l'éditeur inline actuellement focalisé (null sinon). */
     activeEditor: InlineTextEditorHandle | null;
     /** Compteur slides (mode slide). */
@@ -40,7 +41,7 @@ function IconBtn({ label, onClick, children }: { label: string; onClick: () => v
 }
 
 export function ContextualTopBar({
-    mode, onInsert, onOpenBackground, onOpenCodeModal, activeEditor, slidePosition,
+    mode, onInsert, onOpenBackground, onOpenCodeModal, onEditImage, activeEditor, slidePosition,
 }: ContextualTopBarProps) {
     const selectedId = useBuilderStore((s) => s.selectedId);
     const blocks = useBuilderStore((s) => s.blocks);
@@ -94,7 +95,7 @@ export function ContextualTopBar({
         }
 
         if (t === "image-card") {
-            return <IconBtn label="Remplacer l'image" onClick={() => onOpenCodeModal?.(selected.id)}><ImagePlus className="size-4" /></IconBtn>;
+            return <IconBtn label="Remplacer l'image" onClick={() => onEditImage?.(selected.id)}><ImagePlus className="size-4" /></IconBtn>;
         }
 
         if (t === "callout") {
