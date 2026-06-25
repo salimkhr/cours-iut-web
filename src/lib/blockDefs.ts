@@ -165,14 +165,16 @@ export const blockDefs: BlockDef[] = [
         label: "Image",
         category: "Médias",
         description: "Image (via upload) avec légende optionnelle. `src` est l'URL de l'image uploadée.",
-        defaultProps: { src: "", title: "" },
+        defaultProps: { src: "", title: "", alt: "" },
         schema: z.object({
             src: z.string().min(1),
             title: z.string().optional(),
+            alt: z.string().optional(),
         }),
         fields: [
             { key: "src", label: "Image", type: "image-upload" },
             { key: "title", label: "Titre / légende", type: "text" },
+            { key: "alt", label: "Texte alternatif", type: "text", placeholder: "Description pour lecteurs d'écran (vide si décorative)" },
         ],
     },
     {
