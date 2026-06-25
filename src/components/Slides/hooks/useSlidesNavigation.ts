@@ -11,6 +11,7 @@ export interface SlidesNavigation {
     nextSlide: () => void;
     prevSlide: () => void;
     goToSlide: (index: number) => void;
+    syncTo: (slide: number, step: number) => void;
     registerSteps: (slideIndex: number, steps: number) => void;
 }
 
@@ -57,6 +58,11 @@ export function useSlidesNavigation(slidesCount: number): SlidesNavigation {
         [slidesCount]
     );
 
+    const syncTo = useCallback((slide: number, step: number) => {
+        setCurrentSlide(Math.max(0, Math.min(slide, slidesCount - 1)));
+        setCurrentStep(Math.max(0, step));
+    }, [slidesCount]);
+
     return {
         currentSlide,
         currentStep,
@@ -65,6 +71,7 @@ export function useSlidesNavigation(slidesCount: number): SlidesNavigation {
         nextSlide,
         prevSlide,
         goToSlide,
+        syncTo,
         registerSteps,
     };
 }
