@@ -125,6 +125,7 @@ export function EditableBlock({
                     className="absolute -right-6 top-1 z-10 hidden rounded p-0.5 text-slate-400 hover:text-red-600 group-hover/eb:block"
                     onClick={(e) => {
                         e.stopPropagation();
+                        // getState() évite d'abonner le composant à deleteBlock (référence stable)
                         useBuilderStore.getState().deleteBlock(block.id);
                     }}
                 >
@@ -161,6 +162,7 @@ export function EditableBlock({
             <div className="flex h-0 items-center justify-center opacity-0 transition-opacity hover:opacity-100 group-hover/eb:opacity-100">
                 <button
                     type="button"
+                    aria-label="Insérer un bloc après ce bloc"
                     onClick={onInsertAfter}
                     className="-my-2 flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[11px] text-slate-500 shadow-sm hover:text-blue-600 dark:border-slate-700 dark:bg-slate-800"
                 >

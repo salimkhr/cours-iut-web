@@ -331,7 +331,7 @@ export function BuilderPage({
                 )}
             </div>
 
-            {/* Dialog d&apos;insertion globale (Ctrl+I) */}
+            {/* Dialog d'insertion globale (Ctrl+I) */}
             <BlockInsertDialog
                 open={insertDialogOpen}
                 onClose={() => setInsertDialogOpen(false)}
