@@ -24,7 +24,7 @@ class LiveSessionRegistry {
         };
         const existing = this.sessions.get(sessionId);
         const emitter = existing?.emitter ?? new EventEmitter();
-        emitter.setMaxListeners(0);
+        emitter.setMaxListeners(0); // illimité : une session peut avoir beaucoup d'abonnés SSE
         this.sessions.set(sessionId, { state, emitter });
         emitter.emit("state", state);
         return state;
@@ -60,6 +60,7 @@ class LiveSessionRegistry {
         onEnd?: EndListener,
     ): () => void {
         const entry = this.sessions.get(sessionId);
+        // Session absente : no-op intentionnel — l'appelant vérifie get() d'abord.
         if (!entry) return () => {};
         entry.emitter.on("state", onState);
         if (onEnd) entry.emitter.on("ended", onEnd);
