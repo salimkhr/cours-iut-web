@@ -22,6 +22,8 @@ interface BuilderStore {
     isDirty: boolean;
     blockErrors: Record<string, string>;
     collapsedIds: Record<string, true>;
+    activeSlideId: string | null;
+    editingBlockId: string | null;
     _history: Block[][];
     _future: Block[][];
 
@@ -34,6 +36,9 @@ interface BuilderStore {
     duplicateBlock: (id: string) => void;
     moveBlockUp: (id: string) => void;
     moveBlockDown: (id: string) => void;
+    moveBlockToIndex: (id: string, parentId: string | null, index: number) => void;
+    setActiveSlide: (id: string | null) => void;
+    setEditingBlock: (id: string | null) => void;
     updateBlock: (id: string, props: Record<string, unknown>) => void;
     updateChildren: (id: string, children: Block[]) => void;
     insertBlock: (block: Block, parentId: string | null, index?: number) => void;
@@ -58,6 +63,8 @@ export const useBuilderStore = create<BuilderStore>()((set) => ({
     isDirty: false,
     blockErrors: {},
     collapsedIds: {},
+    activeSlideId: null,
+    editingBlockId: null,
     _history: [],
     _future: [],
 
@@ -124,6 +131,18 @@ export const useBuilderStore = create<BuilderStore>()((set) => ({
                 isDirty: true,
             };
         }),
+
+    moveBlockToIndex: (id, parentId, index) =>
+        set((s) => ({
+            blocks: moveBlockInTree(s.blocks, id, parentId, index),
+            _history: pushHistory(s.blocks, s._history),
+            _future: [],
+            isDirty: true,
+        })),
+
+    setActiveSlide: (id) => set({ activeSlideId: id }),
+
+    setEditingBlock: (id) => set({ editingBlockId: id }),
 
     updateBlock: (id, props) =>
         set((state) => ({
