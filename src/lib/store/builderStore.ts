@@ -133,12 +133,17 @@ export const useBuilderStore = create<BuilderStore>()((set) => ({
         }),
 
     moveBlockToIndex: (id, parentId, index) =>
-        set((s) => ({
-            blocks: moveBlockInTree(s.blocks, id, parentId, index),
-            _history: pushHistory(s.blocks, s._history),
-            _future: [],
-            isDirty: true,
-        })),
+        set((s) => {
+            const loc = findParent(s.blocks, id);
+            const currentParentId = loc?.parent?.id ?? null;
+            if (loc && currentParentId === parentId && loc.index === index) return s;
+            return {
+                blocks: moveBlockInTree(s.blocks, id, parentId, index),
+                _history: pushHistory(s.blocks, s._history),
+                _future: [],
+                isDirty: true,
+            };
+        }),
 
     setActiveSlide: (id) => set({ activeSlideId: id }),
 
