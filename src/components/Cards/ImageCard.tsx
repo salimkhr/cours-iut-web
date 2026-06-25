@@ -6,12 +6,13 @@ import Image from "next/image";
 interface ImageCardProps {
     src: string;
     title?: string;
+    alt?: string;
     width?: number;
     height?: number;
     unoptimized?: boolean
 }
 
-export default function ImageCard({src, title, width = 800, height = 800, unoptimized = true}: ImageCardProps) {
+export default function ImageCard({src, title, alt, width = 800, height = 800, unoptimized = true}: ImageCardProps) {
 
     const header = (
         <span className="flex-1 text-center text-sm text-white font-mono">{title}</span>
@@ -20,7 +21,7 @@ export default function ImageCard({src, title, width = 800, height = 800, unopti
     const content = (
         <Image
             src={src}
-            alt={title ?? ''}
+            alt={alt ?? title ?? ''}
             className={"w-full"}
             width={width}
             height={height}
