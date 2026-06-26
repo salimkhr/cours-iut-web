@@ -20,6 +20,19 @@ export interface SlidesContextType {
     isFullscreen: boolean;
     toggleFullscreen: () => void;
     isMobile: boolean;
+
+    // Live (optionnel : absent hors mode présentation)
+    live?: {
+        isLive: boolean;
+        isPresenter: boolean;
+        presenterName: string | null;
+        connection: import("@/lib/live/liveTypes").LiveConnection;
+        drift: import("@/lib/live/drift").Drift;
+        paused: boolean;
+        resync: () => void;
+    };
+    startPresenting?: () => void;
+    stopPresenting?: () => void;
 }
 
 export const SlidesContext = createContext<SlidesContextType | null>(null);
