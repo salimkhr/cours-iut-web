@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useMemo, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {cn} from "@/lib/utils";
 
 import {SlidesContext} from "./context/SlidesContext";
@@ -17,6 +17,9 @@ import {useSlidesNavigation} from "@/components/Slides/hooks/useSlidesNavigation
 import {SlidesMobileView} from "@/components/Slides/SlidesMobileView";
 import {SlidesProgress} from "@/components/Slides/SlidesProgress";
 import {SlidesActions} from "@/components/Slides/SlidesActions";
+import {useLiveSession} from "@/components/Slides/hooks/useLiveSession";
+import {useFollowerSync} from "@/components/Slides/hooks/useFollowerSync";
+import {authClient} from "@/lib/auth-client";
 
 interface SlidesScreenProps {
     children: React.ReactNode;
@@ -54,10 +57,49 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
     /* ---------- Fullscreen ---------- */
     const {isFullscreen, toggleFullscreen} = useFullscreen(containerRef);
 
+    /* ---------- Auth ---------- */
+    const {data: sessionData} = authClient.useSession();
+    const isPresenter = sessionData?.user.role === "admin";
+
+    /* ---------- Live ---------- */
+    const hasSlugCtx = !!(module && section);
+    const live = useLiveSession(module?.path ?? "", section?.path ?? "");
+    const {isLive: sessionIsLive, presenter, sendCommand, connection, presenterName, start, stop} = live;
+
+    const {paused, drift, resync, notifyLocalNav} = useFollowerSync({
+        isLive: sessionIsLive && hasSlugCtx,
+        isPresenter,
+        presenter,
+        localSlide: navigation.currentSlide,
+        syncTo: navigation.syncTo,
+    });
+
+    // Quand le présentateur change de slide, diffuse la position
+    useEffect(() => {
+        if (!isPresenter || !sessionIsLive || !hasSlugCtx) return;
+        sendCommand({slide: navigation.currentSlide, step: navigation.currentStep});
+    }, [navigation.currentSlide, navigation.currentStep, isPresenter, sessionIsLive, hasSlugCtx, sendCommand]);
+
+    // Navigation wrappée pour que les déplacements manuels suspendent le suivi follower
+    const wrappedNext = useCallback(() => {
+        navigation.nextSlide();
+        notifyLocalNav();
+    }, [navigation, notifyLocalNav]);
+
+    const wrappedPrev = useCallback(() => {
+        navigation.prevSlide();
+        notifyLocalNav();
+    }, [navigation, notifyLocalNav]);
+
+    const wrappedGoTo = useCallback((index: number) => {
+        navigation.goToSlide(index);
+        notifyLocalNav();
+    }, [navigation, notifyLocalNav]);
+
     /* ---------- Keyboard ---------- */
     useKeyboardNav({
-        next: navigation.nextSlide,
-        prev: navigation.prevSlide,
+        next: wrappedNext,
+        prev: wrappedPrev,
         toggleFullscreen,
     });
 
@@ -70,6 +112,9 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
             value={{
                 /* Navigation */
                 ...navigation,
+                nextSlide: wrappedNext,
+                prevSlide: wrappedPrev,
+                goToSlide: wrappedGoTo,
                 registerSteps: (steps) =>
                     navigation.registerSteps(navigation.currentSlide, steps),
 
@@ -82,6 +127,19 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                 isFullscreen,
                 toggleFullscreen,
                 isMobile,
+
+                /* Live */
+                live: hasSlugCtx ? {
+                    isLive: sessionIsLive,
+                    isPresenter,
+                    presenterName,
+                    connection,
+                    drift,
+                    paused,
+                    resync,
+                } : undefined,
+                startPresenting: hasSlugCtx ? start : undefined,
+                stopPresenting: hasSlugCtx ? stop : undefined,
             }}
         >
             <div
