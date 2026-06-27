@@ -96,7 +96,7 @@ type Block = _Block;
 
 // ── Éléments à ignorer complètement ────────────────────────────────────────
 const IGNORED_TAGS = new Set([
-    "SectionCard", "CourseLinks", "SlideTitle", "SlideNote",
+    "SectionCard", "CourseLinks", "SlideTitle",
 ]);
 
 // ── Extraction du template literal dans un élément cheerio ─────────────────
@@ -175,6 +175,35 @@ function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
             return { id: uuidv4(), type: "callout", props: { variant: "info" }, children };
         }
 
+        case "SlideText":
+            return { id: uuidv4(), type: "text", props: { content: serializeInline($, el) }, children: [] };
+
+        case "SlideCode": {
+            const language = ($el.attr("language") ?? "").replace(/[{}'"]/g, "");
+            const highlightRaw = ($el.attr("highlight") ?? "").replace(/[{}'"`]/g, "").trim();
+            const code = extractTemplateLiteral($, el);
+            const props: Record<string, unknown> = { language, code };
+            if (highlightRaw) props.highlight = highlightRaw;
+            return { id: uuidv4(), type: "code", props, children: [] };
+        }
+
+        case "SlideList": {
+            const children = $el.children("SlideListItem").toArray()
+                .map(li => convertElement($, li as CheerioElement))
+                .filter(Boolean) as Block[];
+            return { id: uuidv4(), type: "list", props: { ordered: false }, children };
+        }
+
+        case "SlideListItem":
+            return { id: uuidv4(), type: "list-item", props: { text: serializeInline($, el) }, children: [] };
+
+        case "SlideNote": {
+            const raw = $.html(el);
+            const tlMatch = raw.match(/\{`([\s\S]*?)`\}/);
+            const content = tlMatch ? tlMatch[1].trim() : serializeInline($, el);
+            return { id: uuidv4(), type: "slide-note", props: { content }, children: [] };
+        }
+
         default:
             return null;
     }
@@ -225,6 +254,20 @@ export function groupByHeadings(elements: CheerioElement[], $: CheerioAPI): Bloc
             // Transparent wrapper
             const inner = groupByHeadings($el.children().toArray() as CheerioElement[], $);
             blocks.push(...inner);
+            i++;
+
+        } else if (tag === "div" || tag === "SlidesScreen") {
+            // Wrapper transparent — traverser les enfants directement
+            const inner = groupByHeadings($el.children().toArray() as CheerioElement[], $);
+            blocks.push(...inner);
+            i++;
+
+        } else if (tag === "SlideScreen") {
+            // Chaque slide = un bloc slide-screen avec titre + enfants
+            const title = ($el.attr("title") ?? "").replace(/[{}'"`]/g, "");
+            const innerEls = $el.children().toArray() as CheerioElement[];
+            const children = groupByHeadings(innerEls, $);
+            blocks.push({ id: uuidv4(), type: "slide-screen", props: { title }, children });
             i++;
 
         } else {

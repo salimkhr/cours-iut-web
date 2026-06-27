@@ -131,3 +131,38 @@ test("SectionCard → ignoré", () => {
     const blocks = parseJSXString(`<article><SectionCard title="X"/></article>`);
     expect(blocks).toHaveLength(0);
 });
+
+test("SlideScreen → slide-screen block avec children", () => {
+    const blocks = parseJSXString(`
+        <div>
+            <SlidesScreen>
+                <SlideScreen title="Introduction">
+                    <SlideText>Bonjour</SlideText>
+                    <SlideList>
+                        <SlideListItem>Point 1</SlideListItem>
+                    </SlideList>
+                </SlideScreen>
+            </SlidesScreen>
+        </div>`);
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0].type).toBe("slide-screen");
+    expect(blocks[0].props.title).toBe("Introduction");
+    expect(blocks[0].children).toHaveLength(2);
+    expect(blocks[0].children![0].type).toBe("text");
+    expect(blocks[0].children![1].type).toBe("list");
+});
+
+test("SlideCode → code block avec highlight optionnel", () => {
+    const blocks = parseJSXString(`<article><SlideCode language="javascript" highlight="1-3">{\`const x = 1;\`}</SlideCode></article>`);
+    expect(blocks[0].type).toBe("code");
+    expect(blocks[0].props.language).toBe("javascript");
+    expect(blocks[0].props.highlight).toBe("1-3");
+    expect(blocks[0].props.code).toBe("const x = 1;");
+});
+
+test("SlideNote → slide-note block", () => {
+    const blocks = parseJSXString(`<article><SlideNote>{\`- Note 1\n- Note 2\`}</SlideNote></article>`);
+    expect(blocks[0].type).toBe("slide-note");
+    expect(typeof blocks[0].props.content).toBe("string");
+    expect((blocks[0].props.content as string).includes("Note 1")).toBe(true);
+});
