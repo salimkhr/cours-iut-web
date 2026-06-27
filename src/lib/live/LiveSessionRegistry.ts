@@ -4,13 +4,21 @@ import type { LiveSessionState, LiveCommand } from "@/lib/live/liveTypes";
 type StateListener = (state: LiveSessionState) => void;
 type EndListener = () => void;
 
-interface Entry {
-    state: LiveSessionState;
-    emitter: EventEmitter;
-}
-
 class LiveSessionRegistry {
-    private sessions = new Map<string, Entry>();
+    // États des sessions actives (absent = pas de session en cours)
+    private states = new Map<string, LiveSessionState>();
+    // Emitters persistants par slot — créés dès le premier subscribe, survivent aux stop/start
+    private emitters = new Map<string, EventEmitter>();
+
+    private getOrCreateEmitter(sessionId: string): EventEmitter {
+        let emitter = this.emitters.get(sessionId);
+        if (!emitter) {
+            emitter = new EventEmitter();
+            emitter.setMaxListeners(0); // illimité : N abonnés SSE par session
+            this.emitters.set(sessionId, emitter);
+        }
+        return emitter;
+    }
 
     start(sessionId: string, presenterName: string): LiveSessionState {
         const now = Date.now();
@@ -22,36 +30,34 @@ class LiveSessionRegistry {
             startedAt: now,
             updatedAt: now,
         };
-        const existing = this.sessions.get(sessionId);
-        const emitter = existing?.emitter ?? new EventEmitter();
-        emitter.setMaxListeners(0); // illimité : une session peut avoir beaucoup d'abonnés SSE
-        this.sessions.set(sessionId, { state, emitter });
-        emitter.emit("state", state);
+        this.states.set(sessionId, state);
+        this.getOrCreateEmitter(sessionId).emit("state", state);
         return state;
     }
 
     stop(sessionId: string): void {
-        const entry = this.sessions.get(sessionId);
-        if (!entry) return;
-        entry.emitter.emit("ended");
-        entry.emitter.removeAllListeners();
-        this.sessions.delete(sessionId);
+        if (!this.states.has(sessionId)) return;
+        this.states.delete(sessionId);
+        // Les abonnés SSE restent connectés et reçoivent "ended" ;
+        // ils se re-synchroniseront automatiquement au prochain start() sans reconnecter.
+        this.getOrCreateEmitter(sessionId).emit("ended");
     }
 
     setPosition(sessionId: string, cmd: LiveCommand): void {
-        const entry = this.sessions.get(sessionId);
-        if (!entry) return;
-        entry.state = {
-            ...entry.state,
+        const state = this.states.get(sessionId);
+        if (!state) return;
+        const updated: LiveSessionState = {
+            ...state,
             currentSlide: cmd.slide,
             currentStep: cmd.step,
             updatedAt: Date.now(),
         };
-        entry.emitter.emit("state", entry.state);
+        this.states.set(sessionId, updated);
+        this.getOrCreateEmitter(sessionId).emit("state", updated);
     }
 
     get(sessionId: string): LiveSessionState | null {
-        return this.sessions.get(sessionId)?.state ?? null;
+        return this.states.get(sessionId) ?? null;
     }
 
     subscribe(
@@ -59,17 +65,18 @@ class LiveSessionRegistry {
         onState: StateListener,
         onEnd?: EndListener,
     ): () => void {
-        const entry = this.sessions.get(sessionId);
-        // Session absente : no-op intentionnel — l'appelant vérifie get() d'abord.
-        if (!entry) return () => {};
-        entry.emitter.on("state", onState);
-        if (onEnd) entry.emitter.on("ended", onEnd);
+        // Crée l'emitter si absent — le subscribe fonctionne même avant le start().
+        const emitter = this.getOrCreateEmitter(sessionId);
+        emitter.on("state", onState);
+        if (onEnd) emitter.on("ended", onEnd);
         return () => {
-            entry.emitter.off("state", onState);
-            if (onEnd) entry.emitter.off("ended", onEnd);
+            emitter.off("state", onState);
+            if (onEnd) emitter.off("ended", onEnd);
         };
     }
 }
+
+export { LiveSessionRegistry };
 
 // Singleton qui survit au hot-reload en dev (cf. pattern src/lib/mongodb.ts).
 const globalForLive = globalThis as unknown as {
