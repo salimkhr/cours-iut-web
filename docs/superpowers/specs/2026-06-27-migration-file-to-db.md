@@ -58,6 +58,7 @@ src/cours/{moduleSlug}/{sectionSlug}/{Type}.tsx
 |---|---|---|
 | `<Text>` | `text` | `content` : markdown inline reconstruit |
 | `<CodeCard language="js">` | `code` | `language`, `code` (template literal) |
+| `<CodeWithPreviewCard language="html">` | `code-with-preview` | `language`, `code` = contenu de `<CodePanel>` ; `<PreviewPanel>` ignoré |
 | `<List ordered>` | `list` | `ordered` (boolean) |
 | `<ListItem>` | `list-item` | `text` : markdown inline |
 | `<ImageCard src alt>` | `image-card` | `src`, `alt`, `title` (caption) |
