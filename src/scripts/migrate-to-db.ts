@@ -243,6 +243,49 @@ export function parseJSXString(jsxCode: string): Block[] {
     return groupByHeadings(root, $);
 }
 
+// ── Pipeline fichier → Babel → Block[] ─────────────────────────────────────
+export function parseFile(filePath: string): { blocks: Block[]; warnings: string[] } {
+    const warnings: string[] = [];
+    const source = _fs.readFileSync(filePath, "utf-8");
+
+    let ast: ReturnType<typeof _babelParser.parse>;
+    try {
+        ast = _babelParser.parse(source, {
+            sourceType: "module",
+            plugins: ["typescript", "jsx"],
+        });
+    } catch (err) {
+        throw new Error(`Babel parse error: ${(err as Error).message}`);
+    }
+
+    // Cherche le premier ReturnStatement avec un argument JSX
+    // reason: @babel/traverse et @babel/generator n'ont pas de .d.ts — on caste en unknown
+    let jsxNode: unknown = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _trav(ast, {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ReturnStatement(p: any) {
+            const arg = p.node.argument;
+            if (arg && (arg.type === "JSXElement" || arg.type === "JSXFragment")) {
+                jsxNode = arg;
+                p.stop();
+            }
+        },
+    });
+
+    if (!jsxNode) {
+        warnings.push("Aucun JSX trouvé dans le return");
+        return { blocks: [], warnings };
+    }
+
+    // Resérialise le nœud AST → string JSX
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const genResult = _gen(jsxNode as any, { concise: true }) as { code: string };
+    const jsxCode = genResult.code;
+    const blocks = parseJSXString(jsxCode);
+    return { blocks, warnings };
+}
+
 main().catch(err => { console.error("Fatal:", err); process.exit(1); });
 
 async function main() {
