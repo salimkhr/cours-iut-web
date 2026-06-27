@@ -1,6 +1,6 @@
 'use client';
 
-import {ChevronLeft, ChevronRight, Maximize, MessageSquare, Minimize, StopCircle} from "lucide-react";
+import {ChevronLeft, ChevronRight, Maximize, MessageSquare, Minimize, StopCircle, Wifi, WifiOff} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {useState} from "react";
@@ -32,7 +32,21 @@ export const SlidesActions = ({className}: { className?: string }) => {
     if (isMobile) return null;
 
     const isLive = live?.isLive ?? false;
-    const isDrifted = live && !live.isPresenter && (live.paused || live.drift.direction !== "synced");
+    const isFollower = isLive && live && !live.isPresenter;
+
+    // Décrochage : l'étudiant est en dérive ou a mis en pause le suivi automatique
+    const isDetached = isFollower && (live!.paused || live!.drift.direction !== "synced");
+    // Perte de connexion SSE
+    const isDisconnected = live && live.connection !== "connected";
+
+    const driftLabel = () => {
+        if (!live || live.drift.direction === "synced") return null;
+        const n = live.drift.delta;
+        const unit = n > 1 ? "slides" : "slide";
+        return live.drift.direction === "ahead"
+            ? `${n} ${unit} en avance`
+            : `${n} ${unit} en retard`;
+    };
 
     return (
         <div
@@ -43,88 +57,159 @@ export const SlidesActions = ({className}: { className?: string }) => {
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
-            <div
-                className={cn(
-                    "flex items-center gap-2 p-2 rounded-xl border backdrop-blur-md transition-opacity",
-                    hovered ? "opacity-100 bg-background/70" : "opacity-40 bg-background/40"
-                )}
-            >
-                {/* Contrôles live */}
-                {isLive ? (
-                    <>
-                        <div className="flex items-center gap-1.5 px-1 text-xs font-medium text-red-500">
-                            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0"/>
-                            {live!.isPresenter
-                                ? "En direct"
-                                : (live!.presenterName ?? "En direct")}
-                        </div>
+            {/* ── Mode LIVE : étudiant en décrochage ────────────────────────────────── */}
+            {isDetached ? (
+                <div
+                    className={cn(
+                        "flex items-center gap-3 px-4 py-2.5 rounded-xl border backdrop-blur-md transition-opacity",
+                        hovered ? "opacity-100 bg-background/80" : "opacity-60 bg-background/50"
+                    )}
+                >
+                    {/* Badge "En direct" */}
+                    <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0"/>
+                        <span className="text-xs font-medium text-red-500">
+                            {live!.presenterName ?? "En direct"}
+                        </span>
+                    </div>
 
-                        {isDrifted && (
-                            <Button size="sm" variant="ghost" className="text-xs h-7 px-2" onClick={live!.resync}>
-                                Rejoindre
+                    {/* Info décrochage */}
+                    <div className="w-px h-5 bg-border/50"/>
+                    <span className="text-xs text-muted-foreground">
+                        {live!.paused && live!.drift.direction === "synced"
+                            ? "Navigation libre"
+                            : (driftLabel() ?? "En pause")}
+                    </span>
+
+                    {/* CTA Rejoindre */}
+                    <Button
+                        size="sm"
+                        variant="default"
+                        className="h-7 px-3 text-xs font-medium cursor-pointer"
+                        onClick={live!.resync}
+                    >
+                        Rejoindre
+                    </Button>
+                </div>
+            ) : (
+                /* ── Barre d'actions standard ─────────────────────────────────────────── */
+                <div
+                    className={cn(
+                        "flex items-center gap-2 p-2 rounded-xl border backdrop-blur-md transition-opacity",
+                        hovered ? "opacity-100 bg-background/70" : "opacity-40 bg-background/40"
+                    )}
+                >
+                    {/* ── Bloc LIVE ─────────────────────────────────────────────────── */}
+                    {isLive ? (
+                        <>
+                            {/* Indicateur connexion SSE perdue */}
+                            {isDisconnected && (
+                                <span
+                                    className="text-amber-500 cursor-default"
+                                    title={live!.connection === "reconnecting" ? "Reconnexion…" : "Hors ligne"}
+                                >
+                                    {live!.connection === "reconnecting"
+                                        ? <Wifi className="w-4 h-4 animate-pulse"/>
+                                        : <WifiOff className="w-4 h-4"/>}
+                                </span>
+                            )}
+
+                            {/* Badge "En direct" */}
+                            <div className="flex items-center gap-1.5 px-1 select-none">
+                                <span className={cn(
+                                    "w-2 h-2 rounded-full shrink-0",
+                                    live!.isPresenter
+                                        ? "bg-red-500 animate-pulse"
+                                        : "bg-green-500"
+                                )}/>
+                                <span className={cn(
+                                    "text-xs font-medium",
+                                    live!.isPresenter ? "text-red-500" : "text-green-600 dark:text-green-400"
+                                )}>
+                                    {live!.isPresenter
+                                        ? "En direct"
+                                        : (live!.presenterName ?? "En direct")}
+                                </span>
+                            </div>
+
+                            {/* Bouton Stop pour le présentateur */}
+                            {live!.isPresenter && (
+                                <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="cursor-pointer"
+                                    onClick={stopPresenting}
+                                    title="Arrêter la présentation"
+                                >
+                                    <StopCircle className="text-red-500"/>
+                                </Button>
+                            )}
+
+                            <div className="w-px h-6 bg-border/50"/>
+                        </>
+                    ) : startPresenting ? (
+                        /* Bouton démarrer (admin uniquement) */
+                        <>
+                            <Button
+                                size="icon"
+                                variant="ghost"
+                                className="cursor-pointer"
+                                onClick={startPresenting}
+                                title="Démarrer la présentation en direct"
+                            >
+                                <LaptopMinimalCheckIcon size={18}/>
                             </Button>
-                        )}
+                            <div className="w-px h-6 bg-border/50"/>
+                        </>
+                    ) : null}
 
-                        {live!.isPresenter && (
-                            <Button size="icon" variant="ghost" onClick={stopPresenting} title="Arrêter la présentation">
-                                <StopCircle className="text-red-500"/>
-                            </Button>
-                        )}
+                    {/* ── Notes ─────────────────────────────────────────────────────── */}
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className="cursor-pointer"
+                        disabled={!hasNotes}
+                        onClick={() => setShowNotes(!showNotes)}
+                    >
+                        <MessageSquare/>
+                    </Button>
 
-                        <div className="w-px h-6 bg-border/50"/>
-                    </>
-                ) : startPresenting ? (
-                    <>
-                        <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={startPresenting}
-                            title="Démarrer la présentation en direct"
-                        >
-                            <LaptopMinimalCheckIcon size={18}/>
-                        </Button>
-                        <div className="w-px h-6 bg-border/50"/>
-                    </>
-                ) : null}
+                    <div className="w-px h-6 bg-border/50"/>
 
-                <Button
-                    size="icon"
-                    variant="ghost"
-                    disabled={!hasNotes}
-                    onClick={() => setShowNotes(!showNotes)}
-                >
-                    <MessageSquare/>
-                </Button>
+                    {/* ── Plein écran ────────────────────────────────────────────────── */}
+                    <Button size="icon" variant="ghost" className="cursor-pointer" onClick={toggleFullscreen}>
+                        {isFullscreen ? <Minimize/> : <Maximize/>}
+                    </Button>
 
-                <div className="w-px h-6 bg-border/50"/>
+                    <div className="w-px h-6 bg-border/50"/>
 
-                <Button size="icon" variant="ghost" onClick={toggleFullscreen}>
-                    {isFullscreen ? <Minimize/> : <Maximize/>}
-                </Button>
+                    {/* ── Navigation ────────────────────────────────────────────────── */}
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className={cn("cursor-pointer", isFollower && "opacity-50")}
+                        onClick={prevSlide}
+                        disabled={currentSlide === 0 && currentStep === 0}
+                        title={isFollower ? "Explorer (désactive le suivi automatique)" : undefined}
+                    >
+                        <ChevronLeft/>
+                    </Button>
 
-                <div className="w-px h-6 bg-border/50"/>
-
-                <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={prevSlide}
-                    disabled={currentSlide === 0 && currentStep === 0}
-                >
-                    <ChevronLeft/>
-                </Button>
-
-                <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={nextSlide}
-                    disabled={
-                        currentSlide === slidesCount - 1 &&
-                        currentStep === (slideSteps[currentSlide] || 0)
-                    }
-                >
-                    <ChevronRight/>
-                </Button>
-            </div>
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className={cn("cursor-pointer", isFollower && "opacity-50")}
+                        onClick={nextSlide}
+                        disabled={
+                            currentSlide === slidesCount - 1 &&
+                            currentStep === (slideSteps[currentSlide] || 0)
+                        }
+                        title={isFollower ? "Explorer (désactive le suivi automatique)" : undefined}
+                    >
+                        <ChevronRight/>
+                    </Button>
+                </div>
+            )}
         </div>
     );
 };
