@@ -1,6 +1,6 @@
 /// <reference types="bun-types" />
 import { expect, test } from "bun:test";
-import { deriveSlug, serializeInline } from "./migrate-to-db";
+import { deriveSlug, serializeInline, parseJSXString } from "./migrate-to-db";
 import * as cheerio from "cheerio";
 import type { Element as DOMElement } from "domhandler";
 
@@ -66,4 +66,68 @@ test("serializeInline - lien", () => {
 test("serializeInline - entités HTML", () => {
     const { $, el } = loadEl("<Text>l&apos;élève &amp; le &quot;prof&quot;</Text>");
     expect(serializeInline($, el)).toBe("l'élève & le \"prof\"");
+});
+
+test("Text → text block", () => {
+    const blocks = parseJSXString(`<article><Text>Hello monde</Text></article>`);
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0].type).toBe("text");
+    expect(blocks[0].props.content).toBe("Hello monde");
+    expect(typeof blocks[0].id).toBe("string");
+});
+
+test("section + Heading level 2 → section block avec children", () => {
+    const blocks = parseJSXString(`
+        <article>
+            <section>
+                <Heading level={2}>A-Introduction</Heading>
+                <Text>Premier paragraphe</Text>
+            </section>
+        </article>`);
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0].type).toBe("section");
+    expect(blocks[0].props.title).toBe("A-Introduction");
+    expect(blocks[0].children).toHaveLength(1);
+    expect(blocks[0].children![0].type).toBe("text");
+});
+
+test("Heading level 3 imbriqué dans section", () => {
+    const blocks = parseJSXString(`
+        <article>
+            <section>
+                <Heading level={2}>A-Titre</Heading>
+                <Heading level={3}>1. Sous-titre</Heading>
+                <Text>Contenu</Text>
+            </section>
+        </article>`);
+    expect(blocks[0].children).toHaveLength(1);
+    expect(blocks[0].children![0].type).toBe("section");
+    expect(blocks[0].children![0].props.title).toBe("1. Sous-titre");
+});
+
+test("CodeCard → code block", () => {
+    const blocks = parseJSXString(`<article><CodeCard language="javascript">{\`const x = 1;\`}</CodeCard></article>`);
+    expect(blocks[0].type).toBe("code");
+    expect(blocks[0].props.language).toBe("javascript");
+    expect(blocks[0].props.code).toBe("const x = 1;");
+});
+
+test("List ordered → list + list-item", () => {
+    const blocks = parseJSXString(`
+        <article>
+            <List ordered={true}>
+                <ListItem>Premier</ListItem>
+                <ListItem>Deuxième</ListItem>
+            </List>
+        </article>`);
+    expect(blocks[0].type).toBe("list");
+    expect(blocks[0].props.ordered).toBe(true);
+    expect(blocks[0].children).toHaveLength(2);
+    expect(blocks[0].children![0].type).toBe("list-item");
+    expect(blocks[0].children![0].props.text).toBe("Premier");
+});
+
+test("SectionCard → ignoré", () => {
+    const blocks = parseJSXString(`<article><SectionCard title="X"/></article>`);
+    expect(blocks).toHaveLength(0);
 });

@@ -87,6 +87,162 @@ export function deriveSlug(filePath: string): {
     return { moduleSlug, sectionSlug, contentType };
 }
 
+// ── Alias locaux pour les imports préfixés _  ──────────────────────────────
+const cheerio = _cheerio;
+type CheerioElement = DOMElement;
+const uuidv4 = _uuidv4;
+type Block = _Block;
+
+// ── Éléments à ignorer complètement ────────────────────────────────────────
+const IGNORED_TAGS = new Set([
+    "SectionCard", "CourseLinks", "SlideTitle", "SlideNote",
+]);
+
+// ── Extraction du template literal dans un élément cheerio ─────────────────
+function extractTemplateLiteral($: CheerioAPI, el: CheerioElement): string {
+    const raw = $.html(el);
+    const match = raw.match(/\{`([\s\S]*?)`\}/);
+    return match ? match[1].trim() : "";
+}
+
+// ── Convertit un seul élément cheerio → Block | null ───────────────────────
+function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
+    if (el.type !== "tag") return null;
+    const tag = el.tagName;
+    const $el = $(el);
+
+    if (IGNORED_TAGS.has(tag)) return null;
+
+    switch (tag) {
+        case "Text":
+            return { id: uuidv4(), type: "text", props: { content: serializeInline($, el) }, children: [] };
+
+        case "CodeCard": {
+            const language = ($el.attr("language") ?? "").replace(/[{}'"]/g, "");
+            const code = extractTemplateLiteral($, el);
+            return { id: uuidv4(), type: "code", props: { language, code }, children: [] };
+        }
+
+        case "CodeWithPreviewCard": {
+            const language = ($el.attr("language") ?? "").replace(/[{}'"]/g, "");
+            const $panel = $el.find("CodePanel").first();
+            const code = extractTemplateLiteral($, $panel[0] as CheerioElement);
+            return { id: uuidv4(), type: "code-with-preview", props: { language, code }, children: [] };
+        }
+
+        case "List": {
+            const orderedAttr = $el.attr("ordered") ?? "";
+            const ordered = orderedAttr === "{true}" || orderedAttr === "true";
+            const children = $el.children("ListItem").toArray()
+                .map(li => convertElement($, li as CheerioElement))
+                .filter(Boolean) as Block[];
+            return { id: uuidv4(), type: "list", props: { ordered }, children };
+        }
+
+        case "ListItem":
+            return { id: uuidv4(), type: "list-item", props: { text: serializeInline($, el) }, children: [] };
+
+        case "ImageCard": {
+            const src   = ($el.attr("src") ?? "").replace(/[{}'"`]/g, "");
+            const alt   = ($el.attr("alt") ?? "").replace(/[{}'"`]/g, "");
+            const title = ($el.attr("caption") ?? $el.attr("title") ?? "").replace(/[{}'"`]/g, "");
+            return { id: uuidv4(), type: "image-card", props: { src, alt, title }, children: [] };
+        }
+
+        case "DiagramCard": {
+            const header = ($el.attr("title") ?? $el.attr("header") ?? "").replace(/[{}'"`]/g, "");
+            const chart  = extractTemplateLiteral($, el);
+            return { id: uuidv4(), type: "diagram", props: { header, chart }, children: [] };
+        }
+
+        case "Table": {
+            const children = $el.children("TableRow").toArray()
+                .map(row => {
+                    const cells = $(row).children("TableHead, TableCell").toArray()
+                        .map(cell => ({
+                            id: uuidv4(), type: "table-cell",
+                            props: { content: serializeInline($, cell as CheerioElement) },
+                            children: [],
+                        }));
+                    return { id: uuidv4(), type: "table-row", props: {}, children: cells };
+                });
+            return { id: uuidv4(), type: "table", props: {}, children };
+        }
+
+        case "CoursePrerequisites": {
+            const children = groupByHeadings($el.children().toArray() as CheerioElement[], $);
+            return { id: uuidv4(), type: "callout", props: { variant: "info" }, children };
+        }
+
+        default:
+            return null;
+    }
+}
+
+// ── Algorithme de regroupement par heading ──────────────────────────────────
+export function groupByHeadings(elements: CheerioElement[], $: CheerioAPI): Block[] {
+    const blocks: Block[] = [];
+    let i = 0;
+
+    while (i < elements.length) {
+        const el = elements[i];
+        if (el.type !== "tag") { i++; continue; }
+        const tag = el.tagName;
+        const $el = $(el);
+
+        if (tag === "section") {
+            // La <section> JSX délimite un Heading level 2
+            const $heading = $el.children("Heading").first();
+            const title = $heading.length ? serializeInline($, $heading[0] as CheerioElement) : "";
+            // Tous les autres enfants (hors le premier Heading) → children
+            const rest = $el.children().toArray().filter(c =>
+                !((c as CheerioElement).tagName === "Heading" && c === $heading[0])
+            ) as CheerioElement[];
+            const children = groupByHeadings(rest, $);
+            blocks.push({ id: uuidv4(), type: "section", props: { title }, children });
+            i++;
+
+        } else if (tag === "Heading") {
+            const level = parseInt(($el.attr("level") ?? "2").replace(/[{}]/g, ""), 10);
+            const title = serializeInline($, el);
+            // Collecte les frères suivants jusqu'au prochain heading de niveau ≤ level
+            const childEls: CheerioElement[] = [];
+            i++;
+            while (i < elements.length) {
+                const next = elements[i];
+                if (next.type === "tag" && (next as CheerioElement).tagName === "Heading") {
+                    const nextLevel = parseInt(($(next).attr("level") ?? "2").replace(/[{}]/g, ""), 10);
+                    if (nextLevel <= level) break;
+                }
+                childEls.push(elements[i]);
+                i++;
+            }
+            const children = groupByHeadings(childEls, $);
+            blocks.push({ id: uuidv4(), type: "section", props: { title }, children });
+
+        } else if (tag === "article") {
+            // Transparent wrapper
+            const inner = groupByHeadings($el.children().toArray() as CheerioElement[], $);
+            blocks.push(...inner);
+            i++;
+
+        } else {
+            const block = convertElement($, el);
+            if (block) blocks.push(block);
+            i++;
+        }
+    }
+
+    return blocks;
+}
+
+// ── Point d'entrée : JSX string → Block[] ──────────────────────────────────
+export function parseJSXString(jsxCode: string): Block[] {
+    const $ = cheerio.load(jsxCode, { xmlMode: true });
+    const root = $.root().children().toArray() as CheerioElement[];
+    return groupByHeadings(root, $);
+}
+
 main().catch(err => { console.error("Fatal:", err); process.exit(1); });
 
 async function main() {
