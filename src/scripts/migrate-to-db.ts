@@ -9,6 +9,7 @@ import type { Element as DOMElement, AnyNode } from "domhandler";
 import * as _fs from "fs";
 import * as _path from "path";
 import type { Block as _Block } from "@/types/CourseContent";
+import type { Db, ObjectId } from "mongodb";
 
 // @babel/traverse et @babel/generator ont un bug ESM connu en Bun
 // reason: used in Task 5 for parseFile
@@ -283,6 +284,45 @@ export function parseFile(filePath: string): { blocks: Block[]; warnings: string
     const jsxCode = genResult.code;
     const blocks = parseJSXString(jsxCode);
     return { blocks, warnings };
+}
+
+async function upsertContent(
+    db: Db,
+    slugs: { moduleSlug: string; sectionSlug: string; contentType: string },
+    blocks: Block[],
+): Promise<string> {
+    const now = new Date();
+    const result = await db.collection("course_content").findOneAndReplace(
+        { moduleSlug: slugs.moduleSlug, sectionSlug: slugs.sectionSlug, contentType: slugs.contentType },
+        {
+            moduleSlug: slugs.moduleSlug,
+            sectionSlug: slugs.sectionSlug,
+            contentType: slugs.contentType,
+            blocks,
+            version: 1,
+            createdAt: now,
+            updatedAt: now,
+        },
+        { upsert: true, returnDocument: "after" },
+    );
+    return String((result as { _id: ObjectId } | null)?._id ?? "");
+}
+
+async function updateContentRef(
+    db: Db,
+    slugs: { moduleSlug: string; sectionSlug: string; contentType: string },
+    contentId: string,
+): Promise<void> {
+    await db.collection("modules").updateOne(
+        { path: slugs.moduleSlug, "sections.path": slugs.sectionSlug },
+        {
+            $set: {
+                "sections.$.contents.$[ref].source": "db",
+                "sections.$.contents.$[ref].contentId": contentId,
+            },
+        },
+        { arrayFilters: [{ "ref.type": slugs.contentType }] },
+    );
 }
 
 main().catch(err => { console.error("Fatal:", err); process.exit(1); });
