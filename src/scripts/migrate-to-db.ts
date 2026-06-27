@@ -261,7 +261,6 @@ export function parseFile(filePath: string): { blocks: Block[]; warnings: string
     // Cherche le premier ReturnStatement avec un argument JSX
     // reason: @babel/traverse et @babel/generator n'ont pas de .d.ts — on caste en unknown
     let jsxNode: unknown = null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     _trav(ast, {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ReturnStatement(p: any) {
