@@ -325,8 +325,86 @@ async function updateContentRef(
     );
 }
 
-main().catch(err => { console.error("Fatal:", err); process.exit(1); });
+function getAllTSXFiles(dir: string): string[] {
+    let results: string[] = [];
+    for (const entry of _fs.readdirSync(dir, { withFileTypes: true })) {
+        const fullPath = _path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            results = results.concat(getAllTSXFiles(fullPath));
+        } else if (entry.isFile() && entry.name.match(/^(Cours|TP|Examen|Slide)\.tsx$/)) {
+            results.push(fullPath);
+        }
+    }
+    return results;
+}
 
 async function main() {
-    console.log("Migration placeholder - Tasks 1-2 complete");
+    let files: string[];
+
+    if (_FILE_FILTER) {
+        files = [_FILE_FILTER];
+    } else {
+        files = getAllTSXFiles("src/cours");
+        if (_MODULE_FILTER) {
+            files = files.filter(f => f.replace(/\\/g, "/").includes(`/cours/${_MODULE_FILTER}/`));
+        }
+    }
+
+    if (files.length === 0) {
+        console.warn("⚠ Aucun fichier trouvé.");
+        return;
+    }
+
+    console.log(`${_DRY_RUN ? "[DRY-RUN] " : ""}Migration de ${files.length} fichier(s)...\n`);
+
+    let db: Db | null = null;
+    if (!_DRY_RUN) db = await _connectToDB();
+
+    const stats = { ok: 0, warn: 0, error: 0 };
+
+    for (const filePath of files) {
+        const rel = filePath.replace(/\\/g, "/").replace("src/cours/", "");
+        let slugs: ReturnType<typeof deriveSlug>;
+        try {
+            slugs = deriveSlug(filePath);
+        } catch {
+            console.error(`✗  ${rel} — chemin non reconnu`);
+            stats.error++; continue;
+        }
+
+        let blocks: Block[];
+        let warnings: string[];
+        try {
+            ({ blocks, warnings } = parseFile(filePath));
+        } catch (err) {
+            console.error(`✗  ${rel} — ${(err as Error).message}`);
+            stats.error++; continue;
+        }
+
+        if (_DRY_RUN) {
+            const warnStr = warnings.length ? `  ⚠ ${warnings.join(", ")}` : "";
+            console.log(`✓  ${rel}  →  ${blocks.length} blocs (dry-run)${warnStr}`);
+            stats.ok++;
+            continue;
+        }
+
+        try {
+            const contentId = await upsertContent(db!, slugs, blocks);
+            await updateContentRef(db!, slugs, contentId);
+            const warnStr = warnings.length ? `  ⚠ ${warnings.join(", ")}` : "";
+            console.log(`✓  ${rel}  →  ${blocks.length} blocs${warnStr}`);
+            if (warnings.length) stats.warn++;
+            else stats.ok++;
+        } catch (err) {
+            console.error(`✗  ${rel} — DB: ${(err as Error).message}`);
+            stats.error++;
+        }
+    }
+
+    console.log(`\nRésultat : ${stats.ok} ok — ${stats.warn} avertissements — ${stats.error} erreurs`);
+    process.exit(stats.error > 0 ? 1 : 0);
+}
+
+if (import.meta.main) {
+    main().catch(err => { console.error("Fatal:", err); process.exit(1); });
 }
