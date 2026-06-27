@@ -16,6 +16,7 @@
     "extract-coursmd": "bun script/extractToMarkdown.js",
     "generate-imports": "bun script/generateContentImports.js",
     "migrate-contents-refs": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/migrate-contents-refs.ts",
+    "migrate:db": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/migrate-to-db.ts",
     "create-content-index": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/create-content-index.ts",
     "seed-oauth-client": "bunx dotenv-cli -e .env -e .env.local -- bun scripts/seed-oauth-client.ts",
     "audit": "bun audit",
