@@ -19,12 +19,13 @@ export interface SlidesContextType {
     // UI
     isFullscreen: boolean;
     toggleFullscreen: () => void;
-    isMobile: boolean;
 
     // Live (optionnel : absent hors mode présentation)
     live?: {
         isLive: boolean;
         isPresenter: boolean;
+        /** Vrai uniquement sur l'appareil qui a démarré la session (contrôleur actif) */
+        isController: boolean;
         presenterName: string | null;
         connection: import("@/lib/live/liveTypes").LiveConnection;
         drift: import("@/lib/live/drift").Drift;
@@ -33,6 +34,8 @@ export interface SlidesContextType {
     };
     startPresenting?: () => void;
     stopPresenting?: () => void;
+    /** Admin : reprendre le contrôle sans redémarrer la session (après rechargement) */
+    takeControl?: () => void;
 }
 
 export const SlidesContext = createContext<SlidesContextType | null>(null);

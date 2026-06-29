@@ -25,7 +25,6 @@ export const PREVIEW_CONTEXT: SlidesContextType = {
     setShowNotes: () => {},
     isFullscreen: false,
     toggleFullscreen: () => {},
-    isMobile: false,
 };
 
 export function SlideChildItem({ block }: { block: Block }) {
