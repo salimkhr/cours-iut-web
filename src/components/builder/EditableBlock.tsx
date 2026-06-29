@@ -4,6 +4,7 @@ import React, { useRef, useCallback } from "react";
 import { GripVertical, Pencil, Trash2, Plus } from "lucide-react";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { getBlockDefinition } from "@/lib/blockRegistry";
+import { isContainer } from "@/lib/blockSchemas";
 import { InlineTextEditor, type InlineTextEditorHandle } from "@/components/builder/InlineTextEditor";
 import type { Block } from "@/types/CourseContent";
 
@@ -139,15 +140,34 @@ export function EditableBlock({
 
                 {/* Contenu : éditeur inline OU rendu public */}
                 {isEditing && field ? (
-                    <div className="p-1">
-                        <InlineTextEditor
-                            ref={handleEditorRef}
-                            value={String(block.props[field] ?? "")}
-                            onCommit={commit}
-                            onCancel={cancel}
-                            ariaLabel={`Éditer ${def?.label ?? block.type}`}
-                        />
-                    </div>
+                    isContainer(block.type) ? (
+                        /* Conteneur (section, list…) : éditeur du titre visible
+                           en haut, enfants conservés (grisés) en dessous */
+                        <div className="flex flex-col">
+                            <div className="p-1">
+                                <InlineTextEditor
+                                    ref={handleEditorRef}
+                                    value={String(block.props[field] ?? "")}
+                                    onCommit={commit}
+                                    onCancel={cancel}
+                                    ariaLabel={`Éditer ${def?.label ?? block.type}`}
+                                />
+                            </div>
+                            <div className="pointer-events-none opacity-40 select-none">
+                                {children}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="p-1">
+                            <InlineTextEditor
+                                ref={handleEditorRef}
+                                value={String(block.props[field] ?? "")}
+                                onCommit={commit}
+                                onCancel={cancel}
+                                ariaLabel={`Éditer ${def?.label ?? block.type}`}
+                            />
+                        </div>
+                    )
                 ) : (
                     children
                 )}
