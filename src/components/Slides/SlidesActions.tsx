@@ -1,8 +1,7 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, Copy, Maximize, Minimize, QrCode, Share2, StopCircle, Wifi, WifiOff } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize, Minimize, StopCircle, Wifi, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useSlides } from "@/components/Slides/context/SlidesContext";
@@ -25,20 +24,6 @@ export const SlidesActions = ({ className }: { className?: string }) => {
     } = useSlides();
 
     const [hovered, setHovered] = useState(false);
-    const [copied, setCopied] = useState(false);
-
-    const currentUrl = typeof window !== "undefined" ? window.location.href : "";
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(currentUrl)}`;
-
-    const handleShare = async () => {
-        if (navigator.share) {
-            await navigator.share({ url: currentUrl }).catch(() => null);
-        } else {
-            await navigator.clipboard.writeText(currentUrl);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        }
-    };
 
     const isLive = live?.isLive ?? false;
     const isController = live?.isController ?? false;
@@ -128,26 +113,6 @@ export const SlidesActions = ({ className }: { className?: string }) => {
                         <div className="w-px h-6 bg-border/50" />
                     </>
                 ) : null}
-
-                {/* ── QR / Partager ───────────────────────────────────────────────── */}
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button size="icon" variant="ghost" className="cursor-pointer" title="Envoyer le lien sur téléphone">
-                            <QrCode />
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent side="top" className="w-auto p-4 flex flex-col items-center gap-3">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={qrUrl} alt="QR code" width={180} height={180} className="rounded-lg" />
-                        <p className="text-xs text-muted-foreground text-center">Scannez pour ouvrir sur votre téléphone</p>
-                        <Button size="sm" variant="outline" className="w-full gap-2 cursor-pointer" onClick={handleShare}>
-                            {copied ? <Copy className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
-                            {copied ? "Copié !" : "Partager / Copier"}
-                        </Button>
-                    </PopoverContent>
-                </Popover>
-
-                <div className="w-px h-6 bg-border/50" />
 
                 {/* ── Plein écran ─────────────────────────────────────────────────── */}
                 <Button size="icon" variant="ghost" className="cursor-pointer" onClick={toggleFullscreen}>
