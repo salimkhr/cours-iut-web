@@ -19,7 +19,6 @@ import {
     AlertDialogContent,
     AlertDialogDescription,
     AlertDialogFooter,
-    AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import EditModuleSheet from '@/components/admin/EditModuleSheet';
