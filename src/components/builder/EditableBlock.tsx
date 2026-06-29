@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useCallback } from "react";
 import { GripVertical, Pencil, Trash2, Plus } from "lucide-react";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { getBlockDefinition } from "@/lib/blockRegistry";
@@ -41,6 +41,11 @@ export function EditableBlock({
 
     const editorRef = useRef<InlineTextEditorHandle | null>(null);
     const field = def?.inlineEditField;
+
+    const handleEditorRef = useCallback((h: InlineTextEditorHandle | null) => {
+        editorRef.current = h;
+        registerEditor?.(h);
+    }, [registerEditor]);
     const isSelected = selectedId === block.id;
     const isEditing = editingBlockId === block.id && Boolean(field);
     const isText = Boolean(field);
@@ -136,10 +141,7 @@ export function EditableBlock({
                 {isEditing && field ? (
                     <div className="p-1">
                         <InlineTextEditor
-                            ref={(h) => {
-                                editorRef.current = h;
-                                registerEditor?.(h);
-                            }}
+                            ref={handleEditorRef}
                             value={String(block.props[field] ?? "")}
                             onCommit={commit}
                             onCancel={cancel}
