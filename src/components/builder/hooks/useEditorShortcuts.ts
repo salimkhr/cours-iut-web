@@ -48,8 +48,19 @@ export function useEditorShortcuts({
             if (ctrl) {
                 switch (e.key) {
                     case "s": e.preventDefault(); onSave(); return;
-                    case "z": e.preventDefault(); onUndo(); return;
-                    case "y": e.preventDefault(); onRedo(); return;
+                    case "z":
+                        // Shift+Z → redo (standard macOS) ; sinon undo.
+                        // Si un champ texte est actif, on laisse le navigateur gérer
+                        // le undo/redo natif de la saisie (pas de preventDefault).
+                        if (editing) return;
+                        e.preventDefault();
+                        if (e.shiftKey) onRedo(); else onUndo();
+                        return;
+                    case "y":
+                        if (editing) return;
+                        e.preventDefault();
+                        onRedo();
+                        return;
                     case "i": e.preventDefault(); onInsert(); return;
                     case "d": e.preventDefault(); onDuplicate(); return;
                     case "-": e.preventDefault(); onCollapseAll(); return;

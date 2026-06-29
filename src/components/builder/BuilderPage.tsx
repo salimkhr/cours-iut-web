@@ -294,7 +294,10 @@ export function BuilderPage({
     });
 
     return (
-        <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-slate-900">
+        <div
+            className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-slate-900"
+            style={{ "--mod-color": `var(--color-${moduleSlug})` } as React.CSSProperties}
+        >
             <EditorToolbar
                 moduleTitle={moduleTitle}
                 sectionTitle={sectionTitle}

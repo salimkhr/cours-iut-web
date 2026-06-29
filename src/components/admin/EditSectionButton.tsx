@@ -6,6 +6,7 @@ import {useState} from "react";
 import {Button} from "@/components/ui/button";
 import SectionForm, {Section} from "@/components/admin/SectionForm";
 import {Edit} from "lucide-react";
+import {moduleColor} from "@/lib/moduleColor";
 
 interface AddSectionButtonProps {
     modData: Module;
@@ -21,7 +22,8 @@ export default function EditSectionButton({modData, onAdd, section}: AddSectionB
             <div className="flex justify-end mb-2">
                 <Button
                     onClick={() => setOpen(true)}
-                    className={`bg-${modData.path} text-white dark:text-brand-dark hover:opacity-90 border-transparent`}
+                    className="text-white dark:text-brand-dark hover:opacity-90 border-transparent"
+                    style={{ backgroundColor: moduleColor(modData) }}
                 >
                     <Edit/>
                 </Button>

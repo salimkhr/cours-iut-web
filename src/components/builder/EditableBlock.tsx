@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useCallback } from "react";
 import { GripVertical, Pencil, Trash2, Plus } from "lucide-react";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { getBlockDefinition } from "@/lib/blockRegistry";
+import { isContainer } from "@/lib/blockSchemas";
 import { InlineTextEditor, type InlineTextEditorHandle } from "@/components/builder/InlineTextEditor";
 import type { Block } from "@/types/CourseContent";
 
@@ -18,6 +19,8 @@ interface EditableBlockProps {
     onInsertAfter: () => void;
     /** Enregistre le handle de l'éditeur actif (pour la toolbar). */
     registerEditor?: (h: InlineTextEditorHandle | null) => void;
+    /** Classes supplémentaires sur le wrapper externe (ex. col-span pour les blocs column). */
+    wrapperClassName?: string;
 }
 
 const ACTION_TYPES = new Set(["code", "code-runnable", "image-card", "table", "chart", "diagram"]);
@@ -29,6 +32,7 @@ export function EditableBlock({
     children,
     onInsertAfter,
     registerEditor,
+    wrapperClassName,
 }: EditableBlockProps) {
     const def = getBlockDefinition(block.type);
     const selectedId = useBuilderStore((s) => s.selectedId);
@@ -41,6 +45,11 @@ export function EditableBlock({
 
     const editorRef = useRef<InlineTextEditorHandle | null>(null);
     const field = def?.inlineEditField;
+
+    const handleEditorRef = useCallback((h: InlineTextEditorHandle | null) => {
+        editorRef.current = h;
+        registerEditor?.(h);
+    }, [registerEditor]);
     const isSelected = selectedId === block.id;
     const isEditing = editingBlockId === block.id && Boolean(field);
     const isText = Boolean(field);
@@ -64,7 +73,7 @@ export function EditableBlock({
     };
 
     return (
-        <div className="group/eb relative">
+        <div className={["group/eb relative", wrapperClassName].filter(Boolean).join(" ")}>
             <div
                 role="article"
                 tabIndex={0}
@@ -93,11 +102,11 @@ export function EditableBlock({
                     "relative rounded-md border transition-colors",
                     cursor,
                     isEditing
-                        ? "border-blue-500 bg-blue-50/60 dark:bg-blue-950/30"
+                        ? "border-[var(--mod-color)] bg-[var(--mod-color)]/5 dark:bg-[var(--mod-color)]/10"
                         : isSelected
-                          ? "border-blue-400"
-                          : "border-transparent hover:border-blue-300",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1",
+                          ? "border-[var(--mod-color)]"
+                          : "border-transparent hover:border-[var(--mod-color)]/40",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mod-color)] focus-visible:ring-offset-1",
                 ].join(" ")}
             >
                 {/* Handle drag */}
@@ -112,7 +121,7 @@ export function EditableBlock({
 
                 {/* Badge éditer */}
                 {!isEditing && (
-                    <span className="pointer-events-none absolute right-1 top-1 z-10 hidden items-center gap-1 rounded bg-blue-500 px-1.5 py-0.5 text-[10px] text-white group-hover/eb:flex">
+                    <span className="pointer-events-none absolute right-1 top-1 z-10 hidden items-center gap-1 rounded bg-[var(--mod-color)] px-1.5 py-0.5 text-[10px] text-white group-hover/eb:flex">
                         <Pencil className="size-3" />
                         {def?.label ?? block.type}
                     </span>
@@ -134,18 +143,34 @@ export function EditableBlock({
 
                 {/* Contenu : éditeur inline OU rendu public */}
                 {isEditing && field ? (
-                    <div className="p-1">
-                        <InlineTextEditor
-                            ref={(h) => {
-                                editorRef.current = h;
-                                registerEditor?.(h);
-                            }}
-                            value={String(block.props[field] ?? "")}
-                            onCommit={commit}
-                            onCancel={cancel}
-                            ariaLabel={`Éditer ${def?.label ?? block.type}`}
-                        />
-                    </div>
+                    isContainer(block.type) ? (
+                        /* Conteneur (section, list…) : éditeur du titre visible
+                           en haut, enfants conservés (grisés) en dessous */
+                        <div className="flex flex-col">
+                            <div className="p-1">
+                                <InlineTextEditor
+                                    ref={handleEditorRef}
+                                    value={String(block.props[field] ?? "")}
+                                    onCommit={commit}
+                                    onCancel={cancel}
+                                    ariaLabel={`Éditer ${def?.label ?? block.type}`}
+                                />
+                            </div>
+                            <div className="pointer-events-none opacity-40 select-none">
+                                {children}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="p-1">
+                            <InlineTextEditor
+                                ref={handleEditorRef}
+                                value={String(block.props[field] ?? "")}
+                                onCommit={commit}
+                                onCancel={cancel}
+                                ariaLabel={`Éditer ${def?.label ?? block.type}`}
+                            />
+                        </div>
+                    )
                 ) : (
                     children
                 )}
@@ -164,7 +189,7 @@ export function EditableBlock({
                     type="button"
                     aria-label="Insérer un bloc après ce bloc"
                     onClick={onInsertAfter}
-                    className="-my-2 flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[11px] text-slate-500 shadow-sm hover:text-blue-600 dark:border-slate-700 dark:bg-slate-800"
+                    className="-my-2 flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[11px] text-slate-500 shadow-sm hover:text-[var(--mod-color)] dark:border-slate-700 dark:bg-slate-800"
                 >
                     <Plus className="size-3" /> Bloc ici
                 </button>

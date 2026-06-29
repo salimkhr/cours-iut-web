@@ -18,6 +18,7 @@ interface SlideEditCanvasProps {
 
 export function SlideEditCanvas({ slide, position, onInsertAfter }: SlideEditCanvasProps) {
     const updateBlock = useBuilderStore((s) => s.updateBlock);
+    const moduleSlug = useBuilderStore((s) => s.moduleSlug);
     const [activeEditor, setActiveEditor] = useState<InlineTextEditorHandle | null>(null);
     const [codeModal, setCodeModal] = useState<{ id: string; value: string; language: string } | null>(null);
 
@@ -52,7 +53,7 @@ export function SlideEditCanvas({ slide, position, onInsertAfter }: SlideEditCan
                 slidePosition={position}
             />
 
-            <div className="flex min-h-0 flex-1 items-center justify-center bg-slate-800 p-8">
+            <div className={`flex min-h-0 flex-1 items-center justify-center bg-slate-800 p-8${moduleSlug ? ` header-${moduleSlug}` : ""}`}>
                 <div className="aspect-video w-full max-w-5xl">
                     <ZoomedSlide slide={slide} mode="canvas-edit" renderChildren={renderChildren} />
                 </div>

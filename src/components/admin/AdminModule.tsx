@@ -1,6 +1,6 @@
 'use client';
 
-import {useState} from 'react';
+import React, {useState} from 'react';
 import {AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion';
 import Module from "@/types/Module";
 import AdminSection from "@/components/admin/AdminSection";
@@ -11,6 +11,7 @@ import Heading from "@/components/ui/Heading";
 import iconMap from "@/lib/iconMap";
 import {Section} from "@/components/admin/SectionForm";
 import useAdminApi from "@/hook/admin/useAdminApi";
+import {moduleColor} from "@/lib/moduleColor";
 
 interface AdminModuleProps {
     module: Module;
@@ -23,7 +24,6 @@ export default function AdminModule({module}: AdminModuleProps) {
 
     const {addSection: addSectionApi} = useAdminApi();
 
-    // Exemple : fonction pour ajouter une section
     const addSection = async (section: Section) => {
         const savedSection = await addSectionApi(modData._id as unknown as string, section);
         setModData(prev => ({
@@ -32,15 +32,25 @@ export default function AdminModule({module}: AdminModuleProps) {
         }));
     };
 
+    const handleDeleteSection = (sectionPath: string) => {
+        setModData(prev => ({
+            ...prev,
+            sections: prev.sections.filter(s => s.path !== sectionPath),
+        }));
+    };
+
     return (
         <AccordionItem value={modData.path}>
             <AccordionTrigger className="flex items-center">
-                <div className={cn("flex items-center p-2", `text-${modData.path}`)}>
+                <div className="flex items-center p-2" style={{ color: moduleColor(modData) }}>
                     <Icon className="w-6 h-6 mr-2"/>
                     <Heading level={3}>{modData.title}</Heading>
                 </div>
             </AccordionTrigger>
-            <AccordionContent className={cn("p-0", `header-${modData.path}`)}>
+            <AccordionContent
+                className={cn("p-0", "header-module")}
+                style={{ "--module-color": moduleColor(modData) } as React.CSSProperties}
+            >
                 <AddSectionButton onAdd={addSection} modData={modData}/>
                 {modData.sections.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 mb-4">
@@ -49,14 +59,15 @@ export default function AdminModule({module}: AdminModuleProps) {
                                 modData={modData}
                                 key={sec.path}
                                 section={sec}
+                                onDelete={handleDeleteSection}
                             />
-                        ))}</div>) : (
+                        ))}
+                    </div>
+                ) : (
                     <div className="text-center text-sm text-muted-foreground">
                         Aucun cours disponible pour ce module.
                     </div>
-                )
-                }
-
+                )}
             </AccordionContent>
         </AccordionItem>
     );

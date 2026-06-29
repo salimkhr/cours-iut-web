@@ -105,7 +105,7 @@ export function updateBlockProps(
     const next = blocks.map((block) => {
         if (block.id === id) {
             changed = true;
-            return { ...block, props };
+            return { ...block, props: { ...block.props, ...props } };
         }
         if (block.children) {
             const newChildren = updateBlockProps(block.children, id, props);

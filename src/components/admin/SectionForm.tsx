@@ -13,6 +13,7 @@ import {Checkbox} from '@/components/ui/checkbox';
 import {Textarea} from '@/components/ui/textarea';
 import {cn} from '@/lib/utils';
 import Module from '@/types/Module';
+import {moduleColor} from '@/lib/moduleColor';
 import { ContentRef } from '@/types/CourseContent';
 import {
     sectionFormSchema,
@@ -183,7 +184,7 @@ export default function SectionForm({
                     eyebrow="Section"
                     title={isEditMode ? 'Modifier la section' : 'Ajouter une section'}
                     srDescription={isEditMode ? 'Modifier les paramètres de la section' : 'Ajouter une nouvelle section au module'}
-                    className={`bg-${modData.path}`}
+                    style={{ backgroundColor: moduleColor(modData) }}
                 />
 
                 {/* Body + Footer */}
@@ -351,7 +352,8 @@ export default function SectionForm({
                         </Button>
                         <Button
                             type="submit"
-                            className={cn('text-white dark:text-brand-dark font-semibold', `bg-${modData.path} hover:opacity-90`)}
+                            className="text-white dark:text-brand-dark font-semibold hover:opacity-90"
+                            style={{ backgroundColor: moduleColor(modData) }}
                         >
                             {isEditMode ? 'Enregistrer' : 'Ajouter'}
                         </Button>

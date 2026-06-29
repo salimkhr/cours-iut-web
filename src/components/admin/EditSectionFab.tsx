@@ -9,7 +9,7 @@ import SectionForm, {Section as SectionForm_} from "@/components/admin/SectionFo
 import useAdminApi from "@/hook/admin/useAdminApi";
 import Module from "@/types/Module";
 import Section from "@/types/Section";
-import {cn} from "@/lib/utils";
+import {moduleColor} from "@/lib/moduleColor";
 
 interface EditSectionFabProps {
     modData: Module;
@@ -37,10 +37,8 @@ export default function EditSectionFab({modData, section}: EditSectionFabProps) 
                 onClick={() => setOpen(true)}
                 aria-label="Modifier la section"
                 title="Modifier la section"
-                className={cn(
-                    "fixed bottom-6 right-6 z-40 h-12 w-12 rounded-full p-0 shadow-lg text-white dark:text-brand-dark",
-                    `bg-${modData.path} hover:opacity-90`
-                )}
+                className="fixed bottom-6 right-6 z-40 h-12 w-12 rounded-full p-0 shadow-lg text-white dark:text-brand-dark hover:opacity-90"
+                style={{ backgroundColor: moduleColor(modData) }}
             >
                 <Pencil className="w-5 h-5"/>
             </Button>

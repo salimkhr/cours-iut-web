@@ -34,6 +34,7 @@ export function EditorToolbar({
     const redo = useBuilderStore((s) => s.redo);
     const canUndo = useBuilderStore((s) => s._history.length > 0);
     const canRedo = useBuilderStore((s) => s._future.length > 0);
+    const moduleSlug = useBuilderStore((s) => s.moduleSlug);
 
     return (
         <header className="flex items-center gap-3 px-4 py-3 flex-shrink-0 border-b border-slate-200 dark:border-slate-700 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm">
@@ -56,7 +57,7 @@ export function EditorToolbar({
                     </span>
                 </div>
                 <div className="flex items-center gap-2 leading-none">
-                    <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-blue-600 dark:text-blue-400">
+                    <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[var(--mod-color)]">
                         {contentType}
                     </span>
                     <Badge
@@ -98,7 +99,7 @@ export function EditorToolbar({
                 <Button
                     size="icon"
                     variant="ghost"
-                    className="h-8 w-8 text-slate-400 hover:text-blue-600 disabled:opacity-30"
+                    className="h-8 w-8 text-slate-400 hover:text-[var(--mod-color)] disabled:opacity-30"
                     disabled={!canUndo}
                     title="Annuler (Ctrl+Z)"
                     onClick={undo}
@@ -108,7 +109,7 @@ export function EditorToolbar({
                 <Button
                     size="icon"
                     variant="ghost"
-                    className="h-8 w-8 text-slate-400 hover:text-blue-600 disabled:opacity-30"
+                    className="h-8 w-8 text-slate-400 hover:text-[var(--mod-color)] disabled:opacity-30"
                     disabled={!canRedo}
                     title="Refaire (Ctrl+Y)"
                     onClick={redo}
@@ -119,7 +120,8 @@ export function EditorToolbar({
                     size="sm"
                     onClick={onSave}
                     disabled={!isDirty || saving}
-                    className="gap-1.5 h-8 text-xs ml-1"
+                    className="gap-1.5 h-8 text-xs ml-1 hover:opacity-90"
+                    style={moduleSlug ? { backgroundColor: "var(--mod-color)", color: "white", borderColor: "var(--mod-color)" } : undefined}
                 >
                     {saving
                         ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Sauvegarde…</>

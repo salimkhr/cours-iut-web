@@ -38,3 +38,29 @@ export async function PUT(
         return NextResponse.json({error: "Erreur interne"}, {status: 500});
     }
 }
+
+export async function DELETE(
+    _req: Request,
+    {params}: {params: Promise<{moduleId: string}>}
+) {
+    const session = await getServerSession();
+    if (session?.user.role !== "admin") {
+        return NextResponse.json({error: "Non autorisé"}, {status: 403});
+    }
+
+    const {moduleId} = await params;
+
+    try {
+        const db = await connectToDB();
+        const result = await db.collection("modules").deleteOne({_id: new ObjectId(moduleId)});
+
+        if (result.deletedCount === 0) {
+            return NextResponse.json({error: "Module introuvable"}, {status: 404});
+        }
+
+        return NextResponse.json({success: true});
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({error: "Erreur interne"}, {status: 500});
+    }
+}
