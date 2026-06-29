@@ -76,7 +76,7 @@ export const blockDefs: BlockDef[] = [
         ],
         container: containerRules["section"],
         initialChildren: () => [
-            { id: uuidv4(), type: "text", props: { content: "" }, children: [] },
+            { id: uuidv4(), type: "text", props: { content: "" } },
         ],
         inlineEditField: "title",
     },
@@ -320,7 +320,7 @@ export const blockDefs: BlockDef[] = [
         ],
         container: containerRules["slide"],
         initialChildren: () => [
-            { id: uuidv4(), type: "slide-text", props: { content: "" }, children: [] },
+            { id: uuidv4(), type: "slide-text", props: { content: "" } },
         ],
         inlineEditField: "title",
     },
