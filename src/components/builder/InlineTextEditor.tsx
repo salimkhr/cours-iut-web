@@ -1,6 +1,6 @@
 "use client";
 
-import React, { forwardRef, useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
+import React, { forwardRef, useImperativeHandle, useLayoutEffect, useRef, useState, useCallback } from "react";
 import { applyInlineMarker, type InlineMarker } from "@/lib/markdownToolbar";
 
 export interface InlineTextEditorHandle {
@@ -27,6 +27,10 @@ export const InlineTextEditor = forwardRef<InlineTextEditorHandle, InlineTextEdi
     function InlineTextEditor({ value, onCommit, onCancel, ariaLabel, className }, ref) {
         const taRef = useRef<HTMLTextAreaElement>(null);
         const [draft, setDraft] = useState(value);
+        // draftRef keeps applyMarker in sync with draft without requiring
+        // useImperativeHandle to re-run on every keystroke (which would call
+        // the callback ref with null+handle every render → infinite loop).
+        const draftRef = useRef(draft);
 
         // Auto-hauteur
         useLayoutEffect(() => {
@@ -36,17 +40,24 @@ export const InlineTextEditor = forwardRef<InlineTextEditorHandle, InlineTextEdi
             ta.style.height = `${ta.scrollHeight}px`;
         }, [draft]);
 
+        const updateDraft = useCallback((text: string) => {
+            draftRef.current = text;
+            setDraft(text);
+        }, []);
+
+        // deps: [] → handle object est créé une seule fois ; stable entre les
+        // renders → pas de cleanup/setup répété du callback ref côté parent.
         useImperativeHandle(ref, () => ({
             applyMarker(marker) {
                 const ta = taRef.current;
                 if (!ta) return;
                 const { text, selStart, selEnd } = applyInlineMarker(
-                    draft,
+                    draftRef.current,
                     ta.selectionStart,
                     ta.selectionEnd,
                     marker,
                 );
-                setDraft(text);
+                updateDraft(text);
                 requestAnimationFrame(() => {
                     ta.focus();
                     ta.setSelectionRange(selStart, selEnd);
@@ -55,7 +66,8 @@ export const InlineTextEditor = forwardRef<InlineTextEditorHandle, InlineTextEdi
             focus() {
                 taRef.current?.focus();
             },
-        }));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        }), []);
 
         return (
             <textarea
@@ -64,7 +76,7 @@ export const InlineTextEditor = forwardRef<InlineTextEditorHandle, InlineTextEdi
                 value={draft}
                 autoFocus
                 rows={1}
-                onChange={(e) => setDraft(e.target.value)}
+                onChange={(e) => updateDraft(e.target.value)}
                 onBlur={() => onCommit(draft)}
                 onKeyDown={(e) => {
                     if (e.key === "Escape") {
