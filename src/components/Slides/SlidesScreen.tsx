@@ -4,8 +4,6 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {cn} from "@/lib/utils";
 
 import {SlidesContext} from "./context/SlidesContext";
-import {NotesRenderer} from "./ui/NotesRenderer";
-import {useMediaQuery} from "@/hook/useMediaQuery";
 import {useFullscreen} from "./hooks/useFullscreen";
 import {useKeyboardNav} from "./hooks/useKeyboardNav";
 import {useSlideNotes} from "./hooks/useSlideNotes";
@@ -14,7 +12,6 @@ import {SlideTitle} from "./ui/SlideTitle";
 import Module from "@/types/Module";
 import Section from "@/types/Section";
 import {useSlidesNavigation} from "@/components/Slides/hooks/useSlidesNavigation";
-import {SlidesMobileView} from "@/components/Slides/SlidesMobileView";
 import {SlidesProgress} from "@/components/Slides/SlidesProgress";
 import {SlidesActions} from "@/components/Slides/SlidesActions";
 import {useLiveSession} from "@/components/Slides/hooks/useLiveSession";
@@ -33,7 +30,6 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                                                               section,
                                                           }) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const isMobile = useMediaQuery("(max-width: 768px)");
 
     /* ---------- Slides ---------- */
     const slides = useMemo(() => {
@@ -64,21 +60,24 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
     /* ---------- Live ---------- */
     const hasSlugCtx = !!(module && section);
     const live = useLiveSession(module?.path ?? "", section?.path ?? "");
-    const {isLive: sessionIsLive, presenter, sendCommand, connection, presenterName, start, stop} = live;
+    const {isLive: sessionIsLive, presenter, sendCommand, connection, presenterName, start, stop, startedHere, takeControl} = live;
+
+    // Contrôleur actif = admin ET a démarré la session depuis cet appareil
+    const isController = isPresenter && startedHere;
 
     const {paused, drift, resync, notifyLocalNav} = useFollowerSync({
         isLive: sessionIsLive && hasSlugCtx,
-        isPresenter,
+        isController,
         presenter,
         localSlide: navigation.currentSlide,
         syncTo: navigation.syncTo,
     });
 
-    // Quand le présentateur change de slide, diffuse la position
+    // Quand le contrôleur actif change de slide, diffuse la position
     useEffect(() => {
-        if (!isPresenter || !sessionIsLive || !hasSlugCtx) return;
+        if (!isController || !sessionIsLive || !hasSlugCtx) return;
         sendCommand({slide: navigation.currentSlide, step: navigation.currentStep});
-    }, [navigation.currentSlide, navigation.currentStep, isPresenter, sessionIsLive, hasSlugCtx, sendCommand]);
+    }, [navigation.currentSlide, navigation.currentStep, isController, sessionIsLive, hasSlugCtx, sendCommand]);
 
     // Navigation wrappée pour que les déplacements manuels suspendent le suivi follower
     const wrappedNext = useCallback(() => {
@@ -126,12 +125,12 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                 /* UI */
                 isFullscreen,
                 toggleFullscreen,
-                isMobile,
 
                 /* Live */
                 live: hasSlugCtx ? {
                     isLive: sessionIsLive,
                     isPresenter,
+                    isController,
                     presenterName,
                     connection,
                     drift,
@@ -140,6 +139,7 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                 } : undefined,
                 startPresenting: hasSlugCtx ? start : undefined,
                 stopPresenting: hasSlugCtx ? stop : undefined,
+                takeControl: hasSlugCtx && isPresenter && !isController ? takeControl : undefined,
             }}
         >
             <div
@@ -151,45 +151,28 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                         : "bg-muted/30 rounded-2xl border"
                 )}
             >
-                {isMobile ? (
-                    <SlidesMobileView/>
-                ) : (
-                    <>
-                        {/* Progression latérale */}
-                        <SlidesProgress/>
+                {/* Progression latérale */}
+                <SlidesProgress/>
 
-                        {/* Notes (desktop) */}
-                        {showNotes && currentNotes && (
-                            <div
-                                className="absolute top-4 left-4 z-40 w-80 max-h-[70vh] overflow-y-auto bg-background/95 backdrop-blur-md p-6 rounded-2xl border shadow-2xl">
-                                <h3 className="text-xs font-bold uppercase tracking-widest text-primary mb-4">
-                                    Notes de présentation
-                                </h3>
-                                <NotesRenderer notes={currentNotes}/>
-                            </div>
-                        )}
+                {/* Slide courante */}
+                <div className="flex-1 flex items-center justify-center p-6">
+                    {slides[navigation.currentSlide]}
+                </div>
 
-                        {/* Slide courante */}
-                        <div className="flex-1 flex items-center justify-center p-6">
-                            {slides[navigation.currentSlide]}
-                        </div>
+                {/* Actions */}
+                <SlidesActions/>
 
-                        {/* Actions */}
-                        <SlidesActions/>
-
-                        {/* Progress bar bas */}
-                        <div className="absolute bottom-0 left-0 h-1 w-full bg-primary/20">
-                            <div
-                                className="h-full bg-primary transition-all"
-                                style={{
-                                    width: `${
-                                        ((navigation.currentSlide + 1) / slides.length) * 100
-                                    }%`,
-                                }}
-                            />
-                        </div>
-                    </>
-                )}
+                {/* Progress bar bas */}
+                <div className="absolute bottom-0 left-0 h-1 w-full bg-primary/20">
+                    <div
+                        className="h-full bg-primary transition-all"
+                        style={{
+                            width: `${
+                                ((navigation.currentSlide + 1) / slides.length) * 100
+                            }%`,
+                        }}
+                    />
+                </div>
             </div>
         </SlidesContext.Provider>
     );

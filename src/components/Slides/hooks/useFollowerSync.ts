@@ -5,7 +5,8 @@ import { computeDrift, type Drift } from "@/lib/live/drift";
 
 interface FollowerSyncArgs {
     isLive: boolean;
-    isPresenter: boolean;
+    /** Vrai uniquement sur l'appareil qui contrôle la session (a démarré ici) */
+    isController: boolean;
     presenter: { slide: number; step: number } | null;
     localSlide: number;
     syncTo: (slide: number, step: number) => void;
@@ -24,7 +25,7 @@ interface FollowerSync {
  * et expose la dérive + un resync.
  */
 export function useFollowerSync({
-    isLive, isPresenter, presenter, localSlide, syncTo,
+    isLive, isController, presenter, localSlide, syncTo,
 }: FollowerSyncArgs): FollowerSync {
     const [paused, setPaused] = useState(false);
     const applyingRef = useRef(false);
@@ -33,20 +34,20 @@ export function useFollowerSync({
         ? computeDrift(localSlide, presenter.slide)
         : { delta: 0, direction: "synced" };
 
-    // Applique la position du présentateur (sauf si présentateur soi-même ou en pause)
+    // Applique la position du présentateur (sauf si contrôleur actif ou en pause)
     useEffect(() => {
-        if (!isLive || isPresenter || paused || !presenter) return;
+        if (!isLive || isController || paused || !presenter) return;
         applyingRef.current = true;
         syncTo(presenter.slide, presenter.step);
         // libère le flag après application
         const id = requestAnimationFrame(() => { applyingRef.current = false; });
         return () => cancelAnimationFrame(id);
-    }, [isLive, isPresenter, paused, presenter, syncTo]);
+    }, [isLive, isController, paused, presenter, syncTo]);
 
     const notifyLocalNav = useCallback(() => {
         if (applyingRef.current) return; // changement venant du suivi, pas de l'élève
-        if (isLive && !isPresenter) setPaused(true);
-    }, [isLive, isPresenter]);
+        if (isLive && !isController) setPaused(true);
+    }, [isLive, isController]);
 
     const resync = useCallback(() => {
         if (presenter) syncTo(presenter.slide, presenter.step);
