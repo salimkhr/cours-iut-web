@@ -13,6 +13,7 @@ import {Textarea} from '@/components/ui/textarea';
 import {Checkbox} from '@/components/ui/checkbox';
 import {cn} from '@/lib/utils';
 import Module from '@/types/Module';
+import {moduleColor} from '@/lib/moduleColor';
 import {
     moduleFormSchema,
     type ModuleFormValues,
@@ -95,7 +96,7 @@ export default function EditModuleSheet({
                     icon={Settings}
                     eyebrow="Module"
                     title="Modifier le module"
-                    className={`bg-${module.path}`}
+                    style={{ backgroundColor: moduleColor(module) }}
                 />
 
                 {/* Body + Footer */}
@@ -323,7 +324,8 @@ export default function EditModuleSheet({
                         <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className={cn('text-white dark:text-brand-dark font-semibold', `bg-${module.path} hover:opacity-90`)}
+                            className="text-white dark:text-brand-dark font-semibold hover:opacity-90"
+                            style={{ backgroundColor: moduleColor(module) }}
                         >
                             {isSubmitting ? 'Enregistrement…' : 'Enregistrer'}
                         </Button>

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { findBlock } from "@/lib/blockTreeUtils";
 import { getBlockDefinition } from "@/lib/blockRegistry";
+import { COL_SPAN_CLASS } from "@/lib/blockSchemas";
 import { EditableBlock } from "@/components/builder/EditableBlock";
 import { CodeEditorModal } from "@/components/builder/CodeEditorModal";
 import { ImageEditDialog } from "@/components/builder/ImageEditDialog";
@@ -17,6 +18,7 @@ interface CourseEditCanvasProps {
 
 export function CourseEditCanvas({ onInsertAfter }: CourseEditCanvasProps) {
     const blocks = useBuilderStore((s) => s.blocks);
+    const moduleSlug = useBuilderStore((s) => s.moduleSlug);
     const updateBlock = useBuilderStore((s) => s.updateBlock);
     const [activeEditor, setActiveEditor] = useState<InlineTextEditorHandle | null>(null);
     const [codeModal, setCodeModal] = useState<{ id: string; value: string; language: string } | null>(null);
@@ -44,7 +46,7 @@ export function CourseEditCanvas({ onInsertAfter }: CourseEditCanvasProps) {
             />
 
             <div className="min-h-0 flex-1 overflow-y-auto bg-slate-100 px-6 py-8 dark:bg-slate-950">
-                <div className="mx-auto flex max-w-3xl flex-col gap-3">
+                <div className={`mx-auto flex max-w-3xl flex-col gap-3${moduleSlug ? ` header-${moduleSlug}` : ""}`}>
                     {blocks.map((block, i) => (
                         <EditableCourseBlock
                             key={block.id}
@@ -116,6 +118,10 @@ function EditableCourseBlock({
         </div>
     ) : null;
 
+    const wrapperClassName = block.type === "column"
+        ? (COL_SPAN_CLASS[Number(block.props.span)] ?? "md:col-span-6")
+        : undefined;
+
     return (
         <EditableBlock
             block={block}
@@ -123,6 +129,7 @@ function EditableCourseBlock({
             index={index}
             onInsertAfter={() => onInsertAfter(parentId, index + 1)}
             registerEditor={registerEditor}
+            wrapperClassName={wrapperClassName}
         >
             {rendered}
         </EditableBlock>

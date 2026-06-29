@@ -7,6 +7,7 @@
     --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
     --font-sans: var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif;
     --color-footer: #121212;
+    --color-destructive: #dc2626;
 
     /* Design system — Neo-Mirai */
     /* brand-primary adapté light : ratio ≥4.5:1 sur fond crème et avec texte blanc */
@@ -210,6 +211,24 @@
     background-size: 200% 200%;
     animation: gradientShift var(--animation-duration-long) ease infinite;
 }
+
+/* ===== Classe générique — positionner --module-color sur l'ancêtre ===== */
+.header-module h1, .header-module h2, .header-module h3 { color: var(--module-color); }
+.header-module h1 { text-align: center; }
+.header-module .bg-module { background: var(--module-color); }
+.header-module .border-module { border-color: var(--module-color); }
+.header-module .text-module { color: var(--module-color); }
+.header-module a { color: var(--module-color); text-decoration: underline; }
+.header-module .data-\[state\=checked\]\:bg-module[data-state="checked"] { background: var(--module-color); }
+
+/* Alias : les classes header-{slug} existantes définissent --module-color
+   et délèguent le rendu à header-module. Cela préserve la compatibilité
+   avec tout le code existant qui pose header-{slug} sur un ancêtre. */
+.header-html-css   { --module-color: var(--color-html-css); }
+.header-javascript { --module-color: var(--color-javascript); }
+.header-php        { --module-color: var(--color-php); }
+.header-brainfuck  { --module-color: var(--color-brainfuck); }
+.header-login      { --module-color: var(--color-login); }
 
 /* ===== Couleurs par langage ===== */
 /* HTML/CSS */

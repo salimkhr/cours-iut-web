@@ -38,5 +38,15 @@ export default function useAdminApi() {
         return res.data.section;
     }
 
-    return {addModule, addSection, editSection};
+    // Supprimer un module
+    async function deleteModule(moduleId: string) {
+        await axios.delete(`/api/admin/modules/${moduleId}`);
+    }
+
+    // Supprimer une section
+    async function deleteSection(moduleId: string, sectionPath: string) {
+        await axios.delete(`/api/admin/${moduleId}/sections?sectionPath=${encodeURIComponent(sectionPath)}`);
+    }
+
+    return {addModule, addSection, editSection, deleteModule, deleteSection};
 }

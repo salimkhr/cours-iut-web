@@ -10,6 +10,7 @@ import {cn} from "@/lib/utils";
 
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card";
 import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
+import {moduleColor} from "@/lib/moduleColor";
 
 interface ModuleCardProps {
     currentModule: Module;
@@ -67,16 +68,14 @@ export default function ModuleCard({currentModule, isAuthed = true}: ModuleCardP
 
                 <CardHeader className="flex flex-row items-start gap-4 space-y-0 p-0">
                     <div
-                        className={cn(
-                            "flex items-center justify-center w-12 h-12 rounded-xl text-white shadow-lg shrink-0 text-white dark:text-black",
-                            `bg-${path}` // Utilise tes couleurs de badge
-                        )}
+                        className="flex items-center justify-center w-12 h-12 rounded-xl text-white shadow-lg shrink-0 dark:text-black"
+                        style={{ backgroundColor: moduleColor(currentModule) }}
                     >
                         <Icon size={22} />
                     </div>
 
                     <div className="min-w-0 flex-1">
-                        <CardTitle className={cn("text-xl lg:text-2xl font-bold", `text-${path}`)}>
+                        <CardTitle className="text-xl lg:text-2xl font-bold" style={{ color: moduleColor(currentModule) }}>
                             {title}
                         </CardTitle>
 
@@ -113,8 +112,8 @@ export default function ModuleCard({currentModule, isAuthed = true}: ModuleCardP
 
                             <div className="w-full bg-black/10 dark:bg-white/10 rounded-full h-2 mt-2 overflow-hidden">
                                 <div
-                                    className={cn("h-full rounded-full transition-all duration-1000", `bg-${path}`)}
-                                    style={{ width: `${pct}%` }}
+                                    className="h-full rounded-full transition-all duration-1000"
+                                    style={{ width: `${pct}%`, backgroundColor: moduleColor(currentModule) }}
                                 />
                             </div>
                         </div>

@@ -1,3 +1,4 @@
+import React from 'react';
 import { type LucideIcon } from 'lucide-react';
 import { SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
@@ -13,8 +14,10 @@ interface AdminSheetHeaderProps {
     description?: React.ReactNode;
     /** Description accessible uniquement (sr-only) — mutuellement exclusif avec description */
     srDescription?: string;
-    /** Classe de fond : bg-brand-primary, bg-javascript, etc. */
+    /** Classe de fond (modules prédéfinis) ou omise quand style est utilisé. */
     className?: string;
+    /** Style inline — utilisé pour passer backgroundColor via moduleColor() sur les nouveaux modules. */
+    style?: React.CSSProperties;
 }
 
 export default function AdminSheetHeader({
@@ -24,6 +27,7 @@ export default function AdminSheetHeader({
     description,
     srDescription,
     className,
+    style,
 }: AdminSheetHeaderProps) {
     return (
         <div
@@ -31,6 +35,7 @@ export default function AdminSheetHeader({
                 'relative flex items-center gap-4 px-6 py-5 pr-14 overflow-hidden shrink-0',
                 className,
             )}
+            style={style}
         >
             {/* Ligne de lumière sur le bord supérieur */}
             <div

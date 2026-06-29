@@ -26,7 +26,7 @@ interface ContextualTopBarProps {
 
 const TEXT_TYPES = new Set(["text", "slide-text", "heading", "list-item", "slide-list-item"]);
 
-function IconBtn({ label, onClick, onMouseDown, children }: { label: string; onClick: () => void; onMouseDown?: React.MouseEventHandler<HTMLButtonElement>; children: React.ReactNode }) {
+function IconBtn({ label, onClick, onMouseDown, disabled, children }: { label: string; onClick: () => void; onMouseDown?: React.MouseEventHandler<HTMLButtonElement>; disabled?: boolean; children: React.ReactNode }) {
     return (
         <button
             type="button"
@@ -34,7 +34,8 @@ function IconBtn({ label, onClick, onMouseDown, children }: { label: string; onC
             title={label}
             onClick={onClick}
             onMouseDown={onMouseDown}
-            className="inline-flex size-11 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-slate-300 dark:hover:bg-slate-800"
+            disabled={disabled}
+            className="inline-flex size-11 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:pointer-events-none disabled:opacity-30 dark:text-slate-300 dark:hover:bg-slate-800"
         >
             {children}
         </button>
@@ -48,7 +49,10 @@ export function ContextualTopBar({
     const blocks = useBuilderStore((s) => s.blocks);
     const undo = useBuilderStore((s) => s.undo);
     const redo = useBuilderStore((s) => s.redo);
+    const canUndo = useBuilderStore((s) => s._history.length > 0);
+    const canRedo = useBuilderStore((s) => s._future.length > 0);
     const updateBlock = useBuilderStore((s) => s.updateBlock);
+    const moduleSlug = useBuilderStore((s) => s.moduleSlug);
 
     const selected = selectedId ? findBlock(blocks, selectedId) : null;
     const def = selected ? getBlockDefinition(selected.type) : null;
@@ -123,7 +127,8 @@ export function ContextualTopBar({
             <button
                 type="button"
                 onClick={onInsert}
-                className="inline-flex h-8 items-center gap-1 rounded-md bg-blue-600 px-3 text-sm font-medium text-white hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                className="inline-flex h-8 items-center gap-1 rounded-md px-3 text-sm font-medium text-white hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mod-color)] focus-visible:ring-offset-1"
+                style={moduleSlug ? { backgroundColor: "var(--mod-color)" } : { backgroundColor: "#2563eb" }}
             >
                 <Plus className="size-4" /> Bloc
             </button>
@@ -132,8 +137,8 @@ export function ContextualTopBar({
                 <IconBtn label="Fond de la slide" onClick={onOpenBackground}><Palette className="size-4" /></IconBtn>
             )}
 
-            <IconBtn label="Annuler" onClick={undo}><Undo2 className="size-4" /></IconBtn>
-            <IconBtn label="Rétablir" onClick={redo}><Redo2 className="size-4" /></IconBtn>
+            <IconBtn label="Annuler (Ctrl+Z)" onClick={undo} disabled={!canUndo}><Undo2 className="size-4" /></IconBtn>
+            <IconBtn label="Rétablir (Ctrl+Y)" onClick={redo} disabled={!canRedo}><Redo2 className="size-4" /></IconBtn>
 
             {contextZone && <div className="mx-1 h-6 w-px bg-slate-300 dark:bg-slate-600" />}
             {contextZone}

@@ -11,25 +11,40 @@ import Module from "@/types/Module";
 import { getContentTypes, hasContentType } from "@/types/CourseContent";
 import {Section as SectionFrom} from "@/components/admin/SectionForm";
 import useAdminApi from "@/hook/admin/useAdminApi";
+import {Trash2} from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {moduleColor} from "@/lib/moduleColor";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface AdminSectionProps {
     section: Section;
     modData: Module;
-
+    onDelete?: (sectionPath: string) => void;
 }
 
 export default function AdminSection({
                                          section,
                                          modData,
+                                         onDelete,
                                      }: AdminSectionProps) {
     const [currentSection, setCurrentSection] = useState<Section>(section);
+    const [deleting, setDeleting] = useState(false);
 
     const isAvailable = !!currentSection.isAvailable;
     const correctionIsAvailable = !!currentSection.correctionIsAvailable;
 
     const moduleId = modData._id;
 
-    const {editSection: editSectionApi} = useAdminApi();
+    const {editSection: editSectionApi, deleteSection: deleteSectionApi} = useAdminApi();
 
     const editSection = async (updatedSection: SectionFrom) => {
         try {
@@ -38,6 +53,18 @@ export default function AdminSection({
             toast.success("Section mise à jour.");
         } catch {
             toast.error("Erreur lors de la mise à jour de la section.");
+        }
+    };
+
+    const handleDelete = async () => {
+        setDeleting(true);
+        try {
+            await deleteSectionApi(modData._id as unknown as string, currentSection.path);
+            toast.success("Section supprimée.");
+            onDelete?.(currentSection.path);
+        } catch {
+            toast.error("Erreur lors de la suppression de la section.");
+            setDeleting(false);
         }
     };
 
@@ -53,7 +80,48 @@ export default function AdminSection({
         <div className="rounded-lg border p-3 space-y-3 bg-muted/40">
             <div className="flex items-center justify-between">
                 <h3 className="text-xl font-medium leading-tight">{currentSection.order}. {currentSection.title}</h3>
-                <EditSectionButton section={currentSection} modData={modData} onAdd={editSection}/>
+                <div className="flex items-center gap-1">
+                    <EditSectionButton section={currentSection} modData={modData} onAdd={editSection}/>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                disabled={deleting}
+                                aria-label="Supprimer la section"
+                            >
+                                <Trash2 className="w-4 h-4"/>
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="p-0 gap-0 overflow-hidden bg-[#f7ebd9] dark:bg-[#13110d] border-bridge-500/45">
+                            <div
+                                className="flex items-center gap-3 px-6 py-4"
+                                style={{ backgroundColor: moduleColor(modData) }}
+                            >
+                                <Trash2 className="w-5 h-5 text-white shrink-0" />
+                                <AlertDialogTitle className="text-white font-bold text-lg">
+                                    Supprimer la section ?
+                                </AlertDialogTitle>
+                            </div>
+                            <div className="px-6 py-5">
+                                <AlertDialogDescription className="text-brand-dark dark:text-bridge-200">
+                                    La section <strong>{currentSection.title}</strong> sera définitivement supprimée.
+                                    Cette action est irréversible.
+                                </AlertDialogDescription>
+                            </div>
+                            <AlertDialogFooter className="px-6 pb-5">
+                                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={handleDelete}
+                                    variant="destructive"
+                                >
+                                    Supprimer
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </div>
             </div>
             <div className="space-y-3">
                 <div className="flex items-center justify-between">

@@ -120,3 +120,34 @@ export const PUT = withAdmin(async (
         return NextResponse.json({error: 'Erreur interne'}, {status: 500});
     }
 });
+
+export const DELETE = withAdmin(async (
+    req: Request,
+    context: { params: Promise<{ moduleId: string }> }
+) => {
+    try {
+        const {moduleId} = await context.params;
+        const {searchParams} = new URL(req.url);
+        const sectionPath = searchParams.get('sectionPath');
+
+        if (!sectionPath) {
+            return NextResponse.json({error: 'sectionPath requis'}, {status: 400});
+        }
+
+        const db = await connectToDB();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const result = await (db.collection('modules') as any).updateOne(
+            {_id: new ObjectId(moduleId)},
+            {$pull: {sections: {path: sectionPath}}}
+        );
+
+        if (result.modifiedCount === 0) {
+            return NextResponse.json({error: 'Module ou section introuvable'}, {status: 404});
+        }
+
+        return NextResponse.json({success: true});
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({error: 'Erreur interne'}, {status: 500});
+    }
+});
