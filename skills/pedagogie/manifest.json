@@ -102,8 +102,19 @@
         "create_exam",
         "review_exam"
       ]
+    },
+    {
+      "id": "skill-plan",
+      "title": "Skill — Plan de module",
+      "path": "skills/pedagogy-plan.md",
+      "uri": "skill://pedagogie/skill-plan",
+      "purpose": "Concevoir le plan d'un module : objectifs globaux, brainstorm et sélection des sections, création via MCP après validation",
+      "load_when": [
+        "design_curriculum",
+        "plan_module"
+      ]
     }
   ],
-  "updated_at": "2026-06-30T00:21:45.007Z",
-  "content_hash": "4caed144b439"
+  "updated_at": "2026-06-30T05:27:52.640Z",
+  "content_hash": "e242080bf6f3"
 }
