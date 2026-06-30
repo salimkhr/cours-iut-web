@@ -39,6 +39,9 @@ jobs:
       - name: Run ESLint
         run: bun run lint
 
+      - name: Generate skill module
+        run: bun run generate-skill
+
       - name: Type check (via Bun)
         run: bunx tsc --noEmit
 
