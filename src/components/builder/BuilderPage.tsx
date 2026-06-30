@@ -301,6 +301,8 @@ export function BuilderPage({
             <EditorToolbar
                 moduleTitle={moduleTitle}
                 sectionTitle={sectionTitle}
+                moduleSlug={moduleSlug}
+                sectionSlug={sectionSlug}
                 contentType={contentType}
                 source={source}
                 saving={saving}

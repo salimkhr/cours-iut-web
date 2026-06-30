@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight, Save, Loader2, AlertCircle, Undo2, Redo2, Database, Users } from "lucide-react";
+import { ChevronRight, Save, Loader2, AlertCircle, Undo2, Redo2, Database, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,8 @@ import { useBuilderStore } from "@/lib/store/builderStore";
 interface EditorToolbarProps {
     moduleTitle: string;
     sectionTitle: string;
+    moduleSlug: string;
+    sectionSlug: string;
     contentType: string;
     source: "file" | "db";
     saving: boolean;
@@ -22,6 +24,8 @@ interface EditorToolbarProps {
 export function EditorToolbar({
     moduleTitle,
     sectionTitle,
+    moduleSlug,
+    sectionSlug,
     contentType,
     source,
     saving,
@@ -34,21 +38,22 @@ export function EditorToolbar({
     const redo = useBuilderStore((s) => s.redo);
     const canUndo = useBuilderStore((s) => s._history.length > 0);
     const canRedo = useBuilderStore((s) => s._future.length > 0);
-    const moduleSlug = useBuilderStore((s) => s.moduleSlug);
+    const storeModuleSlug = useBuilderStore((s) => s.moduleSlug);
 
     return (
         <header className="flex items-center gap-3 px-4 py-3 flex-shrink-0 border-b border-bridge-200 dark:border-bridge-700 bg-bridge-50/95 dark:bg-bridge-900/95 backdrop-blur-sm">
 
-            {/* Bouton Utilisateurs */}
+            {/* Voir la page en mode normal */}
             <Button
                 asChild
                 variant="ghost"
                 size="sm"
                 className="h-8 gap-1.5 px-2.5 text-xs font-medium text-bridge-600 dark:text-bridge-300 hover:text-brand-primary dark:hover:text-brand-primary hover:bg-bridge-100 dark:hover:bg-bridge-800 shrink-0"
+                title="Voir la page en mode normal (nouvel onglet)"
             >
-                <Link href="/admin">
-                    <Users className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Utilisateurs</span>
+                <Link href={`/${moduleSlug}/${sectionSlug}/${contentType}`} target="_blank" rel="noopener noreferrer">
+                    <Eye className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Voir</span>
                 </Link>
             </Button>
 
@@ -131,7 +136,7 @@ export function EditorToolbar({
                     onClick={onSave}
                     disabled={!isDirty || saving}
                     className="gap-1.5 h-8 text-xs ml-1 hover:opacity-90"
-                    style={moduleSlug ? { backgroundColor: "var(--mod-color)", color: "white", borderColor: "var(--mod-color)" } : undefined}
+                    style={storeModuleSlug ? { backgroundColor: "var(--mod-color)", color: "white", borderColor: "var(--mod-color)" } : undefined}
                 >
                     {saving
                         ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Sauvegarde…</>
