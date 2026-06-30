@@ -24,7 +24,6 @@ import {
     SKILL_MANIFEST,
     SKILL_DOCUMENTS,
     SKILL_VERSION,
-    SKILL_HASH,
 } from "@/lib/skills/pedagogie";
 
 export const runtime = "nodejs";
