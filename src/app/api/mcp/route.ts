@@ -365,7 +365,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         "Crée un nouveau module (structure pédagogique seule, isExtra:true). Réservé aux admins.",
         {
             title:       z.string().describe("Titre affiché du module, ex: Rust"),
-            iconName:    z.string().optional().describe("Nom d'icône lucide (défaut: Code)"),
+            iconName:    z.string().optional().describe("Nom d'icône Lucide — voir https://lucide.dev/icons/ (défaut: Code)"),
             path:        z.string().optional().describe("Slug du module (défaut: dérivé du titre)"),
             description: z.string().optional(),
         },
@@ -421,7 +421,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         {
             module:      z.string().describe("Slug du module à éditer"),
             title:       z.string().optional().describe("Nouveau titre affiché"),
-            iconName:    z.string().optional().describe("Nom d'icône Lucide (ex: Code, Globe, Database, BookOpen)"),
+            iconName:    z.string().optional().describe("Nom d'icône Lucide — voir https://lucide.dev/icons/ pour la liste complète (ex: Code, Globe, Database, BookOpen)"),
             description: z.string().optional().describe("Description ou objectifs globaux du module"),
             colorLight:  z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
                 .describe("Couleur claire du thème en hex (#rrggbb)"),
