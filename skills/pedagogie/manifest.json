@@ -4,7 +4,11 @@
   "version": "1.0.0",
   "description": "Skill pédagogique pour concevoir et réviser des cours, TPs et slides BUT Informatique.",
   "entrypoint": "SKILL.md",
-  "supported_content_types": ["course", "slides", "practical_work"],
+  "supported_content_types": [
+    "course",
+    "slides",
+    "practical_work"
+  ],
   "roles": [
     "instructional_designer",
     "struggling_learner_auditor",
@@ -17,7 +21,9 @@
       "path": "SKILL.md",
       "uri": "skill://pedagogie/main",
       "purpose": "Orchestration, routage, workflow, vérifications multi-supports, fallback web",
-      "load_when": ["always"]
+      "load_when": [
+        "always"
+      ]
     },
     {
       "id": "concepteur",
@@ -25,7 +31,11 @@
       "path": "agents/concepteur.md",
       "uri": "skill://pedagogie/concepteur",
       "purpose": "Rôle du Concepteur : carte d'alignement, vérifications, permissions",
-      "load_when": ["design_unit", "create", "review_structural"]
+      "load_when": [
+        "design_unit",
+        "create",
+        "review_structural"
+      ]
     },
     {
       "id": "auditeur-apprenant",
@@ -33,7 +43,10 @@
       "path": "agents/auditeur-apprenant.md",
       "uri": "skill://pedagogie/auditeur-apprenant",
       "purpose": "Rôle de l'Auditeur : simulation apprenant fragile, format YAML des constats",
-      "load_when": ["review", "review_structural"]
+      "load_when": [
+        "review",
+        "review_structural"
+      ]
     },
     {
       "id": "garant-coherence",
@@ -41,7 +54,10 @@
       "path": "agents/garant-coherence.md",
       "uri": "skill://pedagogie/garant-coherence",
       "purpose": "Rôle du Garant : cohérence parcours + multi-supports, format YAML des constats",
-      "load_when": ["review_structural", "check_coherence"]
+      "load_when": [
+        "review_structural",
+        "check_coherence"
+      ]
     },
     {
       "id": "ref-cours",
@@ -49,7 +65,10 @@
       "path": "references/cours.md",
       "uri": "skill://pedagogie/ref-cours",
       "purpose": "Règles éditoriales JSX pour la rédaction des cours",
-      "load_when": ["create_course", "review_course"]
+      "load_when": [
+        "create_course",
+        "review_course"
+      ]
     },
     {
       "id": "ref-tp",
@@ -57,7 +76,10 @@
       "path": "references/tp.md",
       "uri": "skill://pedagogie/ref-tp",
       "purpose": "Règles éditoriales JSX pour la rédaction des TPs",
-      "load_when": ["create_practical_work", "review_practical_work"]
+      "load_when": [
+        "create_practical_work",
+        "review_practical_work"
+      ]
     },
     {
       "id": "ref-slide",
@@ -65,7 +87,10 @@
       "path": "references/slide.md",
       "uri": "skill://pedagogie/ref-slide",
       "purpose": "Règles éditoriales JSX pour la rédaction des slides",
-      "load_when": ["create_slides", "review_slides"]
+      "load_when": [
+        "create_slides",
+        "review_slides"
+      ]
     },
     {
       "id": "ref-examen",
@@ -73,9 +98,12 @@
       "path": "references/examen.md",
       "uri": "skill://pedagogie/ref-examen",
       "purpose": "Règles éditoriales JSX pour la rédaction des examens",
-      "load_when": ["create_exam", "review_exam"]
+      "load_when": [
+        "create_exam",
+        "review_exam"
+      ]
     }
   ],
-  "updated_at": "2026-06-30T00:00:00Z",
-  "content_hash": "placeholder"
+  "updated_at": "2026-06-30T00:14:30.545Z",
+  "content_hash": "4caed144b439"
 }
