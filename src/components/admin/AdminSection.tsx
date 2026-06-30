@@ -79,7 +79,17 @@ export default function AdminSection({
     return (
         <div className="rounded-lg border p-3 space-y-3 bg-muted/40">
             <div className="flex items-center justify-between">
-                <h3 className="text-xl font-medium leading-tight">{currentSection.order}. {currentSection.title}</h3>
+                <div className="flex items-center gap-2 min-w-0">
+                    <span
+                        className="inline-flex items-center justify-center w-7 h-7 rounded-md text-white dark:text-black font-mono font-bold text-xs shrink-0"
+                        style={{ backgroundColor: moduleColor(modData) }}
+                    >
+                        {currentSection.order.toString().padStart(2, '0')}
+                    </span>
+                    <span className="text-base font-semibold leading-tight text-brand-dark dark:text-bridge-100 truncate">
+                        {currentSection.title}
+                    </span>
+                </div>
                 <div className="flex items-center gap-1">
                     <EditSectionButton section={currentSection} modData={modData} onAdd={editSection}/>
                     <AlertDialog>
