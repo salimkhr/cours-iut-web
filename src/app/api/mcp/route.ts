@@ -414,6 +414,51 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         }
     );
 
+    // ── edit_module ────────────────────────────────────────────────────────────
+    server.tool(
+        "edit_module",
+        "Édite les métadonnées d'un module : titre, description, icône, couleurs thème (colorLight/colorDark en hex). Réservé aux admins.",
+        {
+            module:      z.string().describe("Slug du module à éditer"),
+            title:       z.string().optional().describe("Nouveau titre affiché"),
+            iconName:    z.string().optional().describe("Nom d'icône Lucide (ex: Code, Globe, Database, BookOpen)"),
+            description: z.string().optional().describe("Description ou objectifs globaux du module"),
+            colorLight:  z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
+                .describe("Couleur claire du thème en hex (#rrggbb)"),
+            colorDark:   z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
+                .describe("Couleur sombre du thème en hex (#rrggbb)"),
+        },
+        async ({ module, title, iconName, description, colorLight, colorDark }) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const db = await connectToDB();
+
+            const mod = await db.collection<Module>("modules").findOne({ path: module });
+            if (!mod) throw new Error(`Module "${module}" introuvable.`);
+
+            const set: Record<string, unknown> = { updatedAt: new Date().toISOString() };
+            if (title !== undefined) set.title = title;
+            if (iconName !== undefined) set.iconName = iconName;
+            if (description !== undefined) set.description = description;
+            if (colorLight !== undefined) set.colorLight = colorLight;
+            if (colorDark !== undefined) set.colorDark = colorDark;
+
+            const updatedFields = Object.keys(set).filter((k) => k !== "updatedAt");
+            if (updatedFields.length === 0) {
+                return { content: [{ type: "text" as const, text: "Rien à modifier." }] };
+            }
+
+            await db.collection<Module>("modules").updateOne({ path: module }, { $set: set });
+            revalidateTag(`modules`, { expire: 0 });
+
+            return {
+                content: [{
+                    type: "text" as const,
+                    text: `Module "${module}" mis à jour : ${updatedFields.join(", ")}.`,
+                }],
+            };
+        }
+    );
+
     // ── create_section ─────────────────────────────────────────────────────────
     server.tool(
         "create_section",

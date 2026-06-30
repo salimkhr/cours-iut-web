@@ -131,19 +131,39 @@ create_module({
 
 Stocker le `moduleSlug` retourné.
 
-### 6b — Créer chaque section dans l'ordre
+### 6b — Mettre à jour les métadonnées du module
+
+Après création, appeler `edit_module` pour renseigner les informations que `create_module`
+ne peut pas fixer à la création :
+
+```
+edit_module({
+  module: "[moduleSlug]",
+  description: "[Objectifs globaux du module en 1-3 phrases]",
+  iconName: "[icône Lucide cohérente avec le sujet]",
+  colorLight: "[couleur claire hex #rrggbb — optionnel]",
+  colorDark:  "[couleur sombre hex #rrggbb — optionnel]"
+})
+```
+
+Ne pas inventer les couleurs hex si l'utilisateur ne les a pas précisées.
+Si l'utilisateur veut des couleurs, les proposer et attendre validation avant d'appeler.
+
+### 6c — Créer chaque section dans l'ordre
 
 ```
 create_section({
   moduleSlug: "[moduleSlug]",
   title: "[Titre de la section]",
-  description: "[Objectif spécifique de la section]"
+  objectives: ["[Objectif spécifique de la section]"],
+  totalDuration: [N],
+  contentTypes: ["cours", "slide", "TP"]
 })
 ```
 
 Attendre la confirmation de chaque appel avant le suivant.
 
-### 6c — Vérifier
+### 6d — Vérifier
 
 ```
 list_sections(module=[moduleSlug])

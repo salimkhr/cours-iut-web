@@ -106,6 +106,7 @@ available_mcp_capabilities:
   read: [get_pedagogical_skill_manifest, get_pedagogical_skill_document,
          list_modules, list_sections, get_content]
   create: [create_module, create_section]
+  edit_module: [edit_module, edit_section]
   update: [save_content, insert_block, edit_block, delete_block, reorder_blocks]
 ```
 
@@ -228,7 +229,8 @@ Cette stratégie de repli en quatre passes produit un résultat équivalent.
 - `get_content(module, section, type)` — arbre de blocs
 
 ### Écriture (admins uniquement, après consolidation)
-- `create_module` / `create_section` / `edit_section`
+- `create_module` / `edit_module` (titre, description, icône, couleurs)
+- `create_section` / `edit_section` (objectifs, durée, flags, types de contenu)
 - `save_content` / `insert_block` / `edit_block` / `delete_block` / `reorder_blocks`
 
 ## Documents disponibles
