@@ -16,7 +16,7 @@ import {
 } from "@/lib/blockTreeUtils";
 import { moduleFormSchema } from "@/lib/schemas/module.schema";
 import { assignModuleColor } from "@/lib/assignModuleColor";
-import { VALID_ICON_NAMES } from "@/lib/iconMap";
+import { isValidIcon } from "@/lib/iconMap";
 import { sectionApiSchema } from "@/lib/schemas/section.schema";
 import type { Block, CourseContent, ContentRef } from "@/types/CourseContent";
 import Module from "@/types/Module";
@@ -167,10 +167,10 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     const isAdmin = user.role === "admin";
 
     const iconNameSchema = z.string()
-        .refine((v) => VALID_ICON_NAMES.includes(v), {
-            message: `Icône inconnue. Valeurs acceptées : ${VALID_ICON_NAMES.join(", ")}`,
+        .refine((v) => isValidIcon(v), {
+            message: "Icône inconnue. Consultez https://lucide.dev/icons/ pour la liste complète.",
         })
-        .describe(`Nom d'icône — valeurs acceptées : ${VALID_ICON_NAMES.join(", ")} (voir https://lucide.dev/icons/)`);
+        .describe("Nom d'une icône Lucide (PascalCase, ex: BookOpen, Code, Server) — voir https://lucide.dev/icons/");
 
     // ── Ressources MCP — skill pédagogique ───────────────────────────────────────
 

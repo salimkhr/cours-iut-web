@@ -1,4 +1,4 @@
-import {BookOpen, CodeXml, FolderCode, GraduationCap, Presentation} from "lucide-react";
+import {BookOpen, CodeXml, FolderCode, GalleryThumbnails, GraduationCap} from "lucide-react";
 
 export const CONTENT_ORDER = ['cours', 'TP', 'slide', 'projet', 'examen'] as const;
 export type ContentKey = typeof CONTENT_ORDER[number];
@@ -22,7 +22,7 @@ export const CONTENT_DESC: Record<ContentKey, string> = {
 export const CONTENT_ICON: Record<ContentKey, React.ComponentType<{className?: string}>> = {
     cours: BookOpen,
     TP: CodeXml,
-    slide: Presentation,
+    slide: GalleryThumbnails,
     projet: FolderCode,
     examen: GraduationCap,
 };

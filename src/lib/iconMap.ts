@@ -1,16 +1,19 @@
-import type {LucideIcon} from "lucide-react";
-import {BookOpen, Braces, Code, Server, ServerCog} from "lucide-react";
+import * as LucideIcons from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const iconMap: Record<string, LucideIcon> = {
-    Code: Code,
-    Server: Server,
-    Braces: Braces,
-    BookOpen: BookOpen,
-    CodeXml: Code,
-    ServerCog: ServerCog,
-    BracesIcon: Braces,
-};
+export function isValidIcon(name: string): boolean {
+    return typeof (LucideIcons as Record<string, unknown>)[name] === "function";
+}
 
-export const VALID_ICON_NAMES = Object.keys(iconMap) as string[];
+export function getIcon(name: string): LucideIcon {
+    if (isValidIcon(name)) return (LucideIcons as Record<string, unknown>)[name] as LucideIcon;
+    return LucideIcons.BookOpen;
+}
+
+const iconMap = new Proxy({} as Record<string, LucideIcon>, {
+    get(_, name: string) {
+        return getIcon(name);
+    },
+});
 
 export default iconMap;

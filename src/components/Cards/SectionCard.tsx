@@ -17,10 +17,10 @@ import updateSectionState from "@/hook/admin/updateSectionState";
 
 import {BookTextIcon} from "@/components/icons/book-text";
 import {TerminalIcon} from "@/components/icons/terminal";
-import {LayersIcon} from "@/components/icons/layers";
+import {GalleryThumbnailsIcon} from "@/components/icons/gallery-thumbnails";
 import {RocketIcon} from "@/components/icons/rocket";
 import {GraduationCapIcon} from "@/components/icons/graduation-cap";
-import {TelescopeIcon} from "@/components/icons/telescope";
+import {LaptopMinimalCheckIcon} from "@/components/icons/laptop-minimal-check";
 import type {SectionIconHandle} from "@/components/icons/section-icons";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,7 +29,7 @@ type AnimatedIcon = React.ComponentType<any>;
 const ANIMATED_CONTENT_ICON: Record<ContentKey, AnimatedIcon> = {
     cours: BookTextIcon,
     TP: TerminalIcon,
-    slide: LayersIcon,
+    slide: GalleryThumbnailsIcon,
     projet: RocketIcon,
     examen: GraduationCapIcon,
 };
@@ -275,7 +275,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                         const correctionDisabled = !isAdmin && !section.correctionIsAvailable;
                         return (
                             <AnimatedActionButton
-                                IconComp={TelescopeIcon}
+                                IconComp={LaptopMinimalCheckIcon}
                                 label="Correction"
                                 disabled={correctionDisabled}
                                 href={`${process.env.NEXT_PUBLIC_GIT_URL}/${modulePath}/${section.path}`}

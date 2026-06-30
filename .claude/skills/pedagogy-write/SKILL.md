@@ -33,9 +33,9 @@ description: Rédaction de nouveaux contenus pédagogiques (Cours, TP, Slide, Ex
 
 1. Si le type de contenu n'est pas précisé, demander : **Cours / TP / Slide / Examen ?**
 2. Lire le fichier de référence correspondant avec l'outil Read :
-   - Cours  → `.claude/skills/pedagogy/reference/cours.md`
-   - TP     → `.claude/skills/pedagogy/reference/tp.md`
-   - Slide  → `.claude/skills/pedagogy/reference/slide.md`
-   - Examen → `.claude/skills/pedagogy/reference/examen.md`
+   - Cours  → `skills/pedagogie/references/cours.md`
+   - TP     → `skills/pedagogie/references/tp.md`
+   - Slide  → `skills/pedagogie/references/slide.md`
+   - Examen → `skills/pedagogie/references/examen.md`
 3. Poser **1–2 questions de contexte** avant de générer (sujet traité, cours précédent si type Cours, prérequis supposés)
 4. Générer le contenu directement dans la structure JSX du projet en suivant scrupuleusement les règles du fichier de référence
