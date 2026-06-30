@@ -222,6 +222,38 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         }
     );
 
+    // ── Outils MCP — skill pédagogique ───────────────────────────────────────────
+
+    server.tool(
+        "get_pedagogical_skill_manifest",
+        "Retourne le manifeste du skill pédagogique : version, hash, liste des documents disponibles avec leur id, titre et contexte de chargement.",
+        {},
+        async () => ({
+            content: [{ type: "text" as const, text: JSON.stringify(SKILL_MANIFEST, null, 2) }],
+        })
+    );
+
+    server.tool(
+        "get_pedagogical_skill_document",
+        "Retourne le contenu complet d'un document du skill pédagogique. Appeler get_pedagogical_skill_manifest() d'abord pour obtenir la liste des ids disponibles.",
+        {
+            document_id: z.string().describe(
+                "Id du document à charger. Exemples : \"main\", \"concepteur\", \"auditeur-apprenant\", \"garant-coherence\", \"ref-cours\", \"ref-tp\", \"ref-slide\", \"ref-examen\", \"skill-plan\"."
+            ),
+        },
+        async ({ document_id }) => {
+            if (document_id === "manifest") {
+                return { content: [{ type: "text" as const, text: JSON.stringify(SKILL_MANIFEST, null, 2) }] };
+            }
+            const doc = SKILL_DOCUMENTS[document_id];
+            if (!doc) {
+                const available = Object.keys(SKILL_DOCUMENTS).join(", ");
+                throw new Error(`Document inconnu : "${document_id}". Disponibles : ${available}`);
+            }
+            return { content: [{ type: "text" as const, text: doc.content }] };
+        }
+    );
+
     // ── Prompt MCP — workflow pédagogique ────────────────────────────────────────
 
     server.prompt(
