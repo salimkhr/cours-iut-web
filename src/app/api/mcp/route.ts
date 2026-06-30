@@ -1,4 +1,4 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
@@ -20,8 +20,31 @@ import { sectionApiSchema } from "@/lib/schemas/section.schema";
 import type { Block, CourseContent, ContentRef } from "@/types/CourseContent";
 import Module from "@/types/Module";
 import Section from "@/types/Section";
+import {
+    SKILL_MANIFEST,
+    SKILL_DOCUMENTS,
+    SKILL_VERSION,
+    SKILL_HASH,
+} from "@/lib/skills/pedagogie";
 
 export const runtime = "nodejs";
+
+const SERVER_INSTRUCTIONS = `Ce serveur gère le référentiel pédagogique multi-supports du BUT Informatique.
+
+Un skill pédagogique est disponible pour concevoir et réviser des cours, TPs et slides.
+
+Chargement du skill :
+1. Appelez get_pedagogical_skill_manifest() pour obtenir le manifeste et la liste des documents.
+2. Appelez get_pedagogical_skill_document("main") pour charger les instructions principales.
+3. Chargez les documents complémentaires indiqués selon la tâche.
+
+Le skill couvre trois supports interdépendants : cours, slides, TP.
+
+Pour toute modification structurante (changement d'objectif, nouvelle notion, nouveau TP),
+chargez aussi les rôles : concepteur, auditeur-apprenant, garant-coherence.
+
+Les outils d'écriture (save_content, insert_block, edit_block, delete_block, reorder_blocks)
+ne doivent être appelés qu'après consolidation des audits pédagogiques.`;
 
 type ContentType = CourseContent["contentType"];
 const CONTENT_TYPE = z.enum(["cours", "TP", "examen", "slide"]);
@@ -137,8 +160,164 @@ function slugify(input: string): string {
 // ── Factory McpServer ─────────────────────────────────────────────────────────
 
 function buildMcpServer(user: { id: string; role: string }): McpServer {
-    const server = new McpServer({ name: "cours-iut", version: "1.0.0" });
+    const server = new McpServer(
+        { name: "cours-iut", version: "1.0.0" },
+        { instructions: SERVER_INSTRUCTIONS }
+    );
     const isAdmin = user.role === "admin";
+
+    // ── Ressources MCP — skill pédagogique ───────────────────────────────────────
+
+    const skillResourceList = [
+        {
+            uri: "skill://pedagogie/manifest",
+            name: "Manifeste du skill pédagogique",
+            description: "Manifeste JSON : version, documents disponibles, rôles et hash.",
+            mimeType: "application/json",
+        },
+        ...SKILL_MANIFEST.documents.map((doc) => ({
+            uri: doc.uri,
+            name: doc.title,
+            description: doc.purpose,
+            mimeType: "text/markdown",
+        })),
+    ];
+
+    server.resource(
+        "pedagogie-document",
+        new ResourceTemplate("skill://pedagogie/{id}", {
+            list: async () => ({ resources: skillResourceList }),
+        }),
+        {
+            description: "Document du skill pédagogique (manifeste, instructions principales, rôles des agents, références éditoriales). Lecture seule.",
+        },
+        async (uri, { id }) => {
+            if (id === "manifest") {
+                return {
+                    contents: [{
+                        uri: uri.href,
+                        text: JSON.stringify(SKILL_MANIFEST, null, 2),
+                        mimeType: "application/json",
+                    }],
+                };
+            }
+            const doc = SKILL_DOCUMENTS[id as string];
+            if (!doc) {
+                const available = Object.keys(SKILL_DOCUMENTS).join(", ");
+                throw new Error(`Document inconnu : "${id}". Disponibles : ${available}`);
+            }
+            return {
+                contents: [{
+                    uri: uri.href,
+                    text: doc.content,
+                    mimeType: "text/markdown",
+                }],
+            };
+        }
+    );
+
+    // ── Prompt MCP — workflow pédagogique ────────────────────────────────────────
+
+    server.prompt(
+        "concevoir-unite-pedagogique",
+        {
+            mode: z.enum([
+                "design_curriculum",
+                "design_unit",
+                "create_course",
+                "create_slides",
+                "create_practical_work",
+                "review_support",
+                "review_unit",
+                "check_coherence",
+            ]).describe("Mode de travail pédagogique"),
+            objective: z.string().optional().describe("Objectif pédagogique de l'unité"),
+            audience: z.string().optional().describe("Public cible et niveau (ex: BUT Info 1ère année)"),
+            requested_supports: z.array(z.enum(["course", "slides", "practical_work"]))
+                .optional()
+                .describe("Supports à produire"),
+            context: z.string().optional().describe("Contexte additionnel"),
+        },
+        async ({ mode, objective, audience, requested_supports, context }) => {
+            const mainDoc = SKILL_DOCUMENTS["main"];
+            const docList = SKILL_MANIFEST.documents
+                .map((d) => `- \`${d.id}\` : ${d.title} — ${d.purpose}`)
+                .join("\n");
+
+            const promptText = [
+                `# Workflow pédagogique — ${mode}`,
+                "",
+                "## Instructions du skill",
+                mainDoc.content,
+                "",
+                "## Paramètres de la tâche",
+                `- Mode : ${mode}`,
+                `- Objectif : ${objective ?? "non précisé"}`,
+                `- Public : ${audience ?? "non précisé"}`,
+                `- Supports demandés : ${requested_supports?.join(", ") ?? "tous"}`,
+                `- Contexte : ${context ?? "aucun"}`,
+                "",
+                "## Documents disponibles",
+                docList,
+                "",
+                "Chargez les documents nécessaires avec `get_pedagogical_skill_document(id)` avant de commencer.",
+                "Les outils d'écriture ne doivent être appelés qu'après consolidation des audits.",
+            ].join("\n");
+
+            return {
+                messages: [
+                    { role: "user" as const, content: { type: "text" as const, text: promptText } },
+                ],
+            };
+        }
+    );
+
+    // ── get_pedagogical_skill_manifest ────────────────────────────────────────────
+    server.tool(
+        "get_pedagogical_skill_manifest",
+        "Use this when the user asks to design, write or review a course, practical exercise, slide deck or curriculum. Returns the manifest of the pedagogical skill with the list of documents to load before using content editing tools.",
+        {},
+        async () => ({
+            content: [{
+                type: "text" as const,
+                text: JSON.stringify(SKILL_MANIFEST, null, 2),
+            }],
+        })
+    );
+
+    // ── get_pedagogical_skill_document ────────────────────────────────────────────
+    server.tool(
+        "get_pedagogical_skill_document",
+        "Use this to load a specific document from the pedagogical skill (main instructions, agent roles, editorial references). Call get_pedagogical_skill_manifest first to discover available document IDs.",
+        {
+            document_id: z.string().describe(
+                "Identifiant du document du skill (ex: main, concepteur, auditeur-apprenant, garant-coherence, ref-cours, ref-tp, ref-slide, ref-examen)"
+            ),
+        },
+        async ({ document_id }) => {
+            const doc = SKILL_DOCUMENTS[document_id];
+            if (!doc) {
+                const available = Object.keys(SKILL_DOCUMENTS).join(", ");
+                throw new Error(
+                    `Document inconnu : "${document_id}". Documents disponibles : ${available}`
+                );
+            }
+            return {
+                content: [{
+                    type: "text" as const,
+                    text: JSON.stringify({
+                        id: doc.id,
+                        title: doc.title,
+                        uri: doc.uri,
+                        mime_type: doc.mimeType,
+                        content: doc.content,
+                        version: SKILL_VERSION,
+                        content_hash: doc.contentHash,
+                    }, null, 2),
+                }],
+            };
+        }
+    );
 
     // ── get_migration_status ──────────────────────────────────────────────────
     server.tool(
