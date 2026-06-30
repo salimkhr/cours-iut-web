@@ -57,3 +57,6 @@ rag
 /.agents/
 /uploads/
 src/cours/**/REVIEW.md
+
+# skill module généré automatiquement (source canonique : skills/pedagogie/)
+/src/lib/skills/
