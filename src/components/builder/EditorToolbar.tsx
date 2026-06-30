@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Save, Loader2, AlertCircle, Undo2, Redo2, Database } from "lucide-react";
+import { ChevronRight, Save, Loader2, AlertCircle, Undo2, Redo2, Database, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,8 @@ import { useBuilderStore } from "@/lib/store/builderStore";
 interface EditorToolbarProps {
     moduleTitle: string;
     sectionTitle: string;
+    moduleSlug: string;
+    sectionSlug: string;
     contentType: string;
     source: "file" | "db";
     saving: boolean;
@@ -22,6 +24,8 @@ interface EditorToolbarProps {
 export function EditorToolbar({
     moduleTitle,
     sectionTitle,
+    moduleSlug,
+    sectionSlug,
     contentType,
     source,
     saving,
@@ -34,25 +38,35 @@ export function EditorToolbar({
     const redo = useBuilderStore((s) => s.redo);
     const canUndo = useBuilderStore((s) => s._history.length > 0);
     const canRedo = useBuilderStore((s) => s._future.length > 0);
-    const moduleSlug = useBuilderStore((s) => s.moduleSlug);
+    const storeModuleSlug = useBuilderStore((s) => s.moduleSlug);
 
     return (
-        <header className="flex items-center gap-3 px-4 py-3 flex-shrink-0 border-b border-slate-200 dark:border-slate-700 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm">
-            <Link
-                href="/admin"
-                className="flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shrink-0"
+        <header className="flex items-center gap-3 px-4 py-3 flex-shrink-0 border-b border-bridge-200 dark:border-bridge-700 bg-bridge-50/95 dark:bg-bridge-900/95 backdrop-blur-sm">
+
+            {/* Voir la page en mode normal */}
+            <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="h-8 gap-1.5 px-2.5 text-xs font-medium text-bridge-600 dark:text-bridge-300 hover:text-brand-primary dark:hover:text-brand-primary hover:bg-bridge-100 dark:hover:bg-bridge-800 shrink-0"
+                title="Voir la page en mode normal (nouvel onglet)"
             >
-                <ChevronLeft className="w-3.5 h-3.5" />
-                Admin
-            </Link>
-            <div className="w-px h-8 bg-slate-200 dark:bg-slate-700 shrink-0" />
+                <Link href={`/${moduleSlug}/${sectionSlug}/${contentType}`} target="_blank" rel="noopener noreferrer">
+                    <Eye className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Voir</span>
+                </Link>
+            </Button>
+
+            <div className="w-px h-8 bg-bridge-200 dark:bg-bridge-700 shrink-0" />
+
+            {/* Fil d'Ariane */}
             <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-                <div className="flex items-center gap-1 text-xs leading-none">
-                    <span className="font-semibold text-slate-700 dark:text-slate-200 truncate max-w-[180px]">
+                <div className="flex items-center gap-1 text-xs leading-none min-w-0">
+                    <span className="font-semibold text-brand-dark dark:text-bridge-100 truncate">
                         {moduleTitle}
                     </span>
-                    <ChevronRight className="w-3 h-3 shrink-0 text-slate-400/50" />
-                    <span className="text-slate-500 dark:text-slate-400 truncate max-w-[220px]">
+                    <ChevronRight className="w-3 h-3 shrink-0 text-bridge-400/60" />
+                    <span className="text-bridge-500 dark:text-bridge-400 truncate">
                         {sectionTitle}
                     </span>
                 </div>
@@ -66,7 +80,7 @@ export function EditorToolbar({
                             "text-[10px] font-mono h-4 px-1.5 rounded",
                             source === "db"
                                 ? "border-emerald-500/40 text-emerald-700 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-900/20"
-                                : "border-slate-400/50 text-slate-500 dark:text-slate-400"
+                                : "border-bridge-400/50 text-bridge-500 dark:text-bridge-400"
                         )}
                     >
                         {source === "db" ? "DB" : "fichier"}
@@ -74,12 +88,13 @@ export function EditorToolbar({
                 </div>
             </div>
 
+            {/* Actions */}
             <div className="flex items-center gap-1.5 shrink-0">
                 {source === "file" && onSwitchToDb && (
                     <Button
                         size="sm"
                         variant="outline"
-                        className="gap-1.5 h-8 text-xs"
+                        className="gap-1.5 h-8 text-xs border-bridge-300 dark:border-bridge-600 text-bridge-600 dark:text-bridge-300 hover:bg-bridge-100 dark:hover:bg-bridge-800"
                         onClick={onSwitchToDb}
                         disabled={switching}
                         title="Publier ce contenu en base (DB) et rafraîchir le cache"
@@ -91,7 +106,7 @@ export function EditorToolbar({
                     </Button>
                 )}
                 {isDirty && (
-                    <span className="hidden sm:flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500 mr-1">
+                    <span className="hidden sm:flex items-center gap-1 text-xs text-bridge-400 dark:text-bridge-500 mr-1">
                         <AlertCircle className="w-3 h-3" />
                         Non sauvegardé
                     </span>
@@ -99,7 +114,7 @@ export function EditorToolbar({
                 <Button
                     size="icon"
                     variant="ghost"
-                    className="h-8 w-8 text-slate-400 hover:text-[var(--mod-color)] disabled:opacity-30"
+                    className="h-8 w-8 text-bridge-400 hover:text-[var(--mod-color)] hover:bg-bridge-100 dark:hover:bg-bridge-800 disabled:opacity-30"
                     disabled={!canUndo}
                     title="Annuler (Ctrl+Z)"
                     onClick={undo}
@@ -109,7 +124,7 @@ export function EditorToolbar({
                 <Button
                     size="icon"
                     variant="ghost"
-                    className="h-8 w-8 text-slate-400 hover:text-[var(--mod-color)] disabled:opacity-30"
+                    className="h-8 w-8 text-bridge-400 hover:text-[var(--mod-color)] hover:bg-bridge-100 dark:hover:bg-bridge-800 disabled:opacity-30"
                     disabled={!canRedo}
                     title="Refaire (Ctrl+Y)"
                     onClick={redo}
@@ -121,7 +136,7 @@ export function EditorToolbar({
                     onClick={onSave}
                     disabled={!isDirty || saving}
                     className="gap-1.5 h-8 text-xs ml-1 hover:opacity-90"
-                    style={moduleSlug ? { backgroundColor: "var(--mod-color)", color: "white", borderColor: "var(--mod-color)" } : undefined}
+                    style={storeModuleSlug ? { backgroundColor: "var(--mod-color)", color: "white", borderColor: "var(--mod-color)" } : undefined}
                 >
                     {saving
                         ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Sauvegarde…</>

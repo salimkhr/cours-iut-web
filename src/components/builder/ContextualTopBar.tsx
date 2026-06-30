@@ -35,7 +35,7 @@ function IconBtn({ label, onClick, onMouseDown, disabled, children }: { label: s
             onClick={onClick}
             onMouseDown={onMouseDown}
             disabled={disabled}
-            className="inline-flex size-11 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:pointer-events-none disabled:opacity-30 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="inline-flex size-11 items-center justify-center rounded-md text-brand-dark/70 hover:bg-bridge-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mod-color,#C2410C)] disabled:pointer-events-none disabled:opacity-30 dark:text-bridge-200 dark:hover:bg-bridge-800"
         >
             {children}
         </button>
@@ -84,8 +84,8 @@ export function ContextualTopBar({
         if (t === "code" || t === "slide-code") {
             return (
                 <>
-                    <span className="inline-flex items-center gap-1 px-2 text-xs text-slate-500"><Code2 className="size-4" /> {String(selected.props.language ?? "javascript")}</span>
-                    <span className="inline-flex items-center gap-1 px-2 text-xs text-slate-500"><Highlighter className="size-4" /> {String(selected.props.highlight ?? "—")}</span>
+                    <span className="inline-flex items-center gap-1 px-2 text-xs text-bridge-500"><Code2 className="size-4" /> {String(selected.props.language ?? "javascript")}</span>
+                    <span className="inline-flex items-center gap-1 px-2 text-xs text-bridge-500"><Highlighter className="size-4" /> {String(selected.props.highlight ?? "—")}</span>
                     <IconBtn label="Éditeur plein écran" onClick={() => onOpenCodeModal?.(selected.id)}><Maximize2 className="size-4" /></IconBtn>
                 </>
             );
@@ -122,7 +122,7 @@ export function ContextualTopBar({
     const contextZone = renderContextZone();
 
     return (
-        <div className="z-20 flex items-center gap-1 border-b border-slate-200 bg-slate-50 px-3 py-1.5 dark:border-slate-700 dark:bg-slate-900">
+        <div className="z-20 flex items-center gap-1 border-b border-bridge-200 bg-bridge-50 px-3 py-1.5 dark:border-bridge-700 dark:bg-bridge-900">
             {/* Zone globale */}
             <button
                 type="button"
@@ -140,11 +140,11 @@ export function ContextualTopBar({
             <IconBtn label="Annuler (Ctrl+Z)" onClick={undo} disabled={!canUndo}><Undo2 className="size-4" /></IconBtn>
             <IconBtn label="Rétablir (Ctrl+Y)" onClick={redo} disabled={!canRedo}><Redo2 className="size-4" /></IconBtn>
 
-            {contextZone && <div className="mx-1 h-6 w-px bg-slate-300 dark:bg-slate-600" />}
+            {contextZone && <div className="mx-1 h-6 w-px bg-bridge-300 dark:bg-bridge-600" />}
             {contextZone}
 
             {mode === "slide" && slidePosition && (
-                <span className="ml-auto text-xs font-semibold text-slate-400">
+                <span className="ml-auto text-xs font-semibold text-bridge-400">
                     {slidePosition.index + 1} / {slidePosition.total}
                 </span>
             )}

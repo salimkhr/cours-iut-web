@@ -17,7 +17,7 @@ export function SlideThumbnailList({ slides, activeId, onSelect, onAdd }: SlideT
     const reduced = useReducedMotion();
 
     return (
-        <div className="flex w-[208px] shrink-0 flex-col border-r border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
+        <div className="flex w-[208px] shrink-0 flex-col border-r border-bridge-200 bg-bridge-50 dark:border-bridge-700 dark:bg-bridge-900">
             <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3">
                 {slides.map((slide, i) => (
                     <Thumbnail
@@ -33,7 +33,7 @@ export function SlideThumbnailList({ slides, activeId, onSelect, onAdd }: SlideT
             <button
                 type="button"
                 onClick={onAdd}
-                className="m-3 inline-flex items-center justify-center gap-1 rounded-md border border-dashed border-slate-300 py-2 text-sm text-slate-500 hover:border-blue-400 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-600"
+                className="m-3 inline-flex items-center justify-center gap-1 rounded-md border border-dashed border-bridge-300 py-2 text-sm text-bridge-500 hover:border-[var(--mod-color)] hover:text-[var(--mod-color)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mod-color,#C2410C)] dark:border-bridge-600 dark:text-bridge-400"
             >
                 <Plus className="size-4" /> Slide
             </button>
@@ -66,13 +66,13 @@ function Thumbnail({
             aria-current={active ? "step" : undefined}
             className={[
                 "block w-full overflow-hidden rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
-                active ? "ring-2 ring-blue-500" : "ring-1 ring-slate-200 dark:ring-slate-700",
+                active ? "ring-2 ring-[var(--mod-color,#C2410C)]" : "ring-1 ring-bridge-200 dark:ring-bridge-700",
             ].join(" ")}
         >
             <div className="aspect-video w-full">
                 <ZoomedSlide slide={slide} mode="thumbnail" />
             </div>
-            <div className="truncate bg-white px-2 py-1 text-left text-[11px] text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+            <div className="truncate bg-bridge-50 px-2 py-1 text-left text-[11px] text-brand-dark/70 dark:bg-bridge-800 dark:text-bridge-200">
                 {index + 1}. {String(slide.props.title ?? "Sans titre")}
             </div>
         </button>

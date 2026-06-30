@@ -45,7 +45,7 @@ export function CourseEditCanvas({ onInsertAfter }: CourseEditCanvasProps) {
                 activeEditor={activeEditor}
             />
 
-            <div className="min-h-0 flex-1 overflow-y-auto bg-slate-100 px-6 py-8 dark:bg-slate-950">
+            <div className="min-h-0 flex-1 overflow-y-auto bg-bridge-100 px-6 py-8 dark:bg-bridge-900/40">
                 <div className={`mx-auto flex max-w-3xl flex-col gap-3${moduleSlug ? ` header-${moduleSlug}` : ""}`}>
                     {blocks.map((block, i) => (
                         <EditableCourseBlock
