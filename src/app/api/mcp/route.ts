@@ -16,6 +16,7 @@ import {
 } from "@/lib/blockTreeUtils";
 import { moduleFormSchema } from "@/lib/schemas/module.schema";
 import { assignModuleColor } from "@/lib/assignModuleColor";
+import { VALID_ICON_NAMES } from "@/lib/iconMap";
 import { sectionApiSchema } from "@/lib/schemas/section.schema";
 import type { Block, CourseContent, ContentRef } from "@/types/CourseContent";
 import Module from "@/types/Module";
@@ -164,6 +165,12 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         { instructions: SERVER_INSTRUCTIONS }
     );
     const isAdmin = user.role === "admin";
+
+    const iconNameSchema = z.string()
+        .refine((v) => VALID_ICON_NAMES.includes(v), {
+            message: `Icône inconnue. Valeurs acceptées : ${VALID_ICON_NAMES.join(", ")}`,
+        })
+        .describe(`Nom d'icône — valeurs acceptées : ${VALID_ICON_NAMES.join(", ")} (voir https://lucide.dev/icons/)`);
 
     // ── Ressources MCP — skill pédagogique ───────────────────────────────────────
 
@@ -365,7 +372,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         "Crée un nouveau module (structure pédagogique seule, isExtra:true). Réservé aux admins.",
         {
             title:       z.string().describe("Titre affiché du module, ex: Rust"),
-            iconName:    z.string().optional().describe("Nom d'icône Lucide — voir https://lucide.dev/icons/ (défaut: Code)"),
+            iconName:    iconNameSchema.optional(),
             path:        z.string().optional().describe("Slug du module (défaut: dérivé du titre)"),
             description: z.string().optional(),
         },
@@ -421,7 +428,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         {
             module:      z.string().describe("Slug du module à éditer"),
             title:       z.string().optional().describe("Nouveau titre affiché"),
-            iconName:    z.string().optional().describe("Nom d'icône Lucide — voir https://lucide.dev/icons/ pour la liste complète (ex: Code, Globe, Database, BookOpen)"),
+            iconName:    iconNameSchema.optional(),
             description: z.string().optional().describe("Description ou objectifs globaux du module"),
             colorLight:  z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
                 .describe("Couleur claire du thème en hex (#rrggbb)"),

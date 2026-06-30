@@ -11,4 +11,6 @@ const iconMap: Record<string, LucideIcon> = {
     BracesIcon: Braces,
 };
 
+export const VALID_ICON_NAMES = Object.keys(iconMap) as string[];
+
 export default iconMap;
