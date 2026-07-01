@@ -291,10 +291,9 @@ describe("search_content", () => {
         const raw = await callTool("search_content", { query: "querySelector" });
         const result = JSON.parse(raw);
         // querySelector est dans le callout ct1, enfant de s1 ("A — Introduction au DOM")
-        const match = result.results.find((r: { blockId: string }) => r.blockId === "ct1");
-        if (match) {
-            expect(match.parentSectionTitle).toBe("A — Introduction au DOM");
-        }
+        const match = result.results.find((r: { blockId: string; parentSectionTitle: string }) => r.blockId === "ct1");
+        expect(match).toBeDefined();
+        expect(match!.parentSectionTitle).toBe("A — Introduction au DOM");
         // Si la requête a trouvé d'autres blocs, le total doit quand même être positif
         expect(result.total).toBeGreaterThan(0);
     });
