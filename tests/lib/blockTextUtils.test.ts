@@ -10,6 +10,11 @@ import {
     type SearchMatch,
 } from "@/lib/blockTextUtils";
 
+// Helper concis pour créer un bloc de test minimal
+function b(type: string, props: Record<string, unknown> = {}): Block {
+    return { id: `test-${type}`, type, props };
+}
+
 // ---------------------------------------------------------------------------
 // normalizeForSearch
 // ---------------------------------------------------------------------------
@@ -97,8 +102,35 @@ describe("extractTextFields", () => {
     });
 
     it("callout → [props.title]", () => {
-        const b: Block = { id: "b10", type: "callout", props: { title: "Attention !", variant: "warning" } };
-        expect(extractTextFields(b)).toEqual(["Attention !"]);
+        const blk: Block = { id: "b10", type: "callout", props: { title: "Attention !", variant: "warning" } };
+        expect(extractTextFields(blk)).toEqual(["Attention !"]);
+    });
+
+    it("slide-text → content", () => {
+        const fields = extractTextFields(b("slide-text", { content: "Contenu slide" }));
+        expect(fields).toContain("Contenu slide");
+    });
+    it("slide-list-item → text", () => {
+        expect(extractTextFields(b("slide-list-item", { text: "Item slide" }))).toContain("Item slide");
+    });
+    it("code-with-preview → code uniquement", () => {
+        const fields = extractTextFields(b("code-with-preview", { code: "<div>test</div>", language: "html" }));
+        expect(fields).toContain("<div>test</div>");
+    });
+    it("section-card → title + description", () => {
+        const fields = extractTextFields(b("section-card", { title: "Voir le cours", href: "/js", description: "Introduction" }));
+        expect(fields).toContain("Voir le cours");
+        expect(fields).toContain("Introduction");
+    });
+    it("image-card → alt + title", () => {
+        const fields = extractTextFields(b("image-card", { src: "/img.png", alt: "Schéma DOM", title: "Fig 1" }));
+        expect(fields).toContain("Schéma DOM");
+        expect(fields).toContain("Fig 1");
+    });
+    it("quote → text + source", () => {
+        const fields = extractTextFields(b("quote", { text: "La simplicité.", source: "Voltaire" }));
+        expect(fields).toContain("La simplicité.");
+        expect(fields).toContain("Voltaire");
     });
 });
 
@@ -478,5 +510,56 @@ describe("blocksToMarkdown", () => {
         const md = blocksToMarkdown(blocks, true);
         expect(md).toContain("aperçu live non représentable");
         expect(md).toContain("**Limitations de cet export :**");
+    });
+
+    it("slide → titre ## avec children", () => {
+        const blocks: Block[] = [{
+            id: "sl1", type: "slide", props: { title: "Slide intro" },
+            children: [{ id: "st1", type: "slide-text", props: { content: "Corps slide" } }],
+        }];
+        const md = blocksToMarkdown(blocks);
+        expect(md).toContain("<!--sl1-->");
+        expect(md).toContain("## Slide intro");
+        expect(md).toContain("<!--st1-->");
+        expect(md).toContain("Corps slide");
+    });
+    it("slide-list ordonnée → items numérotés", () => {
+        const blocks: Block[] = [{
+            id: "sl1", type: "slide-list", props: { ordered: true },
+            children: [
+                { id: "sli1", type: "slide-list-item", props: { text: "Point A" }, children: [] },
+                { id: "sli2", type: "slide-list-item", props: { text: "Point B" }, children: [] },
+            ],
+        }];
+        const md = blocksToMarkdown(blocks);
+        expect(md).toContain("<!--sl1-->");
+        expect(md).toContain("<!--sli1-->");
+        expect(md).toContain("1. Point A");
+        expect(md).toContain("1. Point B");
+    });
+    it("callout info → **Info**", () => {
+        const blocks: Block[] = [{ id: "ca1", type: "callout", props: { variant: "info", title: "" }, children: [] }];
+        const md = blocksToMarkdown(blocks);
+        expect(md).toMatch(/>\s+\*\*Info/);
+    });
+    it("callout warning → **Attention**", () => {
+        const blocks: Block[] = [{ id: "ca1", type: "callout", props: { variant: "warning", title: "Danger" }, children: [] }];
+        const md = blocksToMarkdown(blocks);
+        expect(md).toContain("> **Attention — Danger**");
+    });
+    it("callout reminder → **Rappel**", () => {
+        const blocks: Block[] = [{ id: "ca1", type: "callout", props: { variant: "reminder", title: "" }, children: [] }];
+        const md = blocksToMarkdown(blocks);
+        expect(md).toMatch(/>\s+\*\*Rappel/);
+    });
+    it("text bloc vide → omis (pas de <!--id-->)", () => {
+        const blocks: Block[] = [
+            { id: "empty", type: "text", props: { content: "" } },
+            { id: "nonempty", type: "text", props: { content: "Visible" } },
+        ];
+        const md = blocksToMarkdown(blocks);
+        expect(md).not.toContain("<!--empty-->");
+        expect(md).toContain("<!--nonempty-->");
+        expect(md).toContain("Visible");
     });
 });
