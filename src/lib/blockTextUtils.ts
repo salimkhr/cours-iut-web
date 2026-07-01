@@ -10,7 +10,15 @@ import type { Block } from "@/types/CourseContent";
 
 /** Normalise un texte pour la recherche : retire les accents, met en minuscules. */
 export function normalizeForSearch(text: string): string {
-    return text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+    return text.normalize("NFD").replace(/[̀-ͯ]/gu, "").toLowerCase();
+}
+
+// ---------------------------------------------------------------------------
+// str — helper partagé
+// ---------------------------------------------------------------------------
+
+function str(v: unknown, fallback = ""): string {
+    return typeof v === "string" ? v : fallback;
 }
 
 // ---------------------------------------------------------------------------
@@ -23,8 +31,6 @@ export function normalizeForSearch(text: string): string {
  */
 export function extractTextFields(block: Block): string[] {
     const p = block.props;
-
-    const str = (v: unknown): string => (typeof v === "string" ? v : "");
 
     switch (block.type) {
         case "text":
@@ -84,7 +90,7 @@ export interface WalkContext {
     parentSectionTitle: string;
 }
 
-export type BlockVisitor = (block: Block, ctx: WalkContext) => void;
+export type BlockVisitor = (block: Block, ctx: WalkContext) => boolean | void;
 
 // ---------------------------------------------------------------------------
 // walkBlocks
@@ -95,22 +101,27 @@ export type BlockVisitor = (block: Block, ctx: WalkContext) => void;
  * Quand le bloc courant est de type `section`, ses enfants reçoivent
  * `{ parentSectionTitle: block.props.title }`.
  * Pour tous les autres types, les enfants héritent du ctx courant.
+ *
+ * Le visiteur peut retourner `false` pour interrompre le parcours.
+ * `walkBlocks` retourne `false` si le parcours a été interrompu, `true` sinon.
  */
 export function walkBlocks(
     blocks: Block[],
     visitor: BlockVisitor,
     ctx: WalkContext = { parentSectionTitle: "" }
-): void {
+): boolean {
     for (const block of blocks) {
-        visitor(block, ctx);
-        if (block.children && block.children.length > 0) {
+        const keep = visitor(block, ctx);
+        if (keep === false) return false;
+        if (block.children?.length) {
             const childCtx: WalkContext =
                 block.type === "section"
                     ? { parentSectionTitle: (block.props.title as string) ?? "" }
                     : ctx;
-            walkBlocks(block.children, visitor, childCtx);
+            if (!walkBlocks(block.children, visitor, childCtx)) return false;
         }
     }
+    return true;
 }
 
 // ---------------------------------------------------------------------------
@@ -155,7 +166,7 @@ export function searchBlocks(
     results: SearchMatch[]
 ): void {
     walkBlocks(blocks, (block, ctx) => {
-        if (results.length >= maxResults) return;
+        if (results.length >= maxResults) return false; // abort — quota atteint
 
         const fields = extractTextFields(block);
         for (const field of fields) {
@@ -190,10 +201,6 @@ const CALLOUT_LABELS: Record<string, string> = {
     tip: "Astuce",
     reminder: "Rappel",
 };
-
-function str(v: unknown): string {
-    return typeof v === "string" ? v : "";
-}
 
 /**
  * Rend un bloc en Markdown. Retourne `null` si le bloc n'a pas de contenu à
@@ -243,6 +250,11 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
                 const text = str(child.props.text);
                 const prefix = ordered ? "1." : "-";
                 items.push(`<!--${child.id}-->\n${prefix} ${text}`);
+            }
+            if (children.some((c) => c.children?.length)) {
+                limitations.add(
+                    "list-item/slide-list-item : les blocs enfants d'un item de liste sont aplatis (contenu imbriqué non rendu)."
+                );
             }
             if (items.length === 0) return annotation;
             return [annotation, ...items].join("\n\n");
