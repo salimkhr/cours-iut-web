@@ -19,6 +19,12 @@ import { assignModuleColor } from "@/lib/assignModuleColor";
 import { isValidIcon } from "@/lib/iconMap";
 import { sectionApiSchema } from "@/lib/schemas/section.schema";
 import type { Block, CourseContent, ContentRef } from "@/types/CourseContent";
+import {
+    normalizeForSearch,
+    searchBlocks,
+    blocksToMarkdown,
+    type SearchMatch,
+} from "@/lib/blockTextUtils";
 import Module from "@/types/Module";
 import Section from "@/types/Section";
 import {
@@ -901,6 +907,180 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
 
             await saveBlocks(key, updated);
             return { content: [{ type: "text" as const, text: "Blocs réordonnés." }] };
+        }
+    );
+
+    // ── search_content ────────────────────────────────────────────────────────
+    server.tool(
+        "search_content",
+        [
+            "Recherche plein texte dans tous les contenus pédagogiques en base de données.",
+            "Retourne les blocs correspondants avec leur localisation (module/section/type),",
+            "l'ID du bloc, un extrait de contexte, et le titre de la section parente.",
+            "Utilise search_content pour TROUVER où une notion est abordée,",
+            "puis export_content_compact pour LIRE en détail les sections identifiées.",
+            "Note : le contenu dont la source est encore 'file' (non migré en DB) n'est pas indexé.",
+        ].join(" "),
+        {
+            query: z.string().min(1).describe(
+                "Terme ou expression à rechercher (insensible à la casse et aux accents)"
+            ),
+            module: z.string().optional().describe(
+                "Filtrer sur un module spécifique (slug, ex: javascript)"
+            ),
+            type: CONTENT_TYPE.optional().describe(
+                "Filtrer par type de contenu : cours | TP | examen | slide"
+            ),
+            limit: z.number().int().min(1).max(100).optional().describe(
+                "Nombre maximum de résultats (défaut: 20)"
+            ),
+        },
+        async ({ query, module: moduleFilter, type: typeFilter, limit = 20 }) => {
+            const db = await connectToDB();
+
+            const filter: Record<string, unknown> = {};
+            if (moduleFilter) filter.moduleSlug = moduleFilter;
+            if (typeFilter) filter.contentType = typeFilter;
+
+            const docs = await db
+                .collection<CourseContent>("course_content")
+                .find(filter, {
+                    projection: { moduleSlug: 1, sectionSlug: 1, contentType: 1, blocks: 1 },
+                })
+                .toArray();
+
+            const normalizedQuery = normalizeForSearch(query);
+            const matchList: SearchMatch[] = [];
+
+            for (const doc of docs) {
+                if (matchList.length >= limit) break;
+                searchBlocks(
+                    doc.blocks,
+                    doc.moduleSlug,
+                    doc.sectionSlug,
+                    doc.contentType,
+                    normalizedQuery,
+                    limit,
+                    matchList
+                );
+            }
+
+            const note =
+                docs.length === 0
+                    ? "Aucun contenu en base trouvé. Le contenu source 'file' n'est pas indexé."
+                    : `${matchList.length} résultat(s) trouvé(s) dans ${docs.length} contenu(s) en DB (source 'file' exclu).`;
+
+            return {
+                content: [
+                    {
+                        type: "text" as const,
+                        text: JSON.stringify(
+                            { query, total: matchList.length, note, results: matchList },
+                            null,
+                            2
+                        ),
+                    },
+                ],
+            };
+        }
+    );
+
+    // ── export_content_compact ────────────────────────────────────────────────
+    server.tool(
+        "export_content_compact",
+        [
+            "Exporte un contenu pédagogique (section, module entier, ou tous types d'une section)",
+            "en Markdown compact.",
+            "Chaque bloc est annoté de son ID en commentaire HTML (<!--blockId-->)",
+            "pour rester adressable par les outils d'édition (insert_block, edit_block, reorder_blocks).",
+            "Beaucoup plus économe en tokens que get_content.",
+            "Utilise search_content pour identifier d'abord les sections pertinentes,",
+            "puis export_content_compact pour en lire le contenu complet.",
+            "Note : seul le contenu source 'db' est disponible ; le contenu 'file' non migré est exclu.",
+        ].join(" "),
+        {
+            module: z.string().describe("Slug du module, ex: javascript"),
+            section: z.string().optional().describe(
+                "Slug de la section. Omis = toutes les sections du module"
+            ),
+            type: CONTENT_TYPE.optional().describe(
+                "Type de contenu. Omis = tous les types disponibles de la section"
+            ),
+        },
+        async ({ module: moduleSlug, section: sectionSlug, type: contentType }) => {
+            const db = await connectToDB();
+
+            const mod = await db
+                .collection<ModuleDoc>("modules")
+                .findOne({ path: moduleSlug }, { projection: { title: 1, sections: 1 } });
+            if (!mod) throw new Error(`Module "${moduleSlug}" introuvable.`);
+
+            const filter: Record<string, unknown> = { moduleSlug };
+            if (sectionSlug) filter.sectionSlug = sectionSlug;
+            if (contentType) filter.contentType = contentType;
+
+            const docs = await db
+                .collection<CourseContent>("course_content")
+                .find(filter, {
+                    projection: {
+                        moduleSlug: 1,
+                        sectionSlug: 1,
+                        contentType: 1,
+                        blocks: 1,
+                        version: 1,
+                        updatedAt: 1,
+                    },
+                })
+                .sort({ sectionSlug: 1, contentType: 1 })
+                .toArray();
+
+            if (docs.length === 0) {
+                return {
+                    content: [
+                        {
+                            type: "text" as const,
+                            text: [
+                                `Aucun contenu en base trouvé pour module="${moduleSlug}"`,
+                                sectionSlug ? `, section="${sectionSlug}"` : "",
+                                contentType ? `, type="${contentType}"` : "",
+                                ".",
+                                "\n\nNote : le contenu source 'file' (non migré) n'est pas disponible via cet outil.",
+                            ].join(""),
+                        },
+                    ],
+                };
+            }
+
+            const getSectionTitle = (slug: string): string => {
+                const sec = (mod.sections ?? []).find((s) => s.path === slug);
+                return sec?.title ?? slug;
+            };
+
+            const moduleTitle = mod.title ?? moduleSlug;
+            const parts: string[] = [];
+
+            for (const doc of docs) {
+                const sectionTitle = getSectionTitle(doc.sectionSlug);
+                const updatedAt = doc.updatedAt
+                    ? new Date(doc.updatedAt).toISOString().slice(0, 10)
+                    : "?";
+                const header = [
+                    `<!-- export: ${moduleTitle} / ${sectionTitle} / ${doc.contentType} | v${doc.version} | ${updatedAt} -->`,
+                    `# ${moduleTitle} / ${sectionTitle} / ${doc.contentType}`,
+                ].join("\n");
+
+                const markdown = blocksToMarkdown(doc.blocks, true);
+                parts.push(`${header}\n\n${markdown}`);
+            }
+
+            return {
+                content: [
+                    {
+                        type: "text" as const,
+                        text: parts.join("\n\n---\n\n"),
+                    },
+                ],
+            };
         }
     );
 
