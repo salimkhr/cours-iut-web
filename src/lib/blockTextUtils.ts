@@ -246,9 +246,9 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
         case "slide-list": {
             const ordered = !!(props.ordered as boolean | undefined);
             const items: string[] = [];
-            for (const child of children) {
+            for (const [i, child] of children.entries()) {
                 const text = str(child.props.text);
-                const prefix = ordered ? "1." : "-";
+                const prefix = ordered ? `${i + 1}.` : "-";
                 items.push(`<!--${child.id}-->\n${prefix} ${text}`);
             }
             if (children.some((c) => c.children?.length)) {
@@ -264,7 +264,9 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
             const variant = str(props.variant) || "info";
             const label = CALLOUT_LABELS[variant] ?? "Info";
             const title = str(props.title);
-            const heading = `${annotation}\n> **${label} — ${title}**`;
+            const heading = title
+                ? `${annotation}\n> **${label} — ${title}**`
+                : `${annotation}\n> **${label}**`;
             const childParts = renderBlocks(children, depth, limitations);
             if (childParts.length > 0) {
                 return [heading, ...childParts].join("\n\n");

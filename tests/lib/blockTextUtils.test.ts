@@ -350,7 +350,7 @@ describe("blocksToMarkdown", () => {
         expect(md).toContain("- item deux");
     });
 
-    it("list ordonnée → '1. item', '1. item'", () => {
+    it("list ordonnée → '1. item', '2. item'", () => {
         const blocks: Block[] = [
             {
                 id: "lst2", type: "list", props: { ordered: true }, children: [
@@ -361,7 +361,7 @@ describe("blocksToMarkdown", () => {
         ];
         const md = blocksToMarkdown(blocks);
         expect(md).toContain("1. premier");
-        expect(md).toContain("1. deuxième");
+        expect(md).toContain("2. deuxième");
     });
 
     it("code avec filename → contient _filename_ et le bloc de code", () => {
@@ -535,22 +535,22 @@ describe("blocksToMarkdown", () => {
         expect(md).toContain("<!--sl1-->");
         expect(md).toContain("<!--sli1-->");
         expect(md).toContain("1. Point A");
-        expect(md).toContain("1. Point B");
+        expect(md).toContain("2. Point B");
     });
-    it("callout info → **Info**", () => {
+    it("callout info, empty title → **Info**", () => {
         const blocks: Block[] = [{ id: "ca1", type: "callout", props: { variant: "info", title: "" }, children: [] }];
         const md = blocksToMarkdown(blocks);
-        expect(md).toMatch(/>\s+\*\*Info/);
+        expect(md).toContain("> **Info**");
     });
-    it("callout warning → **Attention**", () => {
+    it("callout warning, title 'Danger' → **Attention — Danger**", () => {
         const blocks: Block[] = [{ id: "ca1", type: "callout", props: { variant: "warning", title: "Danger" }, children: [] }];
         const md = blocksToMarkdown(blocks);
         expect(md).toContain("> **Attention — Danger**");
     });
-    it("callout reminder → **Rappel**", () => {
+    it("callout reminder, empty title → **Rappel**", () => {
         const blocks: Block[] = [{ id: "ca1", type: "callout", props: { variant: "reminder", title: "" }, children: [] }];
         const md = blocksToMarkdown(blocks);
-        expect(md).toMatch(/>\s+\*\*Rappel/);
+        expect(md).toContain("> **Rappel**");
     });
     it("text bloc vide → omis (pas de <!--id-->)", () => {
         const blocks: Block[] = [
