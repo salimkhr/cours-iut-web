@@ -244,8 +244,8 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
                 const prefix = ordered ? "1." : "-";
                 items.push(`<!--${child.id}-->\n${prefix} ${text}`);
             }
-            if (items.length === 0) return null;
-            return items.join("\n\n");
+            if (items.length === 0) return annotation;
+            return [annotation, ...items].join("\n\n");
         }
 
         case "callout": {
@@ -284,8 +284,10 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
         case "column": {
             // Pas de markup propre : on aplatit les enfants directement.
             const childParts = renderBlocks(children, depth, limitations);
-            if (childParts.length === 0) return null;
-            return childParts.join("\n\n");
+            if (childParts.length > 0) {
+                return [annotation, ...childParts].join("\n\n");
+            }
+            return annotation;
         }
 
         case "code": {
