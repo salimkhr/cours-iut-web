@@ -114,7 +114,25 @@ Les fichiers du skill sont exposés comme ressources MCP en lecture seule :
 - `get_pedagogical_skill_document(document_id)` — contenu d'un document
 
 ### Lecture des contenus
-- `list_modules()`, `list_sections(module)`, `get_content(module, section, type)`
+- `list_modules()`, `list_sections(module)`, `get_migration_status()`
+- `get_content(module, section, type)` — arbre JSON complet (verbeux)
+- `search_content(query, module?, type?, limit?)` — recherche plein texte multi-sections
+- `export_content_compact(module, section?, type?)` — export Markdown compact, annoté d'IDs de blocs
+
+### Stratégie de lecture recommandée
+
+Pour auditer ou résumer un contenu pédagogique :
+
+1. `list_modules()` → identifier le module
+2. `search_content(query, module?)` → trouver les sections pertinentes
+3. `export_content_compact(module, section, type)` → lire le contenu complet
+
+`export_content_compact` est 3-5× plus compact que `get_content` (JSON brut vs Markdown).
+Les IDs de blocs dans les commentaires HTML (`<!--blockId-->`) permettent d'utiliser
+`edit_block`, `insert_block` ou `reorder_blocks` sans relire le JSON brut.
+
+> Le contenu dont la source est encore `file` (non migré) n'est pas accessible via ces
+> deux outils. Utiliser `get_migration_status()` pour connaître l'état de migration.
 
 ### Écriture (admins uniquement)
 - `create_module`, `create_section`, `edit_section`
