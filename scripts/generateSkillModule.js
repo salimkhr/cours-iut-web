@@ -27,7 +27,7 @@ function readSkillFile(relativePath) {
     if (!fs.existsSync(fullPath)) {
         throw new Error(`Fichier manquant : ${fullPath}`);
     }
-    return fs.readFileSync(fullPath, 'utf-8');
+    return fs.readFileSync(fullPath, 'utf-8').replace(/\r\n/g, '\n');
 }
 
 // Lecture du manifest

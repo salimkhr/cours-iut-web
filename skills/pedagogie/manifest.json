@@ -64,7 +64,7 @@
       "title": "Référence — Cours",
       "path": "references/cours.md",
       "uri": "skill://pedagogie/ref-cours",
-      "purpose": "Règles éditoriales JSX pour la rédaction des cours",
+      "purpose": "Règles éditoriales (blocs) pour la rédaction des cours : structure, chapeau prérequis, calibrage",
       "load_when": [
         "create_course",
         "review_course"
@@ -75,7 +75,7 @@
       "title": "Référence — TP",
       "path": "references/tp.md",
       "uri": "skill://pedagogie/ref-tp",
-      "purpose": "Règles éditoriales JSX pour la rédaction des TPs",
+      "purpose": "Règles éditoriales (blocs) pour la rédaction des TPs : fil rouge, calibrage, guidage",
       "load_when": [
         "create_practical_work",
         "review_practical_work"
@@ -115,6 +115,6 @@
       ]
     }
   ],
-  "updated_at": "2026-06-30T05:39:48.850Z",
-  "content_hash": "3d9039551a43"
+  "updated_at": "2026-07-02T16:33:03.551Z",
+  "content_hash": "4a0fc8bbbfb7"
 }

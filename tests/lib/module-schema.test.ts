@@ -29,3 +29,33 @@ describe("moduleFormSchema — couleurs", () => {
         expect(r.success).toBe(false);
     });
 });
+
+describe("moduleFormSchema — sessionDurationMinutes", () => {
+    const base = {
+        title: "PHP",
+        path: "php",
+        iconName: "Code",
+        associatedSae: [],
+        coefficients: [],
+        instructors: [],
+        isExtra: false,
+    };
+
+    test("accepte une durée entière positive", () => {
+        const r = moduleFormSchema.safeParse({ ...base, sessionDurationMinutes: 150 });
+        expect(r.success).toBe(true);
+        if (r.success) expect(r.data.sessionDurationMinutes).toBe(150);
+    });
+
+    test("est optionnelle", () => {
+        const r = moduleFormSchema.safeParse(base);
+        expect(r.success).toBe(true);
+        if (r.success) expect(r.data.sessionDurationMinutes).toBeUndefined();
+    });
+
+    test("rejette zéro, négatif et non-entier", () => {
+        expect(moduleFormSchema.safeParse({ ...base, sessionDurationMinutes: 0 }).success).toBe(false);
+        expect(moduleFormSchema.safeParse({ ...base, sessionDurationMinutes: -30 }).success).toBe(false);
+        expect(moduleFormSchema.safeParse({ ...base, sessionDurationMinutes: 90.5 }).success).toBe(false);
+    });
+});

@@ -64,9 +64,12 @@ interface ContentKey {
 interface ModuleDoc {
     path: string;
     title?: string;
+    isExtra?: boolean;
+    sessionDurationMinutes?: number;
     sections?: Array<{
         path: string;
         title?: string;
+        totalDuration?: number;
         contents?: Array<{ type: string; source?: string }>;
     }>;
 }
@@ -377,12 +380,14 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         "create_module",
         "Crée un nouveau module (structure pédagogique seule, isExtra:true). Réservé aux admins.",
         {
-            title:       z.string().describe("Titre affiché du module, ex: Rust"),
-            iconName:    iconNameSchema.optional(),
-            path:        z.string().optional().describe("Slug du module (défaut: dérivé du titre)"),
-            description: z.string().optional(),
+            title:                   z.string().describe("Titre affiché du module, ex: Rust"),
+            iconName:                iconNameSchema.optional(),
+            path:                    z.string().optional().describe("Slug du module (défaut: dérivé du titre)"),
+            description:             z.string().optional(),
+            sessionDurationMinutes:  z.number().int().min(1).optional()
+                .describe("Durée d'une séance en minutes (ex: 150 pour 2h30). Absent pour les modules bonus."),
         },
-        async ({ title, iconName, path, description }) => {
+        async ({ title, iconName, path, description, sessionDurationMinutes }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
             const slug = path ? slugify(path) : slugify(title);
@@ -401,6 +406,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 coefficients: [],
                 instructors: [],
                 isExtra: true,
+                sessionDurationMinutes,
             });
             if (!parsed.success) {
                 throw new Error(`Module invalide : ${JSON.stringify(parsed.error.flatten())}`);
@@ -430,18 +436,20 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     // ── edit_module ────────────────────────────────────────────────────────────
     server.tool(
         "edit_module",
-        "Édite les métadonnées d'un module : titre, description, icône, couleurs thème (colorLight/colorDark en hex). Réservé aux admins.",
+        "Édite les métadonnées d'un module : titre, description, icône, couleurs thème (colorLight/colorDark en hex), sessionDurationMinutes. Réservé aux admins.",
         {
-            module:      z.string().describe("Slug du module à éditer"),
-            title:       z.string().optional().describe("Nouveau titre affiché"),
-            iconName:    iconNameSchema.optional(),
-            description: z.string().optional().describe("Description ou objectifs globaux du module"),
-            colorLight:  z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
+            module:                  z.string().describe("Slug du module à éditer"),
+            title:                   z.string().optional().describe("Nouveau titre affiché"),
+            iconName:                iconNameSchema.optional(),
+            description:             z.string().optional().describe("Description ou objectifs globaux du module"),
+            colorLight:              z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
                 .describe("Couleur claire du thème en hex (#rrggbb)"),
-            colorDark:   z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
+            colorDark:               z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
                 .describe("Couleur sombre du thème en hex (#rrggbb)"),
+            sessionDurationMinutes:  z.number().int().min(1).optional()
+                .describe("Durée d'une séance en minutes (ex: 150 pour 2h30)"),
         },
-        async ({ module, title, iconName, description, colorLight, colorDark }) => {
+        async ({ module, title, iconName, description, colorLight, colorDark, sessionDurationMinutes }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
 
@@ -454,6 +462,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             if (description !== undefined) set.description = description;
             if (colorLight !== undefined) set.colorLight = colorLight;
             if (colorDark !== undefined) set.colorDark = colorDark;
+            if (sessionDurationMinutes !== undefined) set.sessionDurationMinutes = sessionDurationMinutes;
 
             const updatedFields = Object.keys(set).filter((k) => k !== "updatedAt");
             if (updatedFields.length === 0) {
@@ -672,10 +681,15 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         {},
         async () => {
             const db = await connectToDB();
-            const modules = await db.collection<{ path: string; title?: string }>("modules")
-                .find({}, { projection: { path: 1, title: 1, _id: 0 } })
+            const modules = await db.collection<{ path: string; title?: string; isExtra?: boolean; sessionDurationMinutes?: number }>("modules")
+                .find({}, { projection: { path: 1, title: 1, isExtra: 1, sessionDurationMinutes: 1, _id: 0 } })
                 .toArray();
-            const result = modules.map((m) => ({ slug: m.path, title: m.title ?? m.path }));
+            const result = modules.map((m) => ({
+                slug: m.path,
+                title: m.title ?? m.path,
+                isExtra: m.isExtra ?? false,
+                ...(m.sessionDurationMinutes !== undefined && { sessionDurationMinutes: m.sessionDurationMinutes }),
+            }));
             return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
         }
     );
@@ -695,6 +709,9 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             const sections = (mod.sections ?? []).map((s) => ({
                 slug: s.path,
                 title: s.title ?? s.path,
+                // totalDuration: fallback à 1 pour la compatibilité avec les anciennes sections
+                // sans durée renseignée. La plupart des sections ont des valeurs explicites en DB.
+                totalDuration: s.totalDuration ?? 1,
                 contents: Object.fromEntries((s.contents ?? []).map((c) => [c.type, c.source ?? "file"])),
             }));
             return { content: [{ type: "text" as const, text: JSON.stringify(sections, null, 2) }] };

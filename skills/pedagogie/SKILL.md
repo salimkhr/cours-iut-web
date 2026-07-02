@@ -97,7 +97,7 @@ related_materials:
   current_practical_work: "indisponible | [contenu]"
 
 constraints:
-  editorial_format: "JSX composants imposés (charger ref-cours, ref-tp ou ref-slide)"
+  editorial_format: "blocs MongoDB (charger ref-cours, ref-tp ou ref-slide ; liste des types via list_block_types)"
   technical_version: "indisponible | [version]"
   vocabulary: "indisponible | [termes imposés]"
   assessment_rules: "indisponible | [règles]"

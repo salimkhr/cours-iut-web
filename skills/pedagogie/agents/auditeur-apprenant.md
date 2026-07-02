@@ -29,6 +29,11 @@ Tu n'es PAS un apprenant qui n'a rien lu ou qui refuse de travailler.
 - Moments où l'apprenant ne sait plus quoi faire
 - Critères de réussite invisibles ou implicites
 - Aides arrivant trop tard dans la progression
+- Fil rouge du TP irréalisable dans le budget temps de la section
+  (`totalDuration × sessionDurationMinutes` moins le temps de cours)
+- Récapitulatif « À ce stade, votre projet contient » de l'exercice N qui ne correspond
+  pas au résultat réel de l'exercice N−1
+- Exercice du fil rouge qui suppose du code que l'étudiant n'a jamais écrit
 
 ## Ordre de lecture
 
