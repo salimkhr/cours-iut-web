@@ -709,6 +709,8 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             const sections = (mod.sections ?? []).map((s) => ({
                 slug: s.path,
                 title: s.title ?? s.path,
+                // totalDuration: fallback à 1 pour la compatibilité avec les anciennes sections
+                // sans durée renseignée. La plupart des sections ont des valeurs explicites en DB.
                 totalDuration: s.totalDuration ?? 1,
                 contents: Object.fromEntries((s.contents ?? []).map((c) => [c.type, c.source ?? "file"])),
             }));

@@ -55,6 +55,9 @@ beforeAll(async () => {
         isExtra: true,
         sections: [],
     });
+
+    // Seed sessionDurationMinutes pour le module php (requis par le test list_modules)
+    await callTool("edit_module", { module: "php", sessionDurationMinutes: 150 });
 }, 60_000);
 
 afterAll(async () => { await stopDb?.(); }, 10_000);
@@ -96,9 +99,14 @@ async function callTool(name: string, params: Record<string, unknown>): Promise<
 }
 
 describe("MCP — durées de séance", () => {
-    test("edit_module accepte sessionDurationMinutes", async () => {
-        const out = await callTool("edit_module", { module: "php", sessionDurationMinutes: 150 });
-        expect(out).toContain("sessionDurationMinutes");
+    test("edit_module permet de modifier sessionDurationMinutes", async () => {
+        // Seed a gardé 150 en beforeAll. On vérifie que edit_module peut changer la valeur.
+        await callTool("edit_module", { module: "php", sessionDurationMinutes: 90 });
+        const out = JSON.parse(await callTool("list_modules", {}));
+        const php = out.find((m: { slug: string }) => m.slug === "php");
+        expect(php.sessionDurationMinutes).toBe(90);
+        // Restaure 150 pour les tests suivants (indépendance)
+        await callTool("edit_module", { module: "php", sessionDurationMinutes: 150 });
     });
 
     test("list_modules renvoie sessionDurationMinutes et isExtra", async () => {
