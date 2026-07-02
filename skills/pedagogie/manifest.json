@@ -64,7 +64,7 @@
       "title": "Référence — Cours",
       "path": "references/cours.md",
       "uri": "skill://pedagogie/ref-cours",
-      "purpose": "Règles éditoriales JSX pour la rédaction des cours",
+      "purpose": "Règles éditoriales (blocs) pour la rédaction des cours : structure, chapeau prérequis, calibrage",
       "load_when": [
         "create_course",
         "review_course"
@@ -115,6 +115,6 @@
       ]
     }
   ],
-  "updated_at": "2026-07-02T06:30:12.395Z",
-  "content_hash": "623eaf4d2513"
+  "updated_at": "2026-07-02T06:36:55.666Z",
+  "content_hash": "7c1dfb1b7585"
 }

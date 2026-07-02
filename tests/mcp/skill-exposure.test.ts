@@ -136,6 +136,14 @@ describe("Skill pédagogique — documents", () => {
         expect(tp).toContain("À ce stade, votre projet contient");
         expect(tp).not.toContain("pas de dépendance exercice");
     });
+
+    it("ref-cours décrit le calibrage et l'alignement TP", () => {
+        const cours = SKILL_DOCUMENTS["ref-cours"].content;
+        expect(cours).toContain("30 min");
+        expect(cours).toContain("list_block_types");
+        expect(cours).toContain("À savoir pour ce cours");
+        expect(cours).toContain("collapsible");
+    });
 });
 
 describe("Skill pédagogique — sécurité", () => {
