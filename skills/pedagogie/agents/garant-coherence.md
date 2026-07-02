@@ -26,6 +26,10 @@ dans le parcours et que ses trois supports sont alignés entre eux et avec le cu
 - Les versions des outils, commandes ou bibliothèques sont-elles cohérentes ?
 - Les exemples sont-ils compatibles entre supports ?
 - Une modification d'un support a-t-elle des effets non reflétés dans les autres ?
+- La chaîne du fil rouge du TP est-elle continue (chaque exercice s'appuie uniquement
+  sur du code écrit dans les exercices précédents ou fourni en téléchargement) ?
+- La somme des durées indicatives des exercices respecte-t-elle le budget de la section
+  (`totalDuration × sessionDurationMinutes` − temps de cours estimé depuis les slides) ?
 
 ### Signaux d'alerte spécifiques
 - Rupture de difficulté injustifiée entre deux sections
