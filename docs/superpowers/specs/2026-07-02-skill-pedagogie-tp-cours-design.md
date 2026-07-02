@@ -31,7 +31,8 @@ MCP (`save_content`, `insert_block`). Le modèle improvise la correspondance JSX
 | Étudiant bloqué dans le fil rouge | Filet léger : récapitulatif d'état en tête de chaque exercice, pas de code de rattrapage à maintenir |
 | Échelle du fil rouge | Selon le module : projet annuel quand il existe (PHP → Netflex), sinon livrable autonome par TP (HTML/CSS, JS) |
 | Source de la durée de séance | Nouvelle prop du **module** (`sessionDurationMinutes`), pas de la section |
-| Budget temps d'un TP | `section.totalDuration` (nb séances) × `module.sessionDurationMinutes` |
+| Budget temps d'un TP | `section.totalDuration` × `module.sessionDurationMinutes` − temps de cours en séance |
+| Temps de cours en séance | Estimé depuis les slides : nb de slides × ~2 min (via `get_content`) ; fallback forfaitaire 30 min sur la première séance si les slides n'existent pas encore |
 | Modules bonus | `isExtra: true` (existant) → aucune contrainte de durée, TP auto-suffisant à faire chez soi |
 | Liste des blocs dans les références | Jamais dupliquée : renvoi vers `list_block_types()` comme source de vérité |
 | Périmètre traduction JSX → blocs | `ref-cours` et `ref-tp` uniquement ; `ref-slide` et `ref-examen` plus tard |
@@ -74,8 +75,11 @@ MCP (`save_content`, `insert_block`). Le modèle improvise la correspondance JSX
 
 ### Calibrage
 
-- Budget = `totalDuration × sessionDurationMinutes` (lus via `list_modules` /
-  `list_sections`).
+- Budget = `totalDuration × sessionDurationMinutes − temps de cours en séance`
+  (durées lues via `list_modules` / `list_sections`).
+- Temps de cours en séance : nombre de slides de la section × ~2 min (lu via
+  `get_content(module, section, "slides")`). Si les slides n'existent pas encore,
+  fallback forfaitaire : 30 min déduites de la première séance.
 - Le fil rouge doit être finissable dans le budget par un étudiant moyen.
 - Chaque exercice porte une durée indicative ; la somme est vérifiée à la rédaction.
 - Modules `isExtra` : pas de contrainte de durée, TP auto-suffisant.
@@ -139,6 +143,7 @@ pièges) ne change pas. Ajouts :
 - `ref-tp` et `ref-cours` ne contiennent plus aucune référence JSX, `.tsx` ou
   `src/cours/`.
 - Un TP généré avec le skill révisé : exercice 1 indépendant, fil rouge ensuite,
-  récapitulatifs d'état, durées indicatives dont la somme respecte le budget.
+  récapitulatifs d'état, durées indicatives dont la somme respecte le budget
+  (déduction faite du temps de cours estimé depuis les slides).
 - Le manifest (`manifest.json`) est régénéré après édition des documents
   (`content_hash` à jour).
