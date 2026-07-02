@@ -116,6 +116,26 @@ describe("Skill pédagogique — documents", () => {
             expect(doc.contentHash).toBe(computed);
         }
     });
+
+    it("ref-tp et ref-cours ne parlent plus JSX ni fichiers .tsx", () => {
+        for (const id of ["ref-tp", "ref-cours"]) {
+            const doc = SKILL_DOCUMENTS[id];
+            expect(doc.content).not.toContain(".tsx");
+            expect(doc.content).not.toContain("@/components");
+            expect(doc.content).not.toContain("src/cours/");
+            expect(doc.content.toLowerCase()).not.toContain("jsx");
+        }
+    });
+
+    it("ref-tp décrit le fil rouge et le calibrage", () => {
+        const tp = SKILL_DOCUMENTS["ref-tp"].content;
+        expect(tp).toContain("fil rouge");
+        expect(tp).toContain("sessionDurationMinutes");
+        expect(tp).toContain("totalDuration");
+        expect(tp).toContain("list_block_types");
+        expect(tp).toContain("À ce stade, votre projet contient");
+        expect(tp).not.toContain("pas de dépendance exercice");
+    });
 });
 
 describe("Skill pédagogique — sécurité", () => {
