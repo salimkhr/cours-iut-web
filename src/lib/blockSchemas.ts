@@ -31,6 +31,10 @@ export const MAX_DEPTH = 8;
  *  fraîchement inséré (defaultProps) doit pouvoir être sauvegardé. */
 export const blockPropsSchemas: Record<string, z.ZodTypeAny> = {
     "text": z.object({ content: z.string() }),
+    "heading": z.object({
+        level: z.coerce.number().int().min(1).max(3),
+        text: z.string(),
+    }),
     "section": z.object({ title: z.string() }),
     "list": z.object({ ordered: z.boolean() }),
     "list-item": z.object({ text: z.string() }),
@@ -104,7 +108,7 @@ export interface ContainerRule {
 }
 
 export const containerRules: Record<string, ContainerRule> = {
-    "columns": { allowedChildren: ["column"], allowedParents: [null, "section", "callout", "collapsible", "slide"] },
+    "columns": { allowedChildren: ["column"], allowedParents: [null, "slide"] },
     "column": { allowedChildren: "any", allowedParents: ["columns"] },
     "list": { allowedChildren: ["list-item"] },
     "list-item": { allowedChildren: "any", allowedParents: ["list"] },
