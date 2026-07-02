@@ -15,6 +15,7 @@ export default interface Module {
     manager?: Instructor;
     associatedSae: string[];
     isExtra?: boolean;
+    sessionDurationMinutes?: number;
     colorLight?: string;
     colorDark?: string;
     updatedAt?: string;
