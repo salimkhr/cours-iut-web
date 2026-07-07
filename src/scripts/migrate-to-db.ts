@@ -329,7 +329,7 @@ export function parseFile(filePath: string): { blocks: Block[]; warnings: string
     return { blocks, warnings };
 }
 
-async function upsertContent(
+export async function upsertContent(
     db: Db,
     slugs: { moduleSlug: string; sectionSlug: string; contentType: string },
     blocks: Block[],
@@ -351,7 +351,7 @@ async function upsertContent(
     return String((result as { _id: ObjectId } | null)?._id ?? "");
 }
 
-async function updateContentRef(
+export async function updateContentRef(
     db: Db,
     slugs: { moduleSlug: string; sectionSlug: string; contentType: string },
     contentId: string,
@@ -368,7 +368,7 @@ async function updateContentRef(
     );
 }
 
-function getAllTSXFiles(dir: string): string[] {
+export function getAllTSXFiles(dir: string): string[] {
     let results: string[] = [];
     for (const entry of _fs.readdirSync(dir, { withFileTypes: true })) {
         const fullPath = _path.join(dir, entry.name);
