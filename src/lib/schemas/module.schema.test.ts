@@ -29,9 +29,30 @@ describe("universeSchema", () => {
         expect(r.success).toBe(false);
     });
 
+    test("rejette un scope inconnu avec message français", () => {
+        const r = universeSchema.safeParse({
+            name: "Netflex",
+            description: "Catalogue de films",
+            scope: "annuel",
+        });
+        expect(r.success).toBe(false);
+        if (!r.success) {
+            expect(r.error.issues[0].message).toContain("Scope invalide");
+        }
+    });
+
     test("rejette un nom vide", () => {
         const r = universeSchema.safeParse({
             name: "",
+            description: "Catalogue de films",
+            scope: "tp",
+        });
+        expect(r.success).toBe(false);
+    });
+
+    test("rejette un nom avec espaces seuls (trim)", () => {
+        const r = universeSchema.safeParse({
+            name: "   ",
             description: "Catalogue de films",
             scope: "tp",
         });

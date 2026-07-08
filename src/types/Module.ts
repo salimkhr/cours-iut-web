@@ -2,12 +2,9 @@ import Section from "@/types/Section";
 import {ObjectId} from "bson";
 import Instructor from "@/types/Instructor";
 import Coefficient from "@/types/Coefficient";
+import type {ModuleUniverse} from "@/lib/schemas/module.schema";
 
-export interface ModuleUniverse {
-    name: string;
-    description: string;
-    scope: "module" | "tp";
-}
+export type {ModuleUniverse};
 
 export default interface Module {
     _id: string | ObjectId;
