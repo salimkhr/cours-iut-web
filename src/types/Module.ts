@@ -3,6 +3,12 @@ import {ObjectId} from "bson";
 import Instructor from "@/types/Instructor";
 import Coefficient from "@/types/Coefficient";
 
+export interface ModuleUniverse {
+    name: string;
+    description: string;
+    scope: "module" | "tp";
+}
+
 export default interface Module {
     _id: string | ObjectId;
     title: string;
@@ -16,6 +22,7 @@ export default interface Module {
     associatedSae: string[];
     isExtra?: boolean;
     sessionDurationMinutes?: number;
+    universe?: ModuleUniverse;
     colorLight?: string;
     colorDark?: string;
     updatedAt?: string;
