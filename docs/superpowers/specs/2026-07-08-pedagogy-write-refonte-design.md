@@ -116,6 +116,24 @@ universe?: {
 Le SKILL.md contient uniquement ce pipeline et le routage vers les références
 (`skills/pedagogie/references/*`). Aucune règle de contenu dupliquée.
 
+**Garde-fous anti-rationalisation** (pedagogy-write est un skill de discipline ; les
+règles doivent résister à un agent pressé) :
+
+- **Liste de red flags** — chacun signifie STOP : écrire des blocs avant consolidation ;
+  deviner un type de bloc sans `list_block_types()` ; sauter l'auditeur-apprenant ;
+  générer sans contexte MCP ; livrer un TP sous 80 % du budget sans le signaler.
+- **Table excuse → réalité**, au minimum :
+  | Excuse | Réalité |
+  |--------|---------|
+  | « C'est un petit TP, pas besoin d'audit » | Les TP courts sont précisément ceux qui sortaient sous-dimensionnés. |
+  | « Je connais déjà les types de blocs » | Le schéma évolue ; un type deviné casse le renderer. |
+  | « Une itération suffit, le budget est approximatif » | Le verdict chiffré de l'auditeur décide, pas l'intuition. |
+  | « L'utilisateur est pressé, j'écris directement » | Le pipeline existe parce que l'écriture directe produisait du contenu inutilisable. |
+- **Mini-flowchart de la boucle calibrage** — c'est une boucle de processus où l'agent
+  risque de s'arrêter trop tôt : audits → verdict (80–100 % du budget + zéro finding
+  bloquant ?) → oui : écriture MCP / non : retour concepteur (max 2 itérations) → au-delà :
+  livraison avec réserves explicites.
+
 ### 6. Nettoyage et régénération
 
 - Supprimer `.claude/skills/pedagogy/reference/` (copie périmée des références, plus
@@ -167,6 +185,23 @@ invisible pour review/rewrite et le curriculum décrocherait. Deux principes com
   concepts, blocs `code` pour les APIs) au lieu des `.tsx`.
 - Sortie inchangée : `reviews/[matiere]-curriculum.md`.
 
+**Descriptions frontmatter (les 4 skills)** :
+
+Les descriptions actuelles résument le workflow (« Regroupe les problèmes par thème,
+brainstorme 2-3 angles… », « Dispatche les sous-agents… »). Phénomène documenté par le
+skill writing-skills : l'agent suit alors la description au lieu de lire le corps du
+skill. Toutes les descriptions sont réécrites en **déclencheurs uniquement**
+(« À utiliser quand… »), sans résumé de processus. Exemples cibles :
+
+- `pedagogy-write` : « À utiliser quand il faut rédiger un nouveau contenu pédagogique
+  (Cours, TP, Slide, Examen) pour un module du site IUT. »
+- `pedagogy-rewrite` : « À utiliser quand un REVIEW.md contient des items non traités
+  à corriger. »
+- `pedagogy-review` : « À utiliser quand un contenu pédagogique existant doit être
+  critiqué ou audité avant correction. »
+- `pedagogy-sync` : « À utiliser après création ou modification d'un contenu pour tenir
+  le curriculum à jour. »
+
 ## Gestion d'erreurs
 
 - Serveur MCP indisponible ou non connecté → arrêt en phase 2 avec message clair.
@@ -178,10 +213,25 @@ invisible pour review/rewrite et le curriculum décrocherait. Deux principes com
 
 - `bun run build` après le chantier code (champ `universe`).
 - Tests Zod du schema module si la suite existante couvre `module.schema.ts`.
-- Test de bout en bout : générer un TP sur un module de staging
-  (`cours-iut-staging`) et vérifier budget (80–100 %) + contrat de consigne sur chaque
-  exercice, puis dérouler `/pedagogy:review` → `/pedagogy:rewrite` → `/pedagogy:sync`
-  sur ce même contenu pour valider la boucle complète.
+
+### Protocole baseline (TDD appliqué aux skills)
+
+1. **RED — baseline avant refonte** : générer un TP sur un module de staging avec le
+   skill actuel et archiver le résultat comme baseline chiffrée : durée totale estimée
+   vs budget, nombre d'exercices sans fichier cible / sans résultat observable / sans
+   critère de validation, nombre d'exemples hors univers ou jouets.
+2. **GREEN — même scénario après refonte** : rejouer exactement le même scénario
+   (même module, même section, même consigne) avec le nouveau pipeline. Critères
+   mesurables de réussite :
+   - somme des durées estimées entre 80 et 100 % du budget ;
+   - 100 % des exercices avec contrat de consigne complet (fichier, noms, entrée,
+     résultat observable, critère de validation) ;
+   - zéro donnée hors univers, zéro type de bloc inventé.
+3. **REFACTOR** : si l'agent contourne une règle pendant le test, ajouter le
+   contre-argument explicite dans la table excuse → réalité et rejouer.
+4. **Boucle complète** : dérouler `/pedagogy:review` → `/pedagogy:rewrite` →
+   `/pedagogy:sync` sur le contenu généré pour valider write → review → rewrite → sync
+   de bout en bout.
 
 ## Hors périmètre
 
