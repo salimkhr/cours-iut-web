@@ -1,6 +1,6 @@
 # Refonte du skill `/pedagogy:write` — orchestration + références
 
-Date : 2026-07-08
+Date : 2026-07-08 (étendue le même jour au chantier 7 : alignement review/rewrite/sync)
 Statut : validé (brainstorm avec l'utilisateur)
 
 ## Problème
@@ -33,8 +33,9 @@ collecte de contexte).
 | Consignes | Contrat complet sur **tous** les exercices, y compris guidage léger |
 | Orchestration | Pipeline complet systématique avec sous-agents à chaque rédaction |
 | Architecture | A — pipeline dans `/pedagogy:write` (spécifique Claude Code), règles de contenu dans `skills/pedagogie/` (partagées avec les clients MCP web) |
+| Boucle write→review→rewrite | Alignée dans la même refonte : review/rewrite/sync basculent sur MCP et chargent les rôles depuis `skills/pedagogie/` |
 
-## Architecture — six chantiers
+## Architecture — sept chantiers
 
 ### 1. Champ `universe` sur Module (code)
 
@@ -123,6 +124,49 @@ Le SKILL.md contient uniquement ce pipeline et le routage vers les références
   `src/lib/skills/pedagogie.ts` (jamais éditer ce fichier à la main ; le manifest hash
   suit).
 
+### 7. Alignement de la boucle review → rewrite → sync
+
+Constat : `pedagogy-review`, `pedagogy-rewrite` et `pedagogy-sync` vivent encore dans
+l'ancien monde fichiers (`src/cours/**/*.tsx`, règles JSX, prompts de rôles dupliqués en
+dur). Sans alignement, le contenu produit par le nouveau write (blocs en DB) serait
+invisible pour review/rewrite et le curriculum décrocherait. Deux principes communs :
+
+- **Lecture/écriture via MCP** — plus aucun accès `src/cours/*.tsx`. Si une section n'a
+  pas de contenu en DB, le skill le signale et s'arrête (pas de repli silencieux sur les
+  fichiers).
+- **Zéro duplication de règles** — les prompts de rôles et les règles de contenu sont
+  chargés depuis `skills/pedagogie/` (agents + références), jamais recopiés dans les
+  SKILL.md. Les nouveaux contrôles (simulation temporelle, test de démarrage, contrat de
+  consigne) s'appliquent ainsi automatiquement à la review.
+
+**`pedagogy-review`** :
+
+- Cible = module/section (slugs DB via args ou question), plus un dossier `src/cours/`.
+- Collecte via MCP : `list_modules` (universe, durées), `list_sections`,
+  `get_content` / `export_content_compact` pour chaque support (cours, slide, TP, examen).
+- Les prompts des trois sous-agents sont construits en injectant : le document de rôle lu
+  depuis `skills/pedagogie/agents/*.md` + le contrat d'entrée + les contenus exportés.
+  Les prompts en dur actuels du SKILL.md sont supprimés.
+- Sortie inchangée : `reviews/[module]-[section]-REVIEW.md` (slugs DB), items `- [ ]`.
+
+**`pedagogy-rewrite`** :
+
+- Lecture du contenu via `get_content` ; corrections via `edit_block` / `insert_block` /
+  `delete_block` / `reorder_blocks` (`list_block_types()` avant toute écriture) au lieu
+  d'Edit/Write sur `.tsx`.
+- Les règles de réécriture renvoient aux références `skills/pedagogie/references/*`
+  (dont le contrat de consigne universel) — plus de règles JSX en dur.
+- Flux conservé : regroupement par thèmes → 2–3 angles par thème → validation → réécriture
+  → marquage `[x]` + `> Traité`.
+- L'exemple actuel « guidage trop fort → consigne reformulée en objectif fonctionnel
+  uniquement » est remplacé : toute reformulation doit préserver le contrat de consigne.
+
+**`pedagogy-sync`** :
+
+- Extraction depuis les blocs DB (`get_content` : blocs `text`/`heading`/`list` pour les
+  concepts, blocs `code` pour les APIs) au lieu des `.tsx`.
+- Sortie inchangée : `reviews/[matiere]-curriculum.md`.
+
 ## Gestion d'erreurs
 
 - Serveur MCP indisponible ou non connecté → arrêt en phase 2 avec message clair.
@@ -136,10 +180,11 @@ Le SKILL.md contient uniquement ce pipeline et le routage vers les références
 - Tests Zod du schema module si la suite existante couvre `module.schema.ts`.
 - Test de bout en bout : générer un TP sur un module de staging
   (`cours-iut-staging`) et vérifier budget (80–100 %) + contrat de consigne sur chaque
-  exercice.
+  exercice, puis dérouler `/pedagogy:review` → `/pedagogy:rewrite` → `/pedagogy:sync`
+  sur ce même contenu pour valider la boucle complète.
 
 ## Hors périmètre
 
 - `ref-slide` et `ref-examen` : mêmes principes applicables, mais chantier ultérieur
   (cohérent avec la décision du 2026-07-02).
-- Les skills `pedagogy-review` / `pedagogy-rewrite` : non modifiés ici.
+- `pedagogy-plan` / `pedagogy-module` : non modifiés ici (déjà orientés MCP).
