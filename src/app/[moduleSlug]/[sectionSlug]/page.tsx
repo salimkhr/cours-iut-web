@@ -82,7 +82,7 @@ export default async function SectionPage({params}: SectionPageProps) {
                             totalDuration={currentSection.totalDuration}
                             contentsCount={currentSection.contents.length}
                             position={`${currentIndex >= 0 ? currentIndex + 1 : "?"} / ${orderedSections.length}`}
-                            modulePath={currentModule.path}
+                            currentModule={currentModule}
                         />
                     </div>
 

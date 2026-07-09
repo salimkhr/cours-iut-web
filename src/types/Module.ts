@@ -2,6 +2,9 @@ import Section from "@/types/Section";
 import {ObjectId} from "bson";
 import Instructor from "@/types/Instructor";
 import Coefficient from "@/types/Coefficient";
+import type {ModuleUniverse} from "@/lib/schemas/module.schema";
+
+export type {ModuleUniverse};
 
 export default interface Module {
     _id: string | ObjectId;
@@ -16,6 +19,7 @@ export default interface Module {
     associatedSae: string[];
     isExtra?: boolean;
     sessionDurationMinutes?: number;
+    universe?: ModuleUniverse;
     colorLight?: string;
     colorDark?: string;
     updatedAt?: string;

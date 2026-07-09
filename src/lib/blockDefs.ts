@@ -222,7 +222,7 @@ export const blockDefs: BlockDef[] = [
             highlightLines: z.string().optional(),
         }),
         fields: [
-            { key: "language", label: "Langage", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx"] },
+            { key: "language", label: "Langage", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx", "rust"] },
             { key: "code", label: "Code", type: "textarea", placeholder: "const x = 42;" },
             { key: "filename", label: "Nom de fichier", type: "text", placeholder: "app.js" },
             { key: "showLineNumbers", label: "Numéros de ligne", type: "boolean" },
@@ -272,7 +272,7 @@ export const blockDefs: BlockDef[] = [
             code: z.string(),
         }),
         fields: [
-            { key: "language", label: "Langage", type: "select", options: ["html", "css", "javascript", "php", "sql", "json"] },
+            { key: "language", label: "Langage", type: "select", options: ["html", "css", "javascript", "php", "sql", "json", "rust"] },
             { key: "filename", label: "Nom de fichier", type: "text", placeholder: "game.html" },
             { key: "code", label: "Contenu du fichier", type: "textarea" },
         ],
@@ -354,7 +354,7 @@ export const blockDefs: BlockDef[] = [
             highlight: z.string().optional(),
         }),
         fields: [
-            { key: "language", label: "Langage", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx"] },
+            { key: "language", label: "Langage", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx", "rust"] },
             { key: "code", label: "Code", type: "textarea", placeholder: "const x = 42;" },
             { key: "highlight", label: "Étapes (highlight)", type: "text", placeholder: "1-3 | 5-7 | 9" },
         ],

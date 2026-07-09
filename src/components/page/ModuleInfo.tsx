@@ -7,6 +7,7 @@ import Instructor from "@/types/Instructor";
 import {Button} from "@/components/ui/button";
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 import {cn} from "@/lib/utils";
+import {moduleColor} from "@/lib/moduleColor";
 
 interface ModuleInfoProps {
     currentModule: Module;
@@ -20,17 +21,17 @@ function Eyebrow({children}: {children: React.ReactNode}) {
     );
 }
 
-function InstructorRow({firstName, lastName, email, role, modulePath}: Instructor & {role: string; modulePath: string}) {
+function InstructorRow({firstName, lastName, email, role}: Instructor & {role: string}) {
     const initials = `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
     return (
         <div className="flex items-center gap-3">
-            <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0 select-none", `bg-${modulePath}`)}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0 select-none bg-(--module-color) dark:bg-(--module-color-dark)">
                 {initials}
             </div>
             <div className="flex flex-col min-w-0 flex-1">
                 <Link
                     href={`mailto:${email}`}
-                    className={cn("text-sm font-semibold leading-tight hover:underline underline-offset-2", `text-${modulePath}`)}
+                    className="text-sm font-semibold leading-tight hover:underline underline-offset-2 text-(--module-color) dark:text-(--module-color-dark)"
                 >
                     {firstName} {lastName}
                 </Link>
@@ -44,7 +45,6 @@ function InstructorRow({firstName, lastName, email, role, modulePath}: Instructo
 }
 
 export default function ModuleInfo({currentModule}: ModuleInfoProps) {
-    const {path: modulePath} = currentModule;
     const coefficients = currentModule.coefficients?.filter((c) => c.value > 0) ?? [];
 
     return (
@@ -67,10 +67,13 @@ export default function ModuleInfo({currentModule}: ModuleInfoProps) {
                     "shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
                     "[&>button]:text-white [&>button]:ring-offset-transparent [&>button:focus-visible]:ring-white/50",
                 )}
-                style={{"--module-color": `var(--color-${modulePath})`} as React.CSSProperties}
+                style={{
+                    "--module-color": moduleColor(currentModule),
+                    "--module-color-dark": moduleColor(currentModule, 'dark'),
+                } as React.CSSProperties}
             >
                 {/* Header */}
-                <div className={cn("relative flex items-center gap-4 px-6 py-5 pr-14 overflow-hidden", `bg-${modulePath}`)}>
+                <div className="relative flex items-center gap-4 px-6 py-5 pr-14 overflow-hidden bg-(--module-color) dark:bg-(--module-color-dark)">
                     <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"/>
                     <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 shrink-0">
                         <Info className="w-5 h-5 text-white" aria-hidden="true"/>
@@ -94,7 +97,6 @@ export default function ModuleInfo({currentModule}: ModuleInfoProps) {
                                 <InstructorRow
                                     {...currentModule.manager}
                                     role="Responsable"
-                                    modulePath={modulePath}
                                 />
                             )}
                             {currentModule.instructors?.map((instructor) => (
@@ -102,7 +104,6 @@ export default function ModuleInfo({currentModule}: ModuleInfoProps) {
                                     key={instructor.email}
                                     {...instructor}
                                     role="Intervenant"
-                                    modulePath={modulePath}
                                 />
                             ))}
                             {!currentModule.manager && !currentModule.instructors?.length && (
@@ -144,7 +145,7 @@ export default function ModuleInfo({currentModule}: ModuleInfoProps) {
                                             <span className="text-sm font-medium text-brand-dark dark:text-bridge-100 flex-1 min-w-0">
                                                 {c.competenceName}
                                             </span>
-                                            <span className={cn("text-sm font-bold font-mono tabular-nums shrink-0", `text-${modulePath}`)}>
+                                            <span className="text-sm font-bold font-mono tabular-nums shrink-0 text-(--module-color) dark:text-(--module-color-dark)">
                                                 {c.value}
                                             </span>
                                         </div>
