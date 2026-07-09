@@ -52,6 +52,7 @@ export default function EditModuleSheet({
         isExtra: module.isExtra ?? false,
         colorLight: module.colorLight ?? '#C2410C',
         colorDark: module.colorDark ?? '#FB923C',
+        universe: module.universe,
     }), [module]);
 
     const {
@@ -59,6 +60,8 @@ export default function EditModuleSheet({
         handleSubmit,
         control,
         reset,
+        watch,
+        setValue,
         formState: {errors, isSubmitting},
     } = useForm<ModuleFormValues>({
         resolver: zodResolver(moduleFormSchema) as Resolver<ModuleFormValues>,
@@ -161,6 +164,61 @@ export default function EditModuleSheet({
                                     </label>
                                 )}
                             />
+                        </section>
+
+                        <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+
+                        {/* Univers thématique */}
+                        <section className="flex flex-col gap-3">
+                            <Eyebrow>Univers thématique</Eyebrow>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <Checkbox
+                                    checked={watch('universe') !== undefined}
+                                    onCheckedChange={(checked) => setValue('universe', checked
+                                        ? {name: '', description: '', scope: 'tp'}
+                                        : undefined)}
+                                />
+                                <span className="text-sm text-brand-dark dark:text-bridge-100">Définir un univers</span>
+                            </label>
+                            {watch('universe') !== undefined && (
+                                <>
+                                    <div>
+                                        <Label htmlFor="em-universe-name" className={labelCn}>Nom *</Label>
+                                        <Input id="em-universe-name" className={inputCn} placeholder="Netflex"
+                                            {...register('universe.name')}/>
+                                        {errors.universe?.name && (
+                                            <p className="text-red-500 text-xs mt-1">{errors.universe.name.message}</p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="em-universe-desc" className={labelCn}>Description (domaine + données types) *</Label>
+                                        <Textarea id="em-universe-desc" rows={3} className={inputCn}
+                                            placeholder="Catalogue de films : title, year, genre, rating…"
+                                            {...register('universe.description')}/>
+                                        {errors.universe?.description && (
+                                            <p className="text-red-500 text-xs mt-1">{errors.universe.description.message}</p>
+                                        )}
+                                    </div>
+                                    <Controller
+                                        control={control}
+                                        name="universe.scope"
+                                        render={({field}) => (
+                                            <div className="flex gap-6">
+                                                <label className="flex items-center gap-2 cursor-pointer">
+                                                    <Checkbox checked={field.value === 'module'}
+                                                        onCheckedChange={() => field.onChange('module')}/>
+                                                    <span className="text-sm text-brand-dark dark:text-bridge-100">Fil rouge annuel</span>
+                                                </label>
+                                                <label className="flex items-center gap-2 cursor-pointer">
+                                                    <Checkbox checked={field.value === 'tp'}
+                                                        onCheckedChange={() => field.onChange('tp')}/>
+                                                    <span className="text-sm text-brand-dark dark:text-bridge-100">Livrable par TP</span>
+                                                </label>
+                                            </div>
+                                        )}
+                                    />
+                                </>
+                            )}
                         </section>
 
                         <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
