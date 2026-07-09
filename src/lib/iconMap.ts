@@ -2,7 +2,8 @@ import * as LucideIcons from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export function isValidIcon(name: string): boolean {
-    return typeof (LucideIcons as Record<string, unknown>)[name] === "function";
+    const icon = (LucideIcons as Record<string, unknown>)[name];
+    return typeof icon === "function" || (typeof icon === "object" && icon !== null);
 }
 
 export function getIcon(name: string): LucideIcon {
