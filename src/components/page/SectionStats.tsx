@@ -2,6 +2,8 @@
 
 import React, {useRef} from "react";
 import {cn} from "@/lib/utils";
+import {moduleColor} from "@/lib/moduleColor";
+import Module from "@/types/Module";
 import {ClockIcon} from "@/components/icons/clock";
 import {LayersIcon} from "@/components/icons/layers";
 import {CompassIcon} from "@/components/icons/compass";
@@ -41,7 +43,7 @@ function AnimatedStat({IconComp, label, value, withDivider, modulePath}: Animate
                 </span>
                 <span className={cn(
                     "text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight tabular-nums leading-none mt-1",
-                    modulePath ? `text-${modulePath}` : "text-brand-dark dark:text-bridge-50"
+                    modulePath ? "text-(--module-color) dark:text-(--module-color-dark)" : "text-brand-dark dark:text-bridge-50"
                 )}>
                     {value}
                 </span>
@@ -54,12 +56,18 @@ interface SectionStatsProps {
     totalDuration: number;
     contentsCount: number;
     position: string;
-    modulePath: string;
+    currentModule: Module;
 }
 
-export default function SectionStats({totalDuration, contentsCount, position, modulePath}: SectionStatsProps) {
+export default function SectionStats({totalDuration, contentsCount, position, currentModule}: SectionStatsProps) {
+    const {path: modulePath} = currentModule;
     return (
-        <div className={cn(
+        <div
+            style={{
+                '--module-color': moduleColor(currentModule),
+                '--module-color-dark': moduleColor(currentModule, 'dark'),
+            } as React.CSSProperties}
+            className={cn(
             "grid grid-cols-3 gap-2 sm:gap-4 rounded-2xl",
             "bg-[#f7ebd9] dark:bg-[#13110d]",
             "border border-bridge-500/45 dark:border-bridge-500/35",

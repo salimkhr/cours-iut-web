@@ -7,10 +7,12 @@ import {ArrowRight, Lock} from "lucide-react";
 import Module from "@/types/Module";
 import Section from "@/types/Section";
 import {cn} from "@/lib/utils";
+import {moduleColor} from "@/lib/moduleColor";
 import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
 import {BookTextIcon} from "@/components/icons/book-text";
 import {TerminalIcon} from "@/components/icons/terminal";
 import {LayersIcon} from "@/components/icons/layers";
+import {GalleryThumbnailsIcon} from "@/components/icons/gallery-thumbnails";
 import {RocketIcon} from "@/components/icons/rocket";
 import {GraduationCapIcon} from "@/components/icons/graduation-cap";
 import type {SectionIconHandle} from "@/components/icons/section-icons";
@@ -32,7 +34,7 @@ const CONTENT_CONFIG: Record<string, {label: string; description: string; IconCo
     slide: {
         label: 'Slides',
         description: 'Présentation visuelle, navigation au clavier.',
-        IconComp: LayersIcon,
+        IconComp: GalleryThumbnailsIcon,
     },
     projet: {
         label: 'Projet',
@@ -68,6 +70,10 @@ export default function ContentCard({content, section, currentModule}: ContentCa
 
     return (
         <motion.article
+            style={{
+                '--module-color': moduleColor(currentModule),
+                '--module-color-dark': moduleColor(currentModule, 'dark'),
+            } as React.CSSProperties}
             className={cn(
                 "group relative h-full flex flex-col p-6 lg:p-7 rounded-2xl overflow-hidden",
                 "bg-[#f7ebd9] dark:bg-[#13110d]",
@@ -108,17 +114,10 @@ export default function ContentCard({content, section, currentModule}: ContentCa
 
                 {/* Header: icon + title + lock badge */}
                 <header className="flex items-center gap-3">
-                    <div className={cn(
-                        "flex items-center justify-center w-12 h-12 rounded-xl shrink-0 text-white shadow-sm",
-                        "transition-transform duration-300 ease-out group-hover:scale-105 group-hover:rotate-[-3deg]",
-                        `bg-${modulePath}`
-                    )}>
+                    <div className="flex items-center justify-center w-12 h-12 rounded-xl shrink-0 text-white shadow-sm transition-transform duration-300 ease-out group-hover:scale-105 group-hover:rotate-[-3deg] bg-(--module-color) dark:bg-(--module-color-dark)">
                         <IconComp ref={iconRef} size={24} className="text-white"/>
                     </div>
-                    <h3 className={cn(
-                        "text-2xl font-bold tracking-tight leading-tight flex-1 min-w-0",
-                        `text-${modulePath}`
-                    )}>
+                    <h3 className="text-2xl font-bold tracking-tight leading-tight flex-1 min-w-0 text-(--module-color) dark:text-(--module-color-dark)">
                         {label}
                     </h3>
                     {isLocked && (

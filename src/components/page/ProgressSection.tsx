@@ -10,6 +10,7 @@ import {BookTextIcon} from "@/components/icons/book-text";
 import {CheckIcon} from "@/components/icons/check";
 import {ClockIcon} from "@/components/icons/clock";
 import type {SectionIconHandle} from "@/components/icons/section-icons";
+import {moduleColor} from "@/lib/moduleColor";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnimatedIconComp = React.ComponentType<any>;
@@ -47,7 +48,7 @@ function AnimatedStat({IconComp, label, value, withDivider, modulePath}: Animate
                 </span>
                 <span className={cn(
                     "text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight tabular-nums leading-none mt-1",
-                    modulePath ? `text-${modulePath}` : "text-brand-dark dark:text-bridge-50"
+                    modulePath ? "text-(--module-color) dark:text-(--module-color-dark)" : "text-brand-dark dark:text-bridge-50"
                 )}>
                     {value}
                 </span>
@@ -72,7 +73,13 @@ export default function ProgressSection({
         .reduce((sum, s) => sum + (s.totalDuration || 1), 0);
 
     return (
-        <section className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-12 -mt-6 lg:-mt-9 mb-6 lg:mb-8">
+        <section
+            className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-12 -mt-6 lg:-mt-9 mb-6 lg:mb-8"
+            style={{
+                '--module-color': moduleColor(currentModule),
+                '--module-color-dark': moduleColor(currentModule, 'dark'),
+            } as React.CSSProperties}
+        >
             <div className="relative max-w-2xl mx-auto opacity-0 animate-fade-in">
                 <div className={cn(
                     "grid grid-cols-3 gap-2 sm:gap-4 rounded-2xl",
