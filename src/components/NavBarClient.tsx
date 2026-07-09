@@ -23,8 +23,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import iconMap from "@/lib/iconMap";
-import {BookOpen, Home, LogIn, LogOut, Moon, Settings, Sun, UserCheck, UserCog, UserLockIcon} from "lucide-react";
+import iconMap, {isValidIcon} from "@/lib/iconMap";
+import {Home, LogIn, LogOut, Moon, Settings, Sun, UserCheck, UserCog, UserLockIcon} from "lucide-react";
 import Module from "@/types/Module";
 import {avatarColor, avatarInitials, cn} from "@/lib/utils";
 import {useMounted} from "@/hook/useMounted";
@@ -136,7 +136,10 @@ export default function NavBarClient({
                     <div className="flex flex-row items-center justify-center gap-2 whitespace-nowrap">
 
                         {modules.map((module) => {
-                            const Icon = iconMap[module.iconName] || BookOpen;
+                            if (!isValidIcon(module.iconName)) {
+                                throw new Error(`Module "${module.path}" : icône "${module.iconName}" introuvable dans Lucide`);
+                            }
+                            const Icon = iconMap[module.iconName];
 
                             return (
                                 <div key={module.path}>
