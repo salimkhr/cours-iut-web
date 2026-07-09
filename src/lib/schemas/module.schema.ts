@@ -27,6 +27,14 @@ export const hexColorSchema = z
     .string()
     .regex(/^#[0-9a-fA-F]{6}$/, "Couleur hex invalide (#rrggbb)");
 
+export const universeSchema = z.object({
+    name: z.string().trim().min(1, "Le nom de l'univers est obligatoire"),
+    description: z.string().trim().min(1, "La description de l'univers est obligatoire"),
+    scope: z.enum(["module", "tp"], {message: "Scope invalide (module ou tp)"}),
+});
+
+export type ModuleUniverse = z.infer<typeof universeSchema>;
+
 export const moduleFormSchema = z.object({
     title: z.string().min(1, "Le titre est obligatoire"),
     path: z.string().min(1, "Le path est obligatoire"),
@@ -41,6 +49,7 @@ export const moduleFormSchema = z.object({
     instructors: z.array(instructorSchema).default([]),
     isExtra: z.boolean().default(false),
     sessionDurationMinutes: z.number().int().min(1).optional(),
+    universe: universeSchema.optional(),
     colorLight: hexColorSchema.optional(),
     colorDark: hexColorSchema.optional(),
 });

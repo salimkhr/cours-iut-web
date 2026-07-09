@@ -9,6 +9,7 @@ import {ClockIcon} from "@/components/icons/clock";
 import Section from "@/types/Section";
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
+import {moduleColor} from "@/lib/moduleColor";
 import {CONTENT_LABELS, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
 import {getContentTypes} from "@/types/CourseContent";
 import {Button} from "@/components/ui/button";
@@ -134,7 +135,10 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
 
     return (
         <motion.article
-            style={{'--module-color': `var(--color-${modulePath})`} as React.CSSProperties}
+            style={{
+            '--module-color': moduleColor(currentModule),
+            '--module-color-dark': moduleColor(currentModule, 'dark'),
+        } as React.CSSProperties}
             className={cn(
                 "group relative h-full flex flex-col p-7 lg:p-9 rounded-2xl overflow-hidden",
                 "bg-bridge-50 dark:bg-bridge-900",
@@ -171,10 +175,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
 
                 {/* Header: order chip + title + duration + lock state */}
                 <header className="flex items-center gap-3">
-                    <div className={cn(
-                        "inline-flex items-center justify-center min-w-9 h-9 px-2.5 rounded-lg text-white dark:text-black font-mono font-bold shadow-sm shrink-0",
-                        `bg-${modulePath}`
-                    )}>
+                    <div className="inline-flex items-center justify-center min-w-9 h-9 px-2.5 rounded-lg text-white dark:text-black font-mono font-bold shadow-sm shrink-0 bg-(--module-color) dark:bg-(--module-color-dark)">
                         {section.order.toString().padStart(2, '0')}
                     </div>
                     <h3 className={cn(

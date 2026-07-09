@@ -1,7 +1,7 @@
 import Link from "next/link";
 import SectionCard from "@/components/Cards/SectionCard";
 import Section from "@/types/Section";
-import iconMap from "@/lib/iconMap";
+import iconMap, {isValidIcon} from "@/lib/iconMap";
 import {BookTextIcon} from "@/components/icons/book-text";
 import PageFooter from "@/components/page/PageFooter";
 import ProgressSection from "@/components/page/ProgressSection";
@@ -41,7 +41,7 @@ export default async function Module({params}: ModulePageProps) {
     const allTags = [...new Set(
         currentModule.sections.flatMap((section: Section) => section.tags || [])
     )].sort((a, b) => a.localeCompare(b));
-    const Icon = iconMap[currentModule.iconName];
+    const Icon = isValidIcon(currentModule.iconName) ? iconMap[currentModule.iconName] : null;
 
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">

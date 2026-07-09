@@ -66,6 +66,20 @@ Tu conçois ou révises l'unité pédagogique. Pour chaque unité, tu vérifies 
 [lien avec la section précédente et la suivante]
 ```
 
+## Dimensionnement temporel (obligatoire pour les TP)
+
+Avant de rédiger le moindre exercice, produire un squelette chiffré :
+
+| # | Objectif de l'exercice | Type (guidé / léger) | Durée estimée |
+|---|------------------------|----------------------|---------------|
+
+- Grille : exercice guidé ≈ 20–30 min, exercice léger ≈ 40–60 min (cf. ref-tp).
+- La somme des durées doit tomber entre **80 et 100 % du budget** transmis dans le
+  contrat d'entrée (`totalDuration × sessionDurationMinutes − temps de cours`).
+- Hors cible → ajuster le nombre ou l'ampleur des exercices **avant** rédaction,
+  pas après.
+- Le squelette chiffré fait partie de la proposition transmise aux auditeurs.
+
 ## Permissions
 
 | Capacité | Autorisée |

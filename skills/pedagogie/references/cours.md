@@ -36,10 +36,25 @@ Chaque concept du cours suit cet ordre :
 
 1. **Contexte** — pourquoi ce concept existe, quel problème concret il résout (1 bloc `text`)
 2. **Définition** — explication en langage naturel, sans jargon préalable (1 bloc `text`)
-3. **Exemple minimal** — le cas le plus simple possible (bloc `code`)
-4. **Exemple complet** — cas réaliste et utile (bloc `code` ou `code-with-preview`)
-5. **Pièges courants** — 2 à 3 erreurs fréquentes avec explication (bloc `list` non
-   ordonnée, ou `callout` variant `warning`)
+3. **Exemple minimal** — le cas le plus simple possible, avec des données de
+   l'univers du module (bloc `code`)
+4. **Exemple réaliste** — variante complète et utile du même exemple, toujours dans
+   l'univers, montrant la notion « en situation » (bloc `code` ou `code-with-preview`)
+5. **Pièges courants** — 2 à 3 erreurs fréquentes, dont au moins une **montrée en
+   code commenté** (le code faux + pourquoi il est faux), via `callout` variant
+   `warning` ou bloc `code` dédié
+
+## Exemples et univers
+
+- L'univers du module (`universe` via `list_modules()`) fournit le domaine et les
+  données types de **tous** les exemples : mêmes entités que le TP (films, scores,
+  produits…), jamais `foo`/`bar`/`test1`.
+- La progression exemple minimal → exemple réaliste reprend les **mêmes données**, pour
+  que l'étudiant voie la notion grandir dans un contexte stable.
+- Un exemple hors univers n'est admis que sur nécessité technique (ex : API tierce
+  imposée) et doit être signalé comme tel dans le contenu.
+- Module sans `universe` : demander à l'utilisateur de le définir et proposer de le
+  sauvegarder via `edit_module` avant de rédiger.
 
 ## Calibrage
 
