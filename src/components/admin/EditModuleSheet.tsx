@@ -50,6 +50,7 @@ export default function EditModuleSheet({
             ? module.instructors
             : [{firstName: '', lastName: '', email: ''}],
         isExtra: module.isExtra ?? false,
+        sessionDurationMinutes: module.sessionDurationMinutes,
         colorLight: module.colorLight ?? '#C2410C',
         colorDark: module.colorDark ?? '#FB923C',
         universe: module.universe,
@@ -164,6 +165,21 @@ export default function EditModuleSheet({
                                     </label>
                                 )}
                             />
+                            <div className="w-48">
+                                <Label htmlFor="em-duration" className={labelCn}>Durée de séance (min)</Label>
+                                <Input
+                                    id="em-duration"
+                                    type="number"
+                                    min={1}
+                                    step={1}
+                                    className={inputCn}
+                                    {...register('sessionDurationMinutes', {valueAsNumber: true})}
+                                    aria-invalid={errors.sessionDurationMinutes ? 'true' : 'false'}
+                                />
+                                {errors.sessionDurationMinutes && (
+                                    <p className="text-red-500 text-xs mt-1">{errors.sessionDurationMinutes.message}</p>
+                                )}
+                            </div>
                         </section>
 
                         <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
