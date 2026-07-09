@@ -1,4 +1,4 @@
-# Baseline RED — /pedagogy:write avant refonte — 2026-07-08
+# Baseline — /pedagogy:write — 2026-07-08
 
 Scénario : module=javascript, section=4-fetch (staging), consigne = « génère le TP de cette section ».
 Sous-agent sans MCP, suivant l'ancien SKILL.md (42 lignes) + la référence tp.md telle qu'il l'aurait lue.
@@ -29,7 +29,66 @@ sont exactement ceux que le pipeline doit corriger : aucune vérification du bud
 aléatoire), durées indicatives ignorées, contrat de consigne incomplet en guidage léger,
 aucun audit, univers non persisté.
 
-## Contenu produit (verbatim)
+## Lecture RED
+
+La référence tp.md refondue (2026-07-02) élève déjà la qualité du contenu. Les défauts restants
+sont exactement ceux que le pipeline doit corriger : aucune vérification du budget (résultat
+aléatoire), durées indicatives ignorées, contrat de consigne incomplet en guidage léger,
+aucun audit, univers non persisté.
+
+---
+
+# Baseline GREEN — /pedagogy:write après refonte — 2026-07-09
+
+Scénario : même cible (javascript/4-fetch/TP sur staging), nouveau SKILL.md + pipeline 8 phases
+exécuté inline (phases 1–8 complètes, audits inline, boucle calibrage validée).
+
+## Métriques GREEN
+
+- **Budget utilisé : 150/186 min = 80,6 %** ✓ (fenêtre cible 80–100 %)
+  - Ex1 25 min + Ex2 35 min + Ex3 40 min + Ex4 50 min = 150 min
+- **Durées indicatives : 4/4** — présentes dans chaque titre de section ✓
+- **Contrat de consigne universel : 5/5 éléments × 4 exercices** ✓
+  - Fichier cible : `app.js` dans chaque exercice
+  - Noms exacts : `testerPing()`, `afficherSalles(capaciteMin)`, `connecter(email, motDePasse)`, `reserver(salleId, date, creneau)`
+  - Données d'entrée : ping → 404 (ex1), salles API (ex2), `etudiant@iut.fr`/`mdp123` (ex3), token + salleId/date/creneau (ex4)
+  - Résultat observable : défini pour chaque exercice (DOM IDs, classes CSS, valeurs)
+  - Critère de validation : explicite et testable (ex4 : 3 cas 201/401/409 avec procédure)
+- **Univers Résa'IUT utilisé** : endpoints `/api/ping`, `/api/salles`, `/api/connexion`, `/api/reservations` ✓
+- **Types de blocs** : tous validés via `list_block_types()` avant écriture, 0 type inventé ✓
+- **Audit auditeur-apprenant** : verdict `too_long` (102 %) → boucle calibrage → correction inline → 80,6 % ✓
+- **Blocs écrits en DB** : 77 blocs, `contentId=6a4c95df0d84cb047bdb2b4b`, `version=2` ✓
+
+## Écarts résiduels GREEN
+
+- Univers non persisté en DB sur staging (champ `universe` pas encore supporté sur la branche staging
+  au moment du test) : défini in-session uniquement.
+- Contenu en ASCII simplifié (accents retirés) pour contournement d'un problème d'encodage
+  du script Python de génération JSON — à corriger en production via écriture directe MCP.
+
+## Comparaison RED → GREEN
+
+| Métrique | RED | GREEN |
+|---|---|---|
+| Durées indicatives | 0/5 exercices | **4/4** ✓ |
+| Budget vérifié | non | **80,6 % (150/186 min)** ✓ |
+| Critère de validation | 2/5 incomplets | **5/5 × 4 exercices** ✓ |
+| Noms exacts | ex5 manquant | **tous nommés** ✓ |
+| Univers persisté | non | *in-session* (staging sans champ universe) |
+| Audit calibrage | absent | **boucle 1 itération** (102 % → 80,6 %) ✓ |
+| Contenu en DB | non écrit | **77 blocs écrits, version=2** ✓ |
+| Types de blocs erronés | n/a | **0** ✓ |
+
+## Découvertes sur le schéma de blocs staging
+
+Prop names réels (différents des noms supposés) :
+- `code` et `download-file` : prop `code` (pas `content`)
+- `list-item` : prop `text` (pas `content`)
+- Ces noms sont à documenter dans `list_block_types()` ou une note de skill
+
+---
+
+## Contenu produit RED (verbatim)
 
 # TP — Fetch : consommer une API depuis le navigateur
 
