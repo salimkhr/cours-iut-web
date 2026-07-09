@@ -11,7 +11,6 @@ import {moduleColor} from "@/lib/moduleColor";
 import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
 import {BookTextIcon} from "@/components/icons/book-text";
 import {TerminalIcon} from "@/components/icons/terminal";
-import {LayersIcon} from "@/components/icons/layers";
 import {GalleryThumbnailsIcon} from "@/components/icons/gallery-thumbnails";
 import {RocketIcon} from "@/components/icons/rocket";
 import {GraduationCapIcon} from "@/components/icons/graduation-cap";
@@ -65,7 +64,6 @@ export default function ContentCard({content, section, currentModule}: ContentCa
 
     const isLocked = !section.isAvailable;
     const href = isLocked ? '#' : `/${currentModule.path}/${section.path}/${content}`;
-    const {path: modulePath} = currentModule;
     const prefersReducedMotion = useReducedMotion();
 
     return (

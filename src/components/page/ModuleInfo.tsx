@@ -21,7 +21,7 @@ function Eyebrow({children}: {children: React.ReactNode}) {
     );
 }
 
-function InstructorRow({firstName, lastName, email, role, modulePath}: Instructor & {role: string; modulePath: string}) {
+function InstructorRow({firstName, lastName, email, role}: Instructor & {role: string}) {
     const initials = `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
     return (
         <div className="flex items-center gap-3">
@@ -45,7 +45,6 @@ function InstructorRow({firstName, lastName, email, role, modulePath}: Instructo
 }
 
 export default function ModuleInfo({currentModule}: ModuleInfoProps) {
-    const {path: modulePath} = currentModule;
     const coefficients = currentModule.coefficients?.filter((c) => c.value > 0) ?? [];
 
     return (
@@ -98,7 +97,6 @@ export default function ModuleInfo({currentModule}: ModuleInfoProps) {
                                 <InstructorRow
                                     {...currentModule.manager}
                                     role="Responsable"
-                                    modulePath={modulePath}
                                 />
                             )}
                             {currentModule.instructors?.map((instructor) => (
@@ -106,7 +104,6 @@ export default function ModuleInfo({currentModule}: ModuleInfoProps) {
                                     key={instructor.email}
                                     {...instructor}
                                     role="Intervenant"
-                                    modulePath={modulePath}
                                 />
                             ))}
                             {!currentModule.manager && !currentModule.instructors?.length && (
