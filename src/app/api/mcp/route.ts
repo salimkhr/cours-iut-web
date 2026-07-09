@@ -14,7 +14,7 @@ import {
     updateBlockProps,
     updateBlockChildren,
 } from "@/lib/blockTreeUtils";
-import { moduleFormSchema } from "@/lib/schemas/module.schema";
+import { moduleFormSchema, universeSchema } from "@/lib/schemas/module.schema";
 import { assignModuleColor } from "@/lib/assignModuleColor";
 import { isValidIcon } from "@/lib/iconMap";
 import { sectionApiSchema } from "@/lib/schemas/section.schema";
@@ -66,6 +66,7 @@ interface ModuleDoc {
     title?: string;
     isExtra?: boolean;
     sessionDurationMinutes?: number;
+    universe?: { name: string; description: string; scope: "module" | "tp" };
     sections?: Array<{
         path: string;
         title?: string;
@@ -386,8 +387,10 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             description:             z.string().optional(),
             sessionDurationMinutes:  z.number().int().min(1).optional()
                 .describe("Durée d'une séance en minutes (ex: 150 pour 2h30). Absent pour les modules bonus."),
+            universe: universeSchema.optional()
+                .describe("Univers thématique du module : name (ex: Netflex), description (domaine + données types), scope ('module' = fil rouge annuel, 'tp' = livrable par TP)"),
         },
-        async ({ title, iconName, path, description, sessionDurationMinutes }) => {
+        async ({ title, iconName, path, description, sessionDurationMinutes, universe }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
             const slug = path ? slugify(path) : slugify(title);
@@ -407,6 +410,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 instructors: [],
                 isExtra: true,
                 sessionDurationMinutes,
+                universe,
             });
             if (!parsed.success) {
                 throw new Error(`Module invalide : ${JSON.stringify(parsed.error.flatten())}`);
@@ -436,7 +440,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     // ── edit_module ────────────────────────────────────────────────────────────
     server.tool(
         "edit_module",
-        "Édite les métadonnées d'un module : titre, description, icône, couleurs thème (colorLight/colorDark en hex), sessionDurationMinutes. Réservé aux admins.",
+        "Édite les métadonnées d'un module : titre, description, icône, couleurs thème (colorLight/colorDark en hex), sessionDurationMinutes, universe. Réservé aux admins.",
         {
             module:                  z.string().describe("Slug du module à éditer"),
             title:                   z.string().optional().describe("Nouveau titre affiché"),
@@ -448,8 +452,10 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 .describe("Couleur sombre du thème en hex (#rrggbb)"),
             sessionDurationMinutes:  z.number().int().min(1).optional()
                 .describe("Durée d'une séance en minutes (ex: 150 pour 2h30)"),
+            universe: universeSchema.optional()
+                .describe("Univers thématique : name, description (domaine + données types), scope ('module' = fil rouge annuel, 'tp' = livrable par TP)"),
         },
-        async ({ module, title, iconName, description, colorLight, colorDark, sessionDurationMinutes }) => {
+        async ({ module, title, iconName, description, colorLight, colorDark, sessionDurationMinutes, universe }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
 
@@ -463,6 +469,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             if (colorLight !== undefined) set.colorLight = colorLight;
             if (colorDark !== undefined) set.colorDark = colorDark;
             if (sessionDurationMinutes !== undefined) set.sessionDurationMinutes = sessionDurationMinutes;
+            if (universe !== undefined) set.universe = universe;
 
             const updatedFields = Object.keys(set).filter((k) => k !== "updatedAt");
             if (updatedFields.length === 0) {
@@ -681,14 +688,15 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         {},
         async () => {
             const db = await connectToDB();
-            const modules = await db.collection<{ path: string; title?: string; isExtra?: boolean; sessionDurationMinutes?: number }>("modules")
-                .find({}, { projection: { path: 1, title: 1, isExtra: 1, sessionDurationMinutes: 1, _id: 0 } })
+            const modules = await db.collection<{ path: string; title?: string; isExtra?: boolean; sessionDurationMinutes?: number; universe?: { name: string; description: string; scope: "module" | "tp" } }>("modules")
+                .find({}, { projection: { path: 1, title: 1, isExtra: 1, sessionDurationMinutes: 1, universe: 1, _id: 0 } })
                 .toArray();
             const result = modules.map((m) => ({
                 slug: m.path,
                 title: m.title ?? m.path,
                 isExtra: m.isExtra ?? false,
                 ...(m.sessionDurationMinutes !== undefined && { sessionDurationMinutes: m.sessionDurationMinutes }),
+                ...(m.universe !== undefined && { universe: m.universe }),
             }));
             return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
         }
