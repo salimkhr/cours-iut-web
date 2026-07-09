@@ -2,7 +2,6 @@ import Link from "next/link";
 import SectionCard from "@/components/Cards/SectionCard";
 import Section from "@/types/Section";
 import iconMap, {isValidIcon} from "@/lib/iconMap";
-import {BookTextIcon} from "@/components/icons/book-text";
 import PageFooter from "@/components/page/PageFooter";
 import ProgressSection from "@/components/page/ProgressSection";
 import HeroSection from "@/components/page/HeroSection";
@@ -41,7 +40,10 @@ export default async function Module({params}: ModulePageProps) {
     const allTags = [...new Set(
         currentModule.sections.flatMap((section: Section) => section.tags || [])
     )].sort((a, b) => a.localeCompare(b));
-    const Icon = isValidIcon(currentModule.iconName) ? iconMap[currentModule.iconName] : null;
+    if (!isValidIcon(currentModule.iconName)) {
+        throw new Error(`Module "${currentModule.path}" : icône "${currentModule.iconName}" introuvable dans Lucide`);
+    }
+    const Icon = iconMap[currentModule.iconName];
 
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
@@ -51,7 +53,7 @@ export default async function Module({params}: ModulePageProps) {
                 imagePath={`images/header/header_${currentModule.path}.svg`}
                 imageAlt={currentModule.title}
                 tags={allTags}
-                icon={Icon ? <Icon size={56} className="mb-4"/> : <BookTextIcon size={56} className="mb-4"/>}
+                icon={<Icon size={56} className="mb-4"/>}
                 path={currentModule.path}
                 compact
                 backHref="/"
