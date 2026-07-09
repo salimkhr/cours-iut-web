@@ -25,7 +25,7 @@ import {
     blocksToMarkdown,
     type SearchMatch,
 } from "@/lib/blockTextUtils";
-import Module from "@/types/Module";
+import Module, { type ModuleUniverse } from "@/types/Module";
 import Section from "@/types/Section";
 import {
     SKILL_MANIFEST,
@@ -66,7 +66,7 @@ interface ModuleDoc {
     title?: string;
     isExtra?: boolean;
     sessionDurationMinutes?: number;
-    universe?: { name: string; description: string; scope: "module" | "tp" };
+    universe?: ModuleUniverse;
     sections?: Array<{
         path: string;
         title?: string;
@@ -688,7 +688,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         {},
         async () => {
             const db = await connectToDB();
-            const modules = await db.collection<{ path: string; title?: string; isExtra?: boolean; sessionDurationMinutes?: number; universe?: { name: string; description: string; scope: "module" | "tp" } }>("modules")
+            const modules = await db.collection<{ path: string; title?: string; isExtra?: boolean; sessionDurationMinutes?: number; universe?: ModuleUniverse }>("modules")
                 .find({}, { projection: { path: 1, title: 1, isExtra: 1, sessionDurationMinutes: 1, universe: 1, _id: 0 } })
                 .toArray();
             const result = modules.map((m) => ({
