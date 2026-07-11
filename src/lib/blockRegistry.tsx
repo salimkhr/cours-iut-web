@@ -205,10 +205,11 @@ const clientParts: Record<string, ClientPart> = {
     },
     "code": {
         icon: Code,
-        render: ({ language, code, filename, showLineNumbers, collapsible, highlightLines }: BlockRenderProps) => (
+        render: ({ language, code, filename, title, showLineNumbers, collapsible, highlightLines }: BlockRenderProps) => (
             <CodeCard
                 language={String(language ?? "javascript")}
                 filename={filename ? String(filename) : undefined}
+                title={title ? String(title) : undefined}
                 showLineNumbers={showLineNumbers !== false}
                 collapsible={Boolean(collapsible)}
                 highlightLines={highlightLines ? String(highlightLines) : undefined}
