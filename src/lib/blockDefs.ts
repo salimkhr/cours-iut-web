@@ -68,7 +68,7 @@ export const blockDefs: BlockDef[] = [
         type: "section",
         label: "Partie",
         category: "Structure",
-        description: "Conteneur d'une grande partie de cours (rend un titre A-/B-/C- selon l'ordre). IMPORTANT : placez le contenu de la partie dans ses `children`, jamais en blocs frères.",
+        description: "Conteneur d'une grande partie de cours. Le renderer préfixe automatiquement le titre : A —, B —, C — (profondeur 0) ou 1., 2., 3. (profondeur 1+). NE PAS inclure ce préfixe dans `title` : écrire 'Pourquoi Rust ?' et non 'A — Pourquoi Rust ?', 'Bonjour Médiathèque' et non 'Exercice 1 — Bonjour Médiathèque'. IMPORTANT : placez le contenu dans ses `children`, jamais en blocs frères.",
         defaultProps: { title: "", projectRef: false },
         schema: z.object({ title: z.string(), projectRef: z.boolean().optional() }),
         fields: [
