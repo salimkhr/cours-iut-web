@@ -69,10 +69,11 @@ export const blockDefs: BlockDef[] = [
         label: "Partie",
         category: "Structure",
         description: "Conteneur d'une grande partie de cours (rend un titre A-/B-/C- selon l'ordre). IMPORTANT : placez le contenu de la partie dans ses `children`, jamais en blocs frères.",
-        defaultProps: { title: "" },
-        schema: z.object({ title: z.string() }),
+        defaultProps: { title: "", projectRef: false },
+        schema: z.object({ title: z.string(), projectRef: z.boolean().optional() }),
         fields: [
             { key: "title", label: "Titre", type: "text", placeholder: "Introduction" },
+            { key: "projectRef", label: "Projet commun", type: "boolean" },
         ],
         container: containerRules["section"],
         initialChildren: () => [

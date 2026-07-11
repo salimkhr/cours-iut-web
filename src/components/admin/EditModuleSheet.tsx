@@ -21,6 +21,7 @@ import {
     FIXED_SAES,
 } from '@/lib/schemas/module.schema';
 import Eyebrow from '@/components/admin/ui/Eyebrow';
+import { LucideIconPicker } from '@/components/ui/LucideIconPicker';
 
 interface EditModuleSheetProps {
     module: Module;
@@ -137,12 +138,16 @@ export default function EditModuleSheet({
                                 </div>
                             </div>
                             <div>
-                                <Label htmlFor="em-icon" className={labelCn}>Icône *</Label>
-                                <Input
-                                    id="em-icon"
-                                    className={inputCn}
-                                    {...register('iconName')}
-                                    aria-invalid={errors.iconName ? 'true' : 'false'}
+                                <Label className={labelCn}>Icône *</Label>
+                                <Controller
+                                    control={control}
+                                    name="iconName"
+                                    render={({ field }) => (
+                                        <LucideIconPicker
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                        />
+                                    )}
                                 />
                                 {errors.iconName && (
                                     <p className="text-red-500 text-xs mt-1">{errors.iconName.message}</p>
