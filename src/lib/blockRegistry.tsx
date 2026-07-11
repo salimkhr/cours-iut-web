@@ -29,6 +29,7 @@ import { SlideList, SlideListItem } from "@/components/Slides/ui/SlideList";
 import { SlideNote } from "@/components/Slides/ui/SlideNote";
 import { blockDefs, getBlockDef, createBlockInstance } from "@/lib/blockDefs";
 import type { BlockDef, FieldDef, BlockCategory } from "@/lib/blockDefs";
+import type Module from "@/types/Module";
 
 // Réexports pour compatibilité avec les imports existants.
 export type { FieldDef, BlockCategory };
@@ -205,11 +206,12 @@ const clientParts: Record<string, ClientPart> = {
     },
     "code": {
         icon: Code,
-        render: ({ language, code, filename, title, showLineNumbers, collapsible, highlightLines }: BlockRenderProps) => (
+        render: ({ language, code, filename, title, showLineNumbers, collapsible, highlightLines, currentModule }: BlockRenderProps) => (
             <CodeCard
                 language={String(language ?? "javascript")}
                 filename={filename ? String(filename) : undefined}
                 title={title ? String(title) : undefined}
+                currentModule={currentModule as Module | undefined}
                 showLineNumbers={showLineNumbers !== false}
                 collapsible={Boolean(collapsible)}
                 highlightLines={highlightLines ? String(highlightLines) : undefined}
