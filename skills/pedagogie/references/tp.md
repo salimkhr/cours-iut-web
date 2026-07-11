@@ -37,6 +37,14 @@ Chaque module déclare son univers thématique dans le champ `universe` retourn�
   `get_content(module, section, "TP")`) : fichiers existants, classes et fonctions déjà
   définies, structure de base de données, fonctionnalités en place. Les exercices
   s'appuient sur cet état sans le répéter ni le contredire.
+
+  **Démarrage du projet commun :** les premiers TP d'un module fil rouge servent à
+  construire les bases du langage ou des outils — le projet commun ne démarre pas
+  forcément en section 1. Lire l'ensemble des sections (`list_sections(module)`) pour
+  repérer le moment opportun : quand l'étudiant dispose des notions suffisantes pour
+  faire avancer un vrai livrable. Avant ce seuil, les exercices restent dans l'univers
+  mais sont indépendants (type `scope: "tp"`). À partir du seuil, chaque TP s'appuie
+  sur le livrable en cours et le fait progresser.
 - `scope: "tp"` → **livrable par TP** : chaque TP construit un objet terminé dans
   l'univers commun, sans dépendance entre TP.
 - Module sans `universe` : demander à l'utilisateur de le définir et proposer de le
