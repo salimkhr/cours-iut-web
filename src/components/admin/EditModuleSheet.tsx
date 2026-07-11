@@ -55,6 +55,7 @@ export default function EditModuleSheet({
         colorLight: module.colorLight ?? '#C2410C',
         colorDark: module.colorDark ?? '#FB923C',
         universe: module.universe,
+        projectIcon: module.projectIcon ?? '',
     }), [module]);
 
     const {
@@ -201,7 +202,22 @@ export default function EditModuleSheet({
                                 />
                                 <span className="text-sm text-brand-dark dark:text-bridge-100">Définir un univers</span>
                             </label>
-                            {watch('universe') !== undefined && (
+                            <div>
+                            <Label className={labelCn}>Icône du projet commun</Label>
+                            <Controller
+                                control={control}
+                                name="projectIcon"
+                                render={({ field }) => (
+                                    <LucideIconPicker
+                                        value={field.value ?? ''}
+                                        onChange={field.onChange}
+                                        placeholder="Aucune icône"
+                                    />
+                                )}
+                            />
+                        </div>
+
+                        {watch('universe') !== undefined && (
                                 <>
                                     <div>
                                         <Label htmlFor="em-universe-name" className={labelCn}>Nom *</Label>

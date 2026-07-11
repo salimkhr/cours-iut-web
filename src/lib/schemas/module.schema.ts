@@ -50,6 +50,7 @@ export const moduleFormSchema = z.object({
     isExtra: z.boolean().default(false),
     sessionDurationMinutes: z.number().int().min(1).optional(),
     universe: universeSchema.optional(),
+    projectIcon: z.string().optional(),
     colorLight: hexColorSchema.optional(),
     colorDark: hexColorSchema.optional(),
 });

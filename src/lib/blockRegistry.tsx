@@ -70,13 +70,14 @@ const clientParts: Record<string, ClientPart> = {
     },
     "section": {
         icon: Layers,
-        render: ({ title, children, depth, sectionIndex, projectRef, projectIcon }: BlockRenderProps) => {
+        render: ({ title, children, depth, sectionIndex, projectRef, currentModule }: BlockRenderProps) => {
             const level = Math.min(2 + (Number(depth) || 0), 4) as 2 | 3 | 4;
             const idx = Number(sectionIndex ?? 0);
             const prefix = Number(depth) === 0
                 ? String.fromCharCode(65 + idx) + " — "
                 : String(idx + 1) + ". ";
-            const icon = String(projectIcon ?? "");
+            const mod = currentModule as Module | undefined;
+            const icon = mod?.projectIcon ?? "";
             const showBadge = Boolean(projectRef) && icon.length > 0;
             return (
                 <section className="flex flex-col gap-6">
