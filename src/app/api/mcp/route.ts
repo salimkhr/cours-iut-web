@@ -440,7 +440,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     // ── edit_module ────────────────────────────────────────────────────────────
     server.tool(
         "edit_module",
-        "Édite les métadonnées d'un module : titre, description, icône, couleurs thème (colorLight/colorDark en hex), sessionDurationMinutes, universe. Réservé aux admins.",
+        "Édite les métadonnées d'un module : titre, description, icône, couleurs thème (colorLight/colorDark en hex), sessionDurationMinutes, universe, projectIcon. Réservé aux admins.",
         {
             module:                  z.string().describe("Slug du module à éditer"),
             title:                   z.string().optional().describe("Nouveau titre affiché"),
@@ -454,8 +454,10 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 .describe("Durée d'une séance en minutes (ex: 150 pour 2h30)"),
             universe: universeSchema.optional()
                 .describe("Univers thématique : name, description (domaine + données types), scope ('module' = fil rouge annuel, 'tp' = livrable par TP)"),
+            projectIcon: iconNameSchema.optional()
+                .describe("Icône Lucide du projet commun inter-sections (ex: 'Clapperboard' pour Netflex, 'BookOpen' pour la médiathèque). Affiché dans le badge des sections marquées projectRef."),
         },
-        async ({ module, title, iconName, description, colorLight, colorDark, sessionDurationMinutes, universe }) => {
+        async ({ module, title, iconName, description, colorLight, colorDark, sessionDurationMinutes, universe, projectIcon }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
 
@@ -470,6 +472,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             if (colorDark !== undefined) set.colorDark = colorDark;
             if (sessionDurationMinutes !== undefined) set.sessionDurationMinutes = sessionDurationMinutes;
             if (universe !== undefined) set.universe = universe;
+            if (projectIcon !== undefined) set.projectIcon = projectIcon;
 
             const updatedFields = Object.keys(set).filter((k) => k !== "updatedAt");
             if (updatedFields.length === 0) {
