@@ -14,7 +14,7 @@ import type { Block } from "@/types/CourseContent";
 export interface FieldDef {
     key: string;
     label: string;
-    type: "text" | "textarea" | "number" | "select" | "boolean" | "array-of-strings" | "image-upload";
+    type: "text" | "textarea" | "number" | "select" | "boolean" | "array-of-strings" | "image-upload" | "lucide-icon";
     options?: string[];
     placeholder?: string;
     /** Si vrai, le champ accepte du markdown inline (**gras**, _em_, `code`, [lien](url)).
@@ -69,11 +69,12 @@ export const blockDefs: BlockDef[] = [
         label: "Partie",
         category: "Structure",
         description: "Conteneur d'une grande partie de cours (rend un titre A-/B-/C- selon l'ordre). IMPORTANT : placez le contenu de la partie dans ses `children`, jamais en blocs frères.",
-        defaultProps: { title: "", projectRef: false },
-        schema: z.object({ title: z.string(), projectRef: z.boolean().optional() }),
+        defaultProps: { title: "", projectRef: false, projectIcon: "" },
+        schema: z.object({ title: z.string(), projectRef: z.boolean().optional(), projectIcon: z.string().optional() }),
         fields: [
             { key: "title", label: "Titre", type: "text", placeholder: "Introduction" },
             { key: "projectRef", label: "Projet commun", type: "boolean" },
+            { key: "projectIcon", label: "Icône du projet", type: "lucide-icon" },
         ],
         container: containerRules["section"],
         initialChildren: () => [

@@ -15,6 +15,7 @@ import {
 import { Plus, X } from "lucide-react";
 import type { FieldDef } from "@/lib/blockRegistry";
 import { ImageUploadField } from "@/components/builder/ImageUploadField";
+import { LucideIconPicker } from "@/components/ui/LucideIconPicker";
 
 interface DynamicPropsEditorProps {
     fields: FieldDef[];
@@ -141,6 +142,18 @@ export function DynamicPropsEditor({ fields, props, onChange, filterTypes }: Dyn
                             >
                                 <Plus className="w-3 h-3" /> Ajouter
                             </Button>
+                        </div>
+                    );
+                }
+
+                if (field.type === "lucide-icon") {
+                    return (
+                        <div key={field.key} className="flex flex-col gap-1.5">
+                            <Label className={labelCls}>{field.label}</Label>
+                            <LucideIconPicker
+                                value={String(value ?? "")}
+                                onChange={(name) => set(field.key, name)}
+                            />
                         </div>
                     );
                 }

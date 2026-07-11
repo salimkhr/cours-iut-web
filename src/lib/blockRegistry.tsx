@@ -70,21 +70,21 @@ const clientParts: Record<string, ClientPart> = {
     },
     "section": {
         icon: Layers,
-        render: ({ title, children, depth, sectionIndex, projectRef, currentModule }: BlockRenderProps) => {
+        render: ({ title, children, depth, sectionIndex, projectRef, projectIcon }: BlockRenderProps) => {
             const level = Math.min(2 + (Number(depth) || 0), 4) as 2 | 3 | 4;
             const idx = Number(sectionIndex ?? 0);
             const prefix = Number(depth) === 0
                 ? String.fromCharCode(65 + idx) + " — "
                 : String(idx + 1) + ". ";
-            const mod = currentModule as Module | undefined;
-            const showBadge = Boolean(projectRef) && Boolean(mod?.iconName);
+            const icon = String(projectIcon ?? "");
+            const showBadge = Boolean(projectRef) && icon.length > 0;
             return (
                 <section className="flex flex-col gap-6">
                     <div className="flex items-center gap-3 flex-wrap">
                         <Heading level={level}>{prefix}{String(title ?? "")}</Heading>
                         {showBadge && (
                             <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary border border-primary/20">
-                                <DynamicLucideIcon name={mod!.iconName} size={12} />
+                                <DynamicLucideIcon name={icon} size={12} />
                                 Projet commun
                             </span>
                         )}
