@@ -14,9 +14,15 @@ Conventions d'usage pédagogique (non déductibles du schéma) :
 | Un exercice | `section` avec `title` : « Exercice N — [objectif] » |
 | Consignes pas-à-pas | `list` avec `ordered: true`, une action par `list-item` |
 | Code (squelette, signature, exemple) | `code` avec `language` et `filename` — jamais de code dans un bloc `text` |
+| Commande à exécuter dans une étape | bloc `code` avec `language: "bash"` en **enfant du `list-item`** (pas de commande inline dans `text`) — `list-item` a `allowedChildren: "any"` |
 | Fichier de départ fourni | `download-file` (données réalistes de l'univers) |
 | Récapitulatif d'état du projet | `callout` variant `info`, title « À ce stade, votre projet contient » |
-| Avertissement / rappel | `callout` variant `warning` ou `reminder` |
+| Avertissement / rappel visuel | `callout` variant `warning` — **jamais `reminder`** |
+
+> **`reminder` ≠ callout visuel.** Le variant `reminder` injecte un contexte IA
+> (« Tu es un professeur… ») visible par les étudiants dans le rendu. N'utilisez
+> `reminder` que si vous souhaitez délibérément afficher ce prompt d'accompagnement.
+> Pour tout encadré prérequis ou avertissement destiné aux étudiants, utilisez `warning`.
 
 ## Univers du module
 
