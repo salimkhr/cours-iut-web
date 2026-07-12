@@ -11,6 +11,7 @@ import AddModuleButton from '@/components/admin/AddModuleButton';
 import SectionForm, {Section} from '@/components/admin/SectionForm';
 import useAdminApi from '@/hook/admin/useAdminApi';
 import Module from '@/types/Module';
+import type {ModuleFormValues} from '@/lib/schemas/module.schema';
 import type {MissingSectionItem} from '@/app/api/admin/sync/route';
 
 interface SyncSheetProps {
@@ -66,8 +67,8 @@ export default function SyncSheet({
         setAddSectionOpen(true);
     }
 
-    async function handleModuleCreated(newMod: Omit<Module, '_id'>) {
-        await addModule(newMod);
+    async function handleModuleCreated(data: ModuleFormValues) {
+        await addModule({...data, sections: []});
         onCreated();
         router.refresh();
     }
