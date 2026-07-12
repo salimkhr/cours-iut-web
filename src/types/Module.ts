@@ -23,5 +23,6 @@ export default interface Module {
     projectIcon?: string;
     colorLight?: string;
     colorDark?: string;
+    isVisible?: boolean;
     updatedAt?: string;
 }

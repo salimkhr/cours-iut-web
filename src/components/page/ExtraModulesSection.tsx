@@ -7,9 +7,10 @@ import type Module from '@/types/Module';
 
 type Props = {
     modules: (Module & { _id: string })[];
+    isAdmin?: boolean;
 };
 
-export default function ExtraModulesSection({ modules }: Props) {
+export default function ExtraModulesSection({ modules, isAdmin = false }: Props) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -32,7 +33,7 @@ export default function ExtraModulesSection({ modules }: Props) {
                             className="opacity-0 animate-fade-in-up w-full"
                             style={{ animationDelay: `${index * 0.1}s` }}
                         >
-                            <ModuleCard currentModule={currentModule} isAuthed={true} />
+                            <ModuleCard currentModule={currentModule} isAuthed={true} isAdmin={isAdmin} />
                         </div>
                     ))}
                 </div>

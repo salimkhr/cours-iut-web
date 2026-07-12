@@ -121,12 +121,13 @@ export default function AdminSection({
                                 </AlertDialogDescription>
                             </div>
                             <AlertDialogFooter className="px-6 pb-5">
-                                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
                                 <AlertDialogAction
                                     onClick={handleDelete}
+                                    disabled={deleting}
                                     variant="destructive"
                                 >
-                                    Supprimer
+                                    {deleting ? 'Suppression…' : 'Supprimer définitivement'}
                                 </AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>

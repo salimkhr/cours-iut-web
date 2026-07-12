@@ -2,6 +2,7 @@ import Link from "next/link";
 import {Mail} from "lucide-react";
 import {GitHubLogoIcon, LinkedInLogoIcon,} from "@radix-ui/react-icons";
 import getModules from "@/lib/getModules";
+import {getServerSession} from "@/lib/auth";
 
 interface PageFooterProps {
     path?: string;
@@ -14,7 +15,9 @@ const socialItems = [
 ];
 
 export default async function PageFooter({}: PageFooterProps = {}) {
-    const modules = await getModules();
+    const [allModules, session] = await Promise.all([getModules(), getServerSession()]);
+    const isAdmin = session?.user.role === 'admin';
+    const modules = allModules.filter(m => isAdmin || m.isVisible !== false);
     const navItems = [
         {label: "Accueil", href: "/"},
         ...modules.map((m) => ({label: m.title, href: `/${m.path}`})),

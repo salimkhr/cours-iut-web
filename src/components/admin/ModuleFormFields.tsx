@@ -120,22 +120,22 @@ export default function ModuleFormFields({
                     />
                     <span className="text-sm text-brand-dark dark:text-bridge-100">Définir un univers</span>
                 </label>
-                <div>
-                    <Label className={labelCn}>Icône du projet commun</Label>
-                    <Controller
-                        control={control}
-                        name="projectIcon"
-                        render={({field}) => (
-                            <LucideIconPicker
-                                value={field.value ?? ''}
-                                onChange={field.onChange}
-                                placeholder="Aucune icône"
-                            />
-                        )}
-                    />
-                </div>
                 {watch('universe') !== undefined && (
                     <>
+                        <div>
+                            <Label className={labelCn}>Icône du projet commun</Label>
+                            <Controller
+                                control={control}
+                                name="projectIcon"
+                                render={({field}) => (
+                                    <LucideIconPicker
+                                        value={field.value ?? ''}
+                                        onChange={field.onChange}
+                                        placeholder="Aucune icône"
+                                    />
+                                )}
+                            />
+                        </div>
                         <div>
                             <Label htmlFor="mf-universe-name" className={labelCn}>Nom *</Label>
                             <Input

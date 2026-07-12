@@ -37,14 +37,14 @@ export const runtime = "nodejs";
 
 const SERVER_INSTRUCTIONS = `Ce serveur gère le référentiel pédagogique multi-supports du BUT Informatique.
 
-Un skill pédagogique est disponible pour concevoir et réviser des cours, TPs et slides.
+Un skill pédagogique est disponible pour concevoir et réviser des cours, TPs, slides et examens.
 
 Chargement du skill :
 1. Appelez get_pedagogical_skill_manifest() pour obtenir le manifeste et la liste des documents.
 2. Appelez get_pedagogical_skill_document("main") pour charger les instructions principales.
 3. Chargez les documents complémentaires indiqués selon la tâche.
 
-Le skill couvre trois supports interdépendants : cours, slides, TP.
+Le skill couvre les supports d'apprentissage interdépendants (cours, slides, TP) et les évaluations de type examen.
 
 Pour toute modification structurante (changement d'objectif, nouvelle notion, nouveau TP),
 chargez aussi les rôles : concepteur, auditeur-apprenant, garant-coherence.
@@ -243,15 +243,16 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 "create_course",
                 "create_slides",
                 "create_practical_work",
+                "create_exam",
                 "review_support",
                 "review_unit",
                 "check_coherence",
             ]).describe("Mode de travail pédagogique"),
             objective: z.string().optional().describe("Objectif pédagogique de l'unité"),
             audience: z.string().optional().describe("Public cible et niveau (ex: BUT Info 1ère année)"),
-            requested_supports: z.array(z.enum(["course", "slides", "practical_work"]))
+            requested_supports: z.array(z.enum(["course", "slides", "practical_work", "exam"]))
                 .optional()
-                .describe("Supports à produire"),
+                .describe("Supports ou évaluations à produire"),
             context: z.string().optional().describe("Contexte additionnel"),
         },
         async ({ mode, objective, audience, requested_supports, context }) => {
@@ -291,7 +292,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     // ── get_pedagogical_skill_manifest ────────────────────────────────────────────
     server.tool(
         "get_pedagogical_skill_manifest",
-        "Use this when the user asks to design, write or review a course, practical exercise, slide deck or curriculum. Returns the manifest of the pedagogical skill with the list of documents to load before using content editing tools.",
+        "Use this when the user asks to design, write or review a course, practical exercise, slide deck, exam or curriculum. Returns the manifest of the pedagogical skill with the list of documents to load before using content editing tools.",
         {},
         async () => ({
             content: [{
@@ -307,7 +308,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         "Use this to load a specific document from the pedagogical skill (main instructions, agent roles, editorial references). Call get_pedagogical_skill_manifest first to discover available document IDs.",
         {
             document_id: z.string().describe(
-                "Identifiant du document du skill (ex: main, concepteur, auditeur-apprenant, garant-coherence, ref-cours, ref-tp, ref-slide, ref-examen)"
+                "Identifiant du document du skill (ex: main, concepteur, auditeur-apprenant, garant-coherence, ref-cours, ref-tp, ref-slide, ref-examen, ref-td, ref-corrige, ref-checklist, ref-evaluation-grille, ref-cas-limites)"
             ),
         },
         async ({ document_id }) => {
@@ -425,6 +426,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 ...parsed.data,
                 ...colors,
                 sections: [],
+                isVisible: false,
                 updatedAt: new Date().toISOString(),
             });
 
@@ -456,8 +458,10 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 .describe("Univers thématique : name, description (domaine + données types), scope ('module' = fil rouge annuel, 'tp' = livrable par TP)"),
             projectIcon: iconNameSchema.optional()
                 .describe("Icône Lucide du projet commun inter-sections (ex: 'Clapperboard' pour Netflex, 'BookOpen' pour la médiathèque). Affiché dans le badge des sections marquées projectRef."),
+            isVisible: z.boolean().optional()
+                .describe("Visibilité du module pour les étudiants. false = masqué (brouillon), true = visible."),
         },
-        async ({ module, title, iconName, description, colorLight, colorDark, sessionDurationMinutes, universe, projectIcon }) => {
+        async ({ module, title, iconName, description, colorLight, colorDark, sessionDurationMinutes, universe, projectIcon, isVisible }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
 
@@ -473,6 +477,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             if (sessionDurationMinutes !== undefined) set.sessionDurationMinutes = sessionDurationMinutes;
             if (universe !== undefined) set.universe = universe;
             if (projectIcon !== undefined) set.projectIcon = projectIcon;
+            if (isVisible !== undefined) set.isVisible = isVisible;
 
             const updatedFields = Object.keys(set).filter((k) => k !== "updatedAt");
             if (updatedFields.length === 0) {
