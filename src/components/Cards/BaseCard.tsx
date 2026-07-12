@@ -6,6 +6,8 @@ import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
 import Link from "next/link";
+import {moduleColor} from "@/lib/moduleColor";
+import {useIsDark} from "@/hook/useIsDark";
 
 interface BaseCardProps {
     href?: string;
@@ -32,6 +34,11 @@ export default function BaseCard({
                                      overlay
                                  }: BaseCardProps) {
     const prefersReducedMotion = useReducedMotion();
+    const isDark = useIsDark();
+
+    const accentColor = currentModule
+        ? moduleColor(currentModule, isDark ? 'dark' : 'light')
+        : 'var(--color-brand-primary)';
 
     return (
         <motion.div
@@ -44,13 +51,13 @@ export default function BaseCard({
                     "relative w-full h-full flex flex-col justify-between border rounded-2xl overflow-hidden",
                     "bg-bridge-50 dark:bg-bridge-900",
                     "text-bridge-900 dark:text-bridge-100",
-                    `border-${currentModule ? currentModule.path : 'module'}`,
                     "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)] dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
                     withHover
                         ? "hover:shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:hover:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]"
                         : "",
                     "transition-shadow duration-300",
                 )}
+                style={{ borderColor: accentColor }}
             >
                 {/* Top edge highlight */}
                 <div aria-hidden="true"
@@ -59,10 +66,8 @@ export default function BaseCard({
                 {overlay}
 
                 <CardHeader
-                    className={cn(
-                        "flex flex-row justify-between items-center px-4 py-3 transition-brightness duration-300",
-                        `bg-${currentModule ? currentModule.path : 'module'}`
-                    )}
+                    className="flex flex-row justify-between items-center px-4 py-3 transition-colors duration-300"
+                    style={{ background: accentColor }}
                 >
                     {withLed && <LEDIndicator/>}
                     {header}
