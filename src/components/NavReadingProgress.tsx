@@ -4,6 +4,7 @@ import {useEffect, useState} from 'react';
 import {useReadingProgressStore} from '@/lib/store/readingProgressStore';
 export default function NavReadingProgress() {
     const modulePath = useReadingProgressStore((s) => s.modulePath);
+    const accentColor = useReadingProgressStore((s) => s.accentColor);
     const [progress, setProgress] = useState(0);
 
     useEffect(() => {
@@ -40,7 +41,7 @@ export default function NavReadingProgress() {
             className="absolute bottom-0 left-0 h-[5px] origin-left transition-[width] duration-150 ease-out"
             style={{
                 width: `${progress}%`,
-                backgroundColor: `var(--color-${modulePath})`,
+                backgroundColor: accentColor ?? undefined,
             }}
         />
     );

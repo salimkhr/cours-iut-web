@@ -6,6 +6,7 @@ import AddModuleButton from "./AddModuleButton";
 import {Accordion} from "@/components/ui/accordion";
 import useAdminApi from "@/hook/admin/useAdminApi";
 import Module from "@/types/Module";
+import type {ModuleFormValues} from "@/lib/schemas/module.schema";
 
 interface ModulesListProps {
     initialModules: Module[];
@@ -15,13 +16,13 @@ export default function ModulesList({initialModules}: ModulesListProps) {
     const [modules, setModules] = useState(initialModules);
     const {addModule} = useAdminApi();
 
-    const handleAddModule = async (newMod: Omit<Module, '_id'>) => {
+    const handleAddModule = async (data: ModuleFormValues) => {
         try {
-            const createdModule = await addModule(newMod as unknown as Omit<Module, '_id'>);
+            const createdModule = await addModule({...data, sections: []});
             setModules(prev => [...prev, createdModule]);
         } catch (error) {
             console.error('Erreur ajout module', error);
-            throw error; // ou gestion spécifique de l'erreur
+            throw error;
         }
     }
 

@@ -1,5 +1,6 @@
 import {contentImports} from "@/lib/contentImports";
 import {notFound, redirect} from "next/navigation";
+import {moduleColor} from "@/lib/moduleColor";
 import {getModuleData} from "@/hook/getModuleData";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getContentRef} from "@/types/CourseContent";
@@ -45,7 +46,10 @@ export default async function Content({params}: ContentPageProps) {
         }
 
         return (
-            <div className={`header-${currentModule.path}`}>
+            <div className="header-module" style={{
+            '--module-color': moduleColor(currentModule),
+            '--module-color-dark': moduleColor(currentModule, 'dark'),
+        } as React.CSSProperties}>
                 <SlideBlocksRenderer
                     blocks={doc.blocks}
                     module={currentModule}
@@ -77,7 +81,10 @@ export default async function Content({params}: ContentPageProps) {
     }
 
     return (
-        <div className={`header-${currentModule.path}`}>
+        <div className="header-module" style={{
+            '--module-color': moduleColor(currentModule),
+            '--module-color-dark': moduleColor(currentModule, 'dark'),
+        } as React.CSSProperties}>
             <ComponentToRender />
             {isAdmin && (
                 <EditContentFab

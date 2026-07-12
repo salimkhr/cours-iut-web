@@ -13,6 +13,7 @@ export interface CodeCardProps {
     className?: string;
     showLineNumbers?: boolean;
     filename?: string;
+    title?: string;
     currentModule?: Module;
     collapsible?: boolean;
     highlightLines?: string;
@@ -23,6 +24,7 @@ export default function CodeCard({
                                      children,
                                      showLineNumbers = true,
                                      filename,
+                                     title,
                                      currentModule,
                                      collapsible = false,
                                      highlightLines,
@@ -74,7 +76,7 @@ export default function CodeCard({
             {/* Onglet fichier / langage */}
             <div className="flex items-center gap-2 min-w-0 flex-1">
                 <span className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-sm rounded px-2.5 py-1 text-xs font-mono text-white/95 truncate max-w-[220px]">
-                    {filename ?? `${language.toLowerCase()}`}
+                    {filename ?? title ?? `${language.toLowerCase()}`}
                 </span>
                 {filename && (
                     <span className="shrink-0 text-[10px] font-semibold tracking-[0.18em] uppercase text-white/45">

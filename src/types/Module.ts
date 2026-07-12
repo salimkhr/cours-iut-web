@@ -20,6 +20,7 @@ export default interface Module {
     isExtra?: boolean;
     sessionDurationMinutes?: number;
     universe?: ModuleUniverse;
+    projectIcon?: string;
     colorLight?: string;
     colorDark?: string;
     updatedAt?: string;

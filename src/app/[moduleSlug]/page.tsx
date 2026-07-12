@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {moduleColor} from "@/lib/moduleColor";
 import SectionCard from "@/components/Cards/SectionCard";
 import Section from "@/types/Section";
 import iconMap, {isValidIcon} from "@/lib/iconMap";
@@ -55,6 +56,7 @@ export default async function Module({params}: ModulePageProps) {
                 tags={allTags}
                 icon={<Icon size={56} className="mb-4"/>}
                 path={currentModule.path}
+                accentColor={moduleColor(currentModule)}
                 compact
                 backHref="/"
                 backLabel="Tous les cours"
@@ -65,7 +67,10 @@ export default async function Module({params}: ModulePageProps) {
                             asChild
                             variant="outline"
                             size="lg"
-                            style={{'--module-color': `var(--color-${currentModule.path})`} as React.CSSProperties}
+                            style={{
+                        '--module-color': moduleColor(currentModule),
+                        '--module-color-dark': moduleColor(currentModule, 'dark'),
+                    } as React.CSSProperties}
                             className="group h-auto rounded-lg border-[3px] border-(--module-color) bg-transparent text-brand-dark dark:text-brand-light hover:bg-(--module-color) hover:text-white hover:border-(--module-color) px-6 py-3 text-sm font-semibold tracking-wide shadow-none transition-all duration-300"
                         >
                             <Link href={`/${currentModule.path}/${lastAvailableSectionPath}`}>

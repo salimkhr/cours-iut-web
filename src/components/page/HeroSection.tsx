@@ -18,6 +18,7 @@ interface HeroSectionProps {
     tags?: string[];
     icon?: ReactNode;
     path?: string;
+    accentColor?: string;
     compact?: boolean;
     backHref?: string;
     backLabel?: string;
@@ -32,6 +33,7 @@ export default function HeroSection({
                                         icon,
                                         tags = [],
                                         path = '',
+                                        accentColor,
                                         compact = false,
                                         backHref,
                                         backLabel
@@ -114,7 +116,7 @@ export default function HeroSection({
                             )}
                             <h1 className="font-extrabold tracking-tight">
                                 {title}
-                                <span style={{color: `var(--color-${path || 'brand-primary'})`}}>.</span>
+                                <span style={{color: accentColor || `var(--color-${path || 'brand-primary'})`}}>.</span>
                             </h1>
                         </div>
                     ) : (
@@ -122,7 +124,7 @@ export default function HeroSection({
                             {icon && <div className="mb-4 flex justify-center lg:justify-start">{icon}</div>}
                             <h1 className="font-extrabold tracking-tight leading-[0.95] text-center lg:text-left text-brand-dark dark:text-brand-light text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl">
                                 {title}
-                                <span style={{color: `var(--color-${path || 'brand-primary'})`}}>.</span>
+                                <span style={{color: accentColor || `var(--color-${path || 'brand-primary'})`}}>.</span>
                             </h1>
                         </>
                     )}
@@ -133,7 +135,7 @@ export default function HeroSection({
                             "block h-1 rounded-full mx-auto lg:mx-0",
                             compact ? "w-12 mt-3" : "w-16 mt-6"
                         )}
-                        style={{backgroundColor: `var(--color-${path || 'brand-primary'})`}}
+                        style={{backgroundColor: accentColor || `var(--color-${path || 'brand-primary'})`}}
                     />
 
                     {description && (

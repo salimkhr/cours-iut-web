@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { cn } from "@/lib/utils";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { findBlock } from "@/lib/blockTreeUtils";
 import { getBlockDefinition } from "@/lib/blockRegistry";
@@ -19,6 +20,8 @@ interface CourseEditCanvasProps {
 export function CourseEditCanvas({ onInsertAfter }: CourseEditCanvasProps) {
     const blocks = useBuilderStore((s) => s.blocks);
     const moduleSlug = useBuilderStore((s) => s.moduleSlug);
+    const moduleColorLight = useBuilderStore((s) => s.moduleColorLight);
+    const moduleColorDark = useBuilderStore((s) => s.moduleColorDark);
     const updateBlock = useBuilderStore((s) => s.updateBlock);
     const [activeEditor, setActiveEditor] = useState<InlineTextEditorHandle | null>(null);
     const [codeModal, setCodeModal] = useState<{ id: string; value: string; language: string } | null>(null);
@@ -46,7 +49,13 @@ export function CourseEditCanvas({ onInsertAfter }: CourseEditCanvasProps) {
             />
 
             <div className="min-h-0 flex-1 overflow-y-auto bg-bridge-100 px-6 py-8 dark:bg-bridge-900/40">
-                <div className={`mx-auto flex max-w-3xl flex-col gap-3${moduleSlug ? ` header-${moduleSlug}` : ""}`}>
+                <div
+                    className={cn("mx-auto flex max-w-3xl flex-col gap-3", moduleSlug ? "header-module" : "")}
+                    style={moduleSlug ? {
+                        '--module-color': moduleColorLight || `var(--color-${moduleSlug})`,
+                        '--module-color-dark': moduleColorDark || moduleColorLight || `var(--color-${moduleSlug})`,
+                    } as React.CSSProperties : undefined}
+                >
                     {blocks.map((block, i) => (
                         <EditableCourseBlock
                             key={block.id}

@@ -6,6 +6,8 @@ import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
 import Link from "next/link";
+import {moduleColor} from "@/lib/moduleColor";
+import {useIsDark} from "@/hook/useIsDark";
 
 interface BaseCardProps {
     href?: string;
@@ -32,6 +34,11 @@ export default function BaseCard({
                                      overlay
                                  }: BaseCardProps) {
     const prefersReducedMotion = useReducedMotion();
+    const isDark = useIsDark();
+
+    const accentColor = currentModule
+        ? moduleColor(currentModule, isDark ? 'dark' : 'light')
+        : 'var(--color-brand-primary)';
 
     return (
         <motion.div
@@ -44,13 +51,13 @@ export default function BaseCard({
                     "relative w-full h-full flex flex-col justify-between border rounded-2xl overflow-hidden",
                     "bg-bridge-50 dark:bg-bridge-900",
                     "text-bridge-900 dark:text-bridge-100",
-                    `border-${currentModule ? currentModule.path : 'module'}`,
                     "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)] dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
                     withHover
                         ? "hover:shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:hover:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]"
                         : "",
                     "transition-shadow duration-300",
                 )}
+                style={{ borderColor: accentColor }}
             >
                 {/* Top edge highlight */}
                 <div aria-hidden="true"
@@ -59,10 +66,8 @@ export default function BaseCard({
                 {overlay}
 
                 <CardHeader
-                    className={cn(
-                        "flex flex-row justify-between items-center px-4 py-3 transition-brightness duration-300",
-                        `bg-${currentModule ? currentModule.path : 'module'}`
-                    )}
+                    className="flex flex-row justify-between items-center px-4 py-3 transition-colors duration-300"
+                    style={{ background: accentColor }}
                 >
                     {withLed && <LEDIndicator/>}
                     {header}
@@ -116,6 +121,11 @@ export function ActionButton({
                                  disabled = false,
                                  target = '_self'
                              }: ActionButtonProps) {
+    const isDark = useIsDark();
+    const accentColor = currentModule
+        ? moduleColor(currentModule, isDark ? 'dark' : 'light')
+        : 'var(--color-brand-primary)';
+
     const baseClasses = cn(
         `inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm
      [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0
@@ -125,9 +135,7 @@ export function ActionButton({
      focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-current
      shadow-xs
      aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive`,
-        `bg-destructive hover:bg-destructive/90 dark:bg-destructive/60
-     border-${currentModule ? currentModule.path : 'module'}
-     text-${currentModule ? currentModule.path : 'module'}`,
+        `bg-destructive hover:bg-destructive/90 dark:bg-destructive/60`,
         "text-black dark:text-white",
         disabled
             ? 'pointer-events-none opacity-50 cursor-not-allowed brightness-75'
@@ -137,14 +145,14 @@ export function ActionButton({
 
     if (disabled) {
         return (
-            <span aria-disabled="true" className={baseClasses}>
+            <span aria-disabled="true" className={baseClasses} style={{ borderColor: accentColor, color: accentColor }}>
                 {children}
             </span>
         );
     }
 
     return (
-        <Link href={href} target={target} className={baseClasses}>
+        <Link href={href} target={target} className={baseClasses} style={{ borderColor: accentColor, color: accentColor }}>
             {children}
         </Link>
     );

@@ -17,6 +17,8 @@ const MAX_HISTORY = 50;
 interface BuilderStore {
     blocks: Block[];
     moduleSlug: string;
+    moduleColorLight: string;
+    moduleColorDark: string;
     contentType: string;
     selectedId: string | null;
     isDirty: boolean;
@@ -27,7 +29,7 @@ interface BuilderStore {
     _history: Block[][];
     _future: Block[][];
 
-    setBlocks: (blocks: Block[], moduleSlug?: string, contentType?: string) => void;
+    setBlocks: (blocks: Block[], moduleSlug?: string, contentType?: string, moduleColorLight?: string, moduleColorDark?: string) => void;
     selectBlock: (id: string | null) => void;
     setBlockErrors: (errors: Record<string, string>) => void;
     toggleCollapse: (id: string) => void;
@@ -58,6 +60,8 @@ function pushHistory(
 export const useBuilderStore = create<BuilderStore>()((set) => ({
     blocks: [],
     moduleSlug: "",
+    moduleColorLight: "",
+    moduleColorDark: "",
     contentType: "",
     selectedId: null,
     isDirty: false,
@@ -68,8 +72,17 @@ export const useBuilderStore = create<BuilderStore>()((set) => ({
     _history: [],
     _future: [],
 
-    setBlocks: (blocks, moduleSlug, contentType) =>
-        set((s) => ({ blocks, moduleSlug: moduleSlug ?? s.moduleSlug, contentType: contentType ?? s.contentType, isDirty: false, _history: [], _future: [] })),
+    setBlocks: (blocks, moduleSlug, contentType, moduleColorLight, moduleColorDark) =>
+        set((s) => ({
+            blocks,
+            moduleSlug: moduleSlug ?? s.moduleSlug,
+            moduleColorLight: moduleColorLight ?? s.moduleColorLight,
+            moduleColorDark: moduleColorDark ?? s.moduleColorDark,
+            contentType: contentType ?? s.contentType,
+            isDirty: false,
+            _history: [],
+            _future: [],
+        })),
 
     selectBlock: (id) => set({ selectedId: id }),
 

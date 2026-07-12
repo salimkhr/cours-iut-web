@@ -44,6 +44,8 @@ interface BuilderPageProps {
     sectionTitle: string;
     initialBlocks: Block[];
     source: "file" | "db";
+    colorLight?: string;
+    colorDark?: string;
     // TODO(deck-mode): wire this when deck mode is implemented
     deckMode?: boolean;
 }
@@ -56,6 +58,8 @@ export function BuilderPage({
     sectionTitle,
     initialBlocks,
     source,
+    colorLight,
+    colorDark,
 }: BuilderPageProps) {
     const setBlocks = useBuilderStore((s) => s.setBlocks);
     const isDirty = useBuilderStore((s) => s.isDirty);
@@ -90,7 +94,7 @@ export function BuilderPage({
 
     // Initialiser les blocs au montage
     useEffect(() => {
-        setBlocks(initialBlocks, moduleSlug, contentType);
+        setBlocks(initialBlocks, moduleSlug, contentType, colorLight, colorDark);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -296,7 +300,10 @@ export function BuilderPage({
     return (
         <div
             className="fixed inset-0 z-50 flex flex-col bg-bridge-50 dark:bg-bridge-900"
-            style={{ "--mod-color": `var(--color-${moduleSlug})` } as React.CSSProperties}
+            style={{
+                "--mod-color": colorLight ?? `var(--color-${moduleSlug})`,
+                "--mod-color-dark": colorDark ?? colorLight ?? `var(--color-${moduleSlug})`,
+            } as React.CSSProperties}
         >
             <EditorToolbar
                 moduleTitle={moduleTitle}

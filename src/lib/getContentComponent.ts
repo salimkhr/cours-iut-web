@@ -33,7 +33,7 @@ export async function getContentComponent({
 
         const blocks = doc.blocks;
         return function DbContent() {
-            return React.createElement(BlockRenderer, { blocks });
+            return React.createElement(BlockRenderer, { blocks, currentModule });
         };
     }
 

@@ -14,7 +14,7 @@ import AddModuleButton from '@/components/admin/AddModuleButton';
 import SyncSheet from '@/components/admin/SyncSheet';
 import ExportImportSheet from '@/components/admin/ExportImportSheet';
 import useAdminApi from '@/hook/admin/useAdminApi';
-import Module from '@/types/Module';
+import type {ModuleFormValues} from '@/lib/schemas/module.schema';
 import type {SyncResponse} from '@/app/api/admin/sync/route';
 
 export default function AdminHomeFab() {
@@ -52,8 +52,8 @@ export default function AdminHomeFab() {
         return () => { cancelled = true; };
     }, []);
 
-    const handleAdd = async (newMod: Omit<Module, '_id'>) => {
-        await addModule(newMod);
+    const handleAdd = async (data: ModuleFormValues) => {
+        await addModule({...data, sections: []});
         router.refresh();
     };
 

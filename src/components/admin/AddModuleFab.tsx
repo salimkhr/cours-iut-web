@@ -1,18 +1,18 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import {useRouter} from 'next/navigation';
 import AddModuleButton from './AddModuleButton';
 import useAdminApi from '@/hook/admin/useAdminApi';
-import Module from '@/types/Module';
+import type {ModuleFormValues} from '@/lib/schemas/module.schema';
 
 export default function AddModuleFab() {
     const router = useRouter();
-    const { addModule } = useAdminApi();
+    const {addModule} = useAdminApi();
 
-    const handleAdd = async (newMod: Omit<Module, '_id'>) => {
-        await addModule(newMod as unknown as Omit<Module, '_id'>);
+    const handleAdd = async (data: ModuleFormValues) => {
+        await addModule({...data, sections: []});
         router.refresh();
     };
 
-    return <AddModuleButton onAdd={handleAdd} />;
+    return <AddModuleButton onAdd={handleAdd}/>;
 }

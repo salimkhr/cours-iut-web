@@ -29,6 +29,8 @@ import { SlideList, SlideListItem } from "@/components/Slides/ui/SlideList";
 import { SlideNote } from "@/components/Slides/ui/SlideNote";
 import { blockDefs, getBlockDef, createBlockInstance } from "@/lib/blockDefs";
 import type { BlockDef, FieldDef, BlockCategory } from "@/lib/blockDefs";
+import type Module from "@/types/Module";
+import { DynamicLucideIcon } from "@/components/ui/DynamicLucideIcon";
 
 // Réexports pour compatibilité avec les imports existants.
 export type { FieldDef, BlockCategory };
@@ -68,15 +70,26 @@ const clientParts: Record<string, ClientPart> = {
     },
     "section": {
         icon: Layers,
-        render: ({ title, children, depth, sectionIndex }: BlockRenderProps) => {
+        render: ({ title, children, depth, sectionIndex, projectRef, currentModule }: BlockRenderProps) => {
             const level = Math.min(2 + (Number(depth) || 0), 4) as 2 | 3 | 4;
             const idx = Number(sectionIndex ?? 0);
             const prefix = Number(depth) === 0
                 ? String.fromCharCode(65 + idx) + " — "
                 : String(idx + 1) + ". ";
+            const mod = currentModule as Module | undefined;
+            const icon = mod?.projectIcon ?? "";
+            const showBadge = Boolean(projectRef) && icon.length > 0;
             return (
                 <section className="flex flex-col gap-6">
-                    <Heading level={level}>{prefix}{String(title ?? "")}</Heading>
+                    <div className="flex items-center gap-3 flex-wrap">
+                        <Heading level={level}>{prefix}{String(title ?? "")}</Heading>
+                        {showBadge && (
+                            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                                <DynamicLucideIcon name={icon} size={12} />
+                                Projet commun
+                            </span>
+                        )}
+                    </div>
                     {children}
                 </section>
             );
@@ -205,10 +218,12 @@ const clientParts: Record<string, ClientPart> = {
     },
     "code": {
         icon: Code,
-        render: ({ language, code, filename, showLineNumbers, collapsible, highlightLines }: BlockRenderProps) => (
+        render: ({ language, code, filename, title, showLineNumbers, collapsible, highlightLines, currentModule }: BlockRenderProps) => (
             <CodeCard
                 language={String(language ?? "javascript")}
                 filename={filename ? String(filename) : undefined}
+                title={title ? String(title) : undefined}
+                currentModule={currentModule as Module | undefined}
                 showLineNumbers={showLineNumbers !== false}
                 collapsible={Boolean(collapsible)}
                 highlightLines={highlightLines ? String(highlightLines) : undefined}

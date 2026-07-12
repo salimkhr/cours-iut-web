@@ -1,5 +1,6 @@
 import {TelescopeIcon} from "@/components/icons/telescope";
 import {getServerSession} from "@/lib/auth";
+import {moduleColor} from "@/lib/moduleColor";
 
 import HeroSection from "@/components/page/HeroSection";
 import SectionStats from "@/components/page/SectionStats";
@@ -66,6 +67,7 @@ export default async function SectionPage({params}: SectionPageProps) {
                 imagePath={`images/header/header_${currentModule.path}.svg`}
                 imageAlt={currentModule.title}
                 path={currentModule.path}
+                accentColor={moduleColor(currentModule)}
                 tags={currentSection?.tags ?? []}
                 compact
                 backHref={`/${moduleSlug}`}
