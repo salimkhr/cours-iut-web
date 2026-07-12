@@ -14,14 +14,14 @@ import { BotIcon } from '@/components/icons/bot';
 import type { BotIconHandle } from '@/components/icons/bot';
 
 interface PromptModeButtonProps {
-    modulePath: string;
+    accentColor: string;
     sectionTitle: string;
     contentType: ContentKey;
 }
 
 type ExtractionState = 'idle' | 'loading' | 'ready';
 
-export default function PromptModeButton({ modulePath, sectionTitle, contentType }: PromptModeButtonProps) {
+export default function PromptModeButton({ accentColor, sectionTitle, contentType }: PromptModeButtonProps) {
     const botRef = useRef<BotIconHandle>(null);
     const [open, setOpen] = useState(false);
     const [state, setState] = useState<ExtractionState>('idle');
@@ -129,11 +129,7 @@ export default function PromptModeButton({ modulePath, sectionTitle, contentType
                         <Button
                             onClick={handleCopy}
                             disabled={state !== 'ready'}
-                            style={
-                                {
-                                    '--module-color': `var(--color-${modulePath})`,
-                                } as React.CSSProperties
-                            }
+                            style={{'--module-color': accentColor} as React.CSSProperties}
                             className="w-full bg-(--module-color) hover:opacity-90 text-white"
                         >
                             {copied ? 'Copié ✓' : "Copier pour l'IA"}

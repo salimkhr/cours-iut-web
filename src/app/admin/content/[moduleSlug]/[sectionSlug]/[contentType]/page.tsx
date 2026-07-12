@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getServerSession } from "@/lib/auth";
 import { connectToDB } from "@/lib/mongodb";
+import { moduleColor } from "@/lib/moduleColor";
 import { BuilderPageDynamic } from "@/components/builder/BuilderPageDynamic";
 import type { Block, ContentRef } from "@/types/CourseContent";
 import type Module from "@/types/Module";
@@ -43,6 +44,8 @@ export default async function ContentBuilderPage({ params }: PageProps) {
             sectionTitle={section.title ?? sectionSlug}
             initialBlocks={(doc?.blocks ?? []) as Block[]}
             source={source}
+            colorLight={moduleColor(mod)}
+            colorDark={moduleColor(mod, 'dark')}
         />
     );
 }

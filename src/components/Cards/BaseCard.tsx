@@ -121,6 +121,11 @@ export function ActionButton({
                                  disabled = false,
                                  target = '_self'
                              }: ActionButtonProps) {
+    const isDark = useIsDark();
+    const accentColor = currentModule
+        ? moduleColor(currentModule, isDark ? 'dark' : 'light')
+        : 'var(--color-brand-primary)';
+
     const baseClasses = cn(
         `inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm
      [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0
@@ -130,9 +135,7 @@ export function ActionButton({
      focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-current
      shadow-xs
      aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive`,
-        `bg-destructive hover:bg-destructive/90 dark:bg-destructive/60
-     border-${currentModule ? currentModule.path : 'module'}
-     text-${currentModule ? currentModule.path : 'module'}`,
+        `bg-destructive hover:bg-destructive/90 dark:bg-destructive/60`,
         "text-black dark:text-white",
         disabled
             ? 'pointer-events-none opacity-50 cursor-not-allowed brightness-75'
@@ -142,14 +145,14 @@ export function ActionButton({
 
     if (disabled) {
         return (
-            <span aria-disabled="true" className={baseClasses}>
+            <span aria-disabled="true" className={baseClasses} style={{ borderColor: accentColor, color: accentColor }}>
                 {children}
             </span>
         );
     }
 
     return (
-        <Link href={href} target={target} className={baseClasses}>
+        <Link href={href} target={target} className={baseClasses} style={{ borderColor: accentColor, color: accentColor }}>
             {children}
         </Link>
     );

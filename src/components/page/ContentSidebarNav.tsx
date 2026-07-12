@@ -10,6 +10,7 @@ interface ContentSidebarNavProps {
     currentContent: string;
     moduleSlug: string;
     sectionSlug: string;
+    accentColor?: string;
 }
 
 export default function ContentSidebarNav({
@@ -17,6 +18,7 @@ export default function ContentSidebarNav({
                                               currentContent,
                                               moduleSlug,
                                               sectionSlug,
+                                              accentColor,
                                           }: ContentSidebarNavProps) {
     const sorted = [...contents].sort(
         (a, b) => CONTENT_ORDER.indexOf(a as ContentKey) - CONTENT_ORDER.indexOf(b as ContentKey)
@@ -66,7 +68,7 @@ export default function ContentSidebarNav({
                                 ? "text-white dark:text-brand-dark"
                                 : "text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark dark:hover:text-bridge-100 hover:bg-bridge-300/40 dark:hover:bg-bridge-700/40"
                         )}
-                        style={isActive ? {backgroundColor: `var(--color-${moduleSlug})`} : undefined}
+                        style={isActive && accentColor ? {backgroundColor: accentColor} : undefined}
                     >
                         <Icon className="w-4 h-4 sm:w-3.5 sm:h-3.5 shrink-0"/>
                         <span>{label}</span>

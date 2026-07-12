@@ -15,6 +15,7 @@ interface TableOfContentsProps {
     moduleSlug: string
     sectionSlug: string
     sectionContents: string[]
+    accentColor?: string
 }
 
 function slugify(text: string): string {
@@ -31,6 +32,7 @@ export default function TableOfContents({
     moduleSlug,
     sectionSlug,
     sectionContents,
+    accentColor,
 }: TableOfContentsProps) {
     const router = useRouter()
     const { headings, setHeadings } = useTocStore()
@@ -126,7 +128,7 @@ export default function TableOfContents({
     }
 
     const displayedHeadings = headings[`${sectionSlug}/${activeTab}`] ?? []
-    const moduleColor = `var(--color-${modulePath})`
+    const moduleColor = accentColor ?? `var(--color-${modulePath})`
 
     return (
         <div ref={containerRef} className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2">

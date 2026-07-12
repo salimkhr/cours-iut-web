@@ -12,6 +12,7 @@ import ExamenWrapper from "@/components/ExamenWrapper";
 import TableOfContents from "@/components/TableOfContents";
 import EditContentFab from "@/components/admin/EditContentFab";
 import {getModuleData} from "@/hook/getModuleData";
+import {moduleColor} from "@/lib/moduleColor";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getContentComponent} from "@/lib/getContentComponent";
 import {cn} from "@/lib/utils";
@@ -88,6 +89,9 @@ export default async function Content({params}: ContentPageProps) {
         }
     }
 
+    const accent = moduleColor(currentModule);
+    const accentDark = moduleColor(currentModule, 'dark');
+
     const contentKey = currentContent as ContentKey;
     const ContentIcon = isSplit ? Columns2 : (CONTENT_ICON[contentKey] ?? BookOpen);
     const contentDesc = isSplit
@@ -105,6 +109,7 @@ export default async function Content({params}: ContentPageProps) {
                 imagePath={`images/header/header_${currentModule.path}.svg`}
                 imageAlt={currentModule.title}
                 path={currentModule.path}
+                accentColor={accent}
                 icon={<ContentIcon/>}
                 backHref={`/${moduleSlug}`}
                 backLabel={currentModule.title}
@@ -115,7 +120,7 @@ export default async function Content({params}: ContentPageProps) {
                         <div className="flex items-center gap-2 mb-2">
                             <Target
                                 className="w-4 h-4"
-                                style={{color: `var(--color-${currentModule.path})`}}
+                                style={{color: accent}}
                             />
                             <h2 className="text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-dark/70 dark:text-bridge-200/70">
                                 Objectifs du cours
@@ -126,7 +131,7 @@ export default async function Content({params}: ContentPageProps) {
                                 <li key={i} className="flex items-start gap-2 break-inside-avoid">
                                     <span
                                         className="mt-2 h-1 w-1 rounded-full shrink-0"
-                                        style={{backgroundColor: `var(--color-${currentModule.path})`}}
+                                        style={{backgroundColor: accent}}
                                     />
                                     <span>{objective}</span>
                                 </li>
@@ -137,7 +142,7 @@ export default async function Content({params}: ContentPageProps) {
             </HeroSection>
 
             {!isSplit && (
-                <ReadingProgress modulePath={currentModule.path}/>
+                <ReadingProgress modulePath={currentModule.path} accentColor={accent}/>
             )}
             <div className="flex sticky top-(--navbar-h) z-[25] w-full justify-end">
                 <div className={cn("flex items-center px-1 border-l border-b border-border rounded-bl-xl bg-transparent backdrop-blur-xs", isSplit ? "py-1" : "pt-1 pb-1")}>
@@ -146,12 +151,13 @@ export default async function Content({params}: ContentPageProps) {
                         currentContent={isSplit ? SPLIT_SLUG : currentContent!}
                         moduleSlug={moduleSlug}
                         sectionSlug={sectionSlug}
+                        accentColor={accent}
                     />
                     {(currentContent === 'cours' || currentContent === 'TP') && !isSplit && (
                         <>
                             <div className="h-4 w-px bg-border mx-0.5 shrink-0" />
                             <PromptModeButton
-                                modulePath={currentModule.path}
+                                accentColor={accent}
                                 sectionTitle={currentSection.title}
                                 contentType={currentContent as ContentKey}
                             />
@@ -165,7 +171,8 @@ export default async function Content({params}: ContentPageProps) {
                     <SplitPane
                         label="Cours"
                         Icon={BookOpen}
-                        modulePath={currentModule.path}
+                        accentColor={accent}
+                        accentColorDark={accentDark}
                         side="left"
                     >
                         <CoursComponent/>
@@ -173,7 +180,8 @@ export default async function Content({params}: ContentPageProps) {
                     <SplitPane
                         label="TP"
                         Icon={CodeXml}
-                        modulePath={currentModule.path}
+                        accentColor={accent}
+                        accentColorDark={accentDark}
                         side="right"
                     >
                         <TPComponent/>
@@ -184,8 +192,12 @@ export default async function Content({params}: ContentPageProps) {
                     <main
                         className={cn(
                             "w-full max-w-7xl mx-auto px-3 lg:px-4 py-10 lg:py-14",
-                            `header-${currentModule.path}`
+                            "header-module"
                         )}
+                        style={{
+                            '--module-color': accent,
+                            '--module-color-dark': accentDark,
+                        } as React.CSSProperties}
                     >
                         <CopyContextGuard contentType={currentContent ?? ''}>
                             {currentContent === "examen" && currentSection.examenIsLock ? (
@@ -204,6 +216,7 @@ export default async function Content({params}: ContentPageProps) {
                             moduleSlug={moduleSlug}
                             sectionSlug={sectionSlug}
                             sectionContents={getContentTypes(currentSection.contents)}
+                            accentColor={accent}
                         />
                     )}
                 </>
@@ -226,27 +239,31 @@ export default async function Content({params}: ContentPageProps) {
 interface SplitPaneProps {
     label: string;
     Icon: React.ComponentType<{className?: string; style?: React.CSSProperties}>;
-    modulePath: string;
+    accentColor: string;
+    accentColorDark: string;
     side: 'left' | 'right';
     children: React.ReactNode;
 }
 
-function SplitPane({label, Icon, modulePath, side, children}: SplitPaneProps) {
+function SplitPane({label, Icon, accentColor, accentColorDark, side, children}: SplitPaneProps) {
     return (
         <section
             aria-label={label}
             className={cn(
-                "max-h-[70dvh] overflow-y-auto lg:max-h-none lg:w-1/2",
+                "max-h-[70dvh] overflow-y-auto lg:max-h-none lg:w-1/2 header-module",
                 side === 'left'
                     ? "lg:pr-2"
                     : "lg:pl-2 lg:border-l lg:border-bridge-500/30 lg:dark:border-bridge-500/25",
-                `header-${modulePath}`
             )}
+            style={{
+                '--module-color': accentColor,
+                '--module-color-dark': accentColorDark,
+            } as React.CSSProperties}
         >
             <div className="mb-4 flex items-center gap-2 lg:sticky lg:top-0 bg-brand-light/85 dark:bg-brand-dark/85 backdrop-blur-md py-2 z-10">
                 <Icon
                     className="w-4 h-4"
-                    style={{color: `var(--color-${modulePath})`}}
+                    style={{color: accentColor}}
                 />
                 <h2 className="text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-dark/70 dark:text-bridge-200/70">
                     {label}

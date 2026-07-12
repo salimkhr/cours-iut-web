@@ -106,7 +106,7 @@ ADD COLUMN is_admin BOOLEAN DEFAULT FALSE NOT NULL;`}
                     <ListItem>
                         Si un <Code>Account</Code> est retourné, utilisez la fonction{" "}
                         <Link href="https://www.php.net/manual/fr/function.password-verify.php" target="_blank">
-                            <Code style={{ color: 'var(--color-php)' }}>password_verify</Code>
+                            <Code style={{ color: 'var(--module-color)' }}>password_verify</Code>
                         </Link>{" "}
                         pour vérifier que le mot de passe est valide.
                     </ListItem>

@@ -12,6 +12,7 @@ interface ContentSwitcherProps {
     moduleSlug: string;
     sectionSlug: string;
     sectionTitle?: string;
+    accentColor?: string;
 }
 
 interface Tab {
@@ -27,6 +28,7 @@ export default function ContentSwitcher({
                                             moduleSlug,
                                             sectionSlug,
                                             sectionTitle,
+                                            accentColor,
                                         }: ContentSwitcherProps) {
     const sorted = [...contents].sort(
         (a, b) => CONTENT_ORDER.indexOf(a as ContentKey) - CONTENT_ORDER.indexOf(b as ContentKey)
@@ -86,7 +88,7 @@ export default function ContentSwitcher({
                                         ? "text-brand-dark dark:text-bridge-50"
                                         : "border-transparent text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark dark:hover:text-bridge-100 hover:border-border"
                                 )}
-                                style={isActive ? {borderColor: `var(--color-${moduleSlug})`} : undefined}
+                                style={isActive && accentColor ? {borderColor: accentColor} : undefined}
                             >
                                 <Icon className="w-3.5 h-3.5 shrink-0"/>
                                 <span>{label}</span>

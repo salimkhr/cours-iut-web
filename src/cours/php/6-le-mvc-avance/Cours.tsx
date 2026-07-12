@@ -1204,7 +1204,7 @@ class UserServiceTest extends TestCase
                 {/* Conteneur responsive */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
                     {/* S - Single Responsibility */}
-                    <div className="p-4 md:p-6 border-2 rounded-lg" style={{ borderColor: 'var(--color-php)' }}>
+                    <div className="p-4 md:p-6 border-2 rounded-lg" style={{ borderColor: 'var(--module-color)' }}>
                         <Heading level={3}>S - Single Responsibility</Heading>
                         <Text className="mb-3">
                             <strong>Appliqué</strong> : Chaque classe a une seule responsabilité
@@ -1220,7 +1220,7 @@ class UserServiceTest extends TestCase
                     </div>
 
                     {/* O - Open/Closed */}
-                    <div className="p-4 md:p-6 border-2 rounded-lg" style={{ borderColor: 'var(--color-php)' }}>
+                    <div className="p-4 md:p-6 border-2 rounded-lg" style={{ borderColor: 'var(--module-color)' }}>
                         <Heading level={3}>O - Open/Closed</Heading>
                         <Text className="mb-3">
                             <strong>Appliqué</strong> : Ouvert à l’extension, fermé à la modification
@@ -1235,7 +1235,7 @@ class UserServiceTest extends TestCase
                     </div>
 
                     {/* L - Liskov Substitution */}
-                    <div className="p-4 md:p-6 border-2 rounded-lg" style={{ borderColor: 'var(--color-php)' }}>
+                    <div className="p-4 md:p-6 border-2 rounded-lg" style={{ borderColor: 'var(--module-color)' }}>
                         <Heading level={3}>L - Liskov Substitution</Heading>
                         <Text className="mb-3">
                             <strong>Appliqué</strong> : Les implémentations sont interchangeables
@@ -1249,7 +1249,7 @@ class UserServiceTest extends TestCase
                     </div>
 
                     {/* I - Interface Segregation */}
-                    <div className="p-4 md:p-6 border-2 rounded-lg" style={{ borderColor: 'var(--color-php)' }}>
+                    <div className="p-4 md:p-6 border-2 rounded-lg" style={{ borderColor: 'var(--module-color)' }}>
                         <Heading level={3}>I - Interface Segregation</Heading>
                         <Text className="mb-3">
                             <strong>Appliqué</strong> : Interfaces spécifiques et ciblées
@@ -1262,7 +1262,7 @@ class UserServiceTest extends TestCase
                     </div>
 
                     {/* D - Dependency Inversion */}
-                    <div className="p-4 md:p-6 border-2 rounded-lg" style={{ borderColor: 'var(--color-php)' }}>
+                    <div className="p-4 md:p-6 border-2 rounded-lg" style={{ borderColor: 'var(--module-color)' }}>
                         <Heading level={3}>D- Dependency Inversion</Heading>
                         <Text className="mb-3">
                             <strong>Appliqué</strong> : Dépendance sur abstractions, pas sur implémentations

@@ -19,6 +19,8 @@ interface SlideEditCanvasProps {
 export function SlideEditCanvas({ slide, position, onInsertAfter }: SlideEditCanvasProps) {
     const updateBlock = useBuilderStore((s) => s.updateBlock);
     const moduleSlug = useBuilderStore((s) => s.moduleSlug);
+    const moduleColorLight = useBuilderStore((s) => s.moduleColorLight);
+    const moduleColorDark = useBuilderStore((s) => s.moduleColorDark);
     const [activeEditor, setActiveEditor] = useState<InlineTextEditorHandle | null>(null);
     const [codeModal, setCodeModal] = useState<{ id: string; value: string; language: string } | null>(null);
 
@@ -53,7 +55,13 @@ export function SlideEditCanvas({ slide, position, onInsertAfter }: SlideEditCan
                 slidePosition={position}
             />
 
-            <div className={`flex min-h-0 flex-1 items-center justify-center bg-slate-800 p-8${moduleSlug ? ` header-${moduleSlug}` : ""}`}>
+            <div
+                className={`flex min-h-0 flex-1 items-center justify-center bg-slate-800 p-8${moduleSlug ? " header-module" : ""}`}
+                style={moduleSlug ? {
+                    '--module-color': moduleColorLight || `var(--color-${moduleSlug})`,
+                    '--module-color-dark': moduleColorDark || moduleColorLight || `var(--color-${moduleSlug})`,
+                } as React.CSSProperties : undefined}
+            >
                 <div className="aspect-video w-full max-w-5xl">
                     <ZoomedSlide slide={slide} mode="canvas-edit" renderChildren={renderChildren} />
                 </div>

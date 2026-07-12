@@ -213,43 +213,34 @@
 }
 
 /* ===== Module color cascade ===== */
-/* Chaque header-{slug} expose --module-color pour les règles communes ci-dessous. */
-.header-html-css   { --module-color: var(--color-html-css); }
-.header-javascript { --module-color: var(--color-javascript); }
-.header-php        { --module-color: var(--color-php); }
-.header-brainfuck  { --module-color: var(--color-brainfuck); }
-.header-login      { --module-color: var(--color-login); }
+/* --module-color (light) et --module-color-dark (dark) sont posés via inline style
+   sur l'élément portant header-module. */
 
-/* Titres colorés dans tout contexte module (cours, admin, builder) */
-.header-html-css h1,   .header-html-css h2,   .header-html-css h3,
-.header-javascript h1, .header-javascript h2, .header-javascript h3,
-.header-php h1,        .header-php h2,        .header-php h3,
-.header-brainfuck h1,  .header-brainfuck h2,  .header-brainfuck h3,
-.header-login h1,      .header-login h2,      .header-login h3,
-.header-module h1,     .header-module h2,     .header-module h3 {
+.header-module h1, .header-module h2, .header-module h3 {
     color: var(--module-color);
 }
+.dark .header-module h1, .dark .header-module h2, .dark .header-module h3 {
+    color: var(--module-color-dark, var(--module-color));
+}
 
-.header-html-css h1, .header-javascript h1, .header-php h1,
-.header-brainfuck h1, .header-login h1, .header-module h1 {
+.header-module h1 {
     text-align: center;
 }
 
-/* Liens colorés */
-.header-html-css a, .header-javascript a, .header-php a,
-.header-brainfuck a, .header-login a, .header-module a {
+.header-module a {
     color: var(--module-color);
     text-decoration: underline;
 }
+.dark .header-module a {
+    color: var(--module-color-dark, var(--module-color));
+}
 
 /* Switch checked (data-[state=checked]:bg-module dans switch.tsx) */
-.header-html-css   .data-\[state\=checked\]\:bg-module[data-state="checked"],
-.header-javascript .data-\[state\=checked\]\:bg-module[data-state="checked"],
-.header-php        .data-\[state\=checked\]\:bg-module[data-state="checked"],
-.header-brainfuck  .data-\[state\=checked\]\:bg-module[data-state="checked"],
-.header-login      .data-\[state\=checked\]\:bg-module[data-state="checked"],
-.header-module     .data-\[state\=checked\]\:bg-module[data-state="checked"] {
+.header-module .data-\[state\=checked\]\:bg-module[data-state="checked"] {
     background: var(--module-color);
+}
+.dark .header-module .data-\[state\=checked\]\:bg-module[data-state="checked"] {
+    background: var(--module-color-dark, var(--module-color));
 }
 
 
