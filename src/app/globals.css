@@ -252,9 +252,6 @@
     background: var(--module-color);
 }
 
-/* Utilitaires encore référencés dans le contenu de cours */
-.text-php   { color: var(--color-php); }
-.border-php { border-color: var(--color-php); }
 
 .input {
     border: 1px solid #222222;

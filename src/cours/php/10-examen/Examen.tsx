@@ -197,7 +197,7 @@ Responsable "1" <-- "*" Matiere`;
                     <Code>index()</Code> de la classe <Code>AdminController</Code>. Modifiez ensuite cette
                     méthode <Code>index()</Code> pour qu&rsquo;elle charge la vue <Code>admin.html.php</Code>.
                     La page est accessible depuis l&rsquo;interface via l&rsquo;icône{" "}
-                    <Link href="http://localhost:8000/admin.php" className="text-php" target="_blank">
+                    <Link href="http://localhost:8000/admin.php" target="_blank">
                         <Settings className="inline w-4 h-4 mx-1 mb-0.5"/>
                     </Link>.
                 </Text>
