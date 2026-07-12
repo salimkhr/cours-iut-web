@@ -23,7 +23,7 @@ export const POST = withAdmin(async (request: Request) => {
                     .toArray(),
             );
 
-        const result = await collection.insertOne({...parsed.data, ...colors});
+        const result = await collection.insertOne({...parsed.data, ...colors, isVisible: false});
 
         return NextResponse.json({insertedId: result.insertedId}, {status: 201});
     } catch (error) {

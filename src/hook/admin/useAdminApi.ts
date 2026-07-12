@@ -38,6 +38,13 @@ export default function useAdminApi() {
         return res.data.section;
     }
 
+    // Modifier la visibilité d'un module
+    async function toggleModuleVisibility(moduleId: string, isVisible: boolean) {
+        await axios.patch(`/api/admin/modules/${moduleId}`, {isVisible}, {
+            headers: {"Content-Type": "application/json"},
+        });
+    }
+
     // Supprimer un module
     async function deleteModule(moduleId: string) {
         await axios.delete(`/api/admin/modules/${moduleId}`);
@@ -48,5 +55,5 @@ export default function useAdminApi() {
         await axios.delete(`/api/admin/${moduleId}/sections?sectionPath=${encodeURIComponent(sectionPath)}`);
     }
 
-    return {addModule, addSection, editSection, deleteModule, deleteSection};
+    return {addModule, addSection, editSection, toggleModuleVisibility, deleteModule, deleteSection};
 }

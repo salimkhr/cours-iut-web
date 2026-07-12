@@ -24,8 +24,9 @@ export default async function Home() {
     const isAuthed = !!session;
 
     const allModules = await getModules();
-    const programModules = isAuthed ? allModules.filter(m => !m.isExtra) : [];
-    const extraModules   = isAuthed ? allModules.filter(m => m.isExtra)  : [];
+    const isAdmin = session?.user.role === 'admin';
+    const programModules = isAuthed ? allModules.filter(m => !m.isExtra && (isAdmin || m.isVisible !== false)) : [];
+    const extraModules   = isAuthed ? allModules.filter(m => m.isExtra  && (isAdmin || m.isVisible !== false)) : [];
 
     return (
         <main className="flex flex-col w-full items-center justify-start min-h-screen bg-brand-light dark:bg-brand-dark">
@@ -62,20 +63,28 @@ export default async function Home() {
                     title="Liste des cours"
                     containerClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full"
                 >
-                    {programModules.map((currentModule, index) => (
-                        <div
-                            key={`${currentModule.path}_${index}`}
-                            className="opacity-0 animate-fade-in-up w-full"
-                            style={{animationDelay: `${index * 0.1}s`}}
-                        >
-                            <ModuleCard currentModule={currentModule} isAuthed={isAuthed}/>
-                        </div>
-                    ))}
+                    {programModules.map((currentModule, index) => {
+                        const hidden = isAdmin && currentModule.isVisible === false;
+                        return (
+                            <div
+                                key={`${currentModule.path}_${index}`}
+                                className="relative opacity-0 animate-fade-in-up w-full"
+                                style={{animationDelay: `${index * 0.1}s`}}
+                            >
+                                {hidden && (
+                                    <span className="absolute top-2 right-2 z-10 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded pointer-events-none">
+                                        Masqué
+                                    </span>
+                                )}
+                                <ModuleCard currentModule={currentModule} isAuthed={isAuthed} isAdmin={isAdmin}/>
+                            </div>
+                        );
+                    })}
                 </CoursesSection>
             </div>
 
             {isAuthed && extraModules.length > 0 && (
-                <ExtraModulesSection modules={extraModules} />
+                <ExtraModulesSection modules={extraModules} isAdmin={isAdmin} />
             )}
 
             {!isAuthed && (

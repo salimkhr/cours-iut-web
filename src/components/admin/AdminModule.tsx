@@ -12,6 +12,9 @@ import iconMap from "@/lib/iconMap";
 import {Section} from "@/components/admin/SectionForm";
 import useAdminApi from "@/hook/admin/useAdminApi";
 import {moduleColor} from "@/lib/moduleColor";
+import {Label} from "@/components/ui/label";
+import {Switch} from "@/components/ui/switch";
+import {toast} from "sonner";
 
 interface AdminModuleProps {
     module: Module;
@@ -19,10 +22,22 @@ interface AdminModuleProps {
 
 export default function AdminModule({module}: AdminModuleProps) {
     const [modData, setModData] = useState(module);
+    const [visible, setVisible] = useState(module.isVisible !== false);
 
     const Icon = iconMap[modData.iconName] || BookOpen;
 
-    const {addSection: addSectionApi} = useAdminApi();
+    const {addSection: addSectionApi, toggleModuleVisibility} = useAdminApi();
+
+    const handleToggleVisibility = async (checked: boolean) => {
+        setVisible(checked);
+        try {
+            await toggleModuleVisibility(modData._id as string, checked);
+            toast.success(checked ? 'Module visible.' : 'Module masqué.');
+        } catch {
+            setVisible(!checked);
+            toast.error('Erreur lors de la mise à jour de la visibilité.');
+        }
+    };
 
     const addSection = async (section: Section) => {
         const savedSection = await addSectionApi(modData._id as unknown as string, section);
@@ -51,6 +66,16 @@ export default function AdminModule({module}: AdminModuleProps) {
                 className={cn("p-0", "header-module")}
                 style={{ "--module-color": moduleColor(modData) } as React.CSSProperties}
             >
+                <div className="flex items-center justify-between px-4 py-3 border-b border-bridge-500/20">
+                    <Label htmlFor={`${modData.path}-visible`} className="text-sm cursor-pointer">
+                        Visible pour les étudiants
+                    </Label>
+                    <Switch
+                        id={`${modData.path}-visible`}
+                        checked={visible}
+                        onCheckedChange={handleToggleVisibility}
+                    />
+                </div>
                 <AddSectionButton onAdd={addSection} modData={modData}/>
                 {modData.sections.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 mb-4">

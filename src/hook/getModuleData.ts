@@ -1,5 +1,6 @@
 import {notFound} from 'next/navigation';
 import getModules from "@/lib/getModules";
+import {getServerSession} from "@/lib/auth";
 
 interface UseModuleDataProps {
     moduleSlug: string;
@@ -8,10 +9,13 @@ interface UseModuleDataProps {
 }
 
 export async function getModuleData({moduleSlug, sectionSlug, contentSlug}: UseModuleDataProps) {
-    const modules = await getModules();
+    const [modules, session] = await Promise.all([getModules(), getServerSession()]);
+    const isAdmin = session?.user.role === 'admin';
+
     const currentModule = modules.find(m => m.path === moduleSlug);
 
     if (!currentModule) notFound();
+    if (currentModule.isVisible === false && !isAdmin) notFound();
 
     let currentSection = null;
     let currentContent = null;
