@@ -81,6 +81,29 @@ d'évaluation et les cas limites actuels.
   ajoute un verdict (date, format, citation). Un motif récurrent (2-3 occurrences) est
   promu en annotation d'exemplaire.
 
+### Stockage et exposition
+
+Les sources du skill (exemplaires compris) restent des fichiers Markdown du repo,
+compilés dans `src/lib/skills/pedagogie.ts` par `bun run generate-skill` et servis aux
+clients MCP par `get_pedagogical_skill_manifest` / `get_pedagogical_skill_document`.
+Rien n'est stocké en MongoDB. Conséquence pour `calibrage.md` : les clients web le lisent
+dans l'état du dernier déploiement ; son alimentation se fait via Claude Code (repo).
+
+Les **unités sources restent des contenus vivants du site** : le bootstrap ne les
+sacrifie pas, elles demeurent publiées et modifiables normalement.
+
+### Point ouvert — rapport exemplaire ↔ unité réelle
+
+À trancher au plus tard à l'écriture du plan (décision reportée par l'utilisateur) :
+
+- **A — snapshot annoté** : copie figée du contenu validé dans
+  `skills/pedagogie/exemplaires/`, annotations alignées sur un texte stable ;
+- **B — référence vivante** : le skill ne stocke que les annotations + un pointeur
+  (module/section) et lit le contenu réel via `export_content_compact` à l'usage.
+
+Recommandation au moment du brainstorm : A (étalon stable, pas de dérive silencieuse si
+l'unité évolue). L'arborescence `exemplaires/` ci-dessus illustre l'option A.
+
 ### Manifeste MCP
 
 Documents exposés : `main`, les 8 exemplaires, `audit-apprenant`, `calibrage`.
