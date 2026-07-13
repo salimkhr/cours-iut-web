@@ -43,7 +43,7 @@ avec l'utilisateur et capitaliser ses verdicts.
 | Invariant unique | Le mécanisme d'exposition MCP (manifest + documents + `bun run generate-skill`), au contenu entièrement renouvelé |
 | Unités sources | **2 unités réelles** de niveaux et matières différents (ex. une section débutant PHP ou HTML/CSS, une section avancée JavaScript), pour éviter la sur-spécialisation |
 | Ordre de bootstrap par unité | **cours → TP → slides → examen** |
-| Rôles | Un seul survit : l'**auditeur-apprenant** (test de démarrage, simulation temporelle). Concepteur et garant-cohérence disparaissent |
+| Rôles | Un seul survit : l'**auditeur-apprenant** (test de démarrage, simulation temporelle). Le concepteur redevient inline (l'agent principal conçoit, l'exemplaire sous les yeux) ; le garant-cohérence est remplacé par exemplaires mono-unité + champ `curriculum` + review, et sera réintroduit si le bootstrap révèle des incohérences inter-supports (décision confirmée le 2026-07-13) |
 | review / rewrite | Restent **séparés** : le REVIEW.md est une coupure de contexte (la review condense une lecture lourde en artefact compact ; le rewrite repart en session fraîche) |
 | Curriculum | Devient un **champ DB sur `Section`**, exposé via MCP. Le skill `pedagogy-sync` est **supprimé** : write et rewrite mettent à jour le champ en fin de workflow |
 | Wrappers locaux | 6 → **3** : `/pedagogy:write`, `/pedagogy:review`, `/pedagogy:rewrite`. Supprimés : `pedagogy-sync`, `pedagogy-module` (alias). `/pedagogy:plan` conservé hors périmètre |
