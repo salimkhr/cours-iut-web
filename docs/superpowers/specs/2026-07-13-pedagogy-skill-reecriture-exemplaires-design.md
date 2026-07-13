@@ -73,13 +73,18 @@ d'évaluation et les cas limites actuels.
 
 - **SKILL.md** : philosophie pédagogique (TP-centrique, code réaliste, cours minimal),
   voix d'enseignant (anti-style IA), workflow de rédaction et routage vers les exemplaires.
-  Aucune checklist, aucun gabarit de structure imposé.
+  Aucune checklist, aucun gabarit de structure imposé. La philosophie écrite au squelette
+  initial est un **brouillon d'amorçage** : elle est réécrite en fin de bootstrap (après
+  l'unité 2) à partir des verdicts réellement accumulés, pas l'inverse.
 - **Exemplaires** : issus de 2 unités réelles complètes — ils encodent le style *et* la
   cohérence inter-supports. Les annotations sont la distillation des verdicts verbatim de
   l'utilisateur, pas des règles inventées par l'agent.
-- **calibrage.md** : continue de grossir après le bootstrap. Chaque génération décevante y
+- **calibrage.md** : continue de vivre après le bootstrap. Chaque génération décevante y
   ajoute un verdict (date, format, citation). Un motif récurrent (2-3 occurrences) est
-  promu en annotation d'exemplaire.
+  promu en annotation d'exemplaire. **Règle d'hygiène** (inscrite dans SKILL.md) : les
+  verdicts promus sont **retirés** du calibrage — il ne contient que les verdicts pas
+  encore promus et reste court par construction. C'est le garde-fou contre la maladie
+  qui a tué l'ancien skill : l'accumulation défensive de règles.
 
 ### Stockage et exposition
 
@@ -92,17 +97,14 @@ dans l'état du dernier déploiement ; son alimentation se fait via Claude Code 
 Les **unités sources restent des contenus vivants du site** : le bootstrap ne les
 sacrifie pas, elles demeurent publiées et modifiables normalement.
 
-### Point ouvert — rapport exemplaire ↔ unité réelle
+### Rapport exemplaire ↔ unité réelle : snapshot annoté
 
-À trancher au plus tard à l'écriture du plan (décision reportée par l'utilisateur) :
-
-- **A — snapshot annoté** : copie figée du contenu validé dans
-  `skills/pedagogie/exemplaires/`, annotations alignées sur un texte stable ;
-- **B — référence vivante** : le skill ne stocke que les annotations + un pointeur
-  (module/section) et lit le contenu réel via `export_content_compact` à l'usage.
-
-Recommandation au moment du brainstorm : A (étalon stable, pas de dérive silencieuse si
-l'unité évolue). L'arborescence `exemplaires/` ci-dessus illustre l'option A.
+Décision (2026-07-13) : l'exemplaire est une **copie figée et annotée** du contenu validé,
+stockée dans `skills/pedagogie/exemplaires/`. L'unité source reste un contenu vivant du
+site, publié et modifiable normalement — seul l'exemplaire est figé. L'alternative
+« référence vivante » (annotations + pointeur, lecture via `export_content_compact`) est
+écartée : une retouche anodine dans le builder modifierait l'étalon sans validation, et
+les annotations commenteraient un texte disparu.
 
 ### Manifeste MCP
 
@@ -181,12 +183,18 @@ Propriétés :
 
 ## Ordre de réalisation
 
-1. Chantier code `curriculum` (types, schéma, MCP, tests, build).
-2. Squelette du nouveau skill : SKILL.md (philosophie + workflow), `audit-apprenant.md`,
-   `calibrage.md` vide, 3 wrappers réécrits.
-3. Bootstrap unité 1 (cours → TP → slides → examen).
-4. Bootstrap unité 2.
-5. Démolition de l'ancien contenu + réécriture des tests + régénération MCP + mise à jour
+1. Préalables : committer le travail en cours (lot M1-M5, working tree propre) et
+   **générer la baseline** — une sortie de l'ancien skill archivée (même consigne que le
+   critère final de validation), pendant qu'il fonctionne encore.
+2. Chantier code `curriculum` (types, schéma, MCP, tests, build).
+   (Le champ `universe` sur Module est déjà implémenté — vérifié le 2026-07-13 : types,
+   schéma Zod, outils MCP, formulaire admin.)
+3. Squelette du nouveau skill : SKILL.md (philosophie d'amorçage + workflow),
+   `audit-apprenant.md`, `calibrage.md` vide, 3 wrappers réécrits.
+4. Bootstrap unité 1 (cours → TP → slides → examen).
+5. Bootstrap unité 2, puis réécriture de la philosophie du SKILL.md à partir des
+   verdicts accumulés.
+6. Démolition de l'ancien contenu + réécriture des tests + régénération MCP + mise à jour
    de `docs/PEDAGOGY.md` et des documents d'audit.
 
 ## Gestion d'erreurs
