@@ -68,12 +68,6 @@ export default async function AdminPage() {
                 >
                     Calibrage pédagogique
                 </Link>
-                <Link
-                    href="/admin/pedagogie"
-                    className="inline-flex items-center gap-1.5 rounded-md border border-bridge-500/30 px-3 py-1.5 text-sm font-medium text-bridge-600 dark:text-bridge-300 hover:bg-bridge-100/50 dark:hover:bg-bridge-800/30 transition-colors"
-                >
-                    Briefs &amp; curriculums
-                </Link>
             </div>
             <UsersTable users={users} />
         </div>
