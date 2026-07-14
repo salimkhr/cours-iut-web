@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { ObjectId } from "bson";
 import { connectToDB } from "@/lib/mongodb";
+import { withAdmin } from "@/lib/withAdmin";
 import type { PedagogyExemplar } from "@/types/Pedagogy";
 
-export async function GET() {
+export const GET = withAdmin(async () => {
     const db = await connectToDB();
     const exemplars = await db.collection<PedagogyExemplar>("pedagogy_exemplars")
         .find({}, { projection: { snapshot: 0 } }).sort({ date: -1 }).toArray();
@@ -16,9 +17,9 @@ export async function GET() {
         level: e.level,
         annotations: e.annotations,
     })));
-}
+});
 
-export async function DELETE(req: Request) {
+export const DELETE = withAdmin(async (req: Request) => {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
     if (!id || !ObjectId.isValid(id)) {
@@ -31,4 +32,4 @@ export async function DELETE(req: Request) {
         return NextResponse.json({ error: "exemplaire introuvable" }, { status: 404 });
     }
     return NextResponse.json({ ok: true });
-}
+});
