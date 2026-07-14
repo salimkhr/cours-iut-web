@@ -10,12 +10,12 @@ export interface ModuleColorPair {
  * Les 4 premières reprennent les couleurs historiques de globals.css.
  */
 export const MODULE_COLOR_PALETTE: ModuleColorPair[] = [
-    { colorLight: "#C13B1A", colorDark: "#FF8568" }, // rouge
-    { colorLight: "#3B3F7A", colorDark: "#9198E5" }, // indigo
-    { colorLight: "#7A6200", colorDark: "#FFD93D" }, // or
-    { colorLight: "#6B21A8", colorDark: "#C07AF8" }, // violet
-    { colorLight: "#1338A0", colorDark: "#6B9FFF" }, // bleu
-    { colorLight: "#0F6E6E", colorDark: "#4FD1C5" }, // teal
-    { colorLight: "#2F6B2F", colorDark: "#7BD88F" }, // vert
-    { colorLight: "#9D1D5A", colorDark: "#F472B6" }, // magenta
+    { colorLight: "#C13B1A", colorDark: "#DD977D" }, // rouge
+    { colorLight: "#3B3F7A", colorDark: "#9D98AB" }, // indigo
+    { colorLight: "#7A6200", colorDark: "#BBA971" }, // or
+    { colorLight: "#6B21A8", colorDark: "#B48AC1" }, // violet
+    { colorLight: "#1338A0", colorDark: "#8A95BE" }, // bleu
+    { colorLight: "#0F6E6E", colorDark: "#88AFA6" }, // teal
+    { colorLight: "#2F6B2F", colorDark: "#97AE87" }, // vert
+    { colorLight: "#9D1D5A", colorDark: "#CC889C" }, // magenta
 ];

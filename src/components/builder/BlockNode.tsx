@@ -74,8 +74,8 @@ export function BlockNode({ block, depth = 0, indexInParent, parentId }: BlockNo
                 errorMessage
                     ? "border-red-400/70 bg-red-50/60 dark:border-red-600/50 dark:bg-red-950/20"
                     : isSelected
-                        ? "border-blue-500/60 bg-blue-500/5"
-                        : "border-slate-300/40 dark:border-slate-600/30 bg-slate-50/60 dark:bg-slate-800/40",
+                        ? "border-brand-primary/60 bg-brand-primary/8"
+                        : "border-bridge-300/45 bg-bridge-50/60 dark:border-bridge-600/35 dark:bg-bridge-800/45",
                 depth > 0 && "ml-4"
             )}
         >
@@ -86,7 +86,7 @@ export function BlockNode({ block, depth = 0, indexInParent, parentId }: BlockNo
             >
                 {isCollapsible && (
                     <button
-                        className="text-slate-400 hover:text-slate-600 shrink-0"
+                        className="text-bridge-500 hover:text-bridge-700 dark:text-bridge-400 dark:hover:text-bridge-200 shrink-0"
                         onClick={(e) => { e.stopPropagation(); toggleCollapse(block.id); }}
                         aria-label={collapsed ? "Déplier" : "Replier"}
                     >
@@ -101,12 +101,12 @@ export function BlockNode({ block, depth = 0, indexInParent, parentId }: BlockNo
                 )}
                 <span className={cn(
                     "text-[10px] font-mono shrink-0 uppercase tracking-wide",
-                    errorMessage ? "text-red-600 dark:text-red-400" : "text-blue-600 dark:text-blue-400"
+                    errorMessage ? "text-red-600 dark:text-red-400" : "text-brand-primary"
                 )}>
                     {def?.label ?? block.type}
                 </span>
                 {contentPreview && (
-                    <span className="text-xs text-slate-500 dark:text-slate-400 truncate flex-1">
+                    <span className="text-xs text-bridge-500 dark:text-bridge-300 truncate flex-1">
                         {contentPreview}
                     </span>
                 )}
@@ -115,7 +115,7 @@ export function BlockNode({ block, depth = 0, indexInParent, parentId }: BlockNo
                         <Button
                             size="icon"
                             variant="ghost"
-                            className="h-6 w-6 text-slate-400 hover:text-blue-600"
+                            className="h-6 w-6 text-bridge-500 hover:text-brand-primary dark:text-bridge-400"
                             title={singleChildDef ? `Ajouter ${singleChildDef.label}` : "Ajouter un bloc enfant"}
                             onClick={singleChildDef ? insertSingleChild : () => setInsertChildOpen(true)}
                         >
@@ -125,7 +125,7 @@ export function BlockNode({ block, depth = 0, indexInParent, parentId }: BlockNo
                     <Button
                         size="icon"
                         variant="ghost"
-                        className="h-6 w-6 text-slate-400 hover:text-blue-600"
+                        className="h-6 w-6 text-bridge-500 hover:text-brand-primary dark:text-bridge-400"
                         title="Ajouter un bloc après"
                         onClick={() => setInsertAfterOpen(true)}
                     >
@@ -138,7 +138,7 @@ export function BlockNode({ block, depth = 0, indexInParent, parentId }: BlockNo
                             "h-6 w-6 transition-colors",
                             confirmDelete
                                 ? "text-red-600 hover:text-red-700 bg-red-50 dark:bg-red-900/20"
-                                : "text-slate-400 hover:text-red-500"
+                                : "text-bridge-500 hover:text-red-500 dark:text-bridge-400"
                         )}
                         title={confirmDelete ? "Confirmer la suppression" : "Supprimer ce bloc"}
                         onClick={handleDeleteClick}
@@ -157,14 +157,14 @@ export function BlockNode({ block, depth = 0, indexInParent, parentId }: BlockNo
 
             {/* Formulaire inline si sélectionné */}
             {isSelected && !collapsed && (
-                <div className="border-t border-slate-300/30 dark:border-slate-600/20">
+                <div className="border-t border-bridge-300/30 dark:border-bridge-600/25">
                     <BlockForm blockId={block.id} />
                 </div>
             )}
 
             {/* Enfants */}
             {!collapsed && (hasChildren || isContainer(block.type)) && (
-                <div className="flex flex-col gap-2 p-2 border-t border-slate-300/30 dark:border-slate-600/20">
+                <div className="flex flex-col gap-2 p-2 border-t border-bridge-300/30 dark:border-bridge-600/25">
                     {(block.children ?? []).map((child, i) => (
                         <BlockNode
                             key={child.id}
@@ -177,7 +177,7 @@ export function BlockNode({ block, depth = 0, indexInParent, parentId }: BlockNo
                     {singleChildDef && (
                         <button
                             onClick={insertSingleChild}
-                            className="flex items-center gap-1.5 w-full px-2 py-1 rounded text-[11px] text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 dark:hover:text-blue-400 transition-colors duration-150 cursor-pointer"
+                            className="flex items-center gap-1.5 w-full px-2 py-1 rounded text-[11px] text-bridge-500 hover:text-brand-primary hover:bg-brand-primary/10 dark:text-bridge-400 dark:hover:bg-brand-primary/16 transition-colors duration-150 cursor-pointer"
                         >
                             <Plus className="w-3 h-3 shrink-0" />
                             Ajouter {singleChildDef.label}

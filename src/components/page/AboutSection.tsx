@@ -52,7 +52,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
 
     // Extended solid zone (55%) and longer transition (75→90%) so text at max-width 560px
     // stays inside a covered zone on viewports ≥1024px, and partially covered on smaller ones.
-    const bgVar = isDark ? "var(--color-brand-dark)" : "var(--color-brand-light)";
+    const bgVar = isDark ? "var(--color-dark-background)" : "var(--color-brand-light)";
     const imageFade = `linear-gradient(to right, ${bgVar} 0%, ${bgVar} 55%, color-mix(in srgb, ${bgVar} 55%, transparent) 75%, transparent 90%)`;
 
     const textColor = isDark ? "var(--color-brand-light)" : "var(--color-brand-dark)";
@@ -62,15 +62,17 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
             <style>{`
         :root {
           --about-mobile-overlay: color-mix(in srgb, var(--color-brand-light) 90%, transparent);
+          --about-muted: var(--color-bridge-600);
         }
         .dark {
-          --about-mobile-overlay: color-mix(in srgb, var(--color-brand-dark) 90%, transparent);
+          --about-mobile-overlay: color-mix(in srgb, var(--color-dark-background) 90%, transparent);
+          --about-muted: var(--color-bridge-200);
         }
         .about-section {
           position: relative;
           width: 100%;
           overflow: hidden;
-          border-top: 1px solid var(--color-brand-gray-300);
+          border-top: 1px solid var(--color-border);
           min-height: clamp(260px, 40vw, 560px);
         }
         .about-image-wrap {
@@ -156,7 +158,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
           font-family: var(--font-mono, monospace);
           font-size: 0.7rem;
           letter-spacing: 0.06em;
-          color: var(--color-brand-gray-500);
+          color: var(--about-muted);
           white-space: nowrap;
           flex-shrink: 0;
         }
@@ -173,7 +175,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
         }
         .progress-bar-bg {
           height: 4px;
-          background: color-mix(in srgb, var(--color-brand-gray-500) 20%, transparent);
+          background: color-mix(in srgb, var(--about-muted) 24%, transparent);
           border-radius: 4px;
           overflow: hidden;
           margin-bottom: 0.4rem;
@@ -188,7 +190,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
           font-family: var(--font-mono, monospace);
           font-size: 0.7rem;
           letter-spacing: 0.06em;
-          color: var(--color-brand-gray-500);
+          color: var(--about-muted);
         }
       `}</style>
 

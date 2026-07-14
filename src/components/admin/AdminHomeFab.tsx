@@ -76,7 +76,7 @@ export default function AdminHomeFab() {
                 <DropdownMenuContent
                     side="top"
                     align="end"
-                    className="mb-2 min-w-[200px] bg-[#f7ebd9] dark:bg-[#13110d] border-bridge-500/45 shadow-[0_8px_24px_-4px_rgba(147,97,58,0.3)]"
+                    className="mb-2 min-w-[200px] bg-card border-bridge-500/45 shadow-[0_8px_24px_-4px_rgba(147,97,58,0.3)]"
                 >
                     <DropdownMenuItem
                         className="gap-2 cursor-pointer"

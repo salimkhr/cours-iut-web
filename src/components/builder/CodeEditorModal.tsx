@@ -36,7 +36,7 @@ export function CodeEditorModal({ open, initialValue, language, onClose, onSave 
                 <DialogHeader>
                     <DialogTitle className="text-sm">Éditer le code — {language}</DialogTitle>
                 </DialogHeader>
-                <div className="min-h-0 flex-1 overflow-hidden rounded border border-slate-200 dark:border-slate-700">
+                <div className="min-h-0 flex-1 overflow-hidden rounded border border-bridge-300/60 dark:border-bridge-600/45">
                     <MonacoEditor
                         height="100%"
                         defaultLanguage={language}

@@ -25,7 +25,7 @@ function InstructorRow({firstName, lastName, email, role}: Instructor & {role: s
     const initials = `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
     return (
         <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0 select-none bg-(--module-color) dark:bg-(--module-color-dark)">
+            <div className="flex size-8 items-center justify-center rounded-lg text-xs font-bold text-white shrink-0 select-none bg-(--module-color) dark:bg-(--module-color-dark) dark:text-brand-dark">
                 {initials}
             </div>
             <div className="flex flex-col min-w-0 flex-1">
@@ -38,7 +38,7 @@ function InstructorRow({firstName, lastName, email, role}: Instructor & {role: s
                 <span className="text-[11px] text-bridge-500 dark:text-bridge-400">{role}</span>
             </div>
             <Link href={`mailto:${email}`} aria-label={`Envoyer un mail à ${firstName} ${lastName}`} className="text-bridge-400 dark:text-bridge-500 hover:text-bridge-600 dark:hover:text-bridge-300 transition-colors duration-200 shrink-0">
-                <Mail className="w-3.5 h-3.5"/>
+                <Mail className="size-3.5"/>
             </Link>
         </div>
     );
@@ -62,10 +62,10 @@ export default function ModuleInfo({currentModule}: ModuleInfoProps) {
             <DialogContent
                 className={cn(
                     "max-w-md p-0 overflow-hidden",
-                    "bg-[#f7ebd9] dark:bg-[#13110d]",
+                    "bg-bridge-50 dark:bg-bridge-800",
                     "border border-bridge-500/45 dark:border-bridge-500/35",
                     "shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
-                    "[&>button]:text-white [&>button]:ring-offset-transparent [&>button:focus-visible]:ring-white/50",
+                    "[&>button]:text-bridge-50 dark:[&>button]:text-brand-dark [&>button]:ring-offset-transparent [&>button:focus-visible]:ring-white/50",
                 )}
                 style={{
                     "--module-color": moduleColor(currentModule),
@@ -74,13 +74,13 @@ export default function ModuleInfo({currentModule}: ModuleInfoProps) {
             >
                 {/* Header */}
                 <div className="relative flex items-center gap-4 px-6 py-5 pr-14 overflow-hidden bg-(--module-color) dark:bg-(--module-color-dark)">
-                    <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"/>
-                    <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 shrink-0">
-                        <Info className="w-5 h-5 text-white" aria-hidden="true"/>
+                    <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-bridge-50/40 dark:via-brand-dark/30 to-transparent"/>
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-bridge-50/20 dark:bg-brand-dark/15 shrink-0">
+                        <Info className="size-5 text-bridge-50 dark:text-brand-dark" aria-hidden="true"/>
                     </div>
-                    <DialogHeader className="p-0 space-y-0 text-left">
-                        <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/60">Module</p>
-                        <DialogTitle className="text-white font-bold text-xl leading-tight">
+                    <DialogHeader className="p-0 gap-0 text-left">
+                        <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-bridge-50/70 dark:text-brand-dark/65">Module</p>
+                        <DialogTitle className="text-bridge-50 dark:text-brand-dark font-bold text-xl leading-tight">
                             {currentModule.title}
                         </DialogTitle>
                     </DialogHeader>

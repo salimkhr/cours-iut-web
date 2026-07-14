@@ -133,7 +133,7 @@ export default function TableOfContents({
     return (
         <div ref={containerRef} className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2">
             {isOpen && (
-                <div className="w-64 max-h-[60vh] bg-brand-light dark:bg-brand-dark border border-bridge-200 dark:border-bridge-600 rounded-xl shadow-xl flex flex-col overflow-hidden">
+                <div className="w-64 max-h-[60vh] bg-bridge-50 dark:bg-bridge-800 border border-border rounded-xl shadow-[0_18px_36px_-14px_rgba(147,97,58,0.5)] dark:shadow-[0_18px_36px_-14px_rgba(0,0,0,0.75)] flex flex-col overflow-hidden">
                     {/* Header onglets */}
                     <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-bridge-100 dark:border-bridge-700 shrink-0">
                         <div className="flex gap-1">
@@ -143,7 +143,7 @@ export default function TableOfContents({
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
                                     className={cn(
-                                        'text-xs font-semibold px-2 py-1 border-b-2 transition-colors',
+                                        'rounded-t-sm text-xs font-semibold px-2 py-1 border-b-2 transition-colors focus-visible:ring-2 focus-visible:ring-ring',
                                         activeTab !== tab && 'border-transparent text-brand-dark/40 dark:text-bridge-300/40'
                                     )}
                                     style={
@@ -159,10 +159,10 @@ export default function TableOfContents({
                         <button
                             type="button"
                             onClick={() => setIsOpen(false)}
-                            className="text-brand-dark/40 dark:text-bridge-300/40 hover:text-brand-dark dark:hover:text-bridge-100 transition-colors"
+                            className="rounded-md text-brand-dark/40 dark:text-bridge-300/40 hover:text-brand-dark dark:hover:text-bridge-100 transition-colors focus-visible:ring-2 focus-visible:ring-ring"
                             aria-label="Fermer"
                         >
-                            <X className="w-3.5 h-3.5" />
+                            <X className="size-3.5" />
                         </button>
                     </div>
 
@@ -190,7 +190,7 @@ export default function TableOfContents({
                                         key={entry.id}
                                         onClick={() => handleEntryClick(entry)}
                                         className={cn(
-                                            'w-full text-left px-3 py-1 transition-colors hover:bg-bridge-100 dark:hover:bg-bridge-700/30',
+                                            'w-full rounded-sm text-left px-3 py-1 transition-colors hover:bg-bridge-100 focus-visible:ring-2 focus-visible:ring-ring dark:hover:bg-bridge-700/30',
                                             entry.level === 3 ? 'pl-7 text-xs' : 'text-sm font-semibold',
                                             !isActive && 'text-brand-dark/80 dark:text-bridge-200/80'
                                         )}
@@ -209,11 +209,11 @@ export default function TableOfContents({
             <button
                 type="button"
                 onClick={() => setIsOpen((p) => !p)}
-                className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg text-white dark:text-brand-dark transition-opacity hover:opacity-90"
+                className="flex size-10 items-center justify-center rounded-full shadow-[0_14px_30px_-12px_rgba(147,97,58,0.65)] text-white dark:text-brand-dark transition-[opacity,transform] hover:opacity-90 active:translate-y-px focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 style={{ backgroundColor: moduleColor }}
                 aria-label="Table des matières"
             >
-                <List className="w-5 h-5" />
+                <List className="size-5" />
             </button>
         </div>
     )

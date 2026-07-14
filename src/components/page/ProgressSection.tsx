@@ -36,7 +36,7 @@ function AnimatedStat({IconComp, label, value, withDivider, modulePath}: Animate
             onMouseLeave={() => iconRef.current?.stopAnimation()}
         >
             {/* Icône desktop — contrôlée via ref */}
-            <div className="hidden sm:flex items-center justify-center w-11 h-11 rounded-xl bg-bridge-700/15 text-brand-dark dark:bg-bridge-500/25 dark:text-bridge-100 shrink-0">
+            <div className="hidden sm:flex size-11 items-center justify-center rounded-xl bg-bridge-700/15 text-brand-dark dark:bg-bridge-500/25 dark:text-bridge-100 shrink-0">
                 <IconComp ref={iconRef} size={20}/>
             </div>
 
@@ -83,7 +83,7 @@ export default function ProgressSection({
             <div className="relative max-w-2xl mx-auto opacity-0 animate-fade-in">
                 <div className={cn(
                     "grid grid-cols-3 gap-2 sm:gap-4 rounded-2xl",
-                    "bg-[#f7ebd9] dark:bg-[#13110d]",
+                    "bg-bridge-50 dark:bg-bridge-800",
                     "border border-bridge-500/45 dark:border-bridge-500/35",
                     "shadow-[0_8px_28px_-12px_rgba(147,97,58,0.45)]",
                     "dark:shadow-[0_8px_28px_-12px_rgba(0,0,0,0.6)]",

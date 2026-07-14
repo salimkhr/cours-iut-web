@@ -283,7 +283,7 @@ export default function EditUserDialog({ user, open, onOpenChange, onUpdated }: 
             <DialogContent
                 className={cn(
                     "max-w-md p-0 overflow-hidden",
-                    "bg-[#f7ebd9] dark:bg-[#13110d]",
+                    "bg-card",
                     "border border-bridge-500/45 dark:border-bridge-500/35",
                     "shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
                     "[&>button]:text-white [&>button]:ring-offset-transparent [&>button:focus-visible]:ring-white/50",

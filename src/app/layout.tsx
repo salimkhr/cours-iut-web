@@ -21,14 +21,15 @@ const ibmPlexSans = IBM_Plex_Sans({
 
 export const metadata: Metadata = {
     title: "Développement Web | Liste des cours",
-    description: "",
+    description: "Plateforme pedagogique pour travailler les cours, TP, slides et examens de developpement web en BUT Informatique.",
+    metadataBase: new URL("https://salimkhraimeche.dev"),
     manifest: '/manifest.json',
     icons: {
         icon: '/icons/icon-192x192.png',
         apple: '/icons/icon-192x192.png'
     },
     other: {
-        'theme-color': '#317EFB'
+        'theme-color': '#C2410C'
     }
 };
 
@@ -43,7 +44,7 @@ export default async function RootLayout({children}: { children: React.ReactNode
 
     return (
         <html lang="fr" className={`${jetbrainsMono.variable} ${ibmPlexSans.variable}`} suppressHydrationWarning>
-            <body className="min-h-screen font-sans bg-brand-light dark:bg-brand-dark text-brand-dark dark:text-brand-light">
+            <body className="min-h-screen font-sans bg-background text-foreground">
                 {themeCss && (
                     <style id="module-theme-vars" dangerouslySetInnerHTML={{__html: themeCss}}/>
                 )}
@@ -54,7 +55,15 @@ export default async function RootLayout({children}: { children: React.ReactNode
                     disableTransitionOnChange
                 >
                     <NavBar/>
-                    {children}
+                    <a
+                        href="#contenu-principal"
+                        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-brand-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-brand-light focus:shadow-[0_18px_36px_-14px_rgba(147,97,58,0.65)]"
+                    >
+                        Aller au contenu
+                    </a>
+                    <div id="contenu-principal" tabIndex={-1} className="outline-none">
+                        {children}
+                    </div>
                     <Toaster richColors closeButton/>
                 </ThemeProvider>
             </body>

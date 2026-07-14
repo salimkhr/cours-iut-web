@@ -74,7 +74,7 @@ export default function ContentCard({content, section, currentModule}: ContentCa
             } as React.CSSProperties}
             className={cn(
                 "group relative h-full flex flex-col p-6 lg:p-7 rounded-2xl overflow-hidden",
-                "bg-[#f7ebd9] dark:bg-[#13110d]",
+                "bg-bridge-50 dark:bg-bridge-800",
                 "border border-bridge-500/45 dark:border-bridge-500/35",
                 "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)]",
                 "dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
@@ -112,15 +112,15 @@ export default function ContentCard({content, section, currentModule}: ContentCa
 
                 {/* Header: icon + title + lock badge */}
                 <header className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-xl shrink-0 text-white shadow-sm transition-transform duration-300 ease-out group-hover:scale-105 group-hover:rotate-[-3deg] bg-(--module-color) dark:bg-(--module-color-dark)">
-                        <IconComp ref={iconRef} size={24} className="text-white"/>
+                    <div className="flex size-12 items-center justify-center rounded-xl shrink-0 text-white shadow-sm transition-transform duration-300 ease-out group-hover:scale-105 group-hover:rotate-[-3deg] bg-(--module-color) dark:bg-(--module-color-dark) dark:text-brand-dark">
+                        <IconComp ref={iconRef} size={24} className="text-current"/>
                     </div>
                     <h3 className="text-2xl font-bold tracking-tight leading-tight flex-1 min-w-0 text-(--module-color) dark:text-(--module-color-dark)">
                         {label}
                     </h3>
                     {isLocked && (
                         <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100 shrink-0">
-                            <Lock className="w-3 h-3"/>
+                            <Lock className="size-3"/>
                             <span className="hidden sm:inline">Verrouillé</span>
                         </span>
                     )}
@@ -141,12 +141,12 @@ export default function ContentCard({content, section, currentModule}: ContentCa
                             className="inline-flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-semibold tracking-wide border border-bridge-700/55 text-brand-dark dark:border-bridge-400/40 dark:text-bridge-100 opacity-50 pointer-events-none cursor-not-allowed"
                         >
                             Indisponible
-                            <Lock className="w-4 h-4"/>
+                            <Lock className="size-4"/>
                         </span>
                     ) : (
                         <Link
                             href={href}
-                            className="group/cta inline-flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-semibold tracking-wide border border-bridge-700/55 text-brand-dark dark:border-bridge-400/40 dark:text-bridge-100 transition-[color,border-color,background-color] duration-300 hover:bg-bridge-200 hover:border-bridge-700 hover:text-bridge-900 dark:hover:bg-bridge-700 dark:hover:border-bridge-300 dark:hover:text-bridge-50"
+                            className="group/cta inline-flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-semibold tracking-wide border border-bridge-700/55 text-brand-dark dark:border-bridge-400/40 dark:text-bridge-100 transition-[color,border-color,background-color,transform] duration-300 hover:bg-bridge-200 hover:border-bridge-700 hover:text-bridge-900 active:translate-y-px dark:hover:bg-bridge-700 dark:hover:border-bridge-300 dark:hover:text-bridge-50"
                         >
                             Ouvrir {label}
                             <ArrowRight className="size-4 transition-transform duration-300 group-hover/cta:translate-x-1"/>

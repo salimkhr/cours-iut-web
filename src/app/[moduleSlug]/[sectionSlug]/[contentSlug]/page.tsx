@@ -119,7 +119,7 @@ export default async function Content({params}: ContentPageProps) {
                     <div className="w-full">
                         <div className="flex items-center gap-2 mb-2">
                             <Target
-                                className="w-4 h-4"
+                                className="size-4"
                                 style={{color: accent}}
                             />
                             <h2 className="text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-dark/70 dark:text-bridge-200/70">
@@ -145,7 +145,7 @@ export default async function Content({params}: ContentPageProps) {
                 <ReadingProgress modulePath={currentModule.path} accentColor={accent}/>
             )}
             <div className="flex sticky top-(--navbar-h) z-[25] w-full justify-end">
-                <div className={cn("flex items-center px-1 border-l border-b border-border rounded-bl-xl bg-transparent backdrop-blur-xs", isSplit ? "py-1" : "pt-1 pb-1")}>
+                <div className={cn("flex items-center px-1 border-l border-b border-border rounded-bl-xl bg-transparent backdrop-blur-xs", isSplit ? "py-1" : "pt-2.5 pb-1")}>
                     <ContentSidebarNav
                         contents={getContentTypes(currentSection.contents)}
                         currentContent={isSplit ? SPLIT_SLUG : currentContent!}
@@ -260,9 +260,9 @@ function SplitPane({label, Icon, accentColor, accentColorDark, side, children}: 
                 '--module-color-dark': accentColorDark,
             } as React.CSSProperties}
         >
-            <div className="mb-4 flex items-center gap-2 lg:sticky lg:top-0 bg-brand-light/85 dark:bg-brand-dark/85 backdrop-blur-md py-2 z-10">
+            <div className="mb-4 flex items-center gap-2 lg:sticky lg:top-0 bg-background/85 backdrop-blur-md py-2 z-10">
                 <Icon
-                    className="w-4 h-4"
+                    className="size-4"
                     style={{color: accentColor}}
                 />
                 <h2 className="text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-dark/70 dark:text-bridge-200/70">

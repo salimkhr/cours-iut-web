@@ -81,9 +81,12 @@ export default function NavBarClient({
         pathname === href || pathname.startsWith(href + "/");
 
     const linkClass = (href: string) =>
-        `${navigationMenuTriggerStyle()} transition-colors duration-200 ${
-            isActive(href) ? "bg-accent text-accent-foreground" : ""
-        }`;
+        cn(
+            navigationMenuTriggerStyle(),
+            "bg-transparent text-bridge-900 hover:bg-transparent hover:text-brand-primary focus:bg-transparent focus:text-brand-primary active:bg-transparent data-[state=open]:bg-transparent data-[state=open]:hover:bg-transparent data-[state=open]:focus:bg-transparent",
+            "dark:text-bridge-100 dark:hover:text-brand-primary dark:focus:text-brand-primary",
+            isActive(href) && "text-brand-primary dark:text-brand-primary"
+        );
 
     async function handleSignOut() {
         await authClient.signOut();
@@ -92,9 +95,9 @@ export default function NavBarClient({
     }
 
     return (
-        <header className="sticky top-0 z-50 bg-transparent backdrop-blur-xs relative">
+        <header className="sticky top-0 z-50 bg-background/88 backdrop-blur-md">
             <NavReadingProgress />
-            <NavigationMenu className="border-b border-border px-2">
+            <NavigationMenu className="h-(--navbar-h) border-b border-border px-2">
 
                 {/* LEFT NAV */}
                 <div className="flex items-center gap-2">

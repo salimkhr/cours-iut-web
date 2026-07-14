@@ -334,7 +334,7 @@ export function BuilderPage({
                                 onInsertAfter={openInsertAt}
                             />
                         ) : (
-                            <div className="flex flex-1 items-center justify-center text-slate-400">
+                            <div className="flex flex-1 items-center justify-center text-bridge-500 dark:text-bridge-300">
                                 Aucune slide. Ajoutez-en une.
                             </div>
                         )}

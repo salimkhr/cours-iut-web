@@ -3,10 +3,7 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {XIcon} from "lucide-react";
 import {cn} from "@/lib/utils";
-import {useTheme} from "next-themes";
 import {ComponentProps} from "react";
-import {useIsDark} from "@/hook/useIsDark";
-import {useMounted} from "@/hook/useMounted";
 
 function Dialog({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
     return <DialogPrimitive.Root data-slot="dialog" {...props} />;
@@ -29,7 +26,7 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
         <DialogPrimitive.Overlay
             data-slot="dialog-overlay"
             className={cn(
-                "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-150 bg-black/50",
+                "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-bridge-900/60",
                 className
             )}
             {...props}
@@ -43,22 +40,18 @@ function DialogContent({
                            showCloseButton = true,
                            ...props
                        }: ComponentProps<typeof DialogPrimitive.Content> & { showCloseButton?: boolean }) {
-    const mounted = useMounted();
-    const isDark = useIsDark();
-    if (!mounted) return null; // SSR safe
-
     return (
         <DialogPortal data-slot="dialog-portal">
             <DialogOverlay />
             <DialogPrimitive.Content
                 data-slot="dialog-content"
-                className={cn(`${isDark ? "bg-gray-800 text-gray-200" : "bg-white text-gray-700"}
+                className={cn(`bg-background text-foreground
           data-[state=open]:animate-in data-[state=closed]:animate-out 
           data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 
           data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 
-          fixed top-[50%] left-[50%] z-200 grid w-full max-w-[calc(100%-2rem)] 
-          translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 
-          shadow-lg duration-200 sm:max-w-lg md:max-w-3xl`,
+          fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)]
+          translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border border-border p-6
+          shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] duration-200 sm:max-w-lg md:max-w-3xl dark:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]`,
                     className
                 )}
                 {...props}
@@ -68,8 +61,7 @@ function DialogContent({
                     <DialogPrimitive.Close
                         data-slot="dialog-close"
                         className={cn(
-                            "ring-offset-background focus:ring-ring absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-                            isDark ? "text-gray-200" : "text-gray-700"
+                            "ring-offset-background focus:ring-ring absolute top-4 right-4 rounded-xs text-foreground opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
                         )}
                     >
                         <XIcon />
@@ -102,26 +94,20 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 function DialogTitle({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Title>) {
-    const { theme } = useTheme();
-    const isDark = theme === "dark";
-
     return (
         <DialogPrimitive.Title
             data-slot="dialog-title"
-            className={cn("text-lg leading-none font-semibold", isDark ? "text-gray-200" : "text-gray-700", className)}
+            className={cn("text-lg leading-none font-semibold text-foreground", className)}
             {...props}
         />
     );
 }
 
 function DialogDescription({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Description>) {
-    const { theme } = useTheme();
-    const isDark = theme === "dark";
-
     return (
         <DialogPrimitive.Description
             data-slot="dialog-description"
-            className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600", className)}
+            className={cn("text-sm text-muted-foreground", className)}
             {...props}
         />
     );

@@ -29,7 +29,7 @@ export default async function Home() {
     const extraModules   = isAuthed ? allModules.filter(m => m.isExtra  && (isAdmin || m.isVisible !== false)) : [];
 
     return (
-        <main className="flex flex-col w-full items-center justify-start min-h-screen bg-brand-light dark:bg-brand-dark">
+        <main className="flex flex-col w-full items-center justify-start min-h-screen bg-background">
             <HeroSection
                 title="Développement Web"
                 description={
@@ -45,12 +45,12 @@ export default async function Home() {
                         asChild
                         variant="outline"
                         size="lg"
-                        className="group h-auto rounded-lg border-2 border-brand-accent-dark bg-transparent text-brand-dark dark:text-brand-light hover:bg-brand-accent-dark hover:text-white hover:border-brand-accent-dark px-6 py-3 text-sm font-semibold tracking-wide shadow-none transition-all duration-300"
+                        className="group h-auto rounded-lg border-2 border-brand-accent-dark bg-transparent text-brand-dark dark:text-brand-light hover:bg-brand-accent-dark hover:text-bridge-50 dark:hover:text-brand-dark hover:border-brand-accent-dark px-6 py-3 text-sm font-semibold tracking-wide shadow-none transition-all duration-300"
                     >
                         <Link href="#cours">
                             Voir les cours
                             <ArrowRight
-                                className="size-4 text-brand-accent-dark group-hover:text-white transition-all duration-300 group-hover:translate-x-1"/>
+                                className="size-4 text-brand-accent-dark group-hover:text-bridge-50 dark:group-hover:text-brand-dark transition-all duration-300 group-hover:translate-x-1"/>
                         </Link>
                     </Button>
                 ) : (
@@ -72,7 +72,7 @@ export default async function Home() {
                                 style={{animationDelay: `${index * 0.1}s`}}
                             >
                                 {hidden && (
-                                    <span className="absolute top-2 right-2 z-10 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded pointer-events-none">
+                                    <span className="absolute top-2 right-2 z-10 rounded-md bg-brand-primary/90 px-2 py-0.5 text-[10px] font-bold text-bridge-50 shadow-[0_8px_18px_-12px_rgba(147,97,58,0.65)] pointer-events-none">
                                         Masqué
                                     </span>
                                 )}
@@ -90,7 +90,7 @@ export default async function Home() {
             {!isAuthed && (
                 <section className="w-full max-w-7xl mx-auto px-6 lg:px-12 -mt-8 lg:-mt-12 mb-16 lg:mb-24 flex flex-col items-center gap-5">
                     <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-dark/60 dark:text-bridge-200/60">
-                        <Lock className="w-3 h-3"/>
+                        <Lock className="size-3"/>
                         Accessible après connexion
                     </span>
                     <AuthCTAPair className="justify-center"/>

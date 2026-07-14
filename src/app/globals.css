@@ -6,7 +6,7 @@
 @theme {
     --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
     --font-sans: var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif;
-    --color-footer: #121212;
+    --color-footer: #2a1d12;
     --color-destructive: #dc2626;
 
     /* Design system — Neo-Mirai */
@@ -16,6 +16,7 @@
     /* légèrement assombri pour rester distinguable de brand-primary au hover */
     --color-brand-accent-dark: #8D2F09;
     --color-brand-dark: #221e18;
+    --color-dark-background: #2B2118;
     --color-brand-dark-soft: #1E293B;
     --color-brand-light: #fcf9f3;
     --color-brand-gray-100: #F1F5F9;
@@ -35,6 +36,25 @@
     --color-bridge-700: #5e3b22;
     --color-bridge-800: #3f2818;
     --color-bridge-900: #2a1d12;
+
+    /* shadcn/Radix semantic tokens mapped to the bridge palette. */
+    --color-background: var(--color-brand-light);
+    --color-foreground: var(--color-brand-dark);
+    --color-card: var(--color-bridge-50);
+    --color-card-foreground: var(--color-brand-dark);
+    --color-popover: var(--color-bridge-50);
+    --color-popover-foreground: var(--color-brand-dark);
+    --color-primary: var(--color-brand-primary);
+    --color-primary-foreground: var(--color-brand-light);
+    --color-secondary: var(--color-bridge-100);
+    --color-secondary-foreground: var(--color-brand-dark);
+    --color-muted: var(--color-bridge-100);
+    --color-muted-foreground: var(--color-bridge-600);
+    --color-accent: color-mix(in srgb, var(--color-brand-primary) 14%, var(--color-bridge-100));
+    --color-accent-foreground: var(--color-brand-dark);
+    --color-border: color-mix(in srgb, var(--color-bridge-500) 42%, transparent);
+    --color-input: color-mix(in srgb, var(--color-bridge-500) 38%, transparent);
+    --color-ring: var(--color-brand-primary);
 }
 
 /* Variables CSS */
@@ -54,33 +74,89 @@
     --navbar-h: 38px;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    text-rendering: optimizeLegibility;
+    font-variant-numeric: tabular-nums;
+    background: var(--color-background);
+    color: var(--color-foreground);
+}
+
+::selection {
+    background: color-mix(in srgb, var(--color-brand-primary) 24%, transparent);
+    color: var(--color-brand-dark);
+}
+
+:where(a, button, [role="button"], input, select, textarea):focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}
+
 /* Variables Dark Mode */
 .dark {
-    /* brand-primary éclairci pour texte lisible sur fond sombre (ratio ≥6:1 sur bridge-800) */
-    --color-brand-primary: #FB923C;
+    /* Dark palette rebuilt from the light bridge system: cocoa surfaces, caramel accents. */
+    --color-brand-primary: #E9955D;
+    --color-brand-accent: #F0AD73;
+    --color-brand-accent-dark: #D47B46;
+    --color-brand-light: #F3DEC4;
 
-    /* Couleurs modules dark — valeur unique lumineuse pour text sur fond sombre ✓ ET bg avec texte sombre ✓
-       Le badge SectionCard utilise déjà text-white dark:text-black.
-       ContentSidebarNav active tab utilise dark:text-brand-dark (voir ContentSidebarNav.tsx).
-       Ratios vérifiés sur fond bridge-800 #3f2818 (L≈0.025) avec texte brand-dark #221e18.    */
-    --color-html-css:   #FF8568;   /* corail rouge  — texte/fond sombre 5.7:1, fond/texte sombre 8.6:1  */
-    --color-php:        #9198E5;   /* lavande indigo — texte/fond sombre 5.3:1, fond/texte sombre 8:1   */
-    --color-javascript: #FFD93D;   /* or vif JS     — texte/fond sombre 8.3:1, fond/texte sombre 12:1  */
-    --color-login:      #6B9FFF;   /* bleu clair    — texte/fond sombre 5.7:1, fond/texte sombre 8.6:1 */
-    --color-brainfuck:  #C07AF8;   /* violet clair  — texte/fond sombre 5.2:1, fond/texte sombre 7.8:1 */
-    --color-scroll:     #d59b6d;
+    --color-bridge-50:  #F7EBD9;
+    --color-bridge-100: #EAD5B8;
+    --color-bridge-200: #D1B48B;
+    --color-bridge-300: #B58B5E;
+    --color-bridge-400: #93683F;
+    --color-bridge-500: #735033;
+    --color-bridge-600: #5A3D27;
+    --color-bridge-700: #452F1F;
+    --color-bridge-800: #352418;
+    --color-bridge-900: #241811;
+
+    --color-background: var(--color-dark-background);
+    --color-foreground: var(--color-brand-light);
+    --color-card: var(--color-bridge-800);
+    --color-card-foreground: var(--color-brand-light);
+    --color-popover: var(--color-bridge-800);
+    --color-popover-foreground: var(--color-brand-light);
+    --color-primary: var(--color-brand-primary);
+    --color-primary-foreground: var(--color-brand-dark);
+    --color-secondary: var(--color-bridge-800);
+    --color-secondary-foreground: var(--color-brand-light);
+    --color-muted: var(--color-bridge-900);
+    --color-muted-foreground: var(--color-bridge-200);
+    --color-accent: color-mix(in srgb, var(--color-brand-primary) 16%, var(--color-bridge-700));
+    --color-accent-foreground: var(--color-brand-light);
+    --color-border: color-mix(in srgb, var(--color-bridge-400) 38%, transparent);
+    --color-input: color-mix(in srgb, var(--color-bridge-500) 44%, transparent);
+    --color-ring: var(--color-brand-primary);
+
+    /* Couleurs modules dark — dérivées des couleurs light, puis réchauffées vers bridge-50. */
+    --color-html-css:   #DD977D;
+    --color-php:        #9D98AB;
+    --color-javascript: #BBA971;
+    --color-login:      #8A95BE;
+    --color-brainfuck:  #B48AC1;
+    --color-scroll:     #B58B5E;
 
     /* === Clerk — intégration Neo-Mirai (dark) === */
-    --clerk-color-primary: #FB923C;            /* brand-accent (plus lumineux sur fond sombre) */
-    --clerk-color-primary-foreground: #221e18; /* texte sombre lisible sur orange clair */
-    --clerk-color-neutral: #f0d5b7;            /* brand-light */
-    --clerk-color-foreground: #f0d5b7;
-    --clerk-color-background: #3f2818;         /* bridge-800 */
-    --clerk-color-input: #2a1d12;              /* bridge-900 */
-    --clerk-color-input-foreground: #f0d5b7;
-    --clerk-color-ring: color-mix(in srgb, #FB923C 35%, transparent);
-    --clerk-color-shimmer: #5e3b22;            /* bridge-700 */
-    --clerk-color-modal-backdrop: color-mix(in srgb, #000000 75%, transparent);
+    --clerk-color-primary: var(--color-brand-primary);
+    --clerk-color-primary-foreground: var(--color-brand-dark);
+    --clerk-color-neutral: var(--color-brand-light);
+    --clerk-color-foreground: var(--color-brand-light);
+    --clerk-color-background: var(--color-bridge-800);
+    --clerk-color-input: var(--color-bridge-900);
+    --clerk-color-input-foreground: var(--color-brand-light);
+    --clerk-color-ring: color-mix(in srgb, var(--color-brand-primary) 35%, transparent);
+    --clerk-color-shimmer: var(--color-bridge-700);
+    --clerk-color-modal-backdrop: color-mix(in srgb, var(--color-bridge-900) 82%, transparent);
 }
 
 /* Animations keyframes */
@@ -192,7 +268,7 @@
 
 .card-hover-effect:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 22px 44px -14px rgba(147, 97, 58, 0.55);
 }
 
 .icon-hover {
@@ -290,7 +366,7 @@
 
 /* Effet au survol */
 ::-webkit-scrollbar-thumb:hover {
-    background-color: #000;
+    background-color: var(--color-bridge-900);
 }
 
 /* === Firefox === */

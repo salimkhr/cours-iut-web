@@ -84,7 +84,7 @@ export const SlideDiagram: React.FC<SlideDiagramProps> = ({
     if (!mounted) {
         return (
             <div className={cn("flex items-start justify-center w-full h-full min-h-[600px]", className)}>
-                <div className="h-full w-full animate-pulse bg-gray-200 dark:bg-gray-700 rounded"/>
+                <div className="h-full w-full animate-pulse bg-bridge-200/70 dark:bg-bridge-700/55 rounded"/>
             </div>
         );
     }
@@ -97,7 +97,7 @@ export const SlideDiagram: React.FC<SlideDiagramProps> = ({
                     className="max-w-full flex items-start justify-center slide-diagram-container"
                 />
             ) : (
-                <div className="h-[600px] flex items-start justify-center text-gray-500">
+                <div className="h-[600px] flex items-start justify-center text-bridge-500 dark:text-bridge-300">
                     Chargement du diagramme...
                 </div>
             )}

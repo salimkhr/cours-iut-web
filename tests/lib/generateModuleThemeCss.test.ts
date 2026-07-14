@@ -7,7 +7,7 @@ describe("generateModuleThemeCss", () => {
             { path: "php", colorLight: "#3B3F7A", colorDark: "#9198E5" },
         ]);
         expect(css).toContain(":root{--color-php:#3B3F7A}");
-        expect(css).toContain(".dark{--color-php:#9198E5}");
+        expect(css).toContain(".dark{--color-php:#9D98AB}");
     });
 
     test("ignore un path non conforme (anti-injection)", () => {
@@ -22,7 +22,7 @@ describe("generateModuleThemeCss", () => {
             { path: "php", colorLight: "red; }", colorDark: "#9198E5" },
         ]);
         expect(css).not.toContain("red");
-        expect(css).toContain(".dark{--color-php:#9198E5}");
+        expect(css).not.toContain(".dark");
         expect(css).not.toContain(":root");
     });
 

@@ -63,14 +63,14 @@ export default function ContentSidebarNav({
                         aria-current={isActive ? 'page' : undefined}
                         className={cn(
                             "shrink-0 inline-flex items-center gap-0.5 px-2 sm:px-1.5 h-11 sm:h-7 text-sm font-medium rounded-md",
-                            "transition-colors duration-200",
+                            "transition-[background-color,color,transform] duration-200 active:translate-y-px focus-visible:ring-2 focus-visible:ring-ring",
                             isActive
                                 ? "text-white dark:text-brand-dark"
                                 : "text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark dark:hover:text-bridge-100 hover:bg-bridge-300/40 dark:hover:bg-bridge-700/40"
                         )}
-                        style={isActive && accentColor ? {backgroundColor: accentColor} : undefined}
+                        style={isActive ? {backgroundColor: accentColor ?? `var(--color-${moduleSlug})`} : undefined}
                     >
-                        <Icon className="w-4 h-4 sm:w-3.5 sm:h-3.5 shrink-0"/>
+                        <Icon className="size-4 sm:size-3.5 shrink-0"/>
                         <span>{label}</span>
                     </Link>
                 );
@@ -84,9 +84,9 @@ export default function ContentSidebarNav({
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Ouvrir les slides dans un nouvel onglet"
-                        className="shrink-0 inline-flex items-center gap-1.5 px-2.5 h-11 sm:h-7 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark dark:hover:text-bridge-100 hover:bg-bridge-300/40 dark:hover:bg-bridge-700/40"
+                        className="shrink-0 inline-flex items-center gap-1.5 px-2.5 h-11 sm:h-7 text-sm font-medium rounded-md transition-[background-color,color,transform] duration-200 cursor-pointer text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark active:translate-y-px focus-visible:ring-2 focus-visible:ring-ring dark:hover:text-bridge-100 hover:bg-bridge-300/40 dark:hover:bg-bridge-700/40"
                     >
-                        <ExternalLink className="w-4 h-4 sm:w-3.5 sm:h-3.5 shrink-0"/>
+                        <ExternalLink className="size-4 sm:size-3.5 shrink-0"/>
                         <span>Slides</span>
                     </a>
                 </>

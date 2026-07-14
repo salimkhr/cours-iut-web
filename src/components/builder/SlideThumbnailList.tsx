@@ -65,7 +65,7 @@ function Thumbnail({
             aria-label={`Slide ${index + 1} : ${String(slide.props.title ?? "Sans titre")}`}
             aria-current={active ? "step" : undefined}
             className={[
-                "block w-full overflow-hidden rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+                "block w-full overflow-hidden rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary",
                 active ? "ring-2 ring-[var(--mod-color,#C2410C)]" : "ring-1 ring-bridge-200 dark:ring-bridge-700",
             ].join(" ")}
         >

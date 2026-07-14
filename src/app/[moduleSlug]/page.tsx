@@ -71,7 +71,7 @@ export default async function Module({params}: ModulePageProps) {
                         '--module-color': moduleColor(currentModule),
                         '--module-color-dark': moduleColor(currentModule, 'dark'),
                     } as React.CSSProperties}
-                            className="group h-auto rounded-lg border-[3px] border-(--module-color) bg-transparent text-brand-dark dark:text-brand-light hover:bg-(--module-color) hover:text-white hover:border-(--module-color) px-6 py-3 text-sm font-semibold tracking-wide shadow-none transition-all duration-300"
+                            className="group h-auto rounded-lg border-[3px] border-(--module-color) bg-transparent text-brand-dark dark:text-brand-light hover:bg-(--module-color) hover:text-white hover:border-(--module-color) dark:hover:text-brand-dark px-6 py-3 text-sm font-semibold tracking-wide shadow-none transition-all duration-300"
                         >
                             <Link href={`/${currentModule.path}/${lastAvailableSectionPath}`}>
                                 Continuer le cours
@@ -83,7 +83,7 @@ export default async function Module({params}: ModulePageProps) {
                                     strokeWidth={3}
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
-                                    className="size-4 text-(--module-color) group-hover:text-white transition-all duration-300 group-hover:translate-x-1"
+                                    className="size-4 text-(--module-color) group-hover:text-white dark:group-hover:text-brand-dark transition-all duration-300 group-hover:translate-x-1"
                                 >
                                     <path d="M5 12h14"/>
                                     <path d="M13 5l7 7-7 7"/>

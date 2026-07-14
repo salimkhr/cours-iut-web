@@ -1,11 +1,11 @@
 import { connectToDB } from "@/lib/mongodb";
 
-/** Couleurs historiques de globals.css → seed en base (aucun changement visuel). */
+/** Couleurs modules seedées en base, avec dark recalculé depuis le light. */
 const COLORS: Record<string, { colorLight: string; colorDark: string }> = {
-    "html-css":   { colorLight: "#C13B1A", colorDark: "#FF8568" },
-    "php":        { colorLight: "#3B3F7A", colorDark: "#9198E5" },
-    "javascript": { colorLight: "#7A6200", colorDark: "#FFD93D" },
-    "brainfuck":  { colorLight: "#6B21A8", colorDark: "#C07AF8" },
+    "html-css":   { colorLight: "#C13B1A", colorDark: "#DD977D" },
+    "php":        { colorLight: "#3B3F7A", colorDark: "#9D98AB" },
+    "javascript": { colorLight: "#7A6200", colorDark: "#BBA971" },
+    "brainfuck":  { colorLight: "#6B21A8", colorDark: "#B48AC1" },
 };
 
 async function main() {

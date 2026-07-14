@@ -94,7 +94,7 @@ export default function PromptModeButton({ accentColor, sectionTitle, contentTyp
                 onMouseEnter={() => botRef.current?.startAnimation()}
                 onMouseLeave={() => botRef.current?.stopAnimation()}
                 aria-label="Ouvrir en mode prompt"
-                className="shrink-0 inline-flex items-center gap-0.5 px-2 sm:px-1.5 h-11 sm:h-7 rounded-md text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark dark:hover:text-bridge-100 hover:bg-bridge-300/40 dark:hover:bg-bridge-700/40"
+                className="shrink-0 inline-flex items-center gap-0.5 px-2 sm:px-1.5 h-11 sm:h-7 rounded-md text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark active:translate-y-px dark:hover:text-bridge-100 hover:bg-bridge-300/40 dark:hover:bg-bridge-700/40"
             >
                 <BotIcon ref={botRef} size={16} className="shrink-0" />
                 <span className="hidden sm:inline text-sm font-medium">Prompt</span>
@@ -103,12 +103,12 @@ export default function PromptModeButton({ accentColor, sectionTitle, contentTyp
             <Sheet open={open} onOpenChange={handleOpenChange}>
                 <SheetContent
                     side="right"
-                    className="w-full sm:max-w-2xl flex flex-col gap-0 bg-brand-light dark:bg-brand-dark text-brand-dark dark:text-brand-light"
+                    className="w-full sm:max-w-2xl flex flex-col gap-0 bg-background text-foreground"
                 >
                     <SheetHeader className="px-4 pb-4 border-b border-bridge-300/40 dark:border-bridge-700/40">
                         <SheetTitle className="flex items-center gap-2 text-base">
                             <BotIcon size={16} />
-                            Pour l&apos;IA — {sectionTitle}
+                            Pour l&apos;IA : {sectionTitle}
                         </SheetTitle>
                     </SheetHeader>
 
@@ -130,7 +130,7 @@ export default function PromptModeButton({ accentColor, sectionTitle, contentTyp
                             onClick={handleCopy}
                             disabled={state !== 'ready'}
                             style={{'--module-color': accentColor} as React.CSSProperties}
-                            className="w-full bg-(--module-color) hover:opacity-90 text-white"
+                            className="w-full bg-(--module-color) text-bridge-50 hover:opacity-90 active:translate-y-px dark:text-brand-dark"
                         >
                             {copied ? 'Copié ✓' : "Copier pour l'IA"}
                         </Button>

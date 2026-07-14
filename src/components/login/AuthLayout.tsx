@@ -25,7 +25,7 @@ export default function AuthLayout({title, description, children, wide = false}:
             aria-label="Pont en bois clair traversé par la lumière"
             className={cn(
                 "relative w-full min-h-screen overflow-hidden -mt-(--navbar-h)",
-                "bg-brand-light dark:bg-brand-dark",
+                "bg-background",
                 "bg-no-repeat bg-right-bottom bg-cover",
             )}
             style={{backgroundImage: `url(${heroImage})`}}
@@ -35,7 +35,7 @@ export default function AuthLayout({title, description, children, wide = false}:
                 visible sur la moitié droite, le contenu sur la gauche. */}
             <div
                 aria-hidden="true"
-                className="absolute inset-0 bg-linear-to-b from-brand-light via-brand-light/90 to-brand-light/60 lg:bg-linear-to-r lg:from-brand-light lg:via-brand-light/85 lg:to-transparent dark:from-brand-dark dark:via-brand-dark/90 dark:to-brand-dark/60 lg:dark:via-brand-dark/85 lg:dark:to-transparent z-0"
+                className="absolute inset-0 bg-linear-to-b from-background via-background/90 to-background/60 lg:bg-linear-to-r lg:from-background lg:via-background/85 lg:to-transparent z-0"
             />
 
             {/* Ambient decoration */}

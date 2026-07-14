@@ -148,7 +148,7 @@ export default function ForgotPasswordForm() {
                     type="submit"
                     disabled={isSubmitting || (captchaRequired && !captchaToken)}
                     size="lg"
-                    className="w-full bg-brand-accent-dark text-white hover:bg-brand-accent-dark/90 flex items-center justify-center gap-2"
+                    className="w-full bg-brand-accent-dark text-white dark:text-brand-dark hover:bg-brand-accent-dark/90 flex items-center justify-center gap-2"
                 >
                     {isSubmitting ? "Envoi…" : captchaRequired && !captchaToken ? "Validation du captcha…" : <><Send className="h-4 w-4"/>Envoyer le lien</>}
                 </Button>

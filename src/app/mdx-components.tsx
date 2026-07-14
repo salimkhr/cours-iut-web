@@ -6,12 +6,12 @@ import Link from 'next/link';
 export function useMDXComponents(components: MDXComponents): MDXComponents {
     return {
         h1: ({ children, ...props }) => (
-            <h1 className="text-3xl font-bold text-blue-600 mb-4" {...props}>
+            <h1 className="text-3xl font-bold text-brand-primary mb-4" {...props}>
                 {children}
             </h1>
         ),
         h2: ({ children, ...props }) => (
-            <h2 className="text-2xl font-semibold text-blue-500 mt-6 mb-3" {...props}>
+            <h2 className="text-2xl font-semibold text-brand-primary mt-6 mb-3" {...props}>
                 {children}
             </h2>
         ),
@@ -21,7 +21,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
             </p>
         ),
         a: ({ href, children, ...props }) => (
-            <Link href={href ?? '#'} {...props} className="text-blue-500 underline hover:text-blue-700">
+            <Link href={href ?? '#'} {...props} className="text-brand-primary underline hover:text-brand-accent-dark dark:hover:text-brand-accent">
                 {children}
             </Link>
         ),

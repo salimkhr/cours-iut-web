@@ -54,7 +54,7 @@ export const SlideTitle: React.FC<SlideTitleProps> = ({module, section}) => {
                     </GlitchText>
 
                     {section.description && (
-                        <p className={`${slideTextSizes.title.description} max-w-3xl mx-auto leading-relaxed ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                        <p className={`${slideTextSizes.title.description} max-w-3xl mx-auto leading-relaxed ${isDark ? "text-bridge-300" : "text-bridge-600"}`}>
                             {section.description}
                         </p>
                     )}

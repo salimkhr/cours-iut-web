@@ -10,7 +10,7 @@ export const metadata: Metadata = generatePageMetadata({
 
 export default function MentionsLegalesPage() {
     return (
-        <main className="flex flex-col w-full min-h-screen bg-brand-light dark:bg-brand-dark">
+        <main className="flex flex-col w-full min-h-screen bg-background">
             <div className="mx-auto max-w-3xl w-full px-6 lg:px-12 py-16 flex-1">
                 <h1 className="text-3xl font-bold text-brand-dark dark:text-brand-light mb-2">
                     Mentions légales
