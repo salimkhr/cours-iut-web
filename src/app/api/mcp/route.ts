@@ -15,6 +15,9 @@ import {
     updateBlockChildren,
 } from "@/lib/blockTreeUtils";
 import { moduleFormSchema, universeSchema } from "@/lib/schemas/module.schema";
+import { addVerdictSchema, VERDICT_FORMATS } from "@/lib/schemas/pedagogy.schema";
+import type { PedagogyVerdict } from "@/types/Pedagogy";
+import { ObjectId } from "bson";
 import { assignModuleColor } from "@/lib/assignModuleColor";
 import { isValidIcon } from "@/lib/iconMap";
 import { sectionApiSchema, briefSchema, curriculumSchema } from "@/lib/schemas/section.schema";
@@ -959,6 +962,78 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                     },
                 ],
             };
+        }
+    );
+
+    // ── add_verdict ───────────────────────────────────────────────────────────
+    server.tool(
+        "add_verdict",
+        "Enregistre un verdict de calibrage (critique utilisateur verbatim sur un contenu généré). À appeler quand l'utilisateur exprime une déception sur une génération. Réservé aux admins.",
+        {
+            format: z.enum(VERDICT_FORMATS).describe("Format concerné : cours | TP | examen | slide | module-design"),
+            verdict: z.string().min(1).describe("La critique, verbatim (citer l'utilisateur, ne pas reformuler)"),
+            moduleSlug: z.string().optional().describe("Module d'où vient le verdict (contexte)"),
+        },
+        async (args) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const parsed = addVerdictSchema.safeParse(args);
+            if (!parsed.success) throw new Error(`Verdict invalide : ${JSON.stringify(parsed.error.flatten())}`);
+
+            const db = await connectToDB();
+            const r = await db.collection<Omit<PedagogyVerdict, "_id">>("pedagogy_verdicts").insertOne({
+                date: new Date(),
+                format: parsed.data.format,
+                ...(parsed.data.moduleSlug && { moduleSlug: parsed.data.moduleSlug }),
+                verdict: parsed.data.verdict,
+                status: "active",
+            });
+            return { content: [{ type: "text" as const, text: `Verdict enregistré. verdictId=${r.insertedId.toString()}` }] };
+        }
+    );
+
+    // ── list_verdicts ─────────────────────────────────────────────────────────
+    server.tool(
+        "list_verdicts",
+        "Retourne les verdicts de calibrage ACTIFS (critiques utilisateur passées). À lire OBLIGATOIREMENT avant toute rédaction de contenu ou conception de module.",
+        {
+            format: z.enum(VERDICT_FORMATS).optional().describe("Filtrer par format. Omis = tous"),
+        },
+        async ({ format }) => {
+            const db = await connectToDB();
+            const filter: Record<string, unknown> = { status: "active" };
+            if (format) filter.format = format;
+            const verdicts = await db.collection<PedagogyVerdict>("pedagogy_verdicts")
+                .find(filter).sort({ date: 1 }).toArray();
+            const result = verdicts.map((v) => ({
+                id: v._id!.toString(),
+                date: v.date instanceof Date ? v.date.toISOString().slice(0, 10) : v.date,
+                format: v.format,
+                ...(v.moduleSlug && { moduleSlug: v.moduleSlug }),
+                verdict: v.verdict,
+            }));
+            return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
+        }
+    );
+
+    // ── distill_verdicts ──────────────────────────────────────────────────────
+    server.tool(
+        "distill_verdicts",
+        "Marque des verdicts comme distillés (promus en annotation d'exemplaire ou invariant du skill). Ils disparaissent de list_verdicts. À appeler après validation utilisateur de la distillation. Réservé aux admins.",
+        {
+            verdictIds: z.array(z.string().min(1)).min(1).describe("IDs des verdicts à distiller"),
+        },
+        async ({ verdictIds }) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const db = await connectToDB();
+            const ids = verdictIds.map((id) => {
+                if (!ObjectId.isValid(id)) throw new Error(`ID invalide : ${id}`);
+                return new ObjectId(id);
+            });
+            const r = await db.collection<PedagogyVerdict>("pedagogy_verdicts").updateMany(
+                { _id: { $in: ids }, status: "active" },
+                { $set: { status: "distilled" } }
+            );
+            return { content: [{ type: "text" as const, text: `${r.modifiedCount} verdict(s) distillé(s).` }] };
         }
     );
 
