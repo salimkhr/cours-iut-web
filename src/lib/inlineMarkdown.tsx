@@ -1,4 +1,5 @@
 import React from "react";
+import Code from "@/components/ui/Code";
 
 const SAFE_URL_PREFIXES = ["http://", "https://", "/", "#", "mailto:"];
 
@@ -39,7 +40,7 @@ export function renderInline(text: string): React.ReactNode[] {
             const end = text.indexOf("`", i + 1);
             if (end !== -1) {
                 flush();
-                out.push(<code key={key++}>{text.slice(i + 1, end)}</code>);
+                out.push(<Code key={key++}>{text.slice(i + 1, end)}</Code>);
                 i = end + 1;
                 continue;
             }
