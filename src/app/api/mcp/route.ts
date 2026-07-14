@@ -31,9 +31,22 @@ import {
 } from "@/lib/blockTextUtils";
 import Module, { type ModuleUniverse } from "@/types/Module";
 import Section from "@/types/Section";
+import { SKILL_MANIFEST, SKILL_DOCUMENTS } from "@/lib/skills/pedagogy";
 export const runtime = "nodejs";
 
-const SERVER_INSTRUCTIONS = `Ce serveur gère le référentiel pédagogique multi-supports du BUT Informatique.`;
+const SERVER_INSTRUCTIONS = `Ce serveur gère le référentiel pédagogique multi-supports du BUT Informatique.
+
+Deux skills pédagogiques sont disponibles :
+- "module-design" : concevoir un module (sections, univers fil rouge, découpage en séances).
+- "content-writer" : rédiger les supports d'une section (cours, slides, TP, examen).
+
+Chargement : get_pedagogical_skill_manifest() puis get_pedagogical_skill_document(id)
+avec id = "module-design" ou "content-writer" selon la tâche.
+
+Avant toute production, le workflow du skill impose de lire list_verdicts (critiques
+utilisateur passées) et list_exemplars (étalons annotés). Les outils d'écriture ne
+visent QUE le serveur staging ; la copie vers la production exige une confirmation
+explicite de l'utilisateur.`;
 
 type ContentType = CourseContent["contentType"];
 const CONTENT_TYPE = z.enum(["cours", "TP", "examen", "slide"]);
@@ -1103,6 +1116,33 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 ...(withSnapshot && { snapshot: e.snapshot }),
             }));
             return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
+        }
+    );
+
+    // ── get_pedagogical_skill_manifest ────────────────────────────────────────
+    server.tool(
+        "get_pedagogical_skill_manifest",
+        "Retourne le manifeste des skills pédagogiques (module-design, content-writer) : version, hash, liste des documents.",
+        {},
+        async () => ({
+            content: [{ type: "text" as const, text: JSON.stringify(SKILL_MANIFEST, null, 2) }],
+        })
+    );
+
+    // ── get_pedagogical_skill_document ────────────────────────────────────────
+    server.tool(
+        "get_pedagogical_skill_document",
+        "Retourne un document de skill pédagogique. id = module-design (conception de module) | content-writer (rédaction cours/TP/slides/examen).",
+        {
+            id: z.string().describe("ID du document : module-design | content-writer"),
+        },
+        async ({ id }) => {
+            const doc = SKILL_DOCUMENTS[id];
+            if (!doc) {
+                const available = Object.keys(SKILL_DOCUMENTS).join(", ");
+                throw new Error(`Document "${id}" inconnu. Disponibles : ${available}`);
+            }
+            return { content: [{ type: "text" as const, text: doc.content }] };
         }
     );
 
