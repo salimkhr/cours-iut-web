@@ -214,7 +214,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             sessionDurationMinutes:  z.number().int().min(1).optional()
                 .describe("Durée d'une séance en minutes (ex: 150 pour 2h30). Absent pour les modules bonus."),
             universe: universeSchema.optional()
-                .describe("Univers thématique du module : name (ex: Netflex), description (domaine + données types), scope ('module' = fil rouge annuel, 'tp' = livrable par TP)"),
+                .describe("Univers thématique du module (fil rouge cumulatif) : name (ex: Netflex), description (domaine + données types)"),
         },
         async ({ title, iconName, path, description, sessionDurationMinutes, universe }) => {
             if (!isAdmin) throw new Error("Forbidden");
@@ -280,7 +280,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             sessionDurationMinutes:  z.number().int().min(1).optional()
                 .describe("Durée d'une séance en minutes (ex: 150 pour 2h30)"),
             universe: universeSchema.optional()
-                .describe("Univers thématique : name, description (domaine + données types), scope ('module' = fil rouge annuel, 'tp' = livrable par TP)"),
+                .describe("Univers thématique du module (fil rouge cumulatif) : name (ex: Netflex), description (domaine + données types)"),
             projectIcon: iconNameSchema.optional()
                 .describe("Icône Lucide du projet commun inter-sections (ex: 'Clapperboard' pour Netflex, 'BookOpen' pour la médiathèque). Affiché dans le badge des sections marquées projectRef."),
             isVisible: z.boolean().optional()
