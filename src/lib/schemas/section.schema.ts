@@ -30,6 +30,12 @@ export const sectionFormSchema = z.object({
     order: z.number().int().min(1, "Position minimum 1"),
     contents: z.array(z.enum(AVAILABLE_CONTENTS)).min(1, "Sélectionnez au moins un type de contenu"),
     courseIntroMinutes: z.number().int().min(0).optional(),
+    briefObjectives: z.string().optional(),
+    briefNotions: z.string().optional(),
+    briefFilRougeStep: z.string().optional(),
+    briefNotes: z.string().optional(),
+    curriculumNotions: z.string().optional(),
+    curriculumApis: z.string().optional(),
 });
 
 export type SectionFormValues = z.infer<typeof sectionFormSchema>;
