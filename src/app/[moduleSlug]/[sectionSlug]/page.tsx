@@ -126,7 +126,7 @@ export default async function SectionPage({params}: SectionPageProps) {
                     <div
                         className={cn(
                             "rounded-2xl px-5 py-4 sm:px-6",
-                            "bg-[#f7ebd9] dark:bg-[#13110d]",
+                            "bg-bridge-50 dark:bg-bridge-800",
                             "border border-bridge-500/45 dark:border-bridge-500/35"
                         )}
                     >

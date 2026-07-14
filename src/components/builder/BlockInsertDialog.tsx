@@ -23,7 +23,7 @@ const CATEGORY_ORDER_SLIDE: BlockCategory[] = ["Slides"];
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
     return (
-        <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-slate-400 dark:text-slate-500 mb-1.5">
+        <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-bridge-500 dark:text-bridge-300 mb-1.5">
             {children}
         </p>
     );
@@ -77,14 +77,14 @@ export function BlockInsertDialog({ open, onClose, parentId, index }: BlockInser
         <Dialog open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
             <DialogContent className={cn(
                 "max-w-sm sm:max-w-md p-0 overflow-hidden",
-                "border border-slate-300/60 dark:border-slate-600/40",
-                "shadow-[0_22px_44px_-14px_rgba(0,0,0,0.18)] dark:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.65)]",
+                "border border-bridge-400/45 dark:border-bridge-500/40",
+                "shadow-[0_22px_44px_-14px_rgba(147,97,58,0.32)] dark:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.65)]",
                 "[&>button]:text-white/70 [&>button:hover]:text-white [&>button]:ring-offset-transparent [&>button:focus-visible]:ring-white/50",
             )}>
                 {/* Header */}
                 <div className={cn(
                     "relative flex items-center gap-3 px-5 py-3.5 pr-14 overflow-hidden",
-                    moduleSlug ? `bg-${moduleSlug}` : "bg-blue-600 dark:bg-blue-700"
+                    moduleSlug ? `bg-${moduleSlug}` : "bg-brand-primary"
                 )}>
                     <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
                     <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/20 shrink-0">
@@ -101,9 +101,9 @@ export function BlockInsertDialog({ open, onClose, parentId, index }: BlockInser
                 </div>
 
                 {/* Body */}
-                <div className="px-4 py-3 flex flex-col gap-3 max-h-[65vh] overflow-y-auto bg-white dark:bg-slate-900">
+                <div className="px-4 py-3 flex flex-col gap-3 max-h-[65vh] overflow-y-auto bg-card">
                     {grouped.length === 0 ? (
-                        <div className="flex flex-col items-center gap-2 py-5 text-slate-400 dark:text-slate-500">
+                        <div className="flex flex-col items-center gap-2 py-5 text-bridge-500 dark:text-bridge-300">
                             <Blocks className="w-6 h-6 opacity-40" />
                             <p className="text-xs text-center">Aucun bloc disponible dans ce contexte.</p>
                         </div>
@@ -111,7 +111,7 @@ export function BlockInsertDialog({ open, onClose, parentId, index }: BlockInser
                         grouped.map(({ cat, items }, gi) => (
                             <div key={cat}>
                                 {gi > 0 && (
-                                    <div className="h-px bg-slate-100 dark:bg-slate-700/60 -mx-4 mb-3" />
+                                    <div className="h-px bg-bridge-200/70 dark:bg-bridge-700/60 -mx-4 mb-3" />
                                 )}
                                 <Eyebrow>{cat}</Eyebrow>
                                 <div className="grid grid-cols-3 gap-1">
@@ -122,10 +122,10 @@ export function BlockInsertDialog({ open, onClose, parentId, index }: BlockInser
                                                 key={def.type}
                                                 variant="outline"
                                                 size="sm"
-                                                className="justify-start gap-1.5 text-xs h-8 px-2.5 font-normal cursor-pointer border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition-colors duration-150 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 dark:hover:bg-blue-950/40 dark:hover:border-blue-700 dark:hover:text-blue-300"
+                                                className="justify-start gap-1.5 text-xs h-8 px-2.5 font-normal cursor-pointer border-bridge-300/65 dark:border-bridge-600/45 text-bridge-700 dark:text-bridge-200 transition-colors duration-150 hover:bg-brand-primary/10 hover:border-brand-primary/40 hover:text-brand-primary dark:hover:bg-brand-primary/16 dark:hover:border-brand-primary/45 dark:hover:text-brand-primary"
                                                 onClick={() => handleInsert(def.type)}
                                             >
-                                                <Icon className="w-3 h-3 shrink-0 text-slate-400 dark:text-slate-500" />
+                                                <Icon className="w-3 h-3 shrink-0 text-bridge-500 dark:text-bridge-300" />
                                                 <span className="truncate">{def.label}</span>
                                             </Button>
                                         );

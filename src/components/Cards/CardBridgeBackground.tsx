@@ -13,7 +13,7 @@ import {cn} from "@/lib/utils";
  *   - `relative`
  *   - `group` (pour le zoom au hover)
  *   - `overflow-hidden` (pour clipper le zoom)
- *   - avec un bg solide qui matche le start du gradient (#f7ebd9 / #13110d)
+ *   - avec un bg solide qui matche le start du gradient (bridge-50 / bridge-800)
  *     pour éviter les fuites pendant le hover scale.
  */
 export default function CardBridgeBackground() {
@@ -33,16 +33,17 @@ export default function CardBridgeBackground() {
                 // de la home. Évite que des hauteurs de card différentes
                 // (descriptions de tailles variables) recadrent le pont
                 // différemment d'une card à l'autre.
-                className="object-cover object-right-bottom transition-transform duration-700 group-hover:scale-105"
+                className="object-cover object-right-bottom opacity-90 transition-transform duration-700 group-hover:scale-105 dark:opacity-[0.88] dark:contrast-105"
             />
             <div
                 className={cn(
                     "absolute inset-0 bg-gradient-to-r",
-                    // from-30% : les 30% gauche restent 100% opaques, garantis
+                    // from-* : la zone gauche reste 100% opaque, garantie
                     // identiques d'une card à l'autre quelle que soit la
                     // hauteur (donc quel que soit le crop du pont).
-                    "from-[#f7ebd9] from-30% via-[#f7ebd9]/60 via-70% to-transparent",
-                    "dark:from-[#13110d] dark:via-[#13110d]/70 dark:to-transparent",
+                    isDark
+                        ? "from-bridge-800 from-38% via-bridge-800/86 via-76% to-bridge-800/18"
+                        : "from-bridge-50 from-30% via-bridge-50/60 via-70% to-transparent",
                 )}
             />
         </div>

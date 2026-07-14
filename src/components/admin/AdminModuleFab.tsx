@@ -88,7 +88,7 @@ export default function AdminModuleFab({ module }: AdminModuleFabProps) {
                 <DropdownMenuContent
                     side="top"
                     align="end"
-                    className="mb-2 min-w-[200px] bg-[#f7ebd9] dark:bg-[#13110d] border-bridge-500/45 shadow-[0_8px_24px_-4px_rgba(147,97,58,0.3)]"
+                    className="mb-2 min-w-[200px] bg-card border-bridge-500/45 shadow-[0_8px_24px_-4px_rgba(147,97,58,0.3)]"
                 >
                     <DropdownMenuItem
                         className="gap-2 cursor-pointer"
@@ -131,7 +131,7 @@ export default function AdminModuleFab({ module }: AdminModuleFabProps) {
             />
 
             <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-                <AlertDialogContent className="p-0 gap-0 overflow-hidden bg-[#f7ebd9] dark:bg-[#13110d] border-bridge-500/45">
+                <AlertDialogContent className="p-0 gap-0 overflow-hidden bg-card border-bridge-500/45">
                     <div
                         className="flex items-center gap-3 px-6 py-4"
                         style={{ backgroundColor: moduleColor(module) }}

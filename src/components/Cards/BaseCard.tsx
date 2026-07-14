@@ -49,7 +49,7 @@ export default function BaseCard({
             <Card
                 className={cn(
                     "relative w-full h-full flex flex-col justify-between border rounded-2xl overflow-hidden",
-                    "bg-bridge-50 dark:bg-bridge-900",
+                    "bg-bridge-50 dark:bg-bridge-800",
                     "text-bridge-900 dark:text-bridge-100",
                     "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)] dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
                     withHover

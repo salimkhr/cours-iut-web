@@ -56,7 +56,7 @@ export function SlideEditCanvas({ slide, position, onInsertAfter }: SlideEditCan
             />
 
             <div
-                className={`flex min-h-0 flex-1 items-center justify-center bg-slate-800 p-8${moduleSlug ? " header-module" : ""}`}
+                className={`flex min-h-0 flex-1 items-center justify-center bg-bridge-900 p-8${moduleSlug ? " header-module" : ""}`}
                 style={moduleSlug ? {
                     '--module-color': moduleColorLight || `var(--color-${moduleSlug})`,
                     '--module-color-dark': moduleColorDark || moduleColorLight || `var(--color-${moduleSlug})`,

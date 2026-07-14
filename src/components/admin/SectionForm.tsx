@@ -36,6 +36,9 @@ export type Section = {
     order: number;
     contents: ContentRef[] | string[];
     examenIsLock?: boolean;
+    courseIntroMinutes?: number;
+    brief?: { objectives: string[]; notions: string[]; filRougeStep: string; notes?: string };
+    curriculum?: { notions: string[]; apis: string[] };
 };
 
 interface SectionFormProps {
@@ -88,6 +91,13 @@ export default function SectionForm({
                     .map(c => typeof c === "string" ? c : c.type)
                     .filter((c): c is typeof AVAILABLE_CONTENTS[number] => (AVAILABLE_CONTENTS as readonly string[]).includes(c)) as SectionFormValues['contents'],
                 examenIsLock: section!.examenIsLock ?? false,
+                courseIntroMinutes: section!.courseIntroMinutes,
+                briefObjectives: (section!.brief?.objectives ?? []).join('\n'),
+                briefNotions: (section!.brief?.notions ?? []).join('\n'),
+                briefFilRougeStep: section!.brief?.filRougeStep ?? '',
+                briefNotes: section!.brief?.notes ?? '',
+                curriculumNotions: (section!.curriculum?.notions ?? []).join('\n'),
+                curriculumApis: (section!.curriculum?.apis ?? []).join('\n'),
             };
         }
         return {
@@ -103,6 +113,13 @@ export default function SectionForm({
             examenIsLock: false,
             order: prefill?.order ?? (modData.sections?.length ?? 0) + 1,
             contents: prefill?.contents ?? ['cours', 'TP'],
+            courseIntroMinutes: undefined,
+            briefObjectives: '',
+            briefNotions: '',
+            briefFilRougeStep: '',
+            briefNotes: '',
+            curriculumNotions: '',
+            curriculumApis: '',
         };
     }, [isEditMode, section, modData.sections?.length, prefill]);
 
@@ -155,10 +172,28 @@ export default function SectionForm({
             .map((t) => t.trim())
             .filter((t) => t.length > 0);
 
+        const splitLines = (s?: string) =>
+            (s ?? '').split('\n').map((x) => x.trim()).filter((x) => x.length > 0);
+
+        const brief = {
+            objectives: splitLines(data.briefObjectives),
+            notions: splitLines(data.briefNotions),
+            filRougeStep: (data.briefFilRougeStep ?? '').trim(),
+            ...(data.briefNotes?.trim() && { notes: data.briefNotes.trim() }),
+        };
+        const curriculum = {
+            notions: splitLines(data.curriculumNotions),
+            apis: splitLines(data.curriculumApis),
+        };
+        const hasBrief = brief.objectives.length > 0 || brief.notions.length > 0 || brief.filRougeStep.length > 0;
+        const hasCurriculum = curriculum.notions.length > 0 || curriculum.apis.length > 0;
+
         onSubmit({
             ...data,
             objectives: cleanedObjectives,
             tags: cleanedTags,
+            ...(hasBrief && { brief }),
+            ...(hasCurriculum && { curriculum }),
         });
 
         onOpenChange(false);
@@ -173,7 +208,7 @@ export default function SectionForm({
                 side="right"
                 className={cn(
                     'p-0 gap-0 overflow-hidden flex flex-col sm:max-w-[480px]',
-                    'bg-[#f7ebd9] dark:bg-[#13110d]',
+                    'bg-card',
                     'border-l border-bridge-500/45',
                     '[&>button]:text-white/80 [&>button:hover]:text-white dark:[&>button]:text-brand-dark/80 dark:[&>button:hover]:text-brand-dark',
                 )}
@@ -312,6 +347,18 @@ export default function SectionForm({
                                         <p className="text-red-500 text-xs mt-1">{errors.order.message}</p>
                                     )}
                                 </div>
+                                <div className="w-36">
+                                    <Label htmlFor="sf-intro" className={labelCn}>Cours 1re séance (min)</Label>
+                                    <Input
+                                        id="sf-intro"
+                                        type="number"
+                                        min={0}
+                                        className={inputCn}
+                                        {...register('courseIntroMinutes', {
+                                            setValueAs: (v) => (v === '' || v === null ? undefined : Number(v)),
+                                        })}
+                                    />
+                                </div>
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 {(
@@ -336,6 +383,48 @@ export default function SectionForm({
                                         <span className="text-sm text-brand-dark dark:text-bridge-100">{label}</span>
                                     </label>
                                 ))}
+                            </div>
+                        </section>
+
+                        <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+
+                        {/* Brief — le prévu */}
+                        <section className="flex flex-col gap-3">
+                            <Eyebrow>Brief (le prévu)</Eyebrow>
+                            <div>
+                                <Label htmlFor="sf-brief-objectives" className={labelCn}>Objectifs du brief</Label>
+                                <Textarea id="sf-brief-objectives" rows={3} className={inputCn} {...register('briefObjectives')}/>
+                                <span className="text-xs text-bridge-500 dark:text-bridge-400 mt-1 block">Un par ligne</span>
+                            </div>
+                            <div>
+                                <Label htmlFor="sf-brief-notions" className={labelCn}>Notions à couvrir</Label>
+                                <Textarea id="sf-brief-notions" rows={3} className={inputCn} {...register('briefNotions')}/>
+                                <span className="text-xs text-bridge-500 dark:text-bridge-400 mt-1 block">Une par ligne</span>
+                            </div>
+                            <div>
+                                <Label htmlFor="sf-brief-filrouge" className={labelCn}>Étape fil rouge</Label>
+                                <Input id="sf-brief-filrouge" className={inputCn} {...register('briefFilRougeStep')}/>
+                            </div>
+                            <div>
+                                <Label htmlFor="sf-brief-notes" className={labelCn}>Notes</Label>
+                                <Textarea id="sf-brief-notes" rows={2} className={inputCn} {...register('briefNotes')}/>
+                            </div>
+                        </section>
+
+                        <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+
+                        {/* Curriculum — le réalisé */}
+                        <section className="flex flex-col gap-3">
+                            <Eyebrow>Curriculum (le réalisé)</Eyebrow>
+                            <div>
+                                <Label htmlFor="sf-curriculum-notions" className={labelCn}>Notions enseignées</Label>
+                                <Textarea id="sf-curriculum-notions" rows={3} className={inputCn} {...register('curriculumNotions')}/>
+                                <span className="text-xs text-bridge-500 dark:text-bridge-400 mt-1 block">Une par ligne</span>
+                            </div>
+                            <div>
+                                <Label htmlFor="sf-curriculum-apis" className={labelCn}>APIs / fonctions vues</Label>
+                                <Textarea id="sf-curriculum-apis" rows={3} className={inputCn} {...register('curriculumApis')}/>
+                                <span className="text-xs text-bridge-500 dark:text-bridge-400 mt-1 block">Une par ligne</span>
                             </div>
                         </section>
                     </div>

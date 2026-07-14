@@ -5,8 +5,8 @@
   "scope": "/",
   "display": "minimal-ui",
   "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#fcf9f3",
+  "theme_color": "#C2410C",
   "description": "Application dédiée à l’apprentissage et à la pratique du développement web.",
   "icons": [
     {

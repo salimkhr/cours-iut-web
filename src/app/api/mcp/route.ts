@@ -1,4 +1,4 @@
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
@@ -15,9 +15,13 @@ import {
     updateBlockChildren,
 } from "@/lib/blockTreeUtils";
 import { moduleFormSchema, universeSchema } from "@/lib/schemas/module.schema";
+import { addVerdictSchema, promoteExemplarSchema, VERDICT_FORMATS, EXEMPLAR_FORMATS, EXEMPLAR_LEVELS } from "@/lib/schemas/pedagogy.schema";
+import type { PedagogyVerdict, PedagogyExemplar } from "@/types/Pedagogy";
+import { ObjectId } from "bson";
 import { assignModuleColor } from "@/lib/assignModuleColor";
 import { isValidIcon } from "@/lib/iconMap";
-import { sectionApiSchema } from "@/lib/schemas/section.schema";
+import { sectionApiSchema, briefSchema, curriculumSchema } from "@/lib/schemas/section.schema";
+import type { SectionBrief, SectionCurriculum } from "@/lib/schemas/section.schema";
 import type { Block, CourseContent, ContentRef } from "@/types/CourseContent";
 import {
     normalizeForSearch,
@@ -27,30 +31,22 @@ import {
 } from "@/lib/blockTextUtils";
 import Module, { type ModuleUniverse } from "@/types/Module";
 import Section from "@/types/Section";
-import {
-    SKILL_MANIFEST,
-    SKILL_DOCUMENTS,
-    SKILL_VERSION,
-} from "@/lib/skills/pedagogie";
-
+import { SKILL_MANIFEST, SKILL_DOCUMENTS } from "@/lib/skills/pedagogy";
 export const runtime = "nodejs";
 
 const SERVER_INSTRUCTIONS = `Ce serveur gère le référentiel pédagogique multi-supports du BUT Informatique.
 
-Un skill pédagogique est disponible pour concevoir et réviser des cours, TPs, slides et examens.
+Deux skills pédagogiques sont disponibles :
+- "module-design" : concevoir un module (sections, univers fil rouge, découpage en séances).
+- "content-writer" : rédiger les supports d'une section (cours, slides, TP, examen).
 
-Chargement du skill :
-1. Appelez get_pedagogical_skill_manifest() pour obtenir le manifeste et la liste des documents.
-2. Appelez get_pedagogical_skill_document("main") pour charger les instructions principales.
-3. Chargez les documents complémentaires indiqués selon la tâche.
+Chargement : get_pedagogical_skill_manifest() puis get_pedagogical_skill_document(id)
+avec id = "module-design" ou "content-writer" selon la tâche.
 
-Le skill couvre les supports d'apprentissage interdépendants (cours, slides, TP) et les évaluations de type examen.
-
-Pour toute modification structurante (changement d'objectif, nouvelle notion, nouveau TP),
-chargez aussi les rôles : concepteur, auditeur-apprenant, garant-coherence.
-
-Les outils d'écriture (save_content, insert_block, edit_block, delete_block, reorder_blocks)
-ne doivent être appelés qu'après consolidation des audits pédagogiques.`;
+Avant toute production, le workflow du skill impose de lire list_verdicts (critiques
+utilisateur passées) et list_exemplars (étalons annotés). Les outils d'écriture ne
+visent QUE le serveur staging ; la copie vers la production exige une confirmation
+explicite de l'utilisateur.`;
 
 type ContentType = CourseContent["contentType"];
 const CONTENT_TYPE = z.enum(["cours", "TP", "examen", "slide"]);
@@ -71,6 +67,9 @@ interface ModuleDoc {
         path: string;
         title?: string;
         totalDuration?: number;
+        courseIntroMinutes?: number;
+        brief?: SectionBrief;
+        curriculum?: SectionCurriculum;
         contents?: Array<{ type: string; source?: string }>;
     }>;
 }
@@ -182,160 +181,6 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         })
         .describe("Nom d'une icône Lucide (PascalCase, ex: BookOpen, Code, Server) — voir https://lucide.dev/icons/");
 
-    // ── Ressources MCP — skill pédagogique ───────────────────────────────────────
-
-    const skillResourceList = [
-        {
-            uri: "skill://pedagogie/manifest",
-            name: "Manifeste du skill pédagogique",
-            description: "Manifeste JSON : version, documents disponibles, rôles et hash.",
-            mimeType: "application/json",
-        },
-        ...SKILL_MANIFEST.documents.map((doc) => ({
-            uri: doc.uri,
-            name: doc.title,
-            description: doc.purpose,
-            mimeType: "text/markdown",
-        })),
-    ];
-
-    server.resource(
-        "pedagogie-document",
-        new ResourceTemplate("skill://pedagogie/{id}", {
-            list: async () => ({ resources: skillResourceList }),
-        }),
-        {
-            description: "Document du skill pédagogique (manifeste, instructions principales, rôles des agents, références éditoriales). Lecture seule.",
-        },
-        async (uri, { id }) => {
-            if (id === "manifest") {
-                return {
-                    contents: [{
-                        uri: uri.href,
-                        text: JSON.stringify(SKILL_MANIFEST, null, 2),
-                        mimeType: "application/json",
-                    }],
-                };
-            }
-            const doc = SKILL_DOCUMENTS[id as string];
-            if (!doc) {
-                const available = Object.keys(SKILL_DOCUMENTS).join(", ");
-                throw new Error(`Document inconnu : "${id}". Disponibles : ${available}`);
-            }
-            return {
-                contents: [{
-                    uri: uri.href,
-                    text: doc.content,
-                    mimeType: "text/markdown",
-                }],
-            };
-        }
-    );
-
-    // ── Prompt MCP — workflow pédagogique ────────────────────────────────────────
-
-    server.prompt(
-        "concevoir-unite-pedagogique",
-        {
-            mode: z.enum([
-                "design_curriculum",
-                "design_unit",
-                "create_course",
-                "create_slides",
-                "create_practical_work",
-                "create_exam",
-                "review_support",
-                "review_unit",
-                "check_coherence",
-            ]).describe("Mode de travail pédagogique"),
-            objective: z.string().optional().describe("Objectif pédagogique de l'unité"),
-            audience: z.string().optional().describe("Public cible et niveau (ex: BUT Info 1ère année)"),
-            requested_supports: z.array(z.enum(["course", "slides", "practical_work", "exam"]))
-                .optional()
-                .describe("Supports ou évaluations à produire"),
-            context: z.string().optional().describe("Contexte additionnel"),
-        },
-        async ({ mode, objective, audience, requested_supports, context }) => {
-            const mainDoc = SKILL_DOCUMENTS["main"];
-            const docList = SKILL_MANIFEST.documents
-                .map((d) => `- \`${d.id}\` : ${d.title} — ${d.purpose}`)
-                .join("\n");
-
-            const promptText = [
-                `# Workflow pédagogique — ${mode}`,
-                "",
-                "## Instructions du skill",
-                mainDoc.content,
-                "",
-                "## Paramètres de la tâche",
-                `- Mode : ${mode}`,
-                `- Objectif : ${objective ?? "non précisé"}`,
-                `- Public : ${audience ?? "non précisé"}`,
-                `- Supports demandés : ${requested_supports?.join(", ") ?? "tous"}`,
-                `- Contexte : ${context ?? "aucun"}`,
-                "",
-                "## Documents disponibles",
-                docList,
-                "",
-                "Chargez les documents nécessaires avec `get_pedagogical_skill_document(id)` avant de commencer.",
-                "Les outils d'écriture ne doivent être appelés qu'après consolidation des audits.",
-            ].join("\n");
-
-            return {
-                messages: [
-                    { role: "user" as const, content: { type: "text" as const, text: promptText } },
-                ],
-            };
-        }
-    );
-
-    // ── get_pedagogical_skill_manifest ────────────────────────────────────────────
-    server.tool(
-        "get_pedagogical_skill_manifest",
-        "Use this when the user asks to design, write or review a course, practical exercise, slide deck, exam or curriculum. Returns the manifest of the pedagogical skill with the list of documents to load before using content editing tools.",
-        {},
-        async () => ({
-            content: [{
-                type: "text" as const,
-                text: JSON.stringify(SKILL_MANIFEST, null, 2),
-            }],
-        })
-    );
-
-    // ── get_pedagogical_skill_document ────────────────────────────────────────────
-    server.tool(
-        "get_pedagogical_skill_document",
-        "Use this to load a specific document from the pedagogical skill (main instructions, agent roles, editorial references). Call get_pedagogical_skill_manifest first to discover available document IDs.",
-        {
-            document_id: z.string().describe(
-                "Identifiant du document du skill (ex: main, concepteur, auditeur-apprenant, garant-coherence, ref-cours, ref-tp, ref-slide, ref-examen, ref-td, ref-corrige, ref-checklist, ref-evaluation-grille, ref-cas-limites)"
-            ),
-        },
-        async ({ document_id }) => {
-            const doc = SKILL_DOCUMENTS[document_id];
-            if (!doc) {
-                const available = Object.keys(SKILL_DOCUMENTS).join(", ");
-                throw new Error(
-                    `Document inconnu : "${document_id}". Documents disponibles : ${available}`
-                );
-            }
-            return {
-                content: [{
-                    type: "text" as const,
-                    text: JSON.stringify({
-                        id: doc.id,
-                        title: doc.title,
-                        uri: doc.uri,
-                        mime_type: doc.mimeType,
-                        content: doc.content,
-                        version: SKILL_VERSION,
-                        content_hash: doc.contentHash,
-                    }, null, 2),
-                }],
-            };
-        }
-    );
-
     // ── get_migration_status ──────────────────────────────────────────────────
     server.tool(
         "get_migration_status",
@@ -389,7 +234,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             sessionDurationMinutes:  z.number().int().min(1).optional()
                 .describe("Durée d'une séance en minutes (ex: 150 pour 2h30). Absent pour les modules bonus."),
             universe: universeSchema.optional()
-                .describe("Univers thématique du module : name (ex: Netflex), description (domaine + données types), scope ('module' = fil rouge annuel, 'tp' = livrable par TP)"),
+                .describe("Univers thématique du module (fil rouge cumulatif) : name (ex: Netflex), description (domaine + données types)"),
         },
         async ({ title, iconName, path, description, sessionDurationMinutes, universe }) => {
             if (!isAdmin) throw new Error("Forbidden");
@@ -455,7 +300,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             sessionDurationMinutes:  z.number().int().min(1).optional()
                 .describe("Durée d'une séance en minutes (ex: 150 pour 2h30)"),
             universe: universeSchema.optional()
-                .describe("Univers thématique : name, description (domaine + données types), scope ('module' = fil rouge annuel, 'tp' = livrable par TP)"),
+                .describe("Univers thématique du module (fil rouge cumulatif) : name (ex: Netflex), description (domaine + données types)"),
             projectIcon: iconNameSchema.optional()
                 .describe("Icône Lucide du projet commun inter-sections (ex: 'Clapperboard' pour Netflex, 'BookOpen' pour la médiathèque). Affiché dans le badge des sections marquées projectRef."),
             isVisible: z.boolean().optional()
@@ -509,8 +354,12 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             objectives:    z.array(z.string()).optional(),
             totalDuration: z.number().int().min(1).optional().describe("Nombre de séances (défaut: 1)"),
             tags:          z.array(z.string()).optional(),
+            courseIntroMinutes: z.number().int().min(0).optional()
+                .describe("Minutes de cours/slides en ouverture de la 1re séance (ex: 30). Le budget TP = totalDuration × sessionDurationMinutes − courseIntroMinutes."),
+            brief: briefSchema.optional()
+                .describe("Cahier des charges de la section : objectives (ce que l'étudiant saura faire), notions (à couvrir), filRougeStep (ce que le TP ajoute au projet fil rouge), notes libres."),
         },
-        async ({ module, title, contentTypes, order, path, objectives, totalDuration, tags }) => {
+        async ({ module, title, contentTypes, order, path, objectives, totalDuration, tags, courseIntroMinutes, brief }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
 
@@ -539,6 +388,8 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 contents: contentTypes,
                 objectives: objectives ?? [],
                 tags: tags ?? [],
+                ...(courseIntroMinutes !== undefined && { courseIntroMinutes }),
+                ...(brief !== undefined && { brief }),
             });
             if (!rawCheck.success) {
                 throw new Error(`Section invalide : ${JSON.stringify(rawCheck.error.flatten())}`);
@@ -572,6 +423,8 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 isAvailable: false,
                 correctionIsAvailable: false,
                 examenIsLock: false,
+                ...(courseIntroMinutes !== undefined && { courseIntroMinutes }),
+                ...(brief !== undefined && { brief }),
             };
 
             await db.collection<Module>("modules").updateOne(
@@ -594,7 +447,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     // ── edit_section ───────────────────────────────────────────────────────────
     server.tool(
         "edit_section",
-        "Édite les métadonnées d'une section (rename, nb séances, ordre, objectifs, flags). addContentTypes est ADDITIF (crée le squelette des types manquants) ; le retrait passe par delete_content. Réservé aux admins.",
+        "Édite les métadonnées d'une section (rename, nb séances, courseIntroMinutes, brief, curriculum, ordre, objectifs, flags). addContentTypes est ADDITIF (crée le squelette des types manquants) ; le retrait passe par delete_content. Réservé aux admins.",
         {
             module:                z.string(),
             sectionPath:           z.string().describe("Slug de la section à éditer"),
@@ -609,6 +462,10 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             correctionIsAvailable: z.boolean().optional(),
             examenIsLock:          z.boolean().optional(),
             addContentTypes:       z.array(CONTENT_TYPE).optional().describe("Types à AJOUTER (additif)"),
+            courseIntroMinutes:    z.number().int().min(0).optional(),
+            brief:                 briefSchema.optional(),
+            curriculum:            curriculumSchema.optional()
+                .describe("Notions effectivement enseignées + APIs vues. Mis à jour par le skill content-writer après rédaction."),
         },
         async (args) => {
             if (!isAdmin) throw new Error("Forbidden");
@@ -629,6 +486,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 ["totalDuration", args.totalDuration], ["tags", args.tags],
                 ["isAvailable", args.isAvailable], ["hasCorrection", args.hasCorrection],
                 ["correctionIsAvailable", args.correctionIsAvailable], ["examenIsLock", args.examenIsLock],
+                ["courseIntroMinutes", args.courseIntroMinutes], ["brief", args.brief], ["curriculum", args.curriculum],
             ];
             for (const [field, value] of meta) {
                 if (value !== undefined) set[`sections.${idx}.${field}`] = value;
@@ -728,6 +586,9 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 // totalDuration: fallback à 1 pour la compatibilité avec les anciennes sections
                 // sans durée renseignée. La plupart des sections ont des valeurs explicites en DB.
                 totalDuration: s.totalDuration ?? 1,
+                ...(s.courseIntroMinutes !== undefined && { courseIntroMinutes: s.courseIntroMinutes }),
+                ...(s.brief !== undefined && { brief: s.brief }),
+                ...(s.curriculum !== undefined && { curriculum: s.curriculum }),
                 contents: Object.fromEntries((s.contents ?? []).map((c) => [c.type, c.source ?? "file"])),
             }));
             return { content: [{ type: "text" as const, text: JSON.stringify(sections, null, 2) }] };
@@ -1114,6 +975,174 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                     },
                 ],
             };
+        }
+    );
+
+    // ── add_verdict ───────────────────────────────────────────────────────────
+    server.tool(
+        "add_verdict",
+        "Enregistre un verdict de calibrage (critique utilisateur verbatim sur un contenu généré). À appeler quand l'utilisateur exprime une déception sur une génération. Réservé aux admins.",
+        {
+            format: z.enum(VERDICT_FORMATS).describe("Format concerné : cours | TP | examen | slide | module-design"),
+            verdict: z.string().min(1).describe("La critique, verbatim (citer l'utilisateur, ne pas reformuler)"),
+            moduleSlug: z.string().optional().describe("Module d'où vient le verdict (contexte)"),
+        },
+        async (args) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const parsed = addVerdictSchema.safeParse(args);
+            if (!parsed.success) throw new Error(`Verdict invalide : ${JSON.stringify(parsed.error.flatten())}`);
+
+            const db = await connectToDB();
+            const r = await db.collection<Omit<PedagogyVerdict, "_id">>("pedagogy_verdicts").insertOne({
+                date: new Date(),
+                format: parsed.data.format,
+                ...(parsed.data.moduleSlug && { moduleSlug: parsed.data.moduleSlug }),
+                verdict: parsed.data.verdict,
+                status: "active",
+            });
+            return { content: [{ type: "text" as const, text: `Verdict enregistré. verdictId=${r.insertedId.toString()}` }] };
+        }
+    );
+
+    // ── list_verdicts ─────────────────────────────────────────────────────────
+    server.tool(
+        "list_verdicts",
+        "Retourne les verdicts de calibrage ACTIFS (critiques utilisateur passées). À lire OBLIGATOIREMENT avant toute rédaction de contenu ou conception de module.",
+        {
+            format: z.enum(VERDICT_FORMATS).optional().describe("Filtrer par format. Omis = tous"),
+        },
+        async ({ format }) => {
+            const db = await connectToDB();
+            const filter: Record<string, unknown> = { status: "active" };
+            if (format) filter.format = format;
+            const verdicts = await db.collection<PedagogyVerdict>("pedagogy_verdicts")
+                .find(filter).sort({ date: 1 }).toArray();
+            const result = verdicts.map((v) => ({
+                id: v._id!.toString(),
+                date: v.date instanceof Date ? v.date.toISOString().slice(0, 10) : v.date,
+                format: v.format,
+                ...(v.moduleSlug && { moduleSlug: v.moduleSlug }),
+                verdict: v.verdict,
+            }));
+            return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
+        }
+    );
+
+    // ── distill_verdicts ──────────────────────────────────────────────────────
+    server.tool(
+        "distill_verdicts",
+        "Marque des verdicts comme distillés (promus en annotation d'exemplaire ou invariant du skill). Ils disparaissent de list_verdicts. À appeler après validation utilisateur de la distillation. Réservé aux admins.",
+        {
+            verdictIds: z.array(z.string().min(1)).min(1).describe("IDs des verdicts à distiller"),
+        },
+        async ({ verdictIds }) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const db = await connectToDB();
+            const ids = verdictIds.map((id) => {
+                if (!ObjectId.isValid(id)) throw new Error(`ID invalide : ${id}`);
+                return new ObjectId(id);
+            });
+            const r = await db.collection<PedagogyVerdict>("pedagogy_verdicts").updateMany(
+                { _id: { $in: ids }, status: "active" },
+                { $set: { status: "distilled" } }
+            );
+            return { content: [{ type: "text" as const, text: `${r.modifiedCount} verdict(s) distillé(s).` }] };
+        }
+    );
+
+    // ── promote_exemplar ──────────────────────────────────────────────────────
+    server.tool(
+        "promote_exemplar",
+        "Promeut un contenu validé en exemplaire de référence : copie FIGÉE des blocs + annotations « pourquoi c'est bon ». À appeler uniquement après un « c'est exactement ça » de l'utilisateur, annotations validées par lui. Réservé aux admins.",
+        {
+            module:      z.string().describe("Slug du module"),
+            section:     z.string().describe("Slug de la section"),
+            type:        z.enum(EXEMPLAR_FORMATS).describe("Type de contenu : cours | TP | examen | slide"),
+            level:       z.enum(EXEMPLAR_LEVELS).describe("Niveau des étudiants visés : debutant | intermediaire | avance"),
+            annotations: z.array(z.string()).min(1).describe("Notes « pourquoi c'est bon », validées par l'utilisateur"),
+        },
+        async (args) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const parsed = promoteExemplarSchema.safeParse(args);
+            if (!parsed.success) throw new Error(`Promotion invalide : ${JSON.stringify(parsed.error.flatten())}`);
+            const { module, section, type, level, annotations } = parsed.data;
+
+            const key: ContentKey = { moduleSlug: module, sectionSlug: section, contentType: type };
+            const blocks = await loadBlocks(key);
+
+            if (blocks.length === 0) {
+                throw new Error(`Aucun bloc en DB pour ${module}/${section}/${type} — rien à promouvoir.`);
+            }
+
+            const db = await connectToDB();
+            const r = await db.collection<Omit<PedagogyExemplar, "_id">>("pedagogy_exemplars").insertOne({
+                date: new Date(),
+                format: type,
+                moduleSlug: module,
+                sectionSlug: section,
+                level,
+                snapshot: blocks,
+                annotations,
+            });
+            return { content: [{ type: "text" as const, text: `Exemplaire promu (snapshot figé de ${blocks.length} blocs racine). exemplarId=${r.insertedId.toString()}` }] };
+        }
+    );
+
+    // ── list_exemplars ────────────────────────────────────────────────────────
+    server.tool(
+        "list_exemplars",
+        "Retourne les exemplaires de référence (étalons annotés). withSnapshot=false (défaut) liste les métadonnées + annotations ; withSnapshot=true inclut les blocs figés de l'exemplaire le plus pertinent. À lire avant toute rédaction : imiter l'exemplaire le plus proche (même format, niveau voisin).",
+        {
+            format:       z.enum(EXEMPLAR_FORMATS).optional().describe("Filtrer par type de contenu"),
+            level:        z.enum(EXEMPLAR_LEVELS).optional().describe("Filtrer par niveau"),
+            withSnapshot: z.boolean().optional().describe("Inclure les blocs figés (coûteux en tokens — ne l'activer que sur l'exemplaire choisi)"),
+        },
+        async ({ format, level, withSnapshot }) => {
+            const db = await connectToDB();
+            const filter: Record<string, unknown> = {};
+            if (format) filter.format = format;
+            if (level) filter.level = level;
+            const exemplars = await db.collection<PedagogyExemplar>("pedagogy_exemplars")
+                .find(filter, withSnapshot ? {} : { projection: { snapshot: 0 } })
+                .sort({ date: -1 }).toArray();
+            const result = exemplars.map((e) => ({
+                id: e._id!.toString(),
+                date: e.date instanceof Date ? e.date.toISOString().slice(0, 10) : e.date,
+                format: e.format,
+                moduleSlug: e.moduleSlug,
+                sectionSlug: e.sectionSlug,
+                level: e.level,
+                annotations: e.annotations,
+                ...(withSnapshot && { snapshot: e.snapshot }),
+            }));
+            return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
+        }
+    );
+
+    // ── get_pedagogical_skill_manifest ────────────────────────────────────────
+    server.tool(
+        "get_pedagogical_skill_manifest",
+        "Retourne le manifeste des skills pédagogiques (module-design, content-writer) : version, hash, liste des documents.",
+        {},
+        async () => ({
+            content: [{ type: "text" as const, text: JSON.stringify(SKILL_MANIFEST, null, 2) }],
+        })
+    );
+
+    // ── get_pedagogical_skill_document ────────────────────────────────────────
+    server.tool(
+        "get_pedagogical_skill_document",
+        "Retourne un document de skill pédagogique. id = module-design (conception de module) | content-writer (rédaction cours/TP/slides/examen).",
+        {
+            id: z.string().describe("ID du document : module-design | content-writer"),
+        },
+        async ({ id }) => {
+            const doc = SKILL_DOCUMENTS[id];
+            if (!doc) {
+                const available = Object.keys(SKILL_DOCUMENTS).join(", ");
+                throw new Error(`Document "${id}" inconnu. Disponibles : ${available}`);
+            }
+            return { content: [{ type: "text" as const, text: doc.content }] };
         }
     );
 

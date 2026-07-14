@@ -50,7 +50,26 @@ function getClientPromise(): Promise<MongoClient> {
     }
 }
 
+function resetClientPromise() {
+    if (process.env.NODE_ENV === "development") {
+        global._mongoClientPromise = undefined;
+    } else {
+        clientPromise = null;
+    }
+    client = null;
+}
+
 export async function connectToDB(): Promise<Db> {
-    const client = await getClientPromise();
-    return client.db("cours-iut-web");
+    try {
+        const c = await getClientPromise();
+        return c.db("cours-iut-web");
+    } catch (err: unknown) {
+        const name = (err as { name?: string })?.name ?? "";
+        if (name === "MongoTopologyClosedError" || name === "MongoNetworkError") {
+            resetClientPromise();
+            const c = await getClientPromise();
+            return c.db("cours-iut-web");
+        }
+        throw err;
+    }
 }

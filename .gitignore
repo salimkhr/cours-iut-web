@@ -58,5 +58,4 @@ rag
 /uploads/
 src/cours/**/REVIEW.md
 
-# skill module généré automatiquement (source canonique : skills/pedagogie/)
-/src/lib/skills/
+# src/lib/skills/pedagogy.ts est généré par scripts/generate-skill.ts et COMMITÉ intentionnellement.

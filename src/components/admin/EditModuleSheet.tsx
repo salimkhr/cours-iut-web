@@ -80,7 +80,7 @@ export default function EditModuleSheet({
                 side="right"
                 className={cn(
                     'p-0 gap-0 overflow-hidden flex flex-col sm:max-w-[520px]',
-                    'bg-[#f7ebd9] dark:bg-[#13110d]',
+                    'bg-card',
                     'border-l border-bridge-500/45',
                     '[&>button]:text-white/80 [&>button:hover]:text-white dark:[&>button]:text-brand-dark/80 dark:[&>button:hover]:text-brand-dark',
                 )}

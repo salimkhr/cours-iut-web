@@ -219,7 +219,7 @@ export default function LoginForm() {
                 )}
 
                 {/* Submit */}
-                <Button type="submit" disabled={loading || (captchaRequired && !captchaToken)} size="lg" className="group w-full h-auto rounded-lg bg-brand-accent-dark text-white hover:bg-brand-accent-dark hover:-translate-y-0.5 border-2 border-brand-accent-dark px-6 py-3 text-sm font-semibold tracking-wide shadow-[0_8px_24px_-10px_rgba(194,65,12,0.55)] hover:shadow-[0_14px_36px_-12px_rgba(194,65,12,0.75)] transition-all duration-300 flex items-center justify-center gap-2"
+                <Button type="submit" disabled={loading || (captchaRequired && !captchaToken)} size="lg" className="group w-full h-auto rounded-lg bg-brand-accent-dark text-white dark:text-brand-dark hover:bg-brand-accent-dark hover:-translate-y-0.5 border-2 border-brand-accent-dark px-6 py-3 text-sm font-semibold tracking-wide shadow-[0_8px_24px_-10px_rgba(194,65,12,0.55)] hover:shadow-[0_14px_36px_-12px_rgba(194,65,12,0.75)] transition-all duration-300 flex items-center justify-center gap-2"
                 >
                     {loading ? "Connexion…" : captchaRequired && !captchaToken ? "Validation du captcha…" : (
                         <>

@@ -15,7 +15,7 @@ export const ProgressPoint = forwardRef<HTMLDivElement, ProgressPointProps>(({ i
             isActive
                 ? cn(
                     "scale-125",
-                    isDark ? "bg-gray-100" : "bg-gray-900"
+                    isDark ? "bg-bridge-50" : "bg-bridge-900"
                 )
                 : isPast
                     ? "bg-primary/50"

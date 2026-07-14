@@ -99,6 +99,9 @@ export const PUT = withAdmin(async (
                     [`sections.${oldSectionIndex}.order`]: updatedSection.order,
                     [`sections.${oldSectionIndex}.contents`]: mergedContents,
                     [`sections.${oldSectionIndex}.examenIsLock`]: updatedSection.examenIsLock,
+                    [`sections.${oldSectionIndex}.courseIntroMinutes`]: updatedSection.courseIntroMinutes,
+                    [`sections.${oldSectionIndex}.brief`]: updatedSection.brief,
+                    [`sections.${oldSectionIndex}.curriculum`]: updatedSection.curriculum,
                 }
             }
         );

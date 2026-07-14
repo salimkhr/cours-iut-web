@@ -104,7 +104,7 @@ export default function AdminSection({
                                 <Trash2 className="w-4 h-4"/>
                             </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent className="p-0 gap-0 overflow-hidden bg-[#f7ebd9] dark:bg-[#13110d] border-bridge-500/45">
+                        <AlertDialogContent className="p-0 gap-0 overflow-hidden bg-card border-bridge-500/45">
                             <div
                                 className="flex items-center gap-3 px-6 py-4"
                                 style={{ backgroundColor: moduleColor(modData) }}

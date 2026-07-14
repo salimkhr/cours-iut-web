@@ -3,9 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "generate-skill": "node scripts/generateSkillModule.js",
-    "prebuild": "node scripts/generateSkillModule.js",
-    "predev": "node scripts/generateSkillModule.js",
     "dev": "bunx next dev",
     "build": "bunx next build",
     "postbuild": "node scripts/postbuild.js",
@@ -21,6 +18,7 @@
     "migrate-contents-refs": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/migrate-contents-refs.ts",
     "migrate:db": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/migrate-to-db.ts",
     "create-content-index": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/create-content-index.ts",
+    "generate-skill": "bun scripts/generate-skill.ts",
     "seed-oauth-client": "bunx dotenv-cli -e .env -e .env.local -- bun scripts/seed-oauth-client.ts",
     "audit": "bun audit",
     "update": "bunx npm-check-updates -u && bun install",

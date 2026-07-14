@@ -127,8 +127,8 @@ export function ContextualTopBar({
             <button
                 type="button"
                 onClick={onInsert}
-                className="inline-flex h-8 items-center gap-1 rounded-md px-3 text-sm font-medium text-white hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mod-color)] focus-visible:ring-offset-1"
-                style={moduleSlug ? { backgroundColor: "var(--mod-color)" } : { backgroundColor: "#2563eb" }}
+                className="inline-flex h-8 items-center gap-1 rounded-md bg-brand-primary px-3 text-sm font-medium text-white hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mod-color)] focus-visible:ring-offset-1"
+                style={moduleSlug ? { backgroundColor: "var(--mod-color)" } : undefined}
             >
                 <Plus className="size-4" /> Bloc
             </button>

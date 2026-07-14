@@ -51,7 +51,7 @@ export function ZoomedSlide({ slide, mode, renderChildren, className }: ZoomedSl
     return (
         <div ref={outerRef} className={className} style={{ width: "100%", height: "100%" }}>
             {scale === null ? (
-                <div className="h-full w-full animate-pulse rounded-lg bg-slate-200 dark:bg-slate-700" />
+                <div className="h-full w-full animate-pulse rounded-lg bg-bridge-200/70 dark:bg-bridge-700/55" />
             ) : (
                 <div
                     className="origin-top-left overflow-hidden rounded-lg bg-card shadow-lg"

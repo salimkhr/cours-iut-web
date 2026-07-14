@@ -49,7 +49,7 @@ export default function DeleteUserDialog({userId, userName, onDeleted}: DeleteUs
             </AlertDialogTrigger>
             <AlertDialogContent
                 className={cn(
-                    'bg-[#f7ebd9] dark:bg-[#13110d]',
+                    'bg-card',
                     'border border-bridge-500/45',
                     'shadow-[0_22px_44px_-14px_rgba(147,97,58,0.45)] dark:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.7)]',
                 )}

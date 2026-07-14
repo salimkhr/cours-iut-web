@@ -115,7 +115,7 @@ export default function ModuleFormFields({
                     <Checkbox
                         checked={watch('universe') !== undefined}
                         onCheckedChange={(checked) => setValue('universe', checked
-                            ? {name: '', description: '', scope: 'tp'}
+                            ? {name: '', description: ''}
                             : undefined)}
                     />
                     <span className="text-sm text-brand-dark dark:text-bridge-100">Définir un univers</span>
@@ -163,28 +163,6 @@ export default function ModuleFormFields({
                                 <p className="text-red-500 text-xs mt-1">{errors.universe.description.message}</p>
                             )}
                         </div>
-                        <Controller
-                            control={control}
-                            name="universe.scope"
-                            render={({field}) => (
-                                <div className="flex gap-6">
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <Checkbox
-                                            checked={field.value === 'module'}
-                                            onCheckedChange={() => field.onChange('module')}
-                                        />
-                                        <span className="text-sm text-brand-dark dark:text-bridge-100">Fil rouge annuel</span>
-                                    </label>
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <Checkbox
-                                            checked={field.value === 'tp'}
-                                            onCheckedChange={() => field.onChange('tp')}
-                                        />
-                                        <span className="text-sm text-brand-dark dark:text-bridge-100">Livrable par TP</span>
-                                    </label>
-                                </div>
-                            )}
-                        />
                     </>
                 )}
             </section>

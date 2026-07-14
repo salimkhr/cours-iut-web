@@ -188,7 +188,7 @@ export default function ProfileForm({initialFirstName, initialLastName, email, i
             )}
 
             <Button type="submit" disabled={isSubmitting} size="lg"
-                className="w-full bg-brand-accent-dark hover:bg-brand-accent-dark/90 text-white flex items-center gap-2">
+                className="w-full bg-brand-accent-dark hover:bg-brand-accent-dark/90 text-white dark:text-brand-dark flex items-center gap-2">
                 <Save className="h-4 w-4"/>
                 {isSubmitting ? "Enregistrement…" : "Enregistrer les modifications"}
             </Button>

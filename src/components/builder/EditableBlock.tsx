@@ -113,7 +113,7 @@ export function EditableBlock({
                 <button
                     type="button"
                     aria-label="Déplacer le bloc"
-                    className="absolute -left-6 top-1 z-10 hidden cursor-grab rounded p-0.5 text-slate-400 hover:text-slate-600 group-hover/eb:block"
+                    className="absolute -left-6 top-1 z-10 hidden cursor-grab rounded p-0.5 text-bridge-500 hover:text-bridge-700 dark:text-bridge-400 dark:hover:text-bridge-200 group-hover/eb:block"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <GripVertical className="size-4" />
@@ -131,7 +131,7 @@ export function EditableBlock({
                 <button
                     type="button"
                     aria-label="Supprimer le bloc"
-                    className="absolute -right-6 top-1 z-10 hidden rounded p-0.5 text-slate-400 hover:text-red-600 group-hover/eb:block"
+                    className="absolute -right-6 top-1 z-10 hidden rounded p-0.5 text-bridge-500 hover:text-red-600 dark:text-bridge-400 group-hover/eb:block"
                     onClick={(e) => {
                         e.stopPropagation();
                         // getState() évite d'abonner le composant à deleteBlock (référence stable)
@@ -189,7 +189,7 @@ export function EditableBlock({
                     type="button"
                     aria-label="Insérer un bloc après ce bloc"
                     onClick={onInsertAfter}
-                    className="-my-2 flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[11px] text-slate-500 shadow-sm hover:text-[var(--mod-color)] dark:border-slate-700 dark:bg-slate-800"
+                    className="-my-2 flex items-center gap-1 rounded-full border border-bridge-300/60 bg-card px-2 py-0.5 text-[11px] text-bridge-500 shadow-sm hover:text-[var(--mod-color)] dark:border-bridge-600/45 dark:text-bridge-300"
                 >
                     <Plus className="size-3" /> Bloc ici
                 </button>

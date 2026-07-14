@@ -30,7 +30,6 @@ export const hexColorSchema = z
 export const universeSchema = z.object({
     name: z.string().trim().min(1, "Le nom de l'univers est obligatoire"),
     description: z.string().trim().min(1, "La description de l'univers est obligatoire"),
-    scope: z.enum(["module", "tp"], {message: "Scope invalide (module ou tp)"}),
 });
 
 export type ModuleUniverse = z.infer<typeof universeSchema>;

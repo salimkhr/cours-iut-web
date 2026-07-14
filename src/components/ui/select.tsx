@@ -5,7 +5,6 @@ import * as SelectPrimitive from "@radix-ui/react-select"
 import {CheckIcon, ChevronDownIcon, ChevronUpIcon} from "lucide-react"
 
 import {cn} from "@/lib/utils"
-import {useIsDark} from "@/hook/useIsDark";
 
 function Select({
                     ...props
@@ -57,17 +56,14 @@ function SelectContent({
                            position = "popper",
                            ...props
                        }: React.ComponentProps<typeof SelectPrimitive.Content>) {
-    const isDark = useIsDark();
-
     return (
         <SelectPrimitive.Portal>
             <SelectPrimitive.Content
                 data-slot="select-content"
                 className={cn(
-                    "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border shadow-md",
+                    "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-lg border border-border shadow-[0_18px_36px_-14px_rgba(147,97,58,0.5)] dark:shadow-[0_18px_36px_-14px_rgba(0,0,0,0.75)]",
                     position === "popper" &&
                     "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
-                    isDark ? "bg-gray-800" : "bg-white",
                     className
                 )}
                 position={position}

@@ -113,11 +113,12 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
         "group/btn flex-1 min-w-[88px] min-h-[44px] rounded-lg",
         "text-xs font-semibold tracking-wide uppercase",
         "border-2 border-(--module-color) text-brand-dark dark:text-bridge-50",
-        "bg-transparent shadow-none",
-        "hover:bg-(--module-color) hover:text-white hover:shadow-md",
-        "transition-[color,border-color,background-color,box-shadow] duration-300",
+        "bg-transparent dark:bg-bridge-900/24 shadow-none",
+        "hover:bg-(--module-color) hover:text-white hover:shadow-md dark:hover:text-brand-dark",
+        "active:translate-y-px focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "transition-[color,border-color,background-color,box-shadow,transform] duration-300",
     );
-    const iconBase = "w-4 h-4 shrink-0 text-(--module-color) group-hover/btn:text-white transition-colors duration-300";
+    const iconBase = "size-4 shrink-0 text-(--module-color) group-hover/btn:text-white dark:group-hover/btn:text-brand-dark transition-colors duration-300";
 
     async function handleToggleLock() {
         if (pending) return;
@@ -141,7 +142,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
         } as React.CSSProperties}
             className={cn(
                 "group relative h-full flex flex-col p-7 lg:p-9 rounded-2xl overflow-hidden",
-                "bg-bridge-50 dark:bg-bridge-900",
+                "bg-bridge-50 dark:bg-bridge-800",
                 "border border-bridge-500/45 dark:border-bridge-500/35",
                 "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)]",
                 "dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
@@ -175,13 +176,10 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
 
                 {/* Header: order chip + title + duration + lock state */}
                 <header className="flex items-center gap-3">
-                    <div className="inline-flex items-center justify-center min-w-9 h-9 px-2.5 rounded-lg text-white dark:text-black font-mono font-bold shadow-sm shrink-0 bg-(--module-color) dark:bg-(--module-color-dark)">
+                    <div className="inline-flex h-9 min-w-9 items-center justify-center rounded-lg px-2.5 text-white dark:text-brand-dark font-mono font-bold shadow-sm shrink-0 bg-(--module-color) dark:bg-(--module-color-dark)">
                         {section.order.toString().padStart(2, '0')}
                     </div>
-                    <h3 className={cn(
-                        "text-xl lg:text-2xl font-bold tracking-tight leading-tight flex-1 min-w-0",
-                        `text-${modulePath}`
-                    )}>
+                    <h3 className="text-xl lg:text-2xl font-bold tracking-tight leading-tight flex-1 min-w-0 text-(--module-color) dark:text-(--module-color-dark)">
                         {section.title}
                     </h3>
                     <div className="flex items-center gap-2 shrink-0">
@@ -199,21 +197,21 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                                 className={cn(
                                     "pointer-events-auto inline-flex items-center gap-1 rounded-md px-2 py-1.5",
                                     "text-[10px] uppercase tracking-[0.18em] font-semibold",
-                                    "transition-colors duration-200 cursor-pointer",
+                                    "transition-[background-color,color,transform] duration-200 cursor-pointer active:translate-y-px",
                                     available
-                                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50"
+                                        ? "bg-brand-primary/12 text-brand-accent-dark hover:bg-brand-primary/18 dark:bg-brand-primary/20 dark:text-brand-primary dark:hover:bg-brand-primary/28"
                                         : "bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100 hover:bg-bridge-700/50"
                                 )}
                                 aria-label={available ? "Verrouiller la section" : "Déverrouiller la section"}
                             >
                                 {available ? (
                                     <>
-                                        <Unlock className="w-3 h-3"/>
+                                        <Unlock className="size-3"/>
                                         <span className="hidden sm:inline">Disponible</span>
                                     </>
                                 ) : (
                                     <>
-                                        <Lock className="w-3 h-3"/>
+                                        <Lock className="size-3"/>
                                         <span className="hidden sm:inline">Verrouillé</span>
                                     </>
                                 )}
@@ -221,7 +219,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                         ) : (
                             isLocked && (
                                 <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100">
-                                    <Lock className="w-3 h-3"/>
+                                    <Lock className="size-3"/>
                                     <span className="hidden sm:inline">Verrouillé</span>
                                 </span>
                             )
@@ -242,7 +240,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                         {section.tags.map((tag) => (
                             <span
                                 key={tag}
-                                className="inline-flex items-center font-mono text-[11px] tracking-tight px-2.5 py-1 rounded-md border border-bridge-700/40 text-brand-dark dark:border-bridge-400/40 dark:text-bridge-100"
+                                className="inline-flex items-center font-mono text-[11px] tracking-tight px-2.5 py-1 rounded-md border border-bridge-700/40 text-brand-dark dark:border-bridge-400/40 dark:bg-bridge-900/20 dark:text-bridge-100"
                             >
                                 #{tag}
                             </span>

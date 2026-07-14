@@ -19,15 +19,16 @@ export default function SectionNavCard({href, direction, section}: SectionNavCar
                 "group/nav flex items-center gap-3 rounded-xl",
                 "w-full min-w-0",
                 // Même fond que les cards (sans le pont)
-                "bg-[#f7ebd9] dark:bg-[#13110d]",
+                "bg-bridge-50 dark:bg-bridge-800",
                 "border border-bridge-500/45 dark:border-bridge-500/35",
                 "px-3 py-2 h-[52px]",
                 "hover:border-bridge-500/65 dark:hover:border-bridge-400/55",
-                "transition-all duration-300"
+                "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)] dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
+                "transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_36px_-14px_rgba(147,97,58,0.5)] active:translate-y-px dark:hover:shadow-[0_18px_36px_-14px_rgba(0,0,0,0.75)]"
             )}
         >
             {isPrev && (
-                <ArrowLeft className="w-4 h-4 shrink-0 text-brand-dark dark:text-bridge-100"/>
+                <ArrowLeft className="size-4 shrink-0 text-brand-dark dark:text-bridge-100"/>
             )}
 
             <div className={cn(
@@ -38,7 +39,7 @@ export default function SectionNavCard({href, direction, section}: SectionNavCar
                     "text-[10px] uppercase tracking-wider text-brand-dark/60 dark:text-bridge-200/60 flex items-center gap-1 shrink-0",
                     !isPrev && "flex-row-reverse"
                 )}>
-                    <NotebookPen className="w-3 h-3 shrink-0"/>
+                    <NotebookPen className="size-3 shrink-0"/>
                     {isPrev ? "Précédente" : "Suivante"}
                 </span>
 
@@ -48,7 +49,7 @@ export default function SectionNavCard({href, direction, section}: SectionNavCar
             </div>
 
             {!isPrev && (
-                <ArrowRight className="w-4 h-4 shrink-0 text-brand-dark dark:text-bridge-100"/>
+                <ArrowRight className="size-4 shrink-0 text-brand-dark dark:text-bridge-100"/>
             )}
         </Link>
     );

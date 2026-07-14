@@ -2,7 +2,6 @@
 
 import React from "react";
 import {cn} from "@/lib/utils";
-import {useIsDark} from "@/hook/useIsDark";
 
 type ListProps = React.HTMLAttributes<HTMLUListElement | HTMLOListElement> & {
     ordered?: boolean;
@@ -22,9 +21,9 @@ export function List({
     const Component = ordered ? "ol" : "ul";
 
     const spacingClasses = {
-        compact: "space-y-1",
-        default: "space-y-2",
-        relaxed: "space-y-3"
+        compact: "[&>*+*]:mt-1",
+        default: "[&>*+*]:mt-2",
+        relaxed: "[&>*+*]:mt-3"
     };
 
     const baseClasses = type !== undefined
@@ -55,11 +54,9 @@ export function ListItem({
                              variant = "default",
                              ...props
                          }: ListItemProps) {
-    const isDark = useIsDark();
-
     const variants = {
-        default: isDark ? "text-gray-100" : "text-gray-900",
-        muted: isDark ? "text-gray-400" : "text-gray-600"
+        default: "text-brand-dark dark:text-bridge-100",
+        muted: "text-brand-dark/60 dark:text-bridge-200/65"
     };
 
     return (

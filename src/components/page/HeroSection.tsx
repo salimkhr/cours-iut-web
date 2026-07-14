@@ -58,7 +58,7 @@ export default function HeroSection({
         <section
             aria-label={imageAlt}
             className={cn(
-                "relative w-full bg-no-repeat bg-right-bottom bg-cover overflow-hidden border-b border-brand-dark/15 dark:border-brand-light/15 -mt-(--navbar-h)",
+                "relative w-full bg-no-repeat bg-right-bottom bg-cover overflow-hidden border-b border-brand-dark/15 dark:border-brand-light/15",
                 compact
                     ? "min-h-[20dvh] sm:min-h-[26vh] lg:min-h-[34vh]"
                     : "min-h-[50dvh] sm:min-h-[60vh] lg:min-h-[80vh]"
@@ -67,7 +67,7 @@ export default function HeroSection({
         >
             {!isHome && (
                 <Particles
-                    className="absolute inset-0 -z-10"
+                    className="pointer-events-none absolute inset-0 z-0 opacity-65"
                     quantity={70}
                     color={particleColor}
                     ease={60}
@@ -77,17 +77,14 @@ export default function HeroSection({
             {/* Gradient overlay — solid left → transparent right (more aggressive on desktop) */}
             <div
                 aria-hidden="true"
-                className="absolute inset-0 bg-linear-to-b from-brand-light via-brand-light/90 to-brand-light/60 lg:bg-linear-to-r lg:from-brand-light lg:via-brand-light/85 lg:to-transparent dark:from-brand-dark dark:via-brand-dark/90 dark:to-brand-dark/60 lg:dark:via-brand-dark/85 lg:dark:to-transparent z-0"
+                className="absolute inset-0 bg-linear-to-b from-background via-background/90 to-background/60 lg:bg-linear-to-r lg:from-background lg:via-background/85 lg:to-transparent z-0"
             />
 
             {/* Ambient decoration — desktop only, subtle */}
             <div aria-hidden="true" className="hidden lg:block absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-20%] left-[-10%] w-[520px] h-[520px] rounded-full bg-brand-primary/10 blur-3xl"/>
-                <div className="absolute bottom-[-25%] left-[15%] w-[420px] h-[420px] rounded-full bg-brand-primary/5 blur-3xl"/>
-                <div className="absolute top-[40%] left-[35%] w-0.5 h-[140px] bg-brand-primary/20 rotate-12"/>
-                <div className="absolute top-[20%] left-[42%] w-1.5 h-1.5 rounded-full bg-brand-primary/40"/>
-                <div className="absolute top-[55%] left-[38%] w-1 h-1 rounded-full bg-brand-primary/30"/>
-                <div className="absolute top-[70%] left-[44%] w-2 h-2 rounded-full bg-brand-primary/25"/>
+                <div className="absolute inset-y-0 left-0 w-[58%] opacity-35 bg-[repeating-linear-gradient(90deg,color-mix(in_srgb,var(--color-brand-primary)_12%,transparent)_0_1px,transparent_1px_72px)]"/>
+                <div className="absolute left-12 top-[28%] h-px w-56 bg-linear-to-r from-brand-primary/35 to-transparent"/>
+                <div className="absolute left-20 top-[64%] h-px w-72 bg-linear-to-r from-brand-primary/25 to-transparent"/>
             </div>
 
             <div
@@ -101,7 +98,7 @@ export default function HeroSection({
                     {backHref && (
                         <Link
                             href={backHref}
-                            className="inline-flex items-center gap-1 text-sm text-brand-dark/55 dark:text-bridge-300/55 hover:text-brand-dark dark:hover:text-bridge-100 transition-colors mb-3 lg:mb-4"
+                            className="inline-flex items-center gap-1 rounded-md text-sm text-brand-dark/55 transition-colors duration-200 hover:text-brand-dark focus-visible:ring-2 focus-visible:ring-ring dark:text-bridge-300/55 dark:hover:text-bridge-100 mb-3 lg:mb-4"
                         >
                             <ChevronLeft className="size-3.5"/>
                             {backLabel}
@@ -114,7 +111,7 @@ export default function HeroSection({
                                     {icon}
                                 </div>
                             )}
-                            <h1 className="font-extrabold tracking-tight">
+                            <h1 className="font-extrabold tracking-tight text-balance">
                                 {title}
                                 <span style={{color: accentColor || `var(--color-${path || 'brand-primary'})`}}>.</span>
                             </h1>
@@ -122,7 +119,7 @@ export default function HeroSection({
                     ) : (
                         <>
                             {icon && <div className="mb-4 flex justify-center lg:justify-start">{icon}</div>}
-                            <h1 className="font-extrabold tracking-tight leading-[0.95] text-center lg:text-left text-brand-dark dark:text-brand-light text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl">
+                            <h1 className="font-extrabold tracking-tight leading-[0.95] text-center lg:text-left text-balance text-brand-dark dark:text-brand-light text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl">
                                 {title}
                                 <span style={{color: accentColor || `var(--color-${path || 'brand-primary'})`}}>.</span>
                             </h1>
@@ -140,7 +137,7 @@ export default function HeroSection({
 
                     {description && (
                         <p className={cn(
-                            "leading-relaxed text-brand-gray-700 dark:text-brand-gray-300 text-center lg:text-left max-w-prose mx-auto lg:mx-0",
+                            "leading-relaxed text-pretty text-brand-gray-700 dark:text-brand-gray-300 text-center lg:text-left max-w-prose mx-auto lg:mx-0",
                             compact
                                 ? "mt-3 text-sm sm:text-base lg:text-base"
                                 : "mt-5 text-base sm:text-lg lg:text-lg xl:text-xl"
