@@ -51,6 +51,24 @@ explicite de l'utilisateur.`;
 type ContentType = CourseContent["contentType"];
 const CONTENT_TYPE = z.enum(["cours", "TP", "examen", "slide"]);
 
+// Les clients MCP dont le schéma d'outils est mis en cache (connecteurs claude.ai)
+// transmettent les paramètres ajoutés depuis en chaîne : on tolère string → typé.
+const intOrString = z.union([z.number().int().min(0), z.string().regex(/^\d+$/)]);
+const boolOrString = z.union([z.boolean(), z.enum(["true", "false"])]);
+
+function asInt(v: number | string | undefined): number | undefined {
+    return v === undefined ? undefined : typeof v === "string" ? parseInt(v, 10) : v;
+}
+function asBool(v: boolean | "true" | "false" | undefined): boolean | undefined {
+    return v === undefined ? undefined : v === true || v === "true";
+}
+function asBrief(v: SectionBrief | string | undefined): SectionBrief | undefined {
+    return v === undefined ? undefined : typeof v === "string" ? briefSchema.parse(JSON.parse(v)) : v;
+}
+function asCurriculum(v: SectionCurriculum | string | undefined): SectionCurriculum | undefined {
+    return v === undefined ? undefined : typeof v === "string" ? curriculumSchema.parse(JSON.parse(v)) : v;
+}
+
 interface ContentKey {
     moduleSlug: string;
     sectionSlug: string;
@@ -355,12 +373,14 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             objectives:    z.array(z.string()).optional(),
             totalDuration: z.number().int().min(1).optional().describe("Nombre de séances (défaut: 1)"),
             tags:          z.array(z.string()).optional(),
-            courseIntroMinutes: z.number().int().min(0).optional()
+            courseIntroMinutes: intOrString.optional()
                 .describe("Minutes de cours/slides en ouverture de la 1re séance (ex: 30). Le budget TP = totalDuration × sessionDurationMinutes − courseIntroMinutes."),
-            brief: briefSchema.optional()
-                .describe("Cahier des charges de la section : objectives (ce que l'étudiant saura faire), notions (à couvrir), filRougeStep (ce que le TP ajoute au projet fil rouge), notes libres."),
+            brief: z.union([briefSchema, z.string()]).optional()
+                .describe("Cahier des charges de la section : objectives (ce que l'étudiant saura faire), notions (à couvrir), filRougeStep (ce que le TP ajoute au projet fil rouge), notes libres. Objet ou JSON stringifié."),
         },
-        async ({ module, title, description, contentTypes, order, path, objectives, totalDuration, tags, courseIntroMinutes, brief }) => {
+        async ({ module, title, description, contentTypes, order, path, objectives, totalDuration, tags, courseIntroMinutes: rawIntro, brief: rawBrief }) => {
+            const courseIntroMinutes = asInt(rawIntro);
+            const brief = asBrief(rawBrief);
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
 
@@ -466,10 +486,10 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             correctionIsAvailable: z.boolean().optional(),
             examenIsLock:          z.boolean().optional(),
             addContentTypes:       z.array(CONTENT_TYPE).optional().describe("Types à AJOUTER (additif)"),
-            courseIntroMinutes:    z.number().int().min(0).optional(),
-            brief:                 briefSchema.optional(),
-            curriculum:            curriculumSchema.optional()
-                .describe("Notions effectivement enseignées + APIs vues. Mis à jour par le skill content-writer après rédaction."),
+            courseIntroMinutes:    intOrString.optional(),
+            brief:                 z.union([briefSchema, z.string()]).optional(),
+            curriculum:            z.union([curriculumSchema, z.string()]).optional()
+                .describe("Notions effectivement enseignées + APIs vues. Mis à jour par le skill content-writer après rédaction. Objet ou JSON stringifié."),
         },
         async (args) => {
             if (!isAdmin) throw new Error("Forbidden");
@@ -490,7 +510,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 ["totalDuration", args.totalDuration], ["tags", args.tags],
                 ["isAvailable", args.isAvailable], ["hasCorrection", args.hasCorrection],
                 ["correctionIsAvailable", args.correctionIsAvailable], ["examenIsLock", args.examenIsLock],
-                ["courseIntroMinutes", args.courseIntroMinutes], ["brief", args.brief], ["curriculum", args.curriculum],
+                ["courseIntroMinutes", asInt(args.courseIntroMinutes)], ["brief", asBrief(args.brief)], ["curriculum", asCurriculum(args.curriculum)],
             ];
             for (const [field, value] of meta) {
                 if (value !== undefined) set[`sections.${idx}.${field}`] = value;
@@ -657,11 +677,12 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             module:    z.string(),
             section:   z.string(),
             type:      CONTENT_TYPE,
-            removeRef: z.boolean().optional()
+            removeRef: boolOrString.optional()
                 .describe("true = retire le type de contenu de la section (au lieu de repasser à source: 'file')"),
         },
-        async ({ module, section, type, removeRef }) => {
+        async ({ module, section, type, removeRef: rawRemoveRef }) => {
             if (!isAdmin) throw new Error("Forbidden");
+            const removeRef = asBool(rawRemoveRef);
             const db = await connectToDB();
             await db.collection<CourseContent>("course_content").deleteOne({
                 moduleSlug: module, sectionSlug: section, contentType: type,
