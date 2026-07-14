@@ -15,8 +15,8 @@ import {
     updateBlockChildren,
 } from "@/lib/blockTreeUtils";
 import { moduleFormSchema, universeSchema } from "@/lib/schemas/module.schema";
-import { addVerdictSchema, VERDICT_FORMATS } from "@/lib/schemas/pedagogy.schema";
-import type { PedagogyVerdict } from "@/types/Pedagogy";
+import { addVerdictSchema, promoteExemplarSchema, VERDICT_FORMATS, EXEMPLAR_FORMATS, EXEMPLAR_LEVELS } from "@/lib/schemas/pedagogy.schema";
+import type { PedagogyVerdict, PedagogyExemplar } from "@/types/Pedagogy";
 import { ObjectId } from "bson";
 import { assignModuleColor } from "@/lib/assignModuleColor";
 import { isValidIcon } from "@/lib/iconMap";
@@ -1034,6 +1034,75 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 { $set: { status: "distilled" } }
             );
             return { content: [{ type: "text" as const, text: `${r.modifiedCount} verdict(s) distillé(s).` }] };
+        }
+    );
+
+    // ── promote_exemplar ──────────────────────────────────────────────────────
+    server.tool(
+        "promote_exemplar",
+        "Promeut un contenu validé en exemplaire de référence : copie FIGÉE des blocs + annotations « pourquoi c'est bon ». À appeler uniquement après un « c'est exactement ça » de l'utilisateur, annotations validées par lui. Réservé aux admins.",
+        {
+            module:      z.string().describe("Slug du module"),
+            section:     z.string().describe("Slug de la section"),
+            type:        z.enum(EXEMPLAR_FORMATS).describe("Type de contenu : cours | TP | examen | slide"),
+            level:       z.enum(EXEMPLAR_LEVELS).describe("Niveau des étudiants visés : debutant | intermediaire | avance"),
+            annotations: z.array(z.string()).min(1).describe("Notes « pourquoi c'est bon », validées par l'utilisateur"),
+        },
+        async (args) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const parsed = promoteExemplarSchema.safeParse(args);
+            if (!parsed.success) throw new Error(`Promotion invalide : ${JSON.stringify(parsed.error.flatten())}`);
+            const { module, section, type, level, annotations } = parsed.data;
+
+            const key: ContentKey = { moduleSlug: module, sectionSlug: section, contentType: type };
+            const blocks = await loadBlocks(key);
+
+            if (blocks.length === 0) {
+                throw new Error(`Aucun bloc en DB pour ${module}/${section}/${type} — rien à promouvoir.`);
+            }
+
+            const db = await connectToDB();
+            const r = await db.collection<Omit<PedagogyExemplar, "_id">>("pedagogy_exemplars").insertOne({
+                date: new Date(),
+                format: type,
+                moduleSlug: module,
+                sectionSlug: section,
+                level,
+                snapshot: blocks,
+                annotations,
+            });
+            return { content: [{ type: "text" as const, text: `Exemplaire promu (snapshot figé de ${blocks.length} blocs racine). exemplarId=${r.insertedId.toString()}` }] };
+        }
+    );
+
+    // ── list_exemplars ────────────────────────────────────────────────────────
+    server.tool(
+        "list_exemplars",
+        "Retourne les exemplaires de référence (étalons annotés). withSnapshot=false (défaut) liste les métadonnées + annotations ; withSnapshot=true inclut les blocs figés de l'exemplaire le plus pertinent. À lire avant toute rédaction : imiter l'exemplaire le plus proche (même format, niveau voisin).",
+        {
+            format:       z.enum(EXEMPLAR_FORMATS).optional().describe("Filtrer par type de contenu"),
+            level:        z.enum(EXEMPLAR_LEVELS).optional().describe("Filtrer par niveau"),
+            withSnapshot: z.boolean().optional().describe("Inclure les blocs figés (coûteux en tokens — ne l'activer que sur l'exemplaire choisi)"),
+        },
+        async ({ format, level, withSnapshot }) => {
+            const db = await connectToDB();
+            const filter: Record<string, unknown> = {};
+            if (format) filter.format = format;
+            if (level) filter.level = level;
+            const exemplars = await db.collection<PedagogyExemplar>("pedagogy_exemplars")
+                .find(filter, withSnapshot ? {} : { projection: { snapshot: 0 } })
+                .sort({ date: -1 }).toArray();
+            const result = exemplars.map((e) => ({
+                id: e._id!.toString(),
+                date: e.date instanceof Date ? e.date.toISOString().slice(0, 10) : e.date,
+                format: e.format,
+                moduleSlug: e.moduleSlug,
+                sectionSlug: e.sectionSlug,
+                level: e.level,
+                annotations: e.annotations,
+                ...(withSnapshot && { snapshot: e.snapshot }),
+            }));
+            return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
         }
     );
 
