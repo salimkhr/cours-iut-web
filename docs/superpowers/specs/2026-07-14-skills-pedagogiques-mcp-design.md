@@ -29,6 +29,7 @@ examen), accessibles depuis n'importe quel client MCP (Claude Code, claude.ai, w
 | Examen | **TP indépendant hors fil rouge** en fin de module, remobilisant les notions des curriculums ; généré en autonomie (pas de validation de squelette) ; durée cible une séance |
 | Flux d'écriture | Hybride : squelette validé en chat → écriture directe sur **staging** → relecture navigateur → corrections `edit_block` → copie vers prod sur confirmation |
 | Staging → prod | Copie **via MCP par le skill** (`get_content` staging → `save_content` prod), confirmation explicite avant chaque écriture prod. Pas de chantier export/import pour l'instant |
+| Outil de copie | **`get_content` uniquement** : il renvoie l'arbre de blocs JSON attendu par `save_content` (round-trip sans perte). `export_content_compact` renvoie du Markdown — outil de lecture seule, **jamais** utilisé pour une copie |
 | Univers | **Un par module, fil rouge cumulatif**. TP = exercices guidés « classiques » d'abord, puis remise en pratique dans le fil rouge |
 | Prod | **Jamais** écrite directement par les skills — toujours staging d'abord, prod sur confirmation |
 
