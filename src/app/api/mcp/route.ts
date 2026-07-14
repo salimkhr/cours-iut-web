@@ -348,6 +348,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         {
             module:        z.string().describe("Slug du module"),
             title:         z.string().describe("Titre de la section"),
+            description:   z.string().optional().describe("Description courte de la section (affichée aux étudiants)"),
             contentTypes:  z.array(CONTENT_TYPE).min(1).describe("Types de contenu : cours | TP | examen | slide"),
             order:         z.number().int().min(1).optional().describe("Position (défaut: max+1)"),
             path:          z.string().optional().describe("Slug de section (défaut: dérivé du titre)"),
@@ -359,7 +360,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             brief: briefSchema.optional()
                 .describe("Cahier des charges de la section : objectives (ce que l'étudiant saura faire), notions (à couvrir), filRougeStep (ce que le TP ajoute au projet fil rouge), notes libres."),
         },
-        async ({ module, title, contentTypes, order, path, objectives, totalDuration, tags, courseIntroMinutes, brief }) => {
+        async ({ module, title, description, contentTypes, order, path, objectives, totalDuration, tags, courseIntroMinutes, brief }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
 
@@ -378,6 +379,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             // Valide la "forme brute" (contents = types) via le schéma admin existant.
             const rawCheck = sectionApiSchema.safeParse({
                 title,
+                ...(description !== undefined && { description }),
                 path: sectionPath,
                 order: nextOrder,
                 totalDuration: totalDuration ?? 1,
@@ -413,6 +415,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
 
             const section: Section = {
                 title,
+                ...(description !== undefined && { description }),
                 path: sectionPath,
                 order: nextOrder,
                 contents,
@@ -452,6 +455,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             module:                z.string(),
             sectionPath:           z.string().describe("Slug de la section à éditer"),
             title:                 z.string().optional(),
+            description:           z.string().optional().describe("Description courte de la section (affichée aux étudiants)"),
             newPath:               z.string().optional().describe("Nouveau slug (cascade sur course_content)"),
             order:                 z.number().int().min(1).optional(),
             objectives:            z.array(z.string()).optional(),
@@ -482,7 +486,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
 
             const set: Record<string, unknown> = {};
             const meta: Array<[string, unknown]> = [
-                ["title", args.title], ["order", args.order], ["objectives", args.objectives],
+                ["title", args.title], ["description", args.description], ["order", args.order], ["objectives", args.objectives],
                 ["totalDuration", args.totalDuration], ["tags", args.tags],
                 ["isAvailable", args.isAvailable], ["hasCorrection", args.hasCorrection],
                 ["correctionIsAvailable", args.correctionIsAvailable], ["examenIsLock", args.examenIsLock],
@@ -648,28 +652,39 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     // ── delete_content ────────────────────────────────────────────────────────
     server.tool(
         "delete_content",
-        "Supprime un contenu de la DB et repasse son ref à source: 'file'. Réservé aux admins.",
+        "Supprime un contenu de la DB. Par défaut repasse son ref à source: 'file' ; avec removeRef: true, retire complètement le type de contenu de la section. Réservé aux admins.",
         {
-            module:  z.string(),
-            section: z.string(),
-            type:    CONTENT_TYPE,
+            module:    z.string(),
+            section:   z.string(),
+            type:      CONTENT_TYPE,
+            removeRef: z.boolean().optional()
+                .describe("true = retire le type de contenu de la section (au lieu de repasser à source: 'file')"),
         },
-        async ({ module, section, type }) => {
+        async ({ module, section, type, removeRef }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
             await db.collection<CourseContent>("course_content").deleteOne({
                 moduleSlug: module, sectionSlug: section, contentType: type,
             });
-            await db.collection("modules").updateOne(
-                { path: module },
-                {
-                    $set:   { "sections.$[s].contents.$[c].source": "file" },
-                    $unset: { "sections.$[s].contents.$[c].contentId": "" },
-                },
-                { arrayFilters: [{ "s.path": section }, { "c.type": type }] }
-            );
+            if (removeRef) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                await (db.collection("modules") as any).updateOne(
+                    { path: module },
+                    { $pull: { "sections.$[s].contents": { type } } },
+                    { arrayFilters: [{ "s.path": section }] }
+                );
+            } else {
+                await db.collection("modules").updateOne(
+                    { path: module },
+                    {
+                        $set:   { "sections.$[s].contents.$[c].source": "file" },
+                        $unset: { "sections.$[s].contents.$[c].contentId": "" },
+                    },
+                    { arrayFilters: [{ "s.path": section }, { "c.type": type }] }
+                );
+            }
             revalidateTag(`content:${module}:${section}:${type}`, { expire: 0 });
-            return { content: [{ type: "text" as const, text: "Supprimé." }] };
+            return { content: [{ type: "text" as const, text: removeRef ? "Contenu supprimé et type retiré de la section." : "Supprimé." }] };
         }
     );
 
