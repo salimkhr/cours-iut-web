@@ -1,6 +1,7 @@
 import { auth, getServerSession } from "@/lib/auth";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import UsersTable from "@/components/admin/users/UsersTable";
 import type { AdminUser } from "@/components/admin/users/UsersTable";
 import MigrateButton from "@/components/admin/MigrateButton";
@@ -59,8 +60,14 @@ export default async function AdminPage() {
                     {users.length} compte{users.length !== 1 ? 's' : ''} enregistré{users.length !== 1 ? 's' : ''}
                 </p>
             </div>
-            <div className="mb-4">
+            <div className="mb-4 flex flex-wrap items-center gap-3">
                 <MigrateButton />
+                <Link
+                    href="/admin/calibrage"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-bridge-500/30 px-3 py-1.5 text-sm font-medium text-bridge-600 dark:text-bridge-300 hover:bg-bridge-100/50 dark:hover:bg-bridge-800/30 transition-colors"
+                >
+                    Calibrage pédagogique
+                </Link>
             </div>
             <UsersTable users={users} />
         </div>
