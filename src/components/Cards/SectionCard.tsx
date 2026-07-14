@@ -112,13 +112,13 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
     const btnBase = cn(
         "group/btn flex-1 min-w-[88px] min-h-[44px] rounded-lg",
         "text-xs font-semibold tracking-wide uppercase",
-        "border-2 border-(--module-color) text-brand-dark dark:text-bridge-50",
-        "bg-transparent dark:bg-bridge-900/24 shadow-none",
-        "hover:bg-(--module-color) hover:text-white hover:shadow-md dark:hover:text-brand-dark",
+        "border-2 border-(--module-color) text-brand-dark dark:border-(--module-color-dark) dark:text-bridge-100",
+        "bg-transparent dark:bg-bridge-900/18 shadow-none",
+        "hover:bg-(--module-color) hover:text-white hover:shadow-md dark:hover:bg-(--module-color-dark) dark:hover:text-brand-dark",
         "active:translate-y-px focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         "transition-[color,border-color,background-color,box-shadow,transform] duration-300",
     );
-    const iconBase = "size-4 shrink-0 text-(--module-color) group-hover/btn:text-white dark:group-hover/btn:text-brand-dark transition-colors duration-300";
+    const iconBase = "size-4 shrink-0 text-(--module-color) dark:text-(--module-color-dark) group-hover/btn:text-white dark:group-hover/btn:text-brand-dark transition-colors duration-300";
 
     async function handleToggleLock() {
         if (pending) return;
@@ -240,7 +240,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                         {section.tags.map((tag) => (
                             <span
                                 key={tag}
-                                className="inline-flex items-center font-mono text-[11px] tracking-tight px-2.5 py-1 rounded-md border border-bridge-700/40 text-brand-dark dark:border-bridge-400/40 dark:bg-bridge-900/20 dark:text-bridge-100"
+                                className="inline-flex items-center font-mono text-[11px] tracking-tight px-2.5 py-1 rounded-md border border-bridge-700/40 text-brand-dark dark:border-bridge-500/35 dark:bg-bridge-900/45 dark:text-bridge-200"
                             >
                                 #{tag}
                             </span>
