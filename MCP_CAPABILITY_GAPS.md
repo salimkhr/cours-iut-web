@@ -1,158 +1,165 @@
 # Lacunes de capacité MCP — Skill pédagogique
 
-Ce document liste les capacités nécessaires pour automatiser les audits pédagogiques
-mais absentes du serveur MCP actuel. Aucune des fonctions listées ici n'est implémentée.
+Dernière mise à jour : 2026-07-12.
+
+Ce document liste les capacités encore manquantes pour automatiser les audits pédagogiques.
+Il ne doit pas répéter les outils déjà disponibles dans le serveur MCP.
+
+## Capacités disponibles à ne plus considérer comme des lacunes
+
+- `get_content(module, section, type)` : retourne l'arbre de blocs complet.
+- `export_content_compact(module, section?, type?)` : fournit un export Markdown compact, annoté avec les IDs de blocs.
+- `search_content(query, module?, type?, limit?)` : recherche plein texte dans les contenus migrés.
+- `get_migration_status()` : indique les contenus disponibles via la base et ceux encore hors migration.
+- `list_block_types()` : expose les blocs disponibles, leurs propriétés et leurs règles de conteneur.
+
+Conséquence pour les agents : utiliser `search_content` pour localiser, `export_content_compact`
+pour lire, puis `get_content` seulement pour une vérification fine ou une écriture précise.
 
 ---
 
-## 1. Lecture des contenus en format lisible
+## 1. Accès au curriculum compilé
 
 ### Cas d'usage pédagogique
-L'Auditeur apprenant et le Garant de cohérence doivent analyser le cours, le TP et les
-slides. `get_content` retourne un arbre de blocs JSON, pas un texte lisible par un modèle.
+
+Le Garant de cohérence doit comparer une unité avec les notions déjà introduites dans les
+sections précédentes du même module ou d'autres modules.
 
 ### Données nécessaires
-Contenu textuel des trois supports sous forme lisible (markdown ou texte structuré).
+
+Liste structurée des concepts, APIs, compétences, prérequis et évaluations par section.
 
 ### Outils actuellement disponibles
-`get_content(module, section, type)` — retourne `{ blocks: [...], source: "db" }`
+
+`list_modules`, `list_sections`, `search_content` et `export_content_compact`.
 
 ### Limitation constatée
-L'arbre de blocs JSON n'est pas directement exploitable pour une analyse pédagogique sans
-transformation. Le modèle client doit interpréter la structure de blocs lui-même.
+
+Ces outils permettent de lire et rechercher les contenus, mais ils ne fournissent pas un
+curriculum compilé, normalisé et directement exploitable par un agent.
 
 ### Impact sur le workflow
-Les agents d'audit reçoivent le contenu via le brief fourni manuellement par l'utilisateur,
-pas via un appel MCP automatique.
+
+La cohérence inter-modules reste partiellement manuelle : l'agent peut rechercher une notion,
+mais doit encore déduire lui-même si elle est introduite, mobilisée, évaluée ou seulement
+mentionnée.
 
 ### Priorité
+
 Haute
 
 ### Contournement actuel
-L'utilisateur copie-colle le contenu dans le brief ou l'agent lit les fichiers `.tsx` locaux
-(Claude Code uniquement).
 
-### Options techniques à étudier ultérieurement
-- `render_content_as_text(module, section, type)` — transforme l'arbre de blocs en markdown.
-- `get_content_summary(module, section, type)` — extrait les concepts clés.
+Dans Claude Code : `/pedagogy:sync` maintient un fichier local `reviews/[matiere]-curriculum.md`.
+Dans les clients web : utiliser `search_content` et `export_content_compact`, puis demander le
+curriculum à l'utilisateur si la décision dépend d'un parcours complet.
 
----
+### Options techniques
 
-## 2. Accès au curriculum compilé
-
-### Cas d'usage pédagogique
-Le Garant de cohérence doit comparer le contenu d'une unité avec le curriculum des unités
-précédentes du même module ou d'autres modules.
-
-### Données nécessaires
-Liste des concepts et APIs enseignés dans chaque section de chaque module.
-
-### Outils actuellement disponibles
-`list_modules`, `list_sections` — structure seule, pas le contenu enseigné.
-
-### Limitation constatée
-Le curriculum compilé (`reviews/[matiere]-curriculum.md`) est généré localement par
-`/pedagogy:sync` et n'est pas stocké dans MongoDB ni exposé via MCP.
-
-### Impact sur le workflow
-La vérification de cohérence inter-modules est indisponible dans les clients web.
-Dans Claude Code, elle repose sur les fichiers locaux `reviews/`.
-
-### Priorité
-Haute
-
-### Contournement actuel
-Dans Claude Code : `/pedagogy:sync` génère et maintient `reviews/[matiere]-curriculum.md`.
-Dans les clients web : l'utilisateur fournit le curriculum manuellement si disponible.
-
-### Options techniques à étudier ultérieurement
-- Stocker le curriculum dans MongoDB (nouvelle collection ou champ `taughtConcepts` dans `modules`).
-- `get_curriculum(module)` — concepts et APIs par section.
-- Appel automatique de `/pedagogy:sync` depuis le MCP après chaque mise à jour de contenu.
+- Stocker un curriculum compilé dans MongoDB.
+- Ajouter `get_curriculum(module?)` avec concepts, APIs, objectifs et prérequis par section.
+- Mettre à jour ce curriculum après chaque modification validée de contenu.
 
 ---
 
-## 3. Recherche de contenu par notion
+## 2. Historique des versions d'un contenu
 
 ### Cas d'usage pédagogique
-Vérifier qu'une notion est introduite avant d'être utilisée dans un TP ou un cours suivant.
+
+Détecter les modifications récentes pour évaluer leur impact sur le cours, les slides, le TP
+ou les évaluations associées.
 
 ### Données nécessaires
-Recherche textuelle dans l'ensemble des contenus d'un module ou de la plateforme.
+
+Historique des versions d'un contenu et diff entre deux versions.
 
 ### Outils actuellement disponibles
-Aucun outil de recherche textuelle.
+
+`get_content` retourne la version courante, mais pas les versions précédentes.
 
 ### Limitation constatée
-Impossible de vérifier automatiquement si un concept apparaît dans un contenu précédent.
+
+Impossible de comparer deux versions du même contenu via MCP.
 
 ### Impact sur le workflow
-La détection des prérequis implicites repose entièrement sur la lecture manuelle.
+
+L'analyse d'impact repose sur le brief utilisateur ou sur l'historique Git local quand il est
+accessible.
 
 ### Priorité
+
 Moyenne
 
-### Contournement actuel
-L'utilisateur fournit explicitement les contenus à comparer.
+### Options techniques
 
-### Options techniques à étudier ultérieurement
-- Indexation textuelle des blocs dans MongoDB.
-- `search_content(query, module?)` — retourne les sections contenant le terme.
+- Stocker des snapshots ou diffs dans MongoDB.
+- Ajouter `get_content_diff(module, section, type, from_version, to_version)`.
 
 ---
 
-## 4. Historique des versions d'un contenu
+## 3. Relations entre sections et modules
 
 ### Cas d'usage pédagogique
-Détecter les modifications récentes pour évaluer leur impact sur les autres supports.
+
+Identifier automatiquement les contenus qui dépendent d'une section modifiée.
 
 ### Données nécessaires
-Historique des versions d'un `course_content` avec les différences entre versions.
+
+Graphe de dépendances entre modules, sections et types de support.
 
 ### Outils actuellement disponibles
-`get_content` retourne uniquement la version courante (`version: N`).
+
+Les outils listent et lisent les contenus, mais ne modélisent pas explicitement les dépendances.
 
 ### Limitation constatée
-Impossible de comparer deux versions du même contenu via le MCP.
+
+Une section peut préparer, réutiliser ou évaluer une notion d'une autre section sans relation
+structurée dans la base.
 
 ### Impact sur le workflow
-L'analyse d'impact repose sur la description manuelle des changements par l'utilisateur.
+
+L'analyse d'impact multi-supports reste manuelle ou fondée sur une recherche textuelle.
 
 ### Priorité
-Basse
 
-### Contournement actuel
-L'utilisateur décrit les changements dans le brief initial.
+Moyenne
 
-### Options techniques à étudier ultérieurement
-- Snapshots ou diffs stockés dans MongoDB.
-- `get_content_diff(module, section, type, from_version, to_version)`.
+### Options techniques
+
+- Ajouter un champ `dependsOn: [{ module, section, type }]`.
+- Ajouter `get_related_content(module, section, type?)`.
 
 ---
 
-## 5. Relations entre sections et modules
+## 4. Extraction structurée des objectifs et concepts
 
 ### Cas d'usage pédagogique
-Identifier automatiquement les sections dépendant d'une section modifiée.
+
+Comparer automatiquement objectifs, prérequis, notions, exemples, exercices et évaluations.
 
 ### Données nécessaires
-Graphe de dépendances entre sections et modules.
+
+Représentation structurée des objectifs observables, notions introduites, compétences mobilisées
+et critères d'évaluation.
 
 ### Outils actuellement disponibles
-Aucune relation explicite modélisée dans le schéma `modules`.
+
+`export_content_compact` expose un texte lisible ; l'extraction reste à la charge de l'agent.
 
 ### Limitation constatée
-Les relations entre supports ne sont pas modélisées dans la base.
+
+Deux agents peuvent extraire des concepts différents depuis le même texte, surtout lorsque les
+titres sont vagues ou que les objectifs sont implicites.
 
 ### Impact sur le workflow
-L'analyse d'impact multi-supports est entièrement manuelle.
+
+Les audits de cohérence restent moins reproductibles qu'une extraction structurée.
 
 ### Priorité
-Basse
 
-### Contournement actuel
-L'utilisateur indique manuellement les contenus liés.
+Basse à moyenne
 
-### Options techniques à étudier ultérieurement
-- Champ `dependsOn: [{ module, section }]` dans `course_content`.
-- `get_related_content(module, section)`.
+### Options techniques
+
+- Ajouter un champ éditorial `learningObjectives` / `taughtConcepts` par section.
+- Ajouter `get_content_pedagogical_index(module, section?, type?)`.

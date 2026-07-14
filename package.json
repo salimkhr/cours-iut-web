@@ -3,9 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "generate-skill": "node scripts/generateSkillModule.js",
-    "prebuild": "node scripts/generateSkillModule.js",
-    "predev": "node scripts/generateSkillModule.js",
     "dev": "bunx next dev",
     "build": "bunx next build",
     "postbuild": "node scripts/postbuild.js",
