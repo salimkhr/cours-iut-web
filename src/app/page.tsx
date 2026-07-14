@@ -19,6 +19,8 @@ export const metadata: Metadata = generatePageMetadata({
     noIndex: false,
 });
 
+const SHOW_HOME_ABOUT_SECTION = false;
+
 export default async function Home() {
     const session = await getServerSession();
     const isAuthed = !!session;
@@ -99,7 +101,9 @@ export default async function Home() {
 
             {session?.user.role === 'admin' && <AdminHomeFab />}
 
-            <AboutSection modules={allModules} isAuthed={isAuthed} />
+            {SHOW_HOME_ABOUT_SECTION && (
+                <AboutSection modules={allModules} isAuthed={isAuthed} />
+            )}
 
             <PageFooter/>
         </main>

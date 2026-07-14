@@ -6,6 +6,7 @@ import {ChevronDown, ChevronUp, ClipboardCopy, Download} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {oneDark, oneLight} from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Module from "@/types/Module";
+import {cn} from "@/lib/utils";
 
 export interface CodeCardProps {
     language: string;
@@ -22,6 +23,7 @@ export interface CodeCardProps {
 export default function CodeCard({
                                      language,
                                      children,
+                                     className,
                                      showLineNumbers = true,
                                      filename,
                                      title,
@@ -194,7 +196,7 @@ export default function CodeCard({
     );
 
     return (
-        <div className="my-8">
+        <div className={cn("course-code-card my-8 sm:my-10", className)}>
             <div hidden data-code-block data-code-lang={language}>{children}</div>
             <BaseCard
                 header={headerCard}

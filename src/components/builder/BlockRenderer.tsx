@@ -43,7 +43,7 @@ function BlockItem({
 export function BlockRenderer({ blocks, currentModule }: { blocks: Block[]; currentModule?: Module }) {
     let sectionCounter = 0;
     return (
-        <article className="flex flex-col gap-6">
+        <article className="course-blocks flex flex-col gap-8 lg:gap-10">
             {blocks.map((block) => {
                 const si = block.type === "section" ? sectionCounter++ : undefined;
                 return <BlockItem key={block.id} block={block} sectionIndex={si} currentModule={currentModule} />;

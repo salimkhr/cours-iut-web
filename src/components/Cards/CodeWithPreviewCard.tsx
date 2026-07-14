@@ -36,7 +36,7 @@ export function PreviewPanel({children}: PreviewPanelProps) {
 
 type MobileTab = 'code' | 'preview';
 
-export default function CodeWithPreviewCard({language, children}: CodeWithPreviewCardProps) {
+export default function CodeWithPreviewCard({language, children, className}: CodeWithPreviewCardProps) {
     let codeContent = "";
     let previewContent: ReactNode = null;
 
@@ -172,7 +172,7 @@ export default function CodeWithPreviewCard({language, children}: CodeWithPrevie
     );
 
     return (
-        <div className="my-8">
+        <div className={cn("course-code-card my-8 sm:my-10", className)}>
             <BaseCard
                 header={headerCard}
                 content={content}

@@ -191,7 +191,7 @@ export default async function Content({params}: ContentPageProps) {
                 <>
                     <main
                         className={cn(
-                            "w-full max-w-7xl mx-auto px-3 lg:px-4 py-10 lg:py-14",
+                            "w-full max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-14",
                             "header-module"
                         )}
                         style={{
@@ -200,13 +200,15 @@ export default async function Content({params}: ContentPageProps) {
                         } as React.CSSProperties}
                     >
                         <CopyContextGuard contentType={currentContent ?? ''}>
-                            {currentContent === "examen" && currentSection.examenIsLock ? (
-                                <ExamenWrapper currentModule={currentModule}>
+                            <div className={cn("course-content", currentContent === "TP" && "course-content-practice")}>
+                                {currentContent === "examen" && currentSection.examenIsLock ? (
+                                    <ExamenWrapper currentModule={currentModule}>
+                                        <ComponentToRender/>
+                                    </ExamenWrapper>
+                                ) : (
                                     <ComponentToRender/>
-                                </ExamenWrapper>
-                            ) : (
-                                <ComponentToRender/>
-                            )}
+                                )}
+                            </div>
                         </CopyContextGuard>
                     </main>
                     {(currentContent === 'cours' || currentContent === 'TP' || currentContent === 'examen') && (
@@ -250,10 +252,10 @@ function SplitPane({label, Icon, accentColor, accentColorDark, side, children}: 
         <section
             aria-label={label}
             className={cn(
-                "max-h-[70dvh] overflow-y-auto lg:max-h-none lg:w-1/2 header-module",
+                "max-h-[70dvh] overflow-y-auto px-3 py-2 sm:px-4 lg:max-h-none lg:w-1/2 lg:px-6 lg:py-3 header-module",
                 side === 'left'
-                    ? "lg:pr-2"
-                    : "lg:pl-2 lg:border-l lg:border-bridge-500/30 lg:dark:border-bridge-500/25",
+                    ? "lg:pr-6"
+                    : "lg:pl-6 lg:border-l lg:border-bridge-500/30 lg:dark:border-bridge-500/25",
             )}
             style={{
                 '--module-color': accentColor,
@@ -269,7 +271,9 @@ function SplitPane({label, Icon, accentColor, accentColorDark, side, children}: 
                     {label}
                 </h2>
             </div>
-            {children}
+            <div className="course-content course-content-split">
+                {children}
+            </div>
         </section>
     );
 }

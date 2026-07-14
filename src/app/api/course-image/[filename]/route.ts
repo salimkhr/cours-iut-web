@@ -31,7 +31,7 @@ export async function GET(
     try {
         const uploadsDir = process.env.UPLOADS_DIR;
         if (!uploadsDir) throw new Error("Variable d'environnement manquante : UPLOADS_DIR");
-        const filePath = path.join(uploadsDir, "course-images", filename);
+        const filePath = path.join(/* turbopackIgnore: true */ uploadsDir, "course-images", filename);
         const buffer = await readFile(filePath);
 
         return new NextResponse(buffer, {

@@ -2,7 +2,7 @@
 
 import React, {useRef} from "react";
 import Link from "next/link";
-import {motion, useReducedMotion} from 'framer-motion';
+import {useReducedMotion} from 'framer-motion';
 import {ArrowRight, Lock} from "lucide-react";
 import Module from "@/types/Module";
 import Section from "@/types/Section";
@@ -67,7 +67,7 @@ export default function ContentCard({content, section, currentModule}: ContentCa
     const prefersReducedMotion = useReducedMotion();
 
     return (
-        <motion.article
+        <article
             style={{
                 '--module-color': moduleColor(currentModule),
                 '--module-color-dark': moduleColor(currentModule, 'dark'),
@@ -78,12 +78,17 @@ export default function ContentCard({content, section, currentModule}: ContentCa
                 "border border-bridge-500/45 dark:border-bridge-500/35",
                 "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)]",
                 "dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
-                "transition-[box-shadow,border-color] duration-300 ease-out",
-                !isLocked && "hover:border-bridge-500/65 dark:hover:border-bridge-400/55 hover:shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:hover:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
+                "transition-[background-color,box-shadow,border-color,transform] duration-300 ease-out will-change-transform",
+                !isLocked && [
+                    "cursor-pointer hover:-translate-y-1.5 active:translate-y-px motion-reduce:hover:translate-y-0 motion-reduce:active:translate-y-0",
+                    "hover:bg-bridge-100 dark:hover:bg-bridge-700",
+                    "hover:border-bridge-500/65 dark:hover:border-bridge-400/55",
+                    "hover:shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:hover:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
+                    "focus-within:border-bridge-500/70 dark:focus-within:border-bridge-300/60",
+                    "focus-within:shadow-[0_22px_44px_-14px_rgba(147,97,58,0.55)] dark:focus-within:shadow-[0_22px_44px_-14px_rgba(0,0,0,0.75)]",
+                ],
                 isLocked && "opacity-85",
             )}
-            whileHover={!isLocked && !prefersReducedMotion ? {y: -6} : {}}
-            transition={{duration: 0.3, ease: "easeOut"}}
             onMouseEnter={() => {
                 if (!isLocked && !prefersReducedMotion) iconRef.current?.startAnimation();
             }}
@@ -154,6 +159,6 @@ export default function ContentCard({content, section, currentModule}: ContentCa
                     )}
                 </div>
             </div>
-        </motion.article>
+        </article>
     );
 }

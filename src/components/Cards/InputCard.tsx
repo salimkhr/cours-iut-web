@@ -7,6 +7,7 @@ import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {Button} from "@/components/ui/button";
 import Module from "@/types/Module";
 import {oneLight} from "react-syntax-highlighter/dist/esm/styles/prism";
+import {cn} from "@/lib/utils";
 
 interface CodeCardProps {
     title: string;
@@ -25,6 +26,7 @@ export default function InputCard({
                                       description,
                                       language = "html",
                                       code,
+                                      className,
                                       showLineNumbers = true,
                                       filename,
                                       currentModule,
@@ -136,7 +138,7 @@ export default function InputCard({
     );
 
     return (
-        <div className="mx-6 my-8">
+        <div className={cn("course-code-card my-8 sm:my-10", className)}>
             <BaseCard
                 header={headerCard}
                 content={content}

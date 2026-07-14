@@ -80,7 +80,7 @@ const clientParts: Record<string, ClientPart> = {
             const icon = mod?.projectIcon ?? "";
             const showBadge = Boolean(projectRef) && icon.length > 0;
             return (
-                <section className="flex flex-col gap-6">
+                <section className="course-block-section flex flex-col gap-5 lg:gap-6">
                     <div className="flex items-center gap-3 flex-wrap">
                         <Heading level={level}>{prefix}{String(title ?? "")}</Heading>
                         {showBadge && (

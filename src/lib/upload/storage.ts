@@ -20,9 +20,9 @@ function getQuarantineBase(): string {
  */
 export async function storeFinal(buf: Buffer, ext: string, subdir = "avatars"): Promise<string> {
     const filename = `${randomUUID()}.${ext}`;
-    const dir = path.join(getUploadsBase(), subdir);
+    const dir = path.join(/* turbopackIgnore: true */ getUploadsBase(), subdir);
     await mkdir(dir, { recursive: true });
-    await writeFile(path.join(dir, filename), buf, { mode: 0o640 });
+    await writeFile(path.join(/* turbopackIgnore: true */ dir, filename), buf, { mode: 0o640 });
     return filename;
 }
 
@@ -34,6 +34,6 @@ export async function storeQuarantine(buf: Buffer, reason: string): Promise<void
     const dir = getQuarantineBase();
     await mkdir(dir, { recursive: true });
     const filename = `${Date.now()}_${randomUUID()}`;
-    await writeFile(path.join(dir, filename), buf, { mode: 0o600 });
+    await writeFile(path.join(/* turbopackIgnore: true */ dir, filename), buf, { mode: 0o600 });
     console.warn(`[QUARANTINE] ${filename} — ${reason}`);
 }
