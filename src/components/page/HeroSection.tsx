@@ -77,7 +77,7 @@ export default function HeroSection({
             {/* Gradient overlay — solid left → transparent right (more aggressive on desktop) */}
             <div
                 aria-hidden="true"
-                className="absolute inset-0 bg-linear-to-b from-background via-background/90 to-background/60 lg:bg-linear-to-r lg:from-background lg:via-background/85 lg:to-transparent z-0"
+                className="absolute inset-0 bg-linear-to-b from-background via-background/90 to-background/60 dark:via-background/94 dark:to-background/72 lg:bg-linear-to-r lg:from-background lg:via-background/85 lg:to-transparent lg:dark:via-background/90 lg:dark:to-background/24 z-0"
             />
 
             {/* Ambient decoration — desktop only, subtle */}
