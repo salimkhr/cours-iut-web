@@ -17,7 +17,8 @@ import {
 import { moduleFormSchema, universeSchema } from "@/lib/schemas/module.schema";
 import { assignModuleColor } from "@/lib/assignModuleColor";
 import { isValidIcon } from "@/lib/iconMap";
-import { sectionApiSchema } from "@/lib/schemas/section.schema";
+import { sectionApiSchema, briefSchema, curriculumSchema } from "@/lib/schemas/section.schema";
+import type { SectionBrief, SectionCurriculum } from "@/lib/schemas/section.schema";
 import type { Block, CourseContent, ContentRef } from "@/types/CourseContent";
 import {
     normalizeForSearch,
@@ -50,6 +51,9 @@ interface ModuleDoc {
         path: string;
         title?: string;
         totalDuration?: number;
+        courseIntroMinutes?: number;
+        brief?: SectionBrief;
+        curriculum?: SectionCurriculum;
         contents?: Array<{ type: string; source?: string }>;
     }>;
 }
@@ -334,8 +338,12 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             objectives:    z.array(z.string()).optional(),
             totalDuration: z.number().int().min(1).optional().describe("Nombre de séances (défaut: 1)"),
             tags:          z.array(z.string()).optional(),
+            courseIntroMinutes: z.number().int().min(0).optional()
+                .describe("Minutes de cours/slides en ouverture de la 1re séance (ex: 30). Le budget TP = totalDuration × sessionDurationMinutes − courseIntroMinutes."),
+            brief: briefSchema.optional()
+                .describe("Cahier des charges de la section : objectives (ce que l'étudiant saura faire), notions (à couvrir), filRougeStep (ce que le TP ajoute au projet fil rouge), notes libres."),
         },
-        async ({ module, title, contentTypes, order, path, objectives, totalDuration, tags }) => {
+        async ({ module, title, contentTypes, order, path, objectives, totalDuration, tags, courseIntroMinutes, brief }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
 
@@ -364,6 +372,8 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 contents: contentTypes,
                 objectives: objectives ?? [],
                 tags: tags ?? [],
+                ...(courseIntroMinutes !== undefined && { courseIntroMinutes }),
+                ...(brief !== undefined && { brief }),
             });
             if (!rawCheck.success) {
                 throw new Error(`Section invalide : ${JSON.stringify(rawCheck.error.flatten())}`);
@@ -397,6 +407,8 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 isAvailable: false,
                 correctionIsAvailable: false,
                 examenIsLock: false,
+                ...(courseIntroMinutes !== undefined && { courseIntroMinutes }),
+                ...(brief !== undefined && { brief }),
             };
 
             await db.collection<Module>("modules").updateOne(
@@ -419,7 +431,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     // ── edit_section ───────────────────────────────────────────────────────────
     server.tool(
         "edit_section",
-        "Édite les métadonnées d'une section (rename, nb séances, ordre, objectifs, flags). addContentTypes est ADDITIF (crée le squelette des types manquants) ; le retrait passe par delete_content. Réservé aux admins.",
+        "Édite les métadonnées d'une section (rename, nb séances, courseIntroMinutes, brief, curriculum, ordre, objectifs, flags). addContentTypes est ADDITIF (crée le squelette des types manquants) ; le retrait passe par delete_content. Réservé aux admins.",
         {
             module:                z.string(),
             sectionPath:           z.string().describe("Slug de la section à éditer"),
@@ -434,6 +446,10 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             correctionIsAvailable: z.boolean().optional(),
             examenIsLock:          z.boolean().optional(),
             addContentTypes:       z.array(CONTENT_TYPE).optional().describe("Types à AJOUTER (additif)"),
+            courseIntroMinutes:    z.number().int().min(0).optional(),
+            brief:                 briefSchema.optional(),
+            curriculum:            curriculumSchema.optional()
+                .describe("Notions effectivement enseignées + APIs vues. Mis à jour par le skill content-writer après rédaction."),
         },
         async (args) => {
             if (!isAdmin) throw new Error("Forbidden");
@@ -454,6 +470,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 ["totalDuration", args.totalDuration], ["tags", args.tags],
                 ["isAvailable", args.isAvailable], ["hasCorrection", args.hasCorrection],
                 ["correctionIsAvailable", args.correctionIsAvailable], ["examenIsLock", args.examenIsLock],
+                ["courseIntroMinutes", args.courseIntroMinutes], ["brief", args.brief], ["curriculum", args.curriculum],
             ];
             for (const [field, value] of meta) {
                 if (value !== undefined) set[`sections.${idx}.${field}`] = value;
@@ -553,6 +570,9 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 // totalDuration: fallback à 1 pour la compatibilité avec les anciennes sections
                 // sans durée renseignée. La plupart des sections ont des valeurs explicites en DB.
                 totalDuration: s.totalDuration ?? 1,
+                ...(s.courseIntroMinutes !== undefined && { courseIntroMinutes: s.courseIntroMinutes }),
+                ...(s.brief !== undefined && { brief: s.brief }),
+                ...(s.curriculum !== undefined && { curriculum: s.curriculum }),
                 contents: Object.fromEntries((s.contents ?? []).map((c) => [c.type, c.source ?? "file"])),
             }));
             return { content: [{ type: "text" as const, text: JSON.stringify(sections, null, 2) }] };
