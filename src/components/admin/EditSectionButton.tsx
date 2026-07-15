@@ -1,6 +1,5 @@
-'use client'
+"use client";
 
-// Composant wrapper pour l'ajout (pour garder la compatibilité)
 import Module from "@/types/Module";
 import {useState} from "react";
 import {Button} from "@/components/ui/button";
@@ -19,15 +18,15 @@ export default function EditSectionButton({modData, onAdd, section}: AddSectionB
 
     return (
         <>
-            <div className="flex justify-end mb-2">
-                <Button
-                    onClick={() => setOpen(true)}
-                    className="text-white dark:text-brand-dark hover:opacity-90 border-transparent"
-                    style={{ backgroundColor: moduleColor(modData) }}
-                >
-                    <Edit/>
-                </Button>
-            </div>
+            <Button
+                onClick={() => setOpen(true)}
+                size="icon"
+                aria-label="Modifier la section"
+                className="h-10 w-10 text-white dark:text-brand-dark hover:opacity-90 border-transparent"
+                style={{backgroundColor: moduleColor(modData)}}
+            >
+                <Edit className="size-4" aria-hidden="true"/>
+            </Button>
 
             <SectionForm
                 modData={modData}
