@@ -160,6 +160,18 @@ export default function AdminSection({
                         disabled={!currentSection.hasCorrection}
                     />
                 </div>
+                {hasContentType(currentSection.contents, "examen") && (
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor={`${currentSection._id}-examen-lock`} className="text-sm">
+                            Examen verrouille
+                        </Label>
+                        <Switch
+                            id={`${currentSection._id}-examen-lock`}
+                            checked={!!currentSection.examenIsLock}
+                            onCheckedChange={(checked) => handleToggle("examenIsLock", !!checked)}
+                        />
+                    </div>
+                )}
                 <div className="border-t border-bridge-500/20 pt-3">
                     <p className="mb-2 text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark/55 dark:text-bridge-200/55">
                         Contenus
