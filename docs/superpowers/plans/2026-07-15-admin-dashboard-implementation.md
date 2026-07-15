@@ -38,7 +38,7 @@
 - Modify: `src/components/admin/AdminTabs.tsx`
   - Devient le shell d'onglets `Modules & sections`, `Utilisateurs`, `Outils`.
 - Modify: `src/components/admin/ModulesList.tsx`
-  - Ajoute l'en-tete de l'onglet modules et gere les creations via `router.refresh`.
+  - Ajoute l'en-tete de l'onglet modules et gere les creations via `router.refresh` sans append local, car `POST /api/admin/modules` renvoie seulement `insertedId`.
 - Modify: `src/components/admin/AdminModule.tsx`
   - Ajoute les actions module inline : masquer/afficher, modifier, ajouter section, supprimer.
 - Modify: `src/components/admin/AdminSection.tsx`
@@ -491,8 +491,7 @@ export default function ModulesList({initialModules}: ModulesListProps) {
     const {addModule} = useAdminApi();
 
     const handleAddModule = async (data: ModuleFormValues) => {
-        const createdModule = await addModule({...data, sections: []});
-        setModules((prev) => [...prev, createdModule]);
+        await addModule({...data, sections: []});
         router.refresh();
     };
 
