@@ -9,7 +9,7 @@ import {moduleColor} from "@/lib/moduleColor";
 
 interface AddSectionButtonProps {
     modData: Module;
-    onAdd: (section: Section) => void;
+    onAdd: (section: Section) => Promise<void> | void;
     section: Section;
 }
 
@@ -22,7 +22,7 @@ export default function EditSectionButton({modData, onAdd, section}: AddSectionB
                 onClick={() => setOpen(true)}
                 size="icon"
                 aria-label="Modifier la section"
-                className="h-10 w-10 text-white dark:text-brand-dark hover:opacity-90 border-transparent"
+                className="h-11 w-11 text-white dark:text-brand-dark hover:opacity-90 border-transparent"
                 style={{backgroundColor: moduleColor(modData)}}
             >
                 <Edit className="size-4" aria-hidden="true"/>

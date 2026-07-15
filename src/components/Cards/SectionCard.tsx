@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useRef, useState} from 'react';
+import React, {useRef} from 'react';
 import Link from "next/link";
 import {motion, useReducedMotion} from 'framer-motion';
 import {Lock, Unlock} from "lucide-react";
@@ -14,7 +14,6 @@ import {CONTENT_LABELS, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
 import {getContentTypes} from "@/types/CourseContent";
 import {Button} from "@/components/ui/button";
 import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
-import updateSectionState from "@/hook/admin/updateSectionState";
 
 import {BookTextIcon} from "@/components/icons/book-text";
 import {TerminalIcon} from "@/components/icons/terminal";
@@ -96,13 +95,11 @@ interface SectionCardProps {
 
 export default function SectionCard({section, currentModule, isAdmin}: SectionCardProps) {
     const {path: modulePath} = currentModule;
-    const [available, setAvailable] = useState(section.isAvailable);
-    const [pending, setPending] = useState(false);
-    const isLocked = !isAdmin && !available;
-    const sectionHref = available || isAdmin
+    const isAvailable = !!section.isAvailable;
+    const isLocked = !isAdmin && !isAvailable;
+    const sectionHref = isAvailable || isAdmin
         ? `/${modulePath}/${section.path}`
         : '#';
-
     const prefersReducedMotion = useReducedMotion();
 
     const sortedContents = getContentTypes(section.contents).sort(
@@ -119,20 +116,6 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
         "transition-[color,border-color,background-color,box-shadow,transform] duration-300",
     );
     const iconBase = "size-4 shrink-0 text-(--module-color) dark:text-(--module-color-dark) group-hover/btn:text-white dark:group-hover/btn:text-brand-dark transition-colors duration-300";
-
-    async function handleToggleLock() {
-        if (pending) return;
-        const next = !available;
-        setPending(true);
-        setAvailable(next);
-        try {
-            await updateSectionState(currentModule._id as string, section.order, 'isAvailable', next);
-        } catch {
-            setAvailable(!next);
-        } finally {
-            setPending(false);
-        }
-    }
 
     return (
         <motion.article
@@ -189,37 +172,31 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                             <span className="hidden sm:inline">&nbsp;séance{section.totalDuration > 1 ? 's' : ''}</span>
                         </span>
                         {isAdmin ? (
-                            <button
-                                type="button"
-                                onClick={handleToggleLock}
-                                disabled={pending}
-                                aria-busy={pending}
+                            <span
                                 className={cn(
-                                    "pointer-events-auto inline-flex items-center gap-1 rounded-md px-2 py-1.5",
+                                    "inline-flex items-center gap-1 rounded-md px-2 py-1.5",
                                     "text-[10px] uppercase tracking-[0.18em] font-semibold",
-                                    "transition-[background-color,color,transform] duration-200 cursor-pointer active:translate-y-px",
-                                    available
-                                        ? "bg-brand-primary/12 text-brand-accent-dark hover:bg-brand-primary/18 dark:bg-brand-primary/20 dark:text-brand-primary dark:hover:bg-brand-primary/28"
-                                        : "bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100 hover:bg-bridge-700/50"
+                                    isAvailable
+                                        ? "bg-brand-primary/12 text-brand-accent-dark dark:bg-brand-primary/20 dark:text-brand-primary"
+                                        : "bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100"
                                 )}
-                                aria-label={available ? "Verrouiller la section" : "Déverrouiller la section"}
                             >
-                                {available ? (
+                                {isAvailable ? (
                                     <>
-                                        <Unlock className="size-3"/>
+                                        <Unlock className="size-3" aria-hidden="true"/>
                                         <span className="hidden sm:inline">Disponible</span>
                                     </>
                                 ) : (
                                     <>
-                                        <Lock className="size-3"/>
+                                        <Lock className="size-3" aria-hidden="true"/>
                                         <span className="hidden sm:inline">Verrouillé</span>
                                     </>
                                 )}
-                            </button>
+                            </span>
                         ) : (
                             isLocked && (
                                 <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100">
-                                    <Lock className="size-3"/>
+                                    <Lock className="size-3" aria-hidden="true"/>
                                     <span className="hidden sm:inline">Verrouillé</span>
                                 </span>
                             )

@@ -35,6 +35,7 @@ interface AdminModuleProps {
 export default function AdminModule({module, onDelete}: AdminModuleProps) {
     const [modData, setModData] = useState(module);
     const [visible, setVisible] = useState(module.isVisible !== false);
+    const [visibilityPending, setVisibilityPending] = useState(false);
     const [editModuleOpen, setEditModuleOpen] = useState(false);
     const [addSectionOpen, setAddSectionOpen] = useState(false);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -45,13 +46,19 @@ export default function AdminModule({module, onDelete}: AdminModuleProps) {
     const Icon = iconMap[modData.iconName] || BookOpen;
 
     const handleToggleVisibility = async (checked: boolean) => {
+        if (visibilityPending) return;
+
+        const previous = visible;
+        setVisibilityPending(true);
         setVisible(checked);
         try {
             await toggleModuleVisibility(modData._id as string, checked);
             toast.success(checked ? "Module visible." : "Module masque.");
         } catch {
-            setVisible(!checked);
+            setVisible(previous);
             toast.error("Erreur lors de la mise a jour de la visibilite.");
+        } finally {
+            setVisibilityPending(false);
         }
     };
 
@@ -87,13 +94,18 @@ export default function AdminModule({module, onDelete}: AdminModuleProps) {
     };
 
     const addSection = async (section: Section) => {
-        const savedSection = await addSectionApi(modData._id as unknown as string, section);
-        setModData((prev) => ({
-            ...prev,
-            sections: [...prev.sections, savedSection],
-        }));
-        toast.success("Section ajoutee.");
-        router.refresh();
+        try {
+            const savedSection = await addSectionApi(modData._id as unknown as string, section);
+            setModData((prev) => ({
+                ...prev,
+                sections: [...prev.sections, savedSection],
+            }));
+            toast.success("Section ajoutee.");
+            router.refresh();
+        } catch (error) {
+            toast.error("Erreur lors de l'ajout de la section.");
+            throw error;
+        }
     };
 
     const handleDeleteSection = (sectionPath: string) => {
@@ -138,7 +150,7 @@ export default function AdminModule({module, onDelete}: AdminModuleProps) {
                             </Button>
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
-                            <Button type="button" variant="outline" className="min-h-11 gap-2 border-bridge-500/45" onClick={() => handleToggleVisibility(!visible)}>
+                            <Button type="button" variant="outline" className="min-h-11 gap-2 border-bridge-500/45" onClick={() => handleToggleVisibility(!visible)} disabled={visibilityPending} aria-busy={visibilityPending}>
                                 {visible ? <Eye className="size-4" aria-hidden="true"/> : <EyeOff className="size-4" aria-hidden="true"/>}
                                 {visible ? "Visible" : "Masque"}
                             </Button>

@@ -10,7 +10,7 @@ import {moduleColor} from "@/lib/moduleColor";
 
 interface AddSectionButtonProps {
     modData: Module;
-    onAdd: (section: Section) => void;
+    onAdd: (section: Section) => Promise<void> | void;
 }
 
 export default function AddSectionButton({modData, onAdd}: AddSectionButtonProps) {

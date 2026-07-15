@@ -68,7 +68,10 @@ export const PUT = withAdmin(async (
         }
 
         // Trouver l'ancienne section pour comparaison
-        const oldSectionIndex = currentModule.sections.findIndex(section => section.path === updatedSection.path);
+        const oldSectionIndex = currentModule.sections.findIndex((section) => {
+            const storedSectionId = section._id?.toString();
+            return section.path === updatedSection.path || (storedSectionId !== undefined && storedSectionId === sectionId);
+        });
 
         if (oldSectionIndex === -1) {
             return NextResponse.json({error: 'Section introuvable'}, {status: 404});
@@ -115,7 +118,11 @@ export const PUT = withAdmin(async (
             _id: new ObjectId(moduleId)
         });
 
-        const finalSection = updatedModule?.sections.find(section => section._id === sectionId);
+        const finalSection = updatedModule?.sections[oldSectionIndex];
+
+        if (!finalSection) {
+            return NextResponse.json({error: 'Section mise a jour introuvable'}, {status: 500});
+        }
 
         return NextResponse.json({success: true, section: finalSection});
     } catch (error) {

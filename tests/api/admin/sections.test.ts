@@ -165,4 +165,25 @@ describe("PUT /api/admin/[moduleId]/sections", () => {
         const body = await res.json();
         expect(body.success).toBe(true);
     });
+
+    test("200 renvoie la section mise a jour meme sans _id imbrique", async () => {
+        session = ADMIN_SESSION;
+        const _id = await insertModule();
+        await db.collection("modules").updateOne(
+            { _id },
+            { $set: { sections: [{ ...VALID_SECTION }] } },
+        );
+        const moduleId = _id.toHexString();
+
+        const payload = { ...VALID_SECTION, title: "Introduction legacy modifiee", sectionId: "legacy-section" };
+        const res = await putSection(makePutReq(moduleId, payload), makeContext(moduleId));
+        expect(res.status).toBe(200);
+        const body = await res.json();
+        expect(body.success).toBe(true);
+        expect(body.section).toBeDefined();
+        expect(body.section.title).toBe("Introduction legacy modifiee");
+
+        const doc = await db.collection("modules").findOne({ _id });
+        expect(doc?.sections?.[0]?.title).toBe("Introduction legacy modifiee");
+    });
 });

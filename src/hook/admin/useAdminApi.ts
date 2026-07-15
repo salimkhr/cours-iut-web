@@ -2,14 +2,18 @@ import axios from "axios";
 import {Section as SectionFrom} from "@/components/admin/SectionForm";
 import Module from "@/types/Module";
 
+type AddModuleResponse = {
+    insertedId: string;
+};
+
 // Hook regroupant les appels API d'administration (modules/sections)
 export default function useAdminApi() {
     // Ajouter un module
-    async function addModule(newMod: Omit<Module, "_id">) {
+    async function addModule(newMod: Omit<Module, "_id">): Promise<AddModuleResponse> {
         const res = await axios.post("/api/admin/modules", newMod, {
             headers: {"Content-Type": "application/json"},
         });
-        return res.data as Module;
+        return res.data as AddModuleResponse;
     }
 
     // Ajouter une section à un module

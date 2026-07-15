@@ -33,6 +33,8 @@ interface AdminSectionProps {
     onDelete?: (sectionPath: string) => void;
 }
 
+type ToggleKey = keyof Pick<Section, "correctionIsAvailable" | "isAvailable" | "examenIsLock">;
+
 export default function AdminSection({
     section,
     modData,
@@ -40,6 +42,7 @@ export default function AdminSection({
 }: AdminSectionProps) {
     const [currentSection, setCurrentSection] = useState<Section>(section);
     const [deleting, setDeleting] = useState(false);
+    const [pendingKey, setPendingKey] = useState<ToggleKey | null>(null);
 
     const isAvailable = !!currentSection.isAvailable;
     const correctionIsAvailable = !!currentSection.correctionIsAvailable;
@@ -49,10 +52,14 @@ export default function AdminSection({
     const editSection = async (updatedSection: SectionFrom) => {
         try {
             const saved = await editSectionApi(modData._id as unknown as string, String(currentSection._id), updatedSection);
+            if (!saved) {
+                throw new Error("Section mise a jour introuvable");
+            }
             setCurrentSection(saved);
             toast.success("Section mise a jour.");
-        } catch {
+        } catch (error) {
             toast.error("Erreur lors de la mise a jour de la section.");
+            throw error;
         }
     };
 
@@ -69,10 +76,13 @@ export default function AdminSection({
     };
 
     const handleToggle = async (
-        key: keyof Pick<Section, "correctionIsAvailable" | "isAvailable" | "examenIsLock">,
+        key: ToggleKey,
         value: boolean
     ) => {
+        if (pendingKey !== null) return;
+
         const previous = currentSection[key];
+        setPendingKey(key);
         setCurrentSection((prev) => ({...prev, [key]: value}));
         try {
             await updateSectionState(moduleId, currentSection.order, key, value);
@@ -80,6 +90,8 @@ export default function AdminSection({
         } catch {
             setCurrentSection((prev) => ({...prev, [key]: previous}));
             toast.error("Erreur lors de la mise a jour de la section.");
+        } finally {
+            setPendingKey(null);
         }
     };
 
@@ -108,7 +120,7 @@ export default function AdminSection({
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                className="h-11 w-11 text-muted-foreground hover:text-destructive"
                                 disabled={deleting}
                                 aria-label="Supprimer la section"
                             >
@@ -147,28 +159,33 @@ export default function AdminSection({
                         id={`${currentSection.path}-available`}
                         checked={isAvailable}
                         onCheckedChange={(checked) => handleToggle("isAvailable", !!checked)}
+                        disabled={pendingKey !== null}
+                        aria-busy={pendingKey === "isAvailable"}
                     />
                 </div>
                 <div className="flex items-center justify-between">
-                    <Label htmlFor={`${currentSection._id}-correction`} className="text-sm">
+                    <Label htmlFor={`${currentSection.path}-correction`} className="text-sm">
                         Correction
                     </Label>
                     <Switch
-                        id={`${section._id}-correction`}
+                        id={`${currentSection.path}-correction`}
                         checked={correctionIsAvailable}
                         onCheckedChange={(checked) => handleToggle("correctionIsAvailable", !!checked)}
-                        disabled={!currentSection.hasCorrection}
+                        disabled={!currentSection.hasCorrection || pendingKey !== null}
+                        aria-busy={pendingKey === "correctionIsAvailable"}
                     />
                 </div>
                 {hasContentType(currentSection.contents, "examen") && (
                     <div className="flex items-center justify-between">
-                        <Label htmlFor={`${currentSection._id}-examen-lock`} className="text-sm">
+                        <Label htmlFor={`${currentSection.path}-examen-lock`} className="text-sm">
                             Examen verrouille
                         </Label>
                         <Switch
-                            id={`${currentSection._id}-examen-lock`}
+                            id={`${currentSection.path}-examen-lock`}
                             checked={!!currentSection.examenIsLock}
                             onCheckedChange={(checked) => handleToggle("examenIsLock", !!checked)}
+                            disabled={pendingKey !== null}
+                            aria-busy={pendingKey === "examenIsLock"}
                         />
                     </div>
                 )}

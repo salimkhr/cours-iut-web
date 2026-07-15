@@ -14,18 +14,18 @@ interface ModulesListProps {
 }
 
 export default function ModulesList({initialModules}: ModulesListProps) {
-    const [modules, setModules] = useState(initialModules);
+    const [deletedModuleIds, setDeletedModuleIds] = useState<Set<string>>(() => new Set());
+    const modules = initialModules.filter((mod) => !deletedModuleIds.has(String(mod._id)));
     const router = useRouter();
     const {addModule} = useAdminApi();
 
     const handleAddModule = async (data: ModuleFormValues) => {
-        const createdModule = await addModule({...data, sections: []});
-        setModules((prev) => [...prev, createdModule]);
+        await addModule({...data, sections: []});
         router.refresh();
     };
 
     const handleDeleteModule = (moduleId: string) => {
-        setModules((prev) => prev.filter((mod) => String(mod._id) !== moduleId));
+        setDeletedModuleIds((prev) => new Set(prev).add(moduleId));
     };
 
     return (

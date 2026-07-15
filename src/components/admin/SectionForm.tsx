@@ -47,7 +47,7 @@ interface SectionFormProps {
     mode: 'add' | 'edit';
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onSubmit: (section: Section) => void;
+    onSubmit: (section: Section) => Promise<void> | void;
     prefill?: {
         title?: string;
         path?: string;
@@ -129,7 +129,7 @@ export default function SectionForm({
         setValue,
         reset,
         control,
-        formState: {errors},
+        formState: {errors, isSubmitting},
     } = useForm<SectionFormValues>({
         resolver: zodResolver(sectionFormSchema),
         defaultValues: getDefaultValues(),
@@ -161,7 +161,7 @@ export default function SectionForm({
         );
     };
 
-    const handleFormSubmit = (data: SectionFormValues) => {
+    const handleFormSubmit = async (data: SectionFormValues) => {
         const cleanedObjectives = (data.objectives ?? '')
             .split('\n')
             .map((o) => o.trim())
@@ -188,7 +188,7 @@ export default function SectionForm({
         const hasBrief = brief.objectives.length > 0 || brief.notions.length > 0 || brief.filRougeStep.length > 0;
         const hasCurriculum = curriculum.notions.length > 0 || curriculum.apis.length > 0;
 
-        onSubmit({
+        await onSubmit({
             ...data,
             objectives: cleanedObjectives,
             tags: cleanedTags,
@@ -436,6 +436,7 @@ export default function SectionForm({
                             variant="ghost"
                             className="text-brand-dark dark:text-bridge-200"
                             onClick={() => onOpenChange(false)}
+                            disabled={isSubmitting}
                         >
                             Annuler
                         </Button>
@@ -443,8 +444,10 @@ export default function SectionForm({
                             type="submit"
                             className="text-white dark:text-brand-dark font-semibold hover:opacity-90"
                             style={{ backgroundColor: moduleColor(modData) }}
+                            disabled={isSubmitting}
+                            aria-busy={isSubmitting}
                         >
-                            {isEditMode ? 'Enregistrer' : 'Ajouter'}
+                            {isSubmitting ? 'Enregistrement...' : isEditMode ? 'Enregistrer' : 'Ajouter'}
                         </Button>
                     </div>
                 </form>

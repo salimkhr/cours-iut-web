@@ -1,10 +1,8 @@
 'use client';
 
 import Link from "next/link";
-import {useState} from "react";
 import {motion, useReducedMotion} from 'framer-motion';
-import {ArrowRight, BookOpen, ChevronRight, Eye, EyeOff, Lock} from "lucide-react";
-import {toast} from "sonner";
+import {ArrowRight, BookOpen, ChevronRight, Lock} from "lucide-react";
 import Module from "@/types/Module";
 import iconMap from "@/lib/iconMap";
 import getModuleProgress from "@/lib/getModuleProgress";
@@ -13,7 +11,6 @@ import {cn} from "@/lib/utils";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card";
 import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
 import {moduleColor} from "@/lib/moduleColor";
-import useAdminApi from "@/hook/admin/useAdminApi";
 
 interface ModuleCardProps {
     currentModule: Module;
@@ -27,24 +24,7 @@ export default function ModuleCard({currentModule, isAuthed = true, isAdmin = fa
     const sectionsCount = sections?.length ?? 0;
     const { progress: pct, lastAvailableSectionPath } = getModuleProgress(currentModule);
 
-    const [visible, setVisible] = useState(currentModule.isVisible !== false);
-    const [pending, setPending] = useState(false);
-    const { toggleModuleVisibility } = useAdminApi();
-
-    const handleToggleVisibility = async () => {
-        if (pending) return;
-        const next = !visible;
-        setPending(true);
-        setVisible(next);
-        try {
-            await toggleModuleVisibility(currentModule._id as string, next);
-            toast.success(next ? 'Module visible.' : 'Module masqué.');
-        } catch {
-            setVisible(!next);
-        } finally {
-            setPending(false);
-        }
-    };
+    const isVisible = currentModule.isVisible !== false;
 
     const continueHref = lastAvailableSectionPath
         ? `/${path}/${lastAvailableSectionPath}`
@@ -107,34 +87,11 @@ export default function ModuleCard({currentModule, isAuthed = true, isAdmin = fa
                                 <Lock className="size-3.5" />
                             </span>
                         )}
-                        {isAdmin && (
-                            <button
-                                type="button"
-                                onClick={handleToggleVisibility}
-                                disabled={pending}
-                                aria-busy={pending}
-                                aria-label={visible ? "Masquer le module" : "Rendre le module visible"}
-                                className={cn(
-                                    "pointer-events-auto inline-flex items-center gap-1 rounded-md px-2 py-1.5",
-                                    "text-[10px] uppercase tracking-[0.18em] font-semibold",
-                                    "transition-[background-color,color,transform] duration-200 cursor-pointer active:translate-y-px",
-                                    visible
-                                        ? "bg-brand-primary/12 text-brand-accent-dark hover:bg-brand-primary/18 dark:bg-brand-primary/20 dark:text-brand-primary dark:hover:bg-brand-primary/28"
-                                        : "bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100 hover:bg-bridge-700/50"
-                                )}
-                            >
-                                {visible ? (
-                                    <>
-                                        <Eye className="size-3"/>
-                                        <span className="hidden sm:inline">Visible</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <EyeOff className="size-3"/>
-                                        <span className="hidden sm:inline">Masqué</span>
-                                    </>
-                                )}
-                            </button>
+                        {isAdmin && !isVisible && (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-bridge-700/30 px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100">
+                                <Lock className="size-3" aria-hidden="true"/>
+                                <span className="hidden sm:inline">Masqué</span>
+                            </span>
                         )}
                     </div>
                 </CardHeader>
