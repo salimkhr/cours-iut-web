@@ -100,24 +100,8 @@ export default function HeroSection({
                 className="absolute inset-0 bg-linear-to-b from-background via-background/90 to-background/60 dark:via-background/94 dark:to-background/72 lg:bg-linear-to-r lg:from-background lg:via-background/85 lg:to-transparent lg:dark:via-background/90 lg:dark:to-background/24 z-0"
             />
 
-            {/* Ambient decoration — subtle static grid with line effects */}
+            {/* Ambient decoration — animated line effects without the static grid */}
             <div aria-hidden="true" className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                <div
-                    className={cn(
-                        gridBoundsClassName,
-                        compact
-                            ? "opacity-55 dark:opacity-40"
-                            : "opacity-70 dark:opacity-45"
-                    )}
-                    style={{
-                        backgroundImage: [
-                            "linear-gradient(to right, color-mix(in srgb, var(--hero-accent) 18%, transparent) 1px, transparent 1px)",
-                            "linear-gradient(to bottom, color-mix(in srgb, var(--hero-accent) 13%, transparent) 1px, transparent 1px)",
-                        ].join(", "),
-                        backgroundSize: "56px 56px",
-                        ...gridMaskStyle,
-                    }}
-                />
                 <div
                     className={cn(gridBoundsClassName, "overflow-hidden")}
                     style={gridMaskStyle}

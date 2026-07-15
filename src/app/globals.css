@@ -556,7 +556,7 @@ input:-webkit-autofill {
     }
     100% {
         opacity: 0;
-        translate: 0 42vh;
+        translate: 0 var(--hero-grid-y-travel, 42vh);
     }
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import {ReactNode} from "react";
+import {type CSSProperties, type ReactNode} from "react";
 import {useIsDark} from "@/hook/useIsDark";
 import {useMounted} from "@/hook/useMounted";
 import {cn} from "@/lib/utils";
@@ -18,6 +18,17 @@ export default function AuthLayout({title, description, children, wide = false}:
     const heroImage = mounted && isDark
         ? "/images/header/pont-dark.png"
         : "/images/header/pont-light.png";
+    const authLineEffectsStyle = {
+        "--hero-accent": "var(--color-brand-primary)",
+        "--hero-grid-x-peak": "0.44",
+        "--hero-grid-x-mid": "0.18",
+        "--hero-grid-y-peak": "0.36",
+        "--hero-grid-y-mid": "0.14",
+        "--hero-grid-x-travel": "68vw",
+        "--hero-grid-y-travel": "100vh",
+        maskImage: "linear-gradient(to right, black 0%, black 82%, transparent 100%)",
+        WebkitMaskImage: "linear-gradient(to right, black 0%, black 82%, transparent 100%)",
+    } as CSSProperties & Record<`--${string}`, string>;
 
     return (
         <section
@@ -38,16 +49,61 @@ export default function AuthLayout({title, description, children, wide = false}:
                 className="absolute inset-0 bg-linear-to-b from-background via-background/90 to-background/60 lg:bg-linear-to-r lg:from-background lg:via-background/85 lg:to-transparent z-0"
             />
 
-            {/* Ambient decoration */}
             <div aria-hidden="true" className="hidden lg:block absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-20%] left-[-10%] w-[520px] h-[520px] rounded-full bg-brand-primary/10 blur-3xl"/>
-                <div className="absolute bottom-[-25%] left-[15%] w-[420px] h-[420px] rounded-full bg-brand-primary/5 blur-3xl"/>
-                <div className="absolute top-[40%] left-[35%] w-0.5 h-[140px] bg-brand-primary/20 rotate-12"/>
-                <div className="absolute top-[20%] left-[42%] w-1.5 h-1.5 rounded-full bg-brand-primary/40"/>
-                <div className="absolute top-[55%] left-[38%] w-1 h-1 rounded-full bg-brand-primary/30"/>
-                <div className="absolute top-[70%] left-[44%] w-2 h-2 rounded-full bg-brand-primary/25"/>
+                <div
+                    className="absolute inset-y-0 left-0 w-[68vw] overflow-hidden"
+                    style={authLineEffectsStyle}
+                >
+                    <div
+                        className="hero-grid-line-x absolute left-0 top-14 h-px w-24"
+                        style={{background: "linear-gradient(to right, transparent, color-mix(in srgb, var(--hero-accent) 50%, transparent), transparent)"}}
+                    />
+                    <div
+                        className="hero-grid-line-x hero-grid-line-delay-1 absolute left-0 top-28 h-px w-32"
+                        style={{background: "linear-gradient(to right, transparent, color-mix(in srgb, var(--hero-accent) 58%, transparent), transparent)"}}
+                    />
+                    <div
+                        className="hero-grid-line-x hero-grid-line-delay-2 absolute left-0 top-[168px] h-px w-28"
+                        style={{background: "linear-gradient(to right, transparent, color-mix(in srgb, var(--hero-accent) 44%, transparent), transparent)"}}
+                    />
+                    <div
+                        className="hero-grid-line-x hero-grid-line-delay-3 absolute left-0 top-[224px] h-px w-40"
+                        style={{background: "linear-gradient(to right, transparent, color-mix(in srgb, var(--hero-accent) 52%, transparent), transparent)"}}
+                    />
+                    <div
+                        className="hero-grid-line-x hero-grid-line-delay-1 absolute bottom-14 left-0 h-px w-36"
+                        style={{background: "linear-gradient(to right, transparent, color-mix(in srgb, var(--hero-accent) 54%, transparent), transparent)"}}
+                    />
+                    <div
+                        className="hero-grid-line-x hero-grid-line-delay-3 absolute bottom-28 left-0 h-px w-44"
+                        style={{background: "linear-gradient(to right, transparent, color-mix(in srgb, var(--hero-accent) 48%, transparent), transparent)"}}
+                    />
+                    <div
+                        className="hero-grid-line-x hero-grid-line-delay-4 absolute bottom-[168px] left-0 h-px w-32"
+                        style={{background: "linear-gradient(to right, transparent, color-mix(in srgb, var(--hero-accent) 42%, transparent), transparent)"}}
+                    />
+                    <div
+                        className="hero-grid-line-y absolute left-[12%] top-0 h-24 w-px"
+                        style={{background: "linear-gradient(to bottom, transparent, color-mix(in srgb, var(--hero-accent) 46%, transparent), transparent)"}}
+                    />
+                    <div
+                        className="hero-grid-line-y hero-grid-line-delay-1 absolute left-[30%] top-0 h-32 w-px"
+                        style={{background: "linear-gradient(to bottom, transparent, color-mix(in srgb, var(--hero-accent) 52%, transparent), transparent)"}}
+                    />
+                    <div
+                        className="hero-grid-line-y hero-grid-line-delay-2 absolute left-[48%] top-0 h-28 w-px"
+                        style={{background: "linear-gradient(to bottom, transparent, color-mix(in srgb, var(--hero-accent) 42%, transparent), transparent)"}}
+                    />
+                    <div
+                        className="hero-grid-line-y hero-grid-line-delay-3 absolute left-[68%] top-0 h-36 w-px"
+                        style={{background: "linear-gradient(to bottom, transparent, color-mix(in srgb, var(--hero-accent) 56%, transparent), transparent)"}}
+                    />
+                    <div
+                        className="hero-grid-line-y hero-grid-line-delay-4 absolute left-[88%] top-0 h-24 w-px"
+                        style={{background: "linear-gradient(to bottom, transparent, color-mix(in srgb, var(--hero-accent) 44%, transparent), transparent)"}}
+                    />
+                </div>
             </div>
-
             <div className="relative z-10 mx-auto w-full max-w-7xl min-h-screen flex items-start lg:items-center justify-center lg:justify-start px-6 lg:pl-12 lg:pr-6 py-12 lg:py-20 opacity-0 animate-fade-in">
                 {/* Bloc unique en haut-gauche, comme la home : titre + descriptif
                     + formulaire empilés. Le pont reste libre sur la moitié droite. */}
