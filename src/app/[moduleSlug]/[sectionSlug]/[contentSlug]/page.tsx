@@ -10,7 +10,6 @@ import CopyContextGuard from "@/components/page/CopyContextGuard";
 import PromptModeButton from "@/components/page/PromptModeButton";
 import ExamenWrapper from "@/components/ExamenWrapper";
 import TableOfContents from "@/components/TableOfContents";
-import EditContentFab from "@/components/admin/EditContentFab";
 import {getModuleData} from "@/hook/getModuleData";
 import {moduleColor} from "@/lib/moduleColor";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
@@ -226,14 +225,6 @@ export default async function Content({params}: ContentPageProps) {
 
             {!isSplit && <PageFooter path={currentModule.path}/>}
 
-            {isAdmin && !isSplit && currentContent && (
-                <EditContentFab
-                    moduleSlug={moduleSlug}
-                    sectionSlug={sectionSlug}
-                    contentType={currentContent}
-                    modulePath={currentModule.path}
-                />
-            )}
         </div>
     );
 }

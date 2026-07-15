@@ -1,5 +1,4 @@
 import {TelescopeIcon} from "@/components/icons/telescope";
-import {getServerSession} from "@/lib/auth";
 import {moduleColor} from "@/lib/moduleColor";
 
 import HeroSection from "@/components/page/HeroSection";
@@ -7,7 +6,6 @@ import SectionStats from "@/components/page/SectionStats";
 import ContentCard from "@/components/Cards/ContentCard";
 import SectionNavCard from "@/components/Cards/SectionNavCard";
 import PageFooter from "@/components/page/PageFooter";
-import EditSectionFab from "@/components/admin/EditSectionFab";
 import {List, ListItem} from "@/components/ui/List";
 import {getModuleData} from "@/hook/getModuleData";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
@@ -55,9 +53,6 @@ export default async function SectionPage({params}: SectionPageProps) {
 
     const hasObjectives =
         !!currentSection?.objectives && currentSection.objectives.length > 0;
-
-    const session = await getServerSession();
-    const isAdmin = session?.user.role === "admin";
 
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
@@ -175,9 +170,6 @@ export default async function SectionPage({params}: SectionPageProps) {
 
             <PageFooter path={currentModule.path}/>
 
-            {isAdmin && currentSection && (
-                <EditSectionFab modData={currentModule} section={currentSection}/>
-            )}
         </div>
     );
 }

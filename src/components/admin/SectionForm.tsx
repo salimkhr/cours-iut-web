@@ -22,7 +22,7 @@ import {
 } from '@/lib/schemas/section.schema';
 import Eyebrow from '@/components/admin/ui/Eyebrow';
 
-// Type exporté pour rétrocompatibilité avec EditSectionFab et AddSectionButton
+// Type exporte pour les formulaires d'ajout et d'edition de section.
 export type Section = {
     title: string;
     path: string;

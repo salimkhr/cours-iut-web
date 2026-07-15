@@ -6,7 +6,6 @@ import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getContentRef} from "@/types/CourseContent";
 import {getContentBlocks} from "@/lib/getContentBlocks";
 import {SlideBlocksRenderer} from "@/components/Slides/SlideBlocksRenderer";
-import EditContentFab from "@/components/admin/EditContentFab";
 import {getServerSession} from "@/lib/auth";
 
 interface ContentPageProps {
@@ -55,14 +54,6 @@ export default async function Content({params}: ContentPageProps) {
                     module={currentModule}
                     section={currentSection}
                 />
-                {isAdmin && (
-                    <EditContentFab
-                        moduleSlug={moduleSlug}
-                        sectionSlug={sectionSlug}
-                        contentType="slide"
-                        modulePath={currentModule.path}
-                    />
-                )}
             </div>
         );
     }
@@ -86,14 +77,6 @@ export default async function Content({params}: ContentPageProps) {
             '--module-color-dark': moduleColor(currentModule, 'dark'),
         } as React.CSSProperties}>
             <ComponentToRender />
-            {isAdmin && (
-                <EditContentFab
-                    moduleSlug={moduleSlug}
-                    sectionSlug={sectionSlug}
-                    contentType="slide"
-                    modulePath={currentModule.path}
-                />
-            )}
         </div>
     );
 }
