@@ -47,7 +47,7 @@ interface ToggleColProps {
 /** Colonne label + switch, largeur fixe pour aligner les colonnes entre les lignes. */
 function ToggleCol({id, label, checked, disabled, pending, onChange}: ToggleColProps) {
     return (
-        <div className="flex w-24 flex-col items-center gap-1.5">
+        <div className="flex w-20 flex-col items-center gap-1.5 xl:w-24">
             <Label
                 htmlFor={id}
                 className="text-center text-[10px] uppercase tracking-[0.12em] font-semibold text-brand-dark/55 dark:text-bridge-200/55"
@@ -188,75 +188,76 @@ export default function AdminSection({
                     </div>
                 </div>
 
-                {/* Interrupteurs alignés en colonnes */}
-                <div className="flex shrink-0 items-start gap-2 pl-11 xl:pl-0" role="group" aria-label={`États de la section ${currentSection.title}`}>
-                    <ToggleCol
-                        id={`${currentSection.path}-available`}
-                        label="Publiée"
-                        checked={isAvailable}
-                        disabled={pendingKey !== null}
-                        pending={pendingKey === "isAvailable"}
-                        onChange={(checked) => handleToggle("isAvailable", checked)}
-                    />
-                    <ToggleCol
-                        id={`${currentSection.path}-correction`}
-                        label="Correction"
-                        checked={correctionIsAvailable}
-                        disabled={!currentSection.hasCorrection || pendingKey !== null}
-                        pending={pendingKey === "correctionIsAvailable"}
-                        onChange={(checked) => handleToggle("correctionIsAvailable", checked)}
-                    />
-                    {hasExamen ? (
+                {/* États + actions : une seule ligne sur mobile (switches à gauche, actions à droite) */}
+                <div className="flex items-center justify-between gap-2 xl:gap-4">
+                    <div className="flex items-start gap-1.5 xl:gap-2" role="group" aria-label={`États de la section ${currentSection.title}`}>
                         <ToggleCol
-                            id={`${currentSection.path}-examen-lock`}
-                            label="Verrou examen"
-                            checked={!!currentSection.examenIsLock}
+                            id={`${currentSection.path}-available`}
+                            label="Publiée"
+                            checked={isAvailable}
                             disabled={pendingKey !== null}
-                            pending={pendingKey === "examenIsLock"}
-                            onChange={(checked) => handleToggle("examenIsLock", checked)}
+                            pending={pendingKey === "isAvailable"}
+                            onChange={(checked) => handleToggle("isAvailable", checked)}
                         />
-                    ) : (
-                        <div className="w-24" aria-hidden="true"/>
-                    )}
-                </div>
+                        <ToggleCol
+                            id={`${currentSection.path}-correction`}
+                            label="Correction"
+                            checked={correctionIsAvailable}
+                            disabled={!currentSection.hasCorrection || pendingKey !== null}
+                            pending={pendingKey === "correctionIsAvailable"}
+                            onChange={(checked) => handleToggle("correctionIsAvailable", checked)}
+                        />
+                        {hasExamen ? (
+                            <ToggleCol
+                                id={`${currentSection.path}-examen-lock`}
+                                label="Verrou examen"
+                                checked={!!currentSection.examenIsLock}
+                                disabled={pendingKey !== null}
+                                pending={pendingKey === "examenIsLock"}
+                                onChange={(checked) => handleToggle("examenIsLock", checked)}
+                            />
+                        ) : (
+                            <div className="hidden w-24 xl:block" aria-hidden="true"/>
+                        )}
+                    </div>
 
-                {/* Actions */}
-                <div className="flex shrink-0 items-center gap-1 pl-11 xl:pl-0">
-                    <EditSectionButton section={currentSection} modData={modData} onAdd={editSection}/>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-11 w-11 text-bridge-600 hover:bg-destructive/10 hover:text-destructive dark:text-bridge-300"
-                                disabled={deleting}
-                                aria-label={`Supprimer la section ${currentSection.title}`}
-                                title="Supprimer la section"
-                            >
-                                <Trash2 className="size-4" aria-hidden="true"/>
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="p-0 gap-0 overflow-hidden bg-card border-bridge-500/45">
-                            <div className="flex items-center gap-3 px-6 py-4" style={{backgroundColor: moduleColor(modData)}}>
-                                <Trash2 className="w-5 h-5 text-white shrink-0"/>
-                                <AlertDialogTitle className="text-white font-bold text-lg">
-                                    Supprimer la section ?
-                                </AlertDialogTitle>
-                            </div>
-                            <div className="px-6 py-5">
-                                <AlertDialogDescription className="text-brand-dark dark:text-bridge-200">
-                                    La section <strong>{currentSection.title}</strong> sera définitivement supprimée.
-                                    Cette action est irréversible.
-                                </AlertDialogDescription>
-                            </div>
-                            <AlertDialogFooter className="px-6 pb-5">
-                                <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleDelete} disabled={deleting} variant="destructive">
-                                    {deleting ? "Suppression…" : "Supprimer définitivement"}
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
+                    <div className="flex shrink-0 items-center gap-1">
+                        <EditSectionButton section={currentSection} modData={modData} onAdd={editSection}/>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-11 w-11 text-bridge-600 hover:bg-destructive/10 hover:text-destructive dark:text-bridge-300"
+                                    disabled={deleting}
+                                    aria-label={`Supprimer la section ${currentSection.title}`}
+                                    title="Supprimer la section"
+                                >
+                                    <Trash2 className="size-4" aria-hidden="true"/>
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="p-0 gap-0 overflow-hidden bg-card border-bridge-500/45">
+                                <div className="flex items-center gap-3 px-6 py-4" style={{backgroundColor: moduleColor(modData)}}>
+                                    <Trash2 className="w-5 h-5 text-white shrink-0"/>
+                                    <AlertDialogTitle className="text-white font-bold text-lg">
+                                        Supprimer la section ?
+                                    </AlertDialogTitle>
+                                </div>
+                                <div className="px-6 py-5">
+                                    <AlertDialogDescription className="text-brand-dark dark:text-bridge-200">
+                                        La section <strong>{currentSection.title}</strong> sera définitivement supprimée.
+                                        Cette action est irréversible.
+                                    </AlertDialogDescription>
+                                </div>
+                                <AlertDialogFooter className="px-6 pb-5">
+                                    <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleDelete} disabled={deleting} variant="destructive">
+                                        {deleting ? "Suppression…" : "Supprimer définitivement"}
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
                 </div>
             </div>
         </li>
