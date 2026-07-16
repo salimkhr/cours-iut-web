@@ -1,15 +1,10 @@
-import Link from "next/link";
 import {notFound} from "next/navigation";
-import {BookOpen, ChevronRight, EyeOff, FileCheck2, Lock, Users} from "lucide-react";
+import {BookOpen, FileCheck2, Lock, Users} from "lucide-react";
 import {getServerSession} from "@/lib/auth";
 import getModules from "@/lib/getModules";
 import getAdminUsers from "@/lib/admin/getAdminUsers";
-import iconMap from "@/lib/iconMap";
-import {moduleColor} from "@/lib/moduleColor";
 import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
 import StatCard from "@/components/admin/ui/StatCard";
-import Eyebrow from "@/components/admin/ui/Eyebrow";
-import {ADMIN_CARD} from "@/components/admin/ui/adminStyles";
 
 export default async function AdminOverviewPage() {
     const session = await getServerSession();
@@ -65,57 +60,6 @@ export default async function AdminOverviewPage() {
                 />
             </div>
 
-            <section className="mt-8 space-y-3">
-                <div>
-                    <Eyebrow>Contenu pédagogique</Eyebrow>
-                    <h2 className="mt-1 text-xl font-bold text-brand-dark dark:text-bridge-100">
-                        Modules
-                    </h2>
-                </div>
-                <ul className={`${ADMIN_CARD} divide-y divide-bridge-500/15 overflow-hidden`}>
-                    {modules.map((mod) => {
-                        const Icon = iconMap[mod.iconName] || BookOpen;
-                        const modSections = mod.sections ?? [];
-                        const published = modSections.filter((s) => s.isAvailable).length;
-                        const hidden = mod.isVisible === false;
-                        return (
-                            <li key={mod.path}>
-                                <Link
-                                    href="/admin/modules"
-                                    className="flex min-h-11 items-center gap-3 px-4 py-3 transition-colors hover:bg-bridge-100/50 dark:hover:bg-bridge-900/30"
-                                >
-                                    <span
-                                        className="flex size-9 shrink-0 items-center justify-center rounded-lg text-white"
-                                        style={{backgroundColor: moduleColor(mod)}}
-                                    >
-                                        <Icon className="size-4" aria-hidden="true"/>
-                                    </span>
-                                    <div className="min-w-0 flex-1">
-                                        <p className="truncate text-sm font-semibold text-brand-dark dark:text-bridge-100">
-                                            {mod.title}
-                                        </p>
-                                        <p className="text-xs text-bridge-600 dark:text-bridge-300">
-                                            {modSections.length} section{modSections.length > 1 ? "s" : ""} · {published} publiée{published > 1 ? "s" : ""}
-                                        </p>
-                                    </div>
-                                    {hidden && (
-                                        <span className="flex shrink-0 items-center gap-1 rounded-md bg-bridge-200/60 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-bridge-700 dark:bg-bridge-700/60 dark:text-bridge-300">
-                                            <EyeOff className="size-3" aria-hidden="true"/>
-                                            Masqué
-                                        </span>
-                                    )}
-                                    <ChevronRight className="size-4 shrink-0 text-bridge-500" aria-hidden="true"/>
-                                </Link>
-                            </li>
-                        );
-                    })}
-                    {modules.length === 0 && (
-                        <li className="px-4 py-8 text-center text-sm text-bridge-500 dark:text-bridge-400">
-                            Aucun module. Créez-en un depuis « Modules & sections ».
-                        </li>
-                    )}
-                </ul>
-            </section>
         </>
     );
 }

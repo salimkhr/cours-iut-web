@@ -39,15 +39,16 @@ export default function AdminSidebar() {
                                         key={item.href}
                                         href={item.href}
                                         aria-current={active ? "page" : undefined}
+                                        title={item.label}
                                         className={cn(
-                                            "flex min-h-11 shrink-0 items-center gap-2.5 whitespace-nowrap rounded-lg px-3 text-sm font-medium transition-colors",
+                                            "flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2.5 whitespace-nowrap rounded-lg px-3 text-sm font-medium transition-colors lg:justify-start",
                                             active
                                                 ? "bg-brand-primary text-white shadow-[0_2px_10px_-4px_rgba(147,97,58,0.5)] dark:text-brand-dark dark:shadow-[0_2px_10px_-4px_rgba(0,0,0,0.5)]"
                                                 : "text-brand-dark/70 hover:bg-bridge-300/40 hover:text-brand-dark dark:text-bridge-100/70 dark:hover:bg-bridge-700/40 dark:hover:text-bridge-100",
                                         )}
                                     >
                                         <Icon className="size-4 shrink-0" aria-hidden="true"/>
-                                        {item.label}
+                                        <span className="sr-only lg:not-sr-only">{item.label}</span>
                                     </Link>
                                 );
                             })}

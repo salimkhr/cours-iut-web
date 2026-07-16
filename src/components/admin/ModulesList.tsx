@@ -67,7 +67,7 @@ export default function ModulesList({initialModules}: ModulesListProps) {
 
             <Accordion
                 type="multiple"
-                defaultValue={initialModules.map((mod) => mod.path)}
+                defaultValue={[]}
                 className="space-y-4"
             >
                 {visibleModules.map((mod) => (
