@@ -12,7 +12,7 @@ import Module from "@/types/Module";
 import {getContentTypes, hasContentType} from "@/types/CourseContent";
 import {Section as SectionFrom} from "@/components/admin/SectionForm";
 import useAdminApi from "@/hook/admin/useAdminApi";
-import {ExternalLink, Pencil, Trash2} from "lucide-react";
+import {ExternalLink, KeyRound, Pencil, Trash2} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {moduleColor} from "@/lib/moduleColor";
 import {CONTENT_LABELS, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
@@ -35,6 +35,36 @@ interface AdminSectionProps {
 
 type ToggleKey = keyof Pick<Section, "correctionIsAvailable" | "isAvailable" | "examenIsLock">;
 
+interface ToggleColProps {
+    id: string;
+    label: string;
+    checked: boolean;
+    disabled?: boolean;
+    pending?: boolean;
+    onChange: (checked: boolean) => void;
+}
+
+/** Colonne label + switch, largeur fixe pour aligner les colonnes entre les lignes. */
+function ToggleCol({id, label, checked, disabled, pending, onChange}: ToggleColProps) {
+    return (
+        <div className="flex w-24 flex-col items-center gap-1.5">
+            <Label
+                htmlFor={id}
+                className="text-center text-[10px] uppercase tracking-[0.12em] font-semibold text-brand-dark/55 dark:text-bridge-200/55"
+            >
+                {label}
+            </Label>
+            <Switch
+                id={id}
+                checked={checked}
+                onCheckedChange={onChange}
+                disabled={disabled}
+                aria-busy={pending}
+            />
+        </div>
+    );
+}
+
 export default function AdminSection({
     section,
     modData,
@@ -49,16 +79,18 @@ export default function AdminSection({
     const moduleId = modData._id;
     const {editSection: editSectionApi, deleteSection: deleteSectionApi} = useAdminApi();
 
+    const hasExamen = hasContentType(currentSection.contents, "examen");
+
     const editSection = async (updatedSection: SectionFrom) => {
         try {
             const saved = await editSectionApi(modData._id as unknown as string, String(currentSection._id), updatedSection);
             if (!saved) {
-                throw new Error("Section mise a jour introuvable");
+                throw new Error("Section mise à jour introuvable");
             }
             setCurrentSection(saved);
-            toast.success("Section mise a jour.");
+            toast.success("Section mise à jour.");
         } catch (error) {
-            toast.error("Erreur lors de la mise a jour de la section.");
+            toast.error("Erreur lors de la mise à jour de la section.");
             throw error;
         }
     };
@@ -67,7 +99,7 @@ export default function AdminSection({
         setDeleting(true);
         try {
             await deleteSectionApi(modData._id as unknown as string, currentSection.path);
-            toast.success("Section supprimee.");
+            toast.success("Section supprimée.");
             onDelete?.(currentSection.path);
         } catch {
             toast.error("Erreur lors de la suppression de la section.");
@@ -86,10 +118,10 @@ export default function AdminSection({
         setCurrentSection((prev) => ({...prev, [key]: value}));
         try {
             await updateSectionState(moduleId, currentSection.order, key, value);
-            toast.success("Section mise a jour.");
+            toast.success("Section mise à jour.");
         } catch {
             setCurrentSection((prev) => ({...prev, [key]: previous}));
-            toast.error("Erreur lors de la mise a jour de la section.");
+            toast.error("Erreur lors de la mise à jour de la section.");
         } finally {
             setPendingKey(null);
         }
@@ -100,31 +132,108 @@ export default function AdminSection({
     );
 
     return (
-        <div className="rounded-lg border p-3 space-y-3 bg-muted/40">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 min-w-0">
+        <li className="border-b border-bridge-500/15 px-4 py-3 transition-colors last:border-b-0 hover:bg-bridge-100/40 dark:hover:bg-bridge-900/30">
+            <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:gap-4">
+                {/* Identité : numéro + titre + contenus */}
+                <div className="flex min-w-0 flex-1 items-start gap-3">
                     <span
-                        className="inline-flex items-center justify-center w-7 h-7 rounded-md text-white dark:text-black font-mono font-bold text-xs shrink-0"
+                        className="mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-md font-mono text-xs font-bold text-white"
                         style={{backgroundColor: moduleColor(modData)}}
                     >
                         {currentSection.order.toString().padStart(2, "0")}
                     </span>
-                    <span className="text-base font-semibold leading-tight text-brand-dark dark:text-bridge-100 truncate">
-                        {currentSection.title}
-                    </span>
+                    <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold leading-tight text-brand-dark dark:text-bridge-100">
+                            {currentSection.title}
+                        </p>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                            {sortedContents.map((content) => {
+                                const key = content as ContentKey;
+                                return (
+                                    <Button
+                                        key={content}
+                                        asChild
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-8 gap-1.5 border-bridge-500/45 px-2.5 text-xs"
+                                    >
+                                        <Link href={`/admin/content/${modData.path}/${currentSection.path}/${content}`}>
+                                            <Pencil className="size-3" aria-hidden="true"/>
+                                            {CONTENT_LABELS[key] ?? content}
+                                        </Link>
+                                    </Button>
+                                );
+                            })}
+                            <Button
+                                asChild
+                                variant="outline"
+                                size="sm"
+                                className="h-8 gap-1.5 border-bridge-500/45 px-2.5 text-xs"
+                            >
+                                <Link href={`/${modData.path}/${currentSection.path}`}>
+                                    <ExternalLink className="size-3" aria-hidden="true"/>
+                                    Voir
+                                </Link>
+                            </Button>
+                            {hasExamen && (
+                                <span
+                                    className="inline-flex h-8 items-center gap-1.5 rounded-md bg-bridge-100 px-2.5 font-mono text-xs font-bold text-brand-primary dark:bg-bridge-900"
+                                    title="Code d'accès à l'examen"
+                                >
+                                    <KeyRound className="size-3" aria-hidden="true"/>
+                                    {modData._id?.toString().slice(-6).toUpperCase()}
+                                </span>
+                            )}
+                        </div>
+                    </div>
                 </div>
-                <div className="flex items-center gap-1">
+
+                {/* Interrupteurs alignés en colonnes */}
+                <div className="flex shrink-0 items-start gap-2 pl-11 xl:pl-0" role="group" aria-label={`États de la section ${currentSection.title}`}>
+                    <ToggleCol
+                        id={`${currentSection.path}-available`}
+                        label="Publiée"
+                        checked={isAvailable}
+                        disabled={pendingKey !== null}
+                        pending={pendingKey === "isAvailable"}
+                        onChange={(checked) => handleToggle("isAvailable", checked)}
+                    />
+                    <ToggleCol
+                        id={`${currentSection.path}-correction`}
+                        label="Correction"
+                        checked={correctionIsAvailable}
+                        disabled={!currentSection.hasCorrection || pendingKey !== null}
+                        pending={pendingKey === "correctionIsAvailable"}
+                        onChange={(checked) => handleToggle("correctionIsAvailable", checked)}
+                    />
+                    {hasExamen ? (
+                        <ToggleCol
+                            id={`${currentSection.path}-examen-lock`}
+                            label="Verrou examen"
+                            checked={!!currentSection.examenIsLock}
+                            disabled={pendingKey !== null}
+                            pending={pendingKey === "examenIsLock"}
+                            onChange={(checked) => handleToggle("examenIsLock", checked)}
+                        />
+                    ) : (
+                        <div className="w-24" aria-hidden="true"/>
+                    )}
+                </div>
+
+                {/* Actions */}
+                <div className="flex shrink-0 items-center gap-1 pl-11 xl:pl-0">
                     <EditSectionButton section={currentSection} modData={modData} onAdd={editSection}/>
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-11 w-11 text-muted-foreground hover:text-destructive"
+                                className="h-11 w-11 text-bridge-600 hover:bg-destructive/10 hover:text-destructive dark:text-bridge-300"
                                 disabled={deleting}
-                                aria-label="Supprimer la section"
+                                aria-label={`Supprimer la section ${currentSection.title}`}
+                                title="Supprimer la section"
                             >
-                                <Trash2 className="w-4 h-4"/>
+                                <Trash2 className="size-4" aria-hidden="true"/>
                             </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="p-0 gap-0 overflow-hidden bg-card border-bridge-500/45">
@@ -136,92 +245,20 @@ export default function AdminSection({
                             </div>
                             <div className="px-6 py-5">
                                 <AlertDialogDescription className="text-brand-dark dark:text-bridge-200">
-                                    La section <strong>{currentSection.title}</strong> sera definitivement supprimee.
-                                    Cette action est irreversible.
+                                    La section <strong>{currentSection.title}</strong> sera définitivement supprimée.
+                                    Cette action est irréversible.
                                 </AlertDialogDescription>
                             </div>
                             <AlertDialogFooter className="px-6 pb-5">
                                 <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
                                 <AlertDialogAction onClick={handleDelete} disabled={deleting} variant="destructive">
-                                    {deleting ? "Suppression..." : "Supprimer definitivement"}
+                                    {deleting ? "Suppression…" : "Supprimer définitivement"}
                                 </AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>
                 </div>
             </div>
-            <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                    <Label htmlFor={`${currentSection.path}-available`} className="text-sm">
-                        {getContentTypes(currentSection.contents).map((content) => content.charAt(0).toUpperCase() + content.slice(1)).join(", ")}
-                    </Label>
-                    <Switch
-                        id={`${currentSection.path}-available`}
-                        checked={isAvailable}
-                        onCheckedChange={(checked) => handleToggle("isAvailable", !!checked)}
-                        disabled={pendingKey !== null}
-                        aria-busy={pendingKey === "isAvailable"}
-                    />
-                </div>
-                <div className="flex items-center justify-between">
-                    <Label htmlFor={`${currentSection.path}-correction`} className="text-sm">
-                        Correction
-                    </Label>
-                    <Switch
-                        id={`${currentSection.path}-correction`}
-                        checked={correctionIsAvailable}
-                        onCheckedChange={(checked) => handleToggle("correctionIsAvailable", !!checked)}
-                        disabled={!currentSection.hasCorrection || pendingKey !== null}
-                        aria-busy={pendingKey === "correctionIsAvailable"}
-                    />
-                </div>
-                {hasContentType(currentSection.contents, "examen") && (
-                    <div className="flex items-center justify-between">
-                        <Label htmlFor={`${currentSection.path}-examen-lock`} className="text-sm">
-                            Examen verrouille
-                        </Label>
-                        <Switch
-                            id={`${currentSection.path}-examen-lock`}
-                            checked={!!currentSection.examenIsLock}
-                            onCheckedChange={(checked) => handleToggle("examenIsLock", !!checked)}
-                            disabled={pendingKey !== null}
-                            aria-busy={pendingKey === "examenIsLock"}
-                        />
-                    </div>
-                )}
-                <div className="border-t border-bridge-500/20 pt-3">
-                    <p className="mb-2 text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark/55 dark:text-bridge-200/55">
-                        Contenus
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                        {sortedContents.map((content) => {
-                            const key = content as ContentKey;
-                            return (
-                                <Button key={content} asChild variant="outline" size="sm" className="min-h-10 gap-1.5 border-bridge-500/45">
-                                    <Link href={`/admin/content/${modData.path}/${currentSection.path}/${content}`}>
-                                        <Pencil className="size-3.5" aria-hidden="true"/>
-                                        {CONTENT_LABELS[key] ?? content}
-                                    </Link>
-                                </Button>
-                            );
-                        })}
-                        <Button asChild variant="outline" size="sm" className="min-h-10 gap-1.5 border-bridge-500/45">
-                            <Link href={`/${modData.path}/${currentSection.path}`}>
-                                <ExternalLink className="size-3.5" aria-hidden="true"/>
-                                Voir
-                            </Link>
-                        </Button>
-                    </div>
-                </div>
-                {hasContentType(currentSection.contents, "examen") && (
-                    <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t mt-2">
-                        <span>Code d&apos;acces :</span>
-                        <code className="bg-muted px-1.5 py-0.5 rounded font-mono font-bold text-primary">
-                            {modData._id?.toString().slice(-6).toUpperCase()}
-                        </code>
-                    </div>
-                )}
-            </div>
-        </div>
+        </li>
     );
 }

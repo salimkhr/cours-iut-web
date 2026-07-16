@@ -1,36 +1,43 @@
-export type AdminTabValue = "modules" | "users" | "tools";
-export type AdminToolActionId = "migration" | "export-import" | "calibrage" | "pedagogie";
+export type AdminNavIconId = "overview" | "modules" | "users" | "tools" | "calibrage" | "pedagogie";
+export type AdminToolActionId = "migration" | "export-import";
+
+export interface AdminNavItem {
+    href: string;
+    label: string;
+    icon: AdminNavIconId;
+    /** Actif uniquement si le pathname correspond exactement (pour /admin). */
+    exact?: boolean;
+}
+
+export interface AdminNavGroup {
+    label: string;
+    items: readonly AdminNavItem[];
+}
 
 export interface AdminToolAction {
     id: AdminToolActionId;
     title: string;
     description: string;
-    href?: string;
 }
 
-export const ADMIN_DEFAULT_TAB: AdminTabValue = "modules";
-
-export const ADMIN_TABS = [
+export const ADMIN_NAV_GROUPS = [
     {
-        value: "modules",
-        label: "Modules & sections",
-        description: "Pilotez les modules, les sections, les verrous et les contenus.",
+        label: "Pilotage",
+        items: [
+            {href: "/admin", label: "Vue d'ensemble", icon: "overview", exact: true},
+            {href: "/admin/modules", label: "Modules & sections", icon: "modules"},
+            {href: "/admin/utilisateurs", label: "Utilisateurs", icon: "users"},
+        ],
     },
     {
-        value: "users",
-        label: "Utilisateurs",
-        description: "Gerez les comptes, les groupes, les roles et les bannissements.",
-    },
-    {
-        value: "tools",
         label: "Outils",
-        description: "Accedez aux actions techniques et aux vues pedagogiques.",
+        items: [
+            {href: "/admin/outils", label: "Outils techniques", icon: "tools"},
+            {href: "/admin/calibrage", label: "Calibrage", icon: "calibrage"},
+            {href: "/admin/pedagogie", label: "Pédagogie", icon: "pedagogie"},
+        ],
     },
-] as const satisfies readonly {
-    value: AdminTabValue;
-    label: string;
-    description: string;
-}[];
+] as const satisfies readonly AdminNavGroup[];
 
 export const ADMIN_TOOL_ACTIONS = [
     {
@@ -41,18 +48,6 @@ export const ADMIN_TOOL_ACTIONS = [
     {
         id: "export-import",
         title: "Exporter / importer",
-        description: "Transferer les modules et sections entre environnements.",
-    },
-    {
-        id: "calibrage",
-        title: "Calibrage pedagogique",
-        description: "Ajuster les verdicts et exemplaires utilises par les skills.",
-        href: "/admin/calibrage",
-    },
-    {
-        id: "pedagogie",
-        title: "Pedagogie",
-        description: "Consulter les briefs et curriculums des sections.",
-        href: "/admin/pedagogie",
+        description: "Transférer les modules et sections entre environnements.",
     },
 ] as const satisfies readonly AdminToolAction[];

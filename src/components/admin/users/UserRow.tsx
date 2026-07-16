@@ -42,7 +42,7 @@ export default function UserRow({ user, onDeleted, onEdit }: UserRowProps) {
                                 {user.name}
                             </p>
                             {user.banned && (
-                                <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-500/15 text-red-500">
+                                <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-destructive/15 text-destructive dark:bg-red-400/15 dark:text-red-400">
                                     Banni
                                 </span>
                             )}
@@ -77,7 +77,7 @@ export default function UserRow({ user, onDeleted, onEdit }: UserRowProps) {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-bridge-400 hover:text-brand-primary hover:bg-brand-primary/10"
+                        className="h-11 w-11 text-bridge-600 dark:text-bridge-300 hover:text-brand-primary hover:bg-brand-primary/10"
                         aria-label={`Modifier ${user.name}`}
                         onClick={() => onEdit(user)}
                     >

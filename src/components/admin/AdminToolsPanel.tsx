@@ -1,18 +1,16 @@
 "use client";
 
 import {useState} from "react";
-import Link from "next/link";
-import {ArrowRight, Database, FileText, GraduationCap, UploadCloud} from "lucide-react";
+import {ArrowRight, Database, UploadCloud} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import MigrateButton from "@/components/admin/MigrateButton";
 import ExportImportSheet from "@/components/admin/ExportImportSheet";
 import {ADMIN_TOOL_ACTIONS} from "@/components/admin/adminDashboardConfig";
+import {ADMIN_CARD} from "@/components/admin/ui/adminStyles";
 
 const TOOL_ICONS = {
     migration: Database,
     "export-import": UploadCloud,
-    calibrage: GraduationCap,
-    pedagogie: FileText,
 } as const;
 
 export default function AdminToolsPanel() {
@@ -26,7 +24,7 @@ export default function AdminToolsPanel() {
                     return (
                         <article
                             key={action.id}
-                            className="rounded-lg border border-bridge-500/35 bg-bridge-50 p-5 shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)] dark:bg-bridge-800 dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]"
+                            className={`${ADMIN_CARD} p-5`}
                         >
                             <div className="mb-4 flex items-start gap-3">
                                 <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-primary/12 text-brand-accent-dark dark:bg-brand-primary/20 dark:text-brand-primary">
@@ -42,7 +40,7 @@ export default function AdminToolsPanel() {
 
                             {action.id === "migration" ? (
                                 <MigrateButton/>
-                            ) : action.id === "export-import" ? (
+                            ) : (
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -51,13 +49,6 @@ export default function AdminToolsPanel() {
                                 >
                                     Ouvrir
                                     <ArrowRight className="size-4" aria-hidden="true"/>
-                                </Button>
-                            ) : (
-                                <Button asChild variant="outline" className="min-h-11 gap-2 border-bridge-500/45">
-                                    <Link href={action.href ?? "/admin"}>
-                                        Ouvrir
-                                        <ArrowRight className="size-4" aria-hidden="true"/>
-                                    </Link>
                                 </Button>
                             )}
                         </article>

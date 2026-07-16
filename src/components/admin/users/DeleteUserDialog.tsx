@@ -41,7 +41,7 @@ export default function DeleteUserDialog({userId, userName, onDeleted}: DeleteUs
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-bridge-400 hover:text-red-500 hover:bg-red-500/10"
+                    className="h-11 w-11 text-bridge-600 dark:text-bridge-300 hover:text-destructive hover:bg-destructive/10"
                     aria-label={`Supprimer ${userName}`}
                 >
                     <Trash2 className="w-4 h-4"/>
@@ -68,7 +68,7 @@ export default function DeleteUserDialog({userId, userName, onDeleted}: DeleteUs
                     <AlertDialogAction
                         onClick={handleDelete}
                         disabled={loading}
-                        className="bg-red-600 hover:bg-red-700 text-white"
+                        variant="destructive"
                     >
                         {loading ? 'Suppression…' : 'Supprimer'}
                     </AlertDialogAction>
