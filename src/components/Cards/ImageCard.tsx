@@ -1,6 +1,7 @@
 'use client';
 import BaseCard from "@/components/Cards/BaseCard";
 import Image from "next/image";
+import type Module from "@/types/Module";
 
 
 interface ImageCardProps {
@@ -10,9 +11,10 @@ interface ImageCardProps {
     width?: number;
     height?: number;
     unoptimized?: boolean
+    currentModule?: Module;
 }
 
-export default function ImageCard({src, title, alt, width = 800, height = 800, unoptimized = true}: ImageCardProps) {
+export default function ImageCard({src, title, alt, width = 800, height = 800, unoptimized = true, currentModule}: ImageCardProps) {
 
     const header = (
         <span className="flex-1 text-center text-sm text-white font-mono">{title}</span>
@@ -32,6 +34,7 @@ export default function ImageCard({src, title, alt, width = 800, height = 800, u
         <BaseCard
             header={header}
             content={content}
+            currentModule={currentModule}
             withHover={false}
         />
     );

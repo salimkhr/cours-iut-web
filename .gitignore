@@ -3,6 +3,10 @@
 # Brainstorming sessions (superpowers visual companion)
 .superpowers/
 
+# Local agent workspace and scratch artifacts
+/.codex/
+/tmp_*
+
 # dependencies
 /node_modules
 /.pnp

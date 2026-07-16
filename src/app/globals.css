@@ -326,6 +326,111 @@ body {
     margin-inline: auto;
 }
 
+/* Rendu DB (BlockRenderer) : l'espacement vertical est géré par les gap flex
+   de .course-blocks et .course-block-section. On neutralise la margin-top des
+   titres (héritée des règles .course-content pour le rendu file) pour éviter
+   la double marge haute au-dessus de chaque titre de section. */
+.course-content .course-blocks :where(h2, h3, h4) {
+    margin-top: 0;
+}
+
+/* Rythme vertical piloté UNIQUEMENT par les gap flex (article / section /
+   colonne). On neutralise les margin-block hérités du rendu file, qui sinon
+   s'additionnent au gap et rendent l'espacement incohérent (~68px autour d'un
+   code card contre ~36px entre deux textes). */
+.course-content .course-blocks .course-code-card,
+.course-content .course-blocks [data-slot="table-container"],
+.course-content .course-blocks [role="alert"],
+.course-content .course-blocks blockquote,
+.course-content .course-blocks hr {
+    margin-block: 0;
+}
+.course-content .course-blocks > :where(p, ul, ol),
+.course-content .course-block-section > :where(p, ul, ol),
+.course-content .course-blocks [class*="col-span"] > :where(p, ul, ol) {
+    margin-block: 0;
+}
+
+/* Le texte, les listes et les callouts remplissent la colonne de lecture :
+   pas de cap 72ch qui laisse un grand vide à droite et casse les lignes trop
+   tôt (le conteneur .course-content borne déjà la largeur de lecture). */
+.course-content .course-blocks :where(p, ul, ol, [role="alert"]) {
+    max-width: none;
+}
+
+/* Titre de section — badge lettre/numéro + filet pleine largeur (rendu DB).
+   Direction « badge + filet » : la couleur module est portée par le badge,
+   le titre reste en encre neutre pour une hiérarchie nette et scannable. */
+.course-content .course-section-head {
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
+}
+/* Le titre (et le pill projet) occupent la largeur restante ; le filet vit
+   sur ce conteneur (bottom-aligné, sans gap avec le badge) → il démarre au
+   coin bas-droit du badge, sans courir sous lui, et file jusqu'au bord. */
+.course-content .course-section-headline {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1 1 0%;
+    min-width: 0;
+    flex-wrap: wrap;
+    padding-left: 0.75rem;
+}
+.course-content .course-section-head--top .course-section-headline {
+    padding-bottom: 0;
+    border-bottom: 2px solid var(--module-color);
+}
+.dark .course-content .course-section-head--top .course-section-headline {
+    border-bottom-color: var(--module-color-dark, var(--module-color));
+}
+.course-content .course-section-head :where(h2, h3, h4) {
+    color: var(--color-brand-dark);
+    margin-bottom: 0;
+    line-height: 1;
+}
+.dark .course-content .course-section-head :where(h2, h3, h4) {
+    color: var(--color-brand-light);
+}
+.course-content .course-section-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.6rem;
+    background: var(--module-color);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.14);
+}
+.dark .course-content .course-section-badge {
+    background: var(--module-color-dark, var(--module-color));
+}
+/* Badge de niveau 2 : seul le coin bas-droit est carré (raccord net avec le
+   filet qui part de là) ; le coin bas-gauche garde son radius. Le padding-bottom
+   (box-sizing border-box) remonte la lettre pour l'aligner sur le texte du titre. */
+.course-content .course-section-head--top .course-section-badge {
+    border-bottom-right-radius: 0;
+}
+.course-content .course-section-badge--sub {
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 0.45rem;
+    font-size: 0.8rem;
+    background: color-mix(in srgb, var(--module-color) 15%, transparent);
+    color: var(--module-color);
+    box-shadow: none;
+}
+.dark .course-content .course-section-badge--sub {
+    background: color-mix(in srgb, var(--module-color-dark, var(--module-color)) 24%, transparent);
+    color: var(--module-color-dark, var(--module-color));
+}
+
 .course-content-split {
     max-width: none;
 }
@@ -413,7 +518,7 @@ body {
 @media (min-width: 1024px) {
     .course-content:not(.course-content-split) .course-code-card,
     .course-content:not(.course-content-split) :where([data-slot="table-container"]) {
-        margin-inline: -0.75rem;
+        margin-inline: 0;
     }
 }
 

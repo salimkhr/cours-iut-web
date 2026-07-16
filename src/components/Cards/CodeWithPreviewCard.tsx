@@ -5,11 +5,13 @@ import {ClipboardCopyIcon, Code2, Eye} from "lucide-react";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {oneDark, oneLight} from "react-syntax-highlighter/dist/esm/styles/prism";
 import {cn} from "@/lib/utils";
+import type Module from "@/types/Module";
 
 interface CodeWithPreviewCardProps {
     language: string;
     children: React.ReactNode;
     className?: string;
+    currentModule?: Module;
 }
 
 interface CodePanelProps {
@@ -36,7 +38,7 @@ export function PreviewPanel({children}: PreviewPanelProps) {
 
 type MobileTab = 'code' | 'preview';
 
-export default function CodeWithPreviewCard({language, children, className}: CodeWithPreviewCardProps) {
+export default function CodeWithPreviewCard({language, children, className, currentModule}: CodeWithPreviewCardProps) {
     let codeContent = "";
     let previewContent: ReactNode = null;
 
@@ -176,6 +178,7 @@ export default function CodeWithPreviewCard({language, children, className}: Cod
             <BaseCard
                 header={headerCard}
                 content={content}
+                currentModule={currentModule}
                 withLed={false}
                 withHover={false}
                 withMarge={false}

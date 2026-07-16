@@ -1,0 +1,1 @@
+C:\Users\Utilisateur\AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\local-agent-mode-sessions\d1310cf5-468a-4a7d-bde3-e33de5f876e1\662e5920-5bf9-4c65-9985-90b1b9bd5865\local_3c464ae4-7ae6-4682-82af-1011d37a900c\outputs\onzeheure

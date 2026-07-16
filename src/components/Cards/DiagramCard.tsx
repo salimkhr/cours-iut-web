@@ -5,10 +5,12 @@ import BaseCard from "@/components/Cards/BaseCard";
 import {useTheme} from "next-themes";
 import Text from "@/components/ui/Text";
 import {useMounted} from "@/hook/useMounted";
+import type Module from "@/types/Module";
 
 type DiagramCardProps = {
     header?: string;
     chart: string;
+    currentModule?: Module;
 };
 
 function DiagramSkeleton() {
@@ -27,7 +29,7 @@ function DiagramSkeleton() {
     );
 }
 
-export default function DiagramCard({header, chart}: DiagramCardProps) {
+export default function DiagramCard({header, chart, currentModule}: DiagramCardProps) {
     const mounted = useMounted();
     // Exception au pattern "Tailwind dark: only" : Mermaid s'initialise via un
     // appel JS impératif `mermaid.initialize({ theme })` qui prend une string,
@@ -88,6 +90,7 @@ export default function DiagramCard({header, chart}: DiagramCardProps) {
                     <DiagramSkeleton/>
                 )
             }
+            currentModule={currentModule}
             withMarge={false}
             withHover={false}
             withLed={false}

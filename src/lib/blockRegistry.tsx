@@ -1,6 +1,7 @@
 'use client';
 
 import React from "react";
+import { cn } from "@/lib/utils";
 import Text from "@/components/ui/Text";
 import Heading from "@/components/ui/Heading";
 import { List, ListItem } from "@/components/ui/List";
@@ -71,24 +72,32 @@ const clientParts: Record<string, ClientPart> = {
     "section": {
         icon: Layers,
         render: ({ title, children, depth, sectionIndex, projectRef, currentModule }: BlockRenderProps) => {
-            const level = Math.min(2 + (Number(depth) || 0), 4) as 2 | 3 | 4;
+            const d = Number(depth) || 0;
+            const level = Math.min(2 + d, 4) as 2 | 3 | 4;
             const idx = Number(sectionIndex ?? 0);
-            const prefix = Number(depth) === 0
-                ? String.fromCharCode(65 + idx) + " — "
-                : String(idx + 1) + ". ";
+            // Badge : lettre (A, B, C…) au niveau 0, numéro (1, 2, 3…) en sous-section.
+            const badgeLabel = d === 0 ? String.fromCharCode(65 + idx) : String(idx + 1);
             const mod = currentModule as Module | undefined;
             const icon = mod?.projectIcon ?? "";
             const showBadge = Boolean(projectRef) && icon.length > 0;
             return (
-                <section className="course-block-section flex flex-col gap-5 lg:gap-6">
-                    <div className="flex items-center gap-3 flex-wrap">
-                        <Heading level={level}>{prefix}{String(title ?? "")}</Heading>
-                        {showBadge && (
-                            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary border border-primary/20">
-                                <DynamicLucideIcon name={icon} size={12} />
-                                Projet commun
-                            </span>
-                        )}
+                <section className="course-block-section flex flex-col gap-4 lg:gap-5">
+                    <div className={cn("course-section-head", d === 0 && "course-section-head--top")}>
+                        <span
+                            className={cn("course-section-badge", d > 0 && "course-section-badge--sub")}
+                            aria-hidden="true"
+                        >
+                            {badgeLabel}
+                        </span>
+                        <div className="course-section-headline">
+                            <Heading level={level}>{String(title ?? "")}</Heading>
+                            {showBadge && (
+                                <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                                    <DynamicLucideIcon name={icon} size={12} />
+                                    Projet commun
+                                </span>
+                            )}
+                        </div>
                     </div>
                     {children}
                 </section>
@@ -126,11 +135,11 @@ const clientParts: Record<string, ClientPart> = {
     },
     "callout": {
         icon: MessageSquare,
-        render: ({ variant, title, children }: BlockRenderProps) => {
+        render: ({ variant, title, children, currentModule }: BlockRenderProps) => {
             const v = String(variant ?? "info");
             if (v === "reminder") {
                 return (
-                    <CourseReminder title={title ? String(title) : undefined}>
+                    <CourseReminder title={title ? String(title) : undefined} currentModule={currentModule as Module | undefined}>
                         {children}
                     </CourseReminder>
                 );
@@ -169,8 +178,8 @@ const clientParts: Record<string, ClientPart> = {
     },
     "image-card": {
         icon: Image,
-        render: ({ src, title, alt }: BlockRenderProps) => (
-            <ImageCard src={String(src ?? "")} title={title ? String(title) : undefined} alt={String(alt ?? "")} />
+        render: ({ src, title, alt, currentModule }: BlockRenderProps) => (
+            <ImageCard src={String(src ?? "")} title={title ? String(title) : undefined} alt={String(alt ?? "")} currentModule={currentModule as Module | undefined} />
         ),
     },
     "table": {
@@ -234,8 +243,8 @@ const clientParts: Record<string, ClientPart> = {
     },
     "code-with-preview": {
         icon: Eye,
-        render: ({ language, code }: BlockRenderProps) => (
-            <CodeWithPreviewCard language={String(language ?? "html")}>
+        render: ({ language, code, currentModule }: BlockRenderProps) => (
+            <CodeWithPreviewCard language={String(language ?? "html")} currentModule={currentModule as Module | undefined}>
                 <CodePanel>{String(code ?? "")}</CodePanel>
                 <PreviewPanel>
                     {/* sandbox="" : aucun script, aucune navigation — le HTML vient de la base */}
@@ -251,8 +260,8 @@ const clientParts: Record<string, ClientPart> = {
     },
     "diagram": {
         icon: Share2,
-        render: ({ header, chart }: BlockRenderProps) => (
-            <DiagramCard header={header ? String(header) : undefined} chart={String(chart ?? "")} />
+        render: ({ header, chart, currentModule }: BlockRenderProps) => (
+            <DiagramCard header={header ? String(header) : undefined} chart={String(chart ?? "")} currentModule={currentModule as Module | undefined} />
         ),
     },
     "download-file": {

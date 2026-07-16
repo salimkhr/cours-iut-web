@@ -29,6 +29,19 @@ export default function proxy(req: NextRequest) {
     const {pathname} = req.nextUrl;
     const sessionCookie = getSessionCookie(req);
 
+    // Bypass e2e/dev — NE JAMAIS ACTIVER EN PRODUCTION.
+    // Doublement verrouillé : (1) inactif si NODE_ENV === "production",
+    // (2) requiert un cookie "e2e-bypass" égal au secret E2E_BYPASS_SECRET
+    // (défini uniquement dans .env.local, git-ignored). Sert à laisser
+    // Playwright capturer des pages protégées en local sans passer par le login.
+    if (
+        process.env.NODE_ENV !== "production" &&
+        process.env.E2E_BYPASS_SECRET &&
+        req.cookies.get("e2e-bypass")?.value === process.env.E2E_BYPASS_SECRET
+    ) {
+        return NextResponse.next();
+    }
+
     // La redirection des utilisateurs connectés hors de /login et /register
     // est gérée dans les pages elles-mêmes via getServerSession() (validation DB).
     // Ici on ne vérifie que la présence du cookie, ce qui ne suffit pas pour
