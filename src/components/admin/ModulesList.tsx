@@ -1,15 +1,19 @@
 "use client";
 
-import {useMemo, useState} from "react";
+import {useCallback, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
-import {Search} from "lucide-react";
-import AdminModule from "@/components/admin/AdminModule";
+import {BookOpen, Search} from "lucide-react";
+import type {ColumnDef} from "@tanstack/react-table";
+import AdminModuleActions, {AdminModuleVisibility} from "@/components/admin/AdminModule";
 import AddModuleButton from "./AddModuleButton";
-import {Accordion} from "@/components/ui/accordion";
 import {Input} from "@/components/ui/input";
+import {Badge} from "@/components/ui/badge";
+import AdminDataTable from "@/components/admin/ui/AdminDataTable";
 import useAdminApi from "@/hook/admin/useAdminApi";
 import Module from "@/types/Module";
 import type {ModuleFormValues} from "@/lib/schemas/module.schema";
+import iconMap from "@/lib/iconMap";
+import {moduleColor} from "@/lib/moduleColor";
 
 interface ModulesListProps {
     initialModules: Module[];
@@ -17,6 +21,57 @@ interface ModulesListProps {
 
 function normalize(text: string): string {
     return text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+}
+
+function ModuleIdentityCell({mod}: {mod: Module}) {
+    const Icon = iconMap[mod.iconName] || BookOpen;
+    const color = moduleColor(mod);
+
+    return (
+        <div className="flex items-center gap-3">
+            <span
+                className="flex size-10 shrink-0 items-center justify-center rounded-lg text-white"
+                style={{backgroundColor: color}}
+            >
+                <Icon className="size-5" aria-hidden="true"/>
+            </span>
+            <div className="min-w-0">
+                <div className="flex min-w-0 items-center gap-1.5">
+                    <p className="truncate text-sm font-semibold text-brand-dark dark:text-bridge-100">
+                        {mod.title}
+                    </p>
+                    {mod.isExtra && (
+                        <Badge
+                            variant="outline"
+                            className="border-bridge-500/30 bg-bridge-100/60 text-bridge-700 dark:bg-bridge-900/35 dark:text-bridge-200"
+                        >
+                            Bonus
+                        </Badge>
+                    )}
+                </div>
+                <p className="truncate font-mono text-xs text-bridge-500 dark:text-bridge-400">
+                    /{mod.path}
+                </p>
+            </div>
+        </div>
+    );
+}
+
+function ModuleSectionsCell({mod}: {mod: Module}) {
+    const sections = mod.sections ?? [];
+    const publishedCount = sections.filter((section) => section.isAvailable).length;
+    const publishedCountLabel = `${publishedCount}/${sections.length} publiée${publishedCount > 1 ? "s" : ""}`;
+
+    return (
+        <div className="flex flex-wrap items-center gap-1.5">
+            <Badge
+                variant="outline"
+                className="border-bridge-500/30 bg-bridge-100/60 text-bridge-700 dark:bg-bridge-900/35 dark:text-bridge-200"
+            >
+                {publishedCountLabel}
+            </Badge>
+        </div>
+    );
 }
 
 export default function ModulesList({initialModules}: ModulesListProps) {
@@ -41,12 +96,41 @@ export default function ModulesList({initialModules}: ModulesListProps) {
         router.refresh();
     };
 
-    const handleDeleteModule = (moduleId: string) => {
+    const handleDeleteModule = useCallback((moduleId: string) => {
         setDeletedModuleIds((prev) => new Set(prev).add(moduleId));
-    };
+    }, []);
+
+    const columns = useMemo<ColumnDef<Module>[]>(() => [
+        {
+            accessorKey: "title",
+            header: "Module",
+            cell: ({row}) => <ModuleIdentityCell mod={row.original}/>,
+        },
+        {
+            id: "sections",
+            header: "Sections",
+            cell: ({row}) => <ModuleSectionsCell mod={row.original}/>,
+        },
+        {
+            id: "publication",
+            header: "Publication",
+            cell: ({row}) => <AdminModuleVisibility module={row.original}/>,
+        },
+        {
+            id: "actions",
+            header: "Actions",
+            cell: ({row}) => (
+                <AdminModuleActions
+                    module={row.original}
+                    filterQuery={normalizedQuery}
+                    onDelete={handleDeleteModule}
+                />
+            ),
+        },
+    ], [handleDeleteModule, normalizedQuery]);
 
     return (
-        <section className="space-y-4">
+        <section className="flex flex-col gap-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative w-full sm:max-w-sm">
                     <Search
@@ -65,28 +149,21 @@ export default function ModulesList({initialModules}: ModulesListProps) {
                 <AddModuleButton onAdd={handleAddModule}/>
             </div>
 
-            <Accordion
-                type="multiple"
-                defaultValue={[]}
-                className="space-y-4"
-            >
-                {visibleModules.map((mod) => (
-                    <AdminModule
-                        key={`${mod._id}_${mod.sections?.length}`}
-                        module={mod}
-                        filterQuery={normalizedQuery}
-                        onDelete={handleDeleteModule}
-                    />
-                ))}
-            </Accordion>
+            <p className="text-sm text-bridge-600 dark:text-bridge-300">
+                {visibleModules.length} module{visibleModules.length > 1 ? "s" : ""}
+                {normalizedQuery && ` sur ${modules.length}`}
+            </p>
 
-            {visibleModules.length === 0 && (
-                <p className="py-10 text-center text-sm text-bridge-500 dark:text-bridge-400">
-                    {normalizedQuery
-                        ? <>Aucun résultat pour «&nbsp;{query.trim()}&nbsp;».</>
-                        : "Aucun module. Ajoutez-en un pour commencer."}
-                </p>
-            )}
+            <AdminDataTable
+                columns={columns}
+                data={visibleModules}
+                emptyMessage={
+                    normalizedQuery
+                        ? `Aucun résultat pour « ${query.trim()} ».`
+                        : "Aucun module. Ajoutez-en un pour commencer."
+                }
+                tableClassName="min-w-[760px]"
+            />
         </section>
     );
 }
