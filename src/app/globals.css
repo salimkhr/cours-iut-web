@@ -566,7 +566,9 @@ input:-webkit-autofill {
     filter: drop-shadow(0 0 8px color-mix(in srgb, var(--hero-accent) 28%, transparent));
 }
 
-@media (prefers-reduced-motion: no-preference) {
+/* Animation uniquement à partir de sm (640px) : sur téléphone les lignes
+   restent à opacity: 0, donc invisibles. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 640px) {
     .hero-grid-line-x {
         animation: heroGridLineX 9s cubic-bezier(0.16, 1, 0.3, 1) infinite;
         animation-delay: -1.6s;

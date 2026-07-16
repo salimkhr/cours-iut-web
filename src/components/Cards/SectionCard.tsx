@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import Link from "next/link";
 import {motion, useReducedMotion} from 'framer-motion';
 import {Lock, Unlock} from "lucide-react";
@@ -14,6 +14,7 @@ import {CONTENT_LABELS, CONTENT_ORDER, ContentKey} from "@/lib/contentMeta";
 import {getContentTypes} from "@/types/CourseContent";
 import {Button} from "@/components/ui/button";
 import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
+import updateSectionState from "@/hook/admin/updateSectionState";
 
 import {BookTextIcon} from "@/components/icons/book-text";
 import {TerminalIcon} from "@/components/icons/terminal";
@@ -95,12 +96,27 @@ interface SectionCardProps {
 
 export default function SectionCard({section, currentModule, isAdmin}: SectionCardProps) {
     const {path: modulePath} = currentModule;
-    const isAvailable = !!section.isAvailable;
+    const [isAvailable, setIsAvailable] = useState(!!section.isAvailable);
+    const [pending, setPending] = useState(false);
     const isLocked = !isAdmin && !isAvailable;
     const sectionHref = isAvailable || isAdmin
         ? `/${modulePath}/${section.path}`
         : '#';
     const prefersReducedMotion = useReducedMotion();
+
+    async function handleToggleLock() {
+        if (pending) return;
+        const next = !isAvailable;
+        setPending(true);
+        setIsAvailable(next);
+        try {
+            await updateSectionState(currentModule._id as string, section.order, 'isAvailable', next);
+        } catch {
+            setIsAvailable(!next);
+        } finally {
+            setPending(false);
+        }
+    }
 
     const sortedContents = getContentTypes(section.contents).sort(
         (a, b) => CONTENT_ORDER.indexOf(a as ContentKey) - CONTENT_ORDER.indexOf(b as ContentKey)
@@ -172,13 +188,21 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                             <span className="hidden sm:inline">&nbsp;séance{section.totalDuration > 1 ? 's' : ''}</span>
                         </span>
                         {isAdmin ? (
-                            <span
+                            <button
+                                type="button"
+                                onClick={handleToggleLock}
+                                disabled={pending}
+                                aria-busy={pending}
+                                aria-label={isAvailable ? "Verrouiller la section" : "Déverrouiller la section"}
                                 className={cn(
-                                    "inline-flex items-center gap-1 rounded-md px-2 py-1.5",
+                                    "pointer-events-auto inline-flex items-center gap-1 rounded-md px-2 py-1.5",
                                     "text-[10px] uppercase tracking-[0.18em] font-semibold",
+                                    "transition-colors duration-200 cursor-pointer",
+                                    "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                                    pending && "opacity-60 cursor-wait",
                                     isAvailable
-                                        ? "bg-brand-primary/12 text-brand-accent-dark dark:bg-brand-primary/20 dark:text-brand-primary"
-                                        : "bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100"
+                                        ? "bg-brand-primary/12 text-brand-accent-dark dark:bg-brand-primary/20 dark:text-brand-primary hover:bg-brand-primary/25 dark:hover:bg-brand-primary/35"
+                                        : "bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100 hover:bg-bridge-700/45 dark:hover:bg-bridge-500/45"
                                 )}
                             >
                                 {isAvailable ? (
@@ -192,7 +216,7 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                                         <span className="hidden sm:inline">Verrouillé</span>
                                     </>
                                 )}
-                            </span>
+                            </button>
                         ) : (
                             isLocked && (
                                 <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100">

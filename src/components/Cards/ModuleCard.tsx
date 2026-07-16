@@ -1,11 +1,13 @@
 'use client';
 
+import {useState} from 'react';
 import Link from "next/link";
 import {motion, useReducedMotion} from 'framer-motion';
-import {ArrowRight, BookOpen, ChevronRight, Lock} from "lucide-react";
+import {ArrowRight, BookOpen, ChevronRight, Lock, Unlock} from "lucide-react";
 import Module from "@/types/Module";
 import iconMap from "@/lib/iconMap";
 import getModuleProgress from "@/lib/getModuleProgress";
+import useAdminApi from "@/hook/admin/useAdminApi";
 import {cn} from "@/lib/utils";
 
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card";
@@ -24,7 +26,9 @@ export default function ModuleCard({currentModule, isAuthed = true, isAdmin = fa
     const sectionsCount = sections?.length ?? 0;
     const { progress: pct, lastAvailableSectionPath } = getModuleProgress(currentModule);
 
-    const isVisible = currentModule.isVisible !== false;
+    const [isVisible, setIsVisible] = useState(currentModule.isVisible !== false);
+    const [pending, setPending] = useState(false);
+    const {toggleModuleVisibility} = useAdminApi();
 
     const continueHref = lastAvailableSectionPath
         ? `/${path}/${lastAvailableSectionPath}`
@@ -32,6 +36,20 @@ export default function ModuleCard({currentModule, isAuthed = true, isAdmin = fa
 
     const canContinue = !!lastAvailableSectionPath;
     const prefersReducedMotion = useReducedMotion();
+
+    async function handleToggleVisibility() {
+        if (pending) return;
+        const next = !isVisible;
+        setPending(true);
+        setIsVisible(next);
+        try {
+            await toggleModuleVisibility(String(currentModule._id), next);
+        } catch {
+            setIsVisible(!next);
+        } finally {
+            setPending(false);
+        }
+    }
 
     return (
         <motion.div
@@ -87,11 +105,36 @@ export default function ModuleCard({currentModule, isAuthed = true, isAdmin = fa
                                 <Lock className="size-3.5" />
                             </span>
                         )}
-                        {isAdmin && !isVisible && (
-                            <span className="inline-flex items-center gap-1 rounded-md bg-bridge-700/30 px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100">
-                                <Lock className="size-3" aria-hidden="true"/>
-                                <span className="hidden sm:inline">Masqué</span>
-                            </span>
+                        {isAdmin && (
+                            <button
+                                type="button"
+                                onClick={handleToggleVisibility}
+                                disabled={pending}
+                                aria-busy={pending}
+                                aria-label={isVisible ? "Masquer le module" : "Rendre le module visible"}
+                                className={cn(
+                                    "pointer-events-auto inline-flex items-center gap-1 rounded-md px-2 py-1.5",
+                                    "text-[10px] font-semibold uppercase tracking-[0.18em]",
+                                    "transition-colors duration-200 cursor-pointer",
+                                    "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                                    pending && "opacity-60 cursor-wait",
+                                    isVisible
+                                        ? "bg-brand-primary/12 text-brand-accent-dark dark:bg-brand-primary/20 dark:text-brand-primary hover:bg-brand-primary/25 dark:hover:bg-brand-primary/35"
+                                        : "bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100 hover:bg-bridge-700/45 dark:hover:bg-bridge-500/45"
+                                )}
+                            >
+                                {isVisible ? (
+                                    <>
+                                        <Unlock className="size-3" aria-hidden="true"/>
+                                        <span className="hidden sm:inline">Visible</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Lock className="size-3" aria-hidden="true"/>
+                                        <span className="hidden sm:inline">Masqué</span>
+                                    </>
+                                )}
+                            </button>
                         )}
                     </div>
                 </CardHeader>

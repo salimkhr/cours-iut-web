@@ -64,23 +64,15 @@ export default async function Home() {
                     title="Liste des cours"
                     containerClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full"
                 >
-                    {programModules.map((currentModule, index) => {
-                        const hidden = isAdmin && currentModule.isVisible === false;
-                        return (
-                            <div
-                                key={`${currentModule.path}_${index}`}
-                                className="relative opacity-0 animate-fade-in-up w-full"
-                                style={{animationDelay: `${index * 0.1}s`}}
-                            >
-                                {hidden && (
-                                    <span className="absolute top-2 right-2 z-10 rounded-md bg-brand-primary/90 px-2 py-0.5 text-[10px] font-bold text-bridge-50 shadow-[0_8px_18px_-12px_rgba(147,97,58,0.65)] pointer-events-none">
-                                        Masqué
-                                    </span>
-                                )}
-                                <ModuleCard currentModule={currentModule} isAuthed={isAuthed} isAdmin={isAdmin}/>
-                            </div>
-                        );
-                    })}
+                    {programModules.map((currentModule, index) => (
+                        <div
+                            key={`${currentModule.path}_${index}`}
+                            className="relative opacity-0 animate-fade-in-up w-full"
+                            style={{animationDelay: `${index * 0.1}s`}}
+                        >
+                            <ModuleCard currentModule={currentModule} isAuthed={isAuthed} isAdmin={isAdmin}/>
+                        </div>
+                    ))}
                 </CoursesSection>
             </div>
 

@@ -7,6 +7,7 @@ import TagsBadges from "@/components/page/TagsBadges";
 import {Particles} from "@/components/magicui/particles";
 import {useMounted} from "@/hook/useMounted";
 import {useIsDark} from "@/hook/useIsDark";
+import {useMediaQuery} from "@/hook/useMediaQuery";
 import {cn} from "@/lib/utils";
 
 interface HeroSectionProps {
@@ -40,6 +41,8 @@ export default function HeroSection({
 }: HeroSectionProps) {
     const mounted = useMounted();
     const isDark = useIsDark();
+    // Pas d'animations du hero sur téléphone (particules, lignes, fade-in)
+    const isMobile = useMediaQuery('(max-width: 639px)');
 
     const color = useMemo(() => {
         if (!mounted || typeof window === 'undefined') return "";
@@ -85,7 +88,7 @@ export default function HeroSection({
             )}
             style={heroStyle}
         >
-            {!isHome && (
+            {!isHome && !isMobile && (
                 <Particles
                     className="pointer-events-none absolute inset-0 z-0 opacity-65"
                     quantity={70}
@@ -101,6 +104,7 @@ export default function HeroSection({
             />
 
             {/* Ambient decoration — animated line effects without the static grid */}
+            {!isMobile && (
             <div aria-hidden="true" className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
                 <div
                     className={cn(gridBoundsClassName, "overflow-hidden")}
@@ -180,10 +184,12 @@ export default function HeroSection({
                 />
                 </div>
             </div>
+            )}
 
             <div
                 className={cn(
-                    "relative z-10 mx-auto w-full max-w-7xl flex flex-col lg:flex-row items-center lg:items-center justify-center lg:justify-between px-6 sm:px-8 md:px-10 lg:pl-12 lg:pr-6 opacity-0 animate-fade-in",
+                    "relative z-10 mx-auto w-full max-w-7xl flex flex-col lg:flex-row items-center lg:items-center justify-center lg:justify-between px-6 sm:px-8 md:px-10 lg:pl-12 lg:pr-6",
+                    !isMobile && "opacity-0 animate-fade-in",
                     compact
                         ? "py-7 lg:py-10 min-h-[20dvh] sm:min-h-[26vh] lg:min-h-[34vh]"
                         : "py-16 lg:py-24 min-h-[50dvh] sm:min-h-[60vh] lg:min-h-[80vh]"
