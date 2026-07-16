@@ -102,6 +102,8 @@ Toutes lues directement via `process.env.X` (pas de module `lib/env.ts`).
 | `NEXT_PUBLIC_WS_URL`           | URL WebSocket autorisée dans la CSP                           | `src/proxy.ts`                  |
 | `NEXT_PUBLIC_GIT_URL`          | Base d'URL du repo (lien « Éditer sur GitHub »)               | `src/components/Cards/SectionCard.tsx` |
 | `NODE_ENV` / `NEXT_PHASE`      | Standards Next/Node, lus par `mongodb.ts` et `csrf-token`     | divers                          |
+| `SYNC_SECRET`                  | Secret partagé staging/prod pour la sync inter-environnements | `api/admin/import`, `api/admin/push-to-prod` |
+| `PROD_SYNC_URL`                | URL de la prod, cible du push (staging uniquement)            | `api/admin/push-to-prod`        |
 | `BETTER_AUTH_SECRET`           | **À définir** : non référencé explicitement dans `src/`, mais lu en interne par `better-auth` |     |
 
 Règles : `.env.local` est git-ignored. Jamais de secret en dur. Tout secret côté serveur uniquement

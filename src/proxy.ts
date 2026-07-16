@@ -36,6 +36,12 @@ export default function proxy(req: NextRequest) {
 
     if (isPublic(pathname)) return NextResponse.next();
 
+    // Sync inter-environnements (staging → prod) : auth par secret partagé,
+    // validée en timing-safe dans la route. Sans secret valide, la route renvoie 403.
+    if (pathname === "/api/admin/import" && req.headers.get("x-sync-secret")) {
+        return NextResponse.next();
+    }
+
     // Check cookie-only : rapide, pas d'appel DB. Le rôle admin est vérifié
     // dans la page/route handler concernée via auth.api.getSession().
     if (!sessionCookie) {

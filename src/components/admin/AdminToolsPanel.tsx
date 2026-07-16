@@ -13,7 +13,16 @@ const TOOL_ICONS = {
     "export-import": UploadCloud,
 } as const;
 
-export default function AdminToolsPanel() {
+export interface ModuleOption {
+    path: string;
+    title: string;
+}
+
+interface AdminToolsPanelProps {
+    modules: ModuleOption[];
+}
+
+export default function AdminToolsPanel({modules}: AdminToolsPanelProps) {
     const [exportImportOpen, setExportImportOpen] = useState(false);
 
     return (
@@ -56,7 +65,7 @@ export default function AdminToolsPanel() {
                 })}
             </div>
 
-            <ExportImportSheet open={exportImportOpen} onOpenChange={setExportImportOpen}/>
+            <ExportImportSheet open={exportImportOpen} onOpenChange={setExportImportOpen} modules={modules}/>
         </>
     );
 }

@@ -1,23 +1,22 @@
 import { NextResponse } from "next/server";
-import { connectToDB } from "@/lib/mongodb";
 import { withAdmin } from "@/lib/withAdmin";
-import Module from "@/types/Module";
-import { WithId } from "mongodb";
+import { buildExportPayload } from "@/lib/admin/buildExportPayload";
 
-export const GET = withAdmin(async (): Promise<Response> => {
+export const GET = withAdmin(async (req: Request): Promise<Response> => {
     try {
-        const db = await connectToDB();
-        const docs = await db.collection<Module>("modules").find().toArray() as WithId<Module>[];
+        const modulePath = new URL(req.url).searchParams.get("module") ?? undefined;
+        const payload = await buildExportPayload(modulePath);
 
-        const payload = docs.map(({ _id, sections, ...rest }) => ({
-            ...rest,
-            sections: (sections ?? []).map(({ _id: _sid, ...sec }) => sec),
-        }));
+        if (modulePath && payload.modules.length === 0) {
+            return NextResponse.json({ error: `Module "${modulePath}" introuvable` }, { status: 404 });
+        }
+
+        const filename = modulePath ? `module-${modulePath}-export.json` : "modules-export.json";
 
         return new Response(JSON.stringify(payload, null, 2), {
             headers: {
                 "Content-Type": "application/json",
-                "Content-Disposition": 'attachment; filename="modules-export.json"',
+                "Content-Disposition": `attachment; filename="${filename}"`,
             },
         });
     } catch (error) {

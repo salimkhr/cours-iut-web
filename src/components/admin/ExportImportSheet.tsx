@@ -1,25 +1,50 @@
 'use client';
 
 import { useReducer, useRef, useEffect } from 'react';
-import { ArrowUpDown, Download, Upload } from 'lucide-react';
+import { ArrowUpDown, Download, Rocket, Upload } from 'lucide-react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import AdminSheetHeader from '@/components/admin/AdminSheetHeader';
 import { Button } from '@/components/ui/button';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import Eyebrow from '@/components/admin/ui/Eyebrow';
+import type { ModuleOption } from '@/components/admin/AdminToolsPanel';
 
 interface ExportImportSheetProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    modules: ModuleOption[];
+}
+
+interface FilePreview {
+    modules: number;
+    sections: number;
+    contents: number;
+}
+
+interface PushResult {
+    inserted: number;
+    updated: number;
+    contentsUpserted: number;
 }
 
 interface SheetState {
     exportLoading: boolean;
     importLoading: boolean;
-    preview: { modules: number; sections: number } | null;
-    importResult: { inserted: number; updated: number } | null;
+    preview: FilePreview | null;
+    importResult: PushResult | null;
     error: string | null;
-    fileData: unknown[] | null;
+    fileData: unknown | null;
+    pushTarget: string;
+    pushLoading: boolean;
+    pushError: string | null;
+    pushResult: PushResult | null;
 }
 
 type SheetAction =
@@ -28,11 +53,17 @@ type SheetAction =
     | { type: 'export_end' }
     | { type: 'export_error'; error: string }
     | { type: 'file_clear' }
-    | { type: 'file_ready'; preview: { modules: number; sections: number }; fileData: unknown[] }
+    | { type: 'file_ready'; preview: FilePreview; fileData: unknown }
     | { type: 'file_error'; error: string }
     | { type: 'import_start' }
-    | { type: 'import_done'; result: { inserted: number; updated: number } }
-    | { type: 'import_error'; error: string };
+    | { type: 'import_done'; result: PushResult }
+    | { type: 'import_error'; error: string }
+    | { type: 'push_target'; target: string }
+    | { type: 'push_start' }
+    | { type: 'push_done'; result: PushResult }
+    | { type: 'push_error'; error: string };
+
+const ALL_MODULES = '__all__';
 
 const initial: SheetState = {
     exportLoading: false,
@@ -41,6 +72,10 @@ const initial: SheetState = {
     importResult: null,
     error: null,
     fileData: null,
+    pushTarget: ALL_MODULES,
+    pushLoading: false,
+    pushError: null,
+    pushResult: null,
 };
 
 function reducer(state: SheetState, action: SheetAction): SheetState {
@@ -65,14 +100,44 @@ function reducer(state: SheetState, action: SheetAction): SheetState {
             return { ...state, importLoading: false, importResult: action.result, fileData: null, preview: null };
         case 'import_error':
             return { ...state, importLoading: false, error: action.error };
+        case 'push_target':
+            return { ...state, pushTarget: action.target };
+        case 'push_start':
+            return { ...state, pushLoading: true, pushError: null, pushResult: null };
+        case 'push_done':
+            return { ...state, pushLoading: false, pushResult: action.result };
+        case 'push_error':
+            return { ...state, pushLoading: false, pushError: action.error };
         default:
             return state;
     }
 }
 
-export default function ExportImportSheet({ open, onOpenChange }: ExportImportSheetProps) {
+/** Extrait un aperçu (modules/sections/contenus) d'un fichier v1 (tableau) ou v2 ({ modules, contents }). */
+function parseFilePreview(json: unknown): FilePreview {
+    let moduleList: { sections?: unknown[] }[];
+    let contents = 0;
+
+    if (Array.isArray(json)) {
+        moduleList = json as { sections?: unknown[] }[];
+    } else if (json && typeof json === 'object' && Array.isArray((json as { modules?: unknown }).modules)) {
+        moduleList = (json as { modules: { sections?: unknown[] }[] }).modules;
+        const c = (json as { contents?: unknown }).contents;
+        contents = Array.isArray(c) ? c.length : 0;
+    } else {
+        throw new Error('Le fichier doit être un export v1 (tableau) ou v2 ({ modules, contents })');
+    }
+
+    const sections = moduleList.reduce((sum, m) => sum + (m.sections?.length ?? 0), 0);
+    return { modules: moduleList.length, sections, contents };
+}
+
+export default function ExportImportSheet({ open, onOpenChange, modules }: ExportImportSheetProps) {
     const [state, dispatch] = useReducer(reducer, initial);
-    const { exportLoading, importLoading, preview, importResult, error, fileData } = state;
+    const {
+        exportLoading, importLoading, preview, importResult, error, fileData,
+        pushTarget, pushLoading, pushError, pushResult,
+    } = state;
     const fileInputRef = useRef<HTMLInputElement>(null);
     const readerRef = useRef<FileReader | null>(null);
 
@@ -81,6 +146,29 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
         dispatch({ type: 'reset' });
         if (fileInputRef.current) fileInputRef.current.value = '';
     }, [open]);
+
+    async function handlePushToProd() {
+        dispatch({ type: 'push_start' });
+        try {
+            const res = await fetch('/api/admin/push-to-prod', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(pushTarget === ALL_MODULES ? {} : { modulePath: pushTarget }),
+            });
+            const body = await res.json() as { inserted?: number; updated?: number; contentsUpserted?: number; error?: string };
+            if (!res.ok) throw new Error(body.error ?? 'Push échoué');
+            dispatch({
+                type: 'push_done',
+                result: {
+                    inserted: body.inserted ?? 0,
+                    updated: body.updated ?? 0,
+                    contentsUpserted: body.contentsUpserted ?? 0,
+                },
+            });
+        } catch (e) {
+            dispatch({ type: 'push_error', error: e instanceof Error ? e.message : 'Erreur pendant le push' });
+        }
+    }
 
     async function handleExport() {
         dispatch({ type: 'export_start' });
@@ -111,10 +199,7 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
         reader.onload = (ev) => {
             try {
                 const json = JSON.parse(ev.target?.result as string);
-                if (!Array.isArray(json)) throw new Error('Le fichier doit contenir un tableau JSON');
-                const totalSections = (json as { sections?: unknown[] }[])
-                    .reduce((sum, m) => sum + (m.sections?.length ?? 0), 0);
-                dispatch({ type: 'file_ready', preview: { modules: json.length, sections: totalSections }, fileData: json });
+                dispatch({ type: 'file_ready', preview: parseFilePreview(json), fileData: json });
             } catch (err) {
                 dispatch({ type: 'file_error', error: err instanceof Error ? err.message : 'Fichier invalide' });
             }
@@ -135,8 +220,8 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
                 const body = await res.json() as { error?: string };
                 throw new Error(body.error ?? 'Import échoué');
             }
-            const result = await res.json() as { inserted: number; updated: number };
-            dispatch({ type: 'import_done', result });
+            const result = await res.json() as { inserted: number; updated: number; contentsUpserted?: number };
+            dispatch({ type: 'import_done', result: { ...result, contentsUpserted: result.contentsUpserted ?? 0 } });
             if (fileInputRef.current) fileInputRef.current.value = '';
         } catch (e) {
             dispatch({ type: 'import_error', error: e instanceof Error ? e.message : 'Erreur import' });
@@ -166,11 +251,52 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
                 {/* Body */}
                 <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-6">
 
+                    {/* Push vers la prod */}
+                    <section className="flex flex-col gap-3">
+                        <Eyebrow>Publier vers la prod</Eyebrow>
+                        <p className="text-sm text-brand-dark/70 dark:text-bridge-200/70">
+                            Pousse la structure et le contenu des cours directement vers la production.
+                            L&apos;état de publication de la prod (visibilité, sections publiées, verrous)
+                            est préservé ; les nouveautés arrivent masquées.
+                        </p>
+                        <Select value={pushTarget} onValueChange={(target) => dispatch({ type: 'push_target', target })}>
+                            <SelectTrigger className="min-h-11 w-full border-bridge-500/45" aria-label="Module à publier">
+                                <SelectValue/>
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value={ALL_MODULES}>Tous les modules</SelectItem>
+                                {modules.map((mod) => (
+                                    <SelectItem key={mod.path} value={mod.path}>{mod.title}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
+                        {pushError && <p className="text-sm text-red-500" role="alert">{pushError}</p>}
+
+                        {pushResult && (
+                            <p className="text-sm text-green-600 dark:text-green-400">
+                                Publié : {pushResult.inserted} module{pushResult.inserted > 1 ? 's' : ''} créé{pushResult.inserted > 1 ? 's' : ''},
+                                {' '}{pushResult.updated} mis à jour, {pushResult.contentsUpserted} contenu{pushResult.contentsUpserted > 1 ? 's' : ''} synchronisé{pushResult.contentsUpserted > 1 ? 's' : ''}
+                            </p>
+                        )}
+
+                        <Button
+                            className="self-start gap-2 bg-brand-primary text-white dark:text-brand-dark hover:opacity-90"
+                            onClick={handlePushToProd}
+                            disabled={pushLoading}
+                        >
+                            <Rocket className="w-4 h-4" aria-hidden="true"/>
+                            {pushLoading ? 'Publication en cours…' : 'Publier vers la prod'}
+                        </Button>
+                    </section>
+
+                    <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+
                     {/* Export */}
                     <section className="flex flex-col gap-3">
                         <Eyebrow>Export</Eyebrow>
                         <p className="text-sm text-brand-dark/70 dark:text-bridge-200/70">
-                            Télécharge tous les modules et leurs sections au format JSON.
+                            Télécharge tous les modules, leurs sections et le contenu des cours au format JSON.
                         </p>
                         <Button
                             variant="outline"
@@ -178,12 +304,12 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
                             onClick={handleExport}
                             disabled={exportLoading}
                         >
-                            <Download className="w-4 h-4" aria-hidden="true" />
+                            <Download className="w-4 h-4" aria-hidden="true"/>
                             {exportLoading ? 'Export en cours…' : "Télécharger l'export JSON"}
                         </Button>
                     </section>
 
-                    <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6" />
+                    <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
 
                     {/* Import */}
                     <section className="flex flex-col gap-3">
@@ -203,14 +329,15 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
                             className="self-start gap-2 border-bridge-500/45"
                             onClick={() => fileInputRef.current?.click()}
                         >
-                            <Upload className="w-4 h-4" aria-hidden="true" />
+                            <Upload className="w-4 h-4" aria-hidden="true"/>
                             Choisir un fichier…
                         </Button>
 
                         {preview && (
                             <p className="text-sm text-bridge-600 dark:text-bridge-300">
                                 {preview.modules} module{preview.modules > 1 ? 's' : ''},{' '}
-                                {preview.sections} section{preview.sections > 1 ? 's' : ''} détectés
+                                {preview.sections} section{preview.sections > 1 ? 's' : ''},{' '}
+                                {preview.contents} contenu{preview.contents > 1 ? 's' : ''} détectés
                             </p>
                         )}
 
@@ -219,7 +346,7 @@ export default function ExportImportSheet({ open, onOpenChange }: ExportImportSh
                         {importResult && (
                             <p className="text-sm text-green-600 dark:text-green-400">
                                 Import terminé : {importResult.inserted} créé{importResult.inserted > 1 ? 's' : ''},
-                                {' '}{importResult.updated} mis à jour
+                                {' '}{importResult.updated} mis à jour, {importResult.contentsUpserted} contenu{importResult.contentsUpserted > 1 ? 's' : ''}
                             </p>
                         )}
 
