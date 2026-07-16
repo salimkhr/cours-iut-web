@@ -100,7 +100,7 @@ export default function NavBarClient({
             <NavigationMenu className="h-(--navbar-h) border-b border-border px-2">
 
                 {/* LEFT NAV */}
-                <div className="flex items-center gap-2">
+                <div className="flex list-none items-center gap-2">
 
                     <NavigationMenuItem>
                         <Link href="/" className={linkClass("/") + " flex items-center"}>
