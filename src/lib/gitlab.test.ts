@@ -171,11 +171,11 @@ describe("commitFiles", () => {
 
     test("pagination de l'arborescence via x-next-page", async () => {
         routes.push({
-            match: (u, m) => m === "GET" && treeUrl(u) && u.includes("page=1"),
+            match: (u, m) => m === "GET" && treeUrl(u) && u.includes("&page=1"),
             respond: () => json(200, [{ type: "blob", path: "a.txt" }], { "x-next-page": "2" }),
         });
         routes.push({
-            match: (u, m) => m === "GET" && treeUrl(u) && u.includes("page=2"),
+            match: (u, m) => m === "GET" && treeUrl(u) && u.includes("&page=2"),
             respond: () => json(200, [{ type: "blob", path: "b.txt" }], { "x-next-page": "" }),
         });
         routes.push({
