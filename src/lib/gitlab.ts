@@ -13,8 +13,12 @@ export interface CorrectionFile {
 }
 
 export function getGitlabConfig(): GitlabConfig {
-    const gitUrl = process.env.NEXT_PUBLIC_GIT_URL;
-    if (!gitUrl) throw new Error("NEXT_PUBLIC_GIT_URL non configuré.");
+    // GITLAB_CORRECTION_URL est lue au runtime (secret serveur, modifiable sans rebuild).
+    // NEXT_PUBLIC_GIT_URL sert de repli mais est figée au build (inlinée par Next) — à éviter.
+    const gitUrl = process.env.GITLAB_CORRECTION_URL ?? process.env.NEXT_PUBLIC_GIT_URL;
+    if (!gitUrl) {
+        throw new Error("GITLAB_CORRECTION_URL non configuré : impossible de publier une correction.");
+    }
     const token = process.env.GITLAB_CORRECTION_TOKEN;
     if (!token) {
         throw new Error("GITLAB_CORRECTION_TOKEN non configuré : impossible de publier une correction.");
@@ -22,7 +26,7 @@ export function getGitlabConfig(): GitlabConfig {
     const url = new URL(gitUrl);
     const rootGroupPath = url.pathname.replace(/^\/+|\/+$/g, "");
     if (!rootGroupPath) {
-        throw new Error(`NEXT_PUBLIC_GIT_URL (${gitUrl}) doit inclure le chemin du groupe racine (ex: /correction).`);
+        throw new Error(`L'URL de correction (${gitUrl}) doit inclure le chemin du groupe racine (ex: /correction).`);
     }
     return { baseUrl: url.origin, rootGroupPath, token };
 }

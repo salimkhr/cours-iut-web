@@ -1,7 +1,11 @@
 import { describe, test, expect, beforeEach, afterEach } from "bun:test";
 import { getGitlabConfig, ensureGroup, ensureProject, commitFiles, type GitlabConfig } from "./gitlab";
 
-const savedEnv = { gitUrl: process.env.NEXT_PUBLIC_GIT_URL, token: process.env.GITLAB_CORRECTION_TOKEN };
+const savedEnv = {
+    gitUrl: process.env.NEXT_PUBLIC_GIT_URL,
+    correctionUrl: process.env.GITLAB_CORRECTION_URL,
+    token: process.env.GITLAB_CORRECTION_TOKEN,
+};
 
 const cfg: GitlabConfig = { baseUrl: "https://git.example.dev", rootGroupPath: "correction", token: "glpat-test" };
 
@@ -35,6 +39,7 @@ function installFetchMock(): void {
 }
 
 beforeEach(() => {
+    delete process.env.GITLAB_CORRECTION_URL;
     process.env.NEXT_PUBLIC_GIT_URL = "https://git.example.dev/correction";
     process.env.GITLAB_CORRECTION_TOKEN = "glpat-test";
     installFetchMock();
@@ -42,6 +47,8 @@ beforeEach(() => {
 
 afterEach(() => {
     process.env.NEXT_PUBLIC_GIT_URL = savedEnv.gitUrl;
+    if (savedEnv.correctionUrl === undefined) delete process.env.GITLAB_CORRECTION_URL;
+    else process.env.GITLAB_CORRECTION_URL = savedEnv.correctionUrl;
     process.env.GITLAB_CORRECTION_TOKEN = savedEnv.token;
     globalThis.fetch = realFetch;
 });
@@ -62,6 +69,26 @@ describe("getGitlabConfig", () => {
     test("échoue si l'URL ne contient pas de chemin de groupe", () => {
         process.env.NEXT_PUBLIC_GIT_URL = "https://git.example.dev";
         expect(() => getGitlabConfig()).toThrow(/groupe racine/);
+    });
+
+    test("GITLAB_CORRECTION_URL (runtime) prend le pas sur NEXT_PUBLIC_GIT_URL", () => {
+        process.env.GITLAB_CORRECTION_URL = "https://git.example.dev/correction";
+        process.env.NEXT_PUBLIC_GIT_URL = "https://git.example.dev/iut3334332";
+        const cfg = getGitlabConfig();
+        expect(cfg.baseUrl).toBe("https://git.example.dev");
+        expect(cfg.rootGroupPath).toBe("correction");
+    });
+
+    test("fonctionne avec GITLAB_CORRECTION_URL seul, sans NEXT_PUBLIC_GIT_URL", () => {
+        delete process.env.NEXT_PUBLIC_GIT_URL;
+        process.env.GITLAB_CORRECTION_URL = "https://git.example.dev/correction";
+        expect(getGitlabConfig().rootGroupPath).toBe("correction");
+    });
+
+    test("échoue si aucune URL de correction n'est configurée", () => {
+        delete process.env.NEXT_PUBLIC_GIT_URL;
+        delete process.env.GITLAB_CORRECTION_URL;
+        expect(() => getGitlabConfig()).toThrow(/GITLAB_CORRECTION_URL/);
     });
 });
 
