@@ -87,6 +87,7 @@ jobs:
           build-args: |
             NEXT_PUBLIC_TURNSTILE_TOKEN=${{ secrets.NEXT_PUBLIC_TURNSTILE_TOKEN }}
             NEXT_PUBLIC_GIT_URL=${{ secrets.NEXT_PUBLIC_GIT_URL }}
+            COMMIT_SHA=${{ github.sha }}
 
       # -------------------------
       # Deploy tag

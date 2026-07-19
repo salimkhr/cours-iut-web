@@ -23,6 +23,12 @@ export default async function PageFooter({}: PageFooterProps = {}) {
         ...modules.map((m) => ({label: m.title, href: `/${m.path}`})),
     ];
 
+    const commitSha = process.env.NEXT_PUBLIC_COMMIT_SHA;
+    const buildDate = process.env.NEXT_PUBLIC_BUILD_DATE;
+    const buildLabel = commitSha
+        ? `build ${commitSha}${buildDate ? ` · ${buildDate}` : ""}`
+        : null;
+
     return (
         <footer
             className="w-full bg-brand-dark text-brand-light/80 mt-auto opacity-0 animate-fade-in z-10 border-t border-brand-dark/15 dark:border-brand-light/15">
@@ -81,7 +87,25 @@ export default async function PageFooter({}: PageFooterProps = {}) {
             <div className="border-t border-brand-light/15">
                 <div
                     className="mx-auto max-w-6xl px-6 lg:px-12 py-3 md:py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] md:text-xs text-brand-light/60">
-                    <p>&copy; {new Date().getFullYear()} Salim Khraimeche — Tous droits réservés.</p>
+                    <div className="flex flex-col items-center sm:items-start gap-0.5">
+                        <p>&copy; {new Date().getFullYear()} Salim Khraimeche — Tous droits réservés.</p>
+                        {buildLabel && (
+                            <p className="font-mono text-brand-light/40">
+                                {commitSha === "dev" ? (
+                                    buildLabel
+                                ) : (
+                                    <Link
+                                        href={`https://github.com/salimkhr/cours-iut-web/commit/${commitSha}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="hover:text-brand-accent transition-colors"
+                                    >
+                                        {buildLabel}
+                                    </Link>
+                                )}
+                            </p>
+                        )}
+                    </div>
                     <nav className="flex flex-wrap items-center gap-x-3 gap-y-1" aria-label="Liens légaux">
                         <Link href="/mentions-legales" className="hover:text-brand-accent transition-colors">
                             Mentions légales
