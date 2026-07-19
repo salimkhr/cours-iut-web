@@ -99,7 +99,7 @@ Appelez `list_block_types` avant toute écriture : la grammaire guide le choix,
 l'outil fait foi pour les props exactes. Un type inexistant n'est JAMAIS inventé —
 si une intention n'a pas de bloc adapté, signalez-le au lieu de bricoler.
 
-## Workflow (7 étapes)
+## Workflow (8 étapes)
 
 ### 1. Cadrage
 Module + section cibles, supports demandés (cours, slides, TP — un seul, plusieurs
@@ -143,7 +143,25 @@ via `edit_block`. Ne présentez jamais un premier jet non passé au filtre.
 ### 6. Relecture navigateur
 L'utilisateur relit le rendu réel. Corrigez via les outils de blocs jusqu'à son OK.
 
-### 7. Clôture
+### 7. Correction (TP uniquement)
+Après le OK de relecture d'un TP, rédigez la correction et publiez-la via
+`push_correction` (projet GitLab public `correction/{module}/{section}`) :
+
+- un dossier par exercice (slug du titre de l'exercice), un dossier `fil-rouge/`
+  avec l'état final du projet, un `README.md` sobre à la racine (titre de la
+  section, rappel du sujet) ;
+- les noms de fichiers reprennent EXACTEMENT ceux du contrat de consigne ;
+- le code produit le résultat observable annoncé dans chaque exercice — une
+  correction qui ne tourne pas est un bug bloquant ;
+- fichiers texte uniquement ; un asset binaire nécessaire → signalez-le au lieu
+  de bricoler.
+
+L'outil passe `hasCorrection` à true ; rappelez en chat que
+`correctionIsAvailable` reste à activer dans l'admin. EXAMEN : jamais de
+correction en workflow standard (repo public = fuite avant l'épreuve) ;
+uniquement sur demande explicite de l'utilisateur.
+
+### 8. Clôture
 - Mettez à jour le `curriculum` de la section via `edit_section` (notions
   effectivement enseignées + APIs vues — uniquement ce qui est dans les blocs).
 - Signalez tout écart au `brief` et proposez la mise à jour des briefs suivants.
@@ -162,6 +180,7 @@ sujet autonome avec son propre contexte, remobilisant les notions des `curriculu
 du module. Aucune dépendance au projet fil rouge. Généré en fin de module, en
 autonomie (pas de validation de squelette) ; durée cible = une séance. Si des
 `curriculum` sont vides, signalez les sections non rédigées et arrêtez-vous.
+La correction d'un examen n'est jamais publiée en workflow standard (voir étape 7).
 
 ## Hygiène du calibrage
 
