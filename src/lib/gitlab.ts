@@ -105,28 +105,8 @@ async function listRepoFiles(cfg: GitlabConfig, projectId: number): Promise<stri
         if (!res.ok) throw await gitlabError(res, "lecture de l'arborescence");
         const items = await res.json() as Array<{ type: string; path: string }>;
         paths.push(...items.filter((i) => i.type === "blob").map((i) => i.path));
-        // Read next page from x-next-page header (try various approaches)
-        let nextPageHeader = "";
-        if (res.headers) {
-            let val: string | null = null;
-            // Try standard .get() with various casings
-            if (typeof res.headers.get === "function") {
-                val = res.headers.get("x-next-page")
-                    ?? res.headers.get("X-Next-Page")
-                    ?? res.headers.get("X-NEXT-PAGE");
-            }
-            // Try direct property access
-            if (!val && typeof res.headers.entries === "function") {
-                for (const [key, v] of res.headers.entries()) {
-                    if (key.toLowerCase() === "x-next-page") {
-                        val = v;
-                        break;
-                    }
-                }
-            }
-            if (val) nextPageHeader = val;
-        }
-        page = nextPageHeader;
+        // Fetch next page number from x-next-page header
+        page = (res.headers.get("x-next-page") ?? "") as string;
     }
     return paths;
 }
