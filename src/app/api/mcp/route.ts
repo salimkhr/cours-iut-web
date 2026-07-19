@@ -19,6 +19,7 @@ import { addVerdictSchema, promoteExemplarSchema, VERDICT_FORMATS, EXEMPLAR_FORM
 import type { PedagogyVerdict, PedagogyExemplar } from "@/types/Pedagogy";
 import { ObjectId } from "bson";
 import { assignModuleColor } from "@/lib/assignModuleColor";
+import { getGitlabConfig, ensureGroup, ensureProject, commitFiles } from "@/lib/gitlab";
 import { isValidIcon } from "@/lib/iconMap";
 import { sectionApiSchema, briefSchema, curriculumSchema } from "@/lib/schemas/section.schema";
 import type { SectionBrief, SectionCurriculum } from "@/lib/schemas/section.schema";
@@ -566,6 +567,53 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 content: [{
                     type: "text" as const,
                     text: `Section "${sectionPath}" mise à jour${effectivePath !== sectionPath ? ` (renommée en "${effectivePath}")` : ""}.`,
+                }],
+            };
+        }
+    );
+
+    // ── push_correction ───────────────────────────────────────────────────────
+    server.tool(
+        "push_correction",
+        "Publie la correction d'un TP sur la forge GitLab (projet public correction/{module}/{section}), en un seul commit qui synchronise l'arborescence (create/update/delete). Passe hasCorrection à true ; correctionIsAvailable reste inchangé. Fichiers texte uniquement. Réservé aux admins.",
+        {
+            module:  z.string().describe("Slug du module"),
+            section: z.string().describe("Slug de la section"),
+            files:   z.array(z.object({
+                path:    z.string().min(1).describe("Chemin relatif dans le repo, ex: exercice-1/index.html"),
+                content: z.string().describe("Contenu texte UTF-8 du fichier"),
+            })).min(1).describe("Arborescence complète de la correction (l'existant non listé est supprimé)"),
+            commitMessage: z.string().optional().describe("Défaut : correction: {module}/{section}"),
+        },
+        async ({ module, section, files, commitMessage }) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const db = await connectToDB();
+
+            const mod = await db.collection<Module>("modules").findOne({ path: module });
+            if (!mod) throw new Error(`Module "${module}" introuvable.`);
+            const sections = mod.sections ?? [];
+            const idx = sections.findIndex((s) => s.path === section);
+            if (idx === -1) throw new Error(`Section "${section}" introuvable.`);
+
+            const types = (sections[idx].contents ?? []).map((c) => c.type);
+            if (!types.includes("TP") && !types.includes("examen")) {
+                throw new Error(`La section "${section}" n'a ni TP ni examen : rien à corriger.`);
+            }
+
+            const cfg = getGitlabConfig();
+            const groupId = await ensureGroup(cfg, cfg.rootGroupPath, module);
+            const project = await ensureProject(cfg, groupId, `${cfg.rootGroupPath}/${module}`, section);
+            const sha = await commitFiles(cfg, project.id, files, commitMessage ?? `correction: ${module}/${section}`);
+
+            await db.collection<Module>("modules").updateOne(
+                { path: module },
+                { $set: { [`sections.${idx}.hasCorrection`]: true } }
+            );
+
+            return {
+                content: [{
+                    type: "text" as const,
+                    text: `Correction publiée : ${project.webUrl} (commit ${sha.slice(0, 8)}, ${files.length} fichier(s)). hasCorrection=true ; correctionIsAvailable reste à activer dans l'admin.`,
                 }],
             };
         }
