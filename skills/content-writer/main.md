@@ -147,12 +147,20 @@ L'utilisateur relit le rendu réel. Corrigez via les outils de blocs jusqu'à so
 Après le OK de relecture d'un TP, rédigez la correction et publiez-la via
 `push_correction` (projet GitLab public `correction/{module}/{section}`) :
 
-- un dossier par exercice (slug du titre de l'exercice), un dossier `fil-rouge/`
-  avec l'état final du projet, un `README.md` sobre à la racine (titre de la
-  section, rappel du sujet) ;
+- un dossier par exercice nommé par le slug du titre (minuscules, tirets, pas
+  d'accents — ex. « Exercice 2 — Formulaire » → `exercice-2-formulaire/`) ;
+- un dossier `fil-rouge/` avec l'état final du projet fil rouge à l'issue de la
+  section ;
+- un `README.md` sobre à la racine : titre de la section, rappel du sujet en une
+  phrase, lien vers le TP sur le site.
+
+Règles de qualité non négociables :
+
 - les noms de fichiers reprennent EXACTEMENT ceux du contrat de consigne ;
 - le code produit le résultat observable annoncé dans chaque exercice — une
   correction qui ne tourne pas est un bug bloquant ;
+- vérifiez que chaque fichier s'ouvre dans le navigateur (ou s'exécute) sans
+  erreur avant de pousser ;
 - fichiers texte uniquement ; un asset binaire nécessaire → signalez-le au lieu
   de bricoler.
 
