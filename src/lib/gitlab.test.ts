@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, afterEach } from "bun:test";
-import { getGitlabConfig, ensureGroup, ensureProject, commitFiles, type GitlabConfig } from "./gitlab";
+import { getGitlabConfig, getCorrectionBaseUrl, ensureGroup, ensureProject, commitFiles, type GitlabConfig } from "./gitlab";
 
 const savedEnv = {
     gitUrl: process.env.NEXT_PUBLIC_GIT_URL,
@@ -89,6 +89,31 @@ describe("getGitlabConfig", () => {
         delete process.env.NEXT_PUBLIC_GIT_URL;
         delete process.env.GITLAB_CORRECTION_URL;
         expect(() => getGitlabConfig()).toThrow(/GITLAB_CORRECTION_URL/);
+    });
+});
+
+describe("getCorrectionBaseUrl", () => {
+    test("renvoie GITLAB_CORRECTION_URL en priorité (runtime)", () => {
+        process.env.GITLAB_CORRECTION_URL = "https://git.example.dev/correction";
+        process.env.NEXT_PUBLIC_GIT_URL = "https://gitlab.com/iut3334332";
+        expect(getCorrectionBaseUrl()).toBe("https://git.example.dev/correction");
+    });
+
+    test("repli sur NEXT_PUBLIC_GIT_URL", () => {
+        delete process.env.GITLAB_CORRECTION_URL;
+        process.env.NEXT_PUBLIC_GIT_URL = "https://gitlab.com/iut3334332";
+        expect(getCorrectionBaseUrl()).toBe("https://gitlab.com/iut3334332");
+    });
+
+    test("retire le(s) slash final(aux) pour éviter le double slash", () => {
+        process.env.GITLAB_CORRECTION_URL = "https://git.example.dev/correction//";
+        expect(getCorrectionBaseUrl()).toBe("https://git.example.dev/correction");
+    });
+
+    test("renvoie null si aucune URL n'est configurée", () => {
+        delete process.env.NEXT_PUBLIC_GIT_URL;
+        delete process.env.GITLAB_CORRECTION_URL;
+        expect(getCorrectionBaseUrl()).toBeNull();
     });
 });
 

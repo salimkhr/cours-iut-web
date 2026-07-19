@@ -14,6 +14,7 @@ import ModuleInfo from "@/components/page/ModuleInfo";
 import {Button} from "@/components/ui/button";
 import {Metadata} from "next";
 import {getServerSession} from "@/lib/auth";
+import {getCorrectionBaseUrl} from "@/lib/gitlab";
 
 
 interface ModulePageProps {
@@ -36,6 +37,9 @@ export default async function Module({params}: ModulePageProps) {
 
     const session = await getServerSession();
     const isAdmin = session?.user.role === 'admin';
+
+    // Lu au runtime (serveur) : le bouton « Correction » n'est plus figé au build.
+    const correctionBaseUrl = getCorrectionBaseUrl();
 
     const allTags = [...new Set(
         currentModule.sections.flatMap((section: Section) => section.tags || [])
@@ -107,7 +111,7 @@ export default async function Module({params}: ModulePageProps) {
                         className="opacity-0 animate-fade-in-up"
                         style={{animationDelay: `${index * 0.1}s`}}
                     >
-                        <SectionCard currentModule={currentModule} section={section} isAdmin={isAdmin}/>
+                        <SectionCard currentModule={currentModule} section={section} isAdmin={isAdmin} correctionBaseUrl={correctionBaseUrl}/>
                     </div>
                 ))}
             </CoursesSection>

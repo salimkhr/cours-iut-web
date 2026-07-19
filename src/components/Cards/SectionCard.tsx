@@ -92,9 +92,11 @@ interface SectionCardProps {
     section: Section;
     currentModule: Module;
     isAdmin: boolean;
+    /** Base du groupe de corrections (runtime, sans slash final). null = forge non configurée. */
+    correctionBaseUrl: string | null;
 }
 
-export default function SectionCard({section, currentModule, isAdmin}: SectionCardProps) {
+export default function SectionCard({section, currentModule, isAdmin, correctionBaseUrl}: SectionCardProps) {
     const {path: modulePath} = currentModule;
     const [isAvailable, setIsAvailable] = useState(!!section.isAvailable);
     const [pending, setPending] = useState(false);
@@ -272,13 +274,14 @@ export default function SectionCard({section, currentModule, isAdmin}: SectionCa
                     })}
 
                     {section.hasCorrection && (() => {
-                        const correctionDisabled = !isAdmin && !section.correctionIsAvailable;
+                        const correctionDisabled =
+                            (!isAdmin && !section.correctionIsAvailable) || !correctionBaseUrl;
                         return (
                             <AnimatedActionButton
                                 IconComp={LaptopMinimalCheckIcon}
                                 label="Correction"
                                 disabled={correctionDisabled}
-                                href={`${process.env.NEXT_PUBLIC_GIT_URL}/${modulePath}/${section.path}`}
+                                href={correctionBaseUrl ? `${correctionBaseUrl}/${modulePath}/${section.path}` : "#"}
                                 btnClassName={cn(
                                     btnBase,
                                     "border-dashed hover:border-solid",

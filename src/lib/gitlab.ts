@@ -12,10 +12,17 @@ export interface CorrectionFile {
     content: string;
 }
 
+/** Base du groupe de corrections (ex: https://git…/correction), sans slash final, ou null si absente.
+ *  GITLAB_CORRECTION_URL est lue au runtime (serveur, modifiable sans rebuild). NEXT_PUBLIC_GIT_URL
+ *  sert de repli mais est figée au build (inlinée par Next) — à éviter côté serveur. */
+export function getCorrectionBaseUrl(): string | null {
+    const raw = process.env.GITLAB_CORRECTION_URL ?? process.env.NEXT_PUBLIC_GIT_URL;
+    if (!raw) return null;
+    return raw.replace(/\/+$/, "");
+}
+
 export function getGitlabConfig(): GitlabConfig {
-    // GITLAB_CORRECTION_URL est lue au runtime (secret serveur, modifiable sans rebuild).
-    // NEXT_PUBLIC_GIT_URL sert de repli mais est figée au build (inlinée par Next) — à éviter.
-    const gitUrl = process.env.GITLAB_CORRECTION_URL ?? process.env.NEXT_PUBLIC_GIT_URL;
+    const gitUrl = getCorrectionBaseUrl();
     if (!gitUrl) {
         throw new Error("GITLAB_CORRECTION_URL non configuré : impossible de publier une correction.");
     }
