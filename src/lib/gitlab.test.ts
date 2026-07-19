@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, afterEach } from "bun:test";
-import { getGitlabConfig, ensureGroup, ensureProject, type GitlabConfig } from "./gitlab";
+import { getGitlabConfig, ensureGroup, ensureProject, commitFiles, type GitlabConfig } from "./gitlab";
 
 const savedEnv = { gitUrl: process.env.NEXT_PUBLIC_GIT_URL, token: process.env.GITLAB_CORRECTION_TOKEN };
 
@@ -116,5 +116,83 @@ describe("ensureProject", () => {
             name: "1-decouverte", path: "1-decouverte", namespace_id: 13,
             visibility: "public", default_branch: "main",
         });
+    });
+});
+
+describe("commitFiles", () => {
+    const treeUrl = (u: string) => u.includes("/projects/7/repository/tree");
+    const commitUrl = (u: string) => u.includes("/projects/7/repository/commits");
+
+    test("repo vide (tree 404) : tout en create, renvoie le SHA", async () => {
+        routes.push({
+            match: (u, m) => m === "POST" && commitUrl(u),
+            respond: () => json(201, { id: "abc1234def5678" }),
+        });
+        const sha = await commitFiles(cfg, 7, [
+            { path: "README.md", content: "# Correction" },
+            { path: "exercice-1/index.html", content: "<!doctype html>" },
+        ], "correction: php/1-decouverte");
+        expect(sha).toBe("abc1234def5678");
+        const post = calls.find((c) => c.method === "POST")!;
+        expect(post.body).toEqual({
+            branch: "main",
+            commit_message: "correction: php/1-decouverte",
+            actions: [
+                { action: "create", file_path: "README.md", content: "# Correction" },
+                { action: "create", file_path: "exercice-1/index.html", content: "<!doctype html>" },
+            ],
+        });
+    });
+
+    test("repo existant : update des présents, delete des orphelins", async () => {
+        routes.push({
+            match: (u, m) => m === "GET" && treeUrl(u),
+            respond: () => json(200, [
+                { type: "blob", path: "README.md" },
+                { type: "blob", path: "obsolete/vieux.js" },
+                { type: "tree", path: "obsolete" },
+            ]),
+        });
+        routes.push({
+            match: (u, m) => m === "POST" && commitUrl(u),
+            respond: () => json(201, { id: "def5678" }),
+        });
+        await commitFiles(cfg, 7, [{ path: "README.md", content: "v2" }], "maj");
+        const post = calls.find((c) => c.method === "POST")!;
+        expect(post.body).toEqual({
+            branch: "main",
+            commit_message: "maj",
+            actions: [
+                { action: "update", file_path: "README.md", content: "v2" },
+                { action: "delete", file_path: "obsolete/vieux.js" },
+            ],
+        });
+    });
+
+    test("pagination de l'arborescence via x-next-page", async () => {
+        routes.push({
+            match: (u, m) => m === "GET" && treeUrl(u) && u.includes("page=1"),
+            respond: () => json(200, [{ type: "blob", path: "a.txt" }], { "x-next-page": "2" }),
+        });
+        routes.push({
+            match: (u, m) => m === "GET" && treeUrl(u) && u.includes("page=2"),
+            respond: () => json(200, [{ type: "blob", path: "b.txt" }], { "x-next-page": "" }),
+        });
+        routes.push({
+            match: (u, m) => m === "POST" && commitUrl(u),
+            respond: () => json(201, { id: "sha3" }),
+        });
+        await commitFiles(cfg, 7, [{ path: "a.txt", content: "x" }], "maj");
+        const post = calls.find((c) => c.method === "POST")!;
+        const actions = (post.body as { actions: Array<{ action: string; file_path: string }> }).actions;
+        expect(actions).toContainEqual({ action: "delete", file_path: "b.txt" });
+    });
+
+    test("erreur API commit : propagée avec statut", async () => {
+        routes.push({
+            match: (u, m) => m === "POST" && commitUrl(u),
+            respond: () => json(400, { message: "A file with this name doesn't exist" }),
+        });
+        await expect(commitFiles(cfg, 7, [{ path: "x", content: "y" }], "m")).rejects.toThrow(/HTTP 400/);
     });
 });

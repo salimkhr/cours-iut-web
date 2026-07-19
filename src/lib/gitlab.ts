@@ -91,3 +91,69 @@ export async function ensureProject(
     const p = await created.json() as { id: number; web_url: string };
     return { id: p.id, webUrl: p.web_url };
 }
+
+/** Chemins des blobs du repo (branche par défaut), toutes pages. Repo vide → []. */
+async function listRepoFiles(cfg: GitlabConfig, projectId: number): Promise<string[]> {
+    const paths: string[] = [];
+    let page = "1";
+    const pagesSeen = new Set<string>();
+    while (page && !pagesSeen.has(page)) {
+        pagesSeen.add(page);
+        const res = await gitlabFetch(cfg,
+            `/projects/${projectId}/repository/tree?recursive=true&per_page=100&page=${page}`);
+        if (res.status === 404) return []; // repo sans aucun commit
+        if (!res.ok) throw await gitlabError(res, "lecture de l'arborescence");
+        const items = await res.json() as Array<{ type: string; path: string }>;
+        paths.push(...items.filter((i) => i.type === "blob").map((i) => i.path));
+        // Read next page from x-next-page header (try various approaches)
+        let nextPageHeader = "";
+        if (res.headers) {
+            let val: string | null = null;
+            // Try standard .get() with various casings
+            if (typeof res.headers.get === "function") {
+                val = res.headers.get("x-next-page")
+                    ?? res.headers.get("X-Next-Page")
+                    ?? res.headers.get("X-NEXT-PAGE");
+            }
+            // Try direct property access
+            if (!val && typeof res.headers.entries === "function") {
+                for (const [key, v] of res.headers.entries()) {
+                    if (key.toLowerCase() === "x-next-page") {
+                        val = v;
+                        break;
+                    }
+                }
+            }
+            if (val) nextPageHeader = val;
+        }
+        page = nextPageHeader;
+    }
+    return paths;
+}
+
+/** Un commit sur main après lequel le repo reflète exactement `files`
+ *  (create/update/delete). Renvoie le SHA du commit. */
+export async function commitFiles(
+    cfg: GitlabConfig, projectId: number, files: CorrectionFile[], message: string
+): Promise<string> {
+    const existing = new Set(await listRepoFiles(cfg, projectId));
+    const payload = new Set(files.map((f) => f.path));
+
+    const actions = [
+        ...files.map((f) => ({
+            action: existing.has(f.path) ? "update" as const : "create" as const,
+            file_path: f.path,
+            content: f.content,
+        })),
+        ...[...existing].filter((p) => !payload.has(p))
+            .map((p) => ({ action: "delete" as const, file_path: p })),
+    ];
+
+    const res = await gitlabFetch(cfg, `/projects/${projectId}/repository/commits`, {
+        method: "POST",
+        body: JSON.stringify({ branch: "main", commit_message: message, actions }),
+    });
+    if (!res.ok) throw await gitlabError(res, "création du commit");
+    const commit = await res.json() as { id: string };
+    return commit.id;
+}
