@@ -19,6 +19,7 @@ séparée sur confirmation.
   consignes de TP (« Créez », « Ouvrez », « Modifiez » — jamais d'infinitif, jamais
   de futur). Interdits : phrases creuses (« il est important de noter que »),
   conclusions plaquées, enthousiasme artificiel, listes sèches sans lien logique.
+  La chasse détaillée aux tics d'écriture IA est dans « Écriture humaine » ci-dessous.
 - **Structure** : imbriquez les blocs (`section` et sous-parties) sans écrire de
   numérotation — elle est générée automatiquement par le rendu.
 
@@ -36,6 +37,44 @@ séparée sur confirmation.
   détail reste dans le cours écrit.
 - **Examen** : contrat de consigne intégral, HORS fil rouge, notions issues des
   `curriculum` uniquement (jamais une notion non enseignée).
+
+## Écriture humaine — anti-tics IA
+
+Adapté du skill humanizer (blader/humanizer). Objectif : un texte qui sonne comme
+un enseignant qui écrit, pas comme un modèle qui génère. Ces tics se jugent en
+grappe : une occurrence isolée passe, trois dans le même paragraphe non.
+
+Tics à traquer dans chaque bloc texte :
+
+- **Vocabulaire IA** : « crucial », « essentiel de comprendre », « plongeons dans »,
+  « explorons », « au cœur de », « puissant », « le monde de », « paysage »,
+  « riche écosystème ». Écrivez le fait, pas la promotion.
+- **Copule évitée** : « constitue », « représente », « s'avère », « joue un rôle
+  central » à la place de « est ». Quand c'est « est », écrivez « est ».
+- **Règle de trois réflexe** : « simple, rapide et efficace ». Deux suffisent,
+  ou un seul mot juste.
+- **Parallélisme négatif** : « Ce n'est pas seulement X, c'est Y ». Dites Y.
+- **Annonces de plan** : « Dans cette partie, nous allons voir… », « Voyons
+  maintenant… », « Passons à… ». Le titre du bloc fait ce travail : attaquez
+  directement la notion.
+- **Conclusions plaquées** : « Vous voilà prêt à… », « Félicitations, vous
+  maîtrisez… ». Un TP se termine sur son dernier critère de validation, un cours
+  sur sa dernière notion.
+- **Staccato dramatique** : « Simple. Efficace. Rapide. » et aphorismes en une ligne.
+- **Emphase mécanique** : graisse semée au fil du texte, listes « **Terme** :
+  définition » enchaînées, emojis décoratifs dans les titres.
+- **Tirets en grappe** : une incise au tiret par paragraphe maximum ; au-delà,
+  parenthèses ou deux phrases.
+- **Hedging** : « peut potentiellement », « dans certains cas, il se peut ».
+  En cours, tranchez ; si une exception compte, donnez l'exception.
+- **Faux intervalles** : « de la simple variable aux architectures complexes »
+  quand les deux bornes ne délimitent rien de réel.
+
+Signaux humains à produire : détails spécifiques difficiles à inventer (numéro de
+version, message d'erreur verbatim, comportement réel d'un navigateur), avis
+d'enseignant assumé (« préférez X, Y vieillit mal »), rythme varié (une phrase
+courte après deux longues). L'exemplaire chargé à l'étape 3 reste la référence
+de voix ; cette liste sert de filet, pas de style.
 
 ## Grammaire des blocs
 
@@ -96,6 +135,10 @@ L'utilisateur valide ou amende AVANT toute rédaction.
 ### 5. Rédaction sur staging
 Écrivez les blocs via `save_content` (première écriture) puis `insert_block` /
 `edit_block` / `delete_block` / `reorder_blocks`. Staging uniquement.
+
+Avant de passer à la relecture : passe « Écriture humaine » obligatoire. Relisez
+chaque bloc texte contre la liste des tics, diagnostiquez les grappes, corrigez
+via `edit_block`. Ne présentez jamais un premier jet non passé au filtre.
 
 ### 6. Relecture navigateur
 L'utilisateur relit le rendu réel. Corrigez via les outils de blocs jusqu'à son OK.
