@@ -1,16 +1,49 @@
 import { describe, test, expect, beforeEach, afterEach } from "bun:test";
-import { getGitlabConfig } from "./gitlab";
+import { getGitlabConfig, ensureGroup, ensureProject, type GitlabConfig } from "./gitlab";
 
 const savedEnv = { gitUrl: process.env.NEXT_PUBLIC_GIT_URL, token: process.env.GITLAB_CORRECTION_TOKEN };
+
+const cfg: GitlabConfig = { baseUrl: "https://git.example.dev", rootGroupPath: "correction", token: "glpat-test" };
+
+interface Route {
+    match: (url: string, method: string) => boolean;
+    respond: (url: string, body: unknown) => Response;
+}
+
+const realFetch = globalThis.fetch;
+let routes: Route[];
+let calls: Array<{ url: string; method: string; body?: unknown }>;
+
+function json(status: number, body: unknown, headers?: Record<string, string>): Response {
+    return new Response(JSON.stringify(body), {
+        status,
+        headers: { "Content-Type": "application/json", ...headers },
+    });
+}
+
+function installFetchMock(): void {
+    routes = [];
+    calls = [];
+    globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
+        const url = input.toString();
+        const method = init?.method ?? "GET";
+        const body = typeof init?.body === "string" ? JSON.parse(init.body) : undefined;
+        calls.push({ url, method, body });
+        const route = routes.find((r) => r.match(url, method));
+        return route ? route.respond(url, body) : json(404, { message: "404 Not Found" });
+    }) as typeof fetch;
+}
 
 beforeEach(() => {
     process.env.NEXT_PUBLIC_GIT_URL = "https://git.example.dev/correction";
     process.env.GITLAB_CORRECTION_TOKEN = "glpat-test";
+    installFetchMock();
 });
 
 afterEach(() => {
     process.env.NEXT_PUBLIC_GIT_URL = savedEnv.gitUrl;
     process.env.GITLAB_CORRECTION_TOKEN = savedEnv.token;
+    globalThis.fetch = realFetch;
 });
 
 describe("getGitlabConfig", () => {
@@ -29,5 +62,59 @@ describe("getGitlabConfig", () => {
     test("échoue si l'URL ne contient pas de chemin de groupe", () => {
         process.env.NEXT_PUBLIC_GIT_URL = "https://git.example.dev";
         expect(() => getGitlabConfig()).toThrow(/groupe racine/);
+    });
+});
+
+describe("ensureGroup", () => {
+    test("groupe existant : renvoie son id sans POST", async () => {
+        routes.push({
+            match: (u, m) => m === "GET" && u.includes("/groups/correction%2Fphp"),
+            respond: () => json(200, { id: 12 }),
+        });
+        expect(await ensureGroup(cfg, "correction", "php")).toBe(12);
+        expect(calls.filter((c) => c.method === "POST")).toHaveLength(0);
+    });
+
+    test("groupe absent : créé public sous le parent", async () => {
+        routes.push({
+            match: (u, m) => m === "GET" && u.endsWith("/groups/correction"),
+            respond: () => json(200, { id: 1 }),
+        });
+        routes.push({
+            match: (u, m) => m === "POST" && u.endsWith("/groups"),
+            respond: () => json(201, { id: 13 }),
+        });
+        expect(await ensureGroup(cfg, "correction", "php")).toBe(13);
+        const post = calls.find((c) => c.method === "POST")!;
+        expect(post.body).toEqual({ name: "php", path: "php", parent_id: 1, visibility: "public" });
+    });
+
+    test("groupe racine absent : erreur explicite, pas de création sauvage", async () => {
+        await expect(ensureGroup(cfg, "correction", "php")).rejects.toThrow(/groupe racine "correction" introuvable/);
+    });
+});
+
+describe("ensureProject", () => {
+    test("projet existant : renvoie id et webUrl", async () => {
+        routes.push({
+            match: (u, m) => m === "GET" && u.includes("/projects/correction%2Fphp%2F1-decouverte"),
+            respond: () => json(200, { id: 7, web_url: "https://git.example.dev/correction/php/1-decouverte" }),
+        });
+        const p = await ensureProject(cfg, 13, "correction/php", "1-decouverte");
+        expect(p).toEqual({ id: 7, webUrl: "https://git.example.dev/correction/php/1-decouverte" });
+    });
+
+    test("projet absent : créé public dans le namespace", async () => {
+        routes.push({
+            match: (u, m) => m === "POST" && u.endsWith("/projects"),
+            respond: () => json(201, { id: 8, web_url: "https://git.example.dev/correction/php/1-decouverte" }),
+        });
+        const p = await ensureProject(cfg, 13, "correction/php", "1-decouverte");
+        expect(p.id).toBe(8);
+        const post = calls.find((c) => c.method === "POST")!;
+        expect(post.body).toEqual({
+            name: "1-decouverte", path: "1-decouverte", namespace_id: 13,
+            visibility: "public", default_branch: "main",
+        });
     });
 });

@@ -42,3 +42,52 @@ async function gitlabError(res: Response, action: string): Promise<Error> {
     const body = await res.text().catch(() => "");
     return new Error(`GitLab — ${action} : HTTP ${res.status}${body ? ` — ${body.slice(0, 300)}` : ""}`);
 }
+
+async function findGroupId(cfg: GitlabConfig, fullPath: string): Promise<number | null> {
+    const res = await gitlabFetch(cfg, `/groups/${encodeURIComponent(fullPath)}`);
+    if (res.status === 404) return null;
+    if (!res.ok) throw await gitlabError(res, `lecture du groupe ${fullPath}`);
+    const group = await res.json() as { id: number };
+    return group.id;
+}
+
+/** Garantit l'existence du sous-groupe `parentPath/name` (création publique sinon). */
+export async function ensureGroup(cfg: GitlabConfig, parentPath: string, name: string): Promise<number> {
+    const existing = await findGroupId(cfg, `${parentPath}/${name}`);
+    if (existing !== null) return existing;
+
+    const parentId = await findGroupId(cfg, parentPath);
+    if (parentId === null) {
+        throw new Error(`GitLab — groupe racine "${parentPath}" introuvable : créez-le à la main sur la forge.`);
+    }
+    const res = await gitlabFetch(cfg, "/groups", {
+        method: "POST",
+        body: JSON.stringify({ name, path: name, parent_id: parentId, visibility: "public" }),
+    });
+    if (!res.ok) throw await gitlabError(res, `création du sous-groupe ${parentPath}/${name}`);
+    const group = await res.json() as { id: number };
+    return group.id;
+}
+
+/** Garantit l'existence du projet `namespacePath/slug` (création publique sinon). */
+export async function ensureProject(
+    cfg: GitlabConfig, namespaceId: number, namespacePath: string, slug: string
+): Promise<{ id: number; webUrl: string }> {
+    const res = await gitlabFetch(cfg, `/projects/${encodeURIComponent(`${namespacePath}/${slug}`)}`);
+    if (res.ok) {
+        const p = await res.json() as { id: number; web_url: string };
+        return { id: p.id, webUrl: p.web_url };
+    }
+    if (res.status !== 404) throw await gitlabError(res, `lecture du projet ${namespacePath}/${slug}`);
+
+    const created = await gitlabFetch(cfg, "/projects", {
+        method: "POST",
+        body: JSON.stringify({
+            name: slug, path: slug, namespace_id: namespaceId,
+            visibility: "public", default_branch: "main",
+        }),
+    });
+    if (!created.ok) throw await gitlabError(created, `création du projet ${namespacePath}/${slug}`);
+    const p = await created.json() as { id: number; web_url: string };
+    return { id: p.id, webUrl: p.web_url };
+}
