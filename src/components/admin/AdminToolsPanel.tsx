@@ -7,16 +7,14 @@ import MigrateButton from "@/components/admin/MigrateButton";
 import ExportImportSheet from "@/components/admin/ExportImportSheet";
 import {ADMIN_TOOL_ACTIONS} from "@/components/admin/adminDashboardConfig";
 import {ADMIN_CARD} from "@/components/admin/ui/adminStyles";
+import type {ModuleOption} from "@/components/admin/adminTypes";
 
 const TOOL_ICONS = {
     migration: Database,
     "export-import": UploadCloud,
 } as const;
 
-export interface ModuleOption {
-    path: string;
-    title: string;
-}
+export type {ModuleOption} from "@/components/admin/adminTypes";
 
 interface AdminToolsPanelProps {
     modules: ModuleOption[];

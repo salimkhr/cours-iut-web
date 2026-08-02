@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import Eyebrow from '@/components/admin/ui/Eyebrow';
-import type { ModuleOption } from '@/components/admin/AdminToolsPanel';
+import type { ModuleOption } from '@/components/admin/adminTypes';
 
 interface ExportImportSheetProps {
     open: boolean;

@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { userEditSchema, type UserEditValues } from '@/lib/schemas/user-edit.schema';
-import type { AdminUser } from './UsersTable';
+import type AdminUser from '@/types/AdminUser';
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
     return (
