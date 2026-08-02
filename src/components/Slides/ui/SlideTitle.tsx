@@ -62,7 +62,7 @@ export const SlideTitle: React.FC<SlideTitleProps> = ({module, section}) => {
                     {module.title}
                 </div>
 
-                <h2 className={`${slideTextSizes.title.section} text-brand-dark dark:text-brand-light`}>
+                <h2 className={`${slideTextSizes.title.section} !text-brand-dark dark:!text-brand-light`}>
                     {section.title}
                     <span className="text-(--module-color) dark:text-(--module-color-dark)">.</span>
                 </h2>
@@ -79,7 +79,7 @@ export const SlideTitle: React.FC<SlideTitleProps> = ({module, section}) => {
                 )}
 
                 {section.tags && section.tags.length > 0 && (
-                    <div className="mt-8">
+                    <div className="mt-8 [&>div]:!justify-start">
                         <TagsBadges tags={section.tags} moduleTheme={module.title}/>
                     </div>
                 )}
