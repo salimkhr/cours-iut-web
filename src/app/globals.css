@@ -279,15 +279,6 @@ body {
     transform: rotate(360deg);
 }
 
-/* Gradient text */
-.gradient-text {
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-size: 200% 200%;
-    animation: gradientShift var(--animation-duration-long) ease infinite;
-}
-
 /* ===== Module color cascade ===== */
 /* --module-color (light) et --module-color-dark (dark) sont posés via inline style
    sur l'élément portant header-module. */
@@ -402,16 +393,23 @@ body {
     flex-shrink: 0;
     width: 2rem;
     height: 2rem;
-    border-radius: 0.6rem;
+    border-radius: 0.5rem;
     background: var(--module-color);
+    /* Blanc littéral volontaire : même pattern que le badge d'ordre de
+       SectionCard (text-white en light), les couleurs module sont calibrées
+       pour ≥5.9:1 avec du texte blanc en light (cf. DESIGN.md §Tertiary). */
     color: #fff;
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 0.875rem;
     line-height: 1;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.14);
+    box-shadow: 0 1px 2px rgba(147, 97, 58, 0.25);
 }
 .dark .course-content .course-section-badge {
     background: var(--module-color-dark, var(--module-color));
+    /* Les couleurs module-*-dark sont calibrées pour du texte brand-dark
+       (≥7.8:1), pas blanc — même bascule que SectionCard (dark:text-brand-dark). */
+    color: var(--color-brand-dark);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.14);
 }
 /* Badge de niveau 2 : seul le coin bas-droit est carré (raccord net avec le
    filet qui part de là) ; le coin bas-gauche garde son radius. Le padding-bottom
@@ -422,8 +420,8 @@ body {
 .course-content .course-section-badge--sub {
     width: 1.6rem;
     height: 1.6rem;
-    border-radius: 0.45rem;
-    font-size: 0.8rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
     background: color-mix(in srgb, var(--module-color) 15%, transparent);
     color: var(--module-color);
     box-shadow: none;
