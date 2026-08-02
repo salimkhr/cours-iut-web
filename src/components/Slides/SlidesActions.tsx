@@ -47,8 +47,11 @@ export const SlidesActions = ({ className }: { className?: string }) => {
             onMouseLeave={() => setHovered(false)}
         >
             <div className={cn(
-                "flex items-center gap-2 p-2 rounded-xl border backdrop-blur-md transition-opacity",
-                hovered ? "opacity-100 bg-background/70" : "opacity-40 bg-background/40"
+                "flex items-center gap-2 p-2 rounded-xl border border-bridge-500/40 backdrop-blur-md transition-opacity",
+                "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)] dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
+                hovered
+                    ? "opacity-100 bg-bridge-50/85 dark:bg-bridge-800/85"
+                    : "opacity-45 bg-bridge-50/55 dark:bg-bridge-800/55"
             )}>
 
                 {/* ── Bloc LIVE ──────────────────────────────────────────────────── */}
@@ -64,18 +67,24 @@ export const SlidesActions = ({ className }: { className?: string }) => {
 
                         {/* Badge rôle */}
                         <div className="flex items-center gap-1.5 px-1 select-none">
+                            {/* Distinction par teinte ET par forme : le leader pulse
+                                sur un disque plein, le suiveur porte un anneau. */}
                             <span className={cn(
                                 "w-2 h-2 rounded-full shrink-0",
-                                isController ? "bg-red-500 animate-pulse" : "bg-green-500"
+                                isController
+                                    ? "bg-brand-primary dark:bg-brand-accent animate-pulse"
+                                    : "border-2 border-bridge-600 dark:border-bridge-300"
                             )} />
                             <div className="flex flex-col leading-none">
                                 <span className={cn(
                                     "text-xs font-semibold",
-                                    isController ? "text-red-500" : "text-green-600 dark:text-green-400"
+                                    isController
+                                        ? "text-brand-primary dark:text-brand-accent"
+                                        : "text-bridge-600 dark:text-bridge-300"
                                 )}>
                                     {isController ? "Leader" : "Suiveur"}
                                 </span>
-                                <span className="text-[10px] text-muted-foreground">
+                                <span className="text-[10px] text-bridge-600/80 dark:text-bridge-300/80">
                                     {isController
                                         ? "Vous contrôlez"
                                         : isDetached
@@ -99,7 +108,7 @@ export const SlidesActions = ({ className }: { className?: string }) => {
 
                         {isController && (
                             <Button size="icon" variant="ghost" className="cursor-pointer" onClick={stopPresenting} title="Arrêter la présentation">
-                                <StopCircle className="text-red-500" />
+                                <StopCircle className="text-brand-primary dark:text-brand-accent" />
                             </Button>
                         )}
 

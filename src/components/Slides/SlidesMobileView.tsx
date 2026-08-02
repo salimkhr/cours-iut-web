@@ -51,11 +51,15 @@ export const SlidesMobileView = () => {
                         )}
                         <span className={cn(
                             "w-2 h-2 rounded-full shrink-0",
-                            isController ? "bg-red-500 animate-pulse" : "bg-green-500"
+                            isController
+                                ? "bg-brand-primary dark:bg-brand-accent animate-pulse"
+                                : "border-2 border-bridge-600 dark:border-bridge-300"
                         )}/>
                         <span className={cn(
                             "text-xs font-medium",
-                            isController ? "text-red-500" : "text-green-600 dark:text-green-400"
+                            isController
+                                ? "text-brand-primary dark:text-brand-accent"
+                                : "text-bridge-600 dark:text-bridge-300"
                         )}>
                             {isController ? "Leader" : (live.presenterName ?? "En direct")}
                         </span>
@@ -65,7 +69,7 @@ export const SlidesMobileView = () => {
                     <Button
                         size="sm"
                         variant="ghost"
-                        className="h-7 px-2 gap-1.5 text-xs text-green-600"
+                        className="h-7 px-2 gap-1.5 text-xs text-brand-primary dark:text-brand-accent"
                         onClick={takeControl}
                     >
                         Reprendre
@@ -108,7 +112,7 @@ export const SlidesMobileView = () => {
                     <Button
                         onClick={stopPresenting}
                         variant="outline"
-                        className="w-full flex items-center justify-center gap-2 text-red-500 border-red-200 hover:bg-red-50"
+                        className="w-full flex items-center justify-center gap-2 text-brand-primary border-brand-primary/40 hover:bg-brand-primary/10 dark:text-brand-accent dark:border-brand-accent/40 dark:hover:bg-brand-accent/10"
                     >
                         <StopCircle className="w-4 h-4"/>
                         Arrêter la présentation
