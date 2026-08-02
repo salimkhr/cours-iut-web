@@ -1,6 +1,4 @@
 import type {MDXComponents} from 'mdx/types';
-// import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-// import { materialLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Link from 'next/link';
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {

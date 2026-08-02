@@ -2,8 +2,7 @@
 import React, {ReactNode, useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
 import {ClipboardCopyIcon, Code2, Eye} from "lucide-react";
-import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
-import {oneDark, oneLight} from "react-syntax-highlighter/dist/esm/styles/prism";
+import {SyntaxHighlighter, normalizeLanguage, oneDark, oneLight} from '@/lib/syntaxHighlighter';
 import {cn} from "@/lib/utils";
 import type Module from "@/types/Module";
 
@@ -86,7 +85,7 @@ export default function CodeWithPreviewCard({language, children, className, curr
     );
 
     const sharedHighlighterProps = {
-        language,
+        language: normalizeLanguage(language),
         customStyle: {
             margin: 0,
             fontSize: '0.875rem',

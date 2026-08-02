@@ -3,10 +3,9 @@
 import React, {useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
 import {CheckIcon, ClipboardCopyIcon, DownloadIcon} from "lucide-react";
-import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
+import {SyntaxHighlighter, normalizeLanguage, oneLight} from '@/lib/syntaxHighlighter';
 import {Button} from "@/components/ui/button";
 import Module from "@/types/Module";
-import {oneLight} from "react-syntax-highlighter/dist/esm/styles/prism";
 import {cn} from "@/lib/utils";
 
 interface CodeCardProps {
@@ -114,7 +113,7 @@ export default function InputCard({
 
             <div className="rounded-md border border-gray-200 overflow-hidden">
                 <SyntaxHighlighter
-                    language={language}
+                    language={normalizeLanguage(language)}
                     style={oneLight}
                     customStyle={{
                         margin: 0,

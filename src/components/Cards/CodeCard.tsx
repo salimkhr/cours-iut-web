@@ -3,8 +3,7 @@
 import React, {useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
 import {ChevronDown, ChevronUp, ClipboardCopy, Download} from "lucide-react";
-import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
-import {oneDark, oneLight} from 'react-syntax-highlighter/dist/esm/styles/prism';
+import {SyntaxHighlighter, normalizeLanguage, oneDark, oneLight} from '@/lib/syntaxHighlighter';
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
 
@@ -145,7 +144,7 @@ export default function CodeCard({
     const highlightedLines = highlightLines ? parseHighlightLines(highlightLines) : [];
 
     const sharedHighlighterProps = {
-        language,
+        language: normalizeLanguage(language),
         customStyle: {
             margin: 0,
             fontSize: '0.875rem',
