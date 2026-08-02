@@ -757,12 +757,10 @@ input:-webkit-autofill {
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--color-bridge-50);
-    opacity: 0.78;
     margin-bottom: 0.3rem;
 }
 .dark .slide-banner-eyebrow {
     color: var(--color-brand-dark);
-    opacity: 0.72;
 }
 
 /* Corps de slide : le contenu respire, le code garde sa place en bas. */

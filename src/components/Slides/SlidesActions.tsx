@@ -47,11 +47,10 @@ export const SlidesActions = ({ className }: { className?: string }) => {
             onMouseLeave={() => setHovered(false)}
         >
             <div className={cn(
-                "flex items-center gap-2 p-2 rounded-xl border border-bridge-500/40 backdrop-blur-md transition-opacity",
-                "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)] dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
+                "flex items-center gap-2 p-2 rounded-xl border border-bridge-500/40 backdrop-blur-md transition-[background-color,box-shadow]",
                 hovered
-                    ? "opacity-100 bg-bridge-50/85 dark:bg-bridge-800/85"
-                    : "opacity-45 bg-bridge-50/55 dark:bg-bridge-800/55"
+                    ? "bg-bridge-50/85 shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)] dark:bg-bridge-800/85 dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]"
+                    : "bg-bridge-50/55 shadow-[0_1px_8px_-5px_rgba(147,97,58,0.28)] dark:bg-bridge-800/55 dark:shadow-[0_1px_10px_-5px_rgba(0,0,0,0.45)]"
             )}>
 
                 {/* ── Bloc LIVE ──────────────────────────────────────────────────── */}

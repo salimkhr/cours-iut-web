@@ -17,8 +17,13 @@ interface SlideBlocksRendererProps {
     section: Section;
 }
 
+// `slide-screen` is the legacy container type emitted by the migration script.
+export function isSlideContainerBlock(block: Block): boolean {
+    return block.type === "slide" || block.type === "slide-screen";
+}
+
 export function SlideBlocksRenderer({ blocks, module, section }: SlideBlocksRendererProps) {
-    const slideBlocks = blocks.filter((b) => b.type === "slide");
+    const slideBlocks = blocks.filter(isSlideContainerBlock);
 
     return (
         <SlidesScreen module={module} section={section}>
