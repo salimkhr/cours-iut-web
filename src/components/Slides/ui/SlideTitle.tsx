@@ -5,6 +5,7 @@ import Module from "@/types/Module";
 import Section from "@/types/Section";
 import TagsBadges from "@/components/page/TagsBadges";
 import {slideTextSizes} from "@/components/Slides/ui/config/slideConfig";
+import {useIsDark} from "@/hook/useIsDark";
 import {useMounted} from "@/hook/useMounted";
 
 interface SlideTitleProps {
@@ -14,13 +15,17 @@ interface SlideTitleProps {
 
 export const SlideTitle: React.FC<SlideTitleProps> = ({module, section}) => {
     const mounted = useMounted();
+    const isDark = useIsDark();
 
     if (!mounted) return null;
 
     const order = section.order ?? 1;
 
     return (
-        <div className="relative flex w-full h-screen overflow-hidden slide-surface">
+        <div
+            className="relative flex w-full h-screen overflow-hidden slide-surface"
+            data-theme={isDark ? "dark" : "light"}
+        >
             {/* Colonne pont — 36 % de la largeur, fondu vers le fond de slide */}
             <div
                 className="relative hidden md:block w-[36%] shrink-0 bg-cover bg-center bg-[url('/images/header/pont-light.png')] dark:bg-[url('/images/header/pont-dark.png')]"
