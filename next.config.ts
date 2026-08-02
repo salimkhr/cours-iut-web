@@ -49,6 +49,13 @@ const baseConfig: NextConfig = {
 
     experimental: {
         authInterrupts: true,
+        // Transforme les imports de barrel en imports directs (moins de modules
+        // à parcourir au build, bundle plus fin).
+        optimizePackageImports: [
+            'motion',
+            '@tanstack/react-table',
+            'recharts',
+        ],
     },
 
     turbopack: {
