@@ -10,7 +10,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { renderInline } from "@/lib/inlineMarkdown";
 import CodeCard from "@/components/Cards/CodeCard";
 import CodeWithPreviewCard, { CodePanel, PreviewPanel } from "@/components/Cards/CodeWithPreviewCard";
-import DiagramCard from "@/components/Cards/DiagramCard";
+import dynamic from "next/dynamic";
+import DiagramSkeleton from "@/components/Cards/DiagramSkeleton";
 import { DownloadCodeButton } from "@/components/DownloadCodeButton";
 import {
     Info, TriangleAlert, Lightbulb,
@@ -36,6 +37,13 @@ import { DynamicLucideIcon } from "@/components/ui/DynamicLucideIcon";
 // Réexports pour compatibilité avec les imports existants.
 export type { FieldDef, BlockCategory };
 export { createBlockInstance };
+
+// Mermaid pèse plusieurs centaines de Ko et ne concerne qu'une minorité de blocs :
+// on ne le charge que si un bloc "diagram" est effectivement rendu.
+const DiagramCard = dynamic(() => import("@/components/Cards/DiagramCard"), {
+    ssr: false,
+    loading: () => <DiagramSkeleton/>,
+});
 
 export interface BlockRenderProps {
     children?: React.ReactNode;

@@ -6,28 +6,13 @@ import {useTheme} from "next-themes";
 import Text from "@/components/ui/Text";
 import {useMounted} from "@/hook/useMounted";
 import type Module from "@/types/Module";
+import DiagramSkeleton from "@/components/Cards/DiagramSkeleton";
 
 type DiagramCardProps = {
     header?: string;
     chart: string;
     currentModule?: Module;
 };
-
-function DiagramSkeleton() {
-    return (
-        <div
-            className="h-48 w-full flex items-center justify-center gap-6 px-8 animate-pulse"
-            role="status"
-            aria-label="Chargement du diagramme"
-        >
-            <div className="h-12 w-20 rounded bg-bridge-300/50 dark:bg-bridge-700/50"/>
-            <div className="h-px w-8 bg-bridge-400/50 dark:bg-bridge-600/50"/>
-            <div className="h-12 w-20 rounded bg-bridge-300/50 dark:bg-bridge-700/50"/>
-            <div className="h-px w-8 bg-bridge-400/50 dark:bg-bridge-600/50"/>
-            <div className="h-12 w-20 rounded bg-bridge-300/50 dark:bg-bridge-700/50"/>
-        </div>
-    );
-}
 
 export default function DiagramCard({header, chart, currentModule}: DiagramCardProps) {
     const mounted = useMounted();

@@ -1,6 +1,5 @@
 'use client';
 import React, {useEffect, useState} from 'react';
-import mermaid from "mermaid";
 import {useTheme} from "next-themes";
 import {cn} from "@/lib/utils";
 import {useMounted} from "@/hook/useMounted";
@@ -33,33 +32,35 @@ export const SlideDiagram: React.FC<SlideDiagramProps> = ({
         const currentTheme = theme === "system" ? systemTheme : theme;
         const mermaidTheme = currentTheme === "dark" ? "dark" : "default";
 
-        // Configuration Mermaid
-        mermaid.initialize({
-            theme: mermaidTheme,
-            startOnLoad: false,
-            securityLevel: 'loose',
-            fontFamily: 'inherit',
-            fontSize: 18,
-            flowchart: {
-                useMaxWidth: true,
-                htmlLabels: true,
-                curve: 'basis',
-                padding: 20,
-                nodeSpacing: 80,
-                rankSpacing: 80
-            },
-            sequence: {
-                useMaxWidth: true,
-                mirrorActors: true,
-                messageMargin: 80,
-                boxMargin: 20,
-                actorMargin: 80
-            }
-        });
-
         // Render async
         const renderDiagram = async () => {
             try {
+                const mermaid = (await import("mermaid")).default;
+
+                // Configuration Mermaid
+                mermaid.initialize({
+                    theme: mermaidTheme,
+                    startOnLoad: false,
+                    securityLevel: 'loose',
+                    fontFamily: 'inherit',
+                    fontSize: 18,
+                    flowchart: {
+                        useMaxWidth: true,
+                        htmlLabels: true,
+                        curve: 'basis',
+                        padding: 20,
+                        nodeSpacing: 80,
+                        rankSpacing: 80
+                    },
+                    sequence: {
+                        useMaxWidth: true,
+                        mirrorActors: true,
+                        messageMargin: 80,
+                        boxMargin: 20,
+                        actorMargin: 80
+                    }
+                });
+
                 const result = await mermaid.render(diagramId, chart);
                 if (isMounted) {
                     setSvg(result.svg);
