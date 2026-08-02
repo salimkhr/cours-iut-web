@@ -38,6 +38,7 @@ bun test                   # bun test (runner natif Bun, *.test.ts)
 bun run migrate:db         # migre le contenu .tsx vers MongoDB
 bun run migrate-contents-refs  # migre les références de contenu
 bun run create-content-index   # crée les index MongoDB du contenu
+bun run create-indexes       # crée/vérifie les index MongoDB (modules, course_content)
 bun run seed-oauth-client  # provisionne un client OAuth better-auth
 bun run generate-skill     # génère un skill pédagogique
 bun run extract-cours      # bun script/extractCours.js
@@ -114,8 +115,9 @@ assets publics, `/`) exigent une session connectée.
   À documenter au cas par cas.
 - **`ObjectId`** : convertir en `string` avant de renvoyer au client (sérialisation JSON).
   Jamais exposer un `_id` brut.
-- **Index** : aucun fichier d'index recensé. **À mettre en place** dans `src/lib/db/indexes.ts`
-  si la volumétrie l'exige.
+- **Index** : déclarés dans `src/lib/db/indexes.ts`, appliqués par `bun run create-indexes`
+  (idempotent). Actuels : `modules.path` (unique), `course_content.{moduleSlug,sectionSlug,contentType}`
+  (unique). Tout nouvel index passe par ce fichier.
 - **Transactions** : non utilisées. Nécessitent un replica set MongoDB.
 
 ## 7. Variables d'environnement
