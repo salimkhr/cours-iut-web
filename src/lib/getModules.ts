@@ -20,4 +20,30 @@ const getModules = cache(async function getModules(): Promise<(Module & { _id: s
     }));
 });
 
+export type ModuleTheme = { path: string; colorLight?: string };
+
+/**
+ * Variante projetée de getModules() pour le layout racine : celui-ci s'exécute à
+ * chaque rendu de page mais n'a besoin que de `path` et `colorLight` pour
+ * générer les variables CSS de thème. Charger les sections complètes de tous les
+ * modules à cet endroit est du transfert pur.
+ *
+ * Séparée de `getModulesTheme` (non mémoïsée) pour rester testable hors rendu RSC :
+ * le `cache()` de React n'a de sens qu'à l'intérieur d'un rendu.
+ */
+export async function fetchModulesTheme(): Promise<ModuleTheme[]> {
+    const db = await connectToDB();
+    const docs = await db
+        .collection<Module>("modules")
+        .find({}, {projection: {_id: 0, path: 1, colorLight: 1}})
+        .toArray();
+
+    // reason: le driver MongoDB type find() d'après le type générique de la collection
+    // (Module), sans tenir compte de la projection passée en option — WithId<Module>
+    // ne reflète donc pas la forme réelle des documents retournés ({path, colorLight}).
+    return docs as unknown as ModuleTheme[];
+}
+
+export const getModulesTheme = cache(fetchModulesTheme);
+
 export default getModules;

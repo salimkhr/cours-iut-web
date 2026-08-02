@@ -4,7 +4,7 @@ import './globals.css';
 import NavBar from "@/components/NavBar";
 import {ThemeProvider} from "@/components/ThemeProvider";
 import {Toaster} from "@/components/ui/sonner";
-import getModules from "@/lib/getModules";
+import {getModulesTheme} from "@/lib/getModules";
 import {generateModuleThemeCss} from "@/lib/generateModuleThemeCss";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -37,7 +37,7 @@ export default async function RootLayout({children}: { children: React.ReactNode
     // Tolérant à la phase de build (DB mockée) : pas de couleur → fallback globals.css.
     let themeCss = "";
     try {
-        themeCss = generateModuleThemeCss(await getModules());
+        themeCss = generateModuleThemeCss(await getModulesTheme());
     } catch {
         themeCss = "";
     }
