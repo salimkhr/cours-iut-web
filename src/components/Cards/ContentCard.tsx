@@ -2,7 +2,7 @@
 
 import React, {useRef} from "react";
 import Link from "next/link";
-import {useReducedMotion} from 'framer-motion';
+import {useReducedMotion} from 'motion/react';
 import {ArrowRight, Lock} from "lucide-react";
 import Module from "@/types/Module";
 import Section from "@/types/Section";

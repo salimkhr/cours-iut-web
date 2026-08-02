@@ -68,7 +68,6 @@
     "clsx": "^2.1.1",
     "cookies": "^0.9.1",
     "date-fns": "^4.3.0",
-    "framer-motion": "^12.40.0",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
     "jose": "^6.2.3",

@@ -2,7 +2,7 @@
 
 import React, {useRef, useState} from 'react';
 import Link from "next/link";
-import {motion, useReducedMotion} from 'framer-motion';
+import {motion, useReducedMotion} from 'motion/react';
 import {Lock, Unlock} from "lucide-react";
 import {ClockIcon} from "@/components/icons/clock";
 

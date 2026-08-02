@@ -1,7 +1,7 @@
 'use client';
 
 import {ReactNode} from 'react';
-import {motion, useReducedMotion} from 'framer-motion';
+import {motion, useReducedMotion} from 'motion/react';
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";

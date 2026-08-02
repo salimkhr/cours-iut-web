@@ -2,7 +2,7 @@
 
 import {useState} from 'react';
 import Link from "next/link";
-import {motion, useReducedMotion} from 'framer-motion';
+import {motion, useReducedMotion} from 'motion/react';
 import {ArrowRight, BookOpen, ChevronRight, Lock, Unlock} from "lucide-react";
 import Module from "@/types/Module";
 import iconMap from "@/lib/iconMap";
