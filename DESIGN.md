@@ -54,9 +54,9 @@ typography:
     lineHeight: 1.3
   body:
     fontFamily: "IBM Plex Sans, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "0.875rem"
+    fontSize: "1rem"
     fontWeight: 400
-    lineHeight: 1.625
+    lineHeight: 1.78
   label:
     fontFamily: "IBM Plex Sans, ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.6875rem"
@@ -187,7 +187,7 @@ Chaque module a une couleur light (sombre, texte blanc ET texte sur crème ≥5:
 - **Display** (800, `clamp(2.25rem, 6vw, 4.5rem)`, line-height 0.95, letter-spacing -0.025em) : titre hero des pages module et `[contentSlug]`. Toujours suivi d'un point en couleur module.
 - **Headline** (700, 1.5rem-2rem, 1.2) : titres de section sur les landings, `<h2>` thématiques.
 - **Title** (700, 1.25rem, 1.3) : titre de SectionCard, label sticky de SplitPane.
-- **Body** (400, 0.875rem, 1.625) : texte courant. **Largeur max 65-75ch** sur le corpus pédagogique.
+- **Body** (400, 1rem, 1.78) : texte courant. **Largeur max 65-75ch** sur le corpus pédagogique (réduit à 0.95rem/1.72 sous 640px).
 - **Label** (600, 0.6875rem, 0.2em letter-spacing, UPPERCASE) : eyebrow structurel — « Objectifs du cours », « Cours », « TP », « Précédent / Suivant ». Toujours discret mais reconnaissable.
 - **Mono** (400, 0.875rem) : code inline, blocs de code, badges techniques.
 
