@@ -190,7 +190,7 @@ export default async function Content({params}: ContentPageProps) {
                 <>
                     <main
                         className={cn(
-                            "w-full max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-14",
+                            "w-full max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-14",
                             "header-module"
                         )}
                         style={{

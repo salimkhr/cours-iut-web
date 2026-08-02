@@ -353,8 +353,10 @@ body {
 
 /* Le texte, les listes et les callouts remplissent la colonne de lecture :
    pas de cap 72ch qui laisse un grand vide à droite et casse les lignes trop
-   tôt (le conteneur .course-content borne déjà la largeur de lecture). */
-.course-content .course-blocks :where(p, ul, ol, [role="alert"]) {
+   tôt (le conteneur .course-content borne déjà la largeur de lecture). Inclut
+   li : sinon le <ul>/<ol> passe à max-width:none mais chaque item de liste
+   reste individuellement capé à 72ch par la règle générale plus bas. */
+.course-content .course-blocks :where(p, ul, ol, li, [role="alert"]) {
     max-width: none;
 }
 
