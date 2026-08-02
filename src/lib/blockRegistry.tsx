@@ -25,7 +25,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import CourseReminder from "@/components/CourseReminder";
 import CoursePrerequisites from "@/components/CoursePrerequisites";
 import { COL_SPAN_CLASS } from "@/lib/blockSchemas";
-import { TableBlockEditor } from "@/components/builder/TableBlockEditor";
 import { SlideText } from "@/components/Slides/ui/SlideText";
 import { SlideList, SlideListItem } from "@/components/Slides/ui/SlideList";
 import { SlideNote } from "@/components/Slides/ui/SlideNote";
@@ -33,6 +32,7 @@ import { blockDefs, getBlockDef, createBlockInstance } from "@/lib/blockDefs";
 import type { BlockDef, FieldDef, BlockCategory } from "@/lib/blockDefs";
 import type Module from "@/types/Module";
 import { DynamicLucideIcon } from "@/components/ui/DynamicLucideIcon";
+import type { BlockRenderProps, BlockEditorProps } from "@/types/blocks";
 
 // Réexports pour compatibilité avec les imports existants.
 export type { FieldDef, BlockCategory };
@@ -45,15 +45,15 @@ const DiagramCard = dynamic(() => import("@/components/Cards/DiagramCard"), {
     loading: () => <DiagramSkeleton/>,
 });
 
-export interface BlockRenderProps {
-    children?: React.ReactNode;
-    [key: string]: unknown;
-}
+// Éditeur réservé au builder admin : jamais rendu côté étudiant.
+const TableBlockEditor: React.ComponentType<BlockEditorProps> = dynamic(
+    () => import("@/components/builder/TableBlockEditor").then((m) => m.TableBlockEditor),
+    { ssr: false },
+);
 
-export interface BlockEditorProps {
-    props: Record<string, unknown>;
-    onChange: (props: Record<string, unknown>) => void;
-}
+// Définis dans src/types/blocks.ts ; réexportés ici pour ne casser aucun
+// import existant.
+export type { BlockRenderProps, BlockEditorProps } from "@/types/blocks";
 
 /** Une définition complète = données server-safe (BlockDef) + parties React. */
 export interface BlockDefinition extends BlockDef {

@@ -5,7 +5,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { renderInline } from "@/lib/inlineMarkdown";
 import { cn } from "@/lib/utils";
-import type { BlockEditorProps } from "@/lib/blockRegistry";
+import type { BlockEditorProps } from "@/types/blocks";
 
 type CellRef = { row: number; col: number };
 // row === -1 → cellule header
