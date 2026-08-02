@@ -732,7 +732,9 @@ input:-webkit-autofill {
     background: var(--module-color-dark, var(--module-color, var(--color-bridge-500)));
 }
 
-.slide-banner :where(h1, h2, h3) {
+.slide-banner h1,
+.slide-banner h2,
+.slide-banner h3 {
     color: var(--color-bridge-50);
     margin: 0;
     line-height: 1.05;
@@ -741,7 +743,9 @@ input:-webkit-autofill {
 /* Les couleurs module-*-dark sont des pastels clairs calibrés pour du texte
    brand-dark (≥7.8:1), pas du crème : le texte du bandeau s'inverse en dark.
    Même règle que .course-section-badge. */
-.dark .slide-banner :where(h1, h2, h3) {
+.dark .slide-banner h1,
+.dark .slide-banner h2,
+.dark .slide-banner h3 {
     color: var(--color-brand-dark);
 }
 
