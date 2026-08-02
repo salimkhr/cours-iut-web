@@ -48,7 +48,6 @@ export const REGISTERED_LANGUAGES: readonly string[] = Object.keys(LANGUAGE_MODU
 const ALIASES: Record<string, string> = {
     html: "markup",
     xml: "markup",
-    svg: "markup",
     js: "javascript",
     ts: "typescript",
     sh: "bash",
@@ -58,14 +57,24 @@ const ALIASES: Record<string, string> = {
 
 /**
  * Ramène un langage saisi dans un cours vers un langage enregistré.
- * Tout ce qui n'est pas reconnu retombe sur "text" : Prism affiche alors le code
- * sans coloration au lieu de logger un avertissement à chaque rendu.
+ * `language` peut être `null`/`undefined` : les blocs de contenu viennent de
+ * MongoDB et n'ont pas toujours ce champ renseigné.
+ * Tout ce qui n'est pas reconnu retombe sur "text" : c'est un sentinel reconnu
+ * nativement par `react-syntax-highlighter`, qui court-circuite la coloration
+ * au lieu de lever puis rattraper une exception pour un langage non enregistré.
  */
-export function normalizeLanguage(language: string): string {
+export function normalizeLanguage(language: string | null | undefined): string {
     const key = (language ?? "").trim().toLowerCase();
     if (!key) return "text";
     const canonical = ALIASES[key] ?? key;
     return REGISTERED_LANGUAGES.includes(canonical) ? canonical : "text";
+}
+
+/** Vrai si le langage est enregistré ou aliasé — donc réellement coloré. */
+export function isKnownLanguage(language: string | null | undefined): boolean {
+    const key = (language ?? "").trim().toLowerCase();
+    if (!key) return false;
+    return REGISTERED_LANGUAGES.includes(ALIASES[key] ?? key);
 }
 
 export { PrismLight as SyntaxHighlighter };
