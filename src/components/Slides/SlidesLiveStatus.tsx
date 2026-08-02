@@ -35,8 +35,11 @@ export const SlidesLiveStatus = () => {
             onMouseLeave={() => setHovered(false)}
         >
             <div className={cn(
-                "flex flex-row items-center gap-2 px-3 py-2 rounded-xl border backdrop-blur-md transition-opacity",
-                hovered ? "opacity-100 bg-background/80" : "opacity-40 bg-background/40"
+                "flex flex-row items-center gap-2 px-3 py-2 rounded-xl border border-bridge-500/40 backdrop-blur-md transition-opacity",
+                "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)] dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
+                hovered
+                    ? "opacity-100 bg-bridge-50/85 dark:bg-bridge-800/85"
+                    : "opacity-45 bg-bridge-50/55 dark:bg-bridge-800/55"
             )}>
                 {isLive ? (
                     <>
@@ -56,16 +59,20 @@ export const SlidesLiveStatus = () => {
                         <div className="flex items-center gap-1.5 select-none">
                             <span className={cn(
                                 "w-2 h-2 rounded-full shrink-0",
-                                isController ? "bg-red-500 animate-pulse" : "bg-green-500"
+                                isController
+                                    ? "bg-brand-primary dark:bg-brand-accent animate-pulse"
+                                    : "border-2 border-bridge-600 dark:border-bridge-300"
                             )} />
                             <div className="flex flex-col leading-none">
                                 <span className={cn(
                                     "text-xs font-semibold",
-                                    isController ? "text-red-500" : "text-green-600 dark:text-green-400"
+                                    isController
+                                        ? "text-brand-primary dark:text-brand-accent"
+                                        : "text-bridge-600 dark:text-bridge-300"
                                 )}>
                                     {isController ? "Leader" : "Suiveur"}
                                 </span>
-                                <span className="text-[10px] text-muted-foreground">
+                                <span className="text-[10px] text-bridge-600/80 dark:text-bridge-300/80">
                                     {isController
                                         ? "Vous contrôlez"
                                         : `Suit ${live!.presenterName ?? "…"}`}
@@ -77,7 +84,7 @@ export const SlidesLiveStatus = () => {
                         {isDetached && (
                             <>
                                 <div className="w-px h-5 bg-border/50" />
-                                <span className="text-[10px] text-muted-foreground">
+                                <span className="text-[10px] text-bridge-600/80 dark:text-bridge-300/80">
                                     {live!.paused && live!.drift.direction === "synced"
                                         ? "Navigation libre"
                                         : (driftLabel() ?? "En pause")}
@@ -120,7 +127,7 @@ export const SlidesLiveStatus = () => {
                                     onClick={stopPresenting}
                                     title="Arrêter la présentation"
                                 >
-                                    <StopCircle className="text-red-500 w-4 h-4" />
+                                    <StopCircle className="text-brand-primary dark:text-brand-accent w-4 h-4" />
                                 </Button>
                             </>
                         )}
