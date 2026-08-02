@@ -20,6 +20,10 @@ export interface SlidesContextType {
     isFullscreen: boolean;
     toggleFullscreen: () => void;
 
+    /* Identité (pour l'eyebrow du bandeau) */
+    moduleTitle?: string;
+    sectionTitle?: string;
+
     // Live (optionnel : absent hors mode présentation)
     live?: {
         isLive: boolean;

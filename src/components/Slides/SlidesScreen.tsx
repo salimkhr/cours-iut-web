@@ -126,6 +126,10 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                 isFullscreen,
                 toggleFullscreen,
 
+                /* Identité */
+                moduleTitle: module?.title,
+                sectionTitle: section?.title,
+
                 /* Live */
                 live: hasSlugCtx ? {
                     isLive: sessionIsLive,
