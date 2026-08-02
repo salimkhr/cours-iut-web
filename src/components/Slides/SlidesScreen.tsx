@@ -149,10 +149,14 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
             <div
                 ref={containerRef}
                 className={cn(
-                    "relative flex flex-col min-h-[600px] w-full transition-all",
+                    "relative flex flex-col min-h-[600px] w-full transition-all slide-surface",
                     isFullscreen
-                        ? "fixed inset-0 z-50 bg-white"
-                        : "bg-muted/30 rounded-2xl border"
+                        ? "fixed inset-0 z-50"
+                        : cn(
+                            "rounded-2xl border border-bridge-500/45 dark:border-bridge-500/35",
+                            "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)]",
+                            "dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
+                        )
                 )}
             >
                 {/* Progression latérale */}
@@ -167,9 +171,9 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                 <SlidesActions/>
 
                 {/* Progress bar bas */}
-                <div className="absolute bottom-0 left-0 h-1 w-full bg-primary/20">
+                <div className="absolute bottom-0 left-0 h-1 w-full bg-bridge-500/20">
                     <div
-                        className="h-full bg-primary transition-all"
+                        className="h-full bg-(--module-color) dark:bg-(--module-color-dark) transition-all"
                         style={{
                             width: `${
                                 ((navigation.currentSlide + 1) / slides.length) * 100
