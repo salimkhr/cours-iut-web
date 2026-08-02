@@ -4,7 +4,6 @@ import type Module from "@/types/Module";
 import type Section from "@/types/Section";
 import { getContentRef } from "@/types/CourseContent";
 import { getContentBlocks } from "@/lib/getContentBlocks";
-import { BlockRenderer } from "@/components/builder/BlockRenderer";
 import React from "react";
 
 interface GetContentComponentArgs {
@@ -31,6 +30,13 @@ export async function getContentComponent({
 
         if (!doc) notFound();
 
+        // Import dynamique : BlockRenderer tire blockRegistry.tsx, dont les blocs
+        // "diagram" (Mermaid) et l'éditeur de tableau du builder. getContentComponent
+        // est appelé par la page qui gère TOUTES les routes de cours (fichier .tsx
+        // ou DB) — un import statique ici ferait entrer ce module dans le graphe de
+        // CHAQUE page de cours, y compris celles sans blocs DB, ce que Next.js
+        // traduit par des balises <script async> injectées au premier chargement.
+        const { BlockRenderer } = await import("@/components/builder/BlockRenderer");
         const blocks = doc.blocks;
         return function DbContent() {
             return React.createElement(BlockRenderer, { blocks, currentModule });
