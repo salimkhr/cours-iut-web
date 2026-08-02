@@ -708,3 +708,63 @@ input:-webkit-autofill {
         display: none;
     }
 }
+
+/* ===== Slides — bandeau, surface, rythme =====
+   Les slides sont projetées et lues à distance : elles empruntent la palette
+   de .course-content mais gardent leur propre échelle et leur propre rythme. */
+
+.slide-surface {
+    background: var(--color-bridge-50);
+}
+.dark .slide-surface {
+    background: var(--color-bridge-900);
+}
+
+/* Bandeau titre d'une slide de contenu : bloc plein couleur module.
+   Surcharge nécessaire de `.header-module h1,h2,h3` (globals.css §header-module),
+   qui colore les titres en couleur module : sur un fond module, le titre doit
+   passer en crème, sinon texte invisible sur son propre fond. */
+.slide-banner {
+    background: var(--module-color, var(--color-bridge-500));
+    padding: 1.25rem 2rem 1.15rem;
+}
+.dark .slide-banner {
+    background: var(--module-color-dark, var(--module-color, var(--color-bridge-500)));
+}
+
+.slide-banner :where(h1, h2, h3) {
+    color: var(--color-bridge-50);
+    margin: 0;
+    line-height: 1.05;
+    text-align: left;
+}
+/* Les couleurs module-*-dark sont des pastels clairs calibrés pour du texte
+   brand-dark (≥7.8:1), pas du crème : le texte du bandeau s'inverse en dark.
+   Même règle que .course-section-badge. */
+.dark .slide-banner :where(h1, h2, h3) {
+    color: var(--color-brand-dark);
+}
+
+/* Eyebrow du bandeau — réutilise le pattern documenté dans DESIGN.md
+   (« étiquettes structurelles ») : 600, 0.2em, uppercase. */
+.slide-banner-eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-bridge-50);
+    opacity: 0.78;
+    margin-bottom: 0.3rem;
+}
+.dark .slide-banner-eyebrow {
+    color: var(--color-brand-dark);
+    opacity: 0.72;
+}
+
+/* Corps de slide : le contenu respire, le code garde sa place en bas. */
+.slide-body {
+    padding: 1.75rem 2rem;
+}
+.slide-body > * + * {
+    margin-top: 1.15rem;
+}
