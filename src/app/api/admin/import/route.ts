@@ -2,26 +2,8 @@ import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { connectToDB } from "@/lib/mongodb";
 import { getServerSession } from "@/lib/auth";
-
-type SectionData = {
-    path: string;
-    order?: number;
-    [key: string]: unknown;
-};
-
-type ModuleData = {
-    path: string;
-    sections?: SectionData[];
-    [key: string]: unknown;
-};
-
-type ContentData = {
-    moduleSlug: string;
-    sectionSlug: string;
-    contentType: string;
-    blocks: unknown[];
-    version?: number;
-};
+import { buildModuleOps, buildContentOps } from "@/lib/admin/importOps";
+import type { ModuleData, ContentData } from "@/lib/admin/importOps";
 
 /** Auth par secret partagé (sync inter-environnements), comparaison timing-safe. */
 function hasValidSyncSecret(req: Request): boolean {
@@ -31,37 +13,6 @@ function hasValidSyncSecret(req: Request): boolean {
     const a = Buffer.from(secret);
     const b = Buffer.from(header);
     return a.length === b.length && timingSafeEqual(a, b);
-}
-
-/** Sur un module existant en prod, l'import ne doit jamais changer l'état de publication. */
-function mergeSections(existingSections: SectionData[], importedSections: SectionData[]): SectionData[] {
-    const existingByPath = new Map(existingSections.map((s) => [s.path, s]));
-    const importedPaths = new Set(importedSections.map((s) => s.path));
-
-    const merged = importedSections.map(({ _id, ...sec }) => {
-        void _id;
-        const existing = existingByPath.get(sec.path);
-        if (existing) {
-            return {
-                ...sec,
-                isAvailable: existing.isAvailable ?? false,
-                correctionIsAvailable: existing.correctionIsAvailable ?? false,
-                examenIsLock: existing.examenIsLock ?? false,
-            };
-        }
-        // Nouvelle section : arrive dépubliée quel que soit son état sur staging.
-        return { ...sec, isAvailable: false, correctionIsAvailable: false };
-    });
-
-    const kept = existingSections
-        .filter((s) => !importedPaths.has(s.path))
-        .map(({ _id, ...sec }) => {
-            void _id;
-            return sec as SectionData;
-        });
-
-    return [...kept, ...merged]
-        .sort((a, b) => ((a.order as number) ?? 0) - ((b.order as number) ?? 0));
 }
 
 export async function POST(req: Request): Promise<Response> {
@@ -116,64 +67,20 @@ export async function POST(req: Request): Promise<Response> {
         const db = await connectToDB();
         const col = db.collection("modules");
 
-        let inserted = 0;
-        let updated = 0;
+        const existingModules = await col.find({ path: { $in: paths } }).toArray();
+        const existingByPath = new Map(existingModules.map((m) => [m.path as string, m as unknown as ModuleData]));
 
-        for (const moduleData of modules) {
-            const { _id, sections = [], ...moduleFields } = moduleData;
-            void _id;
-
-            const existing = await col.findOne({ path: moduleFields.path });
-
-            if (!existing) {
-                // Nouveau module : arrive masqué, sections dépubliées.
-                await col.insertOne({
-                    ...moduleFields,
-                    isVisible: false,
-                    sections: sections.map(({ _id: _sid, ...sec }) => ({
-                        ...sec,
-                        isAvailable: false,
-                        correctionIsAvailable: false,
-                    })),
-                });
-                inserted++;
-            } else {
-                await col.updateOne(
-                    { path: moduleFields.path },
-                    {
-                        $set: {
-                            ...moduleFields,
-                            isVisible: existing.isVisible ?? false,
-                            sections: mergeSections(existing.sections ?? [], sections),
-                        },
-                    },
-                );
-                updated++;
-            }
+        const { operations: moduleOps, inserted, updated } = buildModuleOps(existingByPath, modules);
+        if (moduleOps.length > 0) {
+            await col.bulkWrite(moduleOps, { ordered: false });
         }
 
-        let contentsUpserted = 0;
         const contentCol = db.collection("course_content");
-        for (const content of contents) {
-            const key = {
-                moduleSlug: content.moduleSlug,
-                sectionSlug: content.sectionSlug,
-                contentType: content.contentType,
-            };
-            await contentCol.updateOne(
-                key,
-                {
-                    $set: {
-                        blocks: content.blocks,
-                        version: content.version ?? 1,
-                        updatedAt: new Date(),
-                    },
-                    $setOnInsert: { ...key, createdAt: new Date() },
-                },
-                { upsert: true },
-            );
-            contentsUpserted++;
+        const contentOps = buildContentOps(contents);
+        if (contentOps.length > 0) {
+            await contentCol.bulkWrite(contentOps, { ordered: false });
         }
+        const contentsUpserted = contentOps.length;
 
         return NextResponse.json({ inserted, updated, contentsUpserted });
     } catch (error) {
