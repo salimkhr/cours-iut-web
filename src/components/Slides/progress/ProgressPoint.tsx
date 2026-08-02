@@ -4,22 +4,18 @@ import {cn} from "@/lib/utils";
 interface ProgressPointProps {
     isActive: boolean;
     isPast: boolean;
-    isDark: boolean;
 }
 
-export const ProgressPoint = forwardRef<HTMLDivElement, ProgressPointProps>(({ isActive, isPast, isDark }, ref) => (
+export const ProgressPoint = forwardRef<HTMLDivElement, ProgressPointProps>(({isActive, isPast}, ref) => (
     <div
         ref={ref}
         className={cn(
-            "relative w-1.5 h-1.5 rounded-full",
+            "relative w-1.5 h-1.5 rounded-full transition-transform",
             isActive
-                ? cn(
-                    "scale-125",
-                    isDark ? "bg-bridge-50" : "bg-bridge-900"
-                )
+                ? "scale-125 bg-(--module-color) dark:bg-(--module-color-dark)"
                 : isPast
-                    ? "bg-primary/50"
-                    : "bg-muted-foreground/25"
+                    ? "bg-(--module-color)/45 dark:bg-(--module-color-dark)/45"
+                    : "bg-bridge-500/30 dark:bg-bridge-300/25"
         )}
     />
 ));

@@ -1,7 +1,6 @@
 import React from "react";
 import {cn} from "@/lib/utils";
 import {ProgressPoint} from "./ProgressPoint";
-import {useIsDark} from "@/hook/useIsDark";
 import {useMounted} from "@/hook/useMounted";
 
 interface ProgressGroupProps {
@@ -23,14 +22,13 @@ export const ProgressGroup: React.FC<ProgressGroupProps> = ({
                                                             }) => {
 
     const mounted = useMounted();
-    const isDark = useIsDark();
     if (!mounted) return null;
     return (
         <div
             className={cn(
                 "flex flex-col items-center gap-1 p-0.5 rounded-full border",
                 isCurrentSlide
-                    ? "border-primary/30 bg-primary/5"
+                    ? "border-(--module-color)/35 dark:border-(--module-color-dark)/35"
                     : "border-transparent"
             )}
         >
@@ -44,7 +42,6 @@ export const ProgressGroup: React.FC<ProgressGroupProps> = ({
                         ref={isActive ? activeRef : null}
                         isActive={isActive}
                         isPast={isPast}
-                        isDark={isDark}
                     />
                 );
             })}
