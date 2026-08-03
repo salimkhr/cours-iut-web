@@ -1,4 +1,6 @@
 /// <reference types="bun-types" />
+import {readFileSync} from "node:fs";
+import {join} from "node:path";
 import React from "react";
 import {expect, test} from "bun:test";
 import {renderToStaticMarkup} from "react-dom/server";
@@ -54,6 +56,24 @@ test("fond le pont dans la surface plutot que d'en montrer le cadre", () => {
     // Le PNG a un fond creme opaque : sans masque, son cadre se lit comme un
     // rectangle net dans le coin bas droit de chaque slide.
     expect(html).toContain("radial-gradient");
+});
+
+test("garde le fond dark staging des slides de contenu", () => {
+    const html = renderToStaticMarkup(
+        <SlidesContext.Provider value={contextValue}>
+            <SlideScreen title="Plan">
+                <p>Contenu</p>
+            </SlideScreen>
+        </SlidesContext.Provider>
+    );
+    const globals = readFileSync(join(process.cwd(), "src/app/globals.css"), "utf8");
+
+    expect(html).toContain("dark:from-bridge-900");
+    expect(html).toContain("dark:via-bridge-900/88");
+    expect(html).toContain("dark:to-bridge-900/44");
+    expect(html).not.toContain("dark:from-bridge-800");
+    expect(globals).toMatch(/\.dark \.slide-surface \{\s*background: var\(--color-bridge-900\);\s*\}/);
+    expect(globals).not.toMatch(/\.dark \.slide-surface \{\s*background: var\(--color-bridge-800\);/);
 });
 
 test("rend une scene a hauteur fixe qui ne scrolle pas", () => {

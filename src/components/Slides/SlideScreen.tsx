@@ -40,7 +40,7 @@ export const SlideScreen: React.FC<SlideScreenProps> = ({title, order, children}
                 aria-hidden="true"
                 className="absolute inset-0 z-0 select-none pointer-events-none overflow-hidden"
             >
-                <div className="absolute inset-0 bg-linear-to-br from-bridge-50 via-bridge-50/86 to-bridge-50/30 dark:from-bridge-800 dark:via-bridge-800/88 dark:to-bridge-800/44"/>
+                <div className="absolute inset-0 bg-linear-to-br from-bridge-50 via-bridge-50/86 to-bridge-50/30 dark:from-bridge-900 dark:via-bridge-900/88 dark:to-bridge-900/44"/>
                 {/* Le PNG du pont a un fond crème opaque, très proche de bridge-50
                     mais pas identique : sans masque, son cadre se lit comme un
                     rectangle net dans le coin. Le fondu radial l'ancre au coin

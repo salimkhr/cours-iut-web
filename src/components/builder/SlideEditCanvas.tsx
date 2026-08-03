@@ -67,7 +67,7 @@ export function SlideEditCanvas({ slide, position, order, onInsertAfter }: Slide
                         '--module-color-dark': moduleColorDark || moduleColorLight || `var(--color-${moduleSlug})`,
                     } as React.CSSProperties : undefined}
                 >
-                    <div className="aspect-video w-full max-w-5xl">
+                    <div className="aspect-[8/5] w-full max-w-6xl">
                         <ZoomedSlide slide={slide} mode="canvas-edit" order={order} renderChildren={renderChildren} />
                     </div>
                 </div>

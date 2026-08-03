@@ -27,7 +27,10 @@ beforeAll(async () => {
 afterAll(async () => { await stopDb?.(); }, 10000);
 
 beforeEach(() => { session = null; });
-afterEach(async () => { await db.collection("modules").deleteMany({}); });
+afterEach(async () => {
+    await db.collection("modules").deleteMany({});
+    await db.collection("course_content").deleteMany({});
+});
 
 const ADMIN_SESSION = { user: { id: "u1", role: "admin" } };
 
@@ -47,8 +50,7 @@ describe("GET /api/admin/export", () => {
         const res = await exportModules(makeGetReq(), {});
         expect(res.status).toBe(200);
         const body = await res.json();
-        expect(Array.isArray(body)).toBe(true);
-        expect(body).toHaveLength(0);
+        expect(body).toEqual({ version: 2, modules: [], contents: [] });
     });
 
     test("200 avec modules sans _id", async () => {
@@ -61,9 +63,10 @@ describe("GET /api/admin/export", () => {
         const res = await exportModules(makeGetReq(), {});
         expect(res.status).toBe(200);
         const body = await res.json();
-        expect(body).toHaveLength(1);
-        expect(body[0]._id).toBeUndefined();
-        expect(body[0].path).toBe("javascript");
+        expect(body.modules).toHaveLength(1);
+        expect(body.modules[0]._id).toBeUndefined();
+        expect(body.modules[0].path).toBe("javascript");
+        expect(body.contents).toEqual([]);
     });
 
     test("header Content-Disposition présent", async () => {
@@ -82,7 +85,7 @@ describe("GET /api/admin/export", () => {
         const res = await exportModules(makeGetReq(), {});
         expect(res.status).toBe(200);
         const body = await res.json();
-        expect(body[0].sections[0]._id).toBeUndefined();
+        expect(body.modules[0].sections[0]._id).toBeUndefined();
     });
 });
 

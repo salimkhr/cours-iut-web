@@ -17,6 +17,8 @@ export interface FieldDef {
     type: "text" | "textarea" | "number" | "select" | "boolean" | "array-of-strings" | "image-upload" | "lucide-icon";
     options?: string[];
     placeholder?: string;
+    /** Hauteur visible des champs textarea dans le panneau admin. */
+    rows?: number;
     /** Si vrai, le champ accepte du markdown inline (**gras**, _em_, `code`, [lien](url)).
      *  Utilisé par DynamicPropsEditor pour router vers InlineTextEditor. */
     inlineMarkdown?: boolean;
@@ -224,7 +226,7 @@ export const blockDefs: BlockDef[] = [
         }),
         fields: [
             { key: "language", label: "Langage", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx", "rust"] },
-            { key: "code", label: "Code", type: "textarea", placeholder: "const x = 42;" },
+            { key: "code", label: "Code", type: "textarea", rows: 15, placeholder: "const x = 42;" },
             { key: "filename", label: "Nom de fichier", type: "text", placeholder: "app.js" },
             { key: "showLineNumbers", label: "Numéros de ligne", type: "boolean" },
             { key: "collapsible", label: "Repliable", type: "boolean" },
@@ -243,7 +245,7 @@ export const blockDefs: BlockDef[] = [
         }),
         fields: [
             { key: "language", label: "Langage", type: "select", options: ["html", "css"] },
-            { key: "code", label: "Code", type: "textarea", placeholder: "<button>Cliquez</button>" },
+            { key: "code", label: "Code", type: "textarea", rows: 15, placeholder: "<button>Cliquez</button>" },
         ],
     },
     {
@@ -275,7 +277,7 @@ export const blockDefs: BlockDef[] = [
         fields: [
             { key: "language", label: "Langage", type: "select", options: ["html", "css", "javascript", "php", "sql", "json", "rust"] },
             { key: "filename", label: "Nom de fichier", type: "text", placeholder: "game.html" },
-            { key: "code", label: "Contenu du fichier", type: "textarea" },
+            { key: "code", label: "Contenu du fichier", type: "textarea", rows: 15 },
         ],
     },
     {
@@ -356,7 +358,7 @@ export const blockDefs: BlockDef[] = [
         }),
         fields: [
             { key: "language", label: "Langage", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx", "rust"] },
-            { key: "code", label: "Code", type: "textarea", placeholder: "const x = 42;" },
+            { key: "code", label: "Code", type: "textarea", rows: 15, placeholder: "const x = 42;" },
             { key: "highlight", label: "Étapes (highlight)", type: "text", placeholder: "1-3 | 5-7 | 9" },
         ],
     },

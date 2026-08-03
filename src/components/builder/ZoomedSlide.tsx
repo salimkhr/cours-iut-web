@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { SlideScreen } from "@/components/Slides/SlideScreen";
 import { PREVIEW_CONTEXT, SlideChildrenRenderer } from "@/components/builder/SlideChildrenRenderer";
 import { SlidesContext } from "@/components/Slides/context/SlidesContext";
-import { computeSlideScale, SLIDE_W, SLIDE_H, type ZoomMode } from "@/components/builder/slideScale";
+import { computeSlideScale, getSlideFrameSize, type ZoomMode } from "@/components/builder/slideScale";
 import type { Block } from "@/types/CourseContent";
 
 interface ZoomedSlideProps {
@@ -50,6 +50,7 @@ export function ZoomedSlide({ slide, mode, order, renderChildren, className }: Z
     }, [mode]);
 
     const children = slide.children ?? [];
+    const frame = getSlideFrameSize(mode);
 
     return (
         <div ref={outerRef} className={className} style={{ width: "100%", height: "100%" }}>
@@ -59,8 +60,8 @@ export function ZoomedSlide({ slide, mode, order, renderChildren, className }: Z
                 <div
                     className="origin-top-left overflow-hidden rounded-lg bg-card shadow-lg"
                     style={{
-                        width: SLIDE_W,
-                        height: SLIDE_H,
+                        width: frame.width,
+                        height: frame.height,
                         transform: `scale(${scale})`,
                         pointerEvents: mode === "thumbnail" ? "none" : "auto",
                     }}

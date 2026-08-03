@@ -36,11 +36,12 @@ interface DynamicPropsEditorProps {
  * ne remonte la valeur qu'à la sortie du champ.
  */
 function BufferedTextarea({
-    id, value, placeholder, className, onCommit,
+    id, value, placeholder, rows, className, onCommit,
 }: {
     id: string;
     value: string;
     placeholder?: string;
+    rows: number;
     className?: string;
     onCommit: (value: string) => void;
 }) {
@@ -58,7 +59,7 @@ function BufferedTextarea({
             id={id}
             value={draft}
             placeholder={placeholder}
-            rows={4}
+            rows={rows}
             className={className}
             onChange={(e) => setDraft(e.target.value)}
             onFocus={() => { focused.current = true; }}
@@ -93,6 +94,7 @@ export function DynamicPropsEditor({ fields, props, onChange, filterTypes }: Dyn
                                 id={field.key}
                                 value={String(value ?? "")}
                                 placeholder={field.placeholder}
+                                rows={field.rows ?? 4}
                                 onCommit={(v) => set(field.key, v)}
                                 className={`${inputCls} h-auto resize-none`}
                             />

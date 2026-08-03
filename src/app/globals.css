@@ -725,12 +725,8 @@ input:-webkit-autofill {
 .slide-surface {
     background: var(--color-bridge-50);
 }
-/* bridge-800 est exactement la couleur de fond de `pont-dark.png` (#3f2818) :
-   le filigrane du pont se pose alors sans laisser voir son cadre. C'est aussi
-   la surface de card documentée en dark mode (DESIGN.md §2) — une slide est
-   une surface, pas un champ de saisie (bridge-900). */
 .dark .slide-surface {
-    background: var(--color-bridge-800);
+    background: var(--color-bridge-900);
 }
 
 /* Bandeau de titre de slide — même vocabulaire « badge + filet » que le cours
