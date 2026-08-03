@@ -16,7 +16,7 @@ export const slideTextSizes = {
 
     // Contenu courant (également utilisé par les items de liste)
     text: {
-        default: "text-lg md:text-2xl lg:text-3xl",
+        default: "text-2xl md:text-[1.75rem] lg:text-[2rem]",
         large: "text-xl md:text-3xl lg:text-4xl",
         xl: "text-2xl md:text-4xl lg:text-5xl",
     },

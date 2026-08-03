@@ -7,20 +7,24 @@ import { EditableBlock } from "@/components/builder/EditableBlock";
 import { ContextualTopBar } from "@/components/builder/ContextualTopBar";
 import { CodeEditorModal } from "@/components/builder/CodeEditorModal";
 import { SlideChildItem } from "@/components/builder/SlideChildrenRenderer";
+import { SlidePropsPanel } from "@/components/builder/SlidePropsPanel";
 import type { InlineTextEditorHandle } from "@/components/builder/InlineTextEditor";
 import type { Block } from "@/types/CourseContent";
 
 interface SlideEditCanvasProps {
     slide: Block;
     position: { index: number; total: number };
+    /** Rang de section (le badge suit le titre, pas la position). */
+    order?: number;
     onInsertAfter: (parentId: string | null, index: number) => void;
 }
 
-export function SlideEditCanvas({ slide, position, onInsertAfter }: SlideEditCanvasProps) {
+export function SlideEditCanvas({ slide, position, order, onInsertAfter }: SlideEditCanvasProps) {
     const updateBlock = useBuilderStore((s) => s.updateBlock);
     const moduleSlug = useBuilderStore((s) => s.moduleSlug);
     const moduleColorLight = useBuilderStore((s) => s.moduleColorLight);
     const moduleColorDark = useBuilderStore((s) => s.moduleColorDark);
+    const selectedId = useBuilderStore((s) => s.selectedId);
     const [activeEditor, setActiveEditor] = useState<InlineTextEditorHandle | null>(null);
     const [codeModal, setCodeModal] = useState<{ id: string; value: string; language: string } | null>(null);
 
@@ -55,16 +59,20 @@ export function SlideEditCanvas({ slide, position, onInsertAfter }: SlideEditCan
                 slidePosition={position}
             />
 
-            <div
-                className={`flex min-h-0 flex-1 items-center justify-center bg-bridge-900 p-8${moduleSlug ? " header-module" : ""}`}
-                style={moduleSlug ? {
-                    '--module-color': moduleColorLight || `var(--color-${moduleSlug})`,
-                    '--module-color-dark': moduleColorDark || moduleColorLight || `var(--color-${moduleSlug})`,
-                } as React.CSSProperties : undefined}
-            >
-                <div className="aspect-video w-full max-w-5xl">
-                    <ZoomedSlide slide={slide} mode="canvas-edit" renderChildren={renderChildren} />
+            <div className="flex min-h-0 flex-1">
+                <div
+                    className={`flex min-h-0 flex-1 items-center justify-center bg-bridge-900 p-8${moduleSlug ? " header-module" : ""}`}
+                    style={moduleSlug ? {
+                        '--module-color': moduleColorLight || `var(--color-${moduleSlug})`,
+                        '--module-color-dark': moduleColorDark || moduleColorLight || `var(--color-${moduleSlug})`,
+                    } as React.CSSProperties : undefined}
+                >
+                    <div className="aspect-video w-full max-w-5xl">
+                        <ZoomedSlide slide={slide} mode="canvas-edit" order={order} renderChildren={renderChildren} />
+                    </div>
                 </div>
+
+                <SlidePropsPanel slideId={slide.id} selectedId={selectedId} />
             </div>
 
             {codeModal && (

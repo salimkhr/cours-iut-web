@@ -116,7 +116,7 @@ export const containerRules: Record<string, ContainerRule> = {
     "collapsible": { allowedChildren: "any" },
     "section": { allowedChildren: "any" },
     "slide": {
-        allowedChildren: ["slide-text", "slide-code", "slide-list", "slide-note", "columns"],
+        allowedChildren: ["slide-text", "slide-code", "slide-list", "slide-note", "columns", "diagram"],
         allowedParents: [null],
     },
     "slide-text": { allowedChildren: [], allowedParents: ["slide", "column"] },

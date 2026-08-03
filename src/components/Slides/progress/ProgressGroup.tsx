@@ -26,7 +26,7 @@ export const ProgressGroup: React.FC<ProgressGroupProps> = ({
     return (
         <div
             className={cn(
-                "flex flex-col items-center gap-1 p-0.5 rounded-full border",
+                "flex flex-col items-center gap-1.5 p-1 rounded-full border",
                 isCurrentSlide
                     ? "border-(--module-color)/35 dark:border-(--module-color-dark)/35"
                     : "border-transparent"

@@ -12,8 +12,7 @@ export const SlideHeading: React.FC<SlideHeadingProps> = ({
                                                               children,
                                                               ...props
                                                           }) => {
-    // Le niveau 1 est rendu dans .slide-banner, qui impose déjà sa couleur
-    // (crème en light, brand-dark en dark) : on ne la fixe pas ici.
+    // Le niveau 1 peut être surchargé par SlideScreen selon la DA du deck.
     const styles: Record<number, string> = {
         1: slideTextSizes.heading[1],
         2: `${slideTextSizes.heading[2]} text-brand-dark dark:text-brand-light`,

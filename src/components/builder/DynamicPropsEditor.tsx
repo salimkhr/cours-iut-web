@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -25,6 +26,50 @@ interface DynamicPropsEditorProps {
     filterTypes?: Array<FieldDef["type"]>;
 }
 
+/**
+ * Textarea à validation différée.
+ *
+ * Les champs longs (le code d'un bloc `code` / `slide-code`) écrivaient dans le
+ * store à CHAQUE frappe. Chaque écriture re-rend le canvas entier, coloration
+ * syntaxique comprise : sur quelques centaines de caractères le coût devient
+ * quadratique et l'onglet se fige. On tamponne donc la saisie localement et on
+ * ne remonte la valeur qu'à la sortie du champ.
+ */
+function BufferedTextarea({
+    id, value, placeholder, className, onCommit,
+}: {
+    id: string;
+    value: string;
+    placeholder?: string;
+    className?: string;
+    onCommit: (value: string) => void;
+}) {
+    const [draft, setDraft] = useState(value);
+    const focused = useRef(false);
+
+    // Resynchronise sur les changements venus d'ailleurs (autre bloc
+    // sélectionné, undo…), sans jamais écraser une saisie en cours.
+    useEffect(() => {
+        if (!focused.current) setDraft(value);
+    }, [value]);
+
+    return (
+        <Textarea
+            id={id}
+            value={draft}
+            placeholder={placeholder}
+            rows={4}
+            className={className}
+            onChange={(e) => setDraft(e.target.value)}
+            onFocus={() => { focused.current = true; }}
+            onBlur={() => {
+                focused.current = false;
+                if (draft !== value) onCommit(draft);
+            }}
+        />
+    );
+}
+
 const labelCls = "text-sm font-semibold text-brand-dark dark:text-bridge-200";
 const inputCls = "bg-bridge-100/60 dark:bg-bridge-800/60 border-bridge-500/45 focus-visible:ring-1 focus-visible:ring-bridge-500/50";
 
@@ -44,12 +89,11 @@ export function DynamicPropsEditor({ fields, props, onChange, filterTypes }: Dyn
                     return (
                         <div key={field.key} className="flex flex-col gap-1.5">
                             <Label htmlFor={field.key} className={labelCls}>{field.label}</Label>
-                            <Textarea
+                            <BufferedTextarea
                                 id={field.key}
                                 value={String(value ?? "")}
                                 placeholder={field.placeholder}
-                                onChange={(e) => set(field.key, e.target.value)}
-                                rows={4}
+                                onCommit={(v) => set(field.key, v)}
                                 className={`${inputCls} h-auto resize-none`}
                             />
                         </div>

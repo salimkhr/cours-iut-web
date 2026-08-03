@@ -13,6 +13,7 @@ import { useEditorShortcuts } from "@/components/builder/hooks/useEditorShortcut
 import { CourseEditCanvas } from "@/components/builder/CourseEditCanvas";
 import { SlideEditCanvas } from "@/components/builder/SlideEditCanvas";
 import { SlideThumbnailList } from "@/components/builder/SlideThumbnailList";
+import { computeSlideOrders } from "@/components/Slides/utils/slideOrder";
 import type { Block } from "@/types/CourseContent";
 
 interface ApiValidationDetail { path: string; message: string }
@@ -239,6 +240,15 @@ export function BuilderPage({
         setActiveSlide(blk.id);
     }, [insertBlock, setActiveSlide]);
 
+    // Le raccourci Ctrl+↑/↓ agit sur `selectedId`, or cliquer une vignette ne
+    // pose que `activeSlideId` : il n'atteignait donc jamais une slide. On
+    // déplace ici le bloc slide par son id, indépendamment de la sélection.
+    const moveSlide = useCallback((id: string, direction: "up" | "down") => {
+        if (direction === "up") moveBlockUp(id);
+        else moveBlockDown(id);
+        setActiveSlide(id);
+    }, [moveBlockUp, moveBlockDown, setActiveSlide]);
+
     const handleDelete = useCallback(() => {
         const { selectedId } = useBuilderStore.getState();
         if (selectedId) deleteBlock(selectedId);
@@ -303,6 +313,13 @@ export function BuilderPage({
             style={{
                 "--mod-color": colorLight ?? `var(--color-${moduleSlug})`,
                 "--mod-color-dark": colorDark ?? colorLight ?? `var(--color-${moduleSlug})`,
+                // Mêmes variables que le scope `header-${path}` des pages cours et
+                // slide : l'aperçu prend la couleur du module (badge de titre,
+                // filet, en-tête de CodeCard) au lieu de la brique par défaut.
+                // La classe `header-module`, elle, n'est PAS posée ici : elle
+                // recolorerait aussi les titres du chrome de l'éditeur.
+                "--module-color": colorLight ?? `var(--color-${moduleSlug})`,
+                "--module-color-dark": colorDark ?? colorLight ?? `var(--color-${moduleSlug})`,
             } as React.CSSProperties}
         >
             <EditorToolbar
@@ -326,11 +343,15 @@ export function BuilderPage({
                             activeId={activeSlide?.id ?? null}
                             onSelect={setActiveSlide}
                             onAdd={addSlide}
+                            onMove={moveSlide}
                         />
                         {activeSlide ? (
                             <SlideEditCanvas
                                 slide={activeSlide}
                                 position={{ index: slides.findIndex((s) => s.id === activeSlide.id), total: slides.length }}
+                                order={computeSlideOrders(slides.map((s) => String(s.props.title ?? "")))[
+                                    slides.findIndex((s) => s.id === activeSlide.id)
+                                ]}
                                 onInsertAfter={openInsertAt}
                             />
                         ) : (

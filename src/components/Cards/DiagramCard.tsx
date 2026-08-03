@@ -7,6 +7,7 @@ import Text from "@/components/ui/Text";
 import {useMounted} from "@/hook/useMounted";
 import type Module from "@/types/Module";
 import DiagramSkeleton from "@/components/Cards/DiagramSkeleton";
+import {mermaidThemeVariables} from "@/lib/mermaidTheme";
 
 type DiagramCardProps = {
     header?: string;
@@ -16,6 +17,7 @@ type DiagramCardProps = {
 
 export default function DiagramCard({header, chart, currentModule}: DiagramCardProps) {
     const mounted = useMounted();
+    const hostRef = React.useRef<HTMLDivElement>(null);
     // Exception au pattern "Tailwind dark: only" : Mermaid s'initialise via un
     // appel JS impératif `mermaid.initialize({ theme })` qui prend une string,
     // pas une classe CSS. On a donc besoin de lire le thème en JS via next-themes.
@@ -38,6 +40,14 @@ export default function DiagramCard({header, chart, currentModule}: DiagramCardP
 
         mermaid.initialize({
             theme: mermaidTheme,
+            // Les thèmes livrés de Mermaid sortent en lavande/bleu : hors palette
+            // et contraires à « La Règle des Couleurs Chaudes » (DESIGN.md).
+            // Mêmes variables que SlideDiagram, pour que cours et slides rendent
+            // un diagramme identique.
+            themeVariables: mermaidThemeVariables(
+                currentTheme === "dark",
+                hostRef.current?.closest(".header-module")
+            ),
             startOnLoad: false,
             securityLevel: 'loose',
             fontFamily: 'inherit'
@@ -70,9 +80,9 @@ export default function DiagramCard({header, chart, currentModule}: DiagramCardP
             header={<Text className="text-white">{header}</Text>}
             content={
                 svg ? (
-                    <div dangerouslySetInnerHTML={{__html: svg}} className="w-full mx-auto overflow-x-auto [&_svg]:max-w-full"/>
+                    <div ref={hostRef} dangerouslySetInnerHTML={{__html: svg}} className="w-full mx-auto overflow-x-auto [&_svg]:max-w-full"/>
                 ) : (
-                    <DiagramSkeleton/>
+                    <div ref={hostRef}><DiagramSkeleton/></div>
                 )
             }
             currentModule={currentModule}

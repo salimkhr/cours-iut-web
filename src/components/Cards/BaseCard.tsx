@@ -36,9 +36,15 @@ export default function BaseCard({
     const prefersReducedMotion = useReducedMotion();
     const isDark = useIsDark();
 
+    // Sans module explicite, on lit le scope `header-${path}` de l'ancêtre avant
+    // de retomber sur le brand : une card rendue dans une page de module — cours,
+    // slide, aperçu builder — porte la couleur de ce module, jamais la brique par
+    // défaut. C'est ce qui désalignait l'en-tête de code entre cours et slides.
     const accentColor = currentModule
         ? moduleColor(currentModule, isDark ? 'dark' : 'light')
-        : 'var(--color-brand-primary)';
+        : isDark
+            ? 'var(--module-color-dark, var(--module-color, var(--color-brand-accent)))'
+            : 'var(--module-color, var(--color-brand-primary))';
 
     return (
         <motion.div

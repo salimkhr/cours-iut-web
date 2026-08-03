@@ -2,13 +2,16 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { SlideScreen } from "@/components/Slides/SlideScreen";
-import { SlideChildrenRenderer } from "@/components/builder/SlideChildrenRenderer";
+import { PREVIEW_CONTEXT, SlideChildrenRenderer } from "@/components/builder/SlideChildrenRenderer";
+import { SlidesContext } from "@/components/Slides/context/SlidesContext";
 import { computeSlideScale, SLIDE_W, SLIDE_H, type ZoomMode } from "@/components/builder/slideScale";
 import type { Block } from "@/types/CourseContent";
 
 interface ZoomedSlideProps {
     slide: Block;
     mode: ZoomMode;
+    /** Rang de la slide dans le deck, affiché dans le badge du bandeau de titre. */
+    order?: number;
     /** Rendu enfant alternatif (mode canvas-edit : blocs enveloppés d'EditableBlock). */
     renderChildren?: (children: Block[]) => React.ReactNode;
     className?: string;
@@ -20,7 +23,7 @@ interface ZoomedSlideProps {
  * Le scale crée un stacking context isolé → toute surface flottante ouverte
  * depuis l'intérieur DOIT être portée hors de ce conteneur (Dialog radix le fait).
  */
-export function ZoomedSlide({ slide, mode, renderChildren, className }: ZoomedSlideProps) {
+export function ZoomedSlide({ slide, mode, order, renderChildren, className }: ZoomedSlideProps) {
     const outerRef = useRef<HTMLDivElement>(null);
     const [scale, setScale] = useState<number | null>(null);
 
@@ -62,9 +65,15 @@ export function ZoomedSlide({ slide, mode, renderChildren, className }: ZoomedSl
                         pointerEvents: mode === "thumbnail" ? "none" : "auto",
                     }}
                 >
-                    <SlideScreen title={String(slide.props.title ?? "")}>
-                        {renderChildren ? renderChildren(children) : <SlideChildrenRenderer blocks={children} />}
-                    </SlideScreen>
+                    {/* SlideScreen consomme lui-meme le contexte (eyebrow module
+                        et section) : le provider doit l'englober, pas seulement
+                        ses enfants, sinon l'apercu du builder leve
+                        « useSlides must be used within SlidesContext.Provider ». */}
+                    <SlidesContext.Provider value={PREVIEW_CONTEXT}>
+                        <SlideScreen title={String(slide.props.title ?? "")} order={order}>
+                            {renderChildren ? renderChildren(children) : <SlideChildrenRenderer blocks={children} />}
+                        </SlideScreen>
+                    </SlidesContext.Provider>
                 </div>
             )}
         </div>

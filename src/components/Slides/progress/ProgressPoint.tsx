@@ -10,9 +10,11 @@ export const ProgressPoint = forwardRef<HTMLDivElement, ProgressPointProps>(({is
     <div
         ref={ref}
         className={cn(
-            "relative w-1.5 h-1.5 rounded-full transition-transform",
+            // 6px était illisible, a fortiori projeté au fond d'une salle :
+            // le rail est le seul repère de position pendant une présentation.
+            "relative w-2.5 h-2.5 rounded-full transition-transform",
             isActive
-                ? "scale-125 bg-(--module-color) dark:bg-(--module-color-dark)"
+                ? "scale-140 bg-(--module-color) dark:bg-(--module-color-dark)"
                 : isPast
                     ? "bg-(--module-color)/45 dark:bg-(--module-color-dark)/45"
                     : "bg-bridge-500/30 dark:bg-bridge-300/25"

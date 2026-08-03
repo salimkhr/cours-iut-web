@@ -17,6 +17,9 @@ export interface CodeCardProps {
     currentModule?: Module;
     collapsible?: boolean;
     highlightLines?: string;
+    /** Copier / Télécharger / Afficher. Sans objet quand le bloc est projeté
+     *  (slides) : personne ne clique sur un vidéoprojecteur. */
+    showActions?: boolean;
 }
 
 export default function CodeCard({
@@ -29,6 +32,7 @@ export default function CodeCard({
                                      currentModule,
                                      collapsible = false,
                                      highlightLines,
+                                     showActions = true,
                                  }: CodeCardProps) {
     const [copied, setCopied] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -92,6 +96,7 @@ export default function CodeCard({
             </div>
 
             {/* Actions */}
+            {showActions && (
             <div className="flex items-center gap-0.5 shrink-0">
                 {collapsible && isLongFile && (
                     <button
@@ -124,6 +129,7 @@ export default function CodeCard({
                     <span className="hidden sm:inline">{copied ? 'Copié !' : 'Copier'}</span>
                 </button>
             </div>
+            )}
         </div>
     );
 
@@ -167,7 +173,9 @@ export default function CodeCard({
     };
 
     const content = (
-        <div className="w-full overflow-x-auto">
+        // `data-code-scroll` : point d'accroche stable pour les surfaces qui
+        // doivent piloter le défilement du code (slides, étapes de highlight).
+        <div data-code-scroll className="w-full overflow-x-auto">
             {collapsible && isLongFile && !isExpanded ? (
                 <div className="py-10 text-center">
                     <p className="text-sm font-mono text-bridge-500 dark:text-bridge-400">

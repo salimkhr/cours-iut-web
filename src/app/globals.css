@@ -353,8 +353,13 @@ body {
 
 /* Titre de section — badge lettre/numéro + filet pleine largeur (rendu DB).
    Direction « badge + filet » : la couleur module est portée par le badge,
-   le titre reste en encre neutre pour une hiérarchie nette et scannable. */
-.course-content .course-section-head {
+   le titre reste en encre neutre pour une hiérarchie nette et scannable.
+
+   Ce vocabulaire est partagé avec les slides : un titre de slide EST un titre
+   de section, projeté. Le scope `:is(.course-content, .slide-surface)` est donc
+   la seule source de vérité des deux côtés — pas de copie à maintenir. Les
+   slides n'ajustent que l'échelle (voir §Slides plus bas). */
+:is(.course-content, .slide-surface) .course-section-head {
     display: flex;
     align-items: flex-end;
     gap: 0;
@@ -362,7 +367,7 @@ body {
 /* Le titre (et le pill projet) occupent la largeur restante ; le filet vit
    sur ce conteneur (bottom-aligné, sans gap avec le badge) → il démarre au
    coin bas-droit du badge, sans courir sous lui, et file jusqu'au bord. */
-.course-content .course-section-headline {
+:is(.course-content, .slide-surface) .course-section-headline {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -371,22 +376,26 @@ body {
     flex-wrap: wrap;
     padding-left: 0.75rem;
 }
-.course-content .course-section-head--top .course-section-headline {
+:is(.course-content, .slide-surface) .course-section-head--top .course-section-headline {
     padding-bottom: 0;
     border-bottom: 2px solid var(--module-color);
 }
-.dark .course-content .course-section-head--top .course-section-headline {
+.dark :is(.course-content, .slide-surface) .course-section-head--top .course-section-headline {
     border-bottom-color: var(--module-color-dark, var(--module-color));
 }
-.course-content .course-section-head :where(h2, h3, h4) {
+/* h1 inclus pour les slides. Cette règle doit aussi battre `.header-module h1`
+   (§header-module), qui colore en couleur module et centre : sur un titre à
+   badge, l'encre reste neutre et l'axe reste à gauche. */
+:is(.course-content, .slide-surface) .course-section-head :where(h1, h2, h3, h4) {
     color: var(--color-brand-dark);
+    text-align: left;
     margin-bottom: 0;
     line-height: 1;
 }
-.dark .course-content .course-section-head :where(h2, h3, h4) {
+.dark :is(.course-content, .slide-surface) .course-section-head :where(h1, h2, h3, h4) {
     color: var(--color-brand-light);
 }
-.course-content .course-section-badge {
+:is(.course-content, .slide-surface) .course-section-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -404,7 +413,7 @@ body {
     line-height: 1;
     box-shadow: 0 1px 2px rgba(147, 97, 58, 0.25);
 }
-.dark .course-content .course-section-badge {
+.dark :is(.course-content, .slide-surface) .course-section-badge {
     background: var(--module-color-dark, var(--module-color));
     /* Les couleurs module-*-dark sont calibrées pour du texte brand-dark
        (≥7.8:1), pas blanc — même bascule que SectionCard (dark:text-brand-dark). */
@@ -414,10 +423,10 @@ body {
 /* Badge de niveau 2 : seul le coin bas-droit est carré (raccord net avec le
    filet qui part de là) ; le coin bas-gauche garde son radius. Le padding-bottom
    (box-sizing border-box) remonte la lettre pour l'aligner sur le texte du titre. */
-.course-content .course-section-head--top .course-section-badge {
+:is(.course-content, .slide-surface) .course-section-head--top .course-section-badge {
     border-bottom-right-radius: 0;
 }
-.course-content .course-section-badge--sub {
+:is(.course-content, .slide-surface) .course-section-badge--sub {
     width: 1.6rem;
     height: 1.6rem;
     border-radius: 0.375rem;
@@ -426,7 +435,7 @@ body {
     color: var(--module-color);
     box-shadow: none;
 }
-.dark .course-content .course-section-badge--sub {
+.dark :is(.course-content, .slide-surface) .course-section-badge--sub {
     background: color-mix(in srgb, var(--module-color-dark, var(--module-color)) 24%, transparent);
     color: var(--module-color-dark, var(--module-color));
 }
@@ -716,57 +725,58 @@ input:-webkit-autofill {
 .slide-surface {
     background: var(--color-bridge-50);
 }
+/* bridge-800 est exactement la couleur de fond de `pont-dark.png` (#3f2818) :
+   le filigrane du pont se pose alors sans laisser voir son cadre. C'est aussi
+   la surface de card documentée en dark mode (DESIGN.md §2) — une slide est
+   une surface, pas un champ de saisie (bridge-900). */
 .dark .slide-surface {
-    background: var(--color-bridge-900);
+    background: var(--color-bridge-800);
 }
 
-/* Bandeau titre d'une slide de contenu : bloc plein couleur module.
-   Surcharge nécessaire de `.header-module h1,h2,h3` (globals.css §header-module),
-   qui colore les titres en couleur module : sur un fond module, le titre doit
-   passer en crème, sinon texte invisible sur son propre fond. */
-.slide-banner {
-    background: var(--module-color, var(--color-bridge-500));
-    padding: 1.25rem 2rem 1.15rem;
+/* Bandeau de titre de slide — même vocabulaire « badge + filet » que le cours
+   (§course-section-head, source unique), remonté à l'échelle de projection :
+   le titre passe de ~30px à ~48px, le badge et le filet suivent. */
+.slide-surface .course-section-badge {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.5rem;
 }
-.dark .slide-banner {
-    background: var(--module-color-dark, var(--module-color, var(--color-bridge-500)));
-}
-
-.slide-banner h1,
-.slide-banner h2,
-.slide-banner h3 {
-    color: var(--color-bridge-50);
-    margin: 0;
-    line-height: 1.05;
-    text-align: left;
-}
-/* Les couleurs module-*-dark sont des pastels clairs calibrés pour du texte
-   brand-dark (≥7.8:1), pas du crème : le texte du bandeau s'inverse en dark.
-   Même règle que .course-section-badge. */
-.dark .slide-banner h1,
-.dark .slide-banner h2,
-.dark .slide-banner h3 {
-    color: var(--color-brand-dark);
+.slide-surface .course-section-head--top .course-section-headline {
+    border-bottom-width: 3px;
+    padding-left: 1rem;
 }
 
-/* Eyebrow du bandeau — réutilise le pattern documenté dans DESIGN.md
-   (« étiquettes structurelles ») : 600, 0.2em, uppercase. */
-.slide-banner-eyebrow {
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-bridge-50);
-    margin-bottom: 0.3rem;
-}
-.dark .slide-banner-eyebrow {
-    color: var(--color-brand-dark);
-}
-
-/* Corps de slide : le contenu respire, le code garde sa place en bas. */
+/* Corps de slide : le contenu respire, le code garde sa place en bas.
+   Colonne flex à hauteur bornée (`min-height: 0`) pour que les blocs denses
+   — code, diagramme — se compriment dans la scène au lieu de la faire déborder. */
 .slide-body {
-    padding: 1.75rem 2rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    /* Gouttière verticale réduite : elle s'ajoutait au padding du cadre de
+       slide, sans rien séparer. Sur une slide de code, chaque rem rendue au
+       corps est une ligne lisible de plus. */
+    padding: 1rem 2rem;
 }
 .slide-body > * + * {
     margin-top: 1.15rem;
+}
+
+/* Le bloc de code d'une slide défile pendant les étapes (`highlight`). C'est le
+   CONTENU de la card qui défile, pas la card : sinon son en-tête et sa bordure
+   basse sortent du cadre visible, et le bloc se lit comme tronqué. La card garde
+   donc son cadre complet, le code coulisse dedans. */
+.slide-code-container [data-slot="card"] {
+    height: 100%;
+}
+/* Un SEUL conteneur de défilement : `[data-code-scroll]` (le wrapper interne de
+   CodeCard, déjà scrollable en x). Faire aussi défiler card-content les
+   imbriquerait, et le défilement automatique des étapes viserait le mauvais. */
+.slide-code-container [data-slot="card-content"] {
+    min-height: 0;
+    overflow: hidden;
+}
+.slide-code-container [data-code-scroll] {
+    height: 100%;
+    overflow: auto;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import React, {type CSSProperties, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {cn} from "@/lib/utils";
 
 import {SlidesContext} from "./context/SlidesContext";
@@ -23,6 +23,36 @@ interface SlidesScreenProps {
     module?: Module;
     section?: Section;
 }
+
+export const slideViewportClassName = (isFullscreen: boolean) => cn(
+    "flex-1 min-h-0 flex items-center justify-center",
+    isFullscreen ? "p-0" : "p-6"
+);
+
+// Une slide est une scène de dimensions fixes : le cadre ne doit jamais suivre
+// la hauteur du contenu, sinon la bordure et la barre d'actions sautent d'une
+// slide à l'autre et les slides denses (code, diagramme) débordent la page.
+export const slidesContainerClassName = (isFullscreen: boolean) => cn(
+    "relative flex flex-col w-full overflow-hidden transition-all slide-surface",
+    isFullscreen
+        ? "fixed inset-0 z-50 h-full !border-0 !rounded-none !shadow-none"
+        : cn(
+            "h-[calc(100dvh-var(--navbar-h)-1.5rem)] min-h-[420px]",
+            "rounded-2xl border border-bridge-500/45 dark:border-bridge-500/35",
+            "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)]",
+            "dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
+        )
+);
+
+export const slidesContainerStyle = (isFullscreen: boolean): CSSProperties | undefined => (
+    isFullscreen
+        ? {
+            border: 0,
+            borderRadius: 0,
+            boxShadow: "none",
+        }
+        : undefined
+);
 
 export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                                                               children,
@@ -148,39 +178,19 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
         >
             <div
                 ref={containerRef}
-                className={cn(
-                    "relative flex flex-col min-h-[600px] w-full transition-all slide-surface",
-                    isFullscreen
-                        ? "fixed inset-0 z-50"
-                        : cn(
-                            "rounded-2xl border border-bridge-500/45 dark:border-bridge-500/35",
-                            "shadow-[0_2px_12px_-6px_rgba(147,97,58,0.35)]",
-                            "dark:shadow-[0_2px_14px_-6px_rgba(0,0,0,0.6)]",
-                        )
-                )}
+                className={slidesContainerClassName(isFullscreen)}
+                style={slidesContainerStyle(isFullscreen)}
             >
                 {/* Progression latérale */}
                 <SlidesProgress/>
 
                 {/* Slide courante */}
-                <div className="flex-1 flex items-center justify-center p-6">
+                <div className={slideViewportClassName(isFullscreen)}>
                     {slides[navigation.currentSlide]}
                 </div>
 
                 {/* Actions */}
                 <SlidesActions/>
-
-                {/* Progress bar bas */}
-                <div className="absolute bottom-0 left-0 h-1 w-full bg-bridge-500/20">
-                    <div
-                        className="h-full bg-(--module-color) dark:bg-(--module-color-dark) transition-all"
-                        style={{
-                            width: `${
-                                ((navigation.currentSlide + 1) / slides.length) * 100
-                            }%`,
-                        }}
-                    />
-                </div>
             </div>
         </SlidesContext.Provider>
     );

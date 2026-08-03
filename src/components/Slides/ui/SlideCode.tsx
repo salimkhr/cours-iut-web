@@ -9,6 +9,16 @@ interface SlideCodeProps extends CodeCardProps {
     highlight?: string;
 }
 
+// Interlignes en ratio, pas en rem : `xl` déclarait 1.75rem d'interligne pour
+// 2rem de police — plus petit que la police elle-même. Le highlighter imposait
+// heureusement son propre 1.5, mais la valeur fausse servait encore au calcul
+// de défilement des étapes (voir plus bas).
+export const slideCodeTextMetrics = {
+    default: {fontSize: "1.5rem", lineHeight: "1.5"},
+    large: {fontSize: "1.75rem", lineHeight: "1.5"},
+    xl: {fontSize: "2rem", lineHeight: "1.5"},
+} as const;
+
 export const SlideCode: React.FC<SlideCodeProps> = ({
                                                         className,
                                                         size = "xl",
@@ -16,9 +26,8 @@ export const SlideCode: React.FC<SlideCodeProps> = ({
                                                         ...props
                                                     }) => {
     const {currentStep, registerSteps} = useSlides();
-    const fontSize = size === "xl" ? "2rem" : size === "large" ? "1.75rem" : "1.5rem";
-    const lineHeight = size === "large" ? "2rem" : "1.75rem";
-    const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+    const {fontSize, lineHeight} = slideCodeTextMetrics[size];
+    const rootRef = React.useRef<HTMLDivElement>(null);
 
     const highlightGroups = useMemo(() => {
         if (!highlight) return [];
@@ -34,31 +43,46 @@ export const SlideCode: React.FC<SlideCodeProps> = ({
     const currentHighlight = highlightGroups[currentStep] || "";
 
     useEffect(() => {
-        if (!currentHighlight || !scrollContainerRef.current) return;
+        if (!currentHighlight || !rootRef.current) return;
 
         const firstHighlightedLine = currentHighlight.split(',')[0].split('-')[0].trim();
         const lineNumber = parseInt(firstHighlightedLine);
 
         if (isNaN(lineNumber)) return;
 
-        const container = scrollContainerRef.current;
-        const lineHeightPx = parseFloat(lineHeight) * 16; // Convert rem to px
-        const targetScroll = (lineNumber - 3) * lineHeightPx; // Scroll 3 lines before for context
+        const container = rootRef.current.querySelector<HTMLElement>('[data-code-scroll]');
+        // Le rendu du highlighter émet une ligne = un span bloc.
+        const line = container?.querySelectorAll<HTMLElement>('code > span')[lineNumber - 1];
+        if (!container || !line) return;
+
+        // On mesure la ligne au lieu de la calculer : l'ancien
+        // `parseFloat(lineHeight) * 16` donnait 28px pour des lignes rendues à
+        // 48px, soit un défilement 40 % trop court — la ligne visée finissait
+        // souvent sous le bord du cadre.
+        const lineTop = line.getBoundingClientRect().top
+            - container.getBoundingClientRect().top
+            + container.scrollTop;
 
         container.scrollTo({
-            top: Math.max(0, targetScroll),
+            // Deux lignes de contexte au-dessus de la ligne visée.
+            top: Math.max(0, lineTop - 2 * line.offsetHeight),
             behavior: 'smooth'
         });
-    }, [currentHighlight, lineHeight]);
+    }, [currentHighlight]);
 
     return (
-        <div className={cn("my-6 w-full slide-code-container overflow-hidden", className)}>
-            <div ref={scrollContainerRef} className="max-h-[75vh] overflow-y-auto custom-scrollbar">
-                <CodeCard
-                    {...props}
-                    highlightLines={currentHighlight}
-                />
-            </div>
+        // Le bloc se laisse comprimer par la slide (`min-h-0` + shrink par
+        // défaut) au lieu d'imposer une hauteur en `vh` qui ignorait le chrome
+        // de slide (eyebrow, titre, paddings, barre d'actions) et débordait.
+        // Pas de `my-*` : `.slide-body > * + *` gère déjà l'écart entre blocs,
+        // et chaque rem gagnée ici est une ligne de code lisible en plus.
+        <div ref={rootRef} className={cn("flex w-full min-h-0 flex-col slide-code-container", className)}>
+            <CodeCard
+                {...props}
+                className="!my-0 flex min-h-0 flex-1 flex-col"
+                showActions={false}
+                highlightLines={currentHighlight}
+            />
             <style jsx global>{`
                 .slide-code-container pre {
                     font-size: ${fontSize} !important;
