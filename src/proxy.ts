@@ -1,5 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 import {getSessionCookie} from "better-auth/cookies";
+import {E2E_BYPASS_COOKIE, E2E_BYPASS_HEADER} from "@/lib/e2eBypass";
 
 const PUBLIC_PATHS = [
     "/",
@@ -25,6 +26,19 @@ function isPublic(pathname: string): boolean {
     );
 }
 
+/**
+ * Signale au rendu qu'une requête a traversé le proxy sans session.
+ *
+ * Toujours réécrit — jamais simplement ajouté — pour qu'un client ne puisse pas
+ * forger l'en-tête et faire croire à un bypass.
+ */
+function withBypassHeader(req: NextRequest, active: boolean): NextResponse {
+    const headers = new Headers(req.headers);
+    headers.delete(E2E_BYPASS_HEADER);
+    if (active) headers.set(E2E_BYPASS_HEADER, "1");
+    return NextResponse.next({request: {headers}});
+}
+
 export default function proxy(req: NextRequest) {
     const {pathname} = req.nextUrl;
     const sessionCookie = getSessionCookie(req);
@@ -37,9 +51,11 @@ export default function proxy(req: NextRequest) {
     if (
         process.env.NODE_ENV !== "production" &&
         process.env.E2E_BYPASS_SECRET &&
-        req.cookies.get("e2e-bypass")?.value === process.env.E2E_BYPASS_SECRET
+        req.cookies.get(E2E_BYPASS_COOKIE)?.value === process.env.E2E_BYPASS_SECRET
     ) {
-        return NextResponse.next();
+        // Le rendu l'affiche dans le menu : sans cela, naviguer avec ce cookie
+        // ressemble trait pour trait à un défaut d'authentification.
+        return withBypassHeader(req, true);
     }
 
     // La redirection des utilisateurs connectés hors de /login et /register
@@ -47,12 +63,12 @@ export default function proxy(req: NextRequest) {
     // Ici on ne vérifie que la présence du cookie, ce qui ne suffit pas pour
     // distinguer une session valide d'un cookie périmé.
 
-    if (isPublic(pathname)) return NextResponse.next();
+    if (isPublic(pathname)) return withBypassHeader(req, false);
 
     // Sync inter-environnements (staging → prod) : auth par secret partagé,
     // validée en timing-safe dans la route. Sans secret valide, la route renvoie 403.
     if (pathname === "/api/admin/import" && req.headers.get("x-sync-secret")) {
-        return NextResponse.next();
+        return withBypassHeader(req, false);
     }
 
     // Check cookie-only : rapide, pas d'appel DB. Le rôle admin est vérifié
@@ -68,7 +84,7 @@ export default function proxy(req: NextRequest) {
         return NextResponse.redirect(url);
     }
 
-    return NextResponse.next();
+    return withBypassHeader(req, false);
 }
 
 export const config = {

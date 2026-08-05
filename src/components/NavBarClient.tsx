@@ -24,7 +24,8 @@ import {
 
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import iconMap, {isValidIcon} from "@/lib/iconMap";
-import {Home, LogOut, Moon, Settings, Sun, UserCheck, UserCog, UserLockIcon} from "lucide-react";
+import {Home, LogOut, Moon, Settings, ShieldAlert, ShieldOff, Sun, UserCheck, UserCog, UserLockIcon} from "lucide-react";
+import {clearE2EBypassCookie} from "@/lib/e2eBypass";
 import Module from "@/types/Module";
 import {avatarColor, avatarInitials, cn} from "@/lib/utils";
 import {useMounted} from "@/hook/useMounted";
@@ -59,13 +60,16 @@ type Props = {
     role: string | null;
     user: SafeUser;
     modules: Module[];
+    /** Le proxy a été traversé via le contournement e2e (jamais en production). */
+    e2eBypass?: boolean;
 };
 
 export default function NavBarClient({
                                          userId,
                                          role,
                                          user,
-                                         modules
+                                         modules,
+                                         e2eBypass = false
                                      }: Props) {
 
     const pathname = usePathname();
@@ -128,12 +132,30 @@ export default function NavBarClient({
                         <NavigationMenuItem>
                             <Link
                                 href="/login"
-                                aria-label="Se connecter"
-                                className={linkClass("/login") + " flex items-center gap-1"}
+                                // Sans session, la navigation devrait s'arrêter à /login.
+                                // Si l'on consulte un cours quand même, c'est le cookie
+                                // e2e-bypass qui ouvre le proxy : on le signale ici plutôt
+                                // que de laisser croire à un défaut d'authentification.
+                                aria-label={e2eBypass
+                                    ? "Contournement e2e actif — navigation sans session. Aller à la page de connexion."
+                                    : "Se connecter"}
+                                title={e2eBypass
+                                    ? "Cookie e2e-bypass : le proxy est traversé sans session. Supprimez-le pour retrouver le parcours étudiant."
+                                    : undefined}
+                                className={cn(
+                                    linkClass("/login"),
+                                    "flex items-center gap-1",
+                                    e2eBypass && "text-amber-700 dark:text-amber-300"
+                                )}
                             >
-                                <UserLockIcon className="w-5 h-5" />
-                                {/* Seul mot d'anglais d'une interface en français. */}
-                                <span className="hidden md:inline">Connexion</span>
+                                {e2eBypass
+                                    ? <ShieldAlert className="w-5 h-5" />
+                                    : <UserLockIcon className="w-5 h-5" />}
+                                {/* `whitespace-nowrap` : « Contournement e2e » repassait à la
+                                    ligne et débordait de la hauteur fixe de la barre. */}
+                                <span className="hidden md:inline whitespace-nowrap">
+                                    {e2eBypass ? "Bypass e2e" : "Connexion"}
+                                </span>
                             </Link>
                         </NavigationMenuItem>
                     )}
@@ -253,6 +275,25 @@ export default function NavBarClient({
                                             <span>{isDark ? 'Mode clair' : 'Mode sombre'}</span>
                                         </div>
                                     </DropdownMenuItem>
+
+                                    {/* Sortie de secours : le cookie e2e ouvre le proxy sans
+                                        session et donne l'illusion d'un défaut d'auth. On
+                                        recharge en dur, la page courante n'étant plus
+                                        accessible une fois le contournement levé. */}
+                                    {e2eBypass && (
+                                        <DropdownMenuItem
+                                            onSelect={(e) => {
+                                                e.preventDefault();
+                                                clearE2EBypassCookie().then(() => window.location.reload());
+                                            }}
+                                            className={cn(dropdownItemClass, "text-amber-700 dark:text-amber-300")}
+                                        >
+                                            <div className="flex items-center gap-2.5 w-full">
+                                                <ShieldOff className="w-4 h-4 shrink-0"/>
+                                                <span className="whitespace-nowrap">Retirer le cookie e2e</span>
+                                            </div>
+                                        </DropdownMenuItem>
+                                    )}
                                 </>
                             )}
                         </DropdownMenuContent>

@@ -1,10 +1,12 @@
 import {headers} from "next/headers";
 import {auth} from "@/lib/auth";
 import getModules from "@/lib/getModules";
+import {isE2EBypass} from "@/lib/e2eBypass";
 import NavBarClient from "./NavBarClient";
 
 export default async function NavBar() {
-    const session = await auth.api.getSession({headers: await headers()});
+    const requestHeaders = await headers();
+    const session = await auth.api.getSession({headers: requestHeaders});
     const isAdmin = session?.user.role === 'admin';
     const modules = session
         ? (await getModules()).filter(m => !m.isExtra && (isAdmin || m.isVisible !== false))
@@ -25,6 +27,7 @@ export default async function NavBar() {
             role={session?.user.role ?? ""}
             user={safeUser}
             modules={modules}
+            e2eBypass={isE2EBypass(requestHeaders)}
         />
     );
 }
