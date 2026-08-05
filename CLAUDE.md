@@ -79,7 +79,7 @@ Modules :
   sections, users, export/import, push-to-prod, calibrage, content), `auth/[...all]`, `live/*`
   (sessions temps réel SSE), `mcp`, `upload-avatar`, `avatar/[filename]`, `course-image/[filename]`,
   `health`.
-- `src/components/ui/` — primitives UI (`Text`, `Heading`, `List`, `Code`, `Box`, `Stack`, etc.)
+- `src/components/ui/` — primitives UI (`Text`, `Heading`, `List`, `Code`, `Stack`, `Grid`, etc.)
 - `src/components/Cards/` — cards composites (`CodeCard`, `ImageCard`, `DiagramCard`, `SectionCard`)
 - `src/components/Slides/` — moteur de slides (hooks `useFullscreen`, `useKeyboardNav`)
 - `src/components/builder/` — builder WYSIWYG de contenu (`BuilderPage`, éditeur Monaco)
@@ -217,7 +217,7 @@ invoquer le skill `ui-ux-pro-max` **avant** toute implémentation.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **cours-iut-web** (4878 symbols, 9404 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **cours-iut-web** (5131 symbols, 9949 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 

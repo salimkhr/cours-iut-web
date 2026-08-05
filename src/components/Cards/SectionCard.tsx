@@ -258,8 +258,8 @@ export default function SectionCard({section, currentModule, isAdmin, correction
                     {sortedContents.map((item) => {
                         const key = item as ContentKey;
                         // Type de contenu venant de la DB : un type inconnu (casse/typo/legacy)
-                        // ne doit pas rendre un composant undefined (crash React). Fallback
-                        // cohérent avec ContentSwitcher / ContentSidebarNav.
+                        // ne doit pas rendre un composant undefined (crash React). Même
+                        // repli que ContentSidebarNav.
                         const IconComp = ANIMATED_CONTENT_ICON[key] ?? BookTextIcon;
                         return (
                             <AnimatedActionButton

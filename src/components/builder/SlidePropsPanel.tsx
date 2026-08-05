@@ -18,9 +18,9 @@ interface SlidePropsPanelProps {
  *
  * `blockDefs` décrit pour chaque type ses champs éditables (titre de slide,
  * langage et étapes de highlight d'un bloc de code…), et `BlockForm` sait déjà
- * les rendre. Il n'était simplement plus atteignable : son unique appelant,
- * `BlockNode`, n'est plus monté nulle part. Le mode slide n'exposait donc
- * aucune de ces props.
+ * les rendre. Ce panneau est ce qui les rend enfin atteignables en mode slide :
+ * la seule voie d'accès précédente passait par un arbre de blocs qui n'était
+ * plus monté, et le mode slide n'exposait donc aucune de ces props.
  */
 export function SlidePropsPanel({ slideId, selectedId }: SlidePropsPanelProps) {
     const blocks = useBuilderStore((s) => s.blocks);
