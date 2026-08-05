@@ -24,7 +24,7 @@ import {
 
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import iconMap, {isValidIcon} from "@/lib/iconMap";
-import {Home, LogIn, LogOut, Moon, Settings, Sun, UserCheck, UserCog, UserLockIcon} from "lucide-react";
+import {Home, LogOut, Moon, Settings, Sun, UserCheck, UserCog, UserLockIcon} from "lucide-react";
 import Module from "@/types/Module";
 import {avatarColor, avatarInitials, cn} from "@/lib/utils";
 import {useMounted} from "@/hook/useMounted";
@@ -128,11 +128,12 @@ export default function NavBarClient({
                         <NavigationMenuItem>
                             <Link
                                 href="/login"
-                                aria-label="Login"
+                                aria-label="Se connecter"
                                 className={linkClass("/login") + " flex items-center gap-1"}
                             >
                                 <UserLockIcon className="w-5 h-5" />
-                                <span className="hidden md:inline">Login</span>
+                                {/* Seul mot d'anglais d'une interface en français. */}
+                                <span className="hidden md:inline">Connexion</span>
                             </Link>
                         </NavigationMenuItem>
                     )}
@@ -193,7 +194,8 @@ export default function NavBarClient({
                                 </button>
                             ) : (
                                 <button
-                                    aria-label="Préférences"
+                                    aria-label="Préférences d'affichage"
+                                    title="Préférences d'affichage"
                                     className="flex items-center justify-center w-9 h-9 rounded-full outline-none transition-colors text-bridge-900 dark:text-bridge-100 hover:bg-bridge-200/50 dark:hover:bg-bridge-700/50 focus-visible:ring-2 focus-visible:ring-brand-primary"
                                 >
                                     <Settings className="w-5 h-5"/>
@@ -250,12 +252,6 @@ export default function NavBarClient({
                                             {isDark ? <Sun className="w-4 h-4 shrink-0"/> : <Moon className="w-4 h-4 shrink-0"/>}
                                             <span>{isDark ? 'Mode clair' : 'Mode sombre'}</span>
                                         </div>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem asChild className={dropdownItemClass}>
-                                        <Link href="/login" className="flex items-center gap-2.5">
-                                            <LogIn className="w-4 h-4 shrink-0"/>
-                                            <span>Connexion</span>
-                                        </Link>
                                     </DropdownMenuItem>
                                 </>
                             )}

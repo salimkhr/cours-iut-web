@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
-import {AlertCircle, Lock, LogIn, Mail} from "lucide-react";
+import {AlertCircle, Eye, EyeOff, Loader2, Lock, LogIn, UserRound} from "lucide-react";
 import {useForm, useWatch} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 
@@ -15,6 +15,7 @@ import {Field, FieldContent, FieldDescription, FieldLabel, FieldTitle} from "@/c
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group";
 import {Label} from "@/components/ui/label";
 
+import CaptchaPending from "@/components/login/CaptchaPending";
 import {loginSchema, LoginValues} from "@/lib/schemas/login.schema";
 
 
@@ -24,6 +25,7 @@ export default function LoginForm() {
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_TOKEN;
     const captchaRequired = !!sitekey;
@@ -37,7 +39,9 @@ export default function LoginForm() {
     } = useForm<LoginValues>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
-            rememberMe: true,
+            // Décoché par défaut : les postes des salles de TP sont partagés,
+            // garder la session active doit être un choix explicite.
+            rememberMe: false,
         },
     });
 
@@ -149,16 +153,19 @@ export default function LoginForm() {
 
                 {/* Identifier */}
                 <div className="space-y-2">
-                    <Label>Identifiant</Label>
+                    <Label htmlFor="identifier">Identifiant ou email universitaire</Label>
                     <InputGroup>
                         <InputGroupInput
+                            id="identifier"
                             type="text"
-                            placeholder="votre identifiant"
+                            placeholder="ab123456 ou prenom.nom@etu.univ-lehavre.fr"
                             autoComplete="username"
                             {...register("identifier")}
                         />
                         <InputGroupAddon>
-                            <Mail className="h-5 w-5 text-brand-accent-dark/70"/>
+                            {/* Le champ accepte identifiant *ou* email : une icône
+                                d'enveloppe laissait croire à un champ email seul. */}
+                            <UserRound className="h-5 w-5 text-brand-accent-dark/70"/>
                         </InputGroupAddon>
                     </InputGroup>
                     {errors.identifier && (
@@ -168,16 +175,27 @@ export default function LoginForm() {
 
                 {/* Password */}
                 <div className="space-y-2">
-                    <Label>Mot de passe</Label>
+                    <Label htmlFor="password">Mot de passe</Label>
                     <InputGroup>
                         <InputGroupInput
-                            type="password"
+                            id="password"
+                            type={showPassword ? "text" : "password"}
                             placeholder="••••••••"
                             autoComplete="current-password"
                             {...register("password")}
                         />
                         <InputGroupAddon>
                             <Lock className="h-5 w-5 text-brand-accent-dark/70"/>
+                        </InputGroupAddon>
+                        <InputGroupAddon align="inline-end">
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword((v) => !v)}
+                                className="text-brand-accent-dark/70 hover:text-brand-accent-dark transition-colors"
+                                aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                            >
+                                {showPassword ? <EyeOff className="h-5 w-5"/> : <Eye className="h-5 w-5"/>}
+                            </button>
                         </InputGroupAddon>
                     </InputGroup>
                     {errors.password && (
@@ -195,7 +213,9 @@ export default function LoginForm() {
                     </Link>
                 </div>
 
-                {/* Remember me */}
+                {/* Remember me — présentation sobre : ce n'est pas l'action
+                    principale de la page, il ne doit pas capter l'œil avant le
+                    bouton de connexion. */}
                 <FieldLabel>
                     <Field orientation="horizontal">
                         <Checkbox
@@ -221,13 +241,20 @@ export default function LoginForm() {
                 {/* Submit */}
                 <Button type="submit" disabled={loading || (captchaRequired && !captchaToken)} size="lg" className="group w-full h-auto rounded-lg bg-brand-accent-dark text-white dark:text-brand-dark hover:bg-brand-accent-dark hover:-translate-y-0.5 border-2 border-brand-accent-dark px-6 py-3 text-sm font-semibold tracking-wide shadow-[0_8px_24px_-10px_rgba(194,65,12,0.55)] hover:shadow-[0_14px_36px_-12px_rgba(194,65,12,0.75)] transition-all duration-300 flex items-center justify-center gap-2"
                 >
-                    {loading ? "Connexion…" : captchaRequired && !captchaToken ? "Validation du captcha…" : (
+                    {loading ? (
+                        <>
+                            <Loader2 className="h-4 w-4 animate-spin"/>
+                            Connexion…
+                        </>
+                    ) : (
                         <>
                             <LogIn className="h-4 w-4"/>
                             Se connecter
                         </>
                     )}
                 </Button>
+
+                {captchaRequired && !captchaToken && !loading && <CaptchaPending/>}
             </form>
 
             <p className="text-center text-sm mt-6 text-brand-gray-700 dark:text-brand-gray-300">

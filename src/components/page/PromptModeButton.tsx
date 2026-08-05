@@ -93,11 +93,14 @@ export default function PromptModeButton({ accentColor, sectionTitle, contentTyp
                 onClick={() => handleOpenChange(true)}
                 onMouseEnter={() => botRef.current?.startAnimation()}
                 onMouseLeave={() => botRef.current?.stopAnimation()}
-                aria-label="Ouvrir en mode prompt"
-                className="shrink-0 inline-flex items-center gap-0.5 px-2 sm:px-1.5 h-11 sm:h-7 rounded-md text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark active:translate-y-px dark:hover:text-bridge-100 hover:bg-bridge-300/40 dark:hover:bg-bridge-700/40"
+                aria-label="Copier ce contenu pour une IA"
+                title="Copier ce contenu au format Markdown, pour le coller dans une IA"
+                className="shrink-0 inline-flex items-center gap-1 px-2.5 sm:px-2 h-11 sm:h-8 rounded-md text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark active:translate-y-px dark:hover:text-bridge-100 hover:bg-bridge-300/40 dark:hover:bg-bridge-700/40"
             >
                 <BotIcon ref={botRef} size={16} className="shrink-0" />
-                <span className="hidden sm:inline text-sm font-medium">Prompt</span>
+                {/* « Prompt » ne disait rien à un étudiant : le libellé nomme
+                    maintenant l'action, pas le jargon. */}
+                <span className="hidden sm:inline text-sm font-medium">Copier pour l&apos;IA</span>
             </Button>
 
             <Sheet open={open} onOpenChange={handleOpenChange}>
@@ -108,8 +111,12 @@ export default function PromptModeButton({ accentColor, sectionTitle, contentTyp
                     <SheetHeader className="px-4 pb-4 border-b border-bridge-300/40 dark:border-bridge-700/40">
                         <SheetTitle className="flex items-center gap-2 text-base">
                             <BotIcon size={16} />
-                            Pour l&apos;IA : {sectionTitle}
+                            Copier pour l&apos;IA : {sectionTitle}
                         </SheetTitle>
+                        <p className="text-sm text-brand-dark/60 dark:text-bridge-100/60">
+                            Le contenu de cette page au format Markdown, à coller dans un assistant
+                            (ChatGPT, Claude…) pour vous faire expliquer un point.
+                        </p>
                     </SheetHeader>
 
                     <div className="flex-1 overflow-y-auto min-h-0 px-4 py-4">

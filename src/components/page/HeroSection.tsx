@@ -23,6 +23,8 @@ interface HeroSectionProps {
     compact?: boolean;
     backHref?: string;
     backLabel?: string;
+    /** Surtitre court affiché au-dessus du titre (type de contenu, statut…). */
+    eyebrow?: string;
 }
 
 export default function HeroSection({
@@ -37,7 +39,8 @@ export default function HeroSection({
     accentColor,
     compact = false,
     backHref,
-    backLabel
+    backLabel,
+    eyebrow
 }: HeroSectionProps) {
     const mounted = useMounted();
     const isDark = useIsDark();
@@ -203,6 +206,16 @@ export default function HeroSection({
                             <ChevronLeft className="size-3.5"/>
                             {backLabel}
                         </Link>
+                    )}
+                    {/* Le cours et le TP d'une section partagent titre, hero et
+                        objectifs : sans ce surtitre, rien ne dit lequel on lit. */}
+                    {eyebrow && (
+                        <p
+                            className="mb-2 text-center lg:text-left text-[11px] font-semibold uppercase tracking-[0.2em]"
+                            style={{color: accentColor || `var(--color-${path || 'brand-primary'})`}}
+                        >
+                            {eyebrow}
+                        </p>
                     )}
                     {compact ? (
                         <div className="flex items-center gap-3 lg:gap-4 justify-center lg:justify-start leading-none text-brand-dark dark:text-brand-light text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl">

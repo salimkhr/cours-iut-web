@@ -31,6 +31,9 @@ export default function ContentSidebarNav({
         Icon: React.ComponentType<{ className?: string }>;
         /** Classes de visibilité quand l'onglet n'a de sens qu'au-delà d'une largeur. */
         minBreakpoint?: string;
+        title?: string;
+        /** Onglet signalé par un contour : un mode à découvrir, pas un doublon. */
+        highlight?: boolean;
     }
 
     const tabs: Tab[] = [
@@ -54,6 +57,10 @@ export default function ContentSidebarNav({
                 // La vue split est `lg:flex-row` : sous 1024 px les deux panneaux
                 // s'empilent et l'onglet promet un côte-à-côte qui n'arrive jamais.
                 minBreakpoint: 'hidden lg:inline-flex',
+                // C'est le mode le plus utile en salle de TP (énoncé et cours en
+                // vis-à-vis) mais rien ne le distinguait des autres onglets.
+                title: 'Afficher le cours et le TP en vis-à-vis',
+                highlight: true,
             }]
             : []),
     ];
@@ -65,23 +72,33 @@ export default function ContentSidebarNav({
             aria-label="Changer de type de contenu"
             className="flex items-center gap-0.5"
         >
-            {tabs.map(({key, href, label, Icon, minBreakpoint}) => {
+            {tabs.map(({key, href, label, Icon, minBreakpoint, title, highlight}) => {
                 const isActive = key === currentContent;
                 return (
                     <Link
                         key={key}
                         href={href}
+                        // `ScrollRestore` replace la page à sa propre position de
+                        // lecture : Next ne doit pas remonter en haut au passage.
                         scroll={false}
+                        title={title}
                         aria-current={isActive ? 'page' : undefined}
                         className={cn(
-                            "shrink-0 inline-flex items-center gap-0.5 px-2 sm:px-1.5 h-11 sm:h-7 text-sm font-medium rounded-md",
+                            "shrink-0 inline-flex items-center gap-1 px-2.5 sm:px-2 h-11 sm:h-8 text-sm font-medium rounded-md",
                             minBreakpoint,
                             "transition-[background-color,color,transform] duration-200 active:translate-y-px focus-visible:ring-2 focus-visible:ring-ring",
                             isActive
                                 ? "text-white dark:text-brand-dark"
-                                : "text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark dark:hover:text-bridge-100 hover:bg-bridge-300/40 dark:hover:bg-bridge-700/40"
+                                : "text-brand-dark/55 dark:text-bridge-100/55 hover:text-brand-dark dark:hover:text-bridge-100 hover:bg-bridge-300/40 dark:hover:bg-bridge-700/40",
+                            highlight && !isActive && "border border-dashed text-brand-dark/75 dark:text-bridge-100/75"
                         )}
-                        style={isActive ? {backgroundColor: accentColor ?? `var(--color-${moduleSlug})`} : undefined}
+                        style={
+                            isActive
+                                ? {backgroundColor: accentColor ?? `var(--color-${moduleSlug})`}
+                                : highlight
+                                    ? {borderColor: accentColor ?? `var(--color-${moduleSlug})`}
+                                    : undefined
+                        }
                     >
                         <Icon className="size-4 sm:size-3.5 shrink-0"/>
                         <span>{label}</span>

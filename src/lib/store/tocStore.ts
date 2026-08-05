@@ -4,6 +4,8 @@ export interface TocEntry {
     id: string
     text: string
     level: 2 | 3
+    /** Repère du plan tel qu'affiché dans le corps de page : « A », « 2 », « c ». */
+    badge?: string
 }
 
 interface TocStore {

@@ -7,6 +7,7 @@ import {ArrowRight, BookOpen, ChevronRight, Lock, Unlock} from "lucide-react";
 import Module from "@/types/Module";
 import iconMap from "@/lib/iconMap";
 import getModuleProgress from "@/lib/getModuleProgress";
+import {useLastVisitedSection} from "@/lib/lastVisited";
 import useAdminApi from "@/hook/admin/useAdminApi";
 import {cn} from "@/lib/utils";
 
@@ -24,17 +25,21 @@ export default function ModuleCard({currentModule, isAuthed = true, isAdmin = fa
     const {title, description, path, iconName, sections} = currentModule;
     const Icon = iconMap[iconName] || BookOpen;
     const sectionsCount = sections?.length ?? 0;
-    const { progress: pct, lastAvailableSectionPath } = getModuleProgress(currentModule);
+    const { progress: pct, availableSections } = getModuleProgress(currentModule);
 
     const [isVisible, setIsVisible] = useState(currentModule.isVisible !== false);
     const [pending, setPending] = useState(false);
     const {toggleModuleVisibility} = useAdminApi();
 
-    const continueHref = lastAvailableSectionPath
-        ? `/${path}/${lastAvailableSectionPath}`
-        : `/${path}`;
+    // Même règle que le CTA de la page module : on démarre au début, on ne
+    // « continue » que si ce navigateur a déjà ouvert une section.
+    const firstSection = availableSections[0];
+    const last = useLastVisitedSection(path);
+    const resumePath = last && availableSections.some((s) => s.path === last) ? last : null;
 
-    const canContinue = !!lastAvailableSectionPath;
+    const targetPath = resumePath ?? firstSection?.path ?? null;
+    const continueHref = targetPath ? `/${path}/${targetPath}` : `/${path}`;
+    const canContinue = !!targetPath;
     const prefersReducedMotion = useReducedMotion();
 
     async function handleToggleVisibility() {
@@ -176,7 +181,7 @@ export default function ModuleCard({currentModule, isAuthed = true, isAdmin = fa
                                     !canContinue && "opacity-60 pointer-events-none"
                                 )}
                             >
-                                Continuer le cours
+                                {resumePath ? 'Reprendre le cours' : 'Commencer le cours'}
                                 <ArrowRight className="size-4" />
                             </Link>
 

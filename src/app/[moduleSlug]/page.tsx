@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {moduleColor} from "@/lib/moduleColor";
 import SectionCard from "@/components/Cards/SectionCard";
 import Section from "@/types/Section";
@@ -11,7 +10,7 @@ import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getModuleData} from "@/hook/getModuleData";
 import getModuleProgress from "@/lib/getModuleProgress";
 import ModuleInfo from "@/components/page/ModuleInfo";
-import {Button} from "@/components/ui/button";
+import ResumeCourseButton from "@/components/page/ResumeCourseButton";
 import {Metadata} from "next";
 import {getServerSession} from "@/lib/auth";
 import {getCorrectionBaseUrl} from "@/lib/gitlab";
@@ -32,7 +31,7 @@ export default async function Module({params}: ModulePageProps) {
     const {moduleSlug} = await params;
     const {currentModule} = await getModuleData({moduleSlug});
 
-    const {totalSections, totalAvailableSections, hasAvailableContent, lastAvailableSectionPath} =
+    const {totalSections, totalAvailableSections, hasAvailableContent, availableSections} =
         getModuleProgress(currentModule);
 
     const session = await getServerSession();
@@ -65,34 +64,13 @@ export default async function Module({params}: ModulePageProps) {
                 backLabel="Tous les cours"
             >
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                    {hasAvailableContent && lastAvailableSectionPath && (
-                        <Button
-                            asChild
-                            variant="outline"
-                            size="lg"
-                            style={{
-                        '--module-color': moduleColor(currentModule),
-                        '--module-color-dark': moduleColor(currentModule, 'dark'),
-                    } as React.CSSProperties}
-                            className="group h-auto rounded-lg border-[3px] border-(--module-color) bg-transparent text-brand-dark dark:text-brand-light hover:bg-(--module-color) hover:text-white hover:border-(--module-color) dark:hover:text-brand-dark px-6 py-3 text-sm font-semibold tracking-wide shadow-none transition-all duration-300"
-                        >
-                            <Link href={`/${currentModule.path}/${lastAvailableSectionPath}`}>
-                                Continuer le cours
-                                <svg
-                                    aria-hidden="true"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth={3}
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="size-4 text-(--module-color) group-hover:text-white dark:group-hover:text-brand-dark transition-all duration-300 group-hover:translate-x-1"
-                                >
-                                    <path d="M5 12h14"/>
-                                    <path d="M13 5l7 7-7 7"/>
-                                </svg>
-                            </Link>
-                        </Button>
+                    {hasAvailableContent && (
+                        <ResumeCourseButton
+                            modulePath={currentModule.path}
+                            accentColor={moduleColor(currentModule)}
+                            accentColorDark={moduleColor(currentModule, 'dark')}
+                            sections={availableSections}
+                        />
                     )}
                     <ModuleInfo currentModule={currentModule}/>
                 </div>

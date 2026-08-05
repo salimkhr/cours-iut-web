@@ -11,7 +11,7 @@ import {getModuleData} from "@/hook/getModuleData";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {cn} from "@/lib/utils";
 import Section from "@/types/Section";
-import { getContentTypes } from "@/types/CourseContent";
+import { getContentTypes, hasContentType } from "@/types/CourseContent";
 import {Metadata} from "next";
 
 interface SectionPageProps {
@@ -54,6 +54,19 @@ export default async function SectionPage({params}: SectionPageProps) {
     const hasObjectives =
         !!currentSection?.objectives && currentSection.objectives.length > 0;
 
+    // La page module compte ses « cours » hors examen : compter la position sur
+    // toutes les sections affichait « 11 / 11 » face à un module annoncé à 10
+    // cours. On se cale sur le même référentiel, et un examen — qui n'est pas
+    // une étape du parcours — annonce sa nature plutôt qu'un rang.
+    const isExamen = !!currentSection && hasContentType(currentSection.contents, 'examen');
+    const courseSections = orderedSections.filter((s) => !hasContentType(s.contents, 'examen'));
+    const courseIndex = currentSection
+        ? courseSections.findIndex((s) => s.path === currentSection.path)
+        : -1;
+    const positionLabel = isExamen
+        ? 'Examen'
+        : `${courseIndex >= 0 ? courseIndex + 1 : '?'} / ${courseSections.length}`;
+
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
             <HeroSection
@@ -78,7 +91,7 @@ export default async function SectionPage({params}: SectionPageProps) {
                         <SectionStats
                             totalDuration={currentSection.totalDuration}
                             contentsCount={currentSection.contents.length}
-                            position={`${currentIndex >= 0 ? currentIndex + 1 : "?"} / ${orderedSections.length}`}
+                            position={positionLabel}
                             currentModule={currentModule}
                         />
                     </div>

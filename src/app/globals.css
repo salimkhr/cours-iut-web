@@ -310,6 +310,20 @@ body {
     background: var(--module-color-dark, var(--module-color));
 }
 
+/* JetBrains Mono compose `->` en une flèche `→`, `!=` en `≠`, `=>` en `⇒`.
+   Sur un site de cours, l'étudiant recopie ce qu'il voit : il faut lire les
+   caractères réellement tapés, pas leur ligature. Désactivé partout où la
+   police mono est employée (blocs de code, code inline, éditeur, slides). */
+code,
+pre,
+kbd,
+samp,
+.font-mono,
+[class*="language-"] {
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0, "clig" 0, "calt" 0;
+}
+
 /* ===== Course / TP reading rhythm ===== */
 .course-content {
     width: 100%;

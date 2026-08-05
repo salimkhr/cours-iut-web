@@ -13,7 +13,10 @@ export default async function LoginPage() {
     return (
         <AuthLayout
             title="Connexion"
-            description="Connectez-vous avec le même compte que l'intranet."
+            // « le même compte que l'intranet » laissait croire qu'il n'y avait
+            // rien à créer, alors que l'inscription fait choisir un mot de passe.
+            // Les deux entrées sont valables : on les nomme toutes les deux.
+            description="Votre compte de cette plateforme (identifiant IUT ou email universitaire), ou le compte générique de l'intranet."
         >
             <LoginForm/>
         </AuthLayout>

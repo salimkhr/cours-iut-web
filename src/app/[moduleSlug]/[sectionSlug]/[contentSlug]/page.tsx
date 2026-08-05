@@ -8,6 +8,8 @@ import ReadingProgress from "@/components/page/ReadingProgress";
 import ContentSidebarNav from "@/components/page/ContentSidebarNav";
 import CopyContextGuard from "@/components/page/CopyContextGuard";
 import PromptModeButton from "@/components/page/PromptModeButton";
+import SectionPager from "@/components/page/SectionPager";
+import LastVisitedTracker from "@/components/page/LastVisitedTracker";
 import ExamenWrapper from "@/components/ExamenWrapper";
 import TableOfContents from "@/components/TableOfContents";
 import {getModuleData} from "@/hook/getModuleData";
@@ -15,7 +17,7 @@ import {moduleColor} from "@/lib/moduleColor";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {getContentComponent} from "@/lib/getContentComponent";
 import {cn} from "@/lib/utils";
-import {CONTENT_DESC, CONTENT_ICON, ContentKey} from "@/lib/contentMeta";
+import {CONTENT_DESC, CONTENT_ICON, CONTENT_LABELS, ContentKey, normalizeContentKey} from "@/lib/contentMeta";
 import {getContentTypes, hasContentType} from "@/types/CourseContent";
 import {Metadata} from "next";
 import {getServerSession} from "@/lib/auth";
@@ -42,7 +44,20 @@ export async function generateMetadata({params}: ContentPageProps): Promise<Meta
 
 export default async function Content({params}: ContentPageProps) {
     const {moduleSlug, sectionSlug, contentSlug} = await params;
-    const isSplit = contentSlug === SPLIT_SLUG;
+    const isSplit = contentSlug.toLowerCase() === SPLIT_SLUG;
+
+    // Le type canonique est `TP` en capitales : `/tp` — la casse naturelle quand
+    // on retape ou partage un lien — tombait sur un 404 alors que `/cours` et
+    // `/split` passent. On redirige vers la forme canonique plutôt que de servir
+    // la même page sous deux URLs.
+    if (!isSplit) {
+        const canonical = normalizeContentKey(contentSlug);
+        if (canonical && canonical !== contentSlug) {
+            redirect(`/${moduleSlug}/${sectionSlug}/${canonical}`);
+        }
+    } else if (contentSlug !== SPLIT_SLUG) {
+        redirect(`/${moduleSlug}/${sectionSlug}/${SPLIT_SLUG}`);
+    }
 
     const session = await getServerSession();
     const isAdmin = session?.user.role === 'admin';
@@ -96,14 +111,26 @@ export default async function Content({params}: ContentPageProps) {
     const contentDesc = isSplit
         ? 'Cours et TP en parallèle.'
         : (CONTENT_DESC[contentKey] ?? currentSection.description ?? '');
+    const contentLabel = isSplit ? 'Côte à côte' : (CONTENT_LABELS[contentKey] ?? contentKey);
+
+    // Chapitres voisins, pour la sortie de page.
+    const orderedSections = [...(currentModule.sections ?? [])].sort((a, b) => a.order - b.order);
+    const currentIndex = orderedSections.findIndex((s) => s.path === currentSection.path);
+    const prevSection = currentIndex > 0 ? orderedSections[currentIndex - 1] : null;
+    const nextSection =
+        currentIndex >= 0 && currentIndex < orderedSections.length - 1
+            ? orderedSections[currentIndex + 1]
+            : null;
 
     return (
         <div className="flex flex-col w-full items-center justify-start min-h-screen">
             {!isSplit && (
                 <ScrollRestore storageKey={`${moduleSlug}/${sectionSlug}/${currentContent}`}/>
             )}
+            <LastVisitedTracker modulePath={currentModule.path} sectionPath={currentSection.path}/>
             <HeroSection
                 title={`${currentSection.order}. ${currentSection.title}`}
+                eyebrow={contentLabel}
                 description={contentDesc}
                 imagePath={`images/header/header_${currentModule.path}.svg`}
                 imageAlt={currentModule.title}
@@ -224,6 +251,17 @@ export default async function Content({params}: ContentPageProps) {
                         />
                     )}
                 </>
+            )}
+
+            {!isSplit && (
+                <SectionPager
+                    moduleSlug={moduleSlug}
+                    moduleTitle={currentModule.title}
+                    prevSection={prevSection}
+                    nextSection={nextSection}
+                    accentColor={accent}
+                    accentColorDark={accentDark}
+                />
             )}
 
             {!isSplit && <PageFooter path={currentModule.path}/>}

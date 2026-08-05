@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
-import {Eye, EyeOff, Hash, Lock, Mail, Sparkles, User, UserPlus} from "lucide-react";
+import {Eye, EyeOff, Hash, Loader2, Lock, Mail, Sparkles, User, UserPlus} from "lucide-react";
 import {toast} from "sonner";
 import {Controller, useForm, useWatch} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -12,7 +12,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {authClient} from "@/lib/auth-client";
 import {Button} from "@/components/ui/button";
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group";
-import {Field, FieldError, FieldLabel} from "@/components/ui/field";
+import {Field, FieldDescription, FieldError, FieldLabel} from "@/components/ui/field";
 import {
     Select,
     SelectContent,
@@ -20,6 +20,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import CaptchaPending from "@/components/login/CaptchaPending";
 import {GROUPS, registerSchema, RegisterValues, STUDENT_EMAIL_DOMAIN} from "@/lib/schemas/register.schema";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -245,6 +246,9 @@ export default function RegisterForm() {
                                 {...register("identifier")}
                             />
                         </InputGroup>
+                        <FieldDescription>
+                            Votre identifiant IUT : 2 lettres puis 6 chiffres.
+                        </FieldDescription>
                         <FieldError className="text-brand-accent-dark" errors={[errors.identifier]}/>
                     </Field>
 
@@ -303,6 +307,12 @@ export default function RegisterForm() {
                             </button>
                         </InputGroupAddon>
                     </InputGroup>
+                    {/* Les règles étaient invisibles jusqu'au premier échec, et
+                        rien ne disait si ce mot de passe était celui de l'intranet. */}
+                    <FieldDescription>
+                        7 caractères minimum. Choisissez-en un propre à cette plateforme :
+                        ce n&apos;est pas celui de l&apos;intranet.
+                    </FieldDescription>
                     <FieldError className="text-brand-accent-dark" errors={[errors.password]}/>
                 </Field>
 
@@ -316,13 +326,31 @@ export default function RegisterForm() {
                     size="lg"
                     className="group w-full h-auto rounded-lg bg-brand-accent-dark text-white dark:text-brand-dark hover:bg-brand-accent-dark hover:-translate-y-0.5 border-2 border-brand-accent-dark px-6 py-3 text-sm font-semibold tracking-wide shadow-[0_8px_24px_-10px_rgba(194,65,12,0.55)] hover:shadow-[0_14px_36px_-12px_rgba(194,65,12,0.75)] transition-all duration-300 flex items-center justify-center gap-2"
                 >
-                    {isSubmitting ? "Inscription…" : captchaRequired && !captchaToken ? "Validation du captcha…" : (
+                    {isSubmitting ? (
+                        <>
+                            <Loader2 className="h-4 w-4 animate-spin"/>
+                            Inscription…
+                        </>
+                    ) : (
                         <>
                             <UserPlus className="h-4 w-4"/>
                             S&apos;inscrire
                         </>
                     )}
                 </Button>
+
+                {captchaRequired && !captchaToken && !isSubmitting && <CaptchaPending/>}
+
+                <p className="text-center text-xs text-muted-foreground">
+                    En créant un compte, vous acceptez les{" "}
+                    <Link href="/conditions-utilisation" className="underline underline-offset-4 hover:text-brand-accent-dark">
+                        conditions d&apos;utilisation
+                    </Link>{" "}
+                    et la{" "}
+                    <Link href="/politique-confidentialite" className="underline underline-offset-4 hover:text-brand-accent-dark">
+                        politique de confidentialité
+                    </Link>.
+                </p>
             </form>
 
             <p className="text-center text-sm mt-6 text-muted-foreground">

@@ -8,6 +8,8 @@ export interface ModuleProgress {
     progress: number;
     hasAvailableContent: boolean;
     lastAvailableSectionPath: string | null;
+    /** Sections ouvertes aux étudiants, dans l'ordre pédagogique. */
+    availableSections: Array<{ path: string; label: string }>;
 }
 
 export default function getModuleProgress(currentModule: Module): ModuleProgress {
@@ -32,15 +34,19 @@ export default function getModuleProgress(currentModule: Module): ModuleProgress
         ? Math.round((availableDuration / totalDuration) * 100)
         : 0;
 
-    const lastAvailable = availableSections
+    const orderedAvailable = availableSections
         .slice()
-        .sort((a, b) => b.order - a.order)[0];
+        .sort((a, b) => a.order - b.order);
 
     return {
         totalSections,
         totalAvailableSections,
         progress,
         hasAvailableContent: totalAvailableSections > 0,
-        lastAvailableSectionPath: lastAvailable?.path ?? null,
+        lastAvailableSectionPath: orderedAvailable[orderedAvailable.length - 1]?.path ?? null,
+        availableSections: orderedAvailable.map((s) => ({
+            path: s.path,
+            label: `${s.order}. ${s.title}`,
+        })),
     };
 }
