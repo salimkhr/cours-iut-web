@@ -20,7 +20,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import CaptchaPending from "@/components/login/CaptchaPending";
+import CaptchaPending, {BlinkingBot} from "@/components/login/CaptchaPending";
 import {GROUPS, registerSchema, RegisterValues, STUDENT_EMAIL_DOMAIN} from "@/lib/schemas/register.schema";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -333,7 +333,9 @@ export default function RegisterForm() {
                         </>
                     ) : (
                         <>
-                            <UserPlus className="h-4 w-4"/>
+                            {captchaRequired && !captchaToken
+                                ? <BlinkingBot size={16} className="shrink-0"/>
+                                : <UserPlus className="h-4 w-4"/>}
                             S&apos;inscrire
                         </>
                     )}

@@ -7,13 +7,12 @@ import type {BotIconHandle} from "@/components/icons/bot";
 const BLINK_INTERVAL_MS = 1600;
 
 /**
- * Attente de la vérification anti-robot.
+ * Robot qui cligne des yeux en boucle.
  *
- * Le bouton d'envoi restait grisé sur « Validation du captcha… » sans rien
- * indiquer d'autre : on nomme l'attente à côté du bouton, et le robot cligne
- * des yeux tant qu'elle dure — le libellé de l'action ne bouge plus.
+ * L'animation de `BotIcon` est un clignement unique, déclenché au survol : on la
+ * relance à intervalle régulier pour en faire un témoin d'attente.
  */
-export default function CaptchaPending() {
+export function BlinkingBot({size = 16, className}: {size?: number; className?: string}) {
     const botRef = useRef<BotIconHandle>(null);
 
     useEffect(() => {
@@ -23,6 +22,16 @@ export default function CaptchaPending() {
         return () => clearInterval(id);
     }, []);
 
+    return <BotIcon ref={botRef} size={size} className={className}/>;
+}
+
+/**
+ * Attente de la vérification anti-robot, sous le bouton d'envoi.
+ *
+ * Celui-ci restait grisé sur « Validation du captcha… » sans autre indication :
+ * l'attente est nommée ici, le libellé de l'action ne bouge plus.
+ */
+export default function CaptchaPending() {
     // `div` et non `p` : BotIcon enveloppe son SVG dans un `div`, que HTML
     // interdit à l'intérieur d'un paragraphe — le navigateur refermait le `p`
     // et l'arbre reconstruit ne correspondait plus au rendu serveur.
@@ -31,7 +40,7 @@ export default function CaptchaPending() {
             role="status"
             className="flex items-center justify-center gap-2 text-xs text-muted-foreground"
         >
-            <BotIcon ref={botRef} size={16} className="shrink-0"/>
+            <BlinkingBot className="shrink-0"/>
             Vérification anti-robot en cours…
         </div>
     );

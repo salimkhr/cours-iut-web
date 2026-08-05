@@ -10,6 +10,10 @@ const PUBLIC_PATHS = [
     "/oauth/token",
     "/api/auth", // tous les endpoints better-auth
     "/api/mcp", // auth par Bearer token OAuth, gérée dans route.ts (pas de cookie de session)
+    // Pose/lève le contournement e2e. Doit rester joignable sans session,
+    // puisque c'est précisément ce qu'on n'a pas encore. Inerte hors
+    // développement : la route répond 404.
+    "/api/e2e-bypass",
     "/.well-known", // OAuth discovery (openid-configuration + oauth-protected-resource → Scalekit)
     "/mentions-legales",
     "/politique-confidentialite",

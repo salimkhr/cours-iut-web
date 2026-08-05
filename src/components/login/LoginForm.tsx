@@ -15,7 +15,7 @@ import {Field, FieldContent, FieldDescription, FieldLabel, FieldTitle} from "@/c
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group";
 import {Label} from "@/components/ui/label";
 
-import CaptchaPending from "@/components/login/CaptchaPending";
+import CaptchaPending, {BlinkingBot} from "@/components/login/CaptchaPending";
 import {loginSchema, LoginValues} from "@/lib/schemas/login.schema";
 
 
@@ -248,7 +248,12 @@ export default function LoginForm() {
                         </>
                     ) : (
                         <>
-                            <LogIn className="h-4 w-4"/>
+                            {/* Pendant la vérification anti-robot, l'icône devient un
+                                robot qui cligne : le bouton grisé montre qu'il se
+                                passe quelque chose, sans que son libellé change. */}
+                            {captchaRequired && !captchaToken
+                                ? <BlinkingBot size={16} className="shrink-0"/>
+                                : <LogIn className="h-4 w-4"/>}
                             Se connecter
                         </>
                     )}
