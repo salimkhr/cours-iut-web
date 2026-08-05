@@ -255,13 +255,10 @@ test("Image sans src est écartée : next/image lèverait une erreur", () => {
     expect(parseJSXString(`<article><Image alt="rien"/></article>`)).toEqual([]);
 });
 
-test("SlideDiagram littéral → diagram ; référence de variable écartée", () => {
+test("SlideDiagram littéral → diagram", () => {
     const litteral = parseJSXString(`<article><SlideDiagram>{\`graph TD; A-->B;\`}</SlideDiagram></article>`);
     expect(litteral[0].type).toBe("diagram");
     expect(litteral[0].props.chart).toBe("graph TD; A-->B;");
-    // Le graphe vient d'une constante du fichier : mieux vaut un avertissement
-    // qu'un bloc `diagram` vide qui casserait le rendu Mermaid.
-    expect(parseJSXString(`<article><SlideDiagram chart={propagationDiagram}/></article>`)).toEqual([]);
 });
 
 test("le code extrait n'est pas ré-encodé par cheerio", () => {
@@ -317,7 +314,7 @@ test("un h2 brut dans une section en devient le titre", () => {
     expect(blocks[0].children).toHaveLength(1);
 });
 
-test("HStack et Grid → columns avec des span équilibrés", () => {
+test("HStack → columns avec des span équilibrés", () => {
     const blocks = parseJSXString(`<article><HStack><Text>gauche</Text><Text>droite</Text></HStack></article>`);
     expect(blocks[0].type).toBe("columns");
     expect(blocks[0].children!.map(c => c.props.span)).toEqual([6, 6]);
@@ -326,4 +323,65 @@ test("HStack et Grid → columns avec des span équilibrés", () => {
 
 test("Grid vide n'est pas converti en conteneur creux", () => {
     expect(parseJSXString(`<article><Grid/></article>`)).toEqual([]);
+});
+
+// ── Composants du corpus traités sur décision explicite ─────────────────────
+
+test("InputCard → bloc input-card", () => {
+    const blocks = parseJSXString(`<article><InputCard title="Checkbox" description="Choix multiples" code={\`<input type="checkbox"/>\`}/></article>`);
+    expect(blocks[0].type).toBe("input-card");
+    expect(blocks[0].props.title).toBe("Checkbox");
+    expect(blocks[0].props.description).toBe("Choix multiples");
+    expect(blocks[0].props.code).toBe('<input type="checkbox"/>');
+    expect(blocks[0].props.language).toBe("html");
+});
+
+test("InputExample → partie + description + code avec aperçu", () => {
+    const blocks = parseJSXString(`<article><InputExample title="Le champ texte" description="Saisie libre" code={\`<input type="text"/>\`}/></article>`);
+    expect(blocks[0].type).toBe("section");
+    expect(blocks[0].props.title).toBe("Le champ texte");
+    expect(blocks[0].children!.map(c => c.type)).toEqual(["text", "code-with-preview"]);
+});
+
+test("BaseCard et DemoBox sont écartés sans avertissement", () => {
+    expect(parseJSXString(`<article><BaseCard/><DemoBox/></article>`)).toEqual([]);
+});
+
+test("SlideDiagram sans graphe littéral reçoit un diagramme de remplacement", () => {
+    const blocks = parseJSXString(`<article><SlideDiagram chart={propagationDiagram}/></article>`);
+    expect(blocks[0].type).toBe("diagram");
+    expect(String(blocks[0].props.chart)).toContain("graph LR");
+    expect(String(blocks[0].props.chart)).toContain("à reprendre");
+});
+
+test("les colonnes générées n'utilisent que des spans valides", () => {
+    // `column.span` n'accepte que {3,4,6,8,9} : un span calculé hors de cette
+    // liste rendrait tout le document insauvegardable.
+    for (const n of [1, 2, 3, 4, 5, 7]) {
+        const enfants = Array.from({ length: n }, (_, i) => `<Text>c${i}</Text>`).join("");
+        const blocks = parseJSXString(`<article><HStack>${enfants}</HStack></article>`);
+        const cols = blocks[0]?.type === "columns" ? blocks[0].children! : [];
+        for (const c of cols) expect([3, 4, 6, 8, 9]).toContain(Number(c.props.span));
+        // Hors répartition connue, les enfants sont empilés — jamais perdus.
+        if (!cols.length) expect(blocks).toHaveLength(n);
+    }
+});
+
+test("Grid respecte son nombre de colonnes et empile les rangées", () => {
+    // repeat(2, 1fr) avec 4 cartes = deux rangées de deux, pas une rangée de
+    // quatre colonnes où un bloc de code devient illisible.
+    const cartes = Array.from({ length: 4 }, (_, i) => `<Text>c${i}</Text>`).join("");
+    const blocks = parseJSXString(`<article><Grid templateColumns={{base: "1fr", md: "repeat(2, 1fr)"}}>${cartes}</Grid></article>`);
+    expect(blocks.map(b => b.type)).toEqual(["columns", "columns"]);
+    for (const rangee of blocks) {
+        expect(rangee.children).toHaveLength(2);
+        expect(rangee.children!.every(c => Number(c.props.span) === 6)).toBe(true);
+    }
+});
+
+test("Grid avec un nombre impair d'enfants ne perd pas le dernier", () => {
+    const cartes = Array.from({ length: 5 }, (_, i) => `<Text>c${i}</Text>`).join("");
+    const blocks = parseJSXString(`<article><Grid templateColumns={{md: "repeat(2, 1fr)"}}>${cartes}</Grid></article>`);
+    const feuilles = JSON.stringify(blocks).match(/"type":"text"/g) ?? [];
+    expect(feuilles).toHaveLength(5);
 });

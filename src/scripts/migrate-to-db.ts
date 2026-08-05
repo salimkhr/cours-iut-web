@@ -112,9 +112,23 @@ const uuidv4 = _uuidv4;
 type Block = _Block;
 
 // ── Éléments à ignorer complètement ────────────────────────────────────────
+// `BaseCard` et `DemoBox` sont écartés sur décision explicite : le premier
+// passe tout son contenu par des props JSX (`header={<Text/>}`) que cheerio
+// voit comme des chaînes d'attribut, le second est une démo interactive sans
+// équivalent statique. Les ressaisir au builder est plus sûr que de deviner.
 const IGNORED_TAGS = new Set([
-    "SectionCard", "CourseLinks", "SlideTitle",
+    "SectionCard", "CourseLinks", "SlideTitle", "BaseCard", "DemoBox",
 ]);
+
+/** Diagramme de remplacement pour un `SlideDiagram` dont le graphe est une
+ *  constante du fichier, hors de portée du convertisseur. Mermaid valide, donc
+ *  la slide se rend — mais le texte dit sans ambiguïté qu'il faut le refaire. */
+const DIAGRAMME_A_REFAIRE = [
+    "graph LR",
+    '    A["Diagramme à reprendre"] --> B["Étape 1"]',
+    '    B --> C["Étape 2"]',
+    '    C --> D["Résultat"]',
+].join("\n");
 
 /**
  * Valeur d'un attribut JSX. Le `replace(/[{}'"`]/g, "")` employé jusqu'ici
@@ -156,6 +170,10 @@ function extractTemplateLiteral($: CheerioAPI, el: CheerioElement): string {
  */
 const tagsIgnores = new Map<string, number>();
 
+/** Diagrammes posés en remplacement faute de graphe littéral, remontés en
+ *  avertissement pour qu'ils ne se fondent pas dans le contenu migré. */
+let diagrammesRemplaces = 0;
+
 // ── Convertit un seul élément cheerio → Block | null ───────────────────────
 function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
     if (el.type !== "tag") return null;
@@ -196,19 +214,21 @@ function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
         case "ListItem": case "li":
             return { id: uuidv4(), type: "list-item", props: { text: serializeInline($, el) }, children: [] };
 
-        // `HStack` et `Grid` sont des conteneurs de mise en page : le bloc
-        // `columns` couvre les deux, inutile d'ajouter un type. `columns` est
-        // une grille de 12, d'où le span réparti sur le nombre d'enfants.
-        case "HStack": case "Grid": {
-            const enfants = $el.children().toArray()
-                .map(c => convertElement($, c as CheerioElement))
-                .filter(Boolean) as Block[];
-            if (!enfants.length) break;
-            const span = Math.max(1, Math.min(12, Math.round(12 / enfants.length)));
-            const colonnes = enfants.map(bloc => ({
-                id: uuidv4(), type: "column", props: { span }, children: [bloc],
-            }));
-            return { id: uuidv4(), type: "columns", props: {}, children: colonnes };
+        // `InputCard` : une carte titrée qui commente un extrait de code, sans
+        // aperçu rendu. Douze d'entre elles portent le catalogue des champs de
+        // formulaire du cours PHP ; elles disparaissaient entièrement.
+        case "InputCard": {
+            const code = extractTemplateLiteral($, el) || attrValue($el, "code");
+            if (!code) break;
+            const props: Record<string, unknown> = {
+                title: attrValue($el, "title"),
+                description: attrValue($el, "description"),
+                language: attrValue($el, "language") || "html",
+                code,
+            };
+            const filename = attrValue($el, "filename");
+            if (filename) props.filename = filename;
+            return { id: uuidv4(), type: "input-card", props, children: [] };
         }
 
         case "ImageCard": {
@@ -304,13 +324,17 @@ function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
         }
 
         // `<SlideDiagram chart={mermaidString}/>` : le graphe est le plus
-        // souvent une constante du fichier, hors de portée de cheerio. On ne
-        // convertit que la forme littérale et on laisse l'autre remonter en
-        // avertissement plutôt que d'écrire un diagramme vide.
+        // souvent une constante du fichier, hors de portée de cheerio. On pose
+        // alors un diagramme de remplacement — la place du schéma reste visible
+        // dans la slide, à reprendre au builder.
         case "SlideDiagram": {
             const chart = extractTemplateLiteral($, el);
-            if (!chart) break;
-            return { id: uuidv4(), type: "diagram", props: { header: "", chart }, children: [] };
+            if (!chart) diagrammesRemplaces++;
+            return {
+                id: uuidv4(), type: "diagram",
+                props: { header: "", chart: chart || DIAGRAMME_A_REFAIRE },
+                children: [],
+            };
         }
 
         case "SlideText":
@@ -360,6 +384,46 @@ function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
  * contenu dans la partie précédente.
  */
 const SELECTEUR_TITRE = "Heading, h1, h2, h3, h4, h5, h6";
+
+/** Répartitions d'une rangée sur la grille de 12, limitées aux spans que
+ *  `blockPropsSchemas.column` accepte. */
+const SPAN_PAR_NOMBRE: Record<number, number> = { 2: 6, 3: 4, 4: 3 };
+
+/**
+ * Nombre de colonnes voulu par un `<Grid templateColumns={{md: "repeat(2, 1fr)"}}>`.
+ * À défaut d'indication lisible, deux colonnes : c'est la seule valeur employée
+ * dans le corpus, et la seule qui laisse un bloc de code respirer.
+ */
+function colonnesDeGrille($el: ReturnType<CheerioAPI>, nbEnfants: number): number {
+    const brut = $el.attr("templateColumns") ?? "";
+    const repeat = brut.match(/repeat\(\s*(\d+)/);
+    if (repeat) return Math.max(1, parseInt(repeat[1], 10));
+    // `HStack` n'a pas d'attribut : c'est une rangée, tous les enfants côte à côte.
+    return $el.prop("tagName") === "HStack" ? nbEnfants : 2;
+}
+
+/**
+ * Découpe des blocs en rangées de `parLigne` colonnes. Une rangée dont la
+ * taille n'a pas de span autorisé est laissée à plat : mieux vaut des blocs
+ * empilés qu'un `span` refusé par le schéma, qui rendrait le document entier
+ * insauvegardable depuis le builder.
+ */
+function enRangees(blocs: Block[], parLigne: number): Block[] {
+    if (parLigne <= 1 || blocs.length <= 1) return blocs;
+    const sortie: Block[] = [];
+    for (let d = 0; d < blocs.length; d += parLigne) {
+        const rangee = blocs.slice(d, d + parLigne);
+        const span = SPAN_PAR_NOMBRE[rangee.length];
+        if (!span) { sortie.push(...rangee); continue; }
+        sortie.push({
+            id: uuidv4(), type: "columns", props: {},
+            children: rangee.map(bloc => ({
+                id: uuidv4(), type: "column", props: { span }, children: [bloc],
+            })),
+        });
+    }
+    return sortie;
+}
 
 function estTitre(tag: string): boolean {
     return tag === "Heading" || /^h[1-6]$/.test(tag);
@@ -419,6 +483,33 @@ export function groupByHeadings(elements: CheerioElement[], $: CheerioAPI): Bloc
             blocks.push(...inner);
             i++;
 
+        } else if (tag === "HStack" || tag === "Grid") {
+            // Conteneurs de mise en page : le bloc `columns` les couvre, pas
+            // besoin d'un type de plus. `columns` ne décrit qu'une rangée, donc
+            // un `Grid` de 12 cartes en `repeat(2, 1fr)` donne six rangées de
+            // deux — et non une rangée de douze colonnes illisibles.
+            const inner = groupByHeadings($el.children().toArray() as CheerioElement[], $);
+            blocks.push(...enRangees(inner, colonnesDeGrille($el, inner.length)));
+            i++;
+
+        } else if (tag === "InputExample") {
+            // Composant local au cours HTML : un titre de niveau 4, une
+            // description, puis un code avec aperçu. Trois blocs existants le
+            // reproduisent exactement — inutile d'inventer un type.
+            const code = extractTemplateLiteral($, el) || attrValue($el, "code");
+            const description = attrValue($el, "description");
+            const enfants: Block[] = [];
+            if (description) enfants.push({ id: uuidv4(), type: "text", props: { content: description }, children: [] });
+            if (code) enfants.push({ id: uuidv4(), type: "code-with-preview", props: { language: "html", code }, children: [] });
+            if (enfants.length) {
+                blocks.push({
+                    id: uuidv4(), type: "section",
+                    props: { title: stripHeadingPrefix(attrValue($el, "title")) },
+                    children: enfants,
+                });
+            }
+            i++;
+
         } else if (tag === "SlideScreen") {
             // Chaque slide = un bloc `slide` avec titre + enfants convertis dans
             // l'univers slide. La version précédente émettait un `slide-screen`
@@ -442,8 +533,28 @@ export function groupByHeadings(elements: CheerioElement[], $: CheerioAPI): Bloc
 }
 
 // ── Point d'entrée : JSX string → Block[] ──────────────────────────────────
+/**
+ * Réécrit les attributs `nom={`…`}` en attributs quotés. Cheerio ne connaît
+ * pas la syntaxe JSX : sur `code={`<input type="text"/>`}` il s'arrête au
+ * premier espace et ne rend que « {`<input ». Tout le code d'une `InputCard`
+ * y passait.
+ *
+ * L'échappement est repris tel quel par `attrValue`, dont le décodage en un
+ * seul passage rend exactement la valeur d'origine.
+ */
+export function inlineTemplateAttributes(jsx: string): string {
+    return jsx.replace(/(\w+)=\{`([\s\S]*?)`\}/g, (_whole, nom: string, valeur: string) => {
+        const echappe = valeur
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        return `${nom}="${echappe}"`;
+    });
+}
+
 export function parseJSXString(jsxCode: string): Block[] {
-    const $ = cheerio.load(jsxCode, { xmlMode: true });
+    const $ = cheerio.load(inlineTemplateAttributes(jsxCode), { xmlMode: true });
     const root = $.root().children().toArray() as CheerioElement[];
     return groupByHeadings(root, $);
 }
@@ -452,6 +563,7 @@ export function parseJSXString(jsxCode: string): Block[] {
 export function parseFile(filePath: string): { blocks: Block[]; warnings: string[] } {
     const warnings: string[] = [];
     tagsIgnores.clear();
+    diagrammesRemplaces = 0;
     const source = _fs.readFileSync(filePath, "utf-8");
 
     let ast: ReturnType<typeof _babelParser.parse>;
@@ -495,6 +607,9 @@ export function parseFile(filePath: string): { blocks: Block[]; warnings: string
             .map(([t, n]) => (n > 1 ? `${t}×${n}` : t))
             .join(", ");
         warnings.push(`balises non converties : ${liste}`);
+    }
+    if (diagrammesRemplaces) {
+        warnings.push(`${diagrammesRemplaces} diagramme(s) de remplacement à reprendre`);
     }
     return { blocks, warnings };
 }

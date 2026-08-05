@@ -251,6 +251,27 @@ export const blockDefs: BlockDef[] = [
         ],
     },
     {
+        type: "input-card",
+        label: "Carte de code commentée",
+        category: "Code",
+        description: "Extrait de code titré, accompagné d'une phrase qui explique à quoi il sert. Pour un catalogue d'exemples comparables — les types de champs d'un formulaire, les variantes d'une même balise. Sans aperçu rendu : utiliser « Code + aperçu » si le résultat visuel compte.",
+        defaultProps: { title: "", description: "", language: "html", code: "" },
+        schema: z.object({
+            title: z.string(),
+            description: z.string(),
+            language: z.string(),
+            code: z.string(),
+            filename: z.string().optional(),
+        }),
+        fields: [
+            { key: "title", label: "Titre", type: "text", placeholder: "Checkbox" },
+            { key: "description", label: "Description", type: "text", placeholder: "Choix multiples", inlineMarkdown: true },
+            { key: "language", label: "Langage", type: "select", options: ["html", "css", "javascript", "php", "json", "typescript"] },
+            { key: "code", label: "Code", type: "textarea", rows: 10, placeholder: '<input type="checkbox" name="opt[]"/>' },
+            { key: "filename", label: "Nom du fichier téléchargeable", type: "text", placeholder: "exemple.html" },
+        ],
+    },
+    {
         type: "diagram",
         label: "Diagramme",
         category: "Code",

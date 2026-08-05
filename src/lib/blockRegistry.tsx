@@ -9,6 +9,7 @@ import ImageCard from "@/components/Cards/ImageCard";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { renderInline } from "@/lib/inlineMarkdown";
 import CodeCard from "@/components/Cards/CodeCard";
+import InputCard from "@/components/Cards/InputCard";
 import CodeWithPreviewCard, { CodePanel, PreviewPanel } from "@/components/Cards/CodeWithPreviewCard";
 import dynamic from "next/dynamic";
 import DiagramSkeleton from "@/components/Cards/DiagramSkeleton";
@@ -19,7 +20,7 @@ import {
     LayoutPanelLeft, PanelLeft, MessageSquare, ChevronsUpDown,
     Image, Table as TableIcon, Link, Code, Eye,
     Share2, Download, Quote, Minus,
-    Monitor, StickyNote,
+    Monitor, StickyNote, FileCode,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import CourseReminder from "@/components/CourseReminder";
@@ -235,6 +236,19 @@ const clientParts: Record<string, ClientPart> = {
                     ))}
                 </TableBody>
             </Table>
+        ),
+    },
+    "input-card": {
+        icon: FileCode,
+        render: ({ title, description, language, code, filename, currentModule }: BlockRenderProps) => (
+            <InputCard
+                title={String(title ?? "")}
+                description={String(description ?? "")}
+                language={String(language ?? "html")}
+                code={String(code ?? "")}
+                filename={filename ? String(filename) : undefined}
+                currentModule={currentModule as Module | undefined}
+            />
         ),
     },
     "section-card": {

@@ -86,6 +86,13 @@ export const blockPropsSchemas: Record<string, z.ZodTypeAny> = {
         headers: z.array(z.string()).optional(),
         rows: z.array(z.array(z.string())).optional(),
     }),
+    "input-card": z.object({
+        title: z.string(),
+        description: z.string(),
+        language: z.string(),
+        code: z.string(),
+        filename: z.string().optional(),
+    }),
     "section-card": z.object({
         title: z.string(),
         href: z.string(),
@@ -115,6 +122,7 @@ export interface ContainerRule {
 const LIST_ITEM_CHILDREN = [
     "text", "list", "code", "code-with-preview", "image-card",
     "diagram", "callout", "quote", "table", "download-file", "section-card",
+    "input-card",
 ];
 
 export const containerRules: Record<string, ContainerRule> = {
