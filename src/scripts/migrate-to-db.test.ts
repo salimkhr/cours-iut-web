@@ -102,7 +102,12 @@ test("Heading level 3 imbriqué dans section", () => {
         </article>`);
     expect(blocks[0].children).toHaveLength(1);
     expect(blocks[0].children![0].type).toBe("section");
-    expect(blocks[0].children![0].props.title).toBe("1. Sous-titre");
+    // Le renderer pose lui-même « A — » puis « 1. » selon la profondeur :
+    // conserver le préfixe dans le titre l'affichait en double.
+    expect(blocks[0].children![0].props.title).toBe("Sous-titre");
+    // « A-Titre » sans espace n'est pas un préfixe : c'est la protection qui
+    // épargne « E-commerce » ou « A/B testing ».
+    expect(blocks[0].props.title).toBe("A-Titre");
 });
 
 test("CodeCard → code block", () => {
@@ -132,7 +137,7 @@ test("SectionCard → ignoré", () => {
     expect(blocks).toHaveLength(0);
 });
 
-test("SlideScreen → slide-screen block avec children", () => {
+test("SlideScreen → slide, avec des enfants de l'univers slide", () => {
     const blocks = parseJSXString(`
         <div>
             <SlidesScreen>
@@ -145,11 +150,14 @@ test("SlideScreen → slide-screen block avec children", () => {
             </SlidesScreen>
         </div>`);
     expect(blocks).toHaveLength(1);
-    expect(blocks[0].type).toBe("slide-screen");
+    // `slide-screen` + enfants de cours donnaient un écran vide au rendu :
+    // le player ne connaît que les types `slide-*`.
+    expect(blocks[0].type).toBe("slide");
     expect(blocks[0].props.title).toBe("Introduction");
     expect(blocks[0].children).toHaveLength(2);
-    expect(blocks[0].children![0].type).toBe("text");
-    expect(blocks[0].children![1].type).toBe("list");
+    expect(blocks[0].children![0].type).toBe("slide-text");
+    expect(blocks[0].children![1].type).toBe("slide-list");
+    expect(blocks[0].children![1].children![0].type).toBe("slide-list-item");
 });
 
 test("SlideCode → code block avec highlight optionnel", () => {

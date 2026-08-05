@@ -9,6 +9,8 @@ import type { Element as DOMElement, AnyNode } from "domhandler";
 import * as _fs from "fs";
 import * as _path from "path";
 import type { Block as _Block } from "@/types/CourseContent";
+import { toSlideBlocks } from "@/lib/slideBlockMigration";
+import { decodeHtmlEntities, stripHeadingPrefix, stripJsxSpacers } from "@/lib/contentCleanup";
 import type { Db, ObjectId } from "mongodb";
 
 // @babel/traverse et @babel/generator ont un bug ESM connu en Bun
@@ -31,16 +33,11 @@ interface DataNodeWithText {
     data: string;
 }
 
-const HTML_ENTITIES: Record<string, string> = {
-    "&apos;": "'", "&rsquo;": "'", "&lsquo;": "'",
-    "&quot;": '"',  "&amp;": "&",
-    "&lt;": "<",    "&gt;": ">",
-    "&nbsp;": " ",
-};
-
-function decodeEntities(text: string): string {
-    return text.replace(/&[a-zA-Z]+;/g, m => HTML_ENTITIES[m] ?? m);
-}
+// Décodeur partagé (src/lib/contentCleanup.ts). L'ancienne table locale ne
+// couvrait que neuf entités nommées : les accents (`&#xe9;`), le dollar des
+// template literals (`&#x24;`), les traits d'arborescence et les emojis
+// restaient bruts jusque dans les blocs de code affichés aux étudiants.
+const decodeEntities = decodeHtmlEntities;
 
 export function serializeInline($: CheerioAPI, el: DOMElement): string {
     let result = "";
@@ -66,7 +63,9 @@ export function serializeInline($: CheerioAPI, el: DOMElement): string {
         }
     };
     $(el).contents().each((_, c) => recurse(c as AnyNode));
-    return result.replace(/\s+/g, " ").trim();
+    // `{" "}` est une expression JSX qui *produit* une espace ; cheerio la voit
+    // comme du texte brut et la recopiait telle quelle dans le contenu.
+    return stripJsxSpacers(result).replace(/\s+/g, " ").trim();
 }
 
 export function deriveSlug(filePath: string): {
@@ -229,7 +228,7 @@ export function groupByHeadings(elements: CheerioElement[], $: CheerioAPI): Bloc
                 !((c as CheerioElement).tagName === "Heading" && c === $heading[0])
             ) as CheerioElement[];
             const children = groupByHeadings(rest, $);
-            blocks.push({ id: uuidv4(), type: "section", props: { title }, children });
+            blocks.push({ id: uuidv4(), type: "section", props: { title: stripHeadingPrefix(title) }, children });
             i++;
 
         } else if (tag === "Heading") {
@@ -248,7 +247,7 @@ export function groupByHeadings(elements: CheerioElement[], $: CheerioAPI): Bloc
                 i++;
             }
             const children = groupByHeadings(childEls, $);
-            blocks.push({ id: uuidv4(), type: "section", props: { title }, children });
+            blocks.push({ id: uuidv4(), type: "section", props: { title: stripHeadingPrefix(title) }, children });
 
         } else if (tag === "article") {
             // Transparent wrapper
@@ -263,11 +262,15 @@ export function groupByHeadings(elements: CheerioElement[], $: CheerioAPI): Bloc
             i++;
 
         } else if (tag === "SlideScreen") {
-            // Chaque slide = un bloc slide-screen avec titre + enfants
+            // Chaque slide = un bloc `slide` avec titre + enfants convertis dans
+            // l'univers slide. La version précédente émettait un `slide-screen`
+            // dont les enfants restaient des blocs de cours (`text`, `code`,
+            // `list`) : le player ne sait pas les rendre et n'affichait que le
+            // titre. Voir src/lib/slideBlockMigration.ts.
             const title = ($el.attr("title") ?? "").replace(/[{}'"`]/g, "");
             const innerEls = $el.children().toArray() as CheerioElement[];
-            const children = groupByHeadings(innerEls, $);
-            blocks.push({ id: uuidv4(), type: "slide-screen", props: { title }, children });
+            const children = toSlideBlocks(groupByHeadings(innerEls, $));
+            blocks.push({ id: uuidv4(), type: "slide", props: { title }, children });
             i++;
 
         } else {

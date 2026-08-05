@@ -17,7 +17,15 @@ const slideColumnSpanClass: Record<number, string> = {
     9: "md:col-span-9",
 };
 
-export function SlideBlockItem({block}: { block: Block }) {
+interface SlideBlockItemProps {
+    block: Block;
+    /** Enveloppe optionnelle des blocs imbriqués (items de liste, contenu de
+     *  colonne). Le player public ne la passe pas ; le builder s'en sert pour
+     *  rendre ces blocs sélectionnables et éditables. */
+    renderNested?: (child: Block, parent: Block, index: number) => React.ReactNode;
+}
+
+export function SlideBlockItem({block, renderNested}: SlideBlockItemProps) {
     switch (block.type) {
         case "slide-text":
             return (
@@ -37,13 +45,19 @@ export function SlideBlockItem({block}: { block: Block }) {
         case "slide-list":
             return (
                 <SlideList ordered={Boolean(block.props.ordered)}>
-                    {(block.children ?? []).map((item) => (
+                    {(block.children ?? []).map((item, i) => (
                         <SlideListItem key={item.id}>
-                            {renderInline(String(item.props.text ?? ""))}
+                            {renderNested
+                                ? renderNested(item, block, i)
+                                : renderInline(String(item.props.text ?? ""))}
                         </SlideListItem>
                     ))}
                 </SlideList>
             );
+        // Rendu d'un item isolé : utilisé quand l'appelant enveloppe lui-même
+        // les items (builder), la puce venant du <SlideListItem> parent.
+        case "slide-list-item":
+            return <>{renderInline(String(block.props.text ?? ""))}</>;
         case "slide-note":
             return <SlideNote>{String(block.props.content ?? "")}</SlideNote>;
         case "diagram":
@@ -60,8 +74,10 @@ export function SlideBlockItem({block}: { block: Block }) {
                                 key={col.id}
                                 className={`${spanClass} flex flex-col gap-4 min-w-0 min-h-0`}
                             >
-                                {(col.children ?? []).map((inner) => (
-                                    <SlideBlockItem key={inner.id} block={inner}/>
+                                {(col.children ?? []).map((inner, i) => (
+                                    renderNested
+                                        ? <React.Fragment key={inner.id}>{renderNested(inner, col, i)}</React.Fragment>
+                                        : <SlideBlockItem key={inner.id} block={inner}/>
                                 ))}
                             </div>
                         );

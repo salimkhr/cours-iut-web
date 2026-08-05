@@ -83,13 +83,23 @@ const clientParts: Record<string, ClientPart> = {
             const d = Number(depth) || 0;
             const level = Math.min(2 + d, 4) as 2 | 3 | 4;
             const idx = Number(sectionIndex ?? 0);
-            // Badge : lettre (A, B, C…) au niveau 0, numéro (1, 2, 3…) en sous-section.
-            const badgeLabel = d === 0 ? String.fromCharCode(65 + idx) : String(idx + 1);
+            // Plan scolaire A / 1 / a : chaque profondeur a sa propre notation,
+            // ce qui situe une sous-sous-partie sans composer avec son parent.
+            // Auparavant les niveaux 1 et 2 partageaient « 1, 2, 3 » et les
+            // auteurs écrivaient « 2.1 » à la main dans le titre pour compenser.
+            const badgeLabel = d === 0
+                ? String.fromCharCode(65 + idx)   // A, B, C…
+                : d === 1
+                  ? String(idx + 1)               // 1, 2, 3…
+                  : String.fromCharCode(97 + idx); // a, b, c…
             const mod = currentModule as Module | undefined;
             const icon = mod?.projectIcon ?? "";
             const showBadge = Boolean(projectRef) && icon.length > 0;
             return (
-                <section className="course-block-section flex flex-col gap-4 lg:gap-5">
+                <section
+                    className="course-block-section flex flex-col gap-4 lg:gap-5"
+                    data-depth={d}
+                >
                     <div className={cn("course-section-head", d === 0 && "course-section-head--top")}>
                         <span
                             className={cn("course-section-badge", d > 0 && "course-section-badge--sub")}
@@ -186,9 +196,22 @@ const clientParts: Record<string, ClientPart> = {
     },
     "image-card": {
         icon: Image,
-        render: ({ src, title, alt, currentModule }: BlockRenderProps) => (
-            <ImageCard src={String(src ?? "")} title={title ? String(title) : undefined} alt={String(alt ?? "")} currentModule={currentModule as Module | undefined} />
-        ),
+        render: ({ src, title, alt, currentModule }: BlockRenderProps) => {
+            // `<Image src="">` déclenche une erreur React et fait recharger la
+            // page entière : tant qu'aucune image n'est choisie, on rend un
+            // cadre d'attente à la place du composant public.
+            const url = String(src ?? "").trim();
+            if (!url) {
+                return (
+                    <div className="flex min-h-24 items-center justify-center rounded-md border border-dashed border-bridge-300 px-4 py-6 text-sm text-bridge-600 dark:border-bridge-600 dark:text-bridge-300">
+                        Aucune image sélectionnée
+                    </div>
+                );
+            }
+            return (
+                <ImageCard src={url} title={title ? String(title) : undefined} alt={String(alt ?? "")} currentModule={currentModule as Module | undefined} />
+            );
+        },
     },
     "table": {
         icon: TableIcon,

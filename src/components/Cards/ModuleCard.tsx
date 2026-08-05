@@ -114,7 +114,7 @@ export default function ModuleCard({currentModule, isAuthed = true, isAdmin = fa
                                 aria-label={isVisible ? "Masquer le module" : "Rendre le module visible"}
                                 className={cn(
                                     "pointer-events-auto inline-flex items-center gap-1 rounded-md px-2 py-1.5",
-                                    "text-[10px] font-semibold uppercase tracking-[0.18em]",
+                                    "text-[11px] font-semibold uppercase tracking-[0.18em]",
                                     "transition-colors duration-200 cursor-pointer",
                                     "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                                     pending && "opacity-60 cursor-wait",

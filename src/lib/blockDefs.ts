@@ -70,7 +70,7 @@ export const blockDefs: BlockDef[] = [
         type: "section",
         label: "Partie",
         category: "Structure",
-        description: "Conteneur d'une grande partie de cours. Le renderer préfixe automatiquement le titre : A —, B —, C — (profondeur 0) ou 1., 2., 3. (profondeur 1+). NE PAS inclure ce préfixe dans `title` : écrire 'Pourquoi Rust ?' et non 'A — Pourquoi Rust ?', 'Bonjour Médiathèque' et non 'Exercice 1 — Bonjour Médiathèque'. IMPORTANT : placez le contenu dans ses `children`, jamais en blocs frères.",
+        description: "Conteneur d'une grande partie de cours. Le renderer numérote automatiquement le titre selon un plan scolaire : A, B, C (profondeur 0), puis 1, 2, 3 (profondeur 1), puis a, b, c (profondeur 2+). NE PAS inclure ce préfixe dans `title` : écrire 'Pourquoi Rust ?' et non 'A — Pourquoi Rust ?', 'Boucle for' et non '2.1 Boucle for'. IMPORTANT : placez le contenu dans ses `children`, jamais en blocs frères.",
         defaultProps: { title: "", projectRef: false },
         schema: z.object({ title: z.string(), projectRef: z.boolean().optional() }),
         fields: [
@@ -187,9 +187,11 @@ export const blockDefs: BlockDef[] = [
         description: "Tableau de données : `headers` (string[]) et `rows` (string[][]). Les cellules acceptent du markdown inline.",
         noPropsPanel: true,
         defaultProps: { headers: ["En-tête 1", "En-tête 2"], rows: [["", ""]] },
+        // Optionnels : voir blockSchemas.ts — des tableaux migrés n'ont ni
+        // headers ni rows et doivent rester sauvegardables.
         schema: z.object({
-            headers: z.array(z.string()),
-            rows: z.array(z.array(z.string())),
+            headers: z.array(z.string()).optional(),
+            rows: z.array(z.array(z.string())).optional(),
         }),
         fields: [],
     },

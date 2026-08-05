@@ -50,7 +50,7 @@ function ToggleCol({id, label, checked, disabled, pending, onChange}: ToggleColP
         <div className="flex w-20 flex-col items-center gap-1.5 xl:w-24">
             <Label
                 htmlFor={id}
-                className="text-center text-[10px] uppercase tracking-[0.12em] font-semibold text-brand-dark/55 dark:text-bridge-200/55"
+                className="text-center text-[11px] uppercase tracking-[0.12em] font-semibold text-brand-dark/55 dark:text-bridge-200/55"
             >
                 {label}
             </Label>

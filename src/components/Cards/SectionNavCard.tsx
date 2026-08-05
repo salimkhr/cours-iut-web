@@ -36,7 +36,7 @@ export default function SectionNavCard({href, direction, section}: SectionNavCar
                 !isPrev && "items-end text-right"
             )}>
                 <span className={cn(
-                    "text-[10px] uppercase tracking-wider text-brand-dark/60 dark:text-bridge-200/60 flex items-center gap-1 shrink-0",
+                    "text-[11px] uppercase tracking-wider text-brand-dark/60 dark:text-bridge-200/60 flex items-center gap-1 shrink-0",
                     !isPrev && "flex-row-reverse"
                 )}>
                     <NotebookPen className="size-3 shrink-0"/>

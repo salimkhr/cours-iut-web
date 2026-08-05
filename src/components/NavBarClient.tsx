@@ -102,8 +102,11 @@ export default function NavBarClient({
                 {/* LEFT NAV */}
                 <div className="flex list-none items-center gap-2">
 
+                    {/* Les libellés passent en `hidden md:inline` sous 768 px, ce qui
+                        les retire aussi de l'arbre d'accessibilité : sans aria-label,
+                        un lecteur d'écran mobile n'annonçait que « lien ». */}
                     <NavigationMenuItem>
-                        <Link href="/" className={linkClass("/") + " flex items-center"}>
+                        <Link href="/" aria-label="Accueil" className={linkClass("/") + " flex items-center"}>
                             <Home className="w-5 h-5" />
                         </Link>
                     </NavigationMenuItem>
@@ -112,6 +115,7 @@ export default function NavBarClient({
                         <NavigationMenuItem>
                             <Link
                                 href="/admin"
+                                aria-label="Admin"
                                 className={linkClass("/admin") + " flex items-center gap-1"}
                             >
                                 <UserCheck className="w-5 h-5" />
@@ -124,6 +128,7 @@ export default function NavBarClient({
                         <NavigationMenuItem>
                             <Link
                                 href="/login"
+                                aria-label="Login"
                                 className={linkClass("/login") + " flex items-center gap-1"}
                             >
                                 <UserLockIcon className="w-5 h-5" />
@@ -148,6 +153,7 @@ export default function NavBarClient({
                                 <div key={module.path}>
                                     <Link
                                         href={`/${module.path}`}
+                                        aria-label={module.title}
                                         className={`${linkClass(`/${module.path}`)} flex items-center gap-2 whitespace-nowrap`}
                                     >
                                         <Icon className="w-5 h-5 shrink-0" />

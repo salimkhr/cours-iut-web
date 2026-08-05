@@ -113,7 +113,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
           width: 2.5rem;
           height: 2px;
           background: var(--color-brand-primary);
-          border-radius: 2px;
+          border-radius: 0.375rem; /* rounded.sm — capé à la moitié de la hauteur, donc pilule */
           margin-bottom: 1.5rem;
         }
         .about-label {
@@ -176,15 +176,20 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
         .progress-bar-bg {
           height: 4px;
           background: color-mix(in srgb, var(--about-muted) 24%, transparent);
-          border-radius: 4px;
+          border-radius: 0.375rem;
           overflow: hidden;
           margin-bottom: 0.4rem;
         }
+        /* Remplissage piloté en transform et non en width : animer une propriété
+           de layout relance un calcul de mise en page à chaque frame.
+           transform-origin left fait croître la barre depuis la gauche. */
         .progress-bar-fill {
           height: 100%;
+          width: 100%;
+          transform-origin: left center;
           background: var(--color-brand-primary);
-          border-radius: 4px;
-          transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+          border-radius: 0.375rem;
+          transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .progress-sub {
           font-family: var(--font-mono, monospace);
@@ -253,7 +258,7 @@ export default function AboutSection({ modules, isAuthed }: AboutSectionProps) {
                             >
                                 <div
                                     className="progress-bar-fill"
-                                    style={{ width: `${progressPct}%` }}
+                                    style={{ transform: `scaleX(${progressPct / 100})` }}
                                 />
                             </div>
                             <p className="progress-sub">

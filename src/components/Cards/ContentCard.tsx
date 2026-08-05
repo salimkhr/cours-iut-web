@@ -124,7 +124,7 @@ export default function ContentCard({content, section, currentModule}: ContentCa
                         {label}
                     </h3>
                     {isLocked && (
-                        <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100 shrink-0">
+                        <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100 shrink-0">
                             <Lock className="size-3"/>
                             <span className="hidden sm:inline">Verrouillé</span>
                         </span>

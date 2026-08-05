@@ -24,7 +24,16 @@ export default function ContentSidebarNav({
         (a, b) => CONTENT_ORDER.indexOf(a as ContentKey) - CONTENT_ORDER.indexOf(b as ContentKey)
     );
 
-    const tabs = [
+    interface Tab {
+        key: string;
+        href: string;
+        label: string;
+        Icon: React.ComponentType<{ className?: string }>;
+        /** Classes de visibilité quand l'onglet n'a de sens qu'au-delà d'une largeur. */
+        minBreakpoint?: string;
+    }
+
+    const tabs: Tab[] = [
         ...sorted
             .filter((c) => c !== 'slide')
             .map((content) => {
@@ -42,6 +51,9 @@ export default function ContentSidebarNav({
                 href: `/${moduleSlug}/${sectionSlug}/${SPLIT_KEY}`,
                 label: 'Côte à côte',
                 Icon: Columns2,
+                // La vue split est `lg:flex-row` : sous 1024 px les deux panneaux
+                // s'empilent et l'onglet promet un côte-à-côte qui n'arrive jamais.
+                minBreakpoint: 'hidden lg:inline-flex',
             }]
             : []),
     ];
@@ -53,7 +65,7 @@ export default function ContentSidebarNav({
             aria-label="Changer de type de contenu"
             className="flex items-center gap-0.5"
         >
-            {tabs.map(({key, href, label, Icon}) => {
+            {tabs.map(({key, href, label, Icon, minBreakpoint}) => {
                 const isActive = key === currentContent;
                 return (
                     <Link
@@ -63,6 +75,7 @@ export default function ContentSidebarNav({
                         aria-current={isActive ? 'page' : undefined}
                         className={cn(
                             "shrink-0 inline-flex items-center gap-0.5 px-2 sm:px-1.5 h-11 sm:h-7 text-sm font-medium rounded-md",
+                            minBreakpoint,
                             "transition-[background-color,color,transform] duration-200 active:translate-y-px focus-visible:ring-2 focus-visible:ring-ring",
                             isActive
                                 ? "text-white dark:text-brand-dark"

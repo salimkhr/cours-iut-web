@@ -3,7 +3,7 @@
 import React, {useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
 import {CheckIcon, ClipboardCopyIcon, DownloadIcon} from "lucide-react";
-import {SyntaxHighlighter, normalizeLanguage, oneLight} from '@/lib/syntaxHighlighter';
+import {SyntaxHighlighter, normalizeLanguage, courseCodeLight} from '@/lib/syntaxHighlighter';
 import {Button} from "@/components/ui/button";
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
@@ -111,15 +111,17 @@ export default function InputCard({
                 <p className="text-sm text-gray-600 text-left">{description}</p>
             )}
 
-            <div className="rounded-md border border-gray-200 overflow-hidden">
+            {/* Fond et bordure teintés : le #fafafa / gray-200 d'origine posait
+                une surface froide au milieu du corpus crème. */}
+            <div className="rounded-md border border-bridge-300/60 overflow-hidden bg-bridge-50">
                 <SyntaxHighlighter
                     language={normalizeLanguage(language)}
-                    style={oneLight}
+                    style={courseCodeLight}
                     customStyle={{
                         margin: 0,
                         fontSize: '0.875rem',
                         lineHeight: '1.5rem',
-                        background: '#fafafa',
+                        background: 'transparent',
                     }}
                     wrapLongLines={true}
                     showLineNumbers={showLineNumbers}

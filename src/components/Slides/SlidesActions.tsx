@@ -83,7 +83,7 @@ export const SlidesActions = ({ className }: { className?: string }) => {
                                 )}>
                                     {isController ? "Leader" : "Suiveur"}
                                 </span>
-                                <span className="text-[10px] text-bridge-600/80 dark:text-bridge-300/80">
+                                <span className="text-[11px] text-bridge-600/80 dark:text-bridge-300/80">
                                     {isController
                                         ? "Vous contrôlez"
                                         : isDetached
@@ -100,7 +100,7 @@ export const SlidesActions = ({ className }: { className?: string }) => {
                         )}
 
                         {takeControl && (
-                            <Button size="sm" variant="outline" className="h-6 px-2 text-[10px] cursor-pointer" onClick={takeControl}>
+                            <Button size="sm" variant="outline" className="h-6 px-2 text-[11px] cursor-pointer" onClick={takeControl}>
                                 Reprendre
                             </Button>
                         )}

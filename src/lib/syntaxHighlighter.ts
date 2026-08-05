@@ -11,8 +11,6 @@ import sql from "react-syntax-highlighter/dist/esm/languages/prism/sql";
 import twig from "react-syntax-highlighter/dist/esm/languages/prism/twig";
 import typescript from "react-syntax-highlighter/dist/esm/languages/prism/typescript";
 import yaml from "react-syntax-highlighter/dist/esm/languages/prism/yaml";
-import oneDarkStyle from "react-syntax-highlighter/dist/esm/styles/prism/one-dark";
-import oneLightStyle from "react-syntax-highlighter/dist/esm/styles/prism/one-light";
 
 /**
  * Point d'entrée unique de la coloration syntaxique.
@@ -78,5 +76,7 @@ export function isKnownLanguage(language: string | null | undefined): boolean {
 }
 
 export { PrismLight as SyntaxHighlighter };
-export const oneDark = oneDarkStyle;
-export const oneLight = oneLightStyle;
+// Thèmes maison (src/lib/codeTheme.ts) : les thèmes One Light / One Dark
+// importés jusqu'ici tombaient sous 4.5:1 sur cinq familles de tokens en clair
+// et introduisaient un bleu froid interdit par DESIGN.md.
+export { courseCodeDark, courseCodeLight, lineNumberColor } from "@/lib/codeTheme";

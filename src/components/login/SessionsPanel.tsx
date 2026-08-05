@@ -121,7 +121,7 @@ export default function SessionsPanel() {
                                         {label}
                                     </span>
                                     {isCurrent && (
-                                        <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-brand-accent-dark/10 text-brand-accent-dark">
+                                        <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-brand-accent-dark/10 text-brand-accent-dark">
                                             Session actuelle
                                         </span>
                                     )}

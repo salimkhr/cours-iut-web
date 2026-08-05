@@ -63,3 +63,6 @@ rag
 src/cours/**/REVIEW.md
 
 # src/lib/skills/pedagogy.ts est généré par scripts/generate-skill.ts et COMMITÉ intentionnellement.
+
+# Sauvegardes de migration (scripts/migrate-*)
+/backups/

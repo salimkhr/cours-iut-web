@@ -71,7 +71,7 @@ export const SlidesLiveStatus = () => {
                                 )}>
                                     {isController ? "Leader" : "Suiveur"}
                                 </span>
-                                <span className="text-[10px] text-bridge-600/80 dark:text-bridge-300/80">
+                                <span className="text-[11px] text-bridge-600/80 dark:text-bridge-300/80">
                                     {isController
                                         ? "Vous contrôlez"
                                         : `Suit ${live!.presenterName ?? "…"}`}
@@ -83,7 +83,7 @@ export const SlidesLiveStatus = () => {
                         {isDetached && (
                             <>
                                 <div className="w-px h-5 bg-border/50" />
-                                <span className="text-[10px] text-bridge-600/80 dark:text-bridge-300/80">
+                                <span className="text-[11px] text-bridge-600/80 dark:text-bridge-300/80">
                                     {live!.paused && live!.drift.direction === "synced"
                                         ? "Navigation libre"
                                         : (driftLabel() ?? "En pause")}
@@ -106,7 +106,7 @@ export const SlidesLiveStatus = () => {
                                 <Button
                                     size="sm"
                                     variant="outline"
-                                    className="h-6 px-2 text-[10px] cursor-pointer"
+                                    className="h-6 px-2 text-[11px] cursor-pointer"
                                     onClick={takeControl}
                                     title="Reprendre le contrôle sans redémarrer"
                                 >

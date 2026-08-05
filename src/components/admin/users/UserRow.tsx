@@ -42,7 +42,7 @@ export default function UserRow({ user, onDeleted, onEdit }: UserRowProps) {
                                 {user.name}
                             </p>
                             {user.banned && (
-                                <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-destructive/15 text-destructive dark:bg-red-400/15 dark:text-red-400">
+                                <span className="shrink-0 px-1.5 py-0.5 rounded text-[11px] font-semibold bg-destructive/15 text-destructive dark:bg-red-400/15 dark:text-red-400">
                                     Banni
                                 </span>
                             )}

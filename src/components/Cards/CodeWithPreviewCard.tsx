@@ -2,7 +2,7 @@
 import React, {ReactNode, useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
 import {ClipboardCopyIcon, Code2, Eye} from "lucide-react";
-import {SyntaxHighlighter, normalizeLanguage, oneDark, oneLight} from '@/lib/syntaxHighlighter';
+import {SyntaxHighlighter, normalizeLanguage, courseCodeDark, courseCodeLight} from '@/lib/syntaxHighlighter';
 import {cn} from "@/lib/utils";
 import type Module from "@/types/Module";
 
@@ -68,7 +68,7 @@ export default function CodeWithPreviewCard({language, children, className, curr
                 <span className="inline-flex items-center bg-white/15 backdrop-blur-sm rounded px-2.5 py-1 text-xs font-mono text-white/95">
                     {language.toLowerCase()}
                 </span>
-                <span className="hidden lg:inline text-[10px] font-semibold tracking-[0.18em] uppercase text-white/45">
+                <span className="hidden lg:inline text-[11px] font-semibold tracking-[0.18em] uppercase text-white/45">
                     + aperçu
                 </span>
             </div>
@@ -99,7 +99,7 @@ export default function CodeWithPreviewCard({language, children, className, curr
 
     const codePanel = (
         <div className="block dark:hidden h-full">
-            <SyntaxHighlighter style={oneLight} {...sharedHighlighterProps}>
+            <SyntaxHighlighter style={courseCodeLight} {...sharedHighlighterProps}>
                 {codeContent}
             </SyntaxHighlighter>
             </div>
@@ -107,7 +107,7 @@ export default function CodeWithPreviewCard({language, children, className, curr
 
     const codePanelDark = (
         <div className="hidden dark:block h-full">
-            <SyntaxHighlighter style={oneDark} {...sharedHighlighterProps}>
+            <SyntaxHighlighter style={courseCodeDark} {...sharedHighlighterProps}>
                 {codeContent}
             </SyntaxHighlighter>
         </div>

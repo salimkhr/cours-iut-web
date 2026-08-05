@@ -3,7 +3,7 @@
 import React, {useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
 import {ChevronDown, ChevronUp, ClipboardCopy, Download} from "lucide-react";
-import {SyntaxHighlighter, normalizeLanguage, oneDark, oneLight} from '@/lib/syntaxHighlighter';
+import {SyntaxHighlighter, normalizeLanguage, courseCodeDark, courseCodeLight} from '@/lib/syntaxHighlighter';
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
 
@@ -84,12 +84,12 @@ export default function CodeCard({
                     {filename ?? title ?? `${language.toLowerCase()}`}
                 </span>
                 {filename && (
-                    <span className="shrink-0 text-[10px] font-semibold tracking-[0.18em] uppercase text-white/45">
+                    <span className="shrink-0 text-[11px] font-semibold tracking-[0.18em] uppercase text-white/45">
                         {language}
                     </span>
                 )}
                 {isLongFile && (
-                    <span className="shrink-0 text-[10px] font-mono text-white/35">
+                    <span className="shrink-0 text-[11px] font-mono text-white/35">
                         {lineCount}L
                     </span>
                 )}
@@ -188,12 +188,12 @@ export default function CodeCard({
             ) : (
                 <>
                     <div className="block dark:hidden">
-                        <SyntaxHighlighter style={oneLight} {...sharedHighlighterProps}>
+                        <SyntaxHighlighter style={courseCodeLight} {...sharedHighlighterProps}>
                             {children}
                         </SyntaxHighlighter>
                     </div>
                     <div className="hidden dark:block">
-                        <SyntaxHighlighter style={oneDark} {...sharedHighlighterProps}>
+                        <SyntaxHighlighter style={courseCodeDark} {...sharedHighlighterProps}>
                             {children}
                         </SyntaxHighlighter>
                     </div>

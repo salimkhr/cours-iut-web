@@ -426,8 +426,29 @@ body {
 :is(.course-content, .slide-surface) .course-section-head--top .course-section-badge {
     border-bottom-right-radius: 0;
 }
+/* Indentation par profondeur : le plan A / 1 / a se lit aussi par le décalage.
+   Valeurs réduites sous 640px, où chaque pixel de largeur de lecture compte. */
+:is(.course-content, .slide-surface) .course-block-section[data-depth="1"] {
+    margin-left: 0.75rem;
+}
+:is(.course-content, .slide-surface) .course-block-section[data-depth="2"] {
+    margin-left: 1.5rem;
+}
+@media (min-width: 640px) {
+    :is(.course-content, .slide-surface) .course-block-section[data-depth="1"] {
+        margin-left: 1.25rem;
+    }
+    :is(.course-content, .slide-surface) .course-block-section[data-depth="2"] {
+        margin-left: 2.5rem;
+    }
+}
+
 :is(.course-content, .slide-surface) .course-section-badge--sub {
-    width: 1.6rem;
+    /* `min-width` plutôt qu'une largeur fixe : garde le carré pour un caractère
+       et absorbe un « 10 » si une partie dépasse neuf sous-sections. */
+    width: auto;
+    min-width: 1.6rem;
+    padding-inline: 0.35rem;
     height: 1.6rem;
     border-radius: 0.375rem;
     font-size: 0.875rem;
@@ -511,7 +532,7 @@ body {
     max-width: 100%;
     margin-block: 1.5rem 2rem;
     border: 1px solid var(--color-border);
-    border-radius: 0.75rem;
+    border-radius: 1rem; /* rounded.lg — aligné sur les autres surfaces encadrées */
     background: color-mix(in srgb, var(--color-bridge-50) 62%, transparent);
 }
 
@@ -547,8 +568,11 @@ body {
 }
 
 
+/* Champs de démonstration des cours (exemples de formulaires PHP/HTML).
+   Teintés vers la palette : les littéraux #222222 / #aaaaaa étaient hors
+   système, et le gris du placeholder tombait à 1.9:1 sur le fond crème. */
 .input {
-    border: 1px solid #222222;
+    border: 1px solid var(--color-brand-dark);
     margin-left: 10px;
     margin-bottom: 10px;
     width: 100%;
@@ -556,16 +580,16 @@ body {
 }
 
 .input > option {
-    color: #222222;
+    color: var(--color-brand-dark);
 }
 
 .input::placeholder {
-    color: #aaaaaa; /* couleur du texte placeholder */
+    color: var(--color-bridge-600); /* 6.2:1 sur bridge-50 */
 }
 
 .button {
-    color: #222222;
-    border: 1px solid #222222;
+    color: var(--color-brand-dark);
+    border: 1px solid var(--color-brand-dark);
     margin-left: 10px;
     padding: 0 10px;
     margin-bottom: 10px;

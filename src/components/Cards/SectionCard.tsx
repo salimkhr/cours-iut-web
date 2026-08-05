@@ -77,12 +77,14 @@ function AnimatedActionButton({
             }}
             onMouseLeave={() => iconRef.current?.stopAnimation()}
         >
+            {/* `label` passe en `hidden md:inline` : sans aria-label, ces boutons
+                n'ont plus aucun nom sous 768 px, là où ils sont le plus utilisés. */}
             {disabled ? (
-                <span aria-disabled="true">{inner}</span>
+                <span aria-disabled="true" aria-label={label}>{inner}</span>
             ) : external ? (
-                <Link href={href} target="_blank" rel="noopener noreferrer">{inner}</Link>
+                <Link href={href} aria-label={label} target="_blank" rel="noopener noreferrer">{inner}</Link>
             ) : (
-                <Link href={href}>{inner}</Link>
+                <Link href={href} aria-label={label}>{inner}</Link>
             )}
         </Button>
     );
@@ -198,7 +200,7 @@ export default function SectionCard({section, currentModule, isAdmin, correction
                                 aria-label={isAvailable ? "Verrouiller la section" : "Déverrouiller la section"}
                                 className={cn(
                                     "pointer-events-auto inline-flex items-center gap-1 rounded-md px-2 py-1.5",
-                                    "text-[10px] uppercase tracking-[0.18em] font-semibold",
+                                    "text-[11px] uppercase tracking-[0.18em] font-semibold",
                                     "transition-colors duration-200 cursor-pointer",
                                     "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                                     pending && "opacity-60 cursor-wait",
@@ -221,7 +223,7 @@ export default function SectionCard({section, currentModule, isAdmin, correction
                             </button>
                         ) : (
                             isLocked && (
-                                <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100">
+                                <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100">
                                     <Lock className="size-3" aria-hidden="true"/>
                                     <span className="hidden sm:inline">Verrouillé</span>
                                 </span>

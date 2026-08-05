@@ -175,8 +175,10 @@ Règles condensées :
 - **Impératif vouvoyé strict** dans tous les `<ListItem>` d'une `<List ordered>` de TP : « Créez »,
   « Ouvrez », « Modifiez », « Utilisez », « Ajoutez », « Vérifiez », « Affichez ». **Jamais**
   d'infinitif (« Créer le fichier… ») ni de futur (« Vous créerez… »).
-- Structure : `<article><section>` avec préfixes `A-`, `B-`, `C-` sur les `<Heading level={2}>`
-  et `1.`, `2.`, `3.` sur les `<Heading level={3}>`. Une seule `<section>` par grand thème.
+- Structure : `<article><section>`, une seule `<section>` par grand thème. La numérotation est
+  **posée par le renderer** selon un plan scolaire — `A`, `B`, `C` au premier niveau, `1`, `2`,
+  `3` au deuxième, `a`, `b`, `c` au troisième — et chaque niveau est indenté. Ne jamais écrire
+  ce préfixe dans le titre : « Boucle `for` », pas « 2.1 Boucle `for` ».
 - Composants imposés : `Text`, `Heading`, `List`/`ListItem`, `Code`, `CodeCard`,
   `CodeWithPreviewCard`, `ImageCard`, `DiagramCard`, `SectionCard`, `Table…`. **Jamais** de
   `<p>`, `<ul>`, `<li>`, `<h2>`, `<code>` bruts dans le contenu pédagogique.

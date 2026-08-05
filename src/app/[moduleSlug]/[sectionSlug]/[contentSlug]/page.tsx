@@ -143,8 +143,11 @@ export default async function Content({params}: ContentPageProps) {
             {!isSplit && (
                 <ReadingProgress modulePath={currentModule.path} accentColor={accent}/>
             )}
-            <div className="flex sticky top-(--navbar-h) z-[25] w-full justify-end">
-                <div className={cn("flex items-center px-1 border-l border-b border-border rounded-bl-xl bg-transparent backdrop-blur-xs", isSplit ? "py-1" : "pt-2.5 pb-1")}>
+            {/* `max-w-full` + défilement horizontal : les onglets sont `shrink-0`
+                et cumulaient ~420 px, ce qui poussait un scroll horizontal sur
+                toute la page sous 400 px de large. */}
+            <div className="flex sticky top-(--navbar-h) z-[25] w-full justify-end overflow-hidden">
+                <div className={cn("flex items-center max-w-full overflow-x-auto px-1 border-l border-b border-border rounded-bl-xl bg-transparent backdrop-blur-xs", isSplit ? "py-1" : "pt-2.5 pb-1")}>
                     <ContentSidebarNav
                         contents={getContentTypes(currentSection.contents)}
                         currentContent={isSplit ? SPLIT_SLUG : currentContent!}
