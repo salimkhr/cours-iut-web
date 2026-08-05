@@ -116,6 +116,25 @@ const IGNORED_TAGS = new Set([
     "SectionCard", "CourseLinks", "SlideTitle",
 ]);
 
+/**
+ * Valeur d'un attribut JSX. Le `replace(/[{}'"`]/g, "")` employé jusqu'ici
+ * visait les délimiteurs `{"..."}` mais supprimait *toutes* les apostrophes,
+ * y compris au milieu d'un mot : `title="A - Qu'est-ce qu'un événement ?"`
+ * arrivait « A - Quest-ce quun événement ? » sur la slide.
+ *
+ * On ne retire donc que les délimiteurs qui entourent la valeur, puis on
+ * décode les entités comme partout ailleurs.
+ */
+export function attrValue($el: ReturnType<CheerioAPI>, nom: string): string {
+    let v = ($el.attr(nom) ?? "").trim();
+    if (v.startsWith("{") && v.endsWith("}")) v = v.slice(1, -1).trim();
+    const q = v[0];
+    if ((q === '"' || q === "'" || q === "`") && v.endsWith(q) && v.length > 1) {
+        v = v.slice(1, -1);
+    }
+    return decodeEntities(v).trim();
+}
+
 // ── Extraction du template literal dans un élément cheerio ─────────────────
 function extractTemplateLiteral($: CheerioAPI, el: CheerioElement): string {
     const raw = $.html(el);
@@ -146,43 +165,61 @@ function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
     if (IGNORED_TAGS.has(tag)) return null;
 
     switch (tag) {
-        case "Text":
+        // Les balises brutes sont proscrites dans les cours (cf. CLAUDE.md §10)
+        // mais le corpus en contient encore : les ignorer revenait à perdre le
+        // paragraphe entier plutôt qu'à signaler la convention non respectée.
+        case "Text": case "p":
             return { id: uuidv4(), type: "text", props: { content: serializeInline($, el) }, children: [] };
 
         case "CodeCard": {
-            const language = ($el.attr("language") ?? "").replace(/[{}'"]/g, "");
+            const language = attrValue($el, "language");
             const code = extractTemplateLiteral($, el);
             return { id: uuidv4(), type: "code", props: { language, code }, children: [] };
         }
 
         case "CodeWithPreviewCard": {
-            const language = ($el.attr("language") ?? "").replace(/[{}'"]/g, "");
+            const language = attrValue($el, "language");
             const $panel = $el.find("CodePanel").first();
             const code = extractTemplateLiteral($, $panel[0] as CheerioElement);
             return { id: uuidv4(), type: "code-with-preview", props: { language, code }, children: [] };
         }
 
-        case "List": {
+        case "List": case "ul": case "ol": {
             const orderedAttr = $el.attr("ordered") ?? "";
-            const ordered = orderedAttr === "{true}" || orderedAttr === "true";
-            const children = $el.children("ListItem").toArray()
+            const ordered = tag === "ol" || orderedAttr === "{true}" || orderedAttr === "true";
+            const children = $el.children("ListItem, li").toArray()
                 .map(li => convertElement($, li as CheerioElement))
                 .filter(Boolean) as Block[];
             return { id: uuidv4(), type: "list", props: { ordered }, children };
         }
 
-        case "ListItem":
+        case "ListItem": case "li":
             return { id: uuidv4(), type: "list-item", props: { text: serializeInline($, el) }, children: [] };
 
+        // `HStack` et `Grid` sont des conteneurs de mise en page : le bloc
+        // `columns` couvre les deux, inutile d'ajouter un type. `columns` est
+        // une grille de 12, d'où le span réparti sur le nombre d'enfants.
+        case "HStack": case "Grid": {
+            const enfants = $el.children().toArray()
+                .map(c => convertElement($, c as CheerioElement))
+                .filter(Boolean) as Block[];
+            if (!enfants.length) break;
+            const span = Math.max(1, Math.min(12, Math.round(12 / enfants.length)));
+            const colonnes = enfants.map(bloc => ({
+                id: uuidv4(), type: "column", props: { span }, children: [bloc],
+            }));
+            return { id: uuidv4(), type: "columns", props: {}, children: colonnes };
+        }
+
         case "ImageCard": {
-            const src   = ($el.attr("src") ?? "").replace(/[{}'"`]/g, "");
-            const alt   = ($el.attr("alt") ?? "").replace(/[{}'"`]/g, "");
-            const title = ($el.attr("caption") ?? $el.attr("title") ?? "").replace(/[{}'"`]/g, "");
+            const src   = attrValue($el, "src");
+            const alt   = attrValue($el, "alt");
+            const title = attrValue($el, "caption") || attrValue($el, "title");
             return { id: uuidv4(), type: "image-card", props: { src, alt, title }, children: [] };
         }
 
         case "DiagramCard": {
-            const header = ($el.attr("title") ?? $el.attr("header") ?? "").replace(/[{}'"`]/g, "");
+            const header = attrValue($el, "title") || attrValue($el, "header");
             const chart  = extractTemplateLiteral($, el);
             return { id: uuidv4(), type: "diagram", props: { header, chart }, children: [] };
         }
@@ -243,8 +280,8 @@ function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
         // dans `default`, donc leur contenu disparaissait purement et
         // simplement du cours migré.
         case "DownloadCodeButton": {
-            const language = ($el.attr("language") ?? "html").replace(/[{}'"]/g, "");
-            const filename = ($el.attr("filename") ?? "fichier.txt").replace(/[{}'"`]/g, "");
+            const language = attrValue($el, "language") || "html";
+            const filename = attrValue($el, "filename") || "fichier.txt";
             return {
                 id: uuidv4(), type: "download-file",
                 props: { language, filename, code: extractTemplateLiteral($, el) },
@@ -258,8 +295,8 @@ function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
         }
 
         case "Image": {
-            const src = ($el.attr("src") ?? "").replace(/[{}'"`]/g, "");
-            const alt = ($el.attr("alt") ?? "").replace(/[{}'"`]/g, "");
+            const src = attrValue($el, "src");
+            const alt = attrValue($el, "alt");
             // Un `image-card` sans `src` fait lever une erreur à next/image :
             // mieux vaut perdre le bloc que casser la page.
             if (!src) break;
@@ -280,8 +317,8 @@ function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
             return { id: uuidv4(), type: "text", props: { content: serializeInline($, el) }, children: [] };
 
         case "SlideCode": {
-            const language = ($el.attr("language") ?? "").replace(/[{}'"]/g, "");
-            const highlightRaw = ($el.attr("highlight") ?? "").replace(/[{}'"`]/g, "").trim();
+            const language = attrValue($el, "language");
+            const highlightRaw = attrValue($el, "highlight");
             const code = extractTemplateLiteral($, el);
             const props: Record<string, unknown> = { language, code };
             if (highlightRaw) props.highlight = highlightRaw;
@@ -299,9 +336,10 @@ function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
             return { id: uuidv4(), type: "list-item", props: { text: serializeInline($, el) }, children: [] };
 
         case "SlideNote": {
-            const raw = $.html(el);
-            const tlMatch = raw.match(/\{`([\s\S]*?)`\}/);
-            const content = tlMatch ? tlMatch[1].trim() : serializeInline($, el);
+            // Passait par `$.html()` sans décoder : les notes du présentateur
+            // étaient les dernières à garder des `&#xe9;` et des `&apos;` en
+            // pleine lecture. `extractTemplateLiteral` fait les deux.
+            const content = extractTemplateLiteral($, el) || serializeInline($, el);
             return { id: uuidv4(), type: "slide-note", props: { content }, children: [] };
         }
 
@@ -313,6 +351,23 @@ function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
     // (balise reconnue mais inexploitable) y aboutissent aussi.
     tagsIgnores.set(tag, (tagsIgnores.get(tag) ?? 0) + 1);
     return null;
+}
+
+/**
+ * `<Heading level={n}>` et les `<h2>`…`<h6>` bruts ouvrent tous une partie.
+ * Les seconds sont proscrits par les conventions des cours, mais le corpus en
+ * contient : les laisser de côté faisait disparaître le titre *et* replier son
+ * contenu dans la partie précédente.
+ */
+const SELECTEUR_TITRE = "Heading, h1, h2, h3, h4, h5, h6";
+
+function estTitre(tag: string): boolean {
+    return tag === "Heading" || /^h[1-6]$/.test(tag);
+}
+
+function niveauTitre($el: ReturnType<CheerioAPI>, tag: string): number {
+    if (tag !== "Heading") return parseInt(tag.slice(1), 10);
+    return parseInt(($el.attr("level") ?? "2").replace(/[{}]/g, ""), 10);
 }
 
 // ── Algorithme de regroupement par heading ──────────────────────────────────
@@ -328,28 +383,24 @@ export function groupByHeadings(elements: CheerioElement[], $: CheerioAPI): Bloc
 
         if (tag === "section") {
             // La <section> JSX délimite un Heading level 2
-            const $heading = $el.children("Heading").first();
+            const $heading = $el.children(SELECTEUR_TITRE).first();
             const title = $heading.length ? serializeInline($, $heading[0] as CheerioElement) : "";
             // Tous les autres enfants (hors le premier Heading) → children
-            const rest = $el.children().toArray().filter(c =>
-                !((c as CheerioElement).tagName === "Heading" && c === $heading[0])
-            ) as CheerioElement[];
+            const rest = $el.children().toArray().filter(c => c !== $heading[0]) as CheerioElement[];
             const children = groupByHeadings(rest, $);
             blocks.push({ id: uuidv4(), type: "section", props: { title: stripHeadingPrefix(title) }, children });
             i++;
 
-        } else if (tag === "Heading") {
-            const level = parseInt(($el.attr("level") ?? "2").replace(/[{}]/g, ""), 10);
+        } else if (estTitre(tag)) {
+            const level = niveauTitre($el, tag);
             const title = serializeInline($, el);
             // Collecte les frères suivants jusqu'au prochain heading de niveau ≤ level
             const childEls: CheerioElement[] = [];
             i++;
             while (i < elements.length) {
                 const next = elements[i];
-                if (next.type === "tag" && (next as CheerioElement).tagName === "Heading") {
-                    const nextLevel = parseInt(($(next).attr("level") ?? "2").replace(/[{}]/g, ""), 10);
-                    if (nextLevel <= level) break;
-                }
+                const tagNext = next.type === "tag" ? (next as CheerioElement).tagName : "";
+                if (estTitre(tagNext) && niveauTitre($(next), tagNext) <= level) break;
                 childEls.push(elements[i]);
                 i++;
             }
@@ -374,7 +425,7 @@ export function groupByHeadings(elements: CheerioElement[], $: CheerioAPI): Bloc
             // dont les enfants restaient des blocs de cours (`text`, `code`,
             // `list`) : le player ne sait pas les rendre et n'affichait que le
             // titre. Voir src/lib/slideBlockMigration.ts.
-            const title = ($el.attr("title") ?? "").replace(/[{}'"`]/g, "");
+            const title = stripHeadingPrefix(attrValue($el, "title"));
             const innerEls = $el.children().toArray() as CheerioElement[];
             const children = toSlideBlocks(groupByHeadings(innerEls, $));
             blocks.push({ id: uuidv4(), type: "slide", props: { title }, children });

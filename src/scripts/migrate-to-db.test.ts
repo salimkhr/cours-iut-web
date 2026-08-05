@@ -275,3 +275,55 @@ test("une entité montrée volontairement reste une entité", () => {
     const blocks = parseJSXString(`<article><CodeCard language="html">{\`<p>&amp;copy; 2026</p>\`}</CodeCard></article>`);
     expect(blocks[0].props.code).toBe("<p>&copy; 2026</p>");
 });
+
+test("SlideNote décode ses entités comme les autres blocs", () => {
+    const blocks = parseJSXString(`<article><SlideNote>{\`Rappel : les &#xe9;v&#xe9;nements et l&apos;objet event.\`}</SlideNote></article>`);
+    expect(blocks[0].props.content).toBe("Rappel : les événements et l'objet event.");
+});
+
+test("le titre d'une slide garde ses apostrophes et perd son préfixe", () => {
+    const blocks = parseJSXString(`<article><SlideScreen title="A - Qu'est-ce qu'un événement ?"><SlideText>x</SlideText></SlideScreen></article>`);
+    expect(blocks[0].props.title).toBe("Qu'est-ce qu'un événement ?");
+});
+
+test("les attributs ne perdent plus leurs apostrophes", () => {
+    const blocks = parseJSXString(`<article><ImageCard src="/a.png" alt="L'écran d'accueil"/></article>`);
+    expect(blocks[0].props.alt).toBe("L'écran d'accueil");
+});
+
+// ── Balises brutes du corpus (proscrites par les conventions, mais présentes) ─
+
+test("p → text, ul/ol → list, li → list-item", () => {
+    const blocks = parseJSXString(`<article><p>Un paragraphe.</p><ul><li>a</li><li>b</li></ul><ol><li>un</li></ol></article>`);
+    expect(blocks.map(b => b.type)).toEqual(["text", "list", "list"]);
+    expect(blocks[0].props.content).toBe("Un paragraphe.");
+    expect(blocks[1].props.ordered).toBe(false);
+    expect(blocks[1].children!.map(c => c.props.text)).toEqual(["a", "b"]);
+    expect(blocks[2].props.ordered).toBe(true);
+});
+
+test("h2/h3 bruts ouvrent une partie, comme Heading", () => {
+    const blocks = parseJSXString(`<article><h2>Grande partie</h2><p>intro</p><h3>Sous-partie</h3><p>détail</p></article>`);
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0].props.title).toBe("Grande partie");
+    expect(blocks[0].children![0].type).toBe("text");
+    expect(blocks[0].children![1].props.title).toBe("Sous-partie");
+});
+
+test("un h2 brut dans une section en devient le titre", () => {
+    const blocks = parseJSXString(`<article><section><h2>Titre de section</h2><p>corps</p></section></article>`);
+    expect(blocks[0].type).toBe("section");
+    expect(blocks[0].props.title).toBe("Titre de section");
+    expect(blocks[0].children).toHaveLength(1);
+});
+
+test("HStack et Grid → columns avec des span équilibrés", () => {
+    const blocks = parseJSXString(`<article><HStack><Text>gauche</Text><Text>droite</Text></HStack></article>`);
+    expect(blocks[0].type).toBe("columns");
+    expect(blocks[0].children!.map(c => c.props.span)).toEqual([6, 6]);
+    expect(blocks[0].children![0].children![0].props.content).toBe("gauche");
+});
+
+test("Grid vide n'est pas converti en conteneur creux", () => {
+    expect(parseJSXString(`<article><Grid/></article>`)).toEqual([]);
+});

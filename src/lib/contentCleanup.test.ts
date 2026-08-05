@@ -97,3 +97,14 @@ describe("stripJsxSpacers", () => {
         expect(stripJsxSpacers("objet {clé: valeur}")).toBe("objet {clé: valeur}");
     });
 });
+
+test("préfixe mixte des slides « B.1 - »", () => {
+    expect(stripHeadingPrefix("B.1 - Ajouter un écouteur")).toBe("Ajouter un écouteur");
+    expect(stripHeadingPrefix("A - Qu'est-ce qu'un événement ?")).toBe("Qu'est-ce qu'un événement ?");
+    expect(stripHeadingPrefix("C.2 Structure")).toBe("Structure");
+});
+
+test("un titre qui contient un point n'est pas un préfixe", () => {
+    expect(stripHeadingPrefix("Node.js - Introduction")).toBe("Node.js - Introduction");
+    expect(stripHeadingPrefix("Les Événements - Introduction")).toBe("Les Événements - Introduction");
+});

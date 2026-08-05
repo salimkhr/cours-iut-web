@@ -59,6 +59,9 @@ export function stripHeadingPrefix(title: string): string {
     return title
         // Forme hiérarchique : « 2.1 », « 3.2.1 », suivie d'une espace.
         .replace(/^\s*\d{1,2}(?:\.\d{1,2})+[.)]?\s+/, "")
+        // Forme mixte des slides : « B.1 - », « C.2 ». Le point suivi d'un
+        // chiffre distingue le préfixe d'un « Node.js - Introduction ».
+        .replace(/^\s*[A-Z](?:\.\d{1,2})+\s*[-–—.)]?\s+/, "")
         // Forme simple : « A- », « B — », « 1. », « 12) ».
         .replace(/^\s*(?:[A-Z]|\d{1,2})\s*[-–—/.)]\s+/, "")
         .trim();
