@@ -3,6 +3,7 @@
 // par une opération conservent leur référence (perf re-render React).
 import { v4 as uuidv4 } from "uuid";
 import type { Block } from "@/types/CourseContent";
+import { isContainer } from "@/lib/blockSchemas";
 
 export function cloneBlockDeep(block: Block): Block {
     return {
@@ -157,4 +158,30 @@ export function moveBlock(
     // correction d'index n'est nécessaire, même dans le même parent.
     const without = removeBlock(blocks, id);
     return insertBlock(without, block, targetParentId, targetIndex);
+}
+
+/**
+ * Retire les `children: []` posés sur des blocs qui ne sont pas des conteneurs.
+ * La migration .tsx → DB en a laissé sur ~930 feuilles ; ce bruit de
+ * sérialisation faisait échouer la validation (« Le type text n'accepte pas
+ * d'enfants ») et rendait les cours concernés insauvegardables. Appliqué à
+ * chaque écriture, il assainit la base au fil des sauvegardes.
+ */
+export function pruneEmptyLeafChildren(blocks: Block[]): Block[] {
+    return blocks.map((block) => {
+        const children = block.children;
+        if (children === undefined) return block;
+
+        if (!isContainer(block.type)) {
+            if (children.length === 0) {
+                const { children: _dropped, ...rest } = block;
+                return rest as Block;
+            }
+            // Enfants réels sur une feuille : anomalie réelle, on la laisse
+            // remonter à la validation plutôt que de supprimer du contenu.
+            return block;
+        }
+
+        return { ...block, children: pruneEmptyLeafChildren(children) };
+    });
 }

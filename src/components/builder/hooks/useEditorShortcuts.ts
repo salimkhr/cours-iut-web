@@ -38,8 +38,13 @@ export function useEditorShortcuts({
             const ctrl = e.ctrlKey || e.metaKey;
             const editing = isEditingText();
 
-            // Escape — toujours actif
+            // Escape — désélectionne le bloc, sauf quand un champ a le focus :
+            // là, Échap appartient au champ (sortir de la cellule, valider la
+            // saisie). Sans ce garde-fou, sortir d'une cellule de tableau
+            // refermait le panneau de propriétés et la frappe suivante était
+            // perdue.
             if (e.key === "Escape") {
+                if (editing) return;
                 onEscape();
                 return;
             }

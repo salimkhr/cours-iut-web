@@ -100,7 +100,7 @@ export function BlockNode({ block, depth = 0, indexInParent, parentId }: BlockNo
                     <AlertCircle className="w-3.5 h-3.5 text-red-500 dark:text-red-400 shrink-0" aria-label={errorMessage} />
                 )}
                 <span className={cn(
-                    "text-[10px] font-mono shrink-0 uppercase tracking-wide",
+                    "text-[11px] font-mono shrink-0 uppercase tracking-wide",
                     errorMessage ? "text-red-600 dark:text-red-400" : "text-brand-primary"
                 )}>
                     {def?.label ?? block.type}

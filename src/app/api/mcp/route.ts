@@ -13,6 +13,7 @@ import {
     removeBlock,
     updateBlockProps,
     updateBlockChildren,
+    pruneEmptyLeafChildren,
 } from "@/lib/blockTreeUtils";
 import { moduleFormSchema, universeSchema } from "@/lib/schemas/module.schema";
 import { addVerdictSchema, promoteExemplarSchema, VERDICT_FORMATS, EXEMPLAR_FORMATS, EXEMPLAR_LEVELS } from "@/lib/schemas/pedagogy.schema";
@@ -128,7 +129,10 @@ async function loadBlocks(key: ContentKey): Promise<Block[]> {
     return doc?.blocks ?? [];
 }
 
-async function saveBlocks(key: ContentKey, blocks: Block[]): Promise<{ contentId: string; version: number }> {
+async function saveBlocks(key: ContentKey, input: Block[]): Promise<{ contentId: string; version: number }> {
+    // Même assainissement que la route admin : toute écriture retire les
+    // `children: []` laissés par la migration sur des blocs non conteneurs.
+    const blocks = pruneEmptyLeafChildren(input);
     const db = await connectToDB();
     const now = new Date();
 

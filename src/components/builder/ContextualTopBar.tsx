@@ -4,7 +4,7 @@ import React from "react";
 import {
     Plus, Undo2, Redo2, Bold, Italic, Code, Link, Code2, Highlighter,
     Maximize2, ImagePlus, Heading2, Heading3, List, ListOrdered,
-    Info, AlertTriangle, Lightbulb, BookMarked, Palette,
+    Info, AlertTriangle, Lightbulb, BookMarked, Palette, SlidersHorizontal,
 } from "lucide-react";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { findBlock } from "@/lib/blockTreeUtils";
@@ -22,6 +22,9 @@ interface ContextualTopBarProps {
     activeEditor: InlineTextEditorHandle | null;
     /** Compteur slides (mode slide). */
     slidePosition?: { index: number; total: number };
+    /** Panneau de propriétés (mode cours). */
+    propsPanelOpen?: boolean;
+    onTogglePropsPanel?: () => void;
 }
 
 const TEXT_TYPES = new Set(["text", "slide-text", "heading", "list-item", "slide-list-item"]);
@@ -44,6 +47,7 @@ function IconBtn({ label, onClick, onMouseDown, disabled, children }: { label: s
 
 export function ContextualTopBar({
     mode, onInsert, onOpenBackground, onOpenCodeModal, onEditImage, activeEditor, slidePosition,
+    propsPanelOpen, onTogglePropsPanel,
 }: ContextualTopBarProps) {
     const selectedId = useBuilderStore((s) => s.selectedId);
     const blocks = useBuilderStore((s) => s.blocks);
@@ -65,12 +69,15 @@ export function ContextualTopBar({
 
         if (TEXT_TYPES.has(t)) {
             const noBlur = (e: React.MouseEvent<HTMLButtonElement>) => e.preventDefault();
+            // Sans éditeur focalisé, ces boutons n'ont nulle part où écrire :
+            // les laisser actifs laissait croire que la frappe serait captée.
+            const noEditor = !activeEditor;
             return (
                 <>
-                    <IconBtn label="Gras" onClick={() => mark("bold")} onMouseDown={noBlur}><Bold className="size-4" /></IconBtn>
-                    <IconBtn label="Italique" onClick={() => mark("italic")} onMouseDown={noBlur}><Italic className="size-4" /></IconBtn>
-                    <IconBtn label="Code inline" onClick={() => mark("code")} onMouseDown={noBlur}><Code className="size-4" /></IconBtn>
-                    <IconBtn label="Lien" onClick={() => mark("link")} onMouseDown={noBlur}><Link className="size-4" /></IconBtn>
+                    <IconBtn label="Gras" onClick={() => mark("bold")} onMouseDown={noBlur} disabled={noEditor}><Bold className="size-4" /></IconBtn>
+                    <IconBtn label="Italique" onClick={() => mark("italic")} onMouseDown={noBlur} disabled={noEditor}><Italic className="size-4" /></IconBtn>
+                    <IconBtn label="Code inline" onClick={() => mark("code")} onMouseDown={noBlur} disabled={noEditor}><Code className="size-4" /></IconBtn>
+                    <IconBtn label="Lien" onClick={() => mark("link")} onMouseDown={noBlur} disabled={noEditor}><Link className="size-4" /></IconBtn>
                     {t === "heading" && (
                         <>
                             <IconBtn label="Titre niveau 2" onClick={() => updateBlock(selected.id, { level: 2 })} onMouseDown={noBlur}><Heading2 className="size-4" /></IconBtn>
@@ -127,7 +134,8 @@ export function ContextualTopBar({
             <button
                 type="button"
                 onClick={onInsert}
-                className="inline-flex h-8 items-center gap-1 rounded-md bg-brand-primary px-3 text-sm font-medium text-white hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mod-color)] focus-visible:ring-offset-1"
+                title="Insérer un bloc (Ctrl+I)"
+                className="inline-flex h-8 cursor-pointer items-center gap-1 rounded-md bg-brand-primary px-3 text-sm font-medium text-white transition-opacity duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mod-color)] focus-visible:ring-offset-1"
                 style={moduleSlug ? { backgroundColor: "var(--mod-color)" } : undefined}
             >
                 <Plus className="size-4" /> Bloc
@@ -147,6 +155,26 @@ export function ContextualTopBar({
                 <span className="ml-auto text-xs font-semibold text-bridge-400">
                     {slidePosition.index + 1} / {slidePosition.total}
                 </span>
+            )}
+
+            {onTogglePropsPanel && (
+                <div className="ml-auto">
+                    <button
+                        type="button"
+                        aria-label="Propriétés du bloc"
+                        aria-pressed={propsPanelOpen}
+                        title="Propriétés du bloc"
+                        onClick={onTogglePropsPanel}
+                        className={`inline-flex h-11 cursor-pointer items-center gap-1.5 rounded-md px-3 text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mod-color)] ${
+                            propsPanelOpen
+                                ? "bg-bridge-200 text-brand-dark dark:bg-bridge-700 dark:text-bridge-100"
+                                : "text-brand-dark/70 hover:bg-bridge-100 dark:text-bridge-200 dark:hover:bg-bridge-800"
+                        }`}
+                    >
+                        <SlidersHorizontal className="size-4" />
+                        Propriétés
+                    </button>
+                </div>
             )}
         </div>
     );

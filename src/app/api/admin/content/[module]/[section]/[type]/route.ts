@@ -2,10 +2,70 @@ import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { connectToDB } from "@/lib/mongodb";
 import { withAdmin } from "@/lib/withAdmin";
-import type { Block, CourseContent } from "@/types/CourseContent";
+import type { Block, ContentRef, CourseContent } from "@/types/CourseContent";
+import type Module from "@/types/Module";
 import { validateBlockTree } from "@/lib/validateBlockTree";
+import { pruneEmptyLeafChildren } from "@/lib/blockTreeUtils";
+import { normalizeContentKey } from "@/lib/contentTypes";
 
 type Ctx = { params: Promise<{ module: string; section: string; type: string }> };
+
+/** Réponse 400 commune quand le segment `type` n'est pas un type de contenu connu. */
+function invalidTypeResponse(raw: string) {
+    return NextResponse.json(
+        { error: `Type de contenu inconnu : « ${raw} ».` },
+        { status: 400 }
+    );
+}
+
+/**
+ * Déclare le type de contenu dans `section.contents` s'il en est absent, puis
+ * pointe la référence sur le document en base. Sans cette entrée, la page
+ * publique renvoie un 404 : le contenu existe mais la section ne l'expose pas.
+ * Retourne `true` si l'entrée a dû être créée.
+ */
+async function linkContentRef(
+    db: Awaited<ReturnType<typeof connectToDB>>,
+    moduleSlug: string,
+    sectionSlug: string,
+    contentType: string,
+    contentId: string,
+): Promise<{ ok: boolean; created: boolean }> {
+    const mod = await db.collection<Module>("modules").findOne({ path: moduleSlug });
+    const section = mod?.sections?.find((s) => s.path === sectionSlug);
+    if (!section) return { ok: false, created: false };
+
+    const declared = section.contents?.some((c: ContentRef) => c.type === contentType) ?? false;
+
+    if (declared) {
+        await db.collection("modules").updateOne(
+            { path: moduleSlug },
+            {
+                $set: {
+                    "sections.$[s].contents.$[c].source": "db",
+                    "sections.$[s].contents.$[c].contentId": contentId,
+                },
+            },
+            { arrayFilters: [{ "s.path": sectionSlug }, { "c.type": contentType }] }
+        );
+    } else {
+        await db.collection("modules").updateOne(
+            { path: moduleSlug },
+            {
+                $push: {
+                    "sections.$[s].contents": {
+                        type: contentType,
+                        source: "db",
+                        contentId,
+                    },
+                } as never,
+            },
+            { arrayFilters: [{ "s.path": sectionSlug }] }
+        );
+    }
+
+    return { ok: true, created: !declared };
+}
 
 // ── GET ──────────────────────────────────────────────────────────────────────
 
@@ -14,8 +74,9 @@ export const GET = withAdmin<Ctx>(async (
     { params }: Ctx
 ) => {
     try {
-        const { module: moduleSlug, section: sectionSlug, type: contentType } = await params;
-        const typedType = contentType as CourseContent["contentType"];
+        const { module: moduleSlug, section: sectionSlug, type: rawType } = await params;
+        const typedType = normalizeContentKey(rawType) as CourseContent["contentType"] | null;
+        if (!typedType) return invalidTypeResponse(rawType);
         const db = await connectToDB();
         const doc = await db
             .collection<CourseContent>("course_content")
@@ -45,18 +106,27 @@ export const PUT = withAdmin<Ctx>(async (
     { params }: Ctx
 ) => {
     try {
-        const { module: moduleSlug, section: sectionSlug, type: contentType } = await params;
-        const typedType = contentType as CourseContent["contentType"];
+        const { module: moduleSlug, section: sectionSlug, type: rawType } = await params;
+        const typedType = normalizeContentKey(rawType) as CourseContent["contentType"] | null;
+        if (!typedType) return invalidTypeResponse(rawType);
+        const contentType: string = typedType;
         const body = await req.json() as { blocks: unknown };
 
-        const validation = validateBlockTree(body?.blocks);
+        // Nettoyage avant validation : les `children: []` hérités de la
+        // migration sont retirés à chaque écriture, ce qui assainit la base au
+        // fil des sauvegardes au lieu de bloquer l'auteur.
+        const cleaned = Array.isArray(body?.blocks)
+            ? pruneEmptyLeafChildren(body.blocks as Block[])
+            : body?.blocks;
+
+        const validation = validateBlockTree(cleaned);
         if (!validation.valid) {
             return NextResponse.json(
                 { error: "Blocs invalides", details: validation.errors },
                 { status: 422 }
             );
         }
-        const blocks = body.blocks as Block[];
+        const blocks = cleaned as Block[];
 
         const db = await connectToDB();
         const now = new Date();
@@ -89,21 +159,13 @@ export const PUT = withAdmin<Ctx>(async (
             contentId = insertResult.insertedId.toString();
         }
 
-        await db.collection("modules").updateOne(
-            { path: moduleSlug },
-            {
-                $set: {
-                    "sections.$[s].contents.$[c].source": "db",
-                    "sections.$[s].contents.$[c].contentId": contentId,
-                },
-            },
-            {
-                arrayFilters: [
-                    { "s.path": sectionSlug },
-                    { "c.type": contentType },
-                ],
-            }
-        );
+        const link = await linkContentRef(db, moduleSlug, sectionSlug, contentType, contentId);
+        if (!link.ok) {
+            return NextResponse.json(
+                { error: "Section introuvable — contenu enregistré mais non rattaché." },
+                { status: 404 }
+            );
+        }
 
         revalidateTag(`content:${moduleSlug}:${sectionSlug}:${contentType}`, { expire: 0 });
 
@@ -115,6 +177,8 @@ export const PUT = withAdmin<Ctx>(async (
             contentId,
             version: updated?.version ?? 1,
             updatedAt: updated?.updatedAt ?? now,
+            source: "db",
+            contentTypeDeclared: link.created,
         });
     } catch (error) {
         console.error("[content PUT]", error);
@@ -132,8 +196,10 @@ export const PATCH = withAdmin<Ctx>(async (
     { params }: Ctx
 ) => {
     try {
-        const { module: moduleSlug, section: sectionSlug, type: contentType } = await params;
-        const typedType = contentType as CourseContent["contentType"];
+        const { module: moduleSlug, section: sectionSlug, type: rawType } = await params;
+        const typedType = normalizeContentKey(rawType) as CourseContent["contentType"] | null;
+        if (!typedType) return invalidTypeResponse(rawType);
+        const contentType: string = typedType;
         const db = await connectToDB();
 
         const doc = await db
@@ -147,24 +213,17 @@ export const PATCH = withAdmin<Ctx>(async (
             );
         }
 
-        const result = await db.collection("modules").updateOne(
-            { path: moduleSlug },
-            {
-                $set: {
-                    "sections.$[s].contents.$[c].source": "db",
-                    "sections.$[s].contents.$[c].contentId": doc._id!.toString(),
-                },
-            },
-            { arrayFilters: [{ "s.path": sectionSlug }, { "c.type": contentType }] }
-        );
-
-        if (result.matchedCount === 0) {
+        // `updateOne` avec arrayFilters compte le *module* dans matchedCount :
+        // sans cette vérification, une section qui ne déclare pas le type
+        // renvoyait un succès alors qu'aucune référence n'avait bougé.
+        const link = await linkContentRef(db, moduleSlug, sectionSlug, contentType, doc._id!.toString());
+        if (!link.ok) {
             return NextResponse.json({ error: "Module/section introuvable." }, { status: 404 });
         }
 
         revalidateTag(`content:${moduleSlug}:${sectionSlug}:${contentType}`, { expire: 0 });
 
-        return NextResponse.json({ success: true, source: "db" });
+        return NextResponse.json({ success: true, source: "db", contentTypeDeclared: link.created });
     } catch (error) {
         console.error("[content PATCH]", error);
         return NextResponse.json({ error: "Erreur interne" }, { status: 500 });
@@ -178,8 +237,10 @@ export const DELETE = withAdmin<Ctx>(async (
     { params }: Ctx
 ) => {
     try {
-        const { module: moduleSlug, section: sectionSlug, type: contentType } = await params;
-        const typedType = contentType as CourseContent["contentType"];
+        const { module: moduleSlug, section: sectionSlug, type: rawType } = await params;
+        const typedType = normalizeContentKey(rawType) as CourseContent["contentType"] | null;
+        if (!typedType) return invalidTypeResponse(rawType);
+        const contentType: string = typedType;
         const db = await connectToDB();
 
         await db.collection<CourseContent>("course_content").deleteOne(

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { useBuilderStore } from "@/lib/store/builderStore";
 import { findBlock, findParent, findAllIds } from "@/lib/blockTreeUtils";
@@ -45,6 +46,9 @@ interface BuilderPageProps {
     sectionTitle: string;
     initialBlocks: Block[];
     source: "file" | "db";
+    /** Le type de contenu figure-t-il dans `section.contents` ? Sinon la page
+     *  publique renvoie un 404 quoi qu'on écrive ici. */
+    declaredInSection?: boolean;
     colorLight?: string;
     colorDark?: string;
     // TODO(deck-mode): wire this when deck mode is implemented
@@ -59,6 +63,7 @@ export function BuilderPage({
     sectionTitle,
     initialBlocks,
     source,
+    declaredInSection = true,
     colorLight,
     colorDark,
 }: BuilderPageProps) {
@@ -84,6 +89,11 @@ export function BuilderPage({
     const router = useRouter();
     const [saving, setSaving] = useState(false);
     const [switching, setSwitching] = useState(false);
+    // `source` et `declaredInSection` viennent du serveur : après une
+    // sauvegarde ou une bascule, le badge restait sur « fichier » jusqu'à un
+    // rechargement manuel.
+    const [currentSource, setCurrentSource] = useState<"file" | "db">(source);
+    const [isDeclared, setIsDeclared] = useState(declaredInSection);
     const [insertDialogOpen, setInsertDialogOpen] = useState(false);
     const [insertContext, setInsertContext] = useState<{ parentId: string | null; index: number }>(
         { parentId: null, index: Number.MAX_SAFE_INTEGER }
@@ -170,9 +180,20 @@ export function BuilderPage({
                 }
                 return;
             }
+            const saved = await res.json().catch(() => null) as
+                { source?: "file" | "db"; contentTypeDeclared?: boolean } | null;
             setBlockErrors({});
             markSaved();
-            toast.success("Contenu sauvegardé.");
+            if (saved?.source === "db") setCurrentSource("db");
+            if (saved?.contentTypeDeclared) {
+                setIsDeclared(true);
+                toast.success("Contenu sauvegardé.", {
+                    description: `Le type « ${contentType} » a été ajouté aux contenus de la section : la page est désormais accessible.`,
+                });
+            } else {
+                setIsDeclared(true);
+                toast.success("Contenu sauvegardé.");
+            }
         } catch (err) {
             toast.error("Erreur réseau", {
                 description: err instanceof Error ? err.message : "Erreur inconnue",
@@ -197,7 +218,15 @@ export function BuilderPage({
                 });
                 return;
             }
-            toast.success("Contenu basculé en DB. Cache rafraîchi.");
+            const body = await res.json().catch(() => null) as
+                { contentTypeDeclared?: boolean } | null;
+            setCurrentSource("db");
+            setIsDeclared(true);
+            toast.success("Contenu basculé en DB. Cache rafraîchi.", {
+                description: body?.contentTypeDeclared
+                    ? `Le type « ${contentType} » a été ajouté aux contenus de la section.`
+                    : undefined,
+            });
             router.refresh();
         } catch (err) {
             toast.error("Erreur réseau", {
@@ -328,12 +357,28 @@ export function BuilderPage({
                 moduleSlug={moduleSlug}
                 sectionSlug={sectionSlug}
                 contentType={contentType}
-                source={source}
+                source={currentSource}
                 saving={saving}
                 onSave={() => void handleSave()}
-                onSwitchToDb={source === "file" ? () => void handleSwitchToDb() : undefined}
+                onSwitchToDb={currentSource === "file" ? () => void handleSwitchToDb() : undefined}
                 switching={switching}
             />
+
+            {!isDeclared && (
+                <div
+                    role="status"
+                    className="flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200"
+                >
+                    <AlertTriangle className="size-4 shrink-0" aria-hidden="true" />
+                    <span>
+                        La section « {sectionTitle} » ne déclare pas encore le contenu
+                        <strong> {contentType}</strong> : la page publique renvoie un 404.
+                    </span>
+                    <span className="text-amber-800/80 dark:text-amber-200/70">
+                        La première sauvegarde l&apos;ajoutera automatiquement.
+                    </span>
+                </div>
+            )}
 
             <div className="flex flex-1 min-h-0 overflow-hidden">
                 {isSlideMode ? (

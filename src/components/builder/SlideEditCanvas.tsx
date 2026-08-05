@@ -28,21 +28,38 @@ export function SlideEditCanvas({ slide, position, order, onInsertAfter }: Slide
     const [activeEditor, setActiveEditor] = useState<InlineTextEditorHandle | null>(null);
     const [codeModal, setCodeModal] = useState<{ id: string; value: string; language: string } | null>(null);
 
+    /** Un bloc de slide + ses descendants, chacun enveloppé pour être
+     *  sélectionnable. Sans récursivité, les items d'une liste de slide
+     *  n'étaient jamais rendus comme blocs : impossible d'y écrire. */
+    const renderBlock = (block: Block, parentId: string, index: number): React.ReactNode => (
+        <EditableBlock
+            key={block.id}
+            block={block}
+            parentId={parentId}
+            index={index}
+            onInsertAfter={() => onInsertAfter(parentId, index + 1)}
+            onInsertInside={() => onInsertAfter(block.id, 0)}
+            registerEditor={setActiveEditor}
+        >
+            {block.type === "slide-note" ? (
+                // SlideNote ne rend rien dans la slide (réservé au panneau
+                // notes du player) : sans cet aperçu, le bloc mesurait 2 px et
+                // devenait impossible à retrouver dans l'éditeur.
+                <p className="rounded border border-dashed border-bridge-400/60 px-2 py-1 text-sm text-bridge-300">
+                    <span className="font-semibold">Note présentateur — </span>
+                    {String(block.props.content ?? "") || "vide"}
+                </p>
+            ) : (
+                <SlideChildItem
+                    block={block}
+                    renderNested={(child, parent, i) => renderBlock(child, parent.id, i)}
+                />
+            )}
+        </EditableBlock>
+    );
+
     const renderChildren = (children: Block[]) => (
-        <>
-            {children.map((child, i) => (
-                <EditableBlock
-                    key={child.id}
-                    block={child}
-                    parentId={slide.id}
-                    index={i}
-                    onInsertAfter={() => onInsertAfter(slide.id, i + 1)}
-                    registerEditor={setActiveEditor}
-                >
-                    <SlideChildItem block={child} />
-                </EditableBlock>
-            ))}
-        </>
+        <>{children.map((child, i) => renderBlock(child, slide.id, i))}</>
     );
 
     return (

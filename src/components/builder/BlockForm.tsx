@@ -27,7 +27,13 @@ export function BlockForm({ blockId }: BlockFormProps) {
     if (!block) return null;
 
     const def = getBlockDefinition(block.type);
-    if (!def || def.fields.length === 0) {
+    if (!def) return null;
+
+    // Certains blocs (tableau) embarquent leur propre éditeur : il n'était
+    // branché nulle part, ce qui rendait le bloc impossible à remplir.
+    const Editor = def.editor;
+
+    if (!Editor && def.fields.length === 0) {
         return (
             <p className="text-xs text-bridge-500 dark:text-bridge-400 px-3 py-2">
                 Aucune prop à éditer pour ce type.
@@ -37,11 +43,19 @@ export function BlockForm({ blockId }: BlockFormProps) {
 
     return (
         <div className="flex flex-col gap-3 px-3 py-2">
-            <DynamicPropsEditor
-                fields={def.fields}
-                props={block.props}
-                onChange={(newProps) => updateBlock(blockId, newProps)}
-            />
+            {Editor && (
+                <Editor
+                    props={block.props}
+                    onChange={(newProps) => updateBlock(blockId, newProps)}
+                />
+            )}
+            {def.fields.length > 0 && (
+                <DynamicPropsEditor
+                    fields={def.fields}
+                    props={block.props}
+                    onChange={(newProps) => updateBlock(blockId, newProps)}
+                />
+            )}
         </div>
     );
 }

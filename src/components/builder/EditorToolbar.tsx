@@ -71,13 +71,13 @@ export function EditorToolbar({
                     </span>
                 </div>
                 <div className="flex items-center gap-2 leading-none">
-                    <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[var(--mod-color)]">
+                    <span className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[var(--mod-color)]">
                         {contentType}
                     </span>
                     <Badge
                         variant="outline"
                         className={cn(
-                            "text-[10px] font-mono h-4 px-1.5 rounded",
+                            "text-[11px] font-mono h-4 px-1.5 rounded",
                             source === "db"
                                 ? "border-emerald-500/40 text-emerald-700 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-900/20"
                                 : "border-bridge-400/50 text-bridge-500 dark:text-bridge-400"

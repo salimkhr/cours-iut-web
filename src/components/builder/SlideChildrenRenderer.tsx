@@ -22,8 +22,11 @@ export const PREVIEW_CONTEXT: SlidesContextType = {
     toggleFullscreen: () => {},
 };
 
-export function SlideChildItem({ block }: { block: Block }) {
-    return <SlideBlockItem block={block}/>;
+export function SlideChildItem({ block, renderNested }: {
+    block: Block;
+    renderNested?: (child: Block, parent: Block, index: number) => React.ReactNode;
+}) {
+    return <SlideBlockItem block={block} renderNested={renderNested}/>;
 }
 
 /** Rend les enfants d'une slide, entourés du contexte slides statique. */

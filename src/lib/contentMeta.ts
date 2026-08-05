@@ -1,7 +1,8 @@
 import {BookOpen, CodeXml, FolderCode, GalleryThumbnails, GraduationCap} from "lucide-react";
+import type { ContentKey } from "@/lib/contentTypes";
 
-export const CONTENT_ORDER = ['cours', 'TP', 'slide', 'projet', 'examen'] as const;
-export type ContentKey = typeof CONTENT_ORDER[number];
+export { CONTENT_ORDER, normalizeContentKey } from "@/lib/contentTypes";
+export type { ContentKey } from "@/lib/contentTypes";
 
 export const CONTENT_LABELS: Record<ContentKey, string> = {
     cours: 'Cours',

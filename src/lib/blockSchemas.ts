@@ -79,9 +79,12 @@ export const blockPropsSchemas: Record<string, z.ZodTypeAny> = {
         src: z.string(),
         title: z.string().optional(),
     }),
+    // Tolérant aux props absentes : plusieurs tableaux issus de la migration
+    // .tsx → DB n'ont ni `headers` ni `rows`, ce qui rendait leur cours entier
+    // insauvegardable. Le renderer traite déjà l'absence comme un tableau vide.
     "table": z.object({
-        headers: z.array(z.string()),
-        rows: z.array(z.array(z.string())),
+        headers: z.array(z.string()).optional(),
+        rows: z.array(z.array(z.string())).optional(),
     }),
     "section-card": z.object({
         title: z.string(),
@@ -107,14 +110,24 @@ export interface ContainerRule {
     allowedParents?: (string | null)[];
 }
 
+/** Blocs qui ont leur place à l'intérieur d'un élément de liste : de quoi
+ *  détailler une consigne, pas de quoi ouvrir un chapitre. */
+const LIST_ITEM_CHILDREN = [
+    "text", "list", "code", "code-with-preview", "image-card",
+    "diagram", "callout", "quote", "table", "download-file", "section-card",
+];
+
 export const containerRules: Record<string, ContainerRule> = {
-    "columns": { allowedChildren: ["column"], allowedParents: [null, "slide"] },
+    // `section` était absent de allowedParents : une grande partie de cours
+    // pouvait être glissée dans une puce, un encadré ou un bloc dépliable.
+    // La seule imbrication qui a un sens est la sous-partie (A — puis 1., 2.).
+    "columns": { allowedChildren: ["column"], allowedParents: [null, "slide", "section"] },
     "column": { allowedChildren: "any", allowedParents: ["columns"] },
     "list": { allowedChildren: ["list-item"] },
-    "list-item": { allowedChildren: "any", allowedParents: ["list"] },
+    "list-item": { allowedChildren: LIST_ITEM_CHILDREN, allowedParents: ["list"] },
     "callout": { allowedChildren: "any" },
     "collapsible": { allowedChildren: "any" },
-    "section": { allowedChildren: "any" },
+    "section": { allowedChildren: "any", allowedParents: [null, "section"] },
     "slide": {
         allowedChildren: ["slide-text", "slide-code", "slide-list", "slide-note", "columns", "diagram"],
         allowedParents: [null],
@@ -134,6 +147,21 @@ export const containerRules: Record<string, ContainerRule> = {
 
 export function isContainer(type: string): boolean {
     return type in containerRules;
+}
+
+/** Types utilisables dans une présentation. Une colonne accepte « any » et ne
+ *  sait pas si elle vit dans une slide ou dans un cours : sans ce garde-fou, la
+ *  palette proposait des blocs de cours dans une colonne de slide (le renderer
+ *  de slides ne sait pas les afficher, ils disparaissaient) et inversement. */
+const SLIDE_UNIVERSE_TYPES = new Set([
+    "slide", "slide-text", "slide-code", "slide-list", "slide-list-item",
+    "slide-note", "columns", "column", "diagram",
+]);
+
+/** Ce type de bloc a-t-il sa place dans ce type de contenu (cours/TP vs slide) ? */
+export function isTypeAllowedInContent(type: string, contentType: string | null): boolean {
+    if (contentType === "slide") return SLIDE_UNIVERSE_TYPES.has(type);
+    return !type.startsWith("slide");
 }
 
 /** Un bloc de ce type peut-il être déposé dans ce parent ?

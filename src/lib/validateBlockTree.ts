@@ -76,12 +76,18 @@ export function validateBlockTree(input: unknown): ValidationResult {
 
         const children = block.children as unknown;
         if (children !== undefined) {
-            if (!isContainer(block.type)) {
-                errors.push({ path, message: `Le type ${block.type} n'accepte pas d'enfants` });
-                return;
-            }
             if (!Array.isArray(children)) {
                 errors.push({ path, message: "children doit être un tableau" });
+                return;
+            }
+            if (!isContainer(block.type)) {
+                // `children: []` sur une feuille est du bruit de sérialisation,
+                // pas une erreur de structure : 933 blocs en base en portent un,
+                // ce qui rendait la quasi-totalité des cours insauvegardables
+                // (« Le type text n'accepte pas d'enfants » au clic sur Sauvegarder).
+                if (children.length > 0) {
+                    errors.push({ path, message: `Le type ${block.type} n'accepte pas d'enfants` });
+                }
                 return;
             }
             if (block.type === "columns") {
