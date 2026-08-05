@@ -35,7 +35,7 @@ bun run start              # node .next/standalone/server.js
 bun run lint               # bunx eslint .
 bun run lint:fix           # bunx eslint . --fix
 bun test                   # bun test (runner natif Bun, *.test.ts)
-bun run migrate:db         # migre le contenu .tsx vers MongoDB
+bun run migrate:db         # importe le contenu .tsx vers MongoDB (--dry-run, --force)
 bun run migrate-contents-refs  # migre les références de contenu
 bun run create-content-index   # crée les index MongoDB du contenu
 bun run create-indexes       # crée/vérifie les index MongoDB (modules, course_content)
@@ -49,6 +49,16 @@ bun update                 # bunx npm-check-updates -u && bun install
 ```
 
 > Hooks pre-commit via **husky** (`prepare`). Ne jamais les contourner (`--no-verify`).
+
+Scripts de réparation ponctuels, lancés à la main (`bun src/scripts/<nom>.ts`), tous avec
+`--dry-run` et sauvegarde JSON dans `backups/` : `migrate-slide-blocks` (écrans de slides restés
+au format hérité), `migrate-tables` (tableaux migrés sans `headers`/`rows`), `migrate-clean-content`
+(entités HTML, préfixes de titre, espaces JSX — passes `--entities` / `--titles` / `--spacers`,
+**non idempotentes**, à ne jamais rejouer à l'aveugle).
+
+> `migrate:db` est un **import**, pas une synchronisation : les `.tsx` de `src/cours/` sont figés et
+> ne reflètent plus les corrections faites au builder. Le script ignore par défaut tout contenu
+> modifié depuis sa migration (`--force` pour passer outre).
 
 ## 4. Architecture
 

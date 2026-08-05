@@ -1,4 +1,16 @@
-// Placeholders for Task 3+ implementation
+// src/scripts/migrate-to-db.ts
+//
+// Convertit les cours `.tsx` de `src/cours/` en documents `course_content`.
+//
+//   bun run migrate:db --dry-run          → n'écrit rien, liste les blocs
+//   bun run migrate:db --module=javascript
+//   bun run migrate:db --force            → écrase même le contenu édité depuis
+//
+// ATTENTION : le contenu vit maintenant dans le builder. Ce script est un
+// import initial, pas une synchronisation — les `.tsx` sont figés et ne
+// reflètent plus les corrections faites en base. Par défaut il laisse donc
+// intact tout document modifié après sa migration, et sauvegarde la
+// collection dans `backups/` avant d'écrire.
 import { connectToDB as _connectToDB } from "@/lib/mongodb";
 import { v4 as _uuidv4 } from "uuid";
 import * as _babelParser from "@babel/parser";
@@ -11,6 +23,8 @@ import * as _path from "path";
 import type { Block as _Block } from "@/types/CourseContent";
 import { toSlideBlocks } from "@/lib/slideBlockMigration";
 import { decodeHtmlEntities, stripHeadingPrefix, stripJsxSpacers } from "@/lib/contentCleanup";
+import { pruneEmptyLeafChildren } from "@/lib/blockTreeUtils";
+import { normalizeContentKey } from "@/lib/contentTypes";
 import type { Db, ObjectId } from "mongodb";
 
 // @babel/traverse et @babel/generator ont un bug ESM connu en Bun
@@ -21,6 +35,7 @@ const _gen = (_generate as unknown as { default: typeof _generate }).default ?? 
 // ── CLI args ────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
 const _DRY_RUN   = args.includes("--dry-run");
+const _FORCE     = args.includes("--force");
 const _MODULE_FILTER = args.find(a => a.startsWith("--module="))?.split("=")[1];
 const _FILE_FILTER   = args.find(a => a.startsWith("--file="))?.split("=")[1];
 
@@ -54,7 +69,10 @@ export function serializeInline($: CheerioAPI, el: DOMElement): string {
                     result += "_";  $node.contents().each((_, c) => recurse(c as AnyNode)); result += "_";  break;
                 case "Code":
                     result += "`" + $node.text().trim() + "`"; break;
-                case "a":
+                // `Link` (next/link) est le lien réellement utilisé dans les
+                // cours ; sans ce cas il tombait dans `default`, qui garde le
+                // texte mais jette l'URL.
+                case "a": case "Link":
                     result += "["; $node.contents().each((_, c) => recurse(c as AnyNode));
                     result += "](" + ($node.attr("href") ?? "") + ")"; break;
                 default:
@@ -79,10 +97,10 @@ export function deriveSlug(filePath: string): {
     const match = normalized.match(/src\/cours\/([^/]+)\/([^/]+)\/(\w+)\.tsx$/);
     if (!match) throw new Error(`Chemin inattendu : ${filePath}`);
     const [, moduleSlug, sectionSlug, typeName] = match;
-    const typeMap: Record<string, string> = {
-        Cours: "cours", TP: "TP", Examen: "examen", Slide: "slide",
-    };
-    const contentType = typeMap[typeName];
+    // `normalizeContentKey` plutôt qu'une table locale : une divergence de
+    // casse entre le script et le reste de l'app créerait un document que
+    // personne d'autre ne sait retrouver.
+    const contentType = normalizeContentKey(typeName);
     if (!contentType) throw new Error(`Type inconnu : ${typeName}`);
     return { moduleSlug, sectionSlug, contentType };
 }
@@ -102,8 +120,22 @@ const IGNORED_TAGS = new Set([
 function extractTemplateLiteral($: CheerioAPI, el: CheerioElement): string {
     const raw = $.html(el);
     const match = raw.match(/\{`([\s\S]*?)`\}/);
-    return match ? match[1].trim() : "";
+    // `$.html()` ré-encode le texte : un `-->` de Mermaid ressort en `--&gt;`,
+    // une balise d'exemple en `&lt;div&gt;`. C'est de là que venaient les
+    // milliers d'entités affichées telles quelles dans les blocs de code.
+    // Le décodage se fait en un seul passage, donc un `&copy;` volontaire du
+    // cours HTML (encodé ici en `&amp;copy;`) redevient `&copy;`, pas `©`.
+    return match ? decodeEntities(match[1]).trim() : "";
 }
+
+/**
+ * Balises tombées dans le `default` de `convertElement`, c'est-à-dire du
+ * contenu jeté. Le script rapportait « ✓ 42 blocs » sans jamais dire ce qu'il
+ * n'avait pas su lire — c'est ainsi que les tableaux vides sont passés
+ * inaperçus. `parseFile` vide ce registre à chaque fichier et le remonte en
+ * avertissement.
+ */
+const tagsIgnores = new Map<string, number>();
 
 // ── Convertit un seul élément cheerio → Block | null ───────────────────────
 function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
@@ -155,23 +187,93 @@ function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
             return { id: uuidv4(), type: "diagram", props: { header, chart }, children: [] };
         }
 
+        // Deux défauts cumulés faisaient que les 18 tableaux du corpus
+        // arrivaient vides en base :
+        //  - `children("TableRow")` ne descendait pas dans les `<TableHeader>`
+        //    et `<TableBody>` qui enveloppent les lignes dans tous les cours ;
+        //  - les types `table-row` / `table-cell` produits n'existent nulle
+        //    part — ni schéma, ni renderer. Le bloc `table` lit `props.headers`
+        //    et `props.rows`.
         case "Table": {
-            const children = $el.children("TableRow").toArray()
-                .map(row => {
-                    const cells = $(row).children("TableHead, TableCell").toArray()
-                        .map(cell => ({
-                            id: uuidv4(), type: "table-cell",
-                            props: { content: serializeInline($, cell as CheerioElement) },
-                            children: [],
-                        }));
-                    return { id: uuidv4(), type: "table-row", props: {}, children: cells };
-                });
-            return { id: uuidv4(), type: "table", props: {}, children };
+            const rowEls = $el.find("TableRow").toArray() as CheerioElement[];
+            let headers: string[] = [];
+            const rows: string[][] = [];
+            for (const row of rowEls) {
+                const $row = $(row);
+                const cells = $row.children("TableHead, TableCell").toArray()
+                    .map(cell => serializeInline($, cell as CheerioElement));
+                if (!cells.length) continue;
+                // La ligne d'en-tête est celle faite de `TableHead`, où qu'elle
+                // soit : on ne suppose pas qu'elle vient en premier.
+                const estEntete = $row.children("TableHead").length > 0;
+                if (estEntete && !headers.length) headers = cells;
+                else rows.push(cells);
+            }
+            return { id: uuidv4(), type: "table", props: { headers, rows }, children: [] };
         }
 
         case "CoursePrerequisites": {
             const children = groupByHeadings($el.children().toArray() as CheerioElement[], $);
             return { id: uuidv4(), type: "callout", props: { variant: "info" }, children };
+        }
+
+        // `<Alert>` de shadcn : sans ce cas, l'encadré entier disparaissait.
+        // L'icône (`<Info/>`, `<AlertTriangle/>`) donne la variante, faute
+        // d'attribut explicite dans les cours.
+        case "Alert": {
+            const icones = $el.children().toArray()
+                .map(c => (c as CheerioElement).tagName ?? "").join(" ");
+            const variant = /Triangle|Warning|Alert(?!Title|Description)/.test(icones)
+                ? "warning"
+                : /Lightbulb|Sparkles|Rocket/.test(icones) ? "tip" : "info";
+            const $title = $el.find("AlertTitle").first();
+            const title = $title.length ? serializeInline($, $title[0] as CheerioElement) : "";
+            const $desc = $el.find("AlertDescription").first();
+            const corps = ($desc.length ? $desc.children() : $el.children()).toArray() as CheerioElement[];
+            const children = groupByHeadings(
+                corps.filter(c => !["AlertTitle", "AlertDescription"].includes(c.tagName ?? "")),
+                $,
+            );
+            const props: Record<string, unknown> = { variant };
+            if (title) props.title = title;
+            return { id: uuidv4(), type: "callout", props, children };
+        }
+
+        // Trois composants qui ont pourtant un bloc équivalent — ils tombaient
+        // dans `default`, donc leur contenu disparaissait purement et
+        // simplement du cours migré.
+        case "DownloadCodeButton": {
+            const language = ($el.attr("language") ?? "html").replace(/[{}'"]/g, "");
+            const filename = ($el.attr("filename") ?? "fichier.txt").replace(/[{}'"`]/g, "");
+            return {
+                id: uuidv4(), type: "download-file",
+                props: { language, filename, code: extractTemplateLiteral($, el) },
+                children: [],
+            };
+        }
+
+        case "CourseReminder": {
+            const children = groupByHeadings($el.children().toArray() as CheerioElement[], $);
+            return { id: uuidv4(), type: "callout", props: { variant: "reminder" }, children };
+        }
+
+        case "Image": {
+            const src = ($el.attr("src") ?? "").replace(/[{}'"`]/g, "");
+            const alt = ($el.attr("alt") ?? "").replace(/[{}'"`]/g, "");
+            // Un `image-card` sans `src` fait lever une erreur à next/image :
+            // mieux vaut perdre le bloc que casser la page.
+            if (!src) break;
+            return { id: uuidv4(), type: "image-card", props: { src, alt }, children: [] };
+        }
+
+        // `<SlideDiagram chart={mermaidString}/>` : le graphe est le plus
+        // souvent une constante du fichier, hors de portée de cheerio. On ne
+        // convertit que la forme littérale et on laisse l'autre remonter en
+        // avertissement plutôt que d'écrire un diagramme vide.
+        case "SlideDiagram": {
+            const chart = extractTemplateLiteral($, el);
+            if (!chart) break;
+            return { id: uuidv4(), type: "diagram", props: { header: "", chart }, children: [] };
         }
 
         case "SlideText":
@@ -204,8 +306,13 @@ function convertElement($: CheerioAPI, el: CheerioElement): Block | null {
         }
 
         default:
-            return null;
+            break;
     }
+
+    // Sortie unique pour le contenu non converti : les `break` ci-dessus
+    // (balise reconnue mais inexploitable) y aboutissent aussi.
+    tagsIgnores.set(tag, (tagsIgnores.get(tag) ?? 0) + 1);
+    return null;
 }
 
 // ── Algorithme de regroupement par heading ──────────────────────────────────
@@ -293,6 +400,7 @@ export function parseJSXString(jsxCode: string): Block[] {
 // ── Pipeline fichier → Babel → Block[] ─────────────────────────────────────
 export function parseFile(filePath: string): { blocks: Block[]; warnings: string[] } {
     const warnings: string[] = [];
+    tagsIgnores.clear();
     const source = _fs.readFileSync(filePath, "utf-8");
 
     let ast: ReturnType<typeof _babelParser.parse>;
@@ -329,6 +437,14 @@ export function parseFile(filePath: string): { blocks: Block[]; warnings: string
     const genResult = _gen(jsxNode as any, { concise: true }) as { code: string };
     const jsxCode = genResult.code;
     const blocks = parseJSXString(jsxCode);
+
+    if (tagsIgnores.size) {
+        const liste = [...tagsIgnores.entries()]
+            .sort((a, b) => b[1] - a[1])
+            .map(([t, n]) => (n > 1 ? `${t}×${n}` : t))
+            .join(", ");
+        warnings.push(`balises non converties : ${liste}`);
+    }
     return { blocks, warnings };
 }
 
@@ -338,28 +454,43 @@ export async function upsertContent(
     blocks: Block[],
 ): Promise<string> {
     const now = new Date();
-    const result = await db.collection("course_content").findOneAndReplace(
-        { moduleSlug: slugs.moduleSlug, sectionSlug: slugs.sectionSlug, contentType: slugs.contentType },
+    const filtre = {
+        moduleSlug: slugs.moduleSlug,
+        sectionSlug: slugs.sectionSlug,
+        contentType: slugs.contentType,
+    };
+    // `pruneEmptyLeafChildren` : sans lui le script réécrit les `children: []`
+    // sur des blocs qui n'acceptent pas d'enfants, ce qui fait échouer la
+    // validation au premier enregistrement depuis le builder.
+    // `$setOnInsert` sur `createdAt` : `findOneAndReplace` réécrivait la date
+    // de création à chaque passage, effaçant l'âge réel du contenu.
+    const result = await db.collection("course_content").findOneAndUpdate(
+        filtre,
         {
-            moduleSlug: slugs.moduleSlug,
-            sectionSlug: slugs.sectionSlug,
-            contentType: slugs.contentType,
-            blocks,
-            version: 1,
-            createdAt: now,
-            updatedAt: now,
+            $set: { ...filtre, blocks: pruneEmptyLeafChildren(blocks), updatedAt: now },
+            $setOnInsert: { createdAt: now, version: 1 },
         },
         { upsert: true, returnDocument: "after" },
     );
     return String((result as { _id: ObjectId } | null)?._id ?? "");
 }
 
+/**
+ * Déclare le contenu dans `modules.sections[].contents[]`. L'`updateOne` avec
+ * `arrayFilters` d'origine ne modifiait rien quand la section n'avait pas déjà
+ * une entrée du bon type — et Mongo ne signale pas ce cas comme une erreur. Le
+ * script affichait « ✓ » sur un contenu qu'aucune page ne pouvait atteindre :
+ * trois documents du corpus étaient dans cet état.
+ *
+ * @returns `false` si la section elle-même est introuvable (le contenu reste
+ *          orphelin, l'appelant doit le signaler).
+ */
 export async function updateContentRef(
     db: Db,
     slugs: { moduleSlug: string; sectionSlug: string; contentType: string },
     contentId: string,
-): Promise<void> {
-    await db.collection("modules").updateOne(
+): Promise<boolean> {
+    const majDirecte = await db.collection("modules").updateOne(
         { path: slugs.moduleSlug, "sections.path": slugs.sectionSlug },
         {
             $set: {
@@ -369,6 +500,37 @@ export async function updateContentRef(
         },
         { arrayFilters: [{ "ref.type": slugs.contentType }] },
     );
+    if (majDirecte.modifiedCount > 0) return true;
+
+    const ajout = await db.collection("modules").updateOne(
+        {
+            path: slugs.moduleSlug,
+            sections: {
+                $elemMatch: {
+                    path: slugs.sectionSlug,
+                    "contents.type": { $ne: slugs.contentType },
+                },
+            },
+        },
+        {
+            // reason: `PushOperator<Document>` ne sait pas typer un chemin
+            // positionnel ; même contournement que la route /api/admin/content.
+            $push: {
+                "sections.$.contents": {
+                    type: slugs.contentType, source: "db", contentId,
+                },
+            } as never,
+        },
+    );
+    if (ajout.modifiedCount > 0) return true;
+
+    // Ni mise à jour ni ajout : soit la référence était déjà exacte (rien à
+    // écrire), soit la section n'existe pas. On tranche en relisant.
+    const existe = await db.collection("modules").countDocuments(
+        { path: slugs.moduleSlug, "sections.path": slugs.sectionSlug },
+        { limit: 1 },
+    );
+    return existe > 0;
 }
 
 export function getAllTSXFiles(dir: string): string[] {
@@ -406,7 +568,41 @@ async function main() {
     let db: Db | null = null;
     if (!_DRY_RUN) db = await _connectToDB();
 
-    const stats = { ok: 0, warn: 0, error: 0 };
+    // Le contenu vit désormais dans le builder, plus dans les `.tsx` : relancer
+    // ce script écrase des heures d'édition sans rien demander. On sauvegarde
+    // ce qu'on s'apprête à remplacer, et on laisse de côté ce qui a été édité
+    // après sa migration, sauf `--force`.
+    const dejaEdites = new Set<string>();
+    if (db) {
+        const cle = (d: { moduleSlug: string; sectionSlug: string; contentType: string }) =>
+            `${d.moduleSlug}/${d.sectionSlug}/${d.contentType}`;
+        const existants = await db.collection("course_content").find().toArray();
+
+        if (existants.length) {
+            const dir = _path.join(process.cwd(), "backups");
+            _fs.mkdirSync(dir, { recursive: true });
+            const fichier = _path.join(dir, `course-content-avant-migrate-to-db-${Date.now()}.json`);
+            _fs.writeFileSync(fichier, JSON.stringify(existants, null, 2), "utf8");
+            console.log(`Sauvegarde : ${fichier}\n`);
+        }
+
+        for (const d of existants) {
+            const cree = d.createdAt ? new Date(d.createdAt).getTime() : 0;
+            const modifie = d.updatedAt ? new Date(d.updatedAt).getTime() : 0;
+            // Une minute de marge : la migration écrit les deux dates d'affilée.
+            if (modifie - cree > 60_000) {
+                dejaEdites.add(cle(d as unknown as { moduleSlug: string; sectionSlug: string; contentType: string }));
+            }
+        }
+        if (dejaEdites.size && !_FORCE) {
+            console.warn(
+                `⚠  ${dejaEdites.size} contenu(s) modifié(s) depuis leur migration seront ignorés.\n` +
+                `   Relancez avec --force pour les écraser malgré tout.\n`,
+            );
+        }
+    }
+
+    const stats = { ok: 0, warn: 0, error: 0, ignore: 0 };
 
     for (const filePath of files) {
         const rel = filePath.replace(/\\/g, "/").replace("src/cours/", "");
@@ -434,9 +630,17 @@ async function main() {
             continue;
         }
 
+        const cle = `${slugs.moduleSlug}/${slugs.sectionSlug}/${slugs.contentType}`;
+        if (dejaEdites.has(cle) && !_FORCE) {
+            console.log(`⊘  ${rel} — édité depuis sa migration, laissé intact`);
+            stats.ignore++;
+            continue;
+        }
+
         try {
             const contentId = await upsertContent(db!, slugs, blocks);
-            await updateContentRef(db!, slugs, contentId);
+            const declare = await updateContentRef(db!, slugs, contentId);
+            if (!declare) warnings.push("section absente de `modules` : contenu orphelin");
             const warnStr = warnings.length ? `  ⚠ ${warnings.join(", ")}` : "";
             console.log(`✓  ${rel}  →  ${blocks.length} blocs${warnStr}`);
             if (warnings.length) stats.warn++;
@@ -447,7 +651,10 @@ async function main() {
         }
     }
 
-    console.log(`\nRésultat : ${stats.ok} ok — ${stats.warn} avertissements — ${stats.error} erreurs`);
+    console.log(
+        `\nRésultat : ${stats.ok} ok — ${stats.warn} avertissements — ` +
+        `${stats.ignore} ignorés — ${stats.error} erreurs`,
+    );
     process.exit(stats.error > 0 ? 1 : 0);
 }
 

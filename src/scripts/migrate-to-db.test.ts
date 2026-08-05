@@ -174,3 +174,104 @@ test("SlideNote → slide-note block", () => {
     expect(typeof blocks[0].props.content).toBe("string");
     expect((blocks[0].props.content as string).includes("Note 1")).toBe(true);
 });
+
+// ── Tableaux ────────────────────────────────────────────────────────────────
+// Les 18 tableaux du corpus étaient arrivés vides en base : les lignes sont
+// enveloppées dans `<TableHeader>` / `<TableBody>`, que l'ancien
+// `children("TableRow")` ne traversait pas, et les types `table-row` /
+// `table-cell` produits n'ont ni schéma ni renderer.
+
+test("Table : les lignes sont trouvées à travers TableHeader/TableBody", () => {
+    const blocks = parseJSXString(`<article><Table>
+        <TableHeader><TableRow><TableHead>Commande</TableHead><TableHead>Description</TableHead></TableRow></TableHeader>
+        <TableBody>
+            <TableRow><TableCell>+</TableCell><TableCell>Incrémente</TableCell></TableRow>
+            <TableRow><TableCell>-</TableCell><TableCell>Décrémente</TableCell></TableRow>
+        </TableBody>
+    </Table></article>`);
+    expect(blocks[0].type).toBe("table");
+    expect(blocks[0].props.headers).toEqual(["Commande", "Description"]);
+    expect(blocks[0].props.rows).toEqual([["+", "Incrémente"], ["-", "Décrémente"]]);
+});
+
+test("Table : pas d'enfants table-row/table-cell, aucun renderer ne les connaît", () => {
+    const blocks = parseJSXString(`<article><Table><TableBody><TableRow><TableCell>a</TableCell></TableRow></TableBody></Table></article>`);
+    expect(blocks[0].children).toEqual([]);
+    expect(blocks[0].props.headers).toEqual([]);
+    expect(blocks[0].props.rows).toEqual([["a"]]);
+});
+
+test("Table sans TableHeader : tout passe en lignes", () => {
+    const blocks = parseJSXString(`<article><Table><TableRow><TableCell>seule</TableCell></TableRow></Table></article>`);
+    expect(blocks[0].props.headers).toEqual([]);
+    expect(blocks[0].props.rows).toEqual([["seule"]]);
+});
+
+// ── Liens et encadrés ───────────────────────────────────────────────────────
+
+test("Link garde son URL, comme une balise a", () => {
+    const blocks = parseJSXString(`<article><Text>Voir <Link href="https://mdn.io">la doc</Link> pour la suite.</Text></article>`);
+    expect(blocks[0].props.content).toBe("Voir [la doc](https://mdn.io) pour la suite.");
+});
+
+test("Alert → callout, titre et contenu conservés", () => {
+    const blocks = parseJSXString(`<article><Alert><Info/><AlertTitle>Note importante</AlertTitle><AlertDescription><Text>Lisez ceci.</Text></AlertDescription></Alert></article>`);
+    expect(blocks[0].type).toBe("callout");
+    expect(blocks[0].props.title).toBe("Note importante");
+    expect(blocks[0].props.variant).toBe("info");
+    expect(blocks[0].children![0].props.content).toBe("Lisez ceci.");
+});
+
+test("Alert avec icône d'avertissement → variante warning", () => {
+    const blocks = parseJSXString(`<article><Alert><AlertTriangle/><AlertDescription><Text>Attention.</Text></AlertDescription></Alert></article>`);
+    expect(blocks[0].props.variant).toBe("warning");
+    expect(blocks[0].props.title).toBeUndefined();
+});
+
+// ── Composants qui avaient un bloc équivalent mais tombaient dans `default` ──
+
+test("DownloadCodeButton → download-file avec son code", () => {
+    const blocks = parseJSXString(`<article><DownloadCodeButton language="html" filename={"game.html"}>{\`<!DOCTYPE html>\`}</DownloadCodeButton></article>`);
+    expect(blocks[0].type).toBe("download-file");
+    expect(blocks[0].props.filename).toBe("game.html");
+    expect(blocks[0].props.language).toBe("html");
+    expect(blocks[0].props.code).toBe("<!DOCTYPE html>");
+});
+
+test("CourseReminder → callout variante reminder", () => {
+    const blocks = parseJSXString(`<article><CourseReminder><Text>Rappel du cours.</Text></CourseReminder></article>`);
+    expect(blocks[0].type).toBe("callout");
+    expect(blocks[0].props.variant).toBe("reminder");
+    expect(blocks[0].children![0].props.content).toBe("Rappel du cours.");
+});
+
+test("Image → image-card", () => {
+    const blocks = parseJSXString(`<article><Image src="/media/schema.png" alt="Un schéma"/></article>`);
+    expect(blocks[0].type).toBe("image-card");
+    expect(blocks[0].props.src).toBe("/media/schema.png");
+});
+
+test("Image sans src est écartée : next/image lèverait une erreur", () => {
+    expect(parseJSXString(`<article><Image alt="rien"/></article>`)).toEqual([]);
+});
+
+test("SlideDiagram littéral → diagram ; référence de variable écartée", () => {
+    const litteral = parseJSXString(`<article><SlideDiagram>{\`graph TD; A-->B;\`}</SlideDiagram></article>`);
+    expect(litteral[0].type).toBe("diagram");
+    expect(litteral[0].props.chart).toBe("graph TD; A-->B;");
+    // Le graphe vient d'une constante du fichier : mieux vaut un avertissement
+    // qu'un bloc `diagram` vide qui casserait le rendu Mermaid.
+    expect(parseJSXString(`<article><SlideDiagram chart={propagationDiagram}/></article>`)).toEqual([]);
+});
+
+test("le code extrait n'est pas ré-encodé par cheerio", () => {
+    const blocks = parseJSXString(`<article><CodeCard language="html">{\`<div class="a">Café &amp; thé</div>\`}</CodeCard></article>`);
+    expect(blocks[0].props.code).toBe(`<div class="a">Café & thé</div>`);
+});
+
+test("une entité montrée volontairement reste une entité", () => {
+    // Le cours HTML enseigne les entités : `&copy;` doit rester lisible tel
+    // quel dans l'exemple, sans être résolu en ©.
+    const blocks = parseJSXString(`<article><CodeCard language="html">{\`<p>&amp;copy; 2026</p>\`}</CodeCard></article>`);
+    expect(blocks[0].props.code).toBe("<p>&copy; 2026</p>");
+});
