@@ -3,7 +3,7 @@
 import {useState} from "react";
 import {ArrowRight, Database, UploadCloud} from "lucide-react";
 import {Button} from "@/components/ui/button";
-import MigrateButton from "@/components/admin/MigrateButton";
+import MigrateSheet from "@/components/admin/MigrateSheet";
 import ExportImportSheet from "@/components/admin/ExportImportSheet";
 import {ADMIN_TOOL_ACTIONS} from "@/components/admin/adminDashboardConfig";
 import {ADMIN_CARD} from "@/components/admin/ui/adminStyles";
@@ -21,6 +21,7 @@ interface AdminToolsPanelProps {
 }
 
 export default function AdminToolsPanel({modules}: AdminToolsPanelProps) {
+    const [migrationOpen, setMigrationOpen] = useState(false);
     const [exportImportOpen, setExportImportOpen] = useState(false);
 
     return (
@@ -45,24 +46,24 @@ export default function AdminToolsPanel({modules}: AdminToolsPanelProps) {
                                 </div>
                             </div>
 
-                            {action.id === "migration" ? (
-                                <MigrateButton/>
-                            ) : (
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="min-h-11 gap-2 border-bridge-500/45"
-                                    onClick={() => setExportImportOpen(true)}
-                                >
-                                    Ouvrir
-                                    <ArrowRight className="size-4" aria-hidden="true"/>
-                                </Button>
-                            )}
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="min-h-11 gap-2 border-bridge-500/45"
+                                onClick={() => {
+                                    if (action.id === "migration") setMigrationOpen(true);
+                                    else setExportImportOpen(true);
+                                }}
+                            >
+                                Ouvrir
+                                <ArrowRight className="size-4" aria-hidden="true"/>
+                            </Button>
                         </article>
                     );
                 })}
             </div>
 
+            <MigrateSheet open={migrationOpen} onOpenChange={setMigrationOpen}/>
             <ExportImportSheet open={exportImportOpen} onOpenChange={setExportImportOpen} modules={modules}/>
         </>
     );
