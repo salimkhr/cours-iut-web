@@ -240,14 +240,16 @@ export const blockDefs: BlockDef[] = [
         label: "Code + aperçu",
         category: "Code",
         description: "Code HTML/CSS affiché avec son rendu live côte à côte (iframe sandboxée). Pour illustrer un résultat visuel.",
-        defaultProps: { language: "html", code: "" },
+        defaultProps: { language: "html", code: "", preview: "" },
         schema: z.object({
             language: z.string(),
             code: z.string(),
+            preview: z.string().optional(),
         }),
         fields: [
-            { key: "language", label: "Langage", type: "select", options: ["html", "css"] },
+            { key: "language", label: "Langage", type: "select", options: ["html", "css", "php"] },
             { key: "code", label: "Code", type: "textarea", rows: 15, placeholder: "<button>Cliquez</button>" },
+            { key: "preview", label: "HTML de l'aperçu", type: "textarea", rows: 10, placeholder: "<main id=\"contenu-principal\">...</main>" },
         ],
     },
     {

@@ -60,6 +60,7 @@ export const blockPropsSchemas: Record<string, z.ZodTypeAny> = {
     "code-with-preview": z.object({
         language: z.string(),
         code: z.string(),
+        preview: z.string().optional(),
     }),
     "diagram": z.object({
         header: z.string().optional(),

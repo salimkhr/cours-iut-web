@@ -34,25 +34,32 @@ import type { BlockDef, FieldDef, BlockCategory } from "@/lib/blockDefs";
 import type Module from "@/types/Module";
 import { DynamicLucideIcon } from "@/components/ui/DynamicLucideIcon";
 
-function previewSrcDoc(code: string, language: string): string {
+function previewSrcDoc(code: string, language: string, previewMarkup?: string): string {
+    const markup = previewMarkup?.trim();
     if (language.trim().toLowerCase() === "css") {
-        return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>${code}</style></head><body style="background: #ffffff !important;">
-            <header class="navigation">
-                <strong>Catalogue des formations</strong>
-                <nav><a href="#">Accueil</a> <a href="#">Formations</a></nav>
-            </header>
-            <main id="contenu-principal" class="conteneur">
+        const body = markup || `<main id="contenu-principal" class="conteneur">
                 <h1>Développement web</h1>
                 <p class="introduction">Découvrez un exemple de contenu stylé avec CSS.</p>
                 <section class="grille">
                     <article class="carte"><span class="badge">Nouveau</span><h2>HTML et CSS</h2><p>Structure et présentation d&apos;une page.</p></article>
                     <article class="carte"><h2>JavaScript</h2><p>Interactions dans le navigateur.</p></article>
                 </section>
-            </main>
+            </main>`;
+        const header = markup ? "" : `<header class="navigation">
+                <strong>Catalogue des formations</strong>
+                <nav><a href="#">Accueil</a> <a href="#">Formations</a></nav>
+            </header>`;
+        return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>${code}</style></head><body style="background: #ffffff !important;">
+            ${header}
+            ${body}
         </body></html>`;
     }
 
     const previewTextStyle = "body { color: #221e18; background: #ffffff; }";
+    if (markup) {
+        if (/<html(?:\s|>)/i.test(markup)) return markup;
+        return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>${previewTextStyle}</style></head><body>${markup}</body></html>`;
+    }
     if (/<html(?:\s|>)/i.test(code)) {
         return code.replace(/<\/head>/i, `<style>${previewTextStyle}</style></head>`);
     }
@@ -314,13 +321,13 @@ const clientParts: Record<string, ClientPart> = {
     },
     "code-with-preview": {
         icon: Eye,
-        render: ({ language, code, currentModule }: BlockRenderProps) => (
+        render: ({ language, code, preview, currentModule }: BlockRenderProps) => (
             <CodeWithPreviewCard language={String(language ?? "html")} currentModule={currentModule as Module | undefined}>
                 <CodePanel>{String(code ?? "")}</CodePanel>
                 <PreviewPanel>
                     {/* sandbox="" : aucun script, aucune navigation — le HTML vient de la base */}
                     <iframe
-                        srcDoc={previewSrcDoc(String(code ?? ""), String(language ?? "html"))}
+                        srcDoc={previewSrcDoc(String(code ?? ""), String(language ?? "html"), preview ? String(preview) : undefined)}
                         sandbox=""
                         title="Aperçu du code"
                         className="w-full min-h-40 border-0 bg-white"
