@@ -88,12 +88,12 @@ export default function CodeWithPreviewCard({language, children, className, curr
         language: normalizeLanguage(language),
         customStyle: {
             margin: 0,
-            fontSize: '0.875rem',
-            lineHeight: '1.6',
+            fontSize: '0.8125rem',
+            lineHeight: '1.65',
             height: '100%',
             background: 'transparent',
         },
-        wrapLongLines: true,
+        wrapLongLines: false,
         showLineNumbers: true,
     };
 
@@ -147,12 +147,12 @@ export default function CodeWithPreviewCard({language, children, className, curr
             {/* ── Mobile : un seul panel à la fois ── */}
             <div className="lg:hidden">
                 {mobileTab === 'code' ? (
-                    <div className="overflow-x-auto">
+                    <div className="code-with-preview-mobile-scroll overflow-x-auto">
                         {codePanel}
                         {codePanelDark}
                     </div>
                 ) : (
-                    <div className="p-4 text-left max-h-[60dvh] overflow-auto">
+                    <div className="code-with-preview-preview p-0 text-left max-h-[60dvh] overflow-auto">
                         {previewContent}
                     </div>
                 )}
@@ -164,7 +164,7 @@ export default function CodeWithPreviewCard({language, children, className, curr
                     {codePanel}
                     {codePanelDark}
                 </div>
-                <div className="flex-1 min-w-0 overflow-auto p-4 text-left">
+                <div className="code-with-preview-preview flex-1 min-w-0 overflow-auto p-0 text-left">
                     {previewContent}
                 </div>
             </div>

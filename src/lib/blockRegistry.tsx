@@ -33,6 +33,32 @@ import { blockDefs, getBlockDef, createBlockInstance } from "@/lib/blockDefs";
 import type { BlockDef, FieldDef, BlockCategory } from "@/lib/blockDefs";
 import type Module from "@/types/Module";
 import { DynamicLucideIcon } from "@/components/ui/DynamicLucideIcon";
+
+function previewSrcDoc(code: string, language: string): string {
+    if (language.trim().toLowerCase() === "css") {
+        return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>${code}</style></head><body>
+            <header class="navigation">
+                <strong>Catalogue des formations</strong>
+                <nav><a href="#">Accueil</a> <a href="#">Formations</a></nav>
+            </header>
+            <main id="contenu-principal" class="conteneur">
+                <h1>Développement web</h1>
+                <p class="introduction">Découvrez un exemple de contenu stylé avec CSS.</p>
+                <section class="grille">
+                    <article class="carte"><span class="badge">Nouveau</span><h2>HTML et CSS</h2><p>Structure et présentation d&apos;une page.</p></article>
+                    <article class="carte"><h2>JavaScript</h2><p>Interactions dans le navigateur.</p></article>
+                </section>
+            </main>
+        </body></html>`;
+    }
+
+    const previewTextStyle = "body { color: #221e18; background: #ffffff; }";
+    if (/<html(?:\s|>)/i.test(code)) {
+        return code.replace(/<\/head>/i, `<style>${previewTextStyle}</style></head>`);
+    }
+
+    return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>${previewTextStyle}</style></head><body>${code}</body></html>`;
+}
 import type { BlockRenderProps, BlockEditorProps } from "@/types/blocks";
 
 // Réexports pour compatibilité avec les imports existants.
@@ -294,7 +320,7 @@ const clientParts: Record<string, ClientPart> = {
                 <PreviewPanel>
                     {/* sandbox="" : aucun script, aucune navigation — le HTML vient de la base */}
                     <iframe
-                        srcDoc={String(code ?? "")}
+                        srcDoc={previewSrcDoc(String(code ?? ""), String(language ?? "html"))}
                         sandbox=""
                         title="Aperçu du code"
                         className="w-full min-h-40 border-0 bg-white"

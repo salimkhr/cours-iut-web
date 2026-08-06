@@ -542,6 +542,33 @@ samp,
     margin-block: 2rem;
 }
 
+/* L'aperçu HTML est un mini-viewport, pas une bande de 160px. Une hauteur
+   stable permet de lire les exemples courts comme les pages complètes sans
+   faire varier la largeur du panneau de code. */
+.course-code-card .code-with-preview-preview {
+    min-height: 24rem;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--color-bridge-100) 42%, transparent);
+}
+
+.course-code-card .code-with-preview-preview iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    background: var(--color-bridge-50);
+}
+
+.dark .course-code-card .code-with-preview-preview {
+    background: color-mix(in srgb, var(--color-bridge-700) 34%, transparent);
+}
+
+.dark .course-code-card .code-with-preview-preview iframe {
+    background: var(--color-bridge-50);
+}
+
 .course-content :where([data-slot="table-container"]) {
     max-width: 100%;
     margin-block: 1.5rem 2rem;
@@ -578,6 +605,38 @@ samp,
 
     .course-content :where(h3) {
         margin-top: 1.9rem;
+    }
+
+    /* Les extraits restent fidèles au code source sur mobile : le défilement
+       horizontal est plus lisible qu'un retour à la ligne au milieu d'une
+       balise, d'un sélecteur ou d'une chaîne. */
+    .course-code-card .code-with-preview-mobile-scroll {
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+
+    .course-code-card .code-with-preview-mobile-scroll pre {
+        min-width: max-content;
+        padding: 0.9rem 1rem 1rem 0.75rem !important;
+        font-size: 0.75rem !important;
+        line-height: 1.65 !important;
+        white-space: pre !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+    }
+
+    .course-code-card .code-with-preview-mobile-scroll .linenumber {
+        display: none !important;
+    }
+
+    .course-code-card .code-with-preview-preview {
+        padding: 0 !important;
+        overflow: auto;
+    }
+
+    .course-code-card .code-with-preview-preview iframe {
+        height: 60dvh;
+        min-height: 18rem;
     }
 }
 
