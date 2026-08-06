@@ -558,7 +558,7 @@ samp,
     min-height: 0;
     border: 0;
     border-radius: 0;
-    background: var(--color-bridge-50);
+    background: #ffffff;
 }
 
 .dark .course-code-card .code-with-preview-preview {
@@ -566,7 +566,7 @@ samp,
 }
 
 .dark .course-code-card .code-with-preview-preview iframe {
-    background: var(--color-bridge-50);
+    background: #ffffff;
 }
 
 .course-content :where([data-slot="table-container"]) {

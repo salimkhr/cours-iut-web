@@ -36,7 +36,7 @@ import { DynamicLucideIcon } from "@/components/ui/DynamicLucideIcon";
 
 function previewSrcDoc(code: string, language: string): string {
     if (language.trim().toLowerCase() === "css") {
-        return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>${code}</style></head><body>
+        return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>${code}</style></head><body style="background: #ffffff !important;">
             <header class="navigation">
                 <strong>Catalogue des formations</strong>
                 <nav><a href="#">Accueil</a> <a href="#">Formations</a></nav>
