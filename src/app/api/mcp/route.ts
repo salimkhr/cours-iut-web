@@ -77,21 +77,84 @@ interface ContentKey {
     contentType: ContentType;
 }
 
-interface ModuleDoc {
+type ModuleSectionDoc = Partial<Omit<Section, "_id" | "contents">> & {
+    path: string;
+    contents?: Array<{ type: string; source?: string; contentId?: unknown }>;
+};
+
+type ModuleDoc = Partial<Omit<Module, "_id" | "sections" | "updatedAt">> & {
     path: string;
     title?: string;
-    isExtra?: boolean;
-    sessionDurationMinutes?: number;
-    universe?: ModuleUniverse;
-    sections?: Array<{
-        path: string;
-        title?: string;
-        totalDuration?: number;
-        courseIntroMinutes?: number;
-        brief?: SectionBrief;
-        curriculum?: SectionCurriculum;
-        contents?: Array<{ type: string; source?: string }>;
-    }>;
+    updatedAt?: string | Date;
+    sections?: ModuleSectionDoc[];
+};
+
+function asSerializableId(value: unknown): string | undefined {
+    if (value === undefined || value === null) return undefined;
+    if (typeof value === "string") return value;
+    if (value instanceof ObjectId) return value.toString();
+    return String(value);
+}
+
+function asSerializableDate(value: string | Date | undefined): string | undefined {
+    if (value === undefined) return undefined;
+    return value instanceof Date ? value.toISOString() : value;
+}
+
+function serializeContentRefs(contents: ModuleSectionDoc["contents"] = []) {
+    return contents.map((content) => {
+        const contentId = asSerializableId(content.contentId);
+        return {
+            type: content.type,
+            source: content.source ?? "file",
+            ...(contentId !== undefined && { contentId }),
+        };
+    });
+}
+
+function serializeSectionMetadata(moduleSlug: string, section: ModuleSectionDoc) {
+    return {
+        module: moduleSlug,
+        slug: section.path,
+        title: section.title ?? section.path,
+        ...(section.description !== undefined && { description: section.description }),
+        order: section.order ?? 0,
+        contents: serializeContentRefs(section.contents),
+        objectives: section.objectives ?? [],
+        tags: section.tags ?? [],
+        totalDuration: section.totalDuration ?? 1,
+        ...(section.courseIntroMinutes !== undefined && { courseIntroMinutes: section.courseIntroMinutes }),
+        ...(section.brief !== undefined && { brief: section.brief }),
+        ...(section.curriculum !== undefined && { curriculum: section.curriculum }),
+        hasCorrection: section.hasCorrection ?? false,
+        isAvailable: section.isAvailable ?? false,
+        correctionIsAvailable: section.correctionIsAvailable ?? false,
+        examenIsLock: section.examenIsLock ?? false,
+    };
+}
+
+function serializeModuleMetadata(module: ModuleDoc) {
+    const updatedAt = asSerializableDate(module.updatedAt);
+    return {
+        slug: module.path,
+        title: module.title ?? module.path,
+        ...(module.iconName !== undefined && { iconName: module.iconName }),
+        ...(module.description !== undefined && { description: module.description }),
+        associatedSae: module.associatedSae ?? [],
+        coefficients: module.coefficients ?? [],
+        ...(module.manager !== undefined && { manager: module.manager }),
+        instructors: module.instructors ?? [],
+        isExtra: module.isExtra ?? false,
+        ...(module.sessionDurationMinutes !== undefined && { sessionDurationMinutes: module.sessionDurationMinutes }),
+        ...(module.universe !== undefined && { universe: module.universe }),
+        ...(module.projectIcon !== undefined && { projectIcon: module.projectIcon }),
+        ...(module.colorLight !== undefined && { colorLight: module.colorLight }),
+        ...(module.colorDark !== undefined && { colorDark: module.colorDark }),
+        ...(module.isVisible !== undefined && { isVisible: module.isVisible }),
+        ...(updatedAt !== undefined && { updatedAt }),
+        sectionCount: module.sections?.length ?? 0,
+        sectionSlugs: (module.sections ?? []).map((section) => section.path),
+    };
 }
 
 // ── Validation du Bearer token (Scalekit) ─────────────────────────────────────
@@ -668,6 +731,69 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 contents: Object.fromEntries((s.contents ?? []).map((c) => [c.type, c.source ?? "file"])),
             }));
             return { content: [{ type: "text" as const, text: JSON.stringify(sections, null, 2) }] };
+        }
+    );
+
+    // ── get_module ────────────────────────────────────────────────────────────
+    server.tool(
+        "get_module",
+        "Retourne les métadonnées complètes d'un module, sans blocs de contenu ni sections imbriquées.",
+        { module: z.string().describe("Slug du module, ex: javascript") },
+        async ({ module }) => {
+            const db = await connectToDB();
+            const mod = await db.collection<ModuleDoc>("modules").findOne(
+                { path: module },
+                {
+                    projection: {
+                        _id: 0,
+                        path: 1,
+                        title: 1,
+                        iconName: 1,
+                        description: 1,
+                        associatedSae: 1,
+                        coefficients: 1,
+                        manager: 1,
+                        instructors: 1,
+                        isExtra: 1,
+                        sessionDurationMinutes: 1,
+                        universe: 1,
+                        projectIcon: 1,
+                        colorLight: 1,
+                        colorDark: 1,
+                        isVisible: 1,
+                        updatedAt: 1,
+                        sections: 1,
+                    },
+                }
+            );
+            if (!mod) throw new Error(`Module "${module}" introuvable.`);
+
+            const result = serializeModuleMetadata(mod);
+            return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
+        }
+    );
+
+    // ── get_section ───────────────────────────────────────────────────────────
+    server.tool(
+        "get_section",
+        "Retourne les métadonnées complètes d'une section, sans blocs de contenu.",
+        {
+            module:  z.string().describe("Slug du module, ex: javascript"),
+            section: z.string().describe("Slug de la section, ex: 1-le-dom"),
+        },
+        async ({ module, section }) => {
+            const db = await connectToDB();
+            const mod = await db.collection<ModuleDoc>("modules").findOne(
+                { path: module },
+                { projection: { sections: 1, _id: 0 } }
+            );
+            if (!mod) throw new Error(`Module "${module}" introuvable.`);
+
+            const found = (mod.sections ?? []).find((candidate) => candidate.path === section);
+            if (!found) throw new Error(`Section "${section}" introuvable dans le module "${module}".`);
+
+            const result = serializeSectionMetadata(module, found);
+            return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
         }
     );
 

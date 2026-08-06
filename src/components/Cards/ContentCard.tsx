@@ -3,11 +3,12 @@
 import React, {useRef} from "react";
 import Link from "next/link";
 import {useReducedMotion} from 'motion/react';
-import {ArrowRight, Lock} from "lucide-react";
+import {Lock} from "lucide-react";
 import Module from "@/types/Module";
 import Section from "@/types/Section";
 import {cn} from "@/lib/utils";
 import {moduleColor} from "@/lib/moduleColor";
+import {Button} from "@/components/ui/button";
 import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
 import {BookTextIcon} from "@/components/icons/book-text";
 import {TerminalIcon} from "@/components/icons/terminal";
@@ -51,9 +52,10 @@ interface ContentCardProps {
     content: string;
     section: Section;
     currentModule: Module;
+    isAdmin?: boolean;
 }
 
-export default function ContentCard({content, section, currentModule}: ContentCardProps) {
+export default function ContentCard({content, section, currentModule, isAdmin = false}: ContentCardProps) {
     const config = CONTENT_CONFIG[content] ?? {
         label: content,
         description: '',
@@ -62,9 +64,18 @@ export default function ContentCard({content, section, currentModule}: ContentCa
     const {label, description, IconComp} = config;
     const iconRef = useRef<SectionIconHandle>(null);
 
-    const isLocked = !section.isAvailable;
+    const isLocked = !isAdmin && !section.isAvailable;
     const href = isLocked ? '#' : `/${currentModule.path}/${section.path}/${content}`;
     const prefersReducedMotion = useReducedMotion();
+    const btnBase = cn(
+        "group/btn w-full min-h-[44px] rounded-lg",
+        "text-xs font-semibold tracking-wide uppercase",
+        "border-2 border-(--module-color) text-brand-dark dark:border-(--module-color-dark) dark:text-bridge-100",
+        "bg-transparent dark:bg-bridge-900/18 shadow-none",
+        "hover:bg-(--module-color) hover:text-white hover:shadow-md dark:hover:bg-(--module-color-dark) dark:hover:text-brand-dark",
+        "active:translate-y-px focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "transition-[color,border-color,background-color,box-shadow,transform] duration-300",
+    );
 
     return (
         <article
@@ -143,19 +154,21 @@ export default function ContentCard({content, section, currentModule}: ContentCa
                     {isLocked ? (
                         <span
                             aria-disabled="true"
-                            className="inline-flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-semibold tracking-wide border border-bridge-700/55 text-brand-dark dark:border-bridge-400/40 dark:text-bridge-100 opacity-50 pointer-events-none cursor-not-allowed"
+                            className={cn(btnBase, "inline-flex items-center justify-center gap-2 px-3 opacity-50 pointer-events-none cursor-not-allowed")}
                         >
                             Indisponible
-                            <Lock className="size-4"/>
                         </span>
                     ) : (
-                        <Link
-                            href={href}
-                            className="group/cta inline-flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-semibold tracking-wide border border-bridge-700/55 text-brand-dark dark:border-bridge-400/40 dark:text-bridge-100 transition-[color,border-color,background-color,transform] duration-300 hover:bg-bridge-200 hover:border-bridge-700 hover:text-bridge-900 active:translate-y-px dark:hover:bg-bridge-700 dark:hover:border-bridge-300 dark:hover:text-bridge-50"
+                        <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className={btnBase}
                         >
-                            Ouvrir {label}
-                            <ArrowRight className="size-4 transition-transform duration-300 group-hover/cta:translate-x-1"/>
-                        </Link>
+                            <Link href={href} aria-label={`Ouvrir ${label}`}>
+                                <span>Ouvrir {label}</span>
+                            </Link>
+                        </Button>
                     )}
                 </div>
             </div>

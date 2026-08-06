@@ -13,6 +13,7 @@ import {cn} from "@/lib/utils";
 import Section from "@/types/Section";
 import { getContentTypes, hasContentType } from "@/types/CourseContent";
 import {Metadata} from "next";
+import {getServerSession} from "@/lib/auth";
 
 interface SectionPageProps {
     params: Promise<{
@@ -33,7 +34,11 @@ export async function generateMetadata({params}: SectionPageProps): Promise<Meta
 export default async function SectionPage({params}: SectionPageProps) {
     const {moduleSlug, sectionSlug} = await params;
 
-    const {currentModule, currentSection} = await getModuleData({moduleSlug, sectionSlug});
+    const [{currentModule, currentSection}, session] = await Promise.all([
+        getModuleData({moduleSlug, sectionSlug}),
+        getServerSession(),
+    ]);
+    const isAdmin = session?.user.role === 'admin';
 
     const orderedSections = [...(currentModule.sections ?? [])].sort(
         (a, b) => a.order - b.order
@@ -175,6 +180,7 @@ export default async function SectionPage({params}: SectionPageProps) {
                                 section={currentSection}
                                 currentModule={currentModule}
                                 content={content}
+                                isAdmin={isAdmin}
                             />
                         </div>
                     ))}
