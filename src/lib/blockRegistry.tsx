@@ -343,7 +343,7 @@ const clientParts: Record<string, ClientPart> = {
                             srcDoc={previewSrcDoc(codeValue, languageValue, previewValue)}
                             sandbox=""
                             title="Aperçu du code"
-                            className="w-full min-h-40 border-0 bg-white"
+                            className="w-full border-0 bg-white"
                         />
                     </PreviewPanel>
                 </CodeWithPreviewCard>

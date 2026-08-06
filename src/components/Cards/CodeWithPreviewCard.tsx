@@ -90,7 +90,7 @@ export default function CodeWithPreviewCard({language, children, className, curr
             margin: 0,
             fontSize: '0.8125rem',
             lineHeight: '1.65',
-            height: '100%',
+            height: 'auto',
             background: 'transparent',
         },
         wrapLongLines: false,
@@ -98,7 +98,7 @@ export default function CodeWithPreviewCard({language, children, className, curr
     };
 
     const codePanel = (
-        <div className="block dark:hidden h-full">
+        <div className="block dark:hidden">
             <SyntaxHighlighter style={courseCodeLight} {...sharedHighlighterProps}>
                 {codeContent}
             </SyntaxHighlighter>
@@ -106,7 +106,7 @@ export default function CodeWithPreviewCard({language, children, className, curr
     );
 
     const codePanelDark = (
-        <div className="hidden dark:block h-full">
+        <div className="hidden dark:block">
             <SyntaxHighlighter style={courseCodeDark} {...sharedHighlighterProps}>
                 {codeContent}
             </SyntaxHighlighter>

@@ -9,19 +9,17 @@ import {
     SheetTitle,
     SheetFooter,
 } from '@/components/ui/sheet';
-import { CONTENT_COPY_PREFIX, ContentKey } from '@/lib/contentMeta';
 import { BotIcon } from '@/components/icons/bot';
 import type { BotIconHandle } from '@/components/icons/bot';
 
 interface PromptModeButtonProps {
     accentColor: string;
     sectionTitle: string;
-    contentType: ContentKey;
 }
 
 type ExtractionState = 'idle' | 'loading' | 'ready';
 
-export default function PromptModeButton({ accentColor, sectionTitle, contentType }: PromptModeButtonProps) {
+export default function PromptModeButton({ accentColor, sectionTitle }: PromptModeButtonProps) {
     const botRef = useRef<BotIconHandle>(null);
     const [open, setOpen] = useState(false);
     const [state, setState] = useState<ExtractionState>('idle');
@@ -79,8 +77,7 @@ export default function PromptModeButton({ accentColor, sectionTitle, contentTyp
     };
 
     const handleCopy = async () => {
-        const prefix = CONTENT_COPY_PREFIX[contentType] ?? '';
-        await navigator.clipboard.writeText(prefix + markdown);
+        await navigator.clipboard.writeText(markdown);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };

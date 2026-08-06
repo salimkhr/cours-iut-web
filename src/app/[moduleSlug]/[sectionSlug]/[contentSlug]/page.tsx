@@ -6,7 +6,6 @@ import ScrollRestore from "@/components/page/ScrollRestore";
 import PageFooter from "@/components/page/PageFooter";
 import ReadingProgress from "@/components/page/ReadingProgress";
 import ContentSidebarNav from "@/components/page/ContentSidebarNav";
-import CopyContextGuard from "@/components/page/CopyContextGuard";
 import PromptModeButton from "@/components/page/PromptModeButton";
 import SectionPager from "@/components/page/SectionPager";
 import LastVisitedTracker from "@/components/page/LastVisitedTracker";
@@ -188,7 +187,6 @@ export default async function Content({params}: ContentPageProps) {
                             <PromptModeButton
                                 accentColor={accent}
                                 sectionTitle={currentSection.title}
-                                contentType={currentContent as ContentKey}
                             />
                         </>
                     )}
@@ -228,17 +226,15 @@ export default async function Content({params}: ContentPageProps) {
                             '--module-color-dark': accentDark,
                         } as React.CSSProperties}
                     >
-                        <CopyContextGuard contentType={currentContent ?? ''}>
-                            <div className={cn("course-content", currentContent === "TP" && "course-content-practice")}>
-                                {currentContent === "examen" && currentSection.examenIsLock ? (
-                                    <ExamenWrapper currentModule={currentModule}>
-                                        <ComponentToRender/>
-                                    </ExamenWrapper>
-                                ) : (
+                        <div className={cn("course-content", currentContent === "TP" && "course-content-practice")}>
+                            {currentContent === "examen" && currentSection.examenIsLock ? (
+                                <ExamenWrapper currentModule={currentModule}>
                                     <ComponentToRender/>
-                                )}
-                            </div>
-                        </CopyContextGuard>
+                                </ExamenWrapper>
+                            ) : (
+                                <ComponentToRender/>
+                            )}
+                        </div>
                     </main>
                     {(currentContent === 'cours' || currentContent === 'TP' || currentContent === 'examen') && (
                         <TableOfContents
