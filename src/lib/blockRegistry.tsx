@@ -321,20 +321,34 @@ const clientParts: Record<string, ClientPart> = {
     },
     "code-with-preview": {
         icon: Eye,
-        render: ({ language, code, preview, currentModule }: BlockRenderProps) => (
-            <CodeWithPreviewCard language={String(language ?? "html")} currentModule={currentModule as Module | undefined}>
-                <CodePanel>{String(code ?? "")}</CodePanel>
-                <PreviewPanel>
-                    {/* sandbox="" : aucun script, aucune navigation — le HTML vient de la base */}
-                    <iframe
-                        srcDoc={previewSrcDoc(String(code ?? ""), String(language ?? "html"), preview ? String(preview) : undefined)}
-                        sandbox=""
-                        title="Aperçu du code"
-                        className="w-full min-h-40 border-0 bg-white"
-                    />
-                </PreviewPanel>
-            </CodeWithPreviewCard>
-        ),
+        render: ({ language, code, preview, currentModule }: BlockRenderProps) => {
+            const codeValue = String(code ?? "");
+            const languageValue = String(language ?? "html");
+            const previewValue = typeof preview === "string" ? preview.trim() : "";
+
+            if (!previewValue) {
+                return (
+                    <CodeCard language={languageValue} currentModule={currentModule as Module | undefined}>
+                        {codeValue}
+                    </CodeCard>
+                );
+            }
+
+            return (
+                <CodeWithPreviewCard language={languageValue} currentModule={currentModule as Module | undefined}>
+                    <CodePanel>{codeValue}</CodePanel>
+                    <PreviewPanel>
+                        {/* sandbox="" : aucun script, aucune navigation — l'aperçu vient de la prop du bloc */}
+                        <iframe
+                            srcDoc={previewSrcDoc(codeValue, languageValue, previewValue)}
+                            sandbox=""
+                            title="Aperçu du code"
+                            className="w-full min-h-40 border-0 bg-white"
+                        />
+                    </PreviewPanel>
+                </CodeWithPreviewCard>
+            );
+        },
     },
     "diagram": {
         icon: Share2,
