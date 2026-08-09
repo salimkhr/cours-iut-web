@@ -19,3 +19,20 @@ test("applique le nombre de lignes demande aux champs textarea", () => {
 
     expect(html).toContain('rows="15"');
 });
+
+test("route les champs de type code vers l'éditeur coloré", () => {
+    const fields: FieldDef[] = [
+        {key: "code", label: "Code", type: "code", languageFrom: "language", rows: 15},
+    ];
+
+    const html = renderToStaticMarkup(
+        <DynamicPropsEditor
+            fields={fields}
+            props={{language: "css", code: ".intro { color: red }"}}
+            onChange={() => {}}
+        />
+    );
+
+    expect(html).toContain("data-code-field");
+    expect(html).toContain('data-language="css"');
+});

@@ -14,7 +14,7 @@ import type { Block } from "@/types/CourseContent";
 export interface FieldDef {
     key: string;
     label: string;
-    type: "text" | "textarea" | "number" | "select" | "boolean" | "array-of-strings" | "image-upload" | "lucide-icon";
+    type: "text" | "textarea" | "number" | "select" | "boolean" | "array-of-strings" | "image-upload" | "lucide-icon" | "code";
     options?: string[];
     placeholder?: string;
     /** Hauteur visible des champs textarea dans le panneau admin. */
@@ -22,6 +22,10 @@ export interface FieldDef {
     /** Si vrai, le champ accepte du markdown inline (**gras**, _em_, `code`, [lien](url)).
      *  Utilisé par DynamicPropsEditor pour router vers InlineTextEditor. */
     inlineMarkdown?: boolean;
+    /** Champ `code` : clé de la prop qui porte le langage à colorer. */
+    languageFrom?: string;
+    /** Champ `code` : langage fixe, quand il ne dépend d'aucune autre prop. */
+    language?: string;
 }
 
 export type BlockCategory = "Contenu" | "Structure" | "Listes" | "Code" | "Médias" | "Composants" | "Slides";
@@ -257,10 +261,10 @@ export const blockDefs: BlockDef[] = [
         }),
         fields: [
             {key: "language", label: "Langage", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx", "rust"]},
-            {key: "code", label: "Code", type: "textarea", rows: 15, placeholder: "<button>Cliquez</button>"},
+            {key: "code", label: "Code", type: "code", languageFrom: "language", rows: 15},
             {key: "secondaryLanguage", label: "Langage du second panneau", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx", "rust"]},
-            {key: "secondaryCode", label: "Second code", type: "textarea", rows: 15, placeholder: "<p class=\"intro\">Bonjour</p>"},
-            {key: "preview", label: "Gabarit de l'aperçu", type: "textarea", rows: 10, placeholder: "<!doctype html><html lang=\"fr\"><head><style>/* @edit:css */</style></head><body><!-- @edit:html --></body></html>"},
+            {key: "secondaryCode", label: "Second code", type: "code", languageFrom: "secondaryLanguage", rows: 15},
+            {key: "preview", label: "Gabarit de l'aperçu", type: "code", language: "html", rows: 10},
         ],
     },
     {

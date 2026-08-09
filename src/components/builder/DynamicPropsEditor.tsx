@@ -17,6 +17,7 @@ import { Plus, X } from "lucide-react";
 import type { FieldDef } from "@/lib/blockRegistry";
 import { ImageUploadField } from "@/components/builder/ImageUploadField";
 import { LucideIconPicker } from "@/components/ui/LucideIconPicker";
+import { CodeField } from "@/components/builder/CodeField";
 
 interface DynamicPropsEditorProps {
     fields: FieldDef[];
@@ -201,6 +202,21 @@ export function DynamicPropsEditor({ fields, props, onChange, filterTypes }: Dyn
                                 onChange={(name) => set(field.key, name)}
                             />
                         </div>
+                    );
+                }
+
+                if (field.type === "code") {
+                    const language = field.language ?? String(props[field.languageFrom ?? ""] ?? "text");
+                    return (
+                        <CodeField
+                            key={field.key}
+                            id={field.key}
+                            label={field.label}
+                            value={String(value ?? "")}
+                            language={language}
+                            rows={field.rows}
+                            onChange={(v) => set(field.key, v)}
+                        />
                     );
                 }
 
