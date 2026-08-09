@@ -701,7 +701,7 @@ git commit -m "feat(blocks): ajoute le second panneau de code et documente les m
 
 **Interfaces:**
 - Consumes: `buildPreviewDocument` (Task 4)
-- Produces: `CodeWithPreviewCard` accepte `panels: CodePanelData[]` et `previewHtml` / `sandbox`
+- Produces: `CodeWithPreviewCard` accepte `panels: CodePanelData[]` et `sources?: PreviewSources`
   ```ts
   interface CodePanelData { language: string; code: string; }
   ```
@@ -778,20 +778,90 @@ interface CodeWithPreviewCardProps {
     className?: string;
     currentModule?: Module;
 }
-```
 
-Le rendu des panneaux boucle sur `panels`, chacun avec son étiquette de langage et son bouton Copier. L'aperçu est calculé par `useMemo(() => sources ? buildPreviewDocument(sources) : null, [sources])`, et l'iframe reçoit :
+export default function CodeWithPreviewCard({panels, sources, className, currentModule}: CodeWithPreviewCardProps) {
+    const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
-```tsx
-<iframe
-    srcDoc={document.html}
-    sandbox={document.needsScripts ? "allow-scripts" : ""}
-    title="Aperçu du code"
-    className="w-full border-0 bg-white"
-/>
+    // Nommé `previewDoc`, jamais `document` : ce nom masquerait le `document`
+    // global du DOM à l'intérieur du composant.
+    const previewDoc = useMemo(() => (sources ? buildPreviewDocument(sources) : null), [sources]);
+
+    const handleCopy = (code: string, index: number) => {
+        navigator.clipboard.writeText(code).then(() => {
+            setCopiedIndex(index);
+            setTimeout(() => setCopiedIndex(null), 2000);
+        });
+    };
+
+    const codePanels = panels.map((panel, index) => (
+        <div key={index} className="flex flex-col">
+            <div className="flex items-center justify-between gap-2 border-b border-bridge-400/40 px-3 py-1.5 dark:border-bridge-600/40">
+                <span className="text-xs font-mono uppercase text-bridge-500 dark:text-bridge-400">
+                    {panel.language.toLowerCase()}
+                </span>
+                <button
+                    onClick={() => handleCopy(panel.code, index)}
+                    className="flex items-center gap-1.5 text-xs text-bridge-500 hover:text-bridge-800 dark:text-bridge-400 dark:hover:text-bridge-100"
+                    aria-label={`Copier le code ${panel.language}`}
+                >
+                    <ClipboardCopyIcon className="w-3.5 h-3.5"/>
+                    {copiedIndex === index ? "Copié !" : "Copier"}
+                </button>
+            </div>
+            <div className="block dark:hidden">
+                <SyntaxHighlighter
+                    style={courseCodeLight}
+                    language={normalizeLanguage(panel.language)}
+                    customStyle={{margin: 0, fontSize: "0.8125rem", lineHeight: "1.65", background: "transparent"}}
+                    showLineNumbers
+                >
+                    {panel.code}
+                </SyntaxHighlighter>
+            </div>
+            <div className="hidden dark:block">
+                <SyntaxHighlighter
+                    style={courseCodeDark}
+                    language={normalizeLanguage(panel.language)}
+                    customStyle={{margin: 0, fontSize: "0.8125rem", lineHeight: "1.65", background: "transparent"}}
+                    showLineNumbers
+                >
+                    {panel.code}
+                </SyntaxHighlighter>
+            </div>
+        </div>
+    ));
+
+    const content = (
+        <div className="flex h-full">
+            <div className="flex-1 min-w-0 divide-y divide-bridge-400/40 overflow-x-auto border-r border-bridge-400/40 dark:divide-bridge-600/40 dark:border-bridge-600/40">
+                {codePanels}
+            </div>
+            {/* La colonne d'aperçu n'existe que si `sources` a produit un document :
+                un bloc à deux codes sans preview (ex. PHP + HTML) n'a pas d'iframe. */}
+            {previewDoc && (
+                <div className="code-with-preview-preview flex-1 min-w-0 overflow-auto p-0 text-left">
+                    <iframe
+                        srcDoc={previewDoc.html}
+                        sandbox={previewDoc.needsScripts ? "allow-scripts" : ""}
+                        title="Aperçu du code"
+                        className="w-full border-0 bg-white"
+                    />
+                </div>
+            )}
+        </div>
+    );
+
+    return (
+        <div className={cn("course-code-card my-8 sm:my-10", className)}>
+            <BaseCard content={content} currentModule={currentModule} withLed={false} withHover={false} withMarge={false}/>
+        </div>
+    );
+}
 ```
 
 > `allow-scripts` **sans** `allow-same-origin` : combinées, ces deux valeurs permettraient au script de retirer son propre sandbox.
+>
+> Le rendu ci-dessus omet le `headerCard` et le jeu d'onglets mobile de l'original pour rester lisible dans ce plan — les reprendre de la version actuelle du fichier (bandeau de langage, bouton Copier, bascule `mobileTab` sous 640px) en les adaptant à N panneaux au lieu d'un seul. Le point non négociable est celui que ce step corrige : pas de variable nommée `document`, et la colonne d'aperçu conditionnée à `previewDoc`.
 
 - [ ] **Step 3: Vérifier la compilation et la non-régression**
 
@@ -1008,21 +1078,48 @@ git commit -m "feat(builder): champ de saisie de code coloré, réutilisable par
 
 - [ ] **Step 1: Ajouter l'état d'édition**
 
-Un état par panneau, initialisé sur les valeurs d'origine :
+L'état est indexé par **clé de champ** (`"code"` ou `"secondaryCode"`), jamais par position
+dans `panels` : ce tableau est filtré (Task 6 retire les panneaux vides), donc son index ne
+correspond pas de façon fiable à la source d'origine dans `sources` — un bloc dont seul le
+panneau secondaire est rempli mettrait le CSS présenté à l'index 0 du tableau affiché.
 
 ```tsx
-const [edited, setEdited] = useState<Record<number, string>>({});
-const currentCode = (index: number) => edited[index] ?? panels[index].code;
+type EditableField = "code" | "secondaryCode";
+
+const [edited, setEdited] = useState<Partial<Record<EditableField, string>>>({});
 const isDirty = Object.keys(edited).length > 0;
+
+// Association panneau affiché → clé de champ dans `sources`, dans l'ordre où
+// Task 6 les construit (primaire puis secondaire, avant filtrage des vides).
+const fieldForPanel: EditableField[] = ["code", "secondaryCode"]
+    .filter((_, i) => panels[i] !== undefined) as EditableField[];
 ```
 
 - [ ] **Step 2: Recalculer l'aperçu avec debounce**
 
-L'aperçu se recalcule 300 ms après la dernière frappe, à partir des valeurs courantes — pas des valeurs d'origine.
+L'aperçu se recalcule 300 ms après la dernière frappe, à partir des valeurs courantes — pas
+des valeurs d'origine — en fusionnant `edited` par-dessus `sources` avant de rappeler
+`buildPreviewDocument` :
+
+```tsx
+const effectiveSources: PreviewSources | undefined = sources && {
+    ...sources,
+    code: edited.code ?? sources.code,
+    secondaryCode: edited.secondaryCode ?? sources.secondaryCode,
+};
+```
+
+Passer `effectiveSources` (debounced) à `useMemo` à la place de `sources` pour le calcul de
+`previewDoc`. `sources` (non debounced) continue de déterminer si la colonne d'aperçu existe
+et si les boutons « Modifier » apparaissent — seul le contenu envoyé à l'iframe suit la
+frappe avec retard.
 
 - [ ] **Step 3: Boutons**
 
-Bouton « Modifier » par panneau (visible seulement si `document.editable`), qui charge Monaco pour ce panneau. Bouton « Réinitialiser » sur la carte, visible seulement si `isDirty`, qui vide `edited`.
+Bouton « Modifier » par panneau affiché (visible seulement si `sources` existe et que
+`buildPreviewDocument(sources).editable` est vrai), qui charge Monaco pour la clé de champ
+associée via `fieldForPanel[index]`. Bouton « Réinitialiser » sur la carte, visible
+seulement si `isDirty`, qui vide `edited`.
 
 - [ ] **Step 4: Vérifier dans le navigateur**
 
