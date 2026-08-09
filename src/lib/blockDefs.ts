@@ -239,17 +239,28 @@ export const blockDefs: BlockDef[] = [
         type: "code-with-preview",
         label: "Code + aperçu",
         category: "Code",
-        description: "Code HTML/CSS affiché avec son rendu live côte à côte (iframe sandboxée). Pour illustrer un résultat visuel.",
-        defaultProps: { language: "html", code: "", preview: "" },
+        description:
+            "Un ou deux codes affichés avec leur rendu live côte à côte (iframe sandboxée). " +
+            "Le champ « Gabarit de l'aperçu » est un document HTML complet ; on y pose des " +
+            "marqueurs pour indiquer où injecter chaque code présenté : /* @edit:css */ dans " +
+            "un <style>, <!-- @edit:html --> dans le corps, /* @edit:js */ dans un <script>. " +
+            "Sans marqueur, le gabarit sert directement de rendu. Les codes deviennent " +
+            "modifiables par l'étudiant quand tous les langages du bloc sont exécutables " +
+            "par un navigateur (html, css, javascript).",
+        defaultProps: {language: "html", code: "", preview: "", secondaryLanguage: "", secondaryCode: ""},
         schema: z.object({
             language: z.string(),
             code: z.string(),
             preview: z.string().optional(),
+            secondaryLanguage: z.string().optional(),
+            secondaryCode: z.string().optional(),
         }),
         fields: [
-            { key: "language", label: "Langage", type: "select", options: ["html", "css", "php"] },
-            { key: "code", label: "Code", type: "textarea", rows: 15, placeholder: "<button>Cliquez</button>" },
-            { key: "preview", label: "HTML de l'aperçu", type: "textarea", rows: 10, placeholder: "<main id=\"contenu-principal\">...</main>" },
+            {key: "language", label: "Langage", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx", "rust"]},
+            {key: "code", label: "Code", type: "textarea", rows: 15, placeholder: "<button>Cliquez</button>"},
+            {key: "secondaryLanguage", label: "Langage du second panneau", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx", "rust"]},
+            {key: "secondaryCode", label: "Second code", type: "textarea", rows: 15, placeholder: "<p class=\"intro\">Bonjour</p>"},
+            {key: "preview", label: "Gabarit de l'aperçu", type: "textarea", rows: 10, placeholder: "<!doctype html><html lang=\"fr\"><head><style>/* @edit:css */</style></head><body><!-- @edit:html --></body></html>"},
         ],
     },
     {
