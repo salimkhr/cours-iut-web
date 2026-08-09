@@ -2,14 +2,13 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { Pencil, Search } from 'lucide-react';
-import type { ColumnDef } from '@tanstack/react-table';
 import EditUserDialog from './EditUserDialog';
 import DeleteUserDialog from './DeleteUserDialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import AdminDataTable from '@/components/admin/ui/AdminDataTable';
+import AdminDataTable, { type AdminColumn } from '@/components/admin/ui/AdminDataTable';
 import { avatarColor, avatarInitials, cn } from '@/lib/utils';
 import type AdminUser from '@/types/AdminUser';
 
@@ -64,12 +63,11 @@ export default function UsersTable({ users: initialUsers }: { users: AdminUser[]
         });
     }, [users, normalizedQuery, roleFilter]);
 
-    const columns = useMemo<ColumnDef<AdminUser>[]>(() => [
+    const columns = useMemo<AdminColumn<AdminUser>[]>(() => [
         {
-            accessorKey: 'name',
+            id: 'name',
             header: 'Utilisateur',
-            cell: ({ row }) => {
-                const user = row.original;
+            cell: (user) => {
                 const initials = avatarInitials(user.name);
                 const color = avatarColor(user.name);
 
@@ -104,19 +102,19 @@ export default function UsersTable({ users: initialUsers }: { users: AdminUser[]
             },
         },
         {
-            accessorKey: 'group',
+            id: 'group',
             header: 'Groupe',
-            cell: ({ row }) => (
+            cell: (user) => (
                 <p className="text-sm text-bridge-600 dark:text-bridge-400">
-                    {row.original.group ?? '—'}
+                    {user.group ?? '—'}
                 </p>
             ),
         },
         {
-            accessorKey: 'role',
+            id: 'role',
             header: 'Rôle',
-            cell: ({ row }) => {
-                const isAdmin = row.original.role === 'admin';
+            cell: (user) => {
+                const isAdmin = user.role === 'admin';
 
                 return (
                     <Badge
@@ -133,31 +131,31 @@ export default function UsersTable({ users: initialUsers }: { users: AdminUser[]
             },
         },
         {
-            accessorKey: 'createdAt',
+            id: 'createdAt',
             header: 'Inscrit le',
-            cell: ({ row }) => (
+            cell: (user) => (
                 <p className="text-xs text-bridge-500 dark:text-bridge-400">
-                    {formatDate(row.original.createdAt)}
+                    {formatDate(user.createdAt)}
                 </p>
             ),
         },
         {
             id: 'actions',
             header: 'Actions',
-            cell: ({ row }) => (
+            cell: (user) => (
                 <div className="flex items-center gap-1">
                     <Button
                         variant="ghost"
                         size="icon"
                         className="size-11 text-bridge-600 hover:bg-brand-primary/10 hover:text-brand-primary dark:text-bridge-300"
-                        aria-label={`Modifier ${row.original.name}`}
-                        onClick={() => setEditingUser(row.original)}
+                        aria-label={`Modifier ${user.name}`}
+                        onClick={() => setEditingUser(user)}
                     >
                         <Pencil aria-hidden="true"/>
                     </Button>
                     <DeleteUserDialog
-                        userId={row.original.id}
-                        userName={row.original.name}
+                        userId={user.id}
+                        userName={user.name}
                         onDeleted={handleDeleted}
                     />
                 </div>
@@ -211,6 +209,7 @@ export default function UsersTable({ users: initialUsers }: { users: AdminUser[]
             <AdminDataTable
                 columns={columns}
                 data={filteredUsers}
+                getRowKey={(user) => user.id}
                 emptyMessage={users.length === 0 ? 'Aucun utilisateur trouvé.' : 'Aucun compte ne correspond aux filtres.'}
             />
 

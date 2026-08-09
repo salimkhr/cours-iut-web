@@ -3,12 +3,11 @@
 import {useCallback, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
 import {BookOpen, Search} from "lucide-react";
-import type {ColumnDef} from "@tanstack/react-table";
 import AdminModuleActions, {AdminModuleVisibility} from "@/components/admin/AdminModule";
 import AddModuleButton from "./AddModuleButton";
 import {Input} from "@/components/ui/input";
 import {Badge} from "@/components/ui/badge";
-import AdminDataTable from "@/components/admin/ui/AdminDataTable";
+import AdminDataTable, {type AdminColumn} from "@/components/admin/ui/AdminDataTable";
 import useAdminApi from "@/hook/admin/useAdminApi";
 import Module from "@/types/Module";
 import type {ModuleFormValues} from "@/lib/schemas/module.schema";
@@ -100,28 +99,28 @@ export default function ModulesList({initialModules}: ModulesListProps) {
         setDeletedModuleIds((prev) => new Set(prev).add(moduleId));
     }, []);
 
-    const columns = useMemo<ColumnDef<Module>[]>(() => [
+    const columns = useMemo<AdminColumn<Module>[]>(() => [
         {
-            accessorKey: "title",
+            id: "title",
             header: "Module",
-            cell: ({row}) => <ModuleIdentityCell mod={row.original}/>,
+            cell: (mod) => <ModuleIdentityCell mod={mod}/>,
         },
         {
             id: "sections",
             header: "Sections",
-            cell: ({row}) => <ModuleSectionsCell mod={row.original}/>,
+            cell: (mod) => <ModuleSectionsCell mod={mod}/>,
         },
         {
             id: "publication",
             header: "Publication",
-            cell: ({row}) => <AdminModuleVisibility module={row.original}/>,
+            cell: (mod) => <AdminModuleVisibility module={mod}/>,
         },
         {
             id: "actions",
             header: "Actions",
-            cell: ({row}) => (
+            cell: (mod) => (
                 <AdminModuleActions
-                    module={row.original}
+                    module={mod}
                     filterQuery={normalizedQuery}
                     onDelete={handleDeleteModule}
                 />
@@ -157,6 +156,7 @@ export default function ModulesList({initialModules}: ModulesListProps) {
             <AdminDataTable
                 columns={columns}
                 data={visibleModules}
+                getRowKey={(mod) => String(mod._id)}
                 emptyMessage={
                     normalizedQuery
                         ? `Aucun résultat pour « ${query.trim()} ».`
