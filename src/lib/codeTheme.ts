@@ -18,7 +18,7 @@ import type { CSSProperties } from "react";
 
 type PrismTheme = Record<string, CSSProperties>;
 
-const LIGHT = {
+export const LIGHT = {
     base: "#221e18",       // brand-dark            14.1:1
     muted: "#74492b",      // bridge-600             6.2:1
     punctuation: "#5e3b22",// bridge-700             8.0:1
@@ -36,7 +36,7 @@ const LIGHT = {
     lineNumberOpacity: 0.65,
 } as const;
 
-const DARK = {
+export const DARK = {
     base: "#ecd4b3",       // bridge-100            10.5:1
     muted: "#c79a72",      //                        5.9:1
     punctuation: "#d9c0a0",//                        8.5:1
@@ -114,6 +114,9 @@ function buildTheme(c: typeof LIGHT | typeof DARK): PrismTheme {
         linenumber: { color: c.lineNumber, opacity: c.lineNumberOpacity },
     };
 }
+
+export const CODE_PALETTE_LIGHT = LIGHT;
+export const CODE_PALETTE_DARK = DARK;
 
 export const courseCodeLight: PrismTheme = buildTheme(LIGHT);
 export const courseCodeDark: PrismTheme = buildTheme(DARK);
