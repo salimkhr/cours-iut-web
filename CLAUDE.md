@@ -8,22 +8,36 @@ sous forme de cours, TPs, slides et examens, avec authentification et espace adm
 
 ## 2. Stack technique
 
-- **Next.js** `^16.2.6` (App Router exclusif)
-- **React** `^19.2.6`, **TypeScript** `6.0.3` (strict)
-- **MongoDB** : driver `mongodb@^7.2.0` (pas de Prisma) + `mongodb-memory-server` pour les tests
-- **better-auth** `^1.6.15` (`mongodbAdapter`, plugins `admin` + `captcha` Cloudflare Turnstile,
+- **Next.js** `16.3.0` (App Router exclusif, version épinglée sans `^`)
+- **React** `^19.2.8`, **TypeScript** `6.0.3` (strict, épinglé)
+- **MongoDB** : driver `mongodb@^7.5.0` (pas de Prisma) + `mongodb-memory-server` pour les tests.
+  `bson` est **épinglé à `7.2.0`** (dépendance directe + `overrides`) — voir section 6.
+- **better-auth** `^1.6.26` (`mongodbAdapter`, plugins `admin` + `captcha` Cloudflare Turnstile,
   `@better-auth/oauth-provider`)
 - **Zod** `^4.4.3` + `react-hook-form` / `@hookform/resolvers` — validation des formulaires et
   des frontières API (schémas dans `src/lib/schemas/`)
-- **Tailwind CSS v4** (`^4.3.0`) + `@tailwindcss/postcss`
-- **shadcn/ui** via `radix-ui`, **Framer Motion / motion** `^12.40.0`, **Zustand** `^5.0.13`
-- **MDX** : `@next/mdx@^16.2.6`, `@mdx-js/react`, `remark-gfm`, `rehype-raw`
-- **Mermaid** `^11.15.0` pour les diagrammes pédagogiques
+- **Tailwind CSS v4** (`^4.3.3`) + `@tailwindcss/postcss`
+- **shadcn/ui** via `radix-ui` (`^1.6.7`), **Framer Motion / motion** `^13.0.0`,
+  **Zustand** `^5.0.14`. motion 13 a retiré `@emotion/is-prop-valid` des dépendances optionnelles ;
+  sans CSS-in-JS dans le projet, aucune injection `<MotionConfig isValidProp>` n'est nécessaire.
+- **MDX** : `@next/mdx@16.3.0`, `@mdx-js/react`, `remark-gfm`, `rehype-raw`
+- **Mermaid** `^11.16.1` pour les diagrammes pédagogiques
 - **MCP** : `@modelcontextprotocol/sdk` (serveur exposé via `/api/mcp`) + `@scalekit-sdk/node`
   (broker OAuth devant better-auth)
-- **Builder / contenu** : `@monaco-editor/react` (éditeur), `@tanstack/react-table` + `recharts`
-  (admin), `sharp` (images), `cheerio` / `turndown` / `gray-matter` (migration de contenu),
+- **Majeures bloquées en amont** (vérifié le 2026-08-09, ne pas retenter sans revérifier) :
+  - **ESLint 10** — `eslint-config-next` tire `eslint-plugin-react@7.37.5` (dernière publiée), qui
+    appelle `context.getFilename()`, supprimé dans ESLint 10 → `TypeError` au chargement de la
+    règle `react/display-name`. Rester en `eslint@^9`.
+  - **TypeScript 7** — `tsc --noEmit` et `next build` passent, mais `typescript-eslint` refuse
+    explicitement (`Error: typescript-eslint does not support TS 7.0`), y compris en 8.66.0. C'est
+    un garde-fou volontaire, pas un bug contournable. Rester en `typescript@6.0.3`.
+- **Builder / contenu** : `@monaco-editor/react` (éditeur), `recharts` (graphiques admin),
+  `sharp` (images), `cheerio` / `turndown` / `gray-matter` (migration de contenu),
   `resend` (emails)
+- **Tables admin** : composants `Table…` de shadcn (`src/components/ui/table.tsx`) pilotés par
+  `AdminDataTable` (`src/components/admin/ui/AdminDataTable.tsx`). **Pas de `@tanstack/react-table`**
+  — la dépendance a été retirée, aucune de ses fonctionnalités (tri, pagination, sélection)
+  n'était utilisée. Déclarer les colonnes via le type `AdminColumn<TData>` (`id`, `header`, `cell`).
 
 ## 3. Commandes essentielles
 
@@ -129,6 +143,13 @@ assets publics, `/`) exigent une session connectée.
   (idempotent). Actuels : `modules.path` (unique), `course_content.{moduleSlug,sectionSlug,contentType}`
   (unique). Tout nouvel index passe par ce fichier.
 - **Transactions** : non utilisées. Nécessitent un replica set MongoDB.
+- **`bson` épinglé à `7.2.0`** (dépendance directe **et** entrée `overrides` dans `package.json`).
+  À partir de `7.3.0`, `bson` exécute au chargement du module un bloc `static` qui lit
+  `process.getBuiltinModule('v8').startupSnapshot` ; sous Bun ce getter lève
+  `NotImplementedError`, et l'optional chaining ne protège pas — **tout `import` de `mongodb`
+  échoue** (`bun test`, `bun dev`, scripts `src/scripts/*.ts`). `mongodb@^7.5.0` déclare
+  `bson: ^7.2.0`, la combinaison est donc supportée en amont. Ne pas relever `bson` sans avoir
+  vérifié que Bun implémente `v8.startupSnapshot`.
 
 ## 7. Variables d'environnement
 
@@ -217,7 +238,7 @@ invoquer le skill `ui-ux-pro-max` **avant** toute implémentation.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **cours-iut-web** (5131 symbols, 9949 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **cours-iut-web** (5097 symbols, 9872 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 
@@ -258,3 +279,13 @@ This project is indexed by GitNexus as **cours-iut-web** (5131 symbols, 9949 rel
 | Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
 
 <!-- gitnexus:end -->
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
