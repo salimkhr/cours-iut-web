@@ -50,6 +50,57 @@ const CSS_DEMO_HEADER = `<header class="navigation">
                 <nav><a href="#">Accueil</a> <a href="#">Formations</a></nav>
             </header>`;
 
+/**
+ * Marqueurs d'injection posés dans le gabarit `preview`.
+ * Deux syntaxes selon le contexte d'accueil : commentaire de bloc dans
+ * `<style>` et `<script>`, commentaire HTML dans le corps du document.
+ */
+const EDIT_MARKER = /(?:\/\*\s*@edit:([a-z]+)\s*\*\/|<!--\s*@edit:([a-z]+)\s*-->)/gi;
+
+/** Suffixe de marqueur → nom canonique Prism du langage attendu. */
+const SUFFIX_TO_CANONICAL: Record<string, string> = {
+    css: "css",
+    html: "markup",
+    js: "javascript",
+};
+
+/** Regroupe les codes du bloc par langage canonique, dans l'ordre des panneaux. */
+function groupSourcesByLanguage(sources: PreviewSources): Map<string, string[]> {
+    const grouped = new Map<string, string[]>();
+
+    const panels: Array<[string | null | undefined, string | null | undefined]> = [
+        [sources.language, sources.code],
+        [sources.secondaryLanguage, sources.secondaryCode],
+    ];
+
+    for (const [language, code] of panels) {
+        if (!code) continue;
+        const canonical = normalizeLanguage(language);
+        const bucket = grouped.get(canonical) ?? [];
+        bucket.push(code);
+        grouped.set(canonical, bucket);
+    }
+
+    return grouped;
+}
+
+/** Vrai si le gabarit porte au moins un marqueur d'injection. */
+function hasMarkers(template: string): boolean {
+    EDIT_MARKER.lastIndex = 0;
+    return EDIT_MARKER.test(template);
+}
+
+function injectIntoTemplate(template: string, sources: PreviewSources): string {
+    const grouped = groupSourcesByLanguage(sources);
+
+    return template.replace(EDIT_MARKER, (_match, blockSuffix, htmlSuffix) => {
+        const suffix = String(blockSuffix ?? htmlSuffix).toLowerCase();
+        const canonical = SUFFIX_TO_CANONICAL[suffix];
+        if (!canonical) return "";
+        return (grouped.get(canonical) ?? []).join("\n");
+    });
+}
+
 /** Assemblage historique, conservé quand le gabarit ne porte aucun marqueur. */
 function buildLegacyDocument(sources: PreviewSources): string {
     const code = String(sources.code ?? "");
@@ -78,9 +129,10 @@ function buildLegacyDocument(sources: PreviewSources): string {
 }
 
 export function buildPreviewDocument(sources: PreviewSources): PreviewDocument {
-    return {
-        html: buildLegacyDocument(sources),
-        needsScripts: false,
-        editable: false,
-    };
+    const template = sources.preview?.trim() ?? "";
+    const html = hasMarkers(template)
+        ? injectIntoTemplate(template, sources)
+        : buildLegacyDocument(sources);
+
+    return {html, needsScripts: false, editable: false};
 }

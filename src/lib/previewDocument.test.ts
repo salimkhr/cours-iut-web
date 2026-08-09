@@ -75,3 +75,80 @@ test("HTML sans preview : le code sert de corps de document", () => {
     expect(html).toContain("<p>Bonjour</p>");
     expect(html).toContain("<!doctype html>");
 });
+
+const GABARIT = `<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<style>/* @edit:css */</style></head>
+<body><!-- @edit:html --><script>/* @edit:js */</script></body></html>`;
+
+test("injecte chaque code au marqueur de son langage", () => {
+    const {html} = buildPreviewDocument({
+        language: "css",
+        code: ".intro { color: red }",
+        secondaryLanguage: "html",
+        secondaryCode: "<p class=\"intro\">Bonjour</p>",
+        preview: GABARIT,
+    });
+
+    expect(html).toContain("<style>.intro { color: red }</style>");
+    expect(html).toContain("<p class=\"intro\">Bonjour</p>");
+    expect(html).not.toContain("@edit");
+});
+
+test("injecte le JavaScript au marqueur js", () => {
+    const {html} = buildPreviewDocument({
+        language: "javascript",
+        code: "document.body.dataset.ok = '1';",
+        secondaryLanguage: "html",
+        secondaryCode: "<p>Bonjour</p>",
+        preview: GABARIT,
+    });
+
+    expect(html).toContain("document.body.dataset.ok = '1';");
+    expect(html).toContain("<p>Bonjour</p>");
+});
+
+test("un marqueur sans code correspondant est retiré", () => {
+    const {html} = buildPreviewDocument({
+        language: "css",
+        code: ".a { color: red }",
+        preview: GABARIT,
+    });
+
+    expect(html).not.toContain("@edit");
+    expect(html).toContain("<script></script>");
+});
+
+test("deux codes de même langage sont concaténés dans l'ordre des panneaux", () => {
+    const {html} = buildPreviewDocument({
+        language: "css",
+        code: ".a { color: red }",
+        secondaryLanguage: "css",
+        secondaryCode: ".b { color: blue }",
+        preview: "<style>/* @edit:css */</style>",
+    });
+
+    expect(html).toContain(".a { color: red }\n.b { color: blue }");
+});
+
+test("les alias de langage sont appariés aux marqueurs", () => {
+    const {html} = buildPreviewDocument({
+        language: "js",
+        code: "console.log(1);",
+        preview: "<script>/* @edit:js */</script>",
+    });
+
+    expect(html).toContain("console.log(1);");
+});
+
+test("non-régression : un gabarit sans marqueur garde l'assemblage historique", () => {
+    const sansMarqueur = {
+        language: "css",
+        code: ".intro { color: red }",
+        preview: "<p class=\"intro\">Bonjour</p>",
+    };
+
+    expect(buildPreviewDocument(sansMarqueur).html)
+        .toContain("<style>.intro { color: red }</style>");
+    expect(buildPreviewDocument(sansMarqueur).html)
+        .toContain("<p class=\"intro\">Bonjour</p>");
+});
