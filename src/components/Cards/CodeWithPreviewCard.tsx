@@ -3,8 +3,9 @@ import {useEffect, useMemo, useState} from 'react';
 import dynamic from "next/dynamic";
 import type {BeforeMount, OnMount} from "@monaco-editor/react";
 import BaseCard from "@/components/Cards/BaseCard";
-import {Check, Code2, Eye, Pencil, RotateCcw} from "lucide-react";
+import {Check, Code2, Eye, RotateCcw} from "lucide-react";
 import {CopyIcon} from "@/components/icons/copy";
+import {FilePenLineIcon} from "@/components/icons/file-pen-line";
 import {SyntaxHighlighter, normalizeLanguage, courseCodeDark, courseCodeLight} from '@/lib/syntaxHighlighter';
 import {buildPreviewDocument, type PreviewSources} from "@/lib/previewDocument";
 import {
@@ -194,7 +195,7 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                                 className="flex items-center gap-1.5 text-xs text-bridge-500 hover:text-bridge-800 dark:text-bridge-400 dark:hover:text-bridge-100"
                                 aria-label={`Modifier le code ${panel.language}`}
                             >
-                                <Pencil size={14} className="shrink-0"/>
+                                <FilePenLineIcon size={14} className="shrink-0"/>
                                 Modifier
                             </button>
                         )}
