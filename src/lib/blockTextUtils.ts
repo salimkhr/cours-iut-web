@@ -53,7 +53,7 @@ export function extractTextFields(block: Block): string[] {
             return [str(p.code), str(p.filename)].filter(Boolean);
 
         case "code-with-preview":
-            return [str(p.code)].filter(Boolean);
+            return [str(p.code), str(p.secondaryCode)].filter(Boolean);
 
         case "diagram":
             return [str(p.header), str(p.chart)].filter(Boolean);
@@ -332,7 +332,18 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
             const base = filename
                 ? `${annotation}\n_${filename}_\n${codeBlock}`
                 : `${annotation}\n${codeBlock}`;
-            return `${base}\n_(aperçu live non représentable)_`;
+
+            const secondaryCode = str(props.secondaryCode);
+            const secondaryLang = str(props.secondaryLanguage);
+            const parts = [base];
+
+            if (secondaryCode) {
+                const secondaryCodeBlock = `\`\`\`${secondaryLang}\n${secondaryCode}\n\`\`\``;
+                parts.push(secondaryCodeBlock);
+            }
+
+            parts.push("_(aperçu live non représentable)_");
+            return parts.join("\n");
         }
 
         case "diagram": {
