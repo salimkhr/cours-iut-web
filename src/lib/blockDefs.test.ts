@@ -1,5 +1,6 @@
 import {test, expect} from "bun:test";
 import {blockDefs} from "@/lib/blockDefs";
+import {blockPropsSchemas} from "@/lib/blockSchemas";
 
 test("configure les champs code longs sur 15 lignes dans le builder", () => {
     for (const type of ["code", "code-with-preview", "download-file", "slide-code"]) {
@@ -32,4 +33,45 @@ test("la description du bloc documente les marqueurs pour le MCP", () => {
     const def = blockDefs.find((blockDef) => blockDef.type === "code-with-preview");
 
     expect(def?.description).toContain("@edit:");
+});
+
+test("le schéma interne code-with-preview de blockDefs reste synchronisé avec blockPropsSchemas", () => {
+    const def = blockDefs.find((blockDef) => blockDef.type === "code-with-preview");
+    const defSchema = def?.schema;
+    const propsSchema = blockPropsSchemas["code-with-preview"];
+
+    expect(defSchema).toBeDefined();
+    expect(propsSchema).toBeDefined();
+
+    const samples: unknown[] = [
+        // Tous les champs valides, y compris le second panneau.
+        {
+            language: "html",
+            code: "<button>Cliquez</button>",
+            preview: "<!doctype html>...",
+            secondaryLanguage: "css",
+            secondaryCode: ".btn { color: red; }",
+        },
+        // Champs optionnels absents : doit rester valide sur les deux schémas.
+        {language: "html", code: "<button>Cliquez</button>"},
+        // "code" manquant : doit échouer sur les deux schémas.
+        {language: "html", preview: "<!doctype html>...", secondaryLanguage: "css", secondaryCode: "x"},
+        // "language" manquant : doit échouer sur les deux schémas.
+        {code: "<button>Cliquez</button>"},
+        // secondaryLanguage / secondaryCode d'un mauvais type : doit échouer sur les deux schémas.
+        {language: "html", code: "<button>Cliquez</button>", secondaryLanguage: 42, secondaryCode: true},
+    ];
+
+    for (const sample of samples) {
+        const defResult = defSchema!.safeParse(sample);
+        const propsResult = propsSchema.safeParse(sample);
+
+        expect(defResult.success).toBe(propsResult.success);
+
+        if (defResult.success && propsResult.success) {
+            expect(Object.keys(defResult.data as object).sort()).toEqual(
+                Object.keys(propsResult.data as object).sort()
+            );
+        }
+    }
 });
