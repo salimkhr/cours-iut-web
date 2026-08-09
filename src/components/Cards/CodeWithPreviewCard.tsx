@@ -1,10 +1,19 @@
 'use client'
-import {useMemo, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
+import dynamic from "next/dynamic";
+import type {BeforeMount, OnMount} from "@monaco-editor/react";
 import BaseCard from "@/components/Cards/BaseCard";
-import {Code2, Eye} from "lucide-react";
+import {Code2, Eye, Pencil, RotateCcw} from "lucide-react";
 import {CopyIcon} from "@/components/icons/copy";
 import {SyntaxHighlighter, normalizeLanguage, courseCodeDark, courseCodeLight} from '@/lib/syntaxHighlighter';
 import {buildPreviewDocument, type PreviewSources} from "@/lib/previewDocument";
+import {
+    MONACO_THEME_LIGHT,
+    MONACO_THEME_DARK,
+    courseMonacoLight,
+    courseMonacoDark,
+} from "@/lib/monacoTheme";
+import {useIsDark} from "@/hook/useIsDark";
 import {cn} from "@/lib/utils";
 import type Module from "@/types/Module";
 
@@ -23,19 +32,94 @@ interface CodeWithPreviewCardProps {
 
 type MobileTab = 'code' | 'preview';
 
+/** Clé de champ dans `PreviewSources` — jamais un index dans `panels` (Task 6 le filtre). */
+type EditableField = "code" | "secondaryCode";
+
+// Monaco n'est pas SSR-safe → import client only, chargé seulement quand un
+// panneau passe en édition (voir `openFields`). Même pattern que CodeField.tsx.
+const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {ssr: false});
+
+const handleMonacoBeforeMount: BeforeMount = (monaco) => {
+    monaco.editor.defineTheme(MONACO_THEME_LIGHT, courseMonacoLight);
+    monaco.editor.defineTheme(MONACO_THEME_DARK, courseMonacoDark);
+};
+
+// Monaco garde une <textarea> cachée hors-écran pour capter la saisie clavier ;
+// les navigateurs y appliquent leur correcteur orthographique. On le désactive
+// au montage, comme dans CodeField.tsx.
+const handleMonacoMount: OnMount = (editor) => {
+    editor.getDomNode()?.querySelector("textarea")?.setAttribute("spellcheck", "false");
+};
+
+const EDITABLE_FIELDS: EditableField[] = ["code", "secondaryCode"];
+
 export default function CodeWithPreviewCard({panels, sources, className, currentModule}: CodeWithPreviewCardProps) {
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
     const [mobileTab, setMobileTab] = useState<MobileTab>('code');
+    const isDark = useIsDark();
+
+    // État d'édition indexé par clé de champ (`code` / `secondaryCode`), jamais par
+    // position dans `panels` — ce tableau est filtré (Task 6 retire les panneaux
+    // vides) : un bloc dont seul le panneau secondaire est rempli mettrait ce
+    // contenu à l'index 0 de `panels`, un index qui ne désigne pas le même champ
+    // dans `sources`.
+    const [edited, setEdited] = useState<Partial<Record<EditableField, string>>>({});
+    const [debouncedEdited, setDebouncedEdited] = useState<Partial<Record<EditableField, string>>>({});
+    const [openFields, setOpenFields] = useState<ReadonlySet<EditableField>>(new Set());
+    const isDirty = Object.keys(edited).length > 0;
+
+    // Recalcul de l'aperçu 300 ms après la dernière frappe, jamais à chaque
+    // caractère : `debouncedEdited` ne suit `edited` qu'après un silence clavier.
+    useEffect(() => {
+        const timer = setTimeout(() => setDebouncedEdited(edited), 300);
+        return () => clearTimeout(timer);
+    }, [edited]);
+
+    // Association panneau affiché → clé de champ dans `sources`, dérivée de
+    // `sources` (pas de `panels`) : Task 6 construit `panels` en filtrant
+    // exactement `[code, secondaryCode]` sur la non-vacuité du code, dans cet
+    // ordre — la même prédicat ici garde `fieldForPanel` aligné position à
+    // position avec `panels`, y compris quand seul le second champ est rempli.
+    const fieldForPanel = useMemo(
+        () => EDITABLE_FIELDS.filter((field) => Boolean(sources?.[field])),
+        [sources],
+    );
 
     // Nommé `previewDoc`, jamais `document` : ce nom masquerait le `document`
-    // global du DOM à l'intérieur du composant.
-    const previewDoc = useMemo(() => (sources ? buildPreviewDocument(sources) : null), [sources]);
+    // global du DOM à l'intérieur du composant. Calculé à partir des sources
+    // *debouncées* : seul le contenu envoyé à l'iframe suit la frappe avec
+    // retard, `sources` (non debounced) continue de piloter l'existence de la
+    // colonne d'aperçu et des boutons « Modifier » plus bas.
+    const previewDoc = useMemo(() => {
+        if (!sources) return null;
+        const effectiveSources: PreviewSources = {
+            ...sources,
+            code: debouncedEdited.code ?? sources.code,
+            secondaryCode: debouncedEdited.secondaryCode ?? sources.secondaryCode,
+        };
+        return buildPreviewDocument(effectiveSources);
+    }, [sources, debouncedEdited]);
+
+    // Éditabilité déterminée sur les sources d'origine, non debouncées : elle ne
+    // doit pas clignoter pendant la frappe ni dépendre de ce que l'étudiant vient
+    // d'écrire.
+    const editable = useMemo(() => (sources ? buildPreviewDocument(sources).editable : false), [sources]);
 
     const handleCopy = (code: string, index: number) => {
         navigator.clipboard.writeText(code).then(() => {
             setCopiedIndex(index);
             setTimeout(() => setCopiedIndex(null), 2000);
         });
+    };
+
+    const openField = (field: EditableField) => {
+        setOpenFields((prev) => new Set(prev).add(field));
+    };
+
+    const handleReset = () => {
+        setEdited({});
+        setDebouncedEdited({});
+        setOpenFields(new Set());
     };
 
     const headerCard = (
@@ -55,6 +139,15 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                     </span>
                 )}
             </div>
+            {isDirty && (
+                <button
+                    onClick={handleReset}
+                    className="flex items-center gap-1.5 shrink-0 bg-white/15 backdrop-blur-sm rounded px-2.5 py-1 text-xs font-medium text-white/95 hover:bg-white/25"
+                >
+                    <RotateCcw size={13} className="shrink-0"/>
+                    Réinitialiser
+                </button>
+            )}
         </div>
     );
 
@@ -71,33 +164,74 @@ export default function CodeWithPreviewCard({panels, sources, className, current
         showLineNumbers: true,
     });
 
-    const codePanels = panels.map((panel, index) => (
-        <div key={index} className="flex flex-col">
-            <div className="flex items-center justify-between gap-2 border-b border-bridge-400/40 px-3 py-1.5 dark:border-bridge-600/40">
-                <span className="text-xs font-mono uppercase text-bridge-500 dark:text-bridge-400">
-                    {panel.language.toLowerCase()}
-                </span>
-                <button
-                    onClick={() => handleCopy(panel.code, index)}
-                    className="flex items-center gap-1.5 text-xs text-bridge-500 hover:text-bridge-800 dark:text-bridge-400 dark:hover:text-bridge-100"
-                    aria-label={`Copier le code ${panel.language}`}
-                >
-                    <CopyIcon size={14} className="shrink-0"/>
-                    {copiedIndex === index ? 'Copié !' : 'Copier'}
-                </button>
+    const codePanels = panels.map((panel, index) => {
+        const field = fieldForPanel[index];
+        const canEdit = editable && field !== undefined;
+        const isOpen = field !== undefined && openFields.has(field);
+        const currentCode = (field && edited[field]) ?? panel.code;
+
+        return (
+            <div key={index} className="flex flex-col">
+                <div className="flex items-center justify-between gap-2 border-b border-bridge-400/40 px-3 py-1.5 dark:border-bridge-600/40">
+                    <span className="text-xs font-mono uppercase text-bridge-500 dark:text-bridge-400">
+                        {panel.language.toLowerCase()}
+                    </span>
+                    <div className="flex items-center gap-3">
+                        {canEdit && !isOpen && (
+                            <button
+                                onClick={() => openField(field)}
+                                className="flex items-center gap-1.5 text-xs text-bridge-500 hover:text-bridge-800 dark:text-bridge-400 dark:hover:text-bridge-100"
+                                aria-label={`Modifier le code ${panel.language}`}
+                            >
+                                <Pencil size={14} className="shrink-0"/>
+                                Modifier
+                            </button>
+                        )}
+                        <button
+                            onClick={() => handleCopy(currentCode, index)}
+                            className="flex items-center gap-1.5 text-xs text-bridge-500 hover:text-bridge-800 dark:text-bridge-400 dark:hover:text-bridge-100"
+                            aria-label={`Copier le code ${panel.language}`}
+                        >
+                            <CopyIcon size={14} className="shrink-0"/>
+                            {copiedIndex === index ? 'Copié !' : 'Copier'}
+                        </button>
+                    </div>
+                </div>
+                {isOpen && field ? (
+                    <div style={{height: '320px'}}>
+                        <MonacoEditor
+                            height="100%"
+                            language={panel.language.toLowerCase()}
+                            value={currentCode}
+                            theme={isDark ? MONACO_THEME_DARK : MONACO_THEME_LIGHT}
+                            beforeMount={handleMonacoBeforeMount}
+                            onMount={handleMonacoMount}
+                            onChange={(value) => setEdited((prev) => ({...prev, [field]: value ?? ''}))}
+                            options={{
+                                minimap: {enabled: false},
+                                fontSize: 14,
+                                scrollBeyondLastLine: false,
+                                wordWrap: 'on',
+                            }}
+                        />
+                    </div>
+                ) : (
+                    <>
+                        <div className="block dark:hidden">
+                            <SyntaxHighlighter style={courseCodeLight} {...highlighterProps(panel.language)}>
+                                {currentCode}
+                            </SyntaxHighlighter>
+                        </div>
+                        <div className="hidden dark:block">
+                            <SyntaxHighlighter style={courseCodeDark} {...highlighterProps(panel.language)}>
+                                {currentCode}
+                            </SyntaxHighlighter>
+                        </div>
+                    </>
+                )}
             </div>
-            <div className="block dark:hidden">
-                <SyntaxHighlighter style={courseCodeLight} {...highlighterProps(panel.language)}>
-                    {panel.code}
-                </SyntaxHighlighter>
-            </div>
-            <div className="hidden dark:block">
-                <SyntaxHighlighter style={courseCodeDark} {...highlighterProps(panel.language)}>
-                    {panel.code}
-                </SyntaxHighlighter>
-            </div>
-        </div>
-    ));
+        );
+    });
 
     const codeColumn = (
         <div className="divide-y divide-bridge-400/40 dark:divide-bridge-600/40">
