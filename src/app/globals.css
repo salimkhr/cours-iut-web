@@ -542,13 +542,15 @@ samp,
     margin-block: 0;
 }
 
-/* L'aperçu HTML est un mini-viewport, pas une bande de 160px. Une hauteur
-   stable permet de lire les exemples courts comme les pages complètes sans
-   faire varier la largeur du panneau de code. */
+/* L'aperçu HTML est un mini-viewport, pas une bande de 160px. Il s'aligne sur
+   la hauteur du panneau de code via l'étirement flex (align-self: stretch).
+   Ne pas remettre `height: 100%` ici : une hauteur explicite désactive
+   l'étirement, et comme toute la chaîne de parents est en `h-full` sans
+   hauteur d'ancrage, le 100% se résout à 0 — l'aperçu et son iframe
+   (`height: 0; flex: 1 1 auto`) disparaissent alors complètement. */
 .course-code-card .code-with-preview-preview {
     display: flex;
     flex-direction: column;
-    height: 100%;
     min-height: 0;
     overflow: hidden;
     background: color-mix(in srgb, var(--color-bridge-100) 42%, transparent);
