@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { renderInline } from "@/lib/inlineMarkdown";
 import CodeCard from "@/components/Cards/CodeCard";
 import InputCard from "@/components/Cards/InputCard";
-import CodeWithPreviewCard, { CodePanel, PreviewPanel } from "@/components/Cards/CodeWithPreviewCard";
+import CodeWithPreviewCard from "@/components/Cards/CodeWithPreviewCard";
 import dynamic from "next/dynamic";
 import DiagramSkeleton from "@/components/Cards/DiagramSkeleton";
 import { DownloadCodeButton } from "@/components/DownloadCodeButton";
@@ -34,38 +34,6 @@ import type { BlockDef, FieldDef, BlockCategory } from "@/lib/blockDefs";
 import type Module from "@/types/Module";
 import { DynamicLucideIcon } from "@/components/ui/DynamicLucideIcon";
 
-function previewSrcDoc(code: string, language: string, previewMarkup?: string): string {
-    const markup = previewMarkup?.trim();
-    if (language.trim().toLowerCase() === "css") {
-        const body = markup || `<main id="contenu-principal" class="conteneur">
-                <h1>Développement web</h1>
-                <p class="introduction">Découvrez un exemple de contenu stylé avec CSS.</p>
-                <section class="grille">
-                    <article class="carte"><span class="badge">Nouveau</span><h2>HTML et CSS</h2><p>Structure et présentation d&apos;une page.</p></article>
-                    <article class="carte"><h2>JavaScript</h2><p>Interactions dans le navigateur.</p></article>
-                </section>
-            </main>`;
-        const header = markup ? "" : `<header class="navigation">
-                <strong>Catalogue des formations</strong>
-                <nav><a href="#">Accueil</a> <a href="#">Formations</a></nav>
-            </header>`;
-        return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>${code}</style></head><body style="background: #ffffff !important;">
-            ${header}
-            ${body}
-        </body></html>`;
-    }
-
-    const previewTextStyle = "body { color: #221e18; background: #ffffff; }";
-    if (markup) {
-        if (/<html(?:\s|>)/i.test(markup)) return markup;
-        return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>${previewTextStyle}</style></head><body>${markup}</body></html>`;
-    }
-    if (/<html(?:\s|>)/i.test(code)) {
-        return code.replace(/<\/head>/i, `<style>${previewTextStyle}</style></head>`);
-    }
-
-    return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>${previewTextStyle}</style></head><body>${code}</body></html>`;
-}
 import type { BlockRenderProps, BlockEditorProps } from "@/types/blocks";
 
 // Réexports pour compatibilité avec les imports existants.
@@ -321,32 +289,39 @@ const clientParts: Record<string, ClientPart> = {
     },
     "code-with-preview": {
         icon: Eye,
-        render: ({ language, code, preview, currentModule }: BlockRenderProps) => {
-            const codeValue = String(code ?? "");
-            const languageValue = String(language ?? "html");
+        render: ({ language, code, secondaryLanguage, secondaryCode, preview, currentModule }: BlockRenderProps) => {
+            const panels = [
+                { language: String(language ?? "html"), code: String(code ?? "") },
+                { language: String(secondaryLanguage ?? ""), code: String(secondaryCode ?? "") },
+            ].filter((panel) => panel.code.length > 0);
+
             const previewValue = typeof preview === "string" ? preview.trim() : "";
 
             if (!previewValue) {
+                if (panels.length <= 1) {
+                    return (
+                        <CodeCard language={panels[0]?.language ?? "html"} currentModule={currentModule as Module | undefined}>
+                            {panels[0]?.code ?? ""}
+                        </CodeCard>
+                    );
+                }
                 return (
-                    <CodeCard language={languageValue} currentModule={currentModule as Module | undefined}>
-                        {codeValue}
-                    </CodeCard>
+                    <CodeWithPreviewCard panels={panels} currentModule={currentModule as Module | undefined}/>
                 );
             }
 
             return (
-                <CodeWithPreviewCard language={languageValue} currentModule={currentModule as Module | undefined}>
-                    <CodePanel>{codeValue}</CodePanel>
-                    <PreviewPanel>
-                        {/* sandbox="" : aucun script, aucune navigation — l'aperçu vient de la prop du bloc */}
-                        <iframe
-                            srcDoc={previewSrcDoc(codeValue, languageValue, previewValue)}
-                            sandbox=""
-                            title="Aperçu du code"
-                            className="w-full border-0 bg-white"
-                        />
-                    </PreviewPanel>
-                </CodeWithPreviewCard>
+                <CodeWithPreviewCard
+                    panels={panels}
+                    sources={{
+                        language: String(language ?? "html"),
+                        code: String(code ?? ""),
+                        secondaryLanguage: String(secondaryLanguage ?? ""),
+                        secondaryCode: String(secondaryCode ?? ""),
+                        preview: previewValue,
+                    }}
+                    currentModule={currentModule as Module | undefined}
+                />
             );
         },
     },

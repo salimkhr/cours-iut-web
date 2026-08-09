@@ -1,90 +1,63 @@
 'use client'
-import React, {ReactNode, useState} from 'react';
+import {useMemo, useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
 import {ClipboardCopyIcon, Code2, Eye} from "lucide-react";
 import {SyntaxHighlighter, normalizeLanguage, courseCodeDark, courseCodeLight} from '@/lib/syntaxHighlighter';
+import {buildPreviewDocument, type PreviewSources} from "@/lib/previewDocument";
 import {cn} from "@/lib/utils";
 import type Module from "@/types/Module";
 
-interface CodeWithPreviewCardProps {
+export interface CodePanelData {
     language: string;
-    children: React.ReactNode;
+    code: string;
+}
+
+interface CodeWithPreviewCardProps {
+    panels: CodePanelData[];
+    /** Absent → carte sans aperçu : uniquement les panneaux de code, pas d'iframe. */
+    sources?: PreviewSources;
     className?: string;
     currentModule?: Module;
 }
 
-interface CodePanelProps {
-    children?: string;
-}
-
-interface PreviewPanelProps {
-    children?: React.ReactNode;
-}
-
-interface PanelProps {
-    children: React.ReactNode;
-    'data-code-content'?: boolean;
-    'data-preview-content'?: boolean;
-}
-
-export function CodePanel({children}: CodePanelProps) {
-    return <div data-code-content>{children}</div>;
-}
-
-export function PreviewPanel({children}: PreviewPanelProps) {
-    return <div data-preview-content>{children}</div>;
-}
-
 type MobileTab = 'code' | 'preview';
 
-export default function CodeWithPreviewCard({language, children, className, currentModule}: CodeWithPreviewCardProps) {
-    let codeContent = "";
-    let previewContent: ReactNode = null;
-
-    const [copied, setCopied] = useState(false);
+export default function CodeWithPreviewCard({panels, sources, className, currentModule}: CodeWithPreviewCardProps) {
+    const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
     const [mobileTab, setMobileTab] = useState<MobileTab>('code');
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(codeContent).then(() => {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
+    // Nommé `previewDoc`, jamais `document` : ce nom masquerait le `document`
+    // global du DOM à l'intérieur du composant.
+    const previewDoc = useMemo(() => (sources ? buildPreviewDocument(sources) : null), [sources]);
+
+    const handleCopy = (code: string, index: number) => {
+        navigator.clipboard.writeText(code).then(() => {
+            setCopiedIndex(index);
+            setTimeout(() => setCopiedIndex(null), 2000);
         });
     };
 
-    React.Children.forEach(children, (child) => {
-        if (React.isValidElement(child)) {
-            const element = child as React.ReactElement<PanelProps>;
-            if (typeof element.props.children === 'string') {
-                codeContent = element.props.children;
-            } else {
-                previewContent = element.props.children;
-            }
-        }
-    });
-
     const headerCard = (
         <div className="flex items-center gap-3 w-full min-w-0">
-            <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span className="inline-flex items-center bg-white/15 backdrop-blur-sm rounded px-2.5 py-1 text-xs font-mono text-white/95">
-                    {language.toLowerCase()}
-                </span>
-                <span className="hidden lg:inline text-[11px] font-semibold tracking-[0.18em] uppercase text-white/45">
-                    + aperçu
-                </span>
+            <div className="flex items-center gap-2 min-w-0 flex-1 flex-wrap">
+                {panels.map((panel, index) => (
+                    <span
+                        key={index}
+                        className="inline-flex items-center bg-white/15 backdrop-blur-sm rounded px-2.5 py-1 text-xs font-mono text-white/95"
+                    >
+                        {panel.language.toLowerCase()}
+                    </span>
+                ))}
+                {previewDoc && (
+                    <span className="hidden lg:inline text-[11px] font-semibold tracking-[0.18em] uppercase text-white/45">
+                        + aperçu
+                    </span>
+                )}
             </div>
-
-            <button
-                onClick={handleCopy}
-                className="flex items-center gap-1.5 px-2 py-1 rounded text-xs text-white/70 hover:text-white hover:bg-white/10 transition-colors shrink-0"
-                aria-label="Copier le code"
-            >
-                <ClipboardCopyIcon className="w-3.5 h-3.5"/>
-                <span className="hidden sm:inline">{copied ? 'Copié !' : 'Copier'}</span>
-            </button>
         </div>
     );
 
-    const sharedHighlighterProps = {
+    const highlighterProps = (language: string) => ({
         language: normalizeLanguage(language),
         customStyle: {
             margin: 0,
@@ -95,25 +68,58 @@ export default function CodeWithPreviewCard({language, children, className, curr
         },
         wrapLongLines: false,
         showLineNumbers: true,
-    };
+    });
 
-    const codePanel = (
-        <div className="block dark:hidden">
-            <SyntaxHighlighter style={courseCodeLight} {...sharedHighlighterProps}>
-                {codeContent}
-            </SyntaxHighlighter>
+    const codePanels = panels.map((panel, index) => (
+        <div key={index} className="flex flex-col">
+            <div className="flex items-center justify-between gap-2 border-b border-bridge-400/40 px-3 py-1.5 dark:border-bridge-600/40">
+                <span className="text-xs font-mono uppercase text-bridge-500 dark:text-bridge-400">
+                    {panel.language.toLowerCase()}
+                </span>
+                <button
+                    onClick={() => handleCopy(panel.code, index)}
+                    className="flex items-center gap-1.5 text-xs text-bridge-500 hover:text-bridge-800 dark:text-bridge-400 dark:hover:text-bridge-100"
+                    aria-label={`Copier le code ${panel.language}`}
+                >
+                    <ClipboardCopyIcon className="w-3.5 h-3.5"/>
+                    {copiedIndex === index ? 'Copié !' : 'Copier'}
+                </button>
             </div>
-    );
+            <div className="block dark:hidden">
+                <SyntaxHighlighter style={courseCodeLight} {...highlighterProps(panel.language)}>
+                    {panel.code}
+                </SyntaxHighlighter>
+            </div>
+            <div className="hidden dark:block">
+                <SyntaxHighlighter style={courseCodeDark} {...highlighterProps(panel.language)}>
+                    {panel.code}
+                </SyntaxHighlighter>
+            </div>
+        </div>
+    ));
 
-    const codePanelDark = (
-        <div className="hidden dark:block">
-            <SyntaxHighlighter style={courseCodeDark} {...sharedHighlighterProps}>
-                {codeContent}
-            </SyntaxHighlighter>
+    const codeColumn = (
+        <div className="divide-y divide-bridge-400/40 dark:divide-bridge-600/40">
+            {codePanels}
         </div>
     );
 
-    const content = (
+    const previewFrame = previewDoc && (
+        <iframe
+            srcDoc={previewDoc.html}
+            sandbox={previewDoc.needsScripts ? "allow-scripts" : ""}
+            title="Aperçu du code"
+            className="w-full border-0 bg-white"
+        />
+    );
+
+    // Sans aperçu (ex. bloc PHP + HTML) : pas d'onglets, pas de colonne d'aperçu,
+    // seulement les panneaux de code empilés.
+    const content = !previewDoc ? (
+        <div className="w-full h-full overflow-x-auto">
+            {codeColumn}
+        </div>
+    ) : (
         <div className="w-full h-full overflow-hidden">
 
             {/* ── Tab strip mobile uniquement ── */}
@@ -148,12 +154,11 @@ export default function CodeWithPreviewCard({language, children, className, curr
             <div className="lg:hidden">
                 {mobileTab === 'code' ? (
                     <div className="code-with-preview-mobile-scroll overflow-x-auto">
-                        {codePanel}
-                        {codePanelDark}
+                        {codeColumn}
                     </div>
                 ) : (
                     <div className="code-with-preview-preview p-0 text-left max-h-[60dvh] overflow-auto">
-                        {previewContent}
+                        {previewFrame}
                     </div>
                 )}
             </div>
@@ -161,11 +166,10 @@ export default function CodeWithPreviewCard({language, children, className, curr
             {/* ── Desktop : côte à côte ── */}
             <div className="hidden lg:flex h-full">
                 <div className="flex-1 min-w-0 overflow-x-auto border-r border-bridge-400/40 dark:border-bridge-600/40">
-                    {codePanel}
-                    {codePanelDark}
+                    {codeColumn}
                 </div>
                 <div className="code-with-preview-preview flex-1 min-w-0 overflow-auto p-0 text-left">
-                    {previewContent}
+                    {previewFrame}
                 </div>
             </div>
 
