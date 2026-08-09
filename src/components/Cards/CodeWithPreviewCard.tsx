@@ -313,26 +313,38 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                 </button>
             </div>
 
-            {/* ── Mobile : un seul panel à la fois ── */}
-            <div className="lg:hidden">
-                {mobileTab === 'code' ? (
-                    <div className="code-with-preview-mobile-scroll overflow-x-auto">
+            {/* ── Code et aperçu : montés UNE seule fois ──
+
+                Les deux dispositions (mobile à onglets, bureau côte à côte)
+                partagent les mêmes nœuds. Les monter en double — une copie
+                `lg:hidden`, une copie `hidden lg:flex` — était sans conséquence
+                tant que les panneaux n'étaient que colorés ; depuis qu'un
+                panneau peut passer en édition, cela instanciait DEUX Monaco
+                (dont un dans un conteneur `display:none`) et faisait tourner le
+                JS de l'étudiant dans deux iframes à la fois.
+
+                L'enveloppe qui porte la bascule d'onglet passe en
+                `display: contents` à partir de `lg` : elle s'efface alors de
+                l'arbre de rendu et code et aperçu redeviennent les deux enfants
+                directs de la rangée flex, exactement comme dans la disposition
+                bureau d'origine — la chaîne de hauteurs dont dépend l'étirement
+                de l'iframe (cf. globals.css) est préservée.
+
+                Le `hidden` de l'onglet inactif est posé sur cette enveloppe, et
+                surtout PAS sur `.code-with-preview-preview` : la règle
+                `.course-code-card .code-with-preview-preview { display: flex }`
+                de globals.css (spécificité 0,2,0) l'emporterait sur `.hidden`
+                (0,1,0) et l'aperçu ne se cacherait jamais. */}
+            <div className="lg:flex lg:h-full">
+                <div className={cn("lg:contents", mobileTab !== 'code' && "hidden")}>
+                    <div className="code-with-preview-mobile-scroll min-w-0 overflow-x-auto border-bridge-400/40 dark:border-bridge-600/40 lg:flex-1 lg:border-r">
                         {codeColumn}
                     </div>
-                ) : (
-                    <div className="code-with-preview-preview p-0 text-left max-h-[60dvh] overflow-auto">
+                </div>
+                <div className={cn("lg:contents", mobileTab !== 'preview' && "hidden")}>
+                    <div className="code-with-preview-preview min-w-0 overflow-auto p-0 text-left max-h-[60dvh] lg:max-h-none lg:flex-1">
                         {previewFrame}
                     </div>
-                )}
-            </div>
-
-            {/* ── Desktop : côte à côte ── */}
-            <div className="hidden lg:flex h-full">
-                <div className="flex-1 min-w-0 overflow-x-auto border-r border-bridge-400/40 dark:border-bridge-600/40">
-                    {codeColumn}
-                </div>
-                <div className="code-with-preview-preview flex-1 min-w-0 overflow-auto p-0 text-left">
-                    {previewFrame}
                 </div>
             </div>
 
