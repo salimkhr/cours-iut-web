@@ -3,7 +3,6 @@ import Heading from "@/components/ui/Heading";
 import {List, ListItem} from "@/components/ui/List";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import Code from "@/components/ui/Code";
-import CodeWithPreviewCard, {CodePanel, PreviewPanel} from "@/components/Cards/CodeWithPreviewCard";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -32,7 +31,7 @@ export default function Cours() {
                     <ListItem><strong>BODY</strong> : le contenu visible de la page</ListItem>
                 </List>
 
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<!DOCTYPE html>
 <html lang="fr">
@@ -102,7 +101,7 @@ export default function Cours() {
                             </footer>
                         </div>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <p><strong>À retenir :</strong></p>
                 <List>
@@ -189,7 +188,7 @@ export default function Cours() {
                 </List>
 
 
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<h1>Titre principal (h1) - 1 seul par page</h1>
 <h2>Section principale (h2)</h2>
@@ -206,7 +205,7 @@ export default function Cours() {
                         <h5>Titre mineur (h5)</h5>
                         <h6>Le plus petit titre (h6)</h6>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Heading level={3}>2. Formatage sémantique</Heading>
                 <p>
@@ -214,7 +213,7 @@ export default function Cours() {
                     Elles aident l’accessibilité, le SEO et garantissent un style cohérent.
                 </p>
 
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<p><strong>Important</strong> et <em>emphase</em>.</p>
 <p><mark>Texte surligné</mark> et <small>texte secondaire</small>.</p>
@@ -236,7 +235,7 @@ export default function Cours() {
                         <p>H<sub>2</sub>O et E=mc<sup>2</sup></p>
                         <p><abbr title="HyperText Markup Language">HTML</abbr> est le langage du web.</p>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <p><strong>Pourquoi privilégier ces balises ?</strong></p>
                 <List>
@@ -288,7 +287,7 @@ export default function Cours() {
                     Pour les citations, références et contacts, HTML propose des balises spécifiques.
                 </p>
 
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<p>Einstein : <q>L'imagination est plus importante que le savoir.</q></p>
 
@@ -318,7 +317,7 @@ export default function Cours() {
                             Tél : <a href="tel:+33123456789">01 23 45 67 89</a>
                         </address>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
             </section>
             <section>
                 <Heading level={2}>C/ Listes</Heading>
@@ -334,7 +333,7 @@ export default function Cours() {
                     est introduit par une puce.
                 </p>
 
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<ul>
   <li>HTML</li>
@@ -349,7 +348,7 @@ export default function Cours() {
                             <ListItem>JavaScript</ListItem>
                         </List>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Heading level={3}>2. Liste ordonnée (&lt;ol&gt;)</Heading>
                 <p>
@@ -357,7 +356,7 @@ export default function Cours() {
                     Les éléments sont numérotés automatiquement.
                 </p>
 
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<ol>
   <li>Préparer les ingrédients</li>
@@ -372,7 +371,7 @@ export default function Cours() {
                             <ListItem>Cuire pendant 20 minutes</ListItem>
                         </List>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Heading level={3}>3. Liste de définitions (&lt;dl&gt;)</Heading>
                 <p>
@@ -380,7 +379,7 @@ export default function Cours() {
                     dictionnaire).
                 </p>
 
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<dl>
   <dt>HTML</dt>
@@ -403,14 +402,14 @@ export default function Cours() {
                             <dd>Langage de programmation qui rend une page interactive.</dd>
                         </dl>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Heading level={3}>4. Listes imbriquées</Heading>
                 <p>
                     Les listes peuvent être imbriquées pour représenter une hiérarchie plus complexe.
                 </p>
 
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<ul>
   <li>Frontend
@@ -447,7 +446,7 @@ export default function Cours() {
                             </ListItem>
                         </List>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Heading level={3}>5. Cas pratiques</Heading>
                 <List>
@@ -500,7 +499,7 @@ export default function Cours() {
 
                 <Heading level={3}>1. Tableau simple</Heading>
                 <p>Un tableau basique avec un en-tête et quelques lignes.</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<table>
     <thead>
@@ -541,11 +540,11 @@ export default function Cours() {
                             </tbody>
                         </table>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Heading level={3}>2. Tableau avec <Code>colspan</Code></Heading>
                 <p>Fusion de plusieurs colonnes pour une information combinée.</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<table>
     <thead>
@@ -586,11 +585,11 @@ export default function Cours() {
                             </tbody>
                         </table>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Heading level={3}>3. Tableau avec <Code>rowspan</Code></Heading>
                 <p>Fusion de plusieurs lignes pour indiquer un regroupement vertical.</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<table>
     <thead>
@@ -637,11 +636,11 @@ export default function Cours() {
                             </tbody>
                         </table>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Heading level={3}>4. Tableau combinant <Code>rowspan</Code> et <Code>colspan</Code></Heading>
                 <p>Un tableau plus complexe avec fusion de colonnes et lignes.</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<table>
     <thead>
@@ -706,12 +705,12 @@ export default function Cours() {
                             </tbody>
                         </table>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Heading level={3}>5. Tableau avec en-tête et pied de tableau</Heading>
                 <p>Structure complète
                     avec <Code>&lt;thead&gt;</Code>, <Code>&lt;tbody&gt;</Code> et <Code>&lt;tfoot&gt;</Code>.</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<table
     <caption>Résultats trimestriels 2024 (en euros HT)</caption>
@@ -782,7 +781,7 @@ export default function Cours() {
                             </tfoot>
                         </table>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
             </section>
             <section>
                 <Heading level={2}>E/ Liens - Navigation et interconnexion</Heading>
@@ -801,7 +800,7 @@ export default function Cours() {
                 <Heading level={4}>Liens externes</Heading>
                 <p>Les liens vers d&apos;autres sites doivent souvent s&apos;ouvrir dans un nouvel onglet avec des
                     attributs de sécurité.</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<p>Consultez la documentation officielle sur 
 <a href="https://developer.mozilla.org" target="_blank" rel="noopener noreferrer">
@@ -814,12 +813,12 @@ export default function Cours() {
                                 MDN Web Docs
                             </a></p>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 {/* 2. Liens internes */}
                 <Heading level={4}>Liens internes</Heading>
                 <p>Navigation entre les pages d&apos;un même site.</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<nav>
     <ul>
@@ -838,12 +837,12 @@ export default function Cours() {
                             </ul>
                         </nav>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 {/* 3. Ancres vers sections */}
                 <Heading level={4}>Ancres et navigation interne sur la même page</Heading>
                 <p>Permettent d’accéder directement à une section spécifique.</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<nav aria-label="Table des matières">
     <ol>
@@ -862,12 +861,12 @@ export default function Cours() {
                             </ol>
                         </nav>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 {/* 4. Liens de contact */}
                 <Heading level={4}>Liens de contact intelligents</Heading>
                 <p>Utiliser mailto, tel ou sms pour faciliter la prise de contact.</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`
     <p>📧 <a href="mailto:contact@monsite.com?subject=Demande d'information&body=Bonjour,%0A%0AJe souhaite obtenir des informations sur...">
@@ -894,12 +893,12 @@ export default function Cours() {
                             </a></p>
                         </div>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 {/* 5. Liens de téléchargement */}
                 <Heading level={4}>Liens de téléchargement</Heading>
                 <p>Permettent de télécharger des fichiers directement depuis le site.</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<ul>
     <li><a href="guide-html.pdf" download="guide-complet-html5.pdf">
@@ -920,7 +919,7 @@ export default function Cours() {
                             </a></ListItem>
                         </List>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Table>
                     <TableHeader>
@@ -977,7 +976,7 @@ export default function Cours() {
                 <Heading level={3}>1. Image avec description</Heading>
                 <p>Texte alternatif pour l&apos;accessibilité et utilisation
                     de <code>&lt;figure&gt;</code> et <code>&lt;figcaption&gt;</code>.</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<figure>
   <img src="https://placehold.co/400x300/007bff/ffffff?text=Graphique+Ventes" 
@@ -1001,14 +1000,14 @@ export default function Cours() {
                             </figcaption>
                         </figure>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 {/* Exemple 2 : Image avec chargement différé */}
                 <Heading level={3}>2. Image avec chargement différé</Heading>
                 <p>Améliore la performance en retardant le chargement des images lourdes
                     (<code>{`loading="lazy"`}</code>).
                 </p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<img src="https://placehold.co/600x400/28a745/ffffff?text=Image+Lourde" 
      alt="Démonstration d'image avec chargement différé"
@@ -1024,13 +1023,13 @@ export default function Cours() {
                                unoptimized
                         />
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 {/* Exemple 3 : Images décoratives */}
                 <Heading level={3}>3. Images décoratives</Heading>
                 <p>Ignorées par les lecteurs d&apos;écran
                     (<Code>{`alt=""`}</Code> et <Code>{`role="presentation"`}</Code>).</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<img src="https://placehold.co/80x80/ffc107/000000?text=1" alt="" role="presentation" style="border-radius:50%;">
 <img src="https://placehold.co/80x80/dc3545/ffffff?text=2" alt="" role="presentation" style="border-radius:50%;">
@@ -1046,12 +1045,12 @@ export default function Cours() {
                                    style={{borderRadius: '50%'}} width={400} height={300} unoptimized/>
                         </div>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 {/* Exemple 4 : Image avec dimensions explicites */}
                 <Heading level={3}>4. Image avec dimensions explicites</Heading>
                 <p>Évite le décalage de mise en page (layout shift) en fixant largeur et hauteur.</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<img src="https://placehold.co/300x200/6f42c1/ffffff?text=Logo+Entreprise"
      alt="Logo de l'entreprise - retour à l'accueil"
@@ -1064,12 +1063,12 @@ export default function Cours() {
                                width="300" height="200"
                                style={{display: 'block', margin: '0 auto', borderRadius: '8px'}} unoptimized/>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 {/* Exemple 5 : Images adaptées à la densité de pixels */}
                 <Heading level={3}>5. Images adaptées à la densité de pixels</Heading>
                 <p>Utilisation de <code>srcSet</code> pour Retina et écrans HiDPI.</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<img src="https://placehold.co/200x150/fd7e14/ffffff?text=Standard"
      srcset="https://placehold.co/200x150/fd7e14/ffffff?text=1x 1x,
@@ -1090,7 +1089,7 @@ export default function Cours() {
                             </picture>
                         </div>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 {/* Exemple 6 : Images responsives avec <picture> */}
                 <Heading level={3}>6. Images responsives avec &lt;picture&gt;</Heading>
@@ -1098,7 +1097,7 @@ export default function Cours() {
                     Utilisation de <code>&lt;picture&gt;</code> pour servir des images différentes selon la taille de
                     l&apos;écran.
                 </p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<picture>
   <source media="(min-width: 800px)" srcset="https://placehold.co/800x400/007bff/ffffff?text=Grand+Ecran">
@@ -1119,14 +1118,14 @@ export default function Cours() {
                                  style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}}/>
                         </picture>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 {/* Exemple 7 : Audio accessible */}
                 <Heading level={3}>7. Audio</Heading>
                 <p>
                     Ajouter des contrôles et un texte alternatif pour les lecteurs d&apos;écran.
                 </p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<audio controls>
   <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
@@ -1140,14 +1139,14 @@ export default function Cours() {
                             Votre navigateur ne supporte pas la balise audio.
                         </audio>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 {/* Exemple 8 : Vidéo accessible */}
                 <Heading level={3}>8. Vidéo</Heading>
                 <p>
                     Ajouter des sous-titres (<code>&lt;track&gt;</code>) et des contrôles.
                 </p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<video controls width="600" style="max-width:100%; border-radius:8px;">
   <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
@@ -1163,14 +1162,14 @@ export default function Cours() {
                             Votre navigateur ne supporte pas la balise vidéo.
                         </video>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
             </section>
 
             <section className="space-y-4">
                 <Heading level={2}>G/ Formulaire de base</Heading>
                 <p>Exemple d’un formulaire simple avec un champ texte et un bouton submit.</p>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<form>
   <label>
@@ -1196,7 +1195,7 @@ export default function Cours() {
                             </button>
                         </form>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
             </section>
 
             {/* Catégorie : Textuels */}
@@ -1387,12 +1386,12 @@ export function InputExample({title, description, code, preview}: InputExamplePr
         <div className="space-y-2">
             <Heading level={4}>{title}</Heading>
             <p>{description}</p>
-            <CodeWithPreviewCard language="html">
+            {/* <CodeWithPreviewCard language="html">
                 <CodePanel>{code}</CodePanel>
                 <PreviewPanel>
                     {preview || <div></div>}
                 </PreviewPanel>
-            </CodeWithPreviewCard>
+            </CodeWithPreviewCard> */}
         </div>
     );
 }

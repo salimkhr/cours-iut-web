@@ -3,7 +3,6 @@ import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
 import Heading from "@/components/ui/Heading";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import CodeWithPreviewCard, {CodePanel, PreviewPanel} from "@/components/Cards/CodeWithPreviewCard";
 import ClickableBox from "@/cours/javascript/2-les-evenements/Exemple/ClickableBox";
 import CodeCard from "@/components/Cards/CodeCard";
 import ColorClickableBox from "@/cours/javascript/2-les-evenements/Exemple/ColorClickableBox";
@@ -68,7 +67,7 @@ element.classList.remove("cache");`}
                 </Text>
 
                 <Heading level={3}>1. Ajouter un écouteur avec addEventListener</Heading>
-                <CodeWithPreviewCard language="javascript">
+                {/* <CodeWithPreviewCard language="javascript">
                     <CodePanel>
                         {`// Sélectionner un élément et lui ajouter un écouteur
 const button = document.getElementById("myButton");
@@ -87,7 +86,7 @@ button.addEventListener("click", handleClick);`}
                     <PreviewPanel>
                         <ClickableBox/>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <List>
                     <ListItem>
@@ -397,7 +396,7 @@ document.addEventListener("keydown", (event) => {
                 <Heading level={2}>E- Exemples pratiques</Heading>
 
                 <Heading level={3}>1. Changer la couleur d&apos;un élément au clic</Heading>
-                <CodeWithPreviewCard language="javascript">
+                {/* <CodeWithPreviewCard language="javascript">
                     <CodePanel>
                         {`const box = document.querySelector(".box");
 
@@ -408,10 +407,10 @@ box.addEventListener("click", () => {
                     <PreviewPanel>
                         <ColorClickableBox/>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Heading level={3}>2. Afficher la position de la souris</Heading>
-                <CodeWithPreviewCard language="javascript">
+                {/* <CodeWithPreviewCard language="javascript">
                     <CodePanel>
                         {`const display = document.querySelector("#position");
 
@@ -422,10 +421,10 @@ document.addEventListener("mousemove", (event) => {
                     <PreviewPanel>
                         <MouseTrackerBox/>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Heading level={3}>3. Détecter quelle touche est pressée</Heading>
-                <CodeWithPreviewCard language="javascript">
+                {/* <CodeWithPreviewCard language="javascript">
                     <CodePanel>
                         {`const pressedKeysP = document.getElementById("pressedKeys");
 
@@ -449,10 +448,10 @@ window.addEventListener("keydown", (event) => {
                     <PreviewPanel>
                         <KeyPressBox/>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Heading level={3}>4. Validation simple d&apos;un formulaire</Heading>
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<form>
     <label for="username">Nom d'utilisateur :</label>
@@ -483,10 +482,10 @@ window.addEventListener("keydown", (event) => {
                     <PreviewPanel>
                         <FormBox/>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Heading level={3}>5. Compteur de clics</Heading>
-                <CodeWithPreviewCard language="javascript">
+                {/* <CodeWithPreviewCard language="javascript">
                     <CodePanel>
                         {`const button = document.querySelector("#counter");
 let count = 0;
@@ -499,7 +498,7 @@ button.addEventListener("click", () => {
                     <PreviewPanel>
                         <ClickCounterBox/>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
             </section>
         </article>
     );

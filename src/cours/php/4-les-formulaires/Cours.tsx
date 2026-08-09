@@ -4,7 +4,6 @@ import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
 import Grid from "@/components/ui/Grid";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import CodeWithPreviewCard, {CodePanel, PreviewPanel} from "@/components/Cards/CodeWithPreviewCard";
 import InputCard from "@/components/Cards/InputCard";
 import CodeCard from "@/components/Cards/CodeCard";
 import CoursePrerequisites from "@/components/CoursePrerequisites";
@@ -48,7 +47,7 @@ $action = $_GET['action'] ?? 'list';`}
                     <ListItem><Code>method</Code> : GET (données dans l&apos;URL) ou POST (données cachées)</ListItem>
                 </List>
 
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<form method="post" action="traitement.php">
     <label for="username">Nom d'utilisateur :</label>
@@ -64,7 +63,7 @@ $action = $_GET['action'] ?? 'list';`}
                             <button type="submit" className="button">Envoyer</button>
                         </form>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
 
                 <Heading level={3}>2. Types de champs</Heading>
 
@@ -224,7 +223,7 @@ $action = $_GET['action'] ?? 'list';`}
                     <Code>postal-code</Code>, <Code>cc-number</Code>, <Code>new-password</Code>, <Code>current-password</Code>.
                 </Text>
 
-                <CodeWithPreviewCard language="html">
+                {/* <CodeWithPreviewCard language="html">
                     <CodePanel>
                         {`<form method="post">
     <input type="text" name="firstname" 
@@ -248,7 +247,7 @@ $action = $_GET['action'] ?? 'list';`}
                                    className="input"/>
                         </form>
                     </PreviewPanel>
-                </CodeWithPreviewCard>
+                </CodeWithPreviewCard> */}
             </section>
 
             {/* PARTIE B : PHP */}
