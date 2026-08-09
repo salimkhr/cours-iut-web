@@ -57,13 +57,22 @@ export const blockPropsSchemas: Record<string, z.ZodTypeAny> = {
         collapsible: z.boolean().optional(),
         highlightLines: z.string().optional(),
     }),
+    // Duplicata volontaire du schéma porté par `blockDefs.ts` (champ `schema:`).
+    // Les deux doivent rester identiques — un test de synchronisation les
+    // compare échantillon par échantillon dans `blockDefs.test.ts`.
     "code-with-preview": z.object({
         language: z.string(),
         code: z.string(),
         preview: z.string().optional(),
         secondaryLanguage: z.string().optional(),
         secondaryCode: z.string().optional(),
-    }),
+    }).refine(
+        (props) => !props.secondaryCode?.trim() || Boolean(props.secondaryLanguage?.trim()),
+        {
+            path: ["secondaryLanguage"],
+            message: "Le langage du second panneau est requis si un second code est fourni.",
+        },
+    ),
     "diagram": z.object({
         header: z.string().optional(),
         chart: z.string(),

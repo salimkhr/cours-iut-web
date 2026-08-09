@@ -252,13 +252,27 @@ export const blockDefs: BlockDef[] = [
             "modifiables par l'étudiant quand tous les langages du bloc sont exécutables " +
             "par un navigateur (html, css, javascript).",
         defaultProps: {language: "html", code: "", preview: "", secondaryLanguage: "", secondaryCode: ""},
+        // Duplicata volontaire de l'entrée `code-with-preview` de
+        // `blockSchemas.ts`. Un second code sans langage était accepté puis
+        // silencieusement neutralisé : `normalizeLanguage("")` vaut `"text"`,
+        // donc non exécutable — la règle conjonctive coupait l'édition du bloc
+        // ENTIER, et le second code, apparié à aucun marqueur @edit, ne
+        // paraissait nulle part dans l'aperçu. La validation le refuse
+        // maintenant à la sauvegarde, au lieu de laisser l'auteur découvrir
+        // l'absence de rendu.
         schema: z.object({
             language: z.string(),
             code: z.string(),
             preview: z.string().optional(),
             secondaryLanguage: z.string().optional(),
             secondaryCode: z.string().optional(),
-        }),
+        }).refine(
+            (props) => !props.secondaryCode?.trim() || Boolean(props.secondaryLanguage?.trim()),
+            {
+                path: ["secondaryLanguage"],
+                message: "Le langage du second panneau est requis si un second code est fourni.",
+            },
+        ),
         fields: [
             {key: "language", label: "Langage", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx", "rust"]},
             {key: "code", label: "Code", type: "code", languageFrom: "language", rows: 15},
