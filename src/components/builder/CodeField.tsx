@@ -20,6 +20,9 @@ interface CodeFieldProps {
     value: string;
     language: string;
     rows?: number;
+    /** Exemple affiché tant que le champ est vide. Monaco le gère nativement
+     *  (option `placeholder`, présente depuis 0.47 ; le projet est en 0.55). */
+    placeholder?: string;
     onChange: (value: string) => void;
 }
 
@@ -43,11 +46,11 @@ const handleMount: OnMount = (editor) => {
  * orthographique du navigateur — par Monaco, thémé via monacoTheme.ts pour
  * rester cohérent avec la coloration de lecture (codeTheme.ts / Prism).
  *
- * `data-code-field` / `data-language` sur le conteneur : Monaco se monte
- * côté client (dynamic + ssr:false), invisible au rendu statique — ce sont
- * ces attributs que les tests peuvent vérifier.
+ * `data-code-field` / `data-language` / `data-placeholder` sur le conteneur :
+ * Monaco se monte côté client (dynamic + ssr:false), invisible au rendu
+ * statique — ce sont ces attributs que les tests peuvent vérifier.
  */
-export function CodeField({ id, label, value, language, rows = 10, onChange }: CodeFieldProps) {
+export function CodeField({ id, label, value, language, rows = 10, placeholder, onChange }: CodeFieldProps) {
     const isDark = useIsDark();
     const height = `${Math.max(rows, 4) * 19 + 16}px`;
 
@@ -62,6 +65,7 @@ export function CodeField({ id, label, value, language, rows = 10, onChange }: C
                 id={id}
                 data-code-field
                 data-language={language}
+                data-placeholder={placeholder}
                 className="overflow-hidden rounded border border-bridge-500/45 bg-bridge-100/60 dark:bg-bridge-800/60"
                 style={{ height }}
             >
@@ -78,6 +82,7 @@ export function CodeField({ id, label, value, language, rows = 10, onChange }: C
                         fontSize: 14,
                         scrollBeyondLastLine: false,
                         wordWrap: "on",
+                        placeholder,
                     }}
                 />
             </div>

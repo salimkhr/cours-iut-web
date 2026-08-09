@@ -36,3 +36,19 @@ test("route les champs de type code vers l'éditeur coloré", () => {
     expect(html).toContain("data-code-field");
     expect(html).toContain('data-language="css"');
 });
+
+test("transmet le placeholder du champ à l'éditeur coloré", () => {
+    // Le passage de `textarea` à `code` avait perdu le placeholder en route :
+    // le champ le déclarait, plus rien ne le rendait. Monaco le gère
+    // nativement (option `placeholder`) ; `data-placeholder` est la trace que
+    // le rendu statique peut vérifier, Monaco n'étant monté que côté client.
+    const fields: FieldDef[] = [
+        {key: "preview", label: "Gabarit de l'aperçu", type: "code", language: "html", rows: 10, placeholder: "<!-- @edit:html -->"},
+    ];
+
+    const html = renderToStaticMarkup(
+        <DynamicPropsEditor fields={fields} props={{preview: ""}} onChange={() => {}}/>
+    );
+
+    expect(html).toContain('data-placeholder="&lt;!-- @edit:html --&gt;"');
+});

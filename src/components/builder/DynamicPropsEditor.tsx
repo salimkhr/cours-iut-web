@@ -215,6 +215,7 @@ export function DynamicPropsEditor({ fields, props, onChange, filterTypes }: Dyn
                             value={String(value ?? "")}
                             language={language}
                             rows={field.rows}
+                            placeholder={field.placeholder}
                             onChange={(v) => set(field.key, v)}
                         />
                     );

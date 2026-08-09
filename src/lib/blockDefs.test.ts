@@ -35,6 +35,19 @@ test("la description du bloc documente les marqueurs pour le MCP", () => {
     expect(def?.description).toContain("@edit:");
 });
 
+test("les champs de code du bloc exposent un placeholder au MCP", () => {
+    const def = blockDefs.find((blockDef) => blockDef.type === "code-with-preview");
+
+    // `list_block_types` n'expose que description, label et placeholder : c'est
+    // tout ce qu'un agent connaît du bloc. Un champ sans placeholder le laisse
+    // deviner le format attendu.
+    for (const key of ["code", "secondaryCode", "preview"]) {
+        expect(def?.fields.find((field) => field.key === key)?.placeholder).toBeTruthy();
+    }
+
+    expect(def?.fields.find((field) => field.key === "preview")?.placeholder).toContain("@edit:");
+});
+
 test("le schéma interne code-with-preview de blockDefs reste synchronisé avec blockPropsSchemas", () => {
     const def = blockDefs.find((blockDef) => blockDef.type === "code-with-preview");
     const defSchema = def?.schema;
