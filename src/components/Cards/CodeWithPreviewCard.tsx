@@ -261,10 +261,16 @@ export default function CodeWithPreviewCard({panels, sources, className, current
         </div>
     );
 
+    // `allow-modals` accompagne `allow-scripts` : sans lui, une iframe sandboxée
+    // ignore silencieusement alert() / confirm() / prompt(), or ce sont les
+    // exemples phares du cours de JavaScript — l'étudiant qui colle l'exemple de
+    // la leçon ne verrait rien se produire. Ce jeton est orthogonal à
+    // `allow-same-origin`, qui ne doit JAMAIS être ajouté : combiné à
+    // `allow-scripts`, il permettrait au script de retirer son propre sandbox.
     const previewFrame = previewDoc && (
         <iframe
             srcDoc={previewDoc.html}
-            sandbox={previewDoc.needsScripts ? "allow-scripts" : ""}
+            sandbox={previewDoc.needsScripts ? "allow-scripts allow-modals" : ""}
             title="Aperçu du code"
             className="w-full border-0 bg-white"
         />
