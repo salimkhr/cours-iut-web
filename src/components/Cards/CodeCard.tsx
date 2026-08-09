@@ -2,7 +2,9 @@
 
 import React, {useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
-import {ChevronDown, ChevronUp, ClipboardCopy, Download} from "lucide-react";
+import {ChevronDown, ChevronUp} from "lucide-react";
+import {CopyIcon} from "@/components/icons/copy";
+import {DownloadIcon} from "@/components/icons/download";
 import {SyntaxHighlighter, normalizeLanguage, courseCodeDark, courseCodeLight} from '@/lib/syntaxHighlighter';
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
@@ -117,7 +119,7 @@ export default function CodeCard({
                         title="Télécharger"
                         aria-label="Télécharger le fichier"
                     >
-                        <Download className="w-3.5 h-3.5"/>
+                        <DownloadIcon size={14} className="shrink-0"/>
                     </button>
                 )}
                 <button
@@ -125,7 +127,7 @@ export default function CodeCard({
                     className="flex items-center gap-1.5 px-2 py-2 sm:py-1 min-h-[36px] rounded text-xs text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                     aria-label="Copier le code"
                 >
-                    <ClipboardCopy className="w-3.5 h-3.5"/>
+                    <CopyIcon size={14} className="shrink-0"/>
                     <span className="hidden sm:inline">{copied ? 'Copié !' : 'Copier'}</span>
                 </button>
             </div>

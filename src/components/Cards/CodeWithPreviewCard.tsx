@@ -1,7 +1,8 @@
 'use client'
 import {useMemo, useState} from 'react';
 import BaseCard from "@/components/Cards/BaseCard";
-import {ClipboardCopyIcon, Code2, Eye} from "lucide-react";
+import {Code2, Eye} from "lucide-react";
+import {CopyIcon} from "@/components/icons/copy";
 import {SyntaxHighlighter, normalizeLanguage, courseCodeDark, courseCodeLight} from '@/lib/syntaxHighlighter';
 import {buildPreviewDocument, type PreviewSources} from "@/lib/previewDocument";
 import {cn} from "@/lib/utils";
@@ -81,7 +82,7 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                     className="flex items-center gap-1.5 text-xs text-bridge-500 hover:text-bridge-800 dark:text-bridge-400 dark:hover:text-bridge-100"
                     aria-label={`Copier le code ${panel.language}`}
                 >
-                    <ClipboardCopyIcon className="w-3.5 h-3.5"/>
+                    <CopyIcon size={14} className="shrink-0"/>
                     {copiedIndex === index ? 'Copié !' : 'Copier'}
                 </button>
             </div>
