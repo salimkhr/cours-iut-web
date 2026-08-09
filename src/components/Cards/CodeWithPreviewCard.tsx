@@ -3,7 +3,7 @@ import {useEffect, useMemo, useState} from 'react';
 import dynamic from "next/dynamic";
 import type {BeforeMount, OnMount} from "@monaco-editor/react";
 import BaseCard from "@/components/Cards/BaseCard";
-import {Code2, Eye, Pencil, RotateCcw} from "lucide-react";
+import {Check, Code2, Eye, Pencil, RotateCcw} from "lucide-react";
 import {CopyIcon} from "@/components/icons/copy";
 import {SyntaxHighlighter, normalizeLanguage, courseCodeDark, courseCodeLight} from '@/lib/syntaxHighlighter';
 import {buildPreviewDocument, type PreviewSources} from "@/lib/previewDocument";
@@ -116,6 +116,17 @@ export default function CodeWithPreviewCard({panels, sources, className, current
         setOpenFields((prev) => new Set(prev).add(field));
     };
 
+    // Referme l'éditeur sans toucher à `edited` : la modification reste (le
+    // panneau repasse en lecture colorée sur `currentCode`, pas sur l'original).
+    // Distinct de handleReset, qui efface tout et referme tous les panneaux.
+    const closeField = (field: EditableField) => {
+        setOpenFields((prev) => {
+            const next = new Set(prev);
+            next.delete(field);
+            return next;
+        });
+    };
+
     const handleReset = () => {
         setEdited({});
         setDebouncedEdited({});
@@ -185,6 +196,16 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                             >
                                 <Pencil size={14} className="shrink-0"/>
                                 Modifier
+                            </button>
+                        )}
+                        {isOpen && field && (
+                            <button
+                                onClick={() => closeField(field)}
+                                className="flex items-center gap-1.5 text-xs text-bridge-500 hover:text-bridge-800 dark:text-bridge-400 dark:hover:text-bridge-100"
+                                aria-label={`Terminer l'édition du code ${panel.language}`}
+                            >
+                                <Check size={14} className="shrink-0"/>
+                                Terminé
                             </button>
                         )}
                         <button
