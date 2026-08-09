@@ -188,3 +188,30 @@ test("editable est faux sans aperçu", () => {
         language: "css", code: ".a{}",
     }).editable).toBe(false);
 });
+
+test("editable est faux quand le gabarit sans marqueur remplace le code", () => {
+    // HTML sans marqueur : `buildLegacyDocument` construit le document à partir
+    // de `preview` seul et ne lit jamais `code`. Un bouton « Modifier » ici
+    // ouvrirait un éditeur dont les frappes n'atteindraient jamais l'aperçu.
+    expect(buildPreviewDocument({
+        language: "html",
+        code: "<p>ignoré</p>",
+        preview: "<p>retenu</p>",
+    }).editable).toBe(false);
+});
+
+test("editable redevient vrai dès que le même gabarit porte un marqueur", () => {
+    expect(buildPreviewDocument({
+        language: "html",
+        code: "<p>ignoré</p>",
+        preview: "<!-- @edit:html --><p>retenu</p>",
+    }).editable).toBe(true);
+});
+
+test("editable reste vrai pour le CSS sans marqueur : le code atteint le <style>", () => {
+    expect(buildPreviewDocument({
+        language: "css",
+        code: ".intro { color: red }",
+        preview: "<p class=\"intro\">Bonjour</p>",
+    }).editable).toBe(true);
+});

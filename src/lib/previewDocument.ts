@@ -113,13 +113,25 @@ function injectIntoTemplate(template: string, sources: PreviewSources): string {
     });
 }
 
+/**
+ * Vrai si le bloc emprunte la branche CSS de `buildLegacyDocument`.
+ *
+ * C'est la **seule** voie sans marqueur où `code` atteint réellement le
+ * document rendu : il part dans le `<style>`. Partout ailleurs, un `preview`
+ * rempli *remplace* le code au lieu de l'accueillir. La comparaison est
+ * volontairement identique à celle de la branche elle-même (chaîne brute, pas
+ * `normalizeLanguage`) pour que les deux ne puissent pas diverger.
+ */
+function isLegacyCssPath(sources: PreviewSources): boolean {
+    return String(sources.language ?? "html").trim().toLowerCase() === "css";
+}
+
 /** Assemblage historique, conservé quand le gabarit ne porte aucun marqueur. */
 function buildLegacyDocument(sources: PreviewSources): string {
     const code = String(sources.code ?? "");
-    const language = String(sources.language ?? "html");
     const markup = sources.preview?.trim();
 
-    if (language.trim().toLowerCase() === "css") {
+    if (isLegacyCssPath(sources)) {
         const body = markup || CSS_DEMO_BODY;
         const header = markup ? "" : CSS_DEMO_HEADER;
         return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>${code}</style></head><body style="background: #ffffff !important;">
@@ -142,7 +154,8 @@ function buildLegacyDocument(sources: PreviewSources): string {
 
 export function buildPreviewDocument(sources: PreviewSources): PreviewDocument {
     const template = sources.preview?.trim() ?? "";
-    const html = hasMarkers(template)
+    const templated = hasMarkers(template);
+    const html = templated
         ? injectIntoTemplate(template, sources)
         : buildLegacyDocument(sources);
 
@@ -152,8 +165,17 @@ export function buildPreviewDocument(sources: PreviewSources): PreviewDocument {
     return {
         html,
         needsScripts: panels.some(([language]) => normalizeLanguage(language) === "javascript"),
-        // Conjonctif : un seul langage non exécutable rend l'aperçu trompeur,
-        // puisque ce langage resterait inerte quoi que l'étudiant modifie.
-        editable: showPreview && panels.every(([language]) => isRunnable(language)),
+        // Deux conditions distinctes, toutes deux nécessaires.
+        //
+        // 1. Conjonctif : un seul langage non exécutable rend l'aperçu trompeur,
+        //    puisque ce langage resterait inerte quoi que l'étudiant modifie.
+        // 2. Le code doit réellement atteindre le rendu. Sans marqueur,
+        //    `buildLegacyDocument` n'injecte `code` que sur la branche CSS ;
+        //    ailleurs le gabarit *remplace* le code. Proposer « Modifier » sur
+        //    un tel bloc ouvrirait un éditeur dont chaque frappe serait
+        //    silencieusement jetée au recalcul de l'aperçu.
+        editable: showPreview
+            && panels.every(([language]) => isRunnable(language))
+            && (templated || isLegacyCssPath(sources)),
     };
 }
