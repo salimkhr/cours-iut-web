@@ -152,3 +152,39 @@ test("non-régression : un gabarit sans marqueur garde l'assemblage historique",
     expect(buildPreviewDocument(sansMarqueur).html)
         .toContain("<p class=\"intro\">Bonjour</p>");
 });
+
+test("needsScripts est vrai dès qu'un panneau porte du JavaScript", () => {
+    expect(buildPreviewDocument({
+        language: "javascript", code: "alert(1)", preview: "<p>x</p>",
+    }).needsScripts).toBe(true);
+
+    expect(buildPreviewDocument({
+        language: "css", code: ".a{}", preview: "<p>x</p>",
+    }).needsScripts).toBe(false);
+});
+
+test("needsScripts ignore un panneau JavaScript vide", () => {
+    expect(buildPreviewDocument({
+        language: "javascript", code: "", preview: "<p>x</p>",
+    }).needsScripts).toBe(false);
+});
+
+test("editable exige que TOUS les langages soient exécutables", () => {
+    expect(buildPreviewDocument({
+        language: "css", code: ".a{}",
+        secondaryLanguage: "html", secondaryCode: "<p>x</p>",
+        preview: "<p>x</p>",
+    }).editable).toBe(true);
+
+    expect(buildPreviewDocument({
+        language: "php", code: "<?php echo 1;",
+        secondaryLanguage: "html", secondaryCode: "<form></form>",
+        preview: "<form></form>",
+    }).editable).toBe(false);
+});
+
+test("editable est faux sans aperçu", () => {
+    expect(buildPreviewDocument({
+        language: "css", code: ".a{}",
+    }).editable).toBe(false);
+});

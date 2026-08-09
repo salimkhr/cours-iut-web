@@ -64,6 +64,18 @@ const SUFFIX_TO_CANONICAL: Record<string, string> = {
     js: "javascript",
 };
 
+/** Panneaux réellement renseignés, sous forme [langage, code]. */
+function filledPanels(sources: PreviewSources): Array<[string | null | undefined, string]> {
+    const panels: Array<[string | null | undefined, string | null | undefined]> = [
+        [sources.language, sources.code],
+        [sources.secondaryLanguage, sources.secondaryCode],
+    ];
+
+    return panels
+        .filter((panel): panel is [string | null | undefined, string] => Boolean(panel[1]))
+        .map(([language, code]) => [language, code]);
+}
+
 /** Regroupe les codes du bloc par langage canonique, dans l'ordre des panneaux. */
 function groupSourcesByLanguage(sources: PreviewSources): Map<string, string[]> {
     const grouped = new Map<string, string[]>();
@@ -134,5 +146,14 @@ export function buildPreviewDocument(sources: PreviewSources): PreviewDocument {
         ? injectIntoTemplate(template, sources)
         : buildLegacyDocument(sources);
 
-    return {html, needsScripts: false, editable: false};
+    const panels = filledPanels(sources);
+    const showPreview = template.length > 0 && panels.some(([language]) => isRunnable(language));
+
+    return {
+        html,
+        needsScripts: panels.some(([language]) => normalizeLanguage(language) === "javascript"),
+        // Conjonctif : un seul langage non exécutable rend l'aperçu trompeur,
+        // puisque ce langage resterait inerte quoi que l'étudiant modifie.
+        editable: showPreview && panels.every(([language]) => isRunnable(language)),
+    };
 }
