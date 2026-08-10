@@ -170,10 +170,12 @@ test("needsScripts ignore un panneau JavaScript vide", () => {
 });
 
 test("editable exige que TOUS les langages soient exécutables", () => {
+    // Marqueurs présents : isole la règle conjonctive du garde-fou « le code
+    // doit réellement atteindre le rendu » (couvert séparément plus bas).
     expect(buildPreviewDocument({
         language: "css", code: ".a{}",
         secondaryLanguage: "html", secondaryCode: "<p>x</p>",
-        preview: "<p>x</p>",
+        preview: "<style>/* @edit:css */</style><!-- @edit:html -->",
     }).editable).toBe(true);
 
     expect(buildPreviewDocument({
@@ -213,5 +215,29 @@ test("editable reste vrai pour le CSS sans marqueur : le code atteint le <style>
         language: "css",
         code: ".intro { color: red }",
         preview: "<p class=\"intro\">Bonjour</p>",
+    }).editable).toBe(true);
+});
+
+test("editable est faux pour un CSS + panneau secondaire sans marqueur : secondaryCode n'atteint jamais le rendu", () => {
+    // Même piège que le bloc HTML sans marqueur, mais limité au panneau
+    // secondaire : buildLegacyDocument (branche CSS) n'injecte que `code`
+    // dans <style>, jamais `secondaryCode`. Éditable ici ouvrirait un
+    // « Modifier » sur le panneau HTML dont la frappe serait ignorée.
+    expect(buildPreviewDocument({
+        language: "css",
+        code: ".a { color: red }",
+        secondaryLanguage: "html",
+        secondaryCode: "<p>ignoré</p>",
+        preview: "<p>retenu</p>",
+    }).editable).toBe(false);
+});
+
+test("editable redevient vrai pour le CSS + panneau secondaire dès qu'un marqueur cible le secondaire", () => {
+    expect(buildPreviewDocument({
+        language: "css",
+        code: ".a { color: red }",
+        secondaryLanguage: "html",
+        secondaryCode: "<p>retenu</p>",
+        preview: "<style>/* @edit:css */</style><!-- @edit:html -->",
     }).editable).toBe(true);
 });

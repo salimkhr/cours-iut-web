@@ -170,12 +170,16 @@ export function buildPreviewDocument(sources: PreviewSources): PreviewDocument {
         // 1. Conjonctif : un seul langage non exécutable rend l'aperçu trompeur,
         //    puisque ce langage resterait inerte quoi que l'étudiant modifie.
         // 2. Le code doit réellement atteindre le rendu. Sans marqueur,
-        //    `buildLegacyDocument` n'injecte `code` que sur la branche CSS ;
-        //    ailleurs le gabarit *remplace* le code. Proposer « Modifier » sur
-        //    un tel bloc ouvrirait un éditeur dont chaque frappe serait
-        //    silencieusement jetée au recalcul de l'aperçu.
+        //    `buildLegacyDocument` n'injecte `code` que sur la branche CSS, et
+        //    seulement `code` — jamais `secondaryCode`, qui n'a nulle part où
+        //    aller sur ce chemin. Un bloc CSS + panneau secondaire sans
+        //    marqueur ne peut donc être éditable QUE s'il n'a pas de panneau
+        //    secondaire à trahir : `panels.length <= 1` l'exige. Sans ce
+        //    garde-fou, le panneau secondaire afficherait « Modifier » pour un
+        //    résultat silencieusement jeté, comme le bloc HTML sans marqueur
+        //    avant ce correctif.
         editable: showPreview
             && panels.every(([language]) => isRunnable(language))
-            && (templated || isLegacyCssPath(sources)),
+            && (templated || (isLegacyCssPath(sources) && panels.length <= 1)),
     };
 }
