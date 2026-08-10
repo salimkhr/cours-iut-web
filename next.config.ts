@@ -53,9 +53,16 @@ const baseConfig: NextConfig = {
         // à parcourir au build, bundle plus fin).
         optimizePackageImports: [
             'motion',
-            '@tanstack/react-table',
             'recharts',
         ],
+        // 1 worker au lieu de cpus-1 (défaut) : le pool de workers de "collecting
+        // page data" fork des process qui importent sharp (src/lib/upload/processor.ts,
+        // référencé par les routes upload-avatar/course-image). Sous bun run build,
+        // le NAPI de Bun crashe (SIGSEGV puis SIGILL) dans napi_release_threadsafe_function
+        // à la terminaison de ces workers — bug du runtime, pas du code applicatif
+        // (cf. rapport https://bun.report/1.3.14/...). Réduire à 1 worker limite les
+        // cycles spawn/terminate concurrents pendant lesquels la race se déclenche.
+        cpus: 1,
     },
 
     turbopack: {
