@@ -280,7 +280,7 @@ export const blockDefs: BlockDef[] = [
             // description ci-dessus, TOUT ce qu'un agent MCP connaît du bloc — d'où
             // le gabarit complet, marqueurs compris, sur le champ `preview`.
             {key: "code", label: "Code", type: "code", languageFrom: "language", rows: 15, placeholder: "<button>Cliquez</button>"},
-            {key: "secondaryLanguage", label: "Langage du second panneau", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx", "rust"]},
+            {key: "secondaryLanguage", label: "Langage du second panneau", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx", "rust"], placeholder: "Choisir un langage…"},
             {key: "secondaryCode", label: "Second code", type: "code", languageFrom: "secondaryLanguage", rows: 15, placeholder: "<p class=\"intro\">Bonjour</p>"},
             {key: "preview", label: "Gabarit de l'aperçu", type: "code", language: "html", rows: 10, placeholder: "<!doctype html><html lang=\"fr\"><head><style>/* @edit:css */</style></head><body><!-- @edit:html --></body></html>"},
         ],

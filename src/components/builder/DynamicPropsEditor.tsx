@@ -124,11 +124,19 @@ export function DynamicPropsEditor({ fields, props, onChange, filterTypes }: Dyn
                         <div key={field.key} className="flex flex-col gap-1.5">
                             <Label htmlFor={field.key} className={labelCls}>{field.label}</Label>
                             <Select
-                                value={String(value ?? field.options[0])}
+                                // `undefined`, jamais `field.options[0]` : sur un champ non
+                                // renseigné (bloc existant créé avant ce champ, ou auteur
+                                // qui n'a pas encore choisi), afficher la première option
+                                // ferait croire que le champ est rempli — trompeur depuis
+                                // que certains champs deviennent obligatoires selon le
+                                // contenu d'un autre (ex. secondaryLanguage exigé dès que
+                                // secondaryCode est rempli). Le champ vide affiche
+                                // honnêtement son placeholder.
+                                value={value == null || value === "" ? undefined : String(value)}
                                 onValueChange={(v) => set(field.key, v)}
                             >
                                 <SelectTrigger id={field.key} className={inputCls}>
-                                    <SelectValue />
+                                    <SelectValue placeholder={field.placeholder ?? "—"}/>
                                 </SelectTrigger>
                                 <SelectContent className="bg-bridge-50 dark:bg-bridge-900 border-bridge-400/40 dark:border-bridge-500/40">
                                     {field.options.map((opt) => (
