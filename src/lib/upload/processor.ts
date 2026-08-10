@@ -1,5 +1,3 @@
-import sharp from "sharp";
-
 type SharpFormat = "jpeg" | "png" | "webp" | "gif";
 
 const IMAGE_OUTPUTS: Record<string, { format: SharpFormat; ext: string }> = {
@@ -27,6 +25,14 @@ export async function reencodeImage(
     const output = IMAGE_OUTPUTS[mime];
     if (!output) throw new Error(`MIME non supporté pour le re-encodage : ${mime}`);
 
+    // Import paresseux : un `import sharp` statique en tête de module charge le
+    // binaire natif (libvips) dès que Next évalue ce fichier — y compris pendant
+    // "collecting page data" au build (les routes upload-avatar/upload-image
+    // important ce module au niveau top-level). Sous bun run build, ce chargement
+    // fait planter le NAPI de Bun (SIGSEGV dans napi_release_threadsafe_function,
+    // cf. rapport bun.report). Différer l'import au premier appel réel évite que
+    // le build touche sharp.
+    const { default: sharp } = await import("sharp");
     const buffer = await sharp(buf, {
         failOn: "error",
         limitInputPixels: 268_402_689, // 16 384 × 16 384 px max
