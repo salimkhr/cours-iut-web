@@ -19,6 +19,20 @@ FROM oven/bun:latest AS builder
 
 WORKDIR /app
 
+# next build (Turbopack/SWC, natifs) crashe sous le runtime Bun : le build va
+# jusqu'au bout (tous les artefacts .next sont écrits, "Finalizing page
+# optimization" atteint), puis Bun panique en TERMINANT ses workers internes
+# (SIGSEGV puis SIGILL dans napi_release_threadsafe_function — bug du moteur
+# Bun, identique sur 3 tentatives avec des causes applicatives différentes
+# écartées, cf. bun.report/1.3.14/Bn10d9b296i2FqkggC4664tE). bun reste utilisé
+# pour l'installation des dépendances (deps stage, rapide) ; le build tourne
+# sous Node pour éviter ce bug — même image de base (glibc), donc aucun
+# changement pour les modules natifs déjà résolus par bun install.
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl gnupg \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
@@ -36,7 +50,7 @@ ENV NEXT_PUBLIC_GIT_URL=$NEXT_PUBLIC_GIT_URL
 ENV NEXT_PUBLIC_RESTRICT_EMAIL_DOMAIN=$NEXT_PUBLIC_RESTRICT_EMAIL_DOMAIN
 ENV COMMIT_SHA=$COMMIT_SHA
 
-RUN bun run build
+RUN node node_modules/.bin/next build && node scripts/postbuild.js
 
 
 # -----------------------------
