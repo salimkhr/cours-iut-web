@@ -2,8 +2,8 @@
 // Serveur uniquement (token secret) — jamais importé depuis un Client Component.
 
 export interface GitlabConfig {
-    baseUrl: string;        // ex: https://git.salimkhraimeche.dev
-    rootGroupPath: string;  // ex: correction
+    baseUrl: string;         // ex: https://git.salimkhraimeche.dev
+    rootGroupPath?: string;  // ex: correction — requis pour ensureGroup/ensureProject, absent pour ensurePrivateProject
     token: string;
 }
 
@@ -21,7 +21,7 @@ export function getCorrectionBaseUrl(): string | null {
     return raw.replace(/\/+$/, "");
 }
 
-export function getGitlabConfig(): GitlabConfig {
+export function getGitlabConfig(): GitlabConfig & { rootGroupPath: string } {
     const gitUrl = getCorrectionBaseUrl();
     if (!gitUrl) {
         throw new Error("GITLAB_CORRECTION_URL non configuré : impossible de publier une correction.");
@@ -36,6 +36,22 @@ export function getGitlabConfig(): GitlabConfig {
         throw new Error(`L'URL de correction (${gitUrl}) doit inclure le chemin du groupe racine (ex: /correction).`);
     }
     return { baseUrl: url.origin, rootGroupPath, token };
+}
+
+/** Config dédiée aux projets privés créés via `publish_private_document` — couple
+ *  d'env séparé de GITLAB_CORRECTION_URL/TOKEN (scope différent : pas de groupe
+ *  racine, écrit dans l'espace personnel du token). Même serveur GitLab possible,
+ *  mais credentials découplés de ceux des corrections publiques. */
+export function getPrivateProjectConfig(): GitlabConfig {
+    const raw = process.env.GITLAB_PROJET_URL;
+    if (!raw) {
+        throw new Error("GITLAB_PROJET_URL non configuré : impossible de publier un projet privé.");
+    }
+    const token = process.env.GITLAB_PROJET_TOKEN;
+    if (!token) {
+        throw new Error("GITLAB_PROJET_TOKEN non configuré : impossible de publier un projet privé.");
+    }
+    return { baseUrl: raw.replace(/\/+$/, ""), token };
 }
 
 async function gitlabFetch(cfg: GitlabConfig, path: string, init?: RequestInit): Promise<Response> {
@@ -120,6 +136,34 @@ async function listRepoFiles(cfg: GitlabConfig, projectId: number): Promise<stri
         page = (res.headers.get("x-next-page") ?? "") as string;
     }
     return paths;
+}
+
+/** Garantit l'existence d'un projet PRIVÉ `slug` dans l'espace personnel du token
+ *  (aucun groupe requis — contrairement à `ensureProject`, utilisé pour les
+ *  corrections publiques sous `rootGroupPath`). Même serveur/token que les
+ *  corrections (`getGitlabConfig()`), mais un projet totalement séparé du groupe
+ *  `correction`. */
+export async function ensurePrivateProject(
+    cfg: GitlabConfig, slug: string
+): Promise<{ id: number; webUrl: string }> {
+    const meRes = await gitlabFetch(cfg, "/user");
+    if (!meRes.ok) throw await gitlabError(meRes, "lecture de l'utilisateur du token");
+    const me = await meRes.json() as { username: string };
+
+    const res = await gitlabFetch(cfg, `/projects/${encodeURIComponent(`${me.username}/${slug}`)}`);
+    if (res.ok) {
+        const p = await res.json() as { id: number; web_url: string };
+        return { id: p.id, webUrl: p.web_url };
+    }
+    if (res.status !== 404) throw await gitlabError(res, `lecture du projet privé ${slug}`);
+
+    const created = await gitlabFetch(cfg, "/projects", {
+        method: "POST",
+        body: JSON.stringify({ name: slug, path: slug, visibility: "private", default_branch: "main" }),
+    });
+    if (!created.ok) throw await gitlabError(created, `création du projet privé ${slug}`);
+    const p = await created.json() as { id: number; web_url: string };
+    return { id: p.id, webUrl: p.web_url };
 }
 
 /** Un commit sur main après lequel le repo reflète exactement `files`

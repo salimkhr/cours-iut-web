@@ -167,6 +167,8 @@ Toutes lues directement via `process.env.X` (pas de module `lib/env.ts`).
 | `PROD_SYNC_URL`                | URL de la prod, cible du push (staging uniquement)            | `api/admin/push-to-prod`        |
 | `GITLAB_CORRECTION_URL`        | Base d'URL du groupe de corrections côté serveur (runtime, ex: `https://git…/correction`) — repli sur `NEXT_PUBLIC_GIT_URL` | `src/lib/gitlab.ts` |
 | `GITLAB_CORRECTION_TOKEN`      | PAT GitLab (scope `api`) — publication des corrections de TP  | `src/lib/gitlab.ts`             |
+| `GITLAB_PROJET_URL`            | Base d'URL du serveur GitLab pour les projets privés créés via MCP (`publish_private_document`) — pas de groupe requis, écrit dans l'espace personnel du token, découplé de `GITLAB_CORRECTION_URL` | `src/lib/gitlab.ts` |
+| `GITLAB_PROJET_TOKEN`          | PAT GitLab (scope `api`) — création/écriture de projets privés via `publish_private_document`, distinct de `GITLAB_CORRECTION_TOKEN` | `src/lib/gitlab.ts` |
 | `BETTER_AUTH_SECRET`           | **À définir** : non référencé explicitement dans `src/`, mais lu en interne par `better-auth` |     |
 
 Règles : `.env.local` est git-ignored. Jamais de secret en dur. Tout secret côté serveur uniquement

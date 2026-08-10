@@ -20,7 +20,7 @@ import { addVerdictSchema, promoteExemplarSchema, VERDICT_FORMATS, EXEMPLAR_FORM
 import type { PedagogyVerdict, PedagogyExemplar } from "@/types/Pedagogy";
 import { ObjectId } from "bson";
 import { assignModuleColor } from "@/lib/assignModuleColor";
-import { getGitlabConfig, ensureGroup, ensureProject, commitFiles } from "@/lib/gitlab";
+import { getGitlabConfig, getPrivateProjectConfig, ensureGroup, ensureProject, ensurePrivateProject, commitFiles } from "@/lib/gitlab";
 import { isValidIcon } from "@/lib/iconMap";
 import { sectionApiSchema, briefSchema, curriculumSchema } from "@/lib/schemas/section.schema";
 import type { SectionBrief, SectionCurriculum } from "@/lib/schemas/section.schema";
@@ -681,6 +681,32 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 content: [{
                     type: "text" as const,
                     text: `Correction publiée : ${project.webUrl} (commit ${sha.slice(0, 8)}, ${files.length} fichier(s)). hasCorrection=true ; correctionIsAvailable reste à activer dans l'admin.`,
+                }],
+            };
+        }
+    );
+
+    // ── publish_private_document ──────────────────────────────────────────────
+    server.tool(
+        "publish_private_document",
+        "Crée (si besoin) un projet GitLab PRIVÉ dans l'espace personnel du token dédié (GITLAB_PROJET_URL/TOKEN, distinct de push_correction), et y publie des fichiers en un seul commit qui synchronise l'arborescence (create/update/delete). Réservé aux admins.",
+        {
+            project: z.string().min(1).describe("Slug du projet GitLab (créé s'il n'existe pas encore, visibility: private)"),
+            files:   z.array(z.object({
+                path:    z.string().min(1).describe("Chemin relatif dans le repo, ex: docs/mcp-module-workflow.md"),
+                content: z.string().describe("Contenu texte UTF-8 du fichier"),
+            })).min(1).describe("Arborescence complète à publier (l'existant non listé est supprimé)"),
+            commitMessage: z.string().optional().describe("Défaut : docs: publish {project}"),
+        },
+        async ({ project, files, commitMessage }) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const cfg = getPrivateProjectConfig();
+            const p = await ensurePrivateProject(cfg, project);
+            const sha = await commitFiles(cfg, p.id, files, commitMessage ?? `docs: publish ${project}`);
+            return {
+                content: [{
+                    type: "text" as const,
+                    text: `Projet privé publié : ${p.webUrl} (commit ${sha.slice(0, 8)}, ${files.length} fichier(s)).`,
                 }],
             };
         }
