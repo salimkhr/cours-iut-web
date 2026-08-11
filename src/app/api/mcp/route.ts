@@ -6,6 +6,7 @@ import { connectToDB } from "@/lib/mongodb";
 import { validateScalekitToken } from "@/lib/scalekit";
 import { getPublicOrigin } from "@/lib/publicOrigin";
 import { blockDefs, getBlockDef, createBlockInstance } from "@/lib/blockDefs";
+import { assertSectionAcceptsContent } from "@/lib/mcp/assertSectionAcceptsContent";
 import { validateBlockTree } from "@/lib/validateBlockTree";
 import {
     findBlock,
@@ -198,6 +199,20 @@ async function saveBlocks(key: ContentKey, input: Block[]): Promise<{ contentId:
     const blocks = pruneEmptyLeafChildren(input);
     const db = await connectToDB();
     const now = new Date();
+
+    // Garde anti-orphelin : sans section déclarée dans `modules.sections[]`, le
+    // document écrit ici serait invisible du front comme de `list_sections`, et
+    // ferait ensuite échouer `create_section` sur l'index unique
+    // {moduleSlug, sectionSlug, contentType}. Cf. assertSectionAcceptsContent.
+    const owner = await db.collection<ModuleDoc>("modules").findOne(
+        { path: key.moduleSlug },
+        { projection: { _id: 0, path: 1, "sections.path": 1, "sections.contents.type": 1 } }
+    );
+    assertSectionAcceptsContent(owner, {
+        moduleSlug:  key.moduleSlug,
+        sectionSlug: key.sectionSlug,
+        contentType: key.contentType,
+    });
 
     const existing = await db.collection<CourseContent>("course_content").findOne(key as Partial<CourseContent>);
 
@@ -849,7 +864,8 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     // ── save_content ──────────────────────────────────────────────────────────
     server.tool(
         "save_content",
-        "Remplace entièrement l'arbre de blocs d'un contenu (upsert). Réservé aux admins.",
+        "Remplace entièrement l'arbre de blocs d'un contenu (upsert). La section doit déjà exister "
+        + "dans le module et déclarer ce type de contenu (create_section / edit_section). Réservé aux admins.",
         {
             module:  z.string(),
             section: z.string(),
@@ -916,7 +932,8 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     // ── insert_block ──────────────────────────────────────────────────────────
     server.tool(
         "insert_block",
-        "Insère un nouveau bloc dans l'arbre. parentBlockId null = racine. afterBlockId null/absent = fin de la liste du parent. Réservé aux admins.",
+        "Insère un nouveau bloc dans l'arbre. parentBlockId null = racine. afterBlockId null/absent = fin de la liste du parent. "
+        + "La section doit déjà exister dans le module et déclarer ce type de contenu (create_section / edit_section). Réservé aux admins.",
         {
             module:  z.string(),
             section: z.string(),
