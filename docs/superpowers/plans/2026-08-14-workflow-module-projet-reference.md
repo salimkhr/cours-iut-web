@@ -305,7 +305,7 @@ export function assertCanWriteContent(spec: ProjectSpec | undefined, moduleSlug:
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `bun test src/lib/pedagogy/gates.test.ts`
-Expected: PASS (11 tests).
+Expected: PASS (9 tests).
 
 - [ ] **Step 5: Commit**
 
