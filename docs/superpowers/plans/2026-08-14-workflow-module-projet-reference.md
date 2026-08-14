@@ -1620,15 +1620,22 @@ git commit -m "feat(admin): étapes briefs et réglages"
 
 **Interfaces:**
 - Consomme : les outils `create_module`, `edit_module`, `push_project_reference`, `get_project_reference` (Tasks 4-6).
-- Produit : un document dont le workflow suit les 7 étapes de l'admin.
+- Produit : un document dont le workflow suit six étapes, chacune sous un titre `###` **repris verbatim** par un prompt MCP (Task 16) : `Cadrage`, `Notions`, `Projet`, `Code de référence`, `Sections`, `Briefs`. Aucune étape « Contexte » séparée : la lecture des ressources MCP (`list_modules`, `list_sections`, `list_verdicts`) devient une sous-consigne au sein de l'étape qui en a besoin, pas un palier à part — elle n'a pas d'écran ni de porte qui lui corresponde.
 
 - [ ] **Step 1: Remplacer la section « Workflow »**
 
-Les 6 étapes actuelles deviennent 7, dans l'ordre : cadrage → notions → contexte → projet → **code de référence** → sections → briefs. Points à écrire explicitement :
+Les titres deviennent, dans l'ordre, exactement : `### Cadrage`, `### Notions`, `### Projet`, `### Code de référence`, `### Sections`, `### Briefs`. Ces six titres sont un contrat : Task 16 les cite verbatim dans les prompts MCP `module_cadrage` … `module_briefs`. Ne pas les reformuler après coup sans répercuter le changement sur Task 16.
 
-- Étape « projet » : l'agent propose une `projectSpec` **et** un `exampleDomain` distinct, les écrit via `edit_module` (toujours en brouillon), puis **s'arrête** : « relisez et validez dans l'admin ».
-- Étape « code de référence » : une fois la spec validée, l'agent écrit le projet complet et le pousse via `push_project_reference`, puis **s'arrête** de nouveau.
-- Étape « sections » : l'agent relit son code via `get_project_reference` et propose un découpage où **chaque section est une tranche du projet**, avec la vérification « somme des séances = budget du module ».
+Points à écrire explicitement :
+
+- Étape « Cadrage » : collecte matière/thème, niveau, nombre de séances, durée de séance.
+- Étape « Notions » : liste `plannedNotions`, la progression à couvrir — **avant** tout choix de projet.
+- Étape « Projet » : sous-consigne de lecture du contexte (`list_modules`, `list_sections` des prérequis, `list_verdicts` format `module-design`) puis l'agent propose une `projectSpec` **et** un `exampleDomain` distinct, les écrit via `edit_module` (toujours en brouillon), puis **s'arrête** : « relisez et validez dans l'admin ».
+- Étape « Code de référence » : une fois la spec validée, l'agent écrit le projet complet et le pousse via `push_project_reference`, puis **s'arrête** de nouveau.
+- Étape « Sections » : l'agent relit son code via `get_project_reference` et propose un découpage où **chaque section est une tranche du projet**, avec la vérification « somme des séances = budget du module ».
+- Étape « Briefs » : `filRougeStep`, `filRougeOutcome` et `providedBase` de chaque section.
+
+La septième étape de l'écran admin, « Réglages » (couleurs, coefficients, intervenants, SAÉ), n'a **aucune** contrepartie dans ce document : c'est de la saisie factuelle sans jugement pédagogique, déjà couverte par `edit_module`. Son prompt MCP (Task 16) ne référence donc pas ce document.
 
 - [ ] **Step 2: Mettre à jour la « Philosophie »**
 
@@ -1647,10 +1654,200 @@ git commit -m "docs(skill): module-design sur les 7 étapes et le projet de réf
 
 ---
 
-### Task 16: Réécriture de `content-writer`
+### Task 16: MCP — prompts par étape (module-design)
+
+**Files:**
+- Create: `src/lib/pedagogy/stepPrompts.ts`
+- Create: `src/lib/pedagogy/stepPrompts.test.ts`
+- Modify: `src/app/api/mcp/route.ts`
+
+**Interfaces:**
+- Consomme : `StepId` de `@/lib/pedagogy/moduleProgress` (Task 9) — les identifiants doivent correspondre terme à terme ; les titres `###` de `skills/module-design/main.md` (Task 15) — repris verbatim.
+- Produit : `MODULE_STEP_PROMPTS: StepPromptDef[]` (un par étape de l'écran admin, `reglages` compris) et `buildModuleStepPromptMessage(stepLabel: string, moduleSlug: string): string`, tous deux exportés et testés seuls ; sept appels `server.registerPrompt(...)` dans `route.ts`.
+
+**Pourquoi un prompt par étape :** le serveur MCP n'expose aujourd'hui que des *tools* (fonctions) et des *resources* (les documents de skill, lus passivement — l'agent doit deviner où il en est dans un document de plusieurs milliers de mots). Le protocole MCP a un troisième type d'objet, les *prompts* : un item nommé et paramétré que le client (Claude Desktop, claude.ai) affiche dans une palette et invoque directement. Un prompt par étape rend chaque étape de l'écran `/admin/modules/[slug]` directement lançable, sans reformuler une phrase libre en espérant que l'agent retrouve la bonne section du document.
+
+Le contenu pédagogique reste dans les deux documents de skill (`module-design/main.md`, `content-writer/main.md`) : un prompt ne duplique jamais ce texte, il pointe l'agent vers la bonne section et lui interdit d'en déborder. Sept petits documents à maintenir en plus des deux existants aurait été la vraie duplication.
+
+- [ ] **Step 1: Write the failing test**
+
+```ts
+import {describe, expect, test} from "bun:test";
+import {MODULE_STEP_PROMPTS, buildModuleStepPromptMessage} from "@/lib/pedagogy/stepPrompts";
+import {moduleSteps} from "@/lib/pedagogy/moduleProgress";
+import type Module from "@/types/Module";
+
+describe("MODULE_STEP_PROMPTS", () => {
+    test("un prompt par étape de l'écran, dans le même ordre", () => {
+        const emptyModule = {sections: [], associatedSae: []} as unknown as Module;
+        const screenSteps = moduleSteps(emptyModule).map((s) => s.id);
+        expect(MODULE_STEP_PROMPTS.map((p) => p.stepId)).toEqual(screenSteps);
+    });
+
+    test("des noms de prompt uniques, préfixés module_", () => {
+        const ids = MODULE_STEP_PROMPTS.map((p) => p.id);
+        expect(new Set(ids).size).toBe(ids.length);
+        expect(ids.every((id) => id.startsWith("module_"))).toBe(true);
+    });
+
+    test("l'étape réglages ne référence aucun document de skill", () => {
+        const reglages = MODULE_STEP_PROMPTS.find((p) => p.stepId === "reglages");
+        expect(reglages?.stepLabel).toBeUndefined();
+    });
+
+    test("chaque autre étape porte le titre exact du document module-design", () => {
+        const projet = MODULE_STEP_PROMPTS.find((p) => p.stepId === "projet");
+        expect(projet?.stepLabel).toBe("Projet");
+    });
+});
+
+describe("buildModuleStepPromptMessage", () => {
+    test("nomme le module et l'étape, et interdit de déborder", () => {
+        const msg = buildModuleStepPromptMessage("Projet", "rust");
+        expect(msg).toContain("rust");
+        expect(msg).toContain("« Projet »");
+        expect(msg).toContain("module-design");
+    });
+});
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `bun test src/lib/pedagogy/stepPrompts.test.ts`
+Expected: FAIL — module introuvable.
+
+- [ ] **Step 3: Write minimal implementation**
+
+```ts
+import type {StepId} from "@/lib/pedagogy/moduleProgress";
+
+export interface StepPromptDef {
+    id: string;
+    stepId: StepId;
+    title: string;
+    description: string;
+    /** Titre `###` exact dans skills/module-design/main.md. Absent pour "reglages",
+     *  qui est de la saisie factuelle (edit_module) sans contrepartie pédagogique. */
+    stepLabel?: string;
+}
+
+export const MODULE_STEP_PROMPTS: StepPromptDef[] = [
+    {
+        id: "module_cadrage", stepId: "cadrage", stepLabel: "Cadrage",
+        title: "Cadrer un nouveau module",
+        description: "Matière, niveau, nombre de séances, durée de séance — première étape de conception.",
+    },
+    {
+        id: "module_notions", stepId: "notions", stepLabel: "Notions",
+        title: "Lister les notions à couvrir",
+        description: "Progression de notions à poser avant de choisir le projet fil rouge.",
+    },
+    {
+        id: "module_projet", stepId: "projet", stepLabel: "Projet",
+        title: "Concevoir le projet fil rouge",
+        description: "Spec du projet et domaine d'exemples du cours, jusqu'à la validation dans l'admin.",
+    },
+    {
+        id: "module_reference", stepId: "reference", stepLabel: "Code de référence",
+        title: "Construire le dépôt de référence",
+        description: "Code le projet fil rouge complet et le pousse sur GitLab, jusqu'à la validation.",
+    },
+    {
+        id: "module_sections", stepId: "sections", stepLabel: "Sections",
+        title: "Découper en sections",
+        description: "Relit le code de référence validé et propose le découpage en sections.",
+    },
+    {
+        id: "module_briefs", stepId: "briefs", stepLabel: "Briefs",
+        title: "Rédiger les briefs de section",
+        description: "filRougeStep, filRougeOutcome et providedBase de chaque section.",
+    },
+    {
+        id: "module_reglages", stepId: "reglages",
+        title: "Régler les paramètres du module",
+        description: "Couleurs, coefficients, intervenants, SAÉ — aucun contenu pédagogique.",
+    },
+];
+
+/** Seed message d'un prompt d'étape : nomme le module, pointe l'agent vers la
+ *  section exacte du document module-design, et lui interdit d'en déborder
+ *  sans validation explicite si l'étape en comporte une. */
+export function buildModuleStepPromptMessage(stepLabel: string, moduleSlug: string): string {
+    return `Le module concerné est "${moduleSlug}". Chargez le document skill://pedagogy/module-design `
+        + `(get_pedagogical_skill_document avec id="module-design") et exécutez UNIQUEMENT l'étape `
+        + `« ${stepLabel} » de son workflow. Ne passez pas aux étapes suivantes sans validation `
+        + `explicite si l'étape en comporte une.`;
+}
+
+/** Réglages n'a pas de document à charger : la consigne reste directe. */
+export function buildReglagesPromptMessage(moduleSlug: string): string {
+    return `Le module concerné est "${moduleSlug}". Demandez à l'utilisateur les valeurs à régler `
+        + `(couleurs, coefficients, intervenants, SAÉ) et appliquez-les via edit_module. `
+        + `Aucun document de skill à charger pour cette étape.`;
+}
+```
+
+`moduleSteps()` (Task 9) prend un `Module` complet ; sur un module vide toutes les étapes sont `"todo"` mais l'ordre des `id` renvoyés est stable et sert de référence ici — c'est ce que le premier test vérifie.
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `bun test src/lib/pedagogy/stepPrompts.test.ts`
+Expected: PASS (5 tests).
+
+- [ ] **Step 5: Enregistrer les sept prompts MCP**
+
+Dans `src/app/api/mcp/route.ts`, imports :
+
+```ts
+import {MODULE_STEP_PROMPTS, buildModuleStepPromptMessage, buildReglagesPromptMessage} from "@/lib/pedagogy/stepPrompts";
+```
+
+Dans `buildMcpServer`, après le dernier `server.tool(...)` :
+
+```ts
+    // ── Prompts d'étape (module-design) ─────────────────────────────────────────
+    for (const def of MODULE_STEP_PROMPTS) {
+        server.registerPrompt(
+            def.id,
+            {
+                title: def.title,
+                description: def.description,
+                argsSchema: {module: z.string().describe("Slug du module, ex: rust")},
+            },
+            ({module}) => {
+                if (!isAdmin) throw new Error("Forbidden");
+                const text = def.stepLabel
+                    ? buildModuleStepPromptMessage(def.stepLabel, module)
+                    : buildReglagesPromptMessage(module);
+                return {
+                    messages: [{role: "user" as const, content: {type: "text" as const, text}}],
+                };
+            }
+        );
+    }
+```
+
+- [ ] **Step 6: Vérifier la compilation et l'exposition**
+
+Run: `bunx tsc --noEmit && bun run lint`
+Expected: aucune erreur.
+
+Vérifier manuellement via un client MCP connecté (Claude Desktop ou `claude mcp list-prompts` si disponible) que les sept prompts apparaissent dans la palette, chacun demandant un argument `module`.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add src/lib/pedagogy/stepPrompts.ts src/lib/pedagogy/stepPrompts.test.ts src/app/api/mcp/route.ts
+git commit -m "feat(mcp): un prompt par étape du workflow module (palette du client MCP)"
+```
+
+---
+
+### Task 17: Réécriture de `content-writer`
 
 **Files:**
 - Modify: `skills/content-writer/main.md`
+- Modify: `src/app/api/mcp/route.ts` (un prompt `content_writer`)
 
 - [ ] **Step 1: Ajouter les deux invariants durs**
 
@@ -1717,16 +1914,53 @@ Un bloc sans `children` n'en déclare pas. Les `id` sont libres mais uniques dan
 La liste des lectures de contexte gagne : `get_module` pour `projectSpec` et `exampleDomain`,
 et `get_project_reference` pour le code cible.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Enregistrer le prompt MCP `content_writer`**
+
+Contrairement à `module-design`, la rédaction n'a pas d'étapes d'écran séparées à faire
+correspondre : un seul prompt suffit, qui laisse le document lui-même demander quels supports
+rédiger (sa propre étape 1 « Cadrage »).
+
+Dans `src/app/api/mcp/route.ts`, à la suite des sept `registerPrompt` de Task 16 :
+
+```ts
+    server.registerPrompt(
+        "content_writer",
+        {
+            title: "Rédiger cours, TP, slides ou examen",
+            description: "Rédige les supports d'une section existante, en suivant le workflow content-writer.",
+            argsSchema: {
+                module: z.string().describe("Slug du module, ex: rust"),
+                section: z.string().describe("Slug de la section, ex: ownership"),
+            },
+        },
+        ({module, section}) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const text = `Le module concerné est "${module}", la section "${section}". `
+                + `Chargez le document skill://pedagogy/content-writer `
+                + `(get_pedagogical_skill_document avec id="content-writer") et suivez son workflow `
+                + `en entier, en commençant par son étape 1 (choix des supports à rédiger).`;
+            return {
+                messages: [{role: "user" as const, content: {type: "text" as const, text}}],
+            };
+        }
+    );
+```
+
+- [ ] **Step 6: Vérifier la compilation**
+
+Run: `bunx tsc --noEmit && bun run lint`
+Expected: aucune erreur.
+
+- [ ] **Step 7: Commit**
 
 ```bash
-git add skills/content-writer/main.md
-git commit -m "docs(skill): invariants domaine d'exemples et cible réelle, format des blocs"
+git add skills/content-writer/main.md src/app/api/mcp/route.ts
+git commit -m "docs(skill): invariants domaine d'exemples et cible réelle, format des blocs, prompt content_writer"
 ```
 
 ---
 
-### Task 17: Régénération et vérification de l'exposition
+### Task 18: Régénération et vérification de l'exposition
 
 **Files:**
 - Modify: `src/lib/skills/pedagogy.ts` (généré)
@@ -1769,7 +2003,7 @@ git commit -m "chore(skill): régénère les documents pédagogiques"
 
 # Chantier 4 — Démontage des surfaces flottantes
 
-### Task 18: Suppression du Dialog, du Sheet et du SectionForm
+### Task 19: Suppression du Dialog, du Sheet et du SectionForm
 
 **Files:**
 - Modify: `src/components/admin/AdminModule.tsx`
@@ -1837,7 +2071,7 @@ git commit -m "refactor(admin): supprime le dialog des sections et les formulair
 
 ---
 
-### Task 19: Vérification finale et détection de régression
+### Task 20: Vérification finale et détection de régression
 
 - [ ] **Step 1: Suite complète**
 
@@ -1856,3 +2090,7 @@ Expected: chaque module ayant un `universe` obtient un `projectSpec` validé ; a
 - [ ] **Step 4: Vérifier le parcours complet sur un module neuf**
 
 Créer un module de test via l'admin, parcourir les 7 étapes, faire pousser un projet de référence par l'assistant, le valider, puis rédiger un cours. Vérifier qu'avant validation `save_content` refuse avec le message attendu, et qu'après validation il passe.
+
+- [ ] **Step 5: Vérifier la palette de prompts MCP**
+
+Depuis un client MCP connecté (Claude Desktop, claude.ai), lister les prompts disponibles : les huit doivent apparaître (`module_cadrage`, `module_notions`, `module_projet`, `module_reference`, `module_sections`, `module_briefs`, `module_reglages`, `content_writer`), chacun demandant les arguments attendus (`module`, et `section` pour `content_writer`). Invoquer `module_projet` sur un module de test et vérifier que le message reçu par l'agent nomme le module et l'étape « Projet ».

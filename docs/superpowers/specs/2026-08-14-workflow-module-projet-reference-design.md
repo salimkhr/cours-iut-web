@@ -198,6 +198,39 @@ Le verrou ne s'applique qu'aux modules qui déclarent un `referenceRepo` : les m
 qui n'en ont pas, restent modifiables. Un module conçu par le nouveau workflow en a un dès
 l'étape 4, donc la porte se ferme d'elle-même.
 
+## Prompts MCP
+
+Décision ajoutée le 2026-08-14, après relecture du plan d'implémentation.
+
+Le serveur MCP n'expose aujourd'hui que deux types d'objets : des *tools* (fonctions) et des
+*resources* (les documents de skill, servis en lecture passive — l'agent doit deviner où il en
+est dans un document de plusieurs milliers de mots). Le protocole MCP prévoit un troisième type,
+les *prompts* : un item nommé et paramétré que le client (Claude Desktop, claude.ai) affiche
+dans une palette et invoque directement, sans que l'utilisateur ait à formuler une phrase libre.
+
+**Un prompt par étape de l'écran admin**, plus un pour la rédaction :
+
+| Prompt | Étape | Argument(s) |
+|---|---|---|
+| `module_cadrage` | Cadrage | `module` |
+| `module_notions` | Notions | `module` |
+| `module_projet` | Projet | `module` |
+| `module_reference` | Code de référence | `module` |
+| `module_sections` | Sections | `module` |
+| `module_briefs` | Briefs | `module` |
+| `module_reglages` | Réglages | `module` |
+| `content_writer` | (rédaction, hors écran module) | `module`, `section` |
+
+Chaque prompt d'étape pointe l'agent vers le titre `###` exact de la section correspondante
+dans `module-design/main.md` et lui interdit d'en déborder sans validation explicite — il ne
+duplique jamais le contenu du document. `module_reglages` fait exception : c'est de la saisie
+factuelle (couleurs, coefficients, intervenants, SAÉ) sans jugement pédagogique, donc son
+message ne référence aucun document de skill et pointe directement vers `edit_module`.
+
+Les six titres du document `module-design` sont donc un contrat avec ces prompts : `Cadrage`,
+`Notions`, `Projet`, `Code de référence`, `Sections`, `Briefs`. Toute reformulation d'un titre
+doit être répercutée sur le prompt correspondant.
+
 ## Skill
 
 ### `module-design`
