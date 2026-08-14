@@ -16,7 +16,8 @@ import {
     updateBlockChildren,
     pruneEmptyLeafChildren,
 } from "@/lib/blockTreeUtils";
-import { moduleFormSchema, universeSchema } from "@/lib/schemas/module.schema";
+import { moduleFormSchema, universeSchema, projectSpecSchema, exampleDomainSchema } from "@/lib/schemas/module.schema";
+import { forceDraft } from "@/lib/pedagogy/mcpProjectSpec";
 import { addVerdictSchema, promoteExemplarSchema, VERDICT_FORMATS, EXEMPLAR_FORMATS, EXEMPLAR_LEVELS } from "@/lib/schemas/pedagogy.schema";
 import type { PedagogyVerdict, PedagogyExemplar } from "@/types/Pedagogy";
 import { ObjectId } from "bson";
@@ -148,6 +149,9 @@ function serializeModuleMetadata(module: ModuleDoc) {
         isExtra: module.isExtra ?? false,
         ...(module.sessionDurationMinutes !== undefined && { sessionDurationMinutes: module.sessionDurationMinutes }),
         ...(module.universe !== undefined && { universe: module.universe }),
+        ...(module.projectSpec !== undefined && { projectSpec: module.projectSpec }),
+        ...(module.exampleDomain !== undefined && { exampleDomain: module.exampleDomain }),
+        ...(module.plannedNotions !== undefined && { plannedNotions: module.plannedNotions }),
         ...(module.projectIcon !== undefined && { projectIcon: module.projectIcon }),
         ...(module.colorLight !== undefined && { colorLight: module.colorLight }),
         ...(module.colorDark !== undefined && { colorDark: module.colorDark }),
@@ -336,8 +340,16 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 .describe("Durée d'une séance en minutes (ex: 150 pour 2h30). Absent pour les modules bonus."),
             universe: universeSchema.optional()
                 .describe("Univers thématique du module (fil rouge cumulatif) : name (ex: Netflex), description (domaine + données types)"),
+            projectSpec: projectSpecSchema.optional()
+                .describe("Spec du projet fil rouge : name, pitch, finalDeliverable, entities[]. "
+                    + "Toujours enregistrée en brouillon — la validation se fait dans l'admin."),
+            exampleDomain: exampleDomainSchema.optional()
+                .describe("Domaine d'illustration RÉSERVÉ au cours, distinct du projet. "
+                    + "Le cours ne doit jamais illustrer avec le domaine du projet."),
+            plannedNotions: z.array(z.string()).optional()
+                .describe("Notions à couvrir sur l'ensemble du module, posées avant le choix du projet."),
         },
-        async ({ title, iconName, path, description, sessionDurationMinutes, universe }) => {
+        async ({ title, iconName, path, description, sessionDurationMinutes, universe, projectSpec, exampleDomain, plannedNotions }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
             const slug = path ? slugify(path) : slugify(title);
@@ -358,6 +370,9 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 isExtra: true,
                 sessionDurationMinutes,
                 universe,
+                projectSpec: projectSpec !== undefined ? forceDraft(projectSpec) : undefined,
+                exampleDomain,
+                plannedNotions,
             });
             if (!parsed.success) {
                 throw new Error(`Module invalide : ${JSON.stringify(parsed.error.flatten())}`);
@@ -388,7 +403,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     // ── edit_module ────────────────────────────────────────────────────────────
     server.tool(
         "edit_module",
-        "Édite les métadonnées d'un module : titre, description, icône, couleurs thème (colorLight/colorDark en hex), sessionDurationMinutes, universe, projectIcon. Réservé aux admins.",
+        "Édite les métadonnées d'un module : titre, description, icône, couleurs thème (colorLight/colorDark en hex), sessionDurationMinutes, universe, projectIcon, projectSpec, exampleDomain, plannedNotions. Réservé aux admins.",
         {
             module:                  z.string().describe("Slug du module à éditer"),
             title:                   z.string().optional().describe("Nouveau titre affiché"),
@@ -406,8 +421,16 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 .describe("Icône Lucide du projet commun inter-sections (ex: 'Clapperboard' pour Netflex, 'BookOpen' pour la médiathèque). Affiché dans le badge des sections marquées projectRef."),
             isVisible: z.boolean().optional()
                 .describe("Visibilité du module pour les étudiants. false = masqué (brouillon), true = visible."),
+            projectSpec: projectSpecSchema.optional()
+                .describe("Spec du projet fil rouge : name, pitch, finalDeliverable, entities[]. "
+                    + "Toujours enregistrée en brouillon — la validation se fait dans l'admin."),
+            exampleDomain: exampleDomainSchema.optional()
+                .describe("Domaine d'illustration RÉSERVÉ au cours, distinct du projet. "
+                    + "Le cours ne doit jamais illustrer avec le domaine du projet."),
+            plannedNotions: z.array(z.string()).optional()
+                .describe("Notions à couvrir sur l'ensemble du module, posées avant le choix du projet."),
         },
-        async ({ module, title, iconName, description, colorLight, colorDark, sessionDurationMinutes, universe, projectIcon, isVisible }) => {
+        async ({ module, title, iconName, description, colorLight, colorDark, sessionDurationMinutes, universe, projectIcon, isVisible, projectSpec, exampleDomain, plannedNotions }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
 
@@ -424,6 +447,9 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             if (universe !== undefined) set.universe = universe;
             if (projectIcon !== undefined) set.projectIcon = projectIcon;
             if (isVisible !== undefined) set.isVisible = isVisible;
+            if (projectSpec !== undefined) set.projectSpec = forceDraft(projectSpec, mod.projectSpec);
+            if (exampleDomain !== undefined) set.exampleDomain = exampleDomainSchema.parse(exampleDomain);
+            if (plannedNotions !== undefined) set.plannedNotions = plannedNotions;
 
             const updatedFields = Object.keys(set).filter((k) => k !== "updatedAt");
             if (updatedFields.length === 0) {
@@ -798,6 +824,9 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                         isExtra: 1,
                         sessionDurationMinutes: 1,
                         universe: 1,
+                        projectSpec: 1,
+                        exampleDomain: 1,
+                        plannedNotions: 1,
                         projectIcon: 1,
                         colorLight: 1,
                         colorDark: 1,
