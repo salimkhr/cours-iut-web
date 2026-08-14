@@ -20,6 +20,7 @@
     "mcp:local": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/mcp-local.ts",
     "create-content-index": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/create-content-index.ts",
     "create-indexes": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/create-indexes.ts",
+    "migrate:project-spec": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/migrate-project-spec.ts",
     "generate-skill": "bun scripts/generate-skill.ts",
     "seed-oauth-client": "bunx dotenv-cli -e .env -e .env.local -- bun scripts/seed-oauth-client.ts",
     "audit": "bun audit",
