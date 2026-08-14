@@ -1060,14 +1060,105 @@ export const POST = withAdmin(async (req: Request, {params}: {params: Promise<{i
 
 Vérifier la signature exacte de `withAdmin` dans `src/lib/withAdmin.ts` et l'aligner sur celle des routes voisines (`src/app/api/admin/modules/[moduleId]/route.ts`).
 
-- [ ] **Step 6: Accepter les nouveaux champs en PUT**
+- [ ] **Step 6: Accepter les nouveaux champs en PUT, sans laisser passer une promotion de statut**
 
-Dans `src/app/api/admin/modules/[moduleId]/route.ts`, le handler `PUT` valide déjà le corps avec `moduleFormSchema` : les trois nouveaux champs passent automatiquement puisqu'ils y ont été ajoutés en Task 1. Vérifier qu'aucune liste blanche de clés ne les filtre en amont ; si c'est le cas, y ajouter `projectSpec`, `exampleDomain`, `plannedNotions`.
+Les trois nouveaux champs (`projectSpec`, `exampleDomain`, `plannedNotions`) passent déjà par
+`moduleFormSchema`, ajoutée en Task 1 — aucune liste blanche ne les filtre. Mais `moduleFormSchema`
+n'a pas vocation à protéger les sous-champs `status` : un `PUT` sur `/api/admin/modules/[moduleId]`
+avec un corps `{projectSpec: {..., status: "validated", referenceRepo: {url, status: "validated"}}}`
+écrirait ces statuts directement, **sans passer par `buildGateUpdate`** — ce qui rend `/validate`
+contournable par la route générale d'édition, exactement le trou que la porte 1/porte 2 doivent
+fermer. Task 11 prévoit justement que l'étape « Projet » sauvegarde le `projectSpec` complet via ce
+même `PUT` (édition du texte, pas de la validation) — il faut donc que le `PUT` accepte les
+modifications de contenu tout en étant incapable de faire passer un statut à `"validated"`.
+
+Ajoutez à `src/lib/pedagogy/validateGate.ts` :
+
+```ts
+/** Garde appliquée par le PUT d'édition du module — jamais par /validate, qui a ses propres
+ *  règles. Empêche ce PUT de PROMOUVOIR un statut à "validated" (seul /validate le peut) tout
+ *  en autorisant la régression explicite vers "draft" (bouton "Repasser en brouillon", Task 11).
+ *  Le referenceRepo déjà en base n'est jamais remplacé ni rétrogradé par ce chemin — même
+ *  principe que forceDraft (Task 4) côté MCP ; un referenceRepo fraîchement soumis sans existant
+ *  est clampé à "draft", jamais auto-validé. */
+export function guardProjectSpecOnPut(
+    input: ProjectSpec | undefined,
+    existing: ProjectSpec | undefined
+): ProjectSpec | undefined {
+    if (!input) return input;
+    const status = input.status === "validated" && existing?.status !== "validated"
+        ? "draft"
+        : input.status;
+    const referenceRepo = existing?.referenceRepo
+        ?? (input.referenceRepo ? {...input.referenceRepo, status: "draft" as const} : undefined);
+    return {...input, status, referenceRepo};
+}
+```
+
+Tests à ajouter dans `src/lib/pedagogy/validateGate.test.ts` :
+
+```ts
+describe("guardProjectSpecOnPut", () => {
+    const base = {name: "X", pitch: "p", finalDeliverable: "d", entities: []};
+
+    test("bloque une promotion à validated qui ne passe pas par /validate", () => {
+        const out = guardProjectSpecOnPut({...base, status: "validated"}, {...base, status: "draft"});
+        expect(out?.status).toBe("draft");
+    });
+
+    test("autorise la régression explicite vers draft", () => {
+        const out = guardProjectSpecOnPut({...base, status: "draft"}, {...base, status: "validated"});
+        expect(out?.status).toBe("draft");
+    });
+
+    test("laisse passer un statut validated inchangé", () => {
+        const out = guardProjectSpecOnPut({...base, status: "validated"}, {...base, status: "validated"});
+        expect(out?.status).toBe("validated");
+    });
+
+    test("ne remplace jamais un referenceRepo déjà en base", () => {
+        const existing = {
+            ...base, status: "validated" as const,
+            referenceRepo: {url: "https://git.example/u/x", status: "validated" as const},
+        };
+        const out = guardProjectSpecOnPut(
+            {...base, status: "validated", referenceRepo: {url: "https://git.example/u/autre", status: "validated"}},
+            existing
+        );
+        expect(out?.referenceRepo).toEqual({url: "https://git.example/u/x", status: "validated"});
+    });
+
+    test("clampe à draft un referenceRepo fraîchement soumis sans existant", () => {
+        const out = guardProjectSpecOnPut(
+            {...base, status: "draft", referenceRepo: {url: "https://git.example/u/x", status: "validated"}},
+            undefined
+        );
+        expect(out?.referenceRepo).toEqual({url: "https://git.example/u/x", status: "draft"});
+    });
+});
+```
+
+Dans `src/app/api/admin/modules/[moduleId]/route.ts`, le handler `PUT` doit charger le module
+existant **avant** d'appliquer le `$set` (s'il ne le fait pas déjà), puis passer
+`updateData.projectSpec` par `guardProjectSpecOnPut` :
+
+```ts
+const existing = await db.collection<Module>("modules").findOne({_id: new ObjectId(moduleId)});
+if (!existing) return NextResponse.json({error: "Module introuvable."}, {status: 404});
+
+const updateData = {
+    ...parsed.data,
+    projectSpec: guardProjectSpecOnPut(parsed.data.projectSpec, existing.projectSpec),
+};
+```
+
+Adaptez cette esquisse à la structure réelle du handler (nom des variables, gestion des autres
+champs) plutôt que de la recopier telle quelle si le fichier a une forme différente.
 
 - [ ] **Step 7: Vérifier**
 
 Run: `bunx tsc --noEmit && bun run lint && bun test`
-Expected: PASS.
+Expected: PASS, y compris les 5 nouveaux tests de `guardProjectSpecOnPut`.
 
 - [ ] **Step 8: Commit**
 
