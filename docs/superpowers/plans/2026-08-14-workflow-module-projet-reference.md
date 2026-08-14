@@ -921,8 +921,8 @@ git commit -m "feat(mcp): verrouille l'écriture de contenu sur la validation du
 ### Task 8: API admin — écriture des champs de conception et validation des portes
 
 **Files:**
-- Modify: `src/app/api/admin/modules/[id]/route.ts`
-- Create: `src/app/api/admin/modules/[id]/validate/route.ts`
+- Modify: `src/app/api/admin/modules/[moduleId]/route.ts`
+- Create: `src/app/api/admin/modules/[moduleId]/validate/route.ts`
 - Create: `src/lib/pedagogy/validateGate.ts`
 - Test: `src/lib/pedagogy/validateGate.test.ts`
 
@@ -1024,7 +1024,7 @@ Expected: PASS (6 tests).
 
 - [ ] **Step 5: Créer la route de validation**
 
-`src/app/api/admin/modules/[id]/validate/route.ts` :
+`src/app/api/admin/modules/[moduleId]/validate/route.ts` :
 
 ```ts
 import {NextResponse} from "next/server";
@@ -1058,11 +1058,11 @@ export const POST = withAdmin(async (req: Request, {params}: {params: Promise<{i
 });
 ```
 
-Vérifier la signature exacte de `withAdmin` dans `src/lib/withAdmin.ts` et l'aligner sur celle des routes voisines (`src/app/api/admin/modules/[id]/route.ts`).
+Vérifier la signature exacte de `withAdmin` dans `src/lib/withAdmin.ts` et l'aligner sur celle des routes voisines (`src/app/api/admin/modules/[moduleId]/route.ts`).
 
 - [ ] **Step 6: Accepter les nouveaux champs en PUT**
 
-Dans `src/app/api/admin/modules/[id]/route.ts`, le handler `PUT` valide déjà le corps avec `moduleFormSchema` : les trois nouveaux champs passent automatiquement puisqu'ils y ont été ajoutés en Task 1. Vérifier qu'aucune liste blanche de clés ne les filtre en amont ; si c'est le cas, y ajouter `projectSpec`, `exampleDomain`, `plannedNotions`.
+Dans `src/app/api/admin/modules/[moduleId]/route.ts`, le handler `PUT` valide déjà le corps avec `moduleFormSchema` : les trois nouveaux champs passent automatiquement puisqu'ils y ont été ajoutés en Task 1. Vérifier qu'aucune liste blanche de clés ne les filtre en amont ; si c'est le cas, y ajouter `projectSpec`, `exampleDomain`, `plannedNotions`.
 
 - [ ] **Step 7: Vérifier**
 
@@ -1471,7 +1471,7 @@ git commit -m "feat(admin): page module avec frise d'étapes et sections repliab
 - Modify: `src/components/admin/module-workflow/ModuleWorkflow.tsx`
 
 **Interfaces:**
-- Consomme : `WorkflowStep` (Task 10), `moduleFormSchema` / `projectSpecSchema` / `exampleDomainSchema` (Task 1), la route `PUT /api/admin/modules/[id]` et `POST /api/admin/modules/[id]/validate` (Task 8).
+- Consomme : `WorkflowStep` (Task 10), `moduleFormSchema` / `projectSpecSchema` / `exampleDomainSchema` (Task 1), la route `PUT /api/admin/modules/[moduleId]` et `POST /api/admin/modules/[moduleId]/validate` (Task 8).
 - Produit : chaque composant d'étape reçoit `{module: Module; onSaved: (patch: Partial<Module>) => void}` et gère son propre `useForm`.
 
 **Contraintes UI :** `react-hook-form` + `zodResolver`, `Label` lié par `htmlFor`, message d'erreur sous le champ, bouton désactivé pendant la soumission (`isSubmitting`) — c'est le pattern de `ModuleFormFields.tsx`, s'y aligner. Jamais de placeholder en guise de label.
@@ -1521,7 +1521,7 @@ git commit -m "feat(admin): étapes cadrage, notions et projet éditées en plac
 - Modify: `src/components/admin/module-workflow/ModuleWorkflow.tsx`
 
 **Interfaces:**
-- Consomme : `POST /api/admin/modules/[id]/validate` avec `{gate: "referenceRepo"}`.
+- Consomme : `POST /api/admin/modules/[moduleId]/validate` avec `{gate: "referenceRepo"}`.
 - Produit : `<ReferenceStep module={Module} onSaved={(patch: Partial<Module>) => void} />`.
 
 **Cette étape ne crée rien** : le dépôt est poussé par l'agent via `push_project_reference`. L'écran l'affiche et le valide.
