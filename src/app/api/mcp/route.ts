@@ -18,7 +18,7 @@ import {
 } from "@/lib/blockTreeUtils";
 import { moduleFormSchema, universeSchema, projectSpecSchema, exampleDomainSchema } from "@/lib/schemas/module.schema";
 import { forceDraft } from "@/lib/pedagogy/mcpProjectSpec";
-import { assertCanPushReference } from "@/lib/pedagogy/gates";
+import { assertCanPushReference, assertCanWriteContent } from "@/lib/pedagogy/gates";
 import { referenceProjectSlug, assertReferenceFiles } from "@/lib/pedagogy/projectReference";
 import { addVerdictSchema, promoteExemplarSchema, VERDICT_FORMATS, EXEMPLAR_FORMATS, EXEMPLAR_LEVELS } from "@/lib/schemas/pedagogy.schema";
 import type { PedagogyVerdict, PedagogyExemplar } from "@/types/Pedagogy";
@@ -252,6 +252,18 @@ async function saveBlocks(key: ContentKey, input: Block[]): Promise<{ contentId:
 
     revalidateTag(`content:${key.moduleSlug}:${key.sectionSlug}:${key.contentType}`, { expire: 0 });
     return { contentId, version };
+}
+
+/** Porte 2 : refuse toute écriture de contenu tant que le dépôt de référence
+ *  du module n'est pas validé. Les modules sans dépôt déclaré passent. */
+async function assertModuleWritable(moduleSlug: string): Promise<void> {
+    const db = await connectToDB();
+    const mod = await db.collection<ModuleDoc>("modules").findOne(
+        { path: moduleSlug },
+        { projection: { projectSpec: 1 } }
+    );
+    if (!mod) throw new Error(`Module "${moduleSlug}" introuvable.`);
+    assertCanWriteContent(mod.projectSpec, moduleSlug);
 }
 
 /** Réordonne un tableau d'enfants selon `orderedIds`. Les IDs absents de
@@ -987,6 +999,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         },
         async ({ module, section, type, blocks }) => {
             if (!isAdmin) throw new Error("Forbidden");
+            await assertModuleWritable(module);
 
             const validation = validateBlockTree(blocks);
             if (!validation.valid) {
@@ -1059,6 +1072,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         },
         async ({ module, section, type, blockType, props, parentBlockId, afterBlockId }) => {
             if (!isAdmin) throw new Error("Forbidden");
+            await assertModuleWritable(module);
             const def = getBlockDef(blockType);
             if (!def) throw new Error(`Type de bloc inconnu : ${blockType}`);
 
@@ -1107,6 +1121,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         },
         async ({ module, section, type, blockId, props }) => {
             if (!isAdmin) throw new Error("Forbidden");
+            await assertModuleWritable(module);
             const key: ContentKey = { moduleSlug: module, sectionSlug: section, contentType: type };
             const blocks = await loadBlocks(key);
             if (!findBlock(blocks, blockId)) throw new Error(`Bloc ${blockId} introuvable`);
@@ -1134,6 +1149,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         },
         async ({ module, section, type, blockId }) => {
             if (!isAdmin) throw new Error("Forbidden");
+            await assertModuleWritable(module);
             const key: ContentKey = { moduleSlug: module, sectionSlug: section, contentType: type };
             const blocks = await loadBlocks(key);
             if (!findBlock(blocks, blockId)) throw new Error(`Bloc ${blockId} introuvable`);
@@ -1157,6 +1173,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         },
         async ({ module, section, type, parentBlockId, blockIds }) => {
             if (!isAdmin) throw new Error("Forbidden");
+            await assertModuleWritable(module);
             const key: ContentKey = { moduleSlug: module, sectionSlug: section, contentType: type };
             const blocks = await loadBlocks(key);
 
