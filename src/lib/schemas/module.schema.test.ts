@@ -1,5 +1,5 @@
 import {describe, expect, it, test} from "bun:test";
-import {moduleFormSchema, universeSchema} from "@/lib/schemas/module.schema";
+import {moduleFormSchema, universeSchema, projectSpecSchema, exampleDomainSchema} from "@/lib/schemas/module.schema";
 
 const baseModule = {
     title: "PHP",
@@ -52,5 +52,49 @@ describe("moduleFormSchema.universe", () => {
         });
         expect(r.success).toBe(true);
         if (r.success) expect("scope" in (r.data.universe ?? {})).toBe(false);
+    });
+});
+
+describe("projectSpecSchema", () => {
+    test("accepte une spec complète en brouillon", () => {
+        const parsed = projectSpecSchema.parse({
+            name: "Gestion de restaurant",
+            pitch: "Une application de prise de commandes en salle",
+            finalDeliverable: "Un CLI qui enregistre les commandes et édite l'addition",
+            entities: ["Order", "Table", "Plat"],
+        });
+        expect(parsed.status).toBe("draft");
+        expect(parsed.referenceRepo).toBeUndefined();
+    });
+
+    test("refuse un status inconnu", () => {
+        const result = projectSpecSchema.safeParse({
+            name: "X", pitch: "Y", finalDeliverable: "Z", entities: [], status: "publie",
+        });
+        expect(result.success).toBe(false);
+    });
+
+    test("porte le dépôt de référence avec son propre statut", () => {
+        const parsed = projectSpecSchema.parse({
+            name: "X", pitch: "Y", finalDeliverable: "Z", entities: [],
+            referenceRepo: {url: "https://git.example/u/projet-reference-rust"},
+        });
+        expect(parsed.referenceRepo?.status).toBe("draft");
+    });
+});
+
+describe("exampleDomainSchema", () => {
+    test("exige un nom et une description", () => {
+        expect(exampleDomainSchema.safeParse({name: "", description: "x"}).success).toBe(false);
+        expect(exampleDomainSchema.safeParse({name: "Bibliothèque", description: "Livres, emprunts"}).success).toBe(true);
+    });
+});
+
+describe("moduleFormSchema", () => {
+    test("plannedNotions vaut [] par défaut", () => {
+        const parsed = moduleFormSchema.parse({
+            title: "Rust", path: "rust", iconName: "Code", coefficients: [],
+        });
+        expect(parsed.plannedNotions).toEqual([]);
     });
 });

@@ -50,6 +50,7 @@ export default function EditModuleSheet({
         colorDark: module.colorDark ?? '#FB923C',
         universe: module.universe,
         projectIcon: module.projectIcon ?? '',
+        plannedNotions: module.plannedNotions ?? [],
     }), [module]);
 
     const {

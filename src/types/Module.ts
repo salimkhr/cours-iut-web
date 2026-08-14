@@ -2,9 +2,9 @@ import Section from "@/types/Section";
 import {ObjectId} from "bson";
 import Instructor from "@/types/Instructor";
 import Coefficient from "@/types/Coefficient";
-import type {ModuleUniverse} from "@/lib/schemas/module.schema";
+import type {ModuleUniverse, ProjectSpec, ExampleDomain} from "@/lib/schemas/module.schema";
 
-export type {ModuleUniverse};
+export type {ModuleUniverse, ProjectSpec, ExampleDomain};
 
 export default interface Module {
     _id: string | ObjectId;
@@ -25,4 +25,7 @@ export default interface Module {
     colorDark?: string;
     isVisible?: boolean;
     updatedAt?: string;
+    projectSpec?: ProjectSpec;
+    exampleDomain?: ExampleDomain;
+    plannedNotions?: string[];
 }

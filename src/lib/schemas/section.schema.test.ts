@@ -21,6 +21,16 @@ describe("briefSchema", () => {
             expect(r.data.filRougeStep).toBe("");
         }
     });
+
+    it("le brief porte l'état observable de fin de section", () => {
+        const parsed = briefSchema.parse({filRougeOutcome: "Le CLI affiche la carte du jour"});
+        expect(parsed.filRougeOutcome).toBe("Le CLI affiche la carte du jour");
+        expect(parsed.providedBase).toBeUndefined();
+    });
+
+    it("filRougeOutcome vaut une chaîne vide par défaut", () => {
+        expect(briefSchema.parse({}).filRougeOutcome).toBe("");
+    });
 });
 
 describe("curriculumSchema", () => {

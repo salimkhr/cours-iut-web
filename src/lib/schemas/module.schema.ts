@@ -34,6 +34,29 @@ export const universeSchema = z.object({
 
 export type ModuleUniverse = z.infer<typeof universeSchema>;
 
+export const referenceRepoSchema = z.object({
+    url: z.string().url("URL de dépôt invalide"),
+    status: z.enum(["draft", "validated"]).default("draft"),
+});
+
+export const projectSpecSchema = z.object({
+    name: z.string().trim().min(1, "Le nom du projet est obligatoire"),
+    pitch: z.string().trim().min(1, "Le pitch est obligatoire"),
+    finalDeliverable: z.string().trim().min(1, "Le livrable final est obligatoire"),
+    entities: z.array(z.string().trim().min(1)).default([]),
+    status: z.enum(["draft", "validated"]).default("draft"),
+    referenceRepo: referenceRepoSchema.optional(),
+});
+
+export const exampleDomainSchema = z.object({
+    name: z.string().trim().min(1, "Le nom du domaine d'exemples est obligatoire"),
+    description: z.string().trim().min(1, "La description du domaine d'exemples est obligatoire"),
+});
+
+export type ProjectSpec = z.infer<typeof projectSpecSchema>;
+export type ExampleDomain = z.infer<typeof exampleDomainSchema>;
+export type ReferenceRepo = z.infer<typeof referenceRepoSchema>;
+
 export const moduleFormSchema = z.object({
     title: z.string().min(1, "Le titre est obligatoire"),
     path: z.string().min(1, "Le path est obligatoire"),
@@ -52,6 +75,9 @@ export const moduleFormSchema = z.object({
     projectIcon: z.string().optional(),
     colorLight: hexColorSchema.optional(),
     colorDark: hexColorSchema.optional(),
+    projectSpec: projectSpecSchema.optional(),
+    exampleDomain: exampleDomainSchema.optional(),
+    plannedNotions: z.array(z.string().trim().min(1)).default([]),
 });
 
 export type ModuleFormValues = z.infer<typeof moduleFormSchema>;

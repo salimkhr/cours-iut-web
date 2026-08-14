@@ -6,6 +6,8 @@ export const briefSchema = z.object({
     objectives: z.array(z.string()).default([]),
     notions: z.array(z.string()).default([]),
     filRougeStep: z.string().default(""),
+    filRougeOutcome: z.string().default(""),
+    providedBase: z.string().optional(),
     notes: z.string().optional(),
 });
 export type SectionBrief = z.infer<typeof briefSchema>;
