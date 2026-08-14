@@ -4,15 +4,23 @@ import {useState} from "react";
 import type Module from "@/types/Module";
 import StepStrip from "@/components/admin/module-workflow/StepStrip";
 import WorkflowStep from "@/components/admin/module-workflow/WorkflowStep";
+import CadrageStep from "@/components/admin/module-workflow/steps/CadrageStep";
+import NotionsStep from "@/components/admin/module-workflow/steps/NotionsStep";
+import ProjetStep from "@/components/admin/module-workflow/steps/ProjetStep";
 import {currentStepId, moduleSteps, type StepId} from "@/lib/pedagogy/moduleProgress";
 
 interface ModuleWorkflowProps {
     module: Module;
 }
 
-export default function ModuleWorkflow({module}: ModuleWorkflowProps) {
+export default function ModuleWorkflow({module: initialModule}: ModuleWorkflowProps) {
+    const [module, setModule] = useState(initialModule);
     const steps = moduleSteps(module);
     const [openStep, setOpenStep] = useState<StepId>(currentStepId(module));
+
+    const handleSaved = (patch: Partial<Module>) => {
+        setModule((prev) => ({...prev, ...patch}));
+    };
 
     return (
         <div className="flex flex-col gap-6">
@@ -26,9 +34,14 @@ export default function ModuleWorkflow({module}: ModuleWorkflowProps) {
                         open={openStep === step.id}
                         onOpenChange={(open) => setOpenStep(open ? step.id : openStep)}
                     >
-                        <p className="text-sm text-bridge-600 dark:text-bridge-300">
-                            Étape « {step.label} » — contenu à venir.
-                        </p>
+                        {step.id === "cadrage" && <CadrageStep module={module} onSaved={handleSaved}/>}
+                        {step.id === "notions" && <NotionsStep module={module} onSaved={handleSaved}/>}
+                        {step.id === "projet" && <ProjetStep module={module} onSaved={handleSaved}/>}
+                        {step.id !== "cadrage" && step.id !== "notions" && step.id !== "projet" && (
+                            <p className="text-sm text-bridge-600 dark:text-bridge-300">
+                                Étape « {step.label} » — contenu à venir.
+                            </p>
+                        )}
                     </WorkflowStep>
                 ))}
             </div>
