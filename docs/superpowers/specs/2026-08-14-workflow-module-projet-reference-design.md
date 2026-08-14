@@ -151,12 +151,38 @@ Règles d'affichage :
 - Le tableau de pilotage ne stocke aucun statut. Par section et par support : *briefé* (brief
   rempli), *rédigé* (blocs présents), *publié* (`isAvailable`), *corrigé*
   (`correctionIsAvailable`).
-- `EditModuleSheet` survit pour les réglages annexes (couleurs, coefficients, intervenants,
-  SAÉ), qui n'ont rien à faire dans le workflow de conception.
+### Plus de surfaces flottantes
 
-Contrainte projet : invoquer le skill `ui-ux-pro-max` avant l'implémentation de cet écran
-(règle CLAUDE.md section 11), et réutiliser les primitives existantes (`AdminDataTable`,
-composants `Table…`, `Button`, `Badge`) plutôt que d'en réécrire.
+Tout s'édite en place dans la page. Les seules modales conservées sont les `AlertDialog` de
+confirmation destructive, qui est leur usage légitime.
+
+| Existant | Devient |
+|---|---|
+| `/admin/modules` + `ModulesList` | **Reste** l'index : recherche, ajout, visibilité. L'icône « Gérer les sections » devient un lien vers `/admin/modules/[slug]` |
+| `Dialog` de `AdminModule.tsx` | **Supprimé** — la page le remplace |
+| `EditModuleSheet` + `AdminSheetHeader` | **Démontés** — les réglages annexes (couleurs, coefficients, intervenants, SAÉ) deviennent une dernière étape repliée en bas de page |
+| `ModuleFormFields` | **Conservé**, remonté tel quel dans l'étape « Réglages » de la page |
+| `SectionForm` / `EditSectionButton` | **Démontés** — créer et éditer une section se fait en ligne dans le tableau |
+| `AdminSection.tsx` | **Réutilisé** comme ligne du tableau : il porte déjà les liens builder et les switches Publiée / Correction / Verrou examen. Enrichi des badges d'avancement |
+| `AlertDialog` de suppression | **Conservés** tels quels |
+| `/admin/content/[module]/[section]/[type]` | **Inchangé** — le builder reste la cible des liens |
+
+### Contraintes d'implémentation
+
+Issues du passage par `ui-ux-pro-max` (règle CLAUDE.md section 11) :
+
+- **Étapes repliables** : `Collapsible` (`src/components/ui/collapsible.tsx`). Pas
+  d'`Accordion` dans le projet, et pas de `div onClick` maison.
+- **Indicateur de progression obligatoire** : « Étape 3 sur 7 » plus une frise de pastilles.
+  Un processus multi-étapes sans indication d'avancement est un défaut d'UX identifié.
+- **Tableau sémantique** : composants `Table…` via `AdminDataTable`. Rappel CLAUDE.md :
+  **pas de `@tanstack/react-table`**, colonnes déclarées en `AdminColumn<TData>`.
+- **Formulaires** : `react-hook-form` + `zodResolver`, `Label` lié par `htmlFor`, message
+  d'erreur sous le champ — le pattern de `ModuleFormFields`. Jamais de placeholder en guise
+  de label.
+- **Cibles tactiles** ≥ 44 px (`size-11` / `min-h-11`, déjà l'usage du projet),
+  `aria-label` sur tout bouton icône, focus visible au clavier.
+- Contraste et lisibilité vérifiés en clair **et** en sombre.
 
 ## Outils MCP
 
@@ -226,8 +252,8 @@ Découpage en quatre lots, dans cet ordre. Chacun est livrable et testable seul.
    boutons de validation, tableau de pilotage à états dérivés.
 3. **Skill — réécriture** — `module-design` sur les 7 étapes, `content-writer` sur les deux
    invariants durs, exemple d'arbre de blocs et tableau des outils. Régénération.
-4. **Nettoyage** — `EditModuleSheet` recentré sur les réglages annexes, retrait des champs de
-   conception du formulaire.
+4. **Démontage des surfaces flottantes** — suppression du `Dialog` de `AdminModule`, de
+   `EditModuleSheet` et de `SectionForm` / `EditSectionButton` ; édition en place partout.
 
 ## Tests
 
