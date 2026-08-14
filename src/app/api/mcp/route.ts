@@ -18,6 +18,8 @@ import {
 } from "@/lib/blockTreeUtils";
 import { moduleFormSchema, universeSchema, projectSpecSchema, exampleDomainSchema } from "@/lib/schemas/module.schema";
 import { forceDraft } from "@/lib/pedagogy/mcpProjectSpec";
+import { assertCanPushReference } from "@/lib/pedagogy/gates";
+import { referenceProjectSlug, assertReferenceFiles } from "@/lib/pedagogy/projectReference";
 import { addVerdictSchema, promoteExemplarSchema, VERDICT_FORMATS, EXEMPLAR_FORMATS, EXEMPLAR_LEVELS } from "@/lib/schemas/pedagogy.schema";
 import type { PedagogyVerdict, PedagogyExemplar } from "@/types/Pedagogy";
 import { ObjectId } from "bson";
@@ -722,6 +724,52 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 content: [{
                     type: "text" as const,
                     text: `Correction publiée : ${project.webUrl} (commit ${sha.slice(0, 8)}, ${files.length} fichier(s)). hasCorrection=true ; correctionIsAvailable reste à activer dans l'admin.`,
+                }],
+            };
+        }
+    );
+
+    // ── push_project_reference ────────────────────────────────────────────────
+    server.tool(
+        "push_project_reference",
+        "Pousse la VERSION FINALE du projet fil rouge dans le dépôt GitLab privé du module. "
+        + "Exige que la spec projet soit validée dans l'admin. Le dépôt reflète exactement les "
+        + "fichiers envoyés (les absents sont supprimés). Réservé aux admins.",
+        {
+            module: z.string().describe("Slug du module, ex: rust"),
+            files: z.array(z.object({
+                path:    z.string().describe("Chemin relatif sous la racine, ex: src/main.rs"),
+                content: z.string(),
+            })).describe("Le projet terminé, dans son état de fin de module"),
+            message: z.string().optional().describe("Message de commit"),
+        },
+        async ({module, files, message}) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const db = await connectToDB();
+            const mod = await db.collection<Module>("modules").findOne({path: module});
+            if (!mod) throw new Error(`Module "${module}" introuvable.`);
+
+            assertCanPushReference(mod.projectSpec, module);
+            assertReferenceFiles(files);
+
+            const cfg = getPrivateProjectConfig();
+            const slug = referenceProjectSlug(module);
+            const project = await ensurePrivateProject(cfg, slug);
+            const sha = await commitFiles(cfg, project.id, files, message ?? `Projet de référence — ${module}`);
+
+            await db.collection("modules").updateOne(
+                {path: module},
+                {$set: {
+                    "projectSpec.referenceRepo": {url: project.webUrl, status: "draft"},
+                    updatedAt: new Date().toISOString(),
+                }}
+            );
+
+            return {
+                content: [{
+                    type: "text" as const,
+                    text: `Projet de référence poussé : ${project.webUrl} (commit ${sha.slice(0, 8)}). `
+                        + `Statut « brouillon » — relisez-le et validez-le dans l'admin avant de rédiger les supports.`,
                 }],
             };
         }
