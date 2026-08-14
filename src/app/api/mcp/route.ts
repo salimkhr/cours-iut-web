@@ -24,7 +24,7 @@ import { addVerdictSchema, promoteExemplarSchema, VERDICT_FORMATS, EXEMPLAR_FORM
 import type { PedagogyVerdict, PedagogyExemplar } from "@/types/Pedagogy";
 import { ObjectId } from "bson";
 import { assignModuleColor } from "@/lib/assignModuleColor";
-import { getGitlabConfig, getPrivateProjectConfig, ensureGroup, ensureProject, ensurePrivateProject, commitFiles } from "@/lib/gitlab";
+import { getGitlabConfig, getPrivateProjectConfig, ensureGroup, ensureProject, ensurePrivateProject, commitFiles, listRepoFiles, readRepoFile } from "@/lib/gitlab";
 import { isValidIcon } from "@/lib/iconMap";
 import { sectionApiSchema, briefSchema, curriculumSchema } from "@/lib/schemas/section.schema";
 import type { SectionBrief, SectionCurriculum } from "@/lib/schemas/section.schema";
@@ -770,6 +770,42 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                     type: "text" as const,
                     text: `Projet de référence poussé : ${project.webUrl} (commit ${sha.slice(0, 8)}). `
                         + `Statut « brouillon » — relisez-le et validez-le dans l'admin avant de rédiger les supports.`,
+                }],
+            };
+        }
+    );
+
+    // ── get_project_reference ─────────────────────────────────────────────────
+    server.tool(
+        "get_project_reference",
+        "Lit le projet de référence d'un module. Sans `path`, retourne l'arbre des fichiers ; "
+        + "avec `path`, le contenu du fichier. À lire AVANT de rédiger un TP : le résultat "
+        + "observable de chaque exercice doit sortir de ce code, pas d'une invention.",
+        {
+            module: z.string().describe("Slug du module, ex: rust"),
+            path:   z.string().optional().describe("Chemin d'un fichier ; omis = arbre complet"),
+        },
+        async ({module, path: filePath}) => {
+            const db = await connectToDB();
+            const mod = await db.collection<Module>("modules").findOne({path: module});
+            if (!mod) throw new Error(`Module "${module}" introuvable.`);
+            if (!mod.projectSpec?.referenceRepo) {
+                throw new Error(`Le module "${module}" n'a pas encore de projet de référence.`);
+            }
+
+            const cfg = getPrivateProjectConfig();
+            const project = await ensurePrivateProject(cfg, referenceProjectSlug(module));
+
+            if (filePath) {
+                const content = await readRepoFile(cfg, project.id, filePath);
+                return {content: [{type: "text" as const, text: content}]};
+            }
+
+            const files = await listRepoFiles(cfg, project.id);
+            return {
+                content: [{
+                    type: "text" as const,
+                    text: `${files.length} fichier(s) :\n${files.join("\n")}`,
                 }],
             };
         }

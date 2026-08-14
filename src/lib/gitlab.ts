@@ -120,7 +120,7 @@ export async function ensureProject(
 }
 
 /** Chemins des blobs du repo (branche par défaut), toutes pages. Repo vide → []. */
-async function listRepoFiles(cfg: GitlabConfig, projectId: number): Promise<string[]> {
+export async function listRepoFiles(cfg: GitlabConfig, projectId: number): Promise<string[]> {
     const paths: string[] = [];
     let page = "1";
     const pagesSeen = new Set<string>();
@@ -136,6 +136,19 @@ async function listRepoFiles(cfg: GitlabConfig, projectId: number): Promise<stri
         page = (res.headers.get("x-next-page") ?? "") as string;
     }
     return paths;
+}
+
+/** Contenu d'un fichier sur `main`, décodé depuis la base64 renvoyée par l'API. */
+export async function readRepoFile(
+    cfg: GitlabConfig, projectId: number, filePath: string
+): Promise<string> {
+    const res = await gitlabFetch(
+        cfg,
+        `/projects/${projectId}/repository/files/${encodeURIComponent(filePath)}?ref=main`
+    );
+    if (!res.ok) throw await gitlabError(res, `lecture du fichier ${filePath}`);
+    const file = await res.json() as { content: string };
+    return Buffer.from(file.content, "base64").toString("utf-8");
 }
 
 /** Garantit l'existence d'un projet PRIVÉ `slug` dans l'espace personnel du token
