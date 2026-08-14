@@ -3,6 +3,8 @@ import {connectToDB} from "@/lib/mongodb";
 import {ObjectId} from "bson";
 import {getServerSession} from "@/lib/auth";
 import {moduleFormSchema} from "@/lib/schemas/module.schema";
+import {guardProjectSpecOnPut} from "@/lib/pedagogy/validateGate";
+import type Module from "@/types/Module";
 import {z} from "zod";
 
 const visibilitySchema = z.object({isVisible: z.boolean()});
@@ -22,10 +24,19 @@ export async function PUT(
     if (!parsed.success) {
         return NextResponse.json({error: parsed.error.flatten()}, {status: 400});
     }
-    const updateData = parsed.data;
 
     try {
         const db = await connectToDB();
+        const existing = await db.collection<Module>("modules").findOne({_id: new ObjectId(moduleId)});
+        if (!existing) {
+            return NextResponse.json({error: "Module introuvable"}, {status: 404});
+        }
+
+        const updateData = {
+            ...parsed.data,
+            projectSpec: guardProjectSpecOnPut(parsed.data.projectSpec, existing.projectSpec),
+        };
+
         const result = await db.collection("modules").updateOne(
             {_id: new ObjectId(moduleId)},
             {$set: updateData}

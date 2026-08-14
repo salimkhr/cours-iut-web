@@ -28,3 +28,22 @@ export function buildGateUpdate(
     }
     return {"projectSpec.referenceRepo.status": "validated"};
 }
+
+/** Garde appliquée par le PUT d'édition du module — jamais par /validate, qui a ses propres
+ *  règles. Empêche ce PUT de PROMOUVOIR un statut à "validated" (seul /validate le peut) tout
+ *  en autorisant la régression explicite vers "draft" (bouton "Repasser en brouillon", Task 11).
+ *  Le referenceRepo déjà en base n'est jamais remplacé ni rétrogradé par ce chemin — même
+ *  principe que forceDraft (Task 4) côté MCP ; un referenceRepo fraîchement soumis sans existant
+ *  est clampé à "draft", jamais auto-validé. */
+export function guardProjectSpecOnPut(
+    input: ProjectSpec | undefined,
+    existing: ProjectSpec | undefined
+): ProjectSpec | undefined {
+    if (!input) return input;
+    const status = input.status === "validated" && existing?.status !== "validated"
+        ? "draft"
+        : input.status;
+    const referenceRepo = existing?.referenceRepo
+        ?? (input.referenceRepo ? {...input.referenceRepo, status: "draft" as const} : undefined);
+    return {...input, status, referenceRepo};
+}
