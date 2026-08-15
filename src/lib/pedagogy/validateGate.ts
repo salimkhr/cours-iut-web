@@ -47,3 +47,18 @@ export function guardProjectSpecOnPut(
         ?? (input.referenceRepo ? {...input.referenceRepo, status: "draft" as const} : undefined);
     return {...input, status, referenceRepo};
 }
+
+/** Replie le résultat de `guardProjectSpecOnPut` dans le `$set` d'un PUT complet, sans jamais
+ *  écrire `projectSpec: undefined` comme propriété propre. Le driver Mongo de ce projet n'a PAS
+ *  `ignoreUndefined: true` : une clé explicitement `undefined` est sérialisée en BSON `null`, que
+ *  `moduleFormSchema` (`.optional()`, pas `.nullable()`) rejette au PUT suivant — un module qui
+ *  perd sa spec une fois ne peut alors plus jamais être sauvegardé depuis Cadrage/Notions/Projet
+ *  (400 systématique) tant que la valeur en base reste `null`. */
+export function foldProjectSpecGuard(
+    data: Record<string, unknown> & {projectSpec?: ProjectSpec},
+    existing: ProjectSpec | undefined
+): Record<string, unknown> {
+    const {projectSpec, ...rest} = data;
+    const guarded = guardProjectSpecOnPut(projectSpec, existing);
+    return guarded !== undefined ? {...rest, projectSpec: guarded} : rest;
+}

@@ -3,7 +3,7 @@ import {connectToDB} from "@/lib/mongodb";
 import {ObjectId} from "bson";
 import {getServerSession} from "@/lib/auth";
 import {moduleFormSchema} from "@/lib/schemas/module.schema";
-import {guardProjectSpecOnPut} from "@/lib/pedagogy/validateGate";
+import {foldProjectSpecGuard} from "@/lib/pedagogy/validateGate";
 import type Module from "@/types/Module";
 import {z} from "zod";
 
@@ -32,10 +32,7 @@ export async function PUT(
             return NextResponse.json({error: "Module introuvable"}, {status: 404});
         }
 
-        const updateData = {
-            ...parsed.data,
-            projectSpec: guardProjectSpecOnPut(parsed.data.projectSpec, existing.projectSpec),
-        };
+        const updateData = foldProjectSpecGuard(parsed.data, existing.projectSpec);
 
         const result = await db.collection("modules").updateOne(
             {_id: new ObjectId(moduleId)},

@@ -39,6 +39,43 @@ interface InlineSectionRowProps {
 const inputCn = "bg-bridge-100/60 dark:bg-bridge-800/60 border-bridge-500/45 focus-visible:ring-bridge-500/50";
 const labelCn = "text-sm font-semibold text-brand-dark dark:text-bridge-200";
 
+/** Fusionne le brief édité par ce formulaire (objectives/notions/filRougeStep/notes) avec les
+ *  champs édités ailleurs (filRougeOutcome/providedBase par BriefsStep) : ce formulaire n'a pas
+ *  de champs pour ces deux-là, donc ils doivent venir de `section.brief` existant, jamais être
+ *  reconstruits à partir de `data` (qui ne les porte pas) — sinon toute édition ici (ex. corriger
+ *  un titre) réinitialise silencieusement le fil rouge « résultat attendu » / « base fournie »
+ *  saisis via l'étape Briefs. La route PUT fait un remplacement complet du champ `brief`.
+ */
+export function buildSectionBriefPayload(
+    existingBrief: Section["brief"] | undefined,
+    data: Pick<SectionFormValues, "briefObjectives" | "briefNotions" | "briefFilRougeStep" | "briefNotes">
+): NonNullable<SectionApiPayload["brief"]> {
+    const splitLines = (s?: string) =>
+        (s ?? "").split("\n").map((x) => x.trim()).filter((x) => x.length > 0);
+
+    return {
+        objectives: splitLines(data.briefObjectives),
+        notions: splitLines(data.briefNotions),
+        filRougeStep: (data.briefFilRougeStep ?? "").trim(),
+        filRougeOutcome: existingBrief?.filRougeOutcome ?? "",
+        ...(existingBrief?.providedBase && {providedBase: existingBrief.providedBase}),
+        ...(data.briefNotes?.trim() && {notes: data.briefNotes.trim()}),
+    };
+}
+
+/** Un brief "vide" ne doit générer aucune clé `brief` dans le payload (cf. `onSubmit`) — mais
+ *  "vide" doit tenir compte des CINQ champs du schéma, pas seulement des trois rendus par ce
+ *  formulaire : un brief qui ne porte qu'un `filRougeOutcome` hérité de BriefsStep est un brief
+ *  non vide, et l'omettre supprimerait l'objet `brief` entier au prochain save (undefined → null
+ *  Mongo, cf. PUT de module). */
+export function hasBriefContent(brief: NonNullable<SectionApiPayload["brief"]>): boolean {
+    return brief.objectives.length > 0
+        || brief.notions.length > 0
+        || brief.filRougeStep.length > 0
+        || (brief.filRougeOutcome?.length ?? 0) > 0
+        || Boolean(brief.providedBase);
+}
+
 export default function InlineSectionRow({module, section, onDone}: InlineSectionRowProps) {
     const isEditMode = section !== null;
     const {addSection, editSection} = useAdminApi();
@@ -147,24 +184,18 @@ export default function InlineSectionRow({module, section, onDone}: InlineSectio
         const splitLines = (s?: string) =>
             (s ?? "").split("\n").map((x) => x.trim()).filter((x) => x.length > 0);
 
-        const brief = {
-            objectives: splitLines(data.briefObjectives),
-            notions: splitLines(data.briefNotions),
-            filRougeStep: (data.briefFilRougeStep ?? "").trim(),
-            ...(data.briefNotes?.trim() && {notes: data.briefNotes.trim()}),
-        };
+        const brief = buildSectionBriefPayload(section?.brief, data);
         const curriculum = {
             notions: splitLines(data.curriculumNotions),
             apis: splitLines(data.curriculumApis),
         };
-        const hasBrief = brief.objectives.length > 0 || brief.notions.length > 0 || brief.filRougeStep.length > 0;
         const hasCurriculum = curriculum.notions.length > 0 || curriculum.apis.length > 0;
 
         const payload: SectionApiPayload = {
             ...data,
             objectives: cleanedObjectives,
             tags: cleanedTags,
-            ...(hasBrief && {brief}),
+            ...(hasBriefContent(brief) && {brief}),
             ...(hasCurriculum && {curriculum}),
         };
 
