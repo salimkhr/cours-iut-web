@@ -37,6 +37,12 @@ séparée sur confirmation.
   détail reste dans le cours écrit.
 - **Examen** : contrat de consigne intégral, HORS fil rouge, notions issues des
   `curriculum` uniquement (jamais une notion non enseignée).
+- **Cours — domaine d'illustration** : le cours illustre avec l'`exampleDomain` du module,
+  JAMAIS avec le domaine du projet fil rouge. Un exemple de cours qui reprend le projet est
+  un défaut BLOQUANT : il rend le TP faisable par copier-coller.
+- **TP — cible réelle** : avant d'écrire le squelette, lisez le code cible avec
+  `get_project_reference`. Le résultat observable de chaque exercice sort de ce code, pas
+  d'une invention. Un TP dont la cible ne correspond pas au dépôt est un défaut BLOQUANT.
 
 ## Écriture humaine — anti-tics IA
 
@@ -76,6 +82,43 @@ d'enseignant assumé (« préférez X, Y vieillit mal »), rythme varié (une ph
 courte après deux longues). L'exemplaire chargé à l'étape 3 reste la référence
 de voix ; cette liste sert de filet, pas de style.
 
+## Format de l'arbre de blocs
+
+`save_content` attend un tableau de blocs. Chaque bloc porte un `id` unique, un `type` du
+registre, ses `props`, et `children` pour les conteneurs.
+
+```json
+[
+  {
+    "id": "sec-1",
+    "type": "section",
+    "props": {"title": "Les variables"},
+    "children": [
+      {"id": "txt-1", "type": "text", "props": {"content": "Une variable garde une valeur."}},
+      {
+        "id": "code-1",
+        "type": "code",
+        "props": {"language": "rust", "filename": "src/main.rs", "code": "let plat = \"ratatouille\";"}
+      }
+    ]
+  }
+]
+```
+
+Un bloc sans `children` n'en déclare pas. Les `id` sont libres mais uniques dans l'arbre.
+`list_block_types` fait foi pour les `props` exactes de chaque type.
+
+## Quel outil quand
+
+| Situation | Outil | Piège |
+|---|---|---|
+| Première écriture d'un contenu | `save_content` | **Écrase tout l'arbre** — jamais pour une retouche |
+| Ajouter un bloc | `insert_block` | — |
+| Corriger un bloc | `edit_block` | — |
+| Relire pour copier (staging → prod) | `get_content` | Renvoie le JSON, round-trip sans perte |
+| Relire pour se documenter | `export_content_compact` | Markdown, **lecture seule** : jamais pour une copie |
+| Connaître l'état du projet cible | `get_project_reference` | À lire avant tout squelette de TP |
+
 ## Grammaire des blocs
 
 | Intention pédagogique | Bloc |
@@ -107,11 +150,15 @@ ou tous). Si plusieurs : ordre cours → slides → TP, chacun validé avant le 
 
 ### 2. Contexte MCP — jamais de génération « de tête »
 - `list_modules` : `universe`, `sessionDurationMinutes` du module.
+- `get_module` : `projectSpec` (le fil rouge) et `exampleDomain` (le domaine
+  d'illustration du cours) — les deux domaines à ne jamais confondre, voir Invariants.
 - `list_sections` : `brief` (le cahier des charges), `totalDuration`,
   `courseIntroMinutes` de la section cible ; `curriculum` des sections précédentes
   (les acquis réels).
 - `export_content_compact` sur les TP des sections précédentes : l'état réel du
   projet fil rouge.
+- `get_project_reference` : le code cible réel du projet fil rouge, à lire avant
+  tout squelette de TP.
 - `list_block_types`.
 
 Budgets : cours + slides = `courseIntroMinutes` ;

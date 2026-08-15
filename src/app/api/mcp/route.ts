@@ -1555,6 +1555,29 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         );
     }
 
+    // ── Prompt content-writer ────────────────────────────────────────────────
+    server.registerPrompt(
+        "content_writer",
+        {
+            title: "Rédiger cours, TP, slides ou examen",
+            description: "Rédige les supports d'une section existante, en suivant le workflow content-writer.",
+            argsSchema: {
+                module: z.string().describe("Slug du module, ex: rust"),
+                section: z.string().describe("Slug de la section, ex: ownership"),
+            },
+        },
+        ({module, section}) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const text = `Le module concerné est "${module}", la section "${section}". `
+                + `Chargez le document skill://pedagogy/content-writer `
+                + `(get_pedagogical_skill_document avec id="content-writer") et suivez son workflow `
+                + `en entier, en commençant par son étape 1 (choix des supports à rédiger).`;
+            return {
+                messages: [{role: "user" as const, content: {type: "text" as const, text}}],
+            };
+        }
+    );
+
     return server;
 }
 
