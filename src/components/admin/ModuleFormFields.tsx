@@ -89,7 +89,7 @@ export default function ModuleFormFields({
                 />
             </section>
 
-            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20"/>
 
             {/* Icône du projet commun — le reste de l'univers thématique (nom, description) a
                 migré vers projectSpec/exampleDomain, édités dans l'étape « Projet » du workflow
@@ -112,7 +112,7 @@ export default function ModuleFormFields({
                 </div>
             </section>
 
-            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20"/>
 
             {/* Couleurs */}
             <section className="flex flex-col gap-3">
@@ -142,7 +142,7 @@ export default function ModuleFormFields({
                 )}
             </section>
 
-            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20"/>
 
             {/* Coefficients */}
             <section className="flex flex-col gap-3">
@@ -169,7 +169,7 @@ export default function ModuleFormFields({
                 ))}
             </section>
 
-            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20"/>
 
             {/* Responsable */}
             <section className="flex flex-col gap-3">
@@ -184,7 +184,7 @@ export default function ModuleFormFields({
                 )}
             </section>
 
-            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20"/>
 
             {/* Intervenants */}
             <section className="flex flex-col gap-3">
@@ -228,7 +228,7 @@ export default function ModuleFormFields({
                 </Button>
             </section>
 
-            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
+            <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20"/>
 
             {/* SAÉ */}
             <section className="flex flex-col gap-3">
