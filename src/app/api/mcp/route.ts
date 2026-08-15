@@ -28,6 +28,7 @@ import { getGitlabConfig, getPrivateProjectConfig, ensureGroup, ensureProject, e
 import { isValidIcon } from "@/lib/iconMap";
 import { sectionApiSchema, briefSchema, curriculumSchema } from "@/lib/schemas/section.schema";
 import type { SectionBrief, SectionCurriculum } from "@/lib/schemas/section.schema";
+import { MODULE_STEP_PROMPTS, buildModuleStepPromptMessage, buildReglagesPromptMessage } from "@/lib/pedagogy/stepPrompts";
 import type { Block, CourseContent, ContentRef } from "@/types/CourseContent";
 import {
     normalizeForSearch,
@@ -1532,6 +1533,27 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             return { content: [{ type: "text" as const, text: doc.content }] };
         }
     );
+
+    // ── Prompts d'étape (module-design) ─────────────────────────────────────────
+    for (const def of MODULE_STEP_PROMPTS) {
+        server.registerPrompt(
+            def.id,
+            {
+                title: def.title,
+                description: def.description,
+                argsSchema: { module: z.string().describe("Slug du module, ex: rust") },
+            },
+            ({ module }) => {
+                if (!isAdmin) throw new Error("Forbidden");
+                const text = def.stepLabel
+                    ? buildModuleStepPromptMessage(def.stepLabel, module)
+                    : buildReglagesPromptMessage(module);
+                return {
+                    messages: [{ role: "user" as const, content: { type: "text" as const, text } }],
+                };
+            }
+        );
+    }
 
     return server;
 }
