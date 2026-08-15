@@ -4,6 +4,7 @@ import {useState} from "react";
 import {Pencil, Plus, X} from "lucide-react";
 import type Module from "@/types/Module";
 import type Section from "@/types/Section";
+import {getContentTypes} from "@/types/CourseContent";
 import {Button} from "@/components/ui/button";
 import AdminDataTable, {type AdminColumn} from "@/components/admin/ui/AdminDataTable";
 import {
@@ -23,7 +24,10 @@ interface SectionsStepProps {
 }
 
 /** Empreinte des champs affichés par `SectionStateSwitches`, utilisée comme `key` pour forcer
- *  un remount de `SectionStateCell` quand une édition en ligne les modifie. */
+ *  un remount de `SectionStateCell` quand une édition en ligne les modifie. Inclut les types de
+ *  `contents` : `SectionStateSwitches` dérive `hasExamen` de `section.contents` (présence du
+ *  type "examen") pour décider d'afficher ou non le switch "Verrou examen" — un ajout/retrait de
+ *  "examen" dans les types de contenu doit donc, lui aussi, déclencher le remount. */
 function sectionStateFingerprint(section: Section): string {
     return [
         section.path,
@@ -31,6 +35,7 @@ function sectionStateFingerprint(section: Section): string {
         section.correctionIsAvailable,
         section.examenIsLock,
         section.hasCorrection,
+        getContentTypes(section.contents).join(","),
     ].join(":");
 }
 
@@ -130,9 +135,7 @@ export default function SectionsStep({module, onSaved}: SectionsStepProps) {
                     <p className="text-sm font-semibold leading-tight text-brand-dark dark:text-bridge-100">
                         {section.title}
                     </p>
-                    <div className="mt-1.5">
-                        <SectionContentLinks section={section} modData={module}/>
-                    </div>
+                    <SectionContentLinks section={section} modData={module}/>
                 </div>
             ),
         },

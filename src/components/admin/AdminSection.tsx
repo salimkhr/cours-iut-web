@@ -192,7 +192,7 @@ export function SectionContentLinks({section, modData}: SectionContentLinksProps
     );
 
     return (
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
             {sortedContents.map((content) => {
                 const key = content as ContentKey;
                 return (
@@ -315,9 +315,7 @@ export default function AdminSection({
                         <p className="truncate text-sm font-semibold leading-tight text-brand-dark dark:text-bridge-100">
                             {currentSection.title}
                         </p>
-                        <div className="mt-1.5">
-                            <SectionContentLinks section={currentSection} modData={modData}/>
-                        </div>
+                        <SectionContentLinks section={currentSection} modData={modData}/>
                     </div>
                 </div>
 
