@@ -13,11 +13,12 @@ import {Button} from "@/components/ui/button";
 import {Badge} from "@/components/ui/badge";
 import type Module from "@/types/Module";
 import {
-    FIXED_COMPETENCES,
     projectSpecSchema,
     exampleDomainSchema,
     type ModuleFormValues,
 } from "@/lib/schemas/module.schema";
+import {moduleToFormValues} from "@/lib/pedagogy/moduleFormValues";
+import {readErrorMessage} from "@/lib/pedagogy/apiErrors";
 
 interface ProjetStepProps {
     module: Module;
@@ -33,42 +34,6 @@ type ProjetValues = z.infer<typeof projetSchema>;
 
 const inputCn = "bg-bridge-100/60 dark:bg-bridge-800/60 border-bridge-500/45 focus-visible:ring-bridge-500/50";
 const labelCn = "text-sm font-semibold text-brand-dark dark:text-bridge-200";
-
-/** Reconstruit un ModuleFormValues complet à partir du module courant : le PUT de
- *  /api/admin/modules/[moduleId] remplace le document entier (moduleFormSchema n'a pas de
- *  variante partielle), donc chaque étape doit renvoyer tous les champs existants et ne
- *  patcher que ceux qu'elle édite — sous peine d'écraser coefficients/instructors/couleurs. */
-function moduleToFormValues(module: Module): ModuleFormValues {
-    return {
-        title: module.title,
-        path: module.path,
-        iconName: module.iconName,
-        description: module.description ?? "",
-        associatedSae: module.associatedSae ?? [],
-        coefficients: FIXED_COMPETENCES.map((c) => ({
-            competenceName: c,
-            value: module.coefficients?.find((k) => k.competenceName === c)?.value ?? 0,
-        })),
-        manager: module.manager ?? {firstName: "", lastName: "", email: ""},
-        instructors: module.instructors?.length
-            ? module.instructors
-            : [{firstName: "", lastName: "", email: ""}],
-        isExtra: module.isExtra ?? false,
-        sessionDurationMinutes: module.sessionDurationMinutes,
-        colorLight: module.colorLight ?? "#C2410C",
-        colorDark: module.colorDark ?? "#FB923C",
-        universe: module.universe,
-        projectIcon: module.projectIcon ?? "",
-        plannedNotions: module.plannedNotions ?? [],
-        projectSpec: module.projectSpec,
-        exampleDomain: module.exampleDomain,
-    };
-}
-
-async function readErrorMessage(res: Response, fallback: string): Promise<string> {
-    const json = await res.json().catch(() => ({})) as {error?: unknown};
-    return typeof json.error === "string" ? json.error : fallback;
-}
 
 export default function ProjetStep({module, onSaved}: ProjetStepProps) {
     const [newEntity, setNewEntity] = useState("");

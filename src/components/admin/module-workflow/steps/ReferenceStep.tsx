@@ -7,15 +7,11 @@ import {Button} from "@/components/ui/button";
 import {Badge} from "@/components/ui/badge";
 import {Alert, AlertDescription} from "@/components/ui/alert";
 import type Module from "@/types/Module";
+import {readErrorMessage} from "@/lib/pedagogy/apiErrors";
 
 interface ReferenceStepProps {
     module: Module;
     onSaved: (patch: Partial<Module>) => void;
-}
-
-async function readErrorMessage(res: Response, fallback: string): Promise<string> {
-    const json = await res.json().catch(() => ({})) as {error?: unknown};
-    return typeof json.error === "string" ? json.error : fallback;
 }
 
 export default function ReferenceStep({module, onSaved}: ReferenceStepProps) {
