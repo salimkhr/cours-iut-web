@@ -8,6 +8,7 @@ import CadrageStep from "@/components/admin/module-workflow/steps/CadrageStep";
 import NotionsStep from "@/components/admin/module-workflow/steps/NotionsStep";
 import ProjetStep from "@/components/admin/module-workflow/steps/ProjetStep";
 import ReferenceStep from "@/components/admin/module-workflow/steps/ReferenceStep";
+import SectionsStep from "@/components/admin/module-workflow/steps/SectionsStep";
 import {currentStepId, moduleSteps, type StepId} from "@/lib/pedagogy/moduleProgress";
 
 interface ModuleWorkflowProps {
@@ -39,8 +40,9 @@ export default function ModuleWorkflow({module: initialModule}: ModuleWorkflowPr
                         {step.id === "notions" && <NotionsStep module={module} onSaved={handleSaved}/>}
                         {step.id === "projet" && <ProjetStep module={module} onSaved={handleSaved}/>}
                         {step.id === "reference" && <ReferenceStep module={module} onSaved={handleSaved}/>}
+                        {step.id === "sections" && <SectionsStep module={module} onSaved={handleSaved}/>}
                         {step.id !== "cadrage" && step.id !== "notions" && step.id !== "projet" &&
-                            step.id !== "reference" && (
+                            step.id !== "reference" && step.id !== "sections" && (
                             <p className="text-sm text-bridge-600 dark:text-bridge-300">
                                 Étape « {step.label} » — contenu à venir.
                             </p>
