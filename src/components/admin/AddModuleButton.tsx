@@ -91,13 +91,15 @@ export default function AddModuleButton({onAdd, open: controlledOpen, onOpenChan
                     />
 
                     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 overflow-hidden">
-                        <ModuleFormFields
-                            register={register}
-                            control={control}
-                            errors={errors}
-                            watch={watch}
-                            setValue={setValue}
-                        />
+                        <div className="flex-1 overflow-y-auto px-6 py-5">
+                            <ModuleFormFields
+                                register={register}
+                                control={control}
+                                errors={errors}
+                                watch={watch}
+                                setValue={setValue}
+                            />
+                        </div>
 
                         <div className="shrink-0 border-t border-bridge-700/20 dark:border-bridge-500/20 px-6 py-4 flex items-center justify-between gap-3">
                             <Button

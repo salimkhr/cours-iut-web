@@ -16,14 +16,14 @@ describe("MODULE_STEP_PROMPTS", () => {
         expect(ids.every((id) => id.startsWith("module_"))).toBe(true);
     });
 
-    test("l'étape réglages ne référence aucun document de skill", () => {
-        const reglages = MODULE_STEP_PROMPTS.find((p) => p.stepId === "reglages");
-        expect(reglages?.stepLabel).toBeUndefined();
-    });
-
-    test("chaque autre étape porte le titre exact du document module-design", () => {
+    test("chaque étape porte le titre exact du document module-design", () => {
         const projet = MODULE_STEP_PROMPTS.find((p) => p.stepId === "projet");
         expect(projet?.stepLabel).toBe("Projet");
+    });
+
+    test("réglages a fusionné dans cadrage — plus d'entrée séparée", () => {
+        expect(MODULE_STEP_PROMPTS.find((p) => p.id === "module_reglages")).toBeUndefined();
+        expect(MODULE_STEP_PROMPTS).toHaveLength(6);
     });
 });
 

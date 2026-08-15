@@ -5,16 +5,16 @@ export interface StepPromptDef {
     stepId: StepId;
     title: string;
     description: string;
-    /** Titre `###` exact dans skills/module-design/main.md. Absent pour "reglages",
-     *  qui est de la saisie factuelle (edit_module) sans contrepartie pédagogique. */
-    stepLabel?: string;
+    /** Titre `###` exact dans skills/module-design/main.md. */
+    stepLabel: string;
 }
 
 export const MODULE_STEP_PROMPTS: StepPromptDef[] = [
     {
         id: "module_cadrage", stepId: "cadrage", stepLabel: "Cadrage",
         title: "Cadrer un nouveau module",
-        description: "Matière, niveau, nombre de séances, durée de séance — première étape de conception.",
+        description: "Matière, niveau, séances, durée de séance, et réglages (titre, icône, "
+            + "couleurs, coefficients, intervenants, SAÉ) — première étape de conception.",
     },
     {
         id: "module_notions", stepId: "notions", stepLabel: "Notions",
@@ -41,11 +41,6 @@ export const MODULE_STEP_PROMPTS: StepPromptDef[] = [
         title: "Rédiger les briefs de section",
         description: "filRougeStep, filRougeOutcome et providedBase de chaque section.",
     },
-    {
-        id: "module_reglages", stepId: "reglages",
-        title: "Régler les paramètres du module",
-        description: "Couleurs, coefficients, intervenants, SAÉ — aucun contenu pédagogique.",
-    },
 ];
 
 /** Seed message d'un prompt d'étape : nomme le module, pointe l'agent vers la
@@ -56,11 +51,4 @@ export function buildModuleStepPromptMessage(stepLabel: string, moduleSlug: stri
         + `(get_pedagogical_skill_document avec id="module-design") et exécutez UNIQUEMENT l'étape `
         + `« ${stepLabel} » de son workflow. Ne passez pas aux étapes suivantes sans validation `
         + `explicite si l'étape en comporte une.`;
-}
-
-/** Réglages n'a pas de document à charger : la consigne reste directe. */
-export function buildReglagesPromptMessage(moduleSlug: string): string {
-    return `Le module concerné est "${moduleSlug}". Demandez à l'utilisateur les valeurs à régler `
-        + `(couleurs, coefficients, intervenants, SAÉ) et appliquez-les via edit_module. `
-        + `Aucun document de skill à charger pour cette étape.`;
 }

@@ -9,7 +9,6 @@ import CadrageStep from "@/components/admin/module-workflow/steps/CadrageStep";
 import NotionsStep from "@/components/admin/module-workflow/steps/NotionsStep";
 import ProjetStep from "@/components/admin/module-workflow/steps/ProjetStep";
 import ReferenceStep from "@/components/admin/module-workflow/steps/ReferenceStep";
-import ReglagesStep from "@/components/admin/module-workflow/steps/ReglagesStep";
 import SectionsStep from "@/components/admin/module-workflow/steps/SectionsStep";
 import {currentStepId, moduleSteps, type StepId} from "@/lib/pedagogy/moduleProgress";
 
@@ -44,7 +43,6 @@ export default function ModuleWorkflow({module: initialModule}: ModuleWorkflowPr
                         {step.id === "reference" && <ReferenceStep module={module} onSaved={handleSaved}/>}
                         {step.id === "sections" && <SectionsStep module={module} onSaved={handleSaved}/>}
                         {step.id === "briefs" && <BriefsStep module={module} onSaved={handleSaved}/>}
-                        {step.id === "reglages" && <ReglagesStep module={module} onSaved={handleSaved}/>}
                     </WorkflowStep>
                 ))}
             </div>

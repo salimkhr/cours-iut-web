@@ -33,8 +33,18 @@ geste explicite dans l'admin fait passer une porte.
 Collectez : matière/thème, niveau des étudiants (BUT 1/2/3, débutants ou non),
 nombre total de séances (le budget du module), durée d'une séance. Par arguments ou
 questions. Créez le module via `create_module` (`title`, `path`, `iconName`,
-`coefficients`, `sessionDurationMinutes`) — c'est le seul champ de conception que
-cette étape écrit, tout le reste se remplit aux étapes suivantes.
+`sessionDurationMinutes`) — c'est le seul champ de conception pédagogique que cette
+étape écrit, tout le reste (notions, projet, sections, briefs) se remplit aux étapes
+suivantes.
+
+Cette étape correspond, côté admin, à l'écran « Cadrage » du workflow module — qui
+porte aussi les réglages administratifs (couleurs, coefficients de compétences,
+intervenants, SAÉ associées). Ces champs n'ont pas de contrepartie MCP : aucun outil
+ne les expose, parce qu'ils n'ont pas de réponse pédagogiquement défendable — ce sont
+des faits administratifs, pas des choix de conception. Ne les inventez pas ; laissez
+l'utilisateur les compléter directement dans l'admin. Si l'utilisateur demande une
+couleur ou une description pour le module, `edit_module` (`colorLight`, `colorDark`,
+`description`) les couvre.
 
 ### Notions
 Listez `plannedNotions` : la progression de notions à couvrir sur le module, AVANT

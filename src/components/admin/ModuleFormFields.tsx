@@ -34,7 +34,7 @@ export default function ModuleFormFields({
         useFieldArray({control, name: 'instructors'});
 
     return (
-        <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-5">
+        <div className="flex flex-col gap-5">
 
             {/* Identification */}
             <section className="flex flex-col gap-3">

@@ -2,7 +2,7 @@ import type Module from "@/types/Module";
 import type Section from "@/types/Section";
 import {getContentTypes} from "@/types/CourseContent";
 
-export type StepId = "cadrage" | "notions" | "projet" | "reference" | "sections" | "briefs" | "reglages";
+export type StepId = "cadrage" | "notions" | "projet" | "reference" | "sections" | "briefs";
 export type StepState = "todo" | "done";
 
 export interface ModuleStep {
@@ -18,13 +18,15 @@ const LABELS: Record<StepId, string> = {
     reference: "Référence",
     sections:  "Sections",
     briefs:    "Briefs",
-    reglages:  "Réglages",
 };
 
-const ORDER: StepId[] = ["cadrage", "notions", "projet", "reference", "sections", "briefs", "reglages"];
+const ORDER: StepId[] = ["cadrage", "notions", "projet", "reference", "sections", "briefs"];
 
 function isDone(module: Module, step: StepId): boolean {
     switch (step) {
+        // "cadrage" porte aussi les réglages (couleurs/coefficients/instructors/SAÉ) depuis leur
+        // fusion dans cette étape — tous ont des valeurs par défaut, seule sessionDurationMinutes
+        // a un critère naturel d'incomplétude.
         case "cadrage":   return Boolean(module.sessionDurationMinutes);
         case "notions":   return (module.plannedNotions?.length ?? 0) > 0;
         case "projet":    return module.projectSpec?.status === "validated";
@@ -32,11 +34,6 @@ function isDone(module: Module, step: StepId): boolean {
         case "sections":  return module.sections.length > 0;
         case "briefs":    return module.sections.length > 0
             && module.sections.every((section) => sectionProgress(section).brief);
-        // "reglages" édite couleurs/coefficients/instructors/SAÉ : tous ont des valeurs par
-        // défaut, aucun n'a de critère naturel d'incomplétude. `exampleDomain` appartient à
-        // l'étape Projet, pas Réglages (Finding 6, revue finale) — le vérifier ici laissait le
-        // badge "à faire" en permanence sur tout module migré (jamais d'exampleDomain).
-        case "reglages":  return true;
     }
 }
 
@@ -46,7 +43,7 @@ export function moduleSteps(module: Module): ModuleStep[] {
 
 /** La première étape non franchie — celle que l'écran déplie au chargement. */
 export function currentStepId(module: Module): StepId {
-    return moduleSteps(module).find((step) => step.state === "todo")?.id ?? "reglages";
+    return moduleSteps(module).find((step) => step.state === "todo")?.id ?? ORDER[ORDER.length - 1];
 }
 
 export interface SectionProgress {
