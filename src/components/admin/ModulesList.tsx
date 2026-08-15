@@ -121,12 +121,11 @@ export default function ModulesList({initialModules}: ModulesListProps) {
             cell: (mod) => (
                 <AdminModuleActions
                     module={mod}
-                    filterQuery={normalizedQuery}
                     onDelete={handleDeleteModule}
                 />
             ),
         },
-    ], [handleDeleteModule, normalizedQuery]);
+    ], [handleDeleteModule]);
 
     return (
         <section className="flex flex-col gap-4">

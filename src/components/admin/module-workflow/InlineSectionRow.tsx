@@ -13,8 +13,7 @@ import {Textarea} from "@/components/ui/textarea";
 import Eyebrow from "@/components/admin/ui/Eyebrow";
 import type Module from "@/types/Module";
 import type Section from "@/types/Section";
-import type {Section as SectionApiPayload} from "@/components/admin/SectionForm";
-import useAdminApi from "@/hook/admin/useAdminApi";
+import useAdminApi, {type SectionApiPayload} from "@/hook/admin/useAdminApi";
 import {moduleColor} from "@/lib/moduleColor";
 import {cn} from "@/lib/utils";
 import {

@@ -7,11 +7,9 @@ import {Switch} from "@/components/ui/switch";
 import {useState} from "react";
 import {toast} from "sonner";
 import updateSectionState from "@/hook/admin/updateSectionState";
-import EditSectionButton from "@/components/admin/EditSectionButton";
 import Module from "@/types/Module";
 import {getContentTypes, hasContentType} from "@/types/CourseContent";
-import {Section as SectionFrom} from "@/components/admin/SectionForm";
-import useAdminApi from "@/hook/admin/useAdminApi";
+import useAdminApi, {type SectionApiPayload} from "@/hook/admin/useAdminApi";
 import {ExternalLink, KeyRound, Pencil, Trash2} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {moduleColor} from "@/lib/moduleColor";
@@ -26,12 +24,6 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
-interface AdminSectionProps {
-    section: Section;
-    modData: Module;
-    onDelete?: (sectionPath: string) => void;
-}
 
 export type ToggleKey = keyof Pick<Section, "correctionIsAvailable" | "isAvailable" | "examenIsLock">;
 
@@ -57,7 +49,7 @@ export function useSectionRowState(
     const moduleId = modData._id;
     const {editSection: editSectionApi, deleteSection: deleteSectionApi} = useAdminApi();
 
-    const editSection = async (updatedSection: SectionFrom) => {
+    const editSection = async (updatedSection: SectionApiPayload) => {
         try {
             const saved = await editSectionApi(modData._id as unknown as string, String(currentSection._id), updatedSection);
             if (!saved) {
@@ -282,58 +274,3 @@ export function SectionDeleteDialog({section, modData, deleting, onConfirm}: Sec
     );
 }
 
-/**
- * Ligne de section historique, utilisée par la modale « Gérer les sections » de
- * `AdminModule.tsx` (`src/app/admin` liste des modules). L'édition en ligne du tableau de
- * pilotage (`SectionsStep`, workflow module) ne passe PAS par ce composant : elle recompose les
- * mêmes briques (`useSectionRowState`, `SectionStateSwitches`, `SectionContentLinks`,
- * `SectionDeleteDialog`) directement dans des cellules de `AdminDataTable`, parce qu'un `<li>`
- * ne peut pas se réutiliser tel quel comme ligne de `<table>`. `AdminSection` reste donc la
- * seule route qui ouvre encore `SectionForm` en modale — via `EditSectionButton` — en attendant
- * sa suppression (tâche 19).
- */
-export default function AdminSection({
-    section,
-    modData,
-    onDelete,
-}: AdminSectionProps) {
-    const {currentSection, deleting, pendingKey, editSection, handleDelete, handleToggle} =
-        useSectionRowState(section, modData, onDelete);
-
-    return (
-        <li className="border-b border-bridge-500/15 px-4 py-3 transition-colors last:border-b-0 hover:bg-bridge-100/40 dark:hover:bg-bridge-900/30">
-            <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:gap-4">
-                {/* Identité : numéro + titre + contenus */}
-                <div className="flex min-w-0 flex-1 items-start gap-3">
-                    <span
-                        className="mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-md font-mono text-xs font-bold text-white"
-                        style={{backgroundColor: moduleColor(modData)}}
-                    >
-                        {currentSection.order.toString().padStart(2, "0")}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold leading-tight text-brand-dark dark:text-bridge-100">
-                            {currentSection.title}
-                        </p>
-                        <SectionContentLinks section={currentSection} modData={modData}/>
-                    </div>
-                </div>
-
-                {/* États + actions : une seule ligne sur mobile (switches à gauche, actions à droite) */}
-                <div className="flex items-center justify-between gap-2 xl:gap-4">
-                    <SectionStateSwitches section={currentSection} pendingKey={pendingKey} onToggle={handleToggle}/>
-
-                    <div className="flex shrink-0 items-center gap-1">
-                        <EditSectionButton section={currentSection} modData={modData} onAdd={editSection}/>
-                        <SectionDeleteDialog
-                            section={currentSection}
-                            modData={modData}
-                            deleting={deleting}
-                            onConfirm={handleDelete}
-                        />
-                    </div>
-                </div>
-            </div>
-        </li>
-    );
-}
