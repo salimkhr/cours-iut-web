@@ -37,7 +37,14 @@ export type Section = {
     contents: ContentRef[] | string[];
     examenIsLock?: boolean;
     courseIntroMinutes?: number;
-    brief?: { objectives: string[]; notions: string[]; filRougeStep: string; notes?: string };
+    brief?: {
+        objectives: string[];
+        notions: string[];
+        filRougeStep: string;
+        filRougeOutcome?: string;
+        providedBase?: string;
+        notes?: string;
+    };
     curriculum?: { notions: string[]; apis: string[] };
 };
 

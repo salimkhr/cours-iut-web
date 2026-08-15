@@ -28,8 +28,6 @@ export default function ModuleFormFields({
     register,
     control,
     errors,
-    watch,
-    setValue,
     pathReadOnly = false,
 }: ModuleFormFieldsProps) {
     const {fields: instructorFields, append: appendInstructor, remove: removeInstructor} =
@@ -89,82 +87,29 @@ export default function ModuleFormFields({
                         </label>
                     )}
                 />
-                <div className="w-48">
-                    <Label htmlFor="mf-duration" className={labelCn}>Durée de séance (min)</Label>
-                    <Input
-                        id="mf-duration"
-                        type="number"
-                        min={1}
-                        step={1}
-                        className={inputCn}
-                        {...register('sessionDurationMinutes', {valueAsNumber: true})}
-                        aria-invalid={errors.sessionDurationMinutes ? 'true' : 'false'}
-                    />
-                    {errors.sessionDurationMinutes && (
-                        <p className="text-red-500 text-xs mt-1">{errors.sessionDurationMinutes.message}</p>
-                    )}
-                </div>
             </section>
 
             <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
 
-            {/* Univers thématique */}
+            {/* Icône du projet commun — le reste de l'univers thématique (nom, description) a
+                migré vers projectSpec/exampleDomain, édités dans l'étape « Projet » du workflow
+                (cf. ProjetStep.tsx). Seule cette icône n'a pas de foyer ailleurs. */}
             <section className="flex flex-col gap-3">
-                <Eyebrow>Univers thématique</Eyebrow>
-                <label className="flex items-center gap-2 cursor-pointer">
-                    <Checkbox
-                        checked={watch('universe') !== undefined}
-                        onCheckedChange={(checked) => setValue('universe', checked
-                            ? {name: '', description: ''}
-                            : undefined)}
+                <Eyebrow>Icône du projet commun</Eyebrow>
+                <div>
+                    <Label className={labelCn}>Icône</Label>
+                    <Controller
+                        control={control}
+                        name="projectIcon"
+                        render={({field}) => (
+                            <LucideIconPicker
+                                value={field.value ?? ''}
+                                onChange={field.onChange}
+                                placeholder="Aucune icône"
+                            />
+                        )}
                     />
-                    <span className="text-sm text-brand-dark dark:text-bridge-100">Définir un univers</span>
-                </label>
-                {watch('universe') !== undefined && (
-                    <>
-                        <div>
-                            <Label className={labelCn}>Icône du projet commun</Label>
-                            <Controller
-                                control={control}
-                                name="projectIcon"
-                                render={({field}) => (
-                                    <LucideIconPicker
-                                        value={field.value ?? ''}
-                                        onChange={field.onChange}
-                                        placeholder="Aucune icône"
-                                    />
-                                )}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="mf-universe-name" className={labelCn}>Nom *</Label>
-                            <Input
-                                id="mf-universe-name"
-                                className={inputCn}
-                                placeholder="Netflex"
-                                {...register('universe.name')}
-                            />
-                            {errors.universe?.name && (
-                                <p className="text-red-500 text-xs mt-1">{errors.universe.name.message}</p>
-                            )}
-                        </div>
-                        <div>
-                            <Label htmlFor="mf-universe-desc" className={labelCn}>
-                                Description (domaine + données types) *
-                            </Label>
-                            <Textarea
-                                id="mf-universe-desc"
-                                rows={3}
-                                className={inputCn}
-                                placeholder="Catalogue de films : title, year, genre, rating…"
-                                {...register('universe.description')}
-                            />
-                            {errors.universe?.description && (
-                                <p className="text-red-500 text-xs mt-1">{errors.universe.description.message}</p>
-                            )}
-                        </div>
-                    </>
-                )}
+                </div>
             </section>
 
             <div className="h-px bg-bridge-700/20 dark:bg-bridge-500/20 -mx-6"/>
