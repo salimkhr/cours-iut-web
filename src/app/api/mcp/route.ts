@@ -799,6 +799,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             path:   z.string().optional().describe("Chemin d'un fichier ; omis = arbre complet"),
         },
         async ({module, path: filePath}) => {
+            if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
             const mod = await db.collection<Module>("modules").findOne({path: module});
             if (!mod) throw new Error(`Module "${module}" introuvable.`);
