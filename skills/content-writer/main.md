@@ -12,7 +12,8 @@ séparée sur confirmation.
   démarrer chaque exercice en moins de 2 minutes sans lever la main ; le rapide
   trouve des exercices bonus en fin de TP (hors budget temps).
 - **Code réaliste uniquement** : jamais de foo/bar/toto. Toutes les données et tous
-  les exemples puisent dans l'`universe` du module.
+  les exemples puisent dans l'`universe` du module (décor de noms/données — à ne pas
+  confondre avec `exampleDomain`, le domaine d'illustration du cours, cf. Invariants).
 - **Progression dans chaque TP** : exercices guidés « classiques » pour installer le
   geste, puis remise en pratique dans le fil rouge où le guidage s'allège.
 - **Voix d'enseignant** : ton direct, vouvoiement. Impératif vouvoyé STRICT dans les
@@ -43,6 +44,10 @@ séparée sur confirmation.
 - **TP — cible réelle** : avant d'écrire le squelette, lisez le code cible avec
   `get_project_reference`. Le résultat observable de chaque exercice sort de ce code, pas
   d'une invention. Un TP dont la cible ne correspond pas au dépôt est un défaut BLOQUANT.
+  Module sans dépôt de référence (antérieur à ce workflow — la majorité des modules
+  existants) → `get_project_reference` échoue systématiquement : repliez-vous sur
+  `export_content_compact` des TP déjà rédigés dans les sections précédentes pour
+  connaître l'état réel du projet.
 
 ## Écriture humaine — anti-tics IA
 
@@ -158,7 +163,8 @@ ou tous). Si plusieurs : ordre cours → slides → TP, chacun validé avant le 
 - `export_content_compact` sur les TP des sections précédentes : l'état réel du
   projet fil rouge.
 - `get_project_reference` : le code cible réel du projet fil rouge, à lire avant
-  tout squelette de TP.
+  tout squelette de TP. Échoue si le module n'a pas de dépôt de référence — repliez-vous
+  alors sur `export_content_compact` des sections précédentes (voir Invariants).
 - `list_block_types`.
 
 Budgets : cours + slides = `courseIntroMinutes` ;
