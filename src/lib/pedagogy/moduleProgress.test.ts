@@ -26,12 +26,15 @@ const fullModule = {
 } as unknown as Module;
 
 describe("moduleSteps", () => {
-    test("tout est à faire sur un module vide", () => {
+    test("tout est à faire sur un module vide, sauf réglages (pas de critère d'incomplétude)", () => {
+        // Finding 6 (revue finale) : "reglages" n'édite que des champs à valeur par défaut
+        // (couleurs, coefficients, instructors, SAÉ) — cette étape est toujours "done", y compris
+        // sur un module qui vient d'être créé ou migré sans exampleDomain.
         const steps = moduleSteps(emptyModule);
         expect(steps.map((s) => s.id)).toEqual(
             ["cadrage", "notions", "projet", "reference", "sections", "briefs", "reglages"]
         );
-        expect(steps.filter((s) => s.state === "done")).toHaveLength(0);
+        expect(steps.filter((s) => s.state === "done").map((s) => s.id)).toEqual(["reglages"]);
     });
 
     test("tout est fait sur un module complet", () => {
@@ -42,6 +45,12 @@ describe("moduleSteps", () => {
         const mod = {...fullModule, projectSpec: {...fullModule.projectSpec!, status: "draft" as const}};
         const steps = moduleSteps(mod as Module);
         expect(steps.find((s) => s.id === "projet")?.state).toBe("todo");
+    });
+
+    test("réglages reste \"done\" même sans exampleDomain (module migré, jamais passé par Projet)", () => {
+        const mod = {...emptyModule, exampleDomain: undefined};
+        const steps = moduleSteps(mod as Module);
+        expect(steps.find((s) => s.id === "reglages")?.state).toBe("done");
     });
 });
 

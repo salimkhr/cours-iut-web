@@ -32,7 +32,11 @@ function isDone(module: Module, step: StepId): boolean {
         case "sections":  return module.sections.length > 0;
         case "briefs":    return module.sections.length > 0
             && module.sections.every((section) => sectionProgress(section).brief);
-        case "reglages":  return Boolean(module.exampleDomain);
+        // "reglages" édite couleurs/coefficients/instructors/SAÉ : tous ont des valeurs par
+        // défaut, aucun n'a de critère naturel d'incomplétude. `exampleDomain` appartient à
+        // l'étape Projet, pas Réglages (Finding 6, revue finale) — le vérifier ici laissait le
+        // badge "à faire" en permanence sur tout module migré (jamais d'exampleDomain).
+        case "reglages":  return true;
     }
 }
 
