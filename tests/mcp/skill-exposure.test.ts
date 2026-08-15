@@ -72,6 +72,16 @@ describe("Skills pédagogiques — documents", () => {
         expect(cw).toContain("HORS fil rouge");
     });
 
+    it("content-writer documente le format de l'arbre de blocs", () => {
+        const doc = SKILL_DOCUMENTS["content-writer"];
+        expect(doc.content).toContain("Format de l'arbre de blocs");
+        expect(doc.content).toContain("get_project_reference");
+    });
+
+    it("module-design décrit le code de référence", () => {
+        expect(SKILL_DOCUMENTS["module-design"].content).toContain("push_project_reference");
+    });
+
     it("aucun document ne contient de secret ni de chemin absolu", () => {
         for (const doc of Object.values(SKILL_DOCUMENTS)) {
             for (const p of [/MONGODB_URI/, /SCALEKIT_/, /BETTER_AUTH_SECRET/, /MCP_ADMIN_EMAILS/, /C:\\Users\\/, /\/home\//]) {
