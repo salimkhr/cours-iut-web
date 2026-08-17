@@ -2,7 +2,7 @@ import type Module from "@/types/Module";
 import type Section from "@/types/Section";
 import {getContentTypes} from "@/types/CourseContent";
 
-export type StepId = "cadrage" | "notions" | "projet" | "reference" | "sections" | "briefs";
+export type StepId = "cadrage" | "notions" | "projet" | "reference" | "sections";
 export type StepState = "todo" | "done";
 
 export interface ModuleStep {
@@ -17,10 +17,9 @@ const LABELS: Record<StepId, string> = {
     projet:    "Projet",
     reference: "Référence",
     sections:  "Sections",
-    briefs:    "Briefs",
 };
 
-const ORDER: StepId[] = ["cadrage", "notions", "projet", "reference", "sections", "briefs"];
+const ORDER: StepId[] = ["cadrage", "notions", "projet", "reference", "sections"];
 
 function isDone(module: Module, step: StepId): boolean {
     switch (step) {
@@ -31,8 +30,9 @@ function isDone(module: Module, step: StepId): boolean {
         case "notions":   return (module.plannedNotions?.length ?? 0) > 0;
         case "projet":    return module.projectSpec?.status === "validated";
         case "reference": return module.projectSpec?.referenceRepo?.status === "validated";
-        case "sections":  return module.sections.length > 0;
-        case "briefs":    return module.sections.length > 0
+        // "sections" porte aussi les briefs (fil rouge/résultat attendu/base fournie) depuis
+        // leur fusion dans cette étape — pas franchie tant qu'une section n'a pas son brief.
+        case "sections":  return module.sections.length > 0
             && module.sections.every((section) => sectionProgress(section).brief);
     }
 }

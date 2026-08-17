@@ -1,11 +1,12 @@
 "use client";
 
 import {useState} from "react";
-import {Pencil, Plus, X} from "lucide-react";
+import {Pencil, Plus} from "lucide-react";
 import type Module from "@/types/Module";
 import type Section from "@/types/Section";
 import {getContentTypes} from "@/types/CourseContent";
 import {Button} from "@/components/ui/button";
+import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import AdminDataTable, {type AdminColumn} from "@/components/admin/ui/AdminDataTable";
 import {
     SectionContentLinks,
@@ -13,9 +14,7 @@ import {
     SectionStateSwitches,
     useSectionRowState,
 } from "@/components/admin/AdminSection";
-import SectionProgressBadges from "@/components/admin/module-workflow/SectionProgressBadges";
 import InlineSectionRow from "@/components/admin/module-workflow/InlineSectionRow";
-import {sectionProgress} from "@/lib/pedagogy/moduleProgress";
 import {moduleColor} from "@/lib/moduleColor";
 
 interface SectionsStepProps {
@@ -24,7 +23,7 @@ interface SectionsStepProps {
 }
 
 /** Empreinte des champs affichés par `SectionStateSwitches`, utilisée comme `key` pour forcer
- *  un remount de `SectionStateCell` quand une édition en ligne les modifie. Inclut les types de
+ *  un remount de `SectionStateCell` quand une édition modifie ces champs. Inclut les types de
  *  `contents` : `SectionStateSwitches` dérive `hasExamen` de `section.contents` (présence du
  *  type "examen") pour décider d'afficher ou non le switch "Verrou examen" — un ajout/retrait de
  *  "examen" dans les types de contenu doit donc, lui aussi, déclencher le remount. */
@@ -47,24 +46,21 @@ function SectionStateCell({section, module}: {section: Section; module: Module})
     return <SectionStateSwitches section={currentSection} pendingKey={pendingKey} onToggle={handleToggle}/>;
 }
 
-/** Cellule "Actions" : bascule d'édition en ligne (jamais de modale) + suppression. Instance de
+/** Cellule "Actions" : ouverture de la modale d'édition + suppression. Instance de
  *  `useSectionRowState` indépendante de `SectionStateCell` — la suppression n'a pas besoin de
  *  connaître l'état des switches, et inversement. */
 function SectionActionsCell({
     section,
     module,
-    isEditing,
-    onToggleEdit,
+    onEdit,
     onDeleted,
 }: {
     section: Section;
     module: Module;
-    isEditing: boolean;
-    onToggleEdit: () => void;
+    onEdit: () => void;
     onDeleted: (sectionPath: string) => void;
 }) {
     const {currentSection, deleting, handleDelete} = useSectionRowState(section, module, onDeleted);
-    const color = moduleColor(module);
 
     return (
         <div className="flex shrink-0 items-center gap-1">
@@ -73,13 +69,11 @@ function SectionActionsCell({
                 variant="outline"
                 size="icon"
                 className="h-11 w-11 border-bridge-500/45"
-                style={isEditing ? {backgroundColor: color, borderColor: color, color: "white"} : undefined}
-                aria-label={isEditing ? `Fermer l'édition de la section ${currentSection.title}` : `Modifier la section ${currentSection.title}`}
-                aria-pressed={isEditing}
-                title={isEditing ? "Fermer l'édition" : "Modifier la section"}
-                onClick={onToggleEdit}
+                aria-label={`Modifier la section ${currentSection.title}`}
+                title="Modifier la section"
+                onClick={onEdit}
             >
-                {isEditing ? <X className="size-4" aria-hidden="true"/> : <Pencil className="size-4" aria-hidden="true"/>}
+                <Pencil className="size-4" aria-hidden="true"/>
             </Button>
             <SectionDeleteDialog section={currentSection} modData={module} deleting={deleting} onConfirm={handleDelete}/>
         </div>
@@ -92,21 +86,27 @@ export default function SectionsStep({module, onSaved}: SectionsStepProps) {
     const [adding, setAdding] = useState(false);
 
     const sortedSections = [...sections].sort((first, second) => first.order - second.order);
+    const editingSection = editingPath ? sortedSections.find((s) => s.path === editingPath) ?? null : null;
+    const dialogOpen = adding || editingSection !== null;
 
     const commitSections = (next: Section[]) => {
         setSections(next);
         onSaved({sections: next});
     };
 
-    const handleRowDone = (previousPath: string | null, saved?: Section) => {
+    const closeDialog = () => {
+        setEditingPath(null);
+        setAdding(false);
+    };
+
+    const handleRowDone = (saved?: Section) => {
         if (saved) {
-            const next = previousPath
-                ? sections.map((s) => (s.path === previousPath ? saved : s))
+            const next = editingPath
+                ? sections.map((s) => (s.path === editingPath ? saved : s))
                 : [...sections, saved];
             commitSections(next);
         }
-        setEditingPath(null);
-        setAdding(false);
+        closeDialog();
     };
 
     const handleDeleted = (sectionPath: string) => {
@@ -140,16 +140,11 @@ export default function SectionsStep({module, onSaved}: SectionsStepProps) {
             ),
         },
         {
-            id: "progress",
-            header: "Avancement",
-            cell: (section) => <SectionProgressBadges progress={sectionProgress(section)}/>,
-        },
-        {
             id: "state",
             header: "États",
             // `key` dérivée du contenu (pas juste du path) : force un remount — donc un état
-            // local frais — quand une édition en ligne change isAvailable/hasCorrection/etc.,
-            // au lieu de resynchroniser un état déjà monté via un effet (anti-pattern React).
+            // local frais — quand une édition change isAvailable/hasCorrection/etc., au lieu de
+            // resynchroniser un état déjà monté via un effet (anti-pattern React).
             cell: (section) => (
                 <SectionStateCell key={sectionStateFingerprint(section)} section={section} module={module}/>
             ),
@@ -162,8 +157,7 @@ export default function SectionsStep({module, onSaved}: SectionsStepProps) {
                     key={`${section.path}:${section.title}`}
                     section={section}
                     module={module}
-                    isEditing={editingPath === section.path}
-                    onToggleEdit={() => setEditingPath((prev) => (prev === section.path ? null : section.path))}
+                    onEdit={() => setEditingPath(section.path)}
                     onDeleted={handleDeleted}
                 />
             ),
@@ -177,34 +171,35 @@ export default function SectionsStep({module, onSaved}: SectionsStepProps) {
                 data={sortedSections}
                 emptyMessage="Aucune section dans ce module."
                 getRowKey={(section) => section.path}
-                renderExpanded={(section) =>
-                    editingPath === section.path ? (
-                        <InlineSectionRow
-                            module={module}
-                            section={section}
-                            onDone={(saved) => handleRowDone(section.path, saved)}
-                        />
-                    ) : null
-                }
+                card={false}
             />
 
-            {adding ? (
-                <InlineSectionRow
-                    module={module}
-                    section={null}
-                    onDone={(saved) => handleRowDone(null, saved)}
-                />
-            ) : (
-                <Button
-                    type="button"
-                    variant="outline"
-                    className="min-h-11 gap-2 self-start border-bridge-500/45"
-                    onClick={() => setAdding(true)}
-                >
-                    <Plus className="size-4" aria-hidden="true"/>
-                    Ajouter une section
-                </Button>
-            )}
+            <Button
+                type="button"
+                variant="outline"
+                className="min-h-11 gap-2 self-start border-bridge-500/45"
+                onClick={() => setAdding(true)}
+            >
+                <Plus className="size-4" aria-hidden="true"/>
+                Ajouter une section
+            </Button>
+
+            <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) closeDialog(); }}>
+                <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg md:max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle>
+                            {editingSection ? `Modifier « ${editingSection.title} »` : "Nouvelle section"}
+                        </DialogTitle>
+                    </DialogHeader>
+                    {dialogOpen && (
+                        <InlineSectionRow
+                            module={module}
+                            section={editingSection}
+                            onDone={handleRowDone}
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

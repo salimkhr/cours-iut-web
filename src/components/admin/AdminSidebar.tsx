@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import {usePathname} from "next/navigation";
-import {BookOpen, FileText, GraduationCap, LayoutDashboard, Users, Wrench} from "lucide-react";
+import {BookOpen, FileText, GraduationCap, Users, Wrench} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {ADMIN_NAV_GROUPS, type AdminNavIconId, type AdminNavItem} from "@/components/admin/adminDashboardConfig";
 
-const NAV_ICONS: Record<AdminNavIconId, typeof LayoutDashboard> = {
-    overview: LayoutDashboard,
+const NAV_ICONS: Record<AdminNavIconId, typeof BookOpen> = {
     modules: BookOpen,
     users: Users,
     tools: Wrench,

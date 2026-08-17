@@ -35,6 +35,8 @@ export const sectionFormSchema = z.object({
     briefObjectives: z.string().optional(),
     briefNotions: z.string().optional(),
     briefFilRougeStep: z.string().optional(),
+    briefFilRougeOutcome: z.string().optional(),
+    briefProvidedBase: z.string().optional(),
     briefNotes: z.string().optional(),
     curriculumNotions: z.string().optional(),
     curriculumApis: z.string().optional(),

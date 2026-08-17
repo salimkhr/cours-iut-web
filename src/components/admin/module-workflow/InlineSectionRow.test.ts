@@ -1,36 +1,31 @@
 import {describe, expect, test} from "bun:test";
 import {buildSectionBriefPayload, hasBriefContent} from "@/components/admin/module-workflow/InlineSectionRow";
-import type Section from "@/types/Section";
 
 describe("buildSectionBriefPayload", () => {
-    test("préserve filRougeOutcome et providedBase de la section existante quand on édite un autre champ", () => {
-        // Repro Finding 1 : InlineSectionRow n'a pas de champ pour filRougeOutcome/providedBase
-        // (édités par BriefsStep) — corriger juste le titre d'une section via InlineSectionRow
-        // ne doit jamais les effacer.
-        const existingBrief: Section["brief"] = {
-            objectives: ["Comprendre X"],
-            notions: ["notion A"],
-            filRougeStep: "Étape 2",
-            filRougeOutcome: "Le formulaire envoie une commande",
-            providedBase: "Squelette HTML fourni",
-        };
-
-        const brief = buildSectionBriefPayload(existingBrief, {
+    test("construit le brief complet à partir des six champs du formulaire", () => {
+        const brief = buildSectionBriefPayload({
             briefObjectives: "Comprendre X",
             briefNotions: "notion A",
             briefFilRougeStep: "Étape 2",
+            briefFilRougeOutcome: "Le formulaire envoie une commande",
+            briefProvidedBase: "Squelette HTML fourni",
             briefNotes: "",
         });
 
+        expect(brief.objectives).toEqual(["Comprendre X"]);
+        expect(brief.notions).toEqual(["notion A"]);
+        expect(brief.filRougeStep).toBe("Étape 2");
         expect(brief.filRougeOutcome).toBe("Le formulaire envoie une commande");
         expect(brief.providedBase).toBe("Squelette HTML fourni");
     });
 
-    test("une nouvelle section (pas de brief existant) part de filRougeOutcome vide et sans providedBase", () => {
-        const brief = buildSectionBriefPayload(undefined, {
+    test("une nouvelle section (rien de saisi) part de champs vides et sans providedBase", () => {
+        const brief = buildSectionBriefPayload({
             briefObjectives: "",
             briefNotions: "",
             briefFilRougeStep: "",
+            briefFilRougeOutcome: "",
+            briefProvidedBase: "",
             briefNotes: "",
         });
 
@@ -38,26 +33,22 @@ describe("buildSectionBriefPayload", () => {
         expect(brief.providedBase).toBeUndefined();
     });
 
-    test("les champs édités par ce formulaire (objectives/notions/filRougeStep/notes) écrasent bien la saisie", () => {
-        const existingBrief: Section["brief"] = {
-            objectives: ["ancien"],
-            notions: ["ancien"],
-            filRougeStep: "ancien",
-            filRougeOutcome: "conservé",
-        };
-
-        const brief = buildSectionBriefPayload(existingBrief, {
+    test("chaque champ écrase bien la saisie précédente, notes/providedBase trim(é)s", () => {
+        const brief = buildSectionBriefPayload({
             briefObjectives: "nouveau 1\nnouveau 2",
             briefNotions: "notion nouvelle",
             briefFilRougeStep: "nouvelle étape",
+            briefFilRougeOutcome: "  nouveau résultat  ",
+            briefProvidedBase: "  base fournie  ",
             briefNotes: "  une note  ",
         });
 
         expect(brief.objectives).toEqual(["nouveau 1", "nouveau 2"]);
         expect(brief.notions).toEqual(["notion nouvelle"]);
         expect(brief.filRougeStep).toBe("nouvelle étape");
+        expect(brief.filRougeOutcome).toBe("nouveau résultat");
+        expect(brief.providedBase).toBe("base fournie");
         expect(brief.notes).toBe("une note");
-        expect(brief.filRougeOutcome).toBe("conservé");
     });
 });
 

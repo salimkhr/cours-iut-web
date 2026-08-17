@@ -2,16 +2,14 @@ import {describe, expect, it} from "bun:test";
 import {ADMIN_NAV_GROUPS, ADMIN_TOOL_ACTIONS} from "./adminDashboardConfig";
 
 describe("adminDashboardConfig", () => {
-    it("ouvre sur la vue d'ensemble en correspondance exacte", () => {
+    it("ouvre sur Modules & sections", () => {
         const first = ADMIN_NAV_GROUPS[0].items[0];
-        expect(first.href).toBe("/admin");
-        expect(first.exact).toBe(true);
+        expect(first.href).toBe("/admin/modules");
     });
 
     it("couvre toutes les pages de l'espace admin dans la nav", () => {
         const hrefs = ADMIN_NAV_GROUPS.flatMap((group) => group.items.map((item) => item.href));
         expect(hrefs).toEqual([
-            "/admin",
             "/admin/modules",
             "/admin/utilisateurs",
             "/admin/outils",

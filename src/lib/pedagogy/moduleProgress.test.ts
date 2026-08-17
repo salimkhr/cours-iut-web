@@ -29,7 +29,7 @@ describe("moduleSteps", () => {
     test("tout est à faire sur un module vide", () => {
         const steps = moduleSteps(emptyModule);
         expect(steps.map((s) => s.id)).toEqual(
-            ["cadrage", "notions", "projet", "reference", "sections", "briefs"]
+            ["cadrage", "notions", "projet", "reference", "sections"]
         );
         expect(steps.filter((s) => s.state === "done")).toHaveLength(0);
     });
@@ -55,8 +55,8 @@ describe("currentStepId", () => {
         expect(currentStepId(mod)).toBe("projet");
     });
 
-    test("retombe sur la dernière étape (briefs) quand tout est fait", () => {
-        expect(currentStepId(fullModule)).toBe("briefs");
+    test("retombe sur la dernière étape (sections) quand tout est fait", () => {
+        expect(currentStepId(fullModule)).toBe("sections");
     });
 });
 

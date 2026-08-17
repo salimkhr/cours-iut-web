@@ -1,6 +1,6 @@
 "use client";
 
-import {Check, Circle} from "lucide-react";
+import {Check} from "lucide-react";
 import {cn} from "@/lib/utils";
 import type {ModuleStep, StepId} from "@/lib/pedagogy/moduleProgress";
 
@@ -11,18 +11,12 @@ interface StepStripProps {
 }
 
 export default function StepStrip({steps, currentId, onSelect}: StepStripProps) {
-    const position = steps.findIndex((step) => step.id === currentId) + 1;
-
     return (
         <nav aria-label="Étapes de conception du module" className="flex flex-col gap-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-bridge-600 dark:text-bridge-400">
-                Étape {position} sur {steps.length}
-            </p>
             <ol className="flex flex-wrap items-center gap-1.5">
-                {steps.map((step) => {
+                {steps.map((step, index) => {
                     const active = step.id === currentId;
                     const done = step.state === "done";
-                    const Icon = done ? Check : Circle;
                     return (
                         <li key={step.id}>
                             <button
@@ -39,7 +33,19 @@ export default function StepStrip({steps, currentId, onSelect}: StepStripProps) 
                                         : "text-brand-dark hover:bg-bridge-100 dark:text-bridge-200 dark:hover:bg-bridge-900",
                                 )}
                             >
-                                <Icon className="size-4" aria-hidden="true"/>
+                                <span
+                                    className={cn(
+                                        "inline-flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold",
+                                        active
+                                            ? "bg-white/25 text-white"
+                                            : done
+                                                ? "bg-brand-accent-dark text-white dark:bg-brand-primary"
+                                                : "bg-bridge-200 text-brand-dark dark:bg-bridge-700 dark:text-bridge-200",
+                                    )}
+                                    aria-hidden="true"
+                                >
+                                    {done ? <Check className="size-3"/> : index + 1}
+                                </span>
                                 {step.label}
                             </button>
                         </li>

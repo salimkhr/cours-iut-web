@@ -1,4 +1,4 @@
-export type AdminNavIconId = "overview" | "modules" | "users" | "tools" | "calibrage" | "pedagogie";
+export type AdminNavIconId = "modules" | "users" | "tools" | "calibrage" | "pedagogie";
 export type AdminToolActionId = "migration" | "export-import";
 
 export interface AdminNavItem {
@@ -24,7 +24,6 @@ export const ADMIN_NAV_GROUPS = [
     {
         label: "Pilotage",
         items: [
-            {href: "/admin", label: "Vue d'ensemble", icon: "overview", exact: true},
             {href: "/admin/modules", label: "Modules & sections", icon: "modules"},
             {href: "/admin/utilisateurs", label: "Utilisateurs", icon: "users"},
         ],

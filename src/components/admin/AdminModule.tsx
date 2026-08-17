@@ -1,10 +1,9 @@
 "use client";
 
 import {useState} from "react";
-import Link from "next/link";
 import {useRouter} from "next/navigation";
 import Module from "@/types/Module";
-import {FolderOpen, Trash2} from "lucide-react";
+import {Trash2} from "lucide-react";
 import {cn} from "@/lib/utils";
 import useAdminApi from "@/hook/admin/useAdminApi";
 import {toast} from "sonner";
@@ -106,20 +105,6 @@ export default function AdminModuleActions({module, onDelete}: AdminModuleAction
 
     return (
         <div className="flex items-center gap-1">
-            <Button
-                asChild
-                variant="ghost"
-                size="icon"
-                className="size-11 text-bridge-600 hover:bg-brand-primary/10 hover:text-brand-primary dark:text-bridge-300"
-            >
-                <Link
-                    href={`/admin/modules/${modData.path}`}
-                    aria-label={`Ouvrir le module ${modData.title}`}
-                    title="Ouvrir le module"
-                >
-                    <FolderOpen aria-hidden="true"/>
-                </Link>
-            </Button>
             <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
                 <AlertDialogTrigger asChild>
                     <Button

@@ -4,7 +4,7 @@ import {useCallback, useEffect} from "react";
 import {Controller, useForm, useWatch} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {toast} from "sonner";
-import {Pencil, Plus, X} from "lucide-react";
+import {X} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
@@ -39,16 +39,16 @@ interface InlineSectionRowProps {
 const inputCn = "bg-bridge-100/60 dark:bg-bridge-800/60 border-bridge-500/45 focus-visible:ring-bridge-500/50";
 const labelCn = "text-sm font-semibold text-brand-dark dark:text-bridge-200";
 
-/** Fusionne le brief édité par ce formulaire (objectives/notions/filRougeStep/notes) avec les
- *  champs édités ailleurs (filRougeOutcome/providedBase par BriefsStep) : ce formulaire n'a pas
- *  de champs pour ces deux-là, donc ils doivent venir de `section.brief` existant, jamais être
- *  reconstruits à partir de `data` (qui ne les porte pas) — sinon toute édition ici (ex. corriger
- *  un titre) réinitialise silencieusement le fil rouge « résultat attendu » / « base fournie »
- *  saisis via l'étape Briefs. La route PUT fait un remplacement complet du champ `brief`.
+/** Construit le `brief` complet à partir des six champs édités par ce formulaire. La route PUT
+ *  fait un remplacement complet du champ `brief` : ce formulaire porte désormais tous ses champs
+ *  (filRougeOutcome/providedBase migrés depuis l'ancienne étape « Briefs » du workflow module),
+ *  donc plus besoin de repartir d'un `brief` existant pour en préserver une partie.
  */
 export function buildSectionBriefPayload(
-    existingBrief: Section["brief"] | undefined,
-    data: Pick<SectionFormValues, "briefObjectives" | "briefNotions" | "briefFilRougeStep" | "briefNotes">
+    data: Pick<
+        SectionFormValues,
+        "briefObjectives" | "briefNotions" | "briefFilRougeStep" | "briefFilRougeOutcome" | "briefProvidedBase" | "briefNotes"
+    >
 ): NonNullable<SectionApiPayload["brief"]> {
     const splitLines = (s?: string) =>
         (s ?? "").split("\n").map((x) => x.trim()).filter((x) => x.length > 0);
@@ -57,17 +57,17 @@ export function buildSectionBriefPayload(
         objectives: splitLines(data.briefObjectives),
         notions: splitLines(data.briefNotions),
         filRougeStep: (data.briefFilRougeStep ?? "").trim(),
-        filRougeOutcome: existingBrief?.filRougeOutcome ?? "",
-        ...(existingBrief?.providedBase && {providedBase: existingBrief.providedBase}),
+        filRougeOutcome: (data.briefFilRougeOutcome ?? "").trim(),
+        ...(data.briefProvidedBase?.trim() && {providedBase: data.briefProvidedBase.trim()}),
         ...(data.briefNotes?.trim() && {notes: data.briefNotes.trim()}),
     };
 }
 
 /** Un brief "vide" ne doit générer aucune clé `brief` dans le payload (cf. `onSubmit`) — mais
- *  "vide" doit tenir compte des CINQ champs du schéma, pas seulement des trois rendus par ce
- *  formulaire : un brief qui ne porte qu'un `filRougeOutcome` hérité de BriefsStep est un brief
- *  non vide, et l'omettre supprimerait l'objet `brief` entier au prochain save (undefined → null
- *  Mongo, cf. PUT de module). */
+ *  "vide" doit tenir compte des CINQ champs du schéma `SectionBrief`, pas seulement de ceux
+ *  visibles à l'écran à un instant donné : un brief qui ne porte qu'un `filRougeOutcome` est un
+ *  brief non vide, et l'omettre supprimerait l'objet `brief` entier au prochain save (undefined
+ *  → null Mongo, cf. PUT de module). */
 export function hasBriefContent(brief: NonNullable<SectionApiPayload["brief"]>): boolean {
     return brief.objectives.length > 0
         || brief.notions.length > 0
@@ -106,6 +106,8 @@ export default function InlineSectionRow({module, section, onDone}: InlineSectio
                 briefObjectives: (section.brief?.objectives ?? []).join("\n"),
                 briefNotions: (section.brief?.notions ?? []).join("\n"),
                 briefFilRougeStep: section.brief?.filRougeStep ?? "",
+                briefFilRougeOutcome: section.brief?.filRougeOutcome ?? "",
+                briefProvidedBase: section.brief?.providedBase ?? "",
                 briefNotes: section.brief?.notes ?? "",
                 curriculumNotions: (section.curriculum?.notions ?? []).join("\n"),
                 curriculumApis: (section.curriculum?.apis ?? []).join("\n"),
@@ -128,6 +130,8 @@ export default function InlineSectionRow({module, section, onDone}: InlineSectio
             briefObjectives: "",
             briefNotions: "",
             briefFilRougeStep: "",
+            briefFilRougeOutcome: "",
+            briefProvidedBase: "",
             briefNotes: "",
             curriculumNotions: "",
             curriculumApis: "",
@@ -184,7 +188,7 @@ export default function InlineSectionRow({module, section, onDone}: InlineSectio
         const splitLines = (s?: string) =>
             (s ?? "").split("\n").map((x) => x.trim()).filter((x) => x.length > 0);
 
-        const brief = buildSectionBriefPayload(section?.brief, data);
+        const brief = buildSectionBriefPayload(data);
         const curriculum = {
             notions: splitLines(data.curriculumNotions),
             apis: splitLines(data.curriculumApis),
@@ -213,19 +217,8 @@ export default function InlineSectionRow({module, section, onDone}: InlineSectio
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-5 rounded-lg border border-bridge-500/45 bg-card p-4"
+            className="flex flex-col gap-5"
         >
-            <div className="flex items-center gap-2">
-                {isEditMode ? (
-                    <Pencil className="size-4 shrink-0" style={{color: moduleColor(module)}} aria-hidden="true"/>
-                ) : (
-                    <Plus className="size-4 shrink-0" style={{color: moduleColor(module)}} aria-hidden="true"/>
-                )}
-                <p className="text-sm font-bold text-brand-dark dark:text-bridge-100">
-                    {isEditMode ? `Modifier « ${section!.title} »` : "Nouvelle section"}
-                </p>
-            </div>
-
             {/* Identification */}
             <section className="flex flex-col gap-3">
                 <Eyebrow>Identification</Eyebrow>
@@ -379,6 +372,17 @@ export default function InlineSectionRow({module, section, onDone}: InlineSectio
                 <div>
                     <Label htmlFor={fieldId("brief-filrouge")} className={labelCn}>Étape fil rouge</Label>
                     <Input id={fieldId("brief-filrouge")} className={inputCn} {...register("briefFilRougeStep")}/>
+                </div>
+                <div>
+                    <Label htmlFor={fieldId("brief-filrouge-outcome")} className={labelCn}>Résultat attendu</Label>
+                    <Textarea id={fieldId("brief-filrouge-outcome")} rows={2} className={inputCn} {...register("briefFilRougeOutcome")}/>
+                    <span className="text-xs text-bridge-500 dark:text-bridge-400 mt-1 block">
+                        Ce qui tourne à la fin de la section, pas ce qui a été appris
+                    </span>
+                </div>
+                <div>
+                    <Label htmlFor={fieldId("brief-provided-base")} className={labelCn}>Base fournie</Label>
+                    <Textarea id={fieldId("brief-provided-base")} rows={2} className={inputCn} {...register("briefProvidedBase")}/>
                 </div>
                 <div>
                     <Label htmlFor={fieldId("brief-notes")} className={labelCn}>Notes</Label>

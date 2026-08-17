@@ -156,6 +156,7 @@ export default function ModulesList({initialModules}: ModulesListProps) {
                 columns={columns}
                 data={visibleModules}
                 getRowKey={(mod) => String(mod._id)}
+                getRowHref={(mod) => `/admin/modules/${mod.path}`}
                 emptyMessage={
                     normalizedQuery
                         ? `Aucun résultat pour « ${query.trim()} ».`

@@ -33,13 +33,9 @@ export const MODULE_STEP_PROMPTS: StepPromptDef[] = [
     },
     {
         id: "module_sections", stepId: "sections", stepLabel: "Sections",
-        title: "Découper en sections",
-        description: "Relit le code de référence validé et propose le découpage en sections.",
-    },
-    {
-        id: "module_briefs", stepId: "briefs", stepLabel: "Briefs",
-        title: "Rédiger les briefs de section",
-        description: "filRougeStep, filRougeOutcome et providedBase de chaque section.",
+        title: "Découper en sections et rédiger leurs briefs",
+        description: "Relit le code de référence validé, propose le découpage en sections, puis "
+            + "rédige leur brief (filRougeStep, filRougeOutcome, providedBase).",
     },
 ];
 

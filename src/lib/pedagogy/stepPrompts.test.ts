@@ -21,9 +21,10 @@ describe("MODULE_STEP_PROMPTS", () => {
         expect(projet?.stepLabel).toBe("Projet");
     });
 
-    test("réglages a fusionné dans cadrage — plus d'entrée séparée", () => {
+    test("réglages a fusionné dans cadrage, briefs a fusionné dans sections — plus d'entrées séparées", () => {
         expect(MODULE_STEP_PROMPTS.find((p) => p.id === "module_reglages")).toBeUndefined();
-        expect(MODULE_STEP_PROMPTS).toHaveLength(6);
+        expect(MODULE_STEP_PROMPTS.find((p) => p.id === "module_briefs")).toBeUndefined();
+        expect(MODULE_STEP_PROMPTS).toHaveLength(5);
     });
 });
 

@@ -45,7 +45,13 @@ export const projectSpecSchema = z.object({
     finalDeliverable: z.string().trim().min(1, "Le livrable final est obligatoire"),
     entities: z.array(z.string().trim().min(1)).default([]),
     status: z.enum(["draft", "validated"]).default("draft"),
-    referenceRepo: referenceRepoSchema.optional(),
+    // preprocess null → undefined : Mongo renvoie `null` (jamais `undefined`) pour un champ jamais
+    // renseigné, et moduleToFormValues recopie module.projectSpec.referenceRepo tel quel —
+    // .optional() seul rejette ce `null` et bloquait le PUT de n'importe quelle étape du workflow
+    // module tant qu'aucun dépôt de référence n'existait. Le preprocess (plutôt qu'un .transform
+    // sur le champ optional) garde `referenceRepo` optionnel dans le type inféré, pas juste
+    // `| undefined` toujours présent.
+    referenceRepo: z.preprocess((v) => (v === null ? undefined : v), referenceRepoSchema.optional()),
 });
 
 export const exampleDomainSchema = z.object({

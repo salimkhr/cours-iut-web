@@ -81,6 +81,19 @@ describe("projectSpecSchema", () => {
         });
         expect(parsed.referenceRepo?.status).toBe("draft");
     });
+
+    test("accepte referenceRepo: null (Mongo renvoie null, jamais undefined, pour un champ jamais renseigné)", () => {
+        // Repro bug : le PUT de /api/admin/modules/[moduleId] renvoie moduleToFormValues(module),
+        // qui recopie module.projectSpec.referenceRepo tel quel — `null` venu de Mongo, pas
+        // `undefined`. Sans ce test, .optional() seul rejette `null` et bloque la sauvegarde de
+        // n'importe quelle étape du workflow module tant qu'aucun dépôt de référence n'existe.
+        const result = projectSpecSchema.safeParse({
+            name: "X", pitch: "Y", finalDeliverable: "Z", entities: [],
+            referenceRepo: null,
+        });
+        expect(result.success).toBe(true);
+        if (result.success) expect(result.data.referenceRepo).toBeUndefined();
+    });
 });
 
 describe("exampleDomainSchema", () => {
