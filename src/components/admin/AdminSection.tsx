@@ -226,21 +226,26 @@ export function SectionContentLinks({section, modData}: SectionContentLinksProps
     );
 }
 
-/** Aperçu du brief (résultat attendu du fil rouge) sous le titre de la ligne — évite d'ouvrir
- *  la modale d'édition juste pour lire ce que la section doit produire. `filRougeOutcome` prime
- *  sur `filRougeStep` : c'est l'état observable en fin de section, plus utile en un coup d'œil
- *  que la description de l'étape. */
+/** Aperçu du brief sous le titre de la ligne — évite d'ouvrir la modale d'édition juste pour
+ *  lire ce que la section doit produire. Affiche les textes tels quels (étape, résultat, base
+ *  fournie), sans troncature : en attendant une refonte de cet écran, c'est la lecture complète
+ *  qui manquait, pas juste un indice qu'il y a du contenu. */
 export function SectionBriefPreview({section}: {section: Section}) {
-    const text = section.brief?.filRougeOutcome || section.brief?.filRougeStep;
-    if (!text) return null;
+    const brief = section.brief;
+    if (!brief?.filRougeStep && !brief?.filRougeOutcome && !brief?.providedBase) return null;
 
     return (
-        <p
-            className="mt-1.5 max-w-md text-xs italic text-bridge-500 dark:text-bridge-400"
-            title={text}
-        >
-            {text}
-        </p>
+        <div className="mt-1.5 flex max-w-md flex-col gap-0.5 text-xs text-bridge-500 dark:text-bridge-400">
+            {brief.filRougeStep && (
+                <p><span className="font-semibold">Étape :</span> {brief.filRougeStep}</p>
+            )}
+            {brief.filRougeOutcome && (
+                <p><span className="font-semibold">Résultat :</span> {brief.filRougeOutcome}</p>
+            )}
+            {brief.providedBase && (
+                <p><span className="font-semibold">Base fournie :</span> {brief.providedBase}</p>
+            )}
+        </div>
     );
 }
 
