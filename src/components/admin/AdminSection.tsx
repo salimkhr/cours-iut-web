@@ -226,6 +226,24 @@ export function SectionContentLinks({section, modData}: SectionContentLinksProps
     );
 }
 
+/** Aperçu du brief (résultat attendu du fil rouge) sous le titre de la ligne — évite d'ouvrir
+ *  la modale d'édition juste pour lire ce que la section doit produire. `filRougeOutcome` prime
+ *  sur `filRougeStep` : c'est l'état observable en fin de section, plus utile en un coup d'œil
+ *  que la description de l'étape. */
+export function SectionBriefPreview({section}: {section: Section}) {
+    const text = section.brief?.filRougeOutcome || section.brief?.filRougeStep;
+    if (!text) return null;
+
+    return (
+        <p
+            className="mt-1.5 max-w-md text-xs italic text-bridge-500 dark:text-bridge-400"
+            title={text}
+        >
+            {text}
+        </p>
+    );
+}
+
 interface SectionDeleteDialogProps {
     section: Section;
     modData: Module;

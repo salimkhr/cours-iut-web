@@ -9,6 +9,7 @@ import {Button} from "@/components/ui/button";
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import AdminDataTable, {type AdminColumn} from "@/components/admin/ui/AdminDataTable";
 import {
+    SectionBriefPreview,
     SectionContentLinks,
     SectionDeleteDialog,
     SectionStateSwitches,
@@ -136,6 +137,7 @@ export default function SectionsStep({module, onSaved}: SectionsStepProps) {
                         {section.title}
                     </p>
                     <SectionContentLinks section={section} modData={module}/>
+                    <SectionBriefPreview section={section}/>
                 </div>
             ),
         },
