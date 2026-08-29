@@ -1,8 +1,5 @@
-import { describe, test, expect, beforeEach, afterEach } from "bun:test";
-import {
-    getGitlabConfig, getCorrectionBaseUrl, ensureGroup, ensureProject, commitFiles,
-    getPrivateProjectConfig, ensurePrivateProject, type GitlabConfig,
-} from "./gitlab";
+import { describe, test, expect, beforeEach, afterEach, mock } from "bun:test";
+import type { GitlabConfig } from "./gitlab";
 
 const savedEnv = {
     gitUrl: process.env.NEXT_PUBLIC_GIT_URL,
@@ -19,9 +16,8 @@ interface Route {
     respond: (url: string, body: unknown) => Response;
 }
 
-const realFetch = globalThis.fetch;
-let routes: Route[];
-let calls: Array<{ url: string; method: string; body?: unknown }>;
+let routes: Route[] = [];
+let calls: Array<{ url: string; method: string; body?: unknown }> = [];
 
 function json(status: number, body: unknown, headers?: Record<string, string>): Response {
     return new Response(JSON.stringify(body), {
@@ -30,24 +26,58 @@ function json(status: number, body: unknown, headers?: Record<string, string>): 
     });
 }
 
-function installFetchMock(): void {
-    routes = [];
-    calls = [];
-    globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
-        const url = input.toString();
-        const method = init?.method ?? "GET";
-        const body = typeof init?.body === "string" ? JSON.parse(init.body) : undefined;
-        calls.push({ url, method, body });
-        const route = routes.find((r) => r.match(url, method));
-        return route ? route.respond(url, body) : json(404, { message: "404 Not Found" });
-    }) as typeof fetch;
+// gitlab.ts appelle `node:https` `request(url, options, callback)` — on mocke ce module
+// AVANT le premier import de "./gitlab" (Bun ne rejoue pas mock.module rétroactivement),
+// d'où l'import dynamique de "./gitlab" plus bas.
+function fakeRequest(url: URL, options: { method?: string }, callback: (res: unknown) => void) {
+    const method = options.method ?? "GET";
+    const chunks: Buffer[] = [];
+    return {
+        on() { return this; },
+        write(chunk: string) { chunks.push(Buffer.from(chunk)); },
+        end() {
+            const bodyStr = Buffer.concat(chunks).toString("utf-8");
+            const body = bodyStr ? JSON.parse(bodyStr) : undefined;
+            calls.push({ url: url.toString(), method, body });
+            const route = routes.find((r) => r.match(url.toString(), method));
+            const response = route ? route.respond(url.toString(), body) : json(404, { message: "404 Not Found" });
+            void response.text().then((text) => {
+                const handlers: Record<string, (...a: unknown[]) => void> = {};
+                const res = {
+                    statusCode: response.status,
+                    headers: Object.fromEntries(response.headers.entries()),
+                    on(event: string, handler: (...a: unknown[]) => void) {
+                        handlers[event] = handler;
+                        return res;
+                    },
+                };
+                callback(res);
+                handlers.data?.(Buffer.from(text));
+                handlers.end?.();
+            });
+        },
+    };
 }
+
+// Étend (plutôt que remplace) les modules réels : `mock.module` s'applique à tout le
+// process de test, pas seulement ce fichier — écraser tout node:http/https casserait
+// les autres fichiers qui l'importent (ex: `import http from "node:http"`).
+const realHttp = await import("node:http");
+const realHttps = await import("node:https");
+mock.module("node:https", () => ({ ...realHttps, request: fakeRequest }));
+mock.module("node:http", () => ({ ...realHttp, request: fakeRequest }));
+
+const {
+    getGitlabConfig, getCorrectionBaseUrl, ensureGroup, ensureProject, commitFiles,
+    getPrivateProjectConfig, ensurePrivateProject,
+} = await import("./gitlab");
 
 beforeEach(() => {
     delete process.env.GITLAB_CORRECTION_URL;
     process.env.NEXT_PUBLIC_GIT_URL = "https://git.example.dev/correction";
     process.env.GITLAB_CORRECTION_TOKEN = "glpat-test";
-    installFetchMock();
+    routes = [];
+    calls = [];
 });
 
 afterEach(() => {
@@ -59,7 +89,6 @@ afterEach(() => {
     else process.env.GITLAB_PROJET_URL = savedEnv.projetUrl;
     if (savedEnv.projetToken === undefined) delete process.env.GITLAB_PROJET_TOKEN;
     else process.env.GITLAB_PROJET_TOKEN = savedEnv.projetToken;
-    globalThis.fetch = realFetch;
 });
 
 describe("getGitlabConfig", () => {

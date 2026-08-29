@@ -23,12 +23,6 @@ const baseConfig: NextConfig = {
     output: 'standalone', // garde la sortie standalone pour déploiement
     pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
 
-    // `undici` (dispatcher IPv4 dans src/lib/gitlab.ts) n'est pas dans la liste des
-    // paquets auto-externalisés par Next : sans ça, le webpack bundle server-side
-    // le "require" mais le traçage de sortie `standalone` n'embarque pas le module,
-    // d'où un "Cannot find module 'undici'" au runtime en prod.
-    serverExternalPackages: ['undici'],
-
     env: {
         NEXT_PUBLIC_COMMIT_SHA: commitSha,
         NEXT_PUBLIC_BUILD_DATE: buildDate,

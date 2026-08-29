@@ -1,15 +1,8 @@
 // Client minimal de l'API REST GitLab pour publier les corrections de TP.
 // Serveur uniquement (token secret) — jamais importé depuis un Client Component.
 
-import {Agent} from "undici";
-
-/** Certains réseaux Docker (ex: conteneurs Dokploy) résolvent le domaine GitLab en IPv6
- *  sans route sortante fonctionnelle ("Network unreachable"), alors que l'IPv4 marche.
- *  `fetch` natif (undici) ne bascule pas systématiquement sur l'IPv4 comme le fait curl
- *  (Happy Eyeballs) — on force donc explicitement la famille IPv4 pour tous les appels
- *  GitLab plutôt que de dépendre d'un réglage DNS au niveau du process (NODE_OPTIONS
- *  --dns-result-order, inefficace ici). */
-const ipv4Dispatcher = new Agent({connect: {family: 4}});
+import {request as httpRequest} from "node:http";
+import {request as httpsRequest} from "node:https";
 
 export interface GitlabConfig {
     baseUrl: string;         // ex: https://git.salimkhraimeche.dev
@@ -73,19 +66,62 @@ export function getPrivateProjectConfig(): GitlabConfig & { rootGroupPath: strin
     return { baseUrl: url.origin, rootGroupPath, token };
 }
 
-async function gitlabFetch(cfg: GitlabConfig, path: string, init?: RequestInit): Promise<Response> {
-    return fetch(`${cfg.baseUrl}/api/v4${path}`, {
-        ...init,
-        headers: {
-            "PRIVATE-TOKEN": cfg.token,
-            "Content-Type": "application/json",
-            ...init?.headers,
-        },
-        dispatcher: ipv4Dispatcher,
-    } as RequestInit & {dispatcher: Agent});
+interface GitlabResponse {
+    ok: boolean;
+    status: number;
+    headers: { get(name: string): string | null };
+    text(): Promise<string>;
+    json(): Promise<unknown>;
 }
 
-async function gitlabError(res: Response, action: string): Promise<Error> {
+/** Requête via `node:http(s)` plutôt que `fetch` : `family: 4` force nativement l'IPv4,
+ *  sans dépendance externe (undici en npm direct casse le traçage de fichiers de la
+ *  sortie `standalone` de Next — "Cannot find module 'undici'" en prod). Certains
+ *  réseaux Docker (Dokploy) résolvent le domaine GitLab en IPv6 sans route sortante
+ *  fonctionnelle ("Network unreachable"), que `fetch` ne contourne pas comme curl
+ *  (Happy Eyeballs). */
+function gitlabFetch(
+    cfg: GitlabConfig, path: string, init?: { method?: string; body?: string }
+): Promise<GitlabResponse> {
+    const url = new URL(`${cfg.baseUrl}/api/v4${path}`);
+    const requestFn = url.protocol === "https:" ? httpsRequest : httpRequest;
+    const body = init?.body;
+
+    return new Promise((resolve, reject) => {
+        const req = requestFn(url, {
+            method: init?.method ?? "GET",
+            family: 4,
+            headers: {
+                "PRIVATE-TOKEN": cfg.token,
+                "Content-Type": "application/json",
+                ...(body ? {"Content-Length": Buffer.byteLength(body)} : {}),
+            },
+        }, (res) => {
+            const chunks: Buffer[] = [];
+            res.on("data", (chunk: Buffer) => chunks.push(chunk));
+            res.on("end", () => {
+                const text = Buffer.concat(chunks).toString("utf-8");
+                resolve({
+                    ok: (res.statusCode ?? 0) >= 200 && (res.statusCode ?? 0) < 300,
+                    status: res.statusCode ?? 0,
+                    headers: {
+                        get: (name: string) => {
+                            const value = res.headers[name.toLowerCase()];
+                            return Array.isArray(value) ? value[0] ?? null : value ?? null;
+                        },
+                    },
+                    text: async () => text,
+                    json: async () => JSON.parse(text),
+                });
+            });
+        });
+        req.on("error", reject);
+        if (body) req.write(body);
+        req.end();
+    });
+}
+
+async function gitlabError(res: GitlabResponse, action: string): Promise<Error> {
     const body = await res.text().catch(() => "");
     return new Error(`GitLab — ${action} : HTTP ${res.status}${body ? ` — ${body.slice(0, 300)}` : ""}`);
 }
