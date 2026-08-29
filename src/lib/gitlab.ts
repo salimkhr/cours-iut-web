@@ -1,9 +1,19 @@
 // Client minimal de l'API REST GitLab pour publier les corrections de TP.
 // Serveur uniquement (token secret) — jamais importé depuis un Client Component.
 
+import {Agent} from "undici";
+
+/** Certains réseaux Docker (ex: conteneurs Dokploy) résolvent le domaine GitLab en IPv6
+ *  sans route sortante fonctionnelle ("Network unreachable"), alors que l'IPv4 marche.
+ *  `fetch` natif (undici) ne bascule pas systématiquement sur l'IPv4 comme le fait curl
+ *  (Happy Eyeballs) — on force donc explicitement la famille IPv4 pour tous les appels
+ *  GitLab plutôt que de dépendre d'un réglage DNS au niveau du process (NODE_OPTIONS
+ *  --dns-result-order, inefficace ici). */
+const ipv4Dispatcher = new Agent({connect: {family: 4}});
+
 export interface GitlabConfig {
     baseUrl: string;         // ex: https://git.salimkhraimeche.dev
-    rootGroupPath?: string;  // ex: correction — requis pour ensureGroup/ensureProject, absent pour ensurePrivateProject
+    rootGroupPath?: string;  // ex: correction ou projet — requis pour ensureGroup/ensureProject/ensurePrivateProject
     token: string;
 }
 
@@ -39,10 +49,14 @@ export function getGitlabConfig(): GitlabConfig & { rootGroupPath: string } {
 }
 
 /** Config dédiée aux projets privés créés via `publish_private_document` — couple
- *  d'env séparé de GITLAB_CORRECTION_URL/TOKEN (scope différent : pas de groupe
- *  racine, écrit dans l'espace personnel du token). Même serveur GitLab possible,
- *  mais credentials découplés de ceux des corrections publiques. */
-export function getPrivateProjectConfig(): GitlabConfig {
+ *  d'env séparé de GITLAB_CORRECTION_URL/TOKEN (credentials découplés de ceux des
+ *  corrections publiques, même serveur GitLab possible). GITLAB_PROJET_URL porte un
+ *  groupe racine (ex: https://git…/projet) comme GITLAB_CORRECTION_URL — les projets
+ *  créés par `ensurePrivateProject` vivent sous ce groupe, jamais dans l'espace
+ *  personnel du token, mais restent `visibility: "private"` (jamais publics comme
+ *  les corrections). Le groupe doit déjà exister sur la forge (même contrainte que
+ *  ensureGroup/ensureProject : pas de création sauvage d'un groupe racine). */
+export function getPrivateProjectConfig(): GitlabConfig & { rootGroupPath: string } {
     const raw = process.env.GITLAB_PROJET_URL;
     if (!raw) {
         throw new Error("GITLAB_PROJET_URL non configuré : impossible de publier un projet privé.");
@@ -51,7 +65,12 @@ export function getPrivateProjectConfig(): GitlabConfig {
     if (!token) {
         throw new Error("GITLAB_PROJET_TOKEN non configuré : impossible de publier un projet privé.");
     }
-    return { baseUrl: raw.replace(/\/+$/, ""), token };
+    const url = new URL(raw);
+    const rootGroupPath = url.pathname.replace(/^\/+|\/+$/g, "");
+    if (!rootGroupPath) {
+        throw new Error(`GITLAB_PROJET_URL (${raw}) doit inclure le chemin du groupe racine (ex: /projet).`);
+    }
+    return { baseUrl: url.origin, rootGroupPath, token };
 }
 
 async function gitlabFetch(cfg: GitlabConfig, path: string, init?: RequestInit): Promise<Response> {
@@ -62,7 +81,8 @@ async function gitlabFetch(cfg: GitlabConfig, path: string, init?: RequestInit):
             "Content-Type": "application/json",
             ...init?.headers,
         },
-    });
+        dispatcher: ipv4Dispatcher,
+    } as RequestInit & {dispatcher: Agent});
 }
 
 async function gitlabError(res: Response, action: string): Promise<Error> {
@@ -151,30 +171,36 @@ export async function readRepoFile(
     return Buffer.from(file.content, "base64").toString("utf-8");
 }
 
-/** Garantit l'existence d'un projet PRIVÉ `slug` dans l'espace personnel du token
- *  (aucun groupe requis — contrairement à `ensureProject`, utilisé pour les
- *  corrections publiques sous `rootGroupPath`). Même serveur/token que les
- *  corrections (`getGitlabConfig()`), mais un projet totalement séparé du groupe
- *  `correction`. */
+/** Garantit l'existence du projet PRIVÉ `rootGroupPath/slug`, sous le groupe racine
+ *  de `cfg` (jamais dans l'espace personnel du token). Groupe absent → erreur
+ *  explicite, pas de création sauvage (même contrainte que `ensureGroup`). Projet
+ *  créé en `visibility: "private"` — un dépôt de référence ou un document publié via
+ *  `publish_private_document` ne doit jamais devenir visible publiquement. */
 export async function ensurePrivateProject(
-    cfg: GitlabConfig, slug: string
+    cfg: GitlabConfig & { rootGroupPath: string }, slug: string
 ): Promise<{ id: number; webUrl: string }> {
-    const meRes = await gitlabFetch(cfg, "/user");
-    if (!meRes.ok) throw await gitlabError(meRes, "lecture de l'utilisateur du token");
-    const me = await meRes.json() as { username: string };
+    const namespacePath = `${cfg.rootGroupPath}/${slug}`;
 
-    const res = await gitlabFetch(cfg, `/projects/${encodeURIComponent(`${me.username}/${slug}`)}`);
+    const res = await gitlabFetch(cfg, `/projects/${encodeURIComponent(namespacePath)}`);
     if (res.ok) {
         const p = await res.json() as { id: number; web_url: string };
         return { id: p.id, webUrl: p.web_url };
     }
-    if (res.status !== 404) throw await gitlabError(res, `lecture du projet privé ${slug}`);
+    if (res.status !== 404) throw await gitlabError(res, `lecture du projet privé ${namespacePath}`);
+
+    const namespaceId = await findGroupId(cfg, cfg.rootGroupPath);
+    if (namespaceId === null) {
+        throw new Error(`GitLab — groupe racine "${cfg.rootGroupPath}" introuvable : créez-le à la main sur la forge.`);
+    }
 
     const created = await gitlabFetch(cfg, "/projects", {
         method: "POST",
-        body: JSON.stringify({ name: slug, path: slug, visibility: "private", default_branch: "main" }),
+        body: JSON.stringify({
+            name: slug, path: slug, namespace_id: namespaceId,
+            visibility: "private", default_branch: "main",
+        }),
     });
-    if (!created.ok) throw await gitlabError(created, `création du projet privé ${slug}`);
+    if (!created.ok) throw await gitlabError(created, `création du projet privé ${namespacePath}`);
     const p = await created.json() as { id: number; web_url: string };
     return { id: p.id, webUrl: p.web_url };
 }

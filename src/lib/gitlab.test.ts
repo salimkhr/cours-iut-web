@@ -1,10 +1,15 @@
 import { describe, test, expect, beforeEach, afterEach } from "bun:test";
-import { getGitlabConfig, getCorrectionBaseUrl, ensureGroup, ensureProject, commitFiles, type GitlabConfig } from "./gitlab";
+import {
+    getGitlabConfig, getCorrectionBaseUrl, ensureGroup, ensureProject, commitFiles,
+    getPrivateProjectConfig, ensurePrivateProject, type GitlabConfig,
+} from "./gitlab";
 
 const savedEnv = {
     gitUrl: process.env.NEXT_PUBLIC_GIT_URL,
     correctionUrl: process.env.GITLAB_CORRECTION_URL,
     token: process.env.GITLAB_CORRECTION_TOKEN,
+    projetUrl: process.env.GITLAB_PROJET_URL,
+    projetToken: process.env.GITLAB_PROJET_TOKEN,
 };
 
 const cfg: GitlabConfig = { baseUrl: "https://git.example.dev", rootGroupPath: "correction", token: "glpat-test" };
@@ -50,6 +55,10 @@ afterEach(() => {
     if (savedEnv.correctionUrl === undefined) delete process.env.GITLAB_CORRECTION_URL;
     else process.env.GITLAB_CORRECTION_URL = savedEnv.correctionUrl;
     process.env.GITLAB_CORRECTION_TOKEN = savedEnv.token;
+    if (savedEnv.projetUrl === undefined) delete process.env.GITLAB_PROJET_URL;
+    else process.env.GITLAB_PROJET_URL = savedEnv.projetUrl;
+    if (savedEnv.projetToken === undefined) delete process.env.GITLAB_PROJET_TOKEN;
+    else process.env.GITLAB_PROJET_TOKEN = savedEnv.projetToken;
     globalThis.fetch = realFetch;
 });
 
@@ -89,6 +98,71 @@ describe("getGitlabConfig", () => {
         delete process.env.NEXT_PUBLIC_GIT_URL;
         delete process.env.GITLAB_CORRECTION_URL;
         expect(() => getGitlabConfig()).toThrow(/GITLAB_CORRECTION_URL/);
+    });
+});
+
+describe("getPrivateProjectConfig", () => {
+    beforeEach(() => {
+        process.env.GITLAB_PROJET_URL = "https://git.example.dev/projet";
+        process.env.GITLAB_PROJET_TOKEN = "glpat-projet-test";
+    });
+
+    test("dérive base et groupe racine de GITLAB_PROJET_URL", () => {
+        const cfg = getPrivateProjectConfig();
+        expect(cfg.baseUrl).toBe("https://git.example.dev");
+        expect(cfg.rootGroupPath).toBe("projet");
+        expect(cfg.token).toBe("glpat-projet-test");
+    });
+
+    test("échoue explicitement si GITLAB_PROJET_URL manque", () => {
+        delete process.env.GITLAB_PROJET_URL;
+        expect(() => getPrivateProjectConfig()).toThrow(/GITLAB_PROJET_URL/);
+    });
+
+    test("échoue explicitement si GITLAB_PROJET_TOKEN manque", () => {
+        delete process.env.GITLAB_PROJET_TOKEN;
+        expect(() => getPrivateProjectConfig()).toThrow(/GITLAB_PROJET_TOKEN/);
+    });
+
+    test("échoue si l'URL ne contient pas de chemin de groupe", () => {
+        process.env.GITLAB_PROJET_URL = "https://git.example.dev";
+        expect(() => getPrivateProjectConfig()).toThrow(/groupe racine/);
+    });
+});
+
+describe("ensurePrivateProject", () => {
+    const privateCfg = { baseUrl: "https://git.example.dev", rootGroupPath: "projet", token: "glpat-test" };
+
+    test("projet existant : renvoie id et webUrl sans POST ni lookup de groupe", async () => {
+        routes.push({
+            match: (u, m) => m === "GET" && u.includes("/projects/projet%2Fdoc-interne"),
+            respond: () => json(200, { id: 21, web_url: "https://git.example.dev/projet/doc-interne" }),
+        });
+        const p = await ensurePrivateProject(privateCfg, "doc-interne");
+        expect(p).toEqual({ id: 21, webUrl: "https://git.example.dev/projet/doc-interne" });
+        expect(calls.filter((c) => c.method === "POST")).toHaveLength(0);
+    });
+
+    test("projet absent : créé privé sous le groupe racine", async () => {
+        routes.push({
+            match: (u, m) => m === "GET" && u.endsWith("/groups/projet"),
+            respond: () => json(200, { id: 9 }),
+        });
+        routes.push({
+            match: (u, m) => m === "POST" && u.endsWith("/projects"),
+            respond: () => json(201, { id: 22, web_url: "https://git.example.dev/projet/doc-interne" }),
+        });
+        const p = await ensurePrivateProject(privateCfg, "doc-interne");
+        expect(p.id).toBe(22);
+        const post = calls.find((c) => c.method === "POST")!;
+        expect(post.body).toEqual({
+            name: "doc-interne", path: "doc-interne", namespace_id: 9,
+            visibility: "private", default_branch: "main",
+        });
+    });
+
+    test("groupe racine absent : erreur explicite, pas de création sauvage", async () => {
+        await expect(ensurePrivateProject(privateCfg, "doc-interne")).rejects.toThrow(/groupe racine "projet" introuvable/);
     });
 });
 
