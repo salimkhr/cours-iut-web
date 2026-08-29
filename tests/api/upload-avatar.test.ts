@@ -62,7 +62,7 @@ beforeEach(() => {
 });
 afterEach(() => {
     // Restaure NODE_ENV si un test l'a modifié
-    Object.defineProperty(process.env, "NODE_ENV", { value: "test", writable: true, configurable: true });
+    Object.defineProperty(process.env, "NODE_ENV", { value: "test", writable: true, configurable: true, enumerable: true });
 });
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -159,7 +159,7 @@ describe("POST /api/upload-avatar", () => {
     });
 
     test("503 si ClamAV en erreur en production", async () => {
-        Object.defineProperty(process.env, "NODE_ENV", { value: "production", writable: true, configurable: true });
+        Object.defineProperty(process.env, "NODE_ENV", { value: "production", writable: true, configurable: true, enumerable: true });
         scanResult = { error: "connexion refusée" };
         const res = await POST(makeFormReq(makeJpegFile()) as NextRequest);
         expect(res.status).toBe(503);

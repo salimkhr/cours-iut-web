@@ -2,9 +2,8 @@
 # Dependencies
 # -----------------------------
 # Épinglé sur la version de `packageManager` (package.json) : `latest` a cassé le
-# build en changeant de format de lockfile (bun 1.4.0 vs bun.lock généré en 1.3.14),
-# --frozen-lockfile refusant alors un lockfile qu'il juge "changé".
-FROM oven/bun:1.3.14 AS deps
+# build en changeant de format de lockfile sous nos pieds sans avertissement.
+FROM oven/bun:1.4.0 AS deps
 
 RUN apt-get update && apt-get install -y libc6
 
@@ -18,7 +17,7 @@ RUN bun install --frozen-lockfile
 # -----------------------------
 # Build
 # -----------------------------
-FROM oven/bun:1.3.14 AS builder
+FROM oven/bun:1.4.0 AS builder
 
 WORKDIR /app
 
