@@ -32,7 +32,10 @@ export default async function Content({params}: ContentPageProps) {
     const isAdmin = session?.user.role === "admin";
 
     if (!currentSection) notFound();
-    if (currentSection.isAvailable === false) notFound();
+    // Même exemption que la route `[contentSlug]` : un admin doit pouvoir relire ses slides
+    // avant de publier la section. Sans le `!isAdmin`, la préparation d'une séance était
+    // impossible — la page 404ait pour son propre auteur.
+    if (!isAdmin && currentSection.isAvailable === false) notFound();
 
     const ref = getContentRef(currentSection.contents, "slide");
 
