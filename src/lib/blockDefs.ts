@@ -460,6 +460,43 @@ export const blockDefs: BlockDef[] = [
         ],
         inlineEditField: "content",
     },
+    {
+        type: "slide-table",
+        label: "Tableau slide",
+        category: "Slides",
+        description: "Tableau dans une slide : `headers` (string[]) et `rows` (string[][]). Les cellules acceptent du markdown inline. Typographie agrandie pour la projection — garder peu de colonnes et peu de lignes.",
+        defaultProps: {
+            headers: ["En-tête 1", "En-tête 2"],
+            rows: [["", ""]],
+        },
+        schema: z.object({
+            headers: z.array(z.string()).optional(),
+            rows: z.array(z.array(z.string())).optional(),
+        }),
+        fields: [],
+    },
+    {
+        type: "slide-image",
+        label: "Image slide",
+        category: "Slides",
+        description: "Image dans une slide (via upload). Contrainte en hauteur pour tenir dans l'écran sans déborder.",
+        defaultProps: { src: "", title: "", alt: "" },
+        schema: z.object({
+            src: z.string(),
+            title: z.string().optional(),
+            alt: z.string().optional(),
+        }),
+        fields: [
+            { key: "src", label: "Image", type: "image-upload" },
+            { key: "title", label: "Légende", type: "text" },
+            {
+                key: "alt",
+                label: "Texte alternatif",
+                type: "text",
+                placeholder: "Description pour lecteurs d'écran (vide si décorative)",
+            },
+        ],
+    },
 ];
 
 const byType = new Map<string, BlockDef>(blockDefs.map((d) => [d.type, d]));

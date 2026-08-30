@@ -29,6 +29,8 @@ import { COL_SPAN_CLASS } from "@/lib/blockSchemas";
 import { SlideText } from "@/components/Slides/ui/SlideText";
 import { SlideList, SlideListItem } from "@/components/Slides/ui/SlideList";
 import { SlideNote } from "@/components/Slides/ui/SlideNote";
+import { SlideTable } from "@/components/Slides/ui/SlideTable";
+import { SlideImage } from "@/components/Slides/ui/SlideImage";
 import { blockDefs, getBlockDef, createBlockInstance } from "@/lib/blockDefs";
 import type { BlockDef, FieldDef, BlockCategory } from "@/lib/blockDefs";
 import type Module from "@/types/Module";
@@ -406,6 +408,34 @@ const clientParts: Record<string, ClientPart> = {
         render: ({ content }: BlockRenderProps) => (
             <SlideNote>{String(content ?? "")}</SlideNote>
         ),
+    },
+    "slide-table": {
+        icon: TableIcon,
+        editor: TableBlockEditor,
+        render: ({ headers, rows }: BlockRenderProps) => (
+            <SlideTable
+                headers={(headers as string[]) ?? []}
+                rows={(rows as string[][]) ?? []}
+            />
+        ),
+    },
+    "slide-image": {
+        icon: Image,
+        render: ({ src, title, alt }: BlockRenderProps) => {
+            // Même garde que `image-card` : `<Image src="">` lève une erreur React et
+            // recharge la page entière tant qu'aucune image n'est choisie.
+            const url = String(src ?? "").trim();
+            if (!url) {
+                return (
+                    <div className="flex min-h-24 items-center justify-center rounded-md border border-dashed border-bridge-300 px-4 py-6 text-sm text-bridge-600 dark:border-bridge-600 dark:text-bridge-300">
+                        Aucune image sélectionnée
+                    </div>
+                );
+            }
+            return (
+                <SlideImage src={url} title={title ? String(title) : undefined} alt={String(alt ?? "")} />
+            );
+        },
     },
 };
 

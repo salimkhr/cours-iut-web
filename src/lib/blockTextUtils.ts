@@ -58,7 +58,8 @@ export function extractTextFields(block: Block): string[] {
         case "diagram":
             return [str(p.header), str(p.chart)].filter(Boolean);
 
-        case "table": {
+        case "table":
+        case "slide-table": {
             const headers = Array.isArray(p.headers) ? (p.headers as string[]) : [];
             const rows = Array.isArray(p.rows) ? (p.rows as string[][]) : [];
             return [headers.join(" "), rows.flat().join(" ")].filter(Boolean);
@@ -68,6 +69,7 @@ export function extractTextFields(block: Block): string[] {
             return [str(p.title), str(p.description)].filter(Boolean);
 
         case "image-card":
+        case "slide-image":
             return [str(p.alt), str(p.title)].filter(Boolean);
 
         case "quote":
@@ -356,7 +358,8 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
             return `${annotation}\n${codeBlock}`;
         }
 
-        case "table": {
+        case "table":
+        case "slide-table": {
             const headers = Array.isArray(props.headers) ? (props.headers as string[]) : [];
             const rows = Array.isArray(props.rows) ? (props.rows as string[][]) : [];
             if (headers.length === 0) return annotation;
@@ -377,7 +380,8 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
             return `${annotation}\n${link}${description ? ` — ${description}` : ""}`;
         }
 
-        case "image-card": {
+        case "image-card":
+        case "slide-image": {
             const alt = str(props.alt);
             const src = str(props.src);
             const title = str(props.title);

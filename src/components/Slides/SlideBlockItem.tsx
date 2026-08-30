@@ -8,6 +8,8 @@ import {SlideDiagram} from "@/components/Slides/ui/SlideDiagram";
 import {SlideList, SlideListItem} from "@/components/Slides/ui/SlideList";
 import {SlideNote} from "@/components/Slides/ui/SlideNote";
 import {SlideText} from "@/components/Slides/ui/SlideText";
+import {SlideTable} from "@/components/Slides/ui/SlideTable";
+import {SlideImage} from "@/components/Slides/ui/SlideImage";
 
 const slideColumnSpanClass: Record<number, string> = {
     3: "md:col-span-3",
@@ -60,6 +62,21 @@ export function SlideBlockItem({block, renderNested}: SlideBlockItemProps) {
             return <>{renderInline(String(block.props.text ?? ""))}</>;
         case "slide-note":
             return <SlideNote>{String(block.props.content ?? "")}</SlideNote>;
+        case "slide-table":
+            return (
+                <SlideTable
+                    headers={(block.props.headers as string[]) ?? []}
+                    rows={(block.props.rows as string[][]) ?? []}
+                />
+            );
+        case "slide-image":
+            return (
+                <SlideImage
+                    src={String(block.props.src ?? "")}
+                    title={block.props.title ? String(block.props.title) : undefined}
+                    alt={String(block.props.alt ?? "")}
+                />
+            );
         case "diagram":
             return <SlideDiagram chart={String(block.props.chart ?? "")}/>;
         case "columns":

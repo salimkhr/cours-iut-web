@@ -120,6 +120,18 @@ export const blockPropsSchemas: Record<string, z.ZodTypeAny> = {
     "slide-list": z.object({ ordered: z.boolean() }),
     "slide-list-item": z.object({ text: z.string() }),
     "slide-note": z.object({ content: z.string() }),
+    // Mêmes props que leurs homologues de cours (`table`, `image-card`) : c'est le rendu
+    // qui diffère, pas la donnée. `headers`/`rows` restent optionnels pour la même raison
+    // que sur `table` — un tableau en cours de saisie doit rester sauvegardable.
+    "slide-table": z.object({
+        headers: z.array(z.string()).optional(),
+        rows: z.array(z.array(z.string())).optional(),
+    }),
+    "slide-image": z.object({
+        src: z.string(),
+        title: z.string().optional(),
+        alt: z.string().optional(),
+    }),
 };
 
 export interface ContainerRule {
@@ -149,11 +161,16 @@ export const containerRules: Record<string, ContainerRule> = {
     "collapsible": { allowedChildren: "any" },
     "section": { allowedChildren: "any", allowedParents: [null, "section"] },
     "slide": {
-        allowedChildren: ["slide-text", "slide-code", "slide-list", "slide-note", "columns", "diagram"],
+        allowedChildren: [
+            "slide-text", "slide-code", "slide-list", "slide-note", "columns", "diagram",
+            "slide-table", "slide-image",
+        ],
         allowedParents: [null],
     },
     "slide-text": { allowedChildren: [], allowedParents: ["slide", "column"] },
     "slide-code": { allowedChildren: [], allowedParents: ["slide", "column"] },
+    "slide-table": { allowedChildren: [], allowedParents: ["slide", "column"] },
+    "slide-image": { allowedChildren: [], allowedParents: ["slide", "column"] },
     "slide-list": {
         allowedChildren: ["slide-list-item"],
         allowedParents: ["slide", "column"],
@@ -175,7 +192,7 @@ export function isContainer(type: string): boolean {
  *  de slides ne sait pas les afficher, ils disparaissaient) et inversement. */
 const SLIDE_UNIVERSE_TYPES = new Set([
     "slide", "slide-text", "slide-code", "slide-list", "slide-list-item",
-    "slide-note", "columns", "column", "diagram",
+    "slide-note", "slide-table", "slide-image", "columns", "column", "diagram",
 ]);
 
 /** Ce type de bloc a-t-il sa place dans ce type de contenu (cours/TP vs slide) ? */
