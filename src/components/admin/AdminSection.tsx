@@ -273,9 +273,9 @@ export function SectionDeleteDialog({section, modData, deleting, onConfirm}: Sec
         <AlertDialog>
             <AlertDialogTrigger asChild>
                 <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
-                    className="h-11 w-11 border-bridge-500/45 text-bridge-600 hover:border-destructive/40 hover:bg-destructive/10 hover:text-destructive dark:text-bridge-300"
+                    className="h-11 w-11 text-bridge-600 hover:bg-destructive/10 hover:text-destructive dark:text-bridge-300"
                     disabled={deleting}
                     aria-label={`Supprimer la section ${section.title}`}
                     title="Supprimer la section"

@@ -68,9 +68,9 @@ function SectionActionsCell({
         <div className="flex shrink-0 items-center gap-1">
             <Button
                 type="button"
-                variant="outline"
+                variant="ghost"
                 size="icon"
-                className="h-11 w-11 border-bridge-500/45"
+                className="h-11 w-11 text-bridge-600 dark:text-bridge-300"
                 aria-label={`Modifier la section ${currentSection.title}`}
                 title="Modifier la section"
                 onClick={onEdit}
