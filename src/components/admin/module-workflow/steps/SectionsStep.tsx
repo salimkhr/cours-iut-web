@@ -1,7 +1,7 @@
 "use client";
 
 import {useState} from "react";
-import {Pencil, Plus} from "lucide-react";
+import {Eye, EyeOff, Pencil, Plus} from "lucide-react";
 import type Module from "@/types/Module";
 import type Section from "@/types/Section";
 import {getContentTypes} from "@/types/CourseContent";
@@ -86,6 +86,9 @@ export default function SectionsStep({module, onSaved}: SectionsStepProps) {
     const [sections, setSections] = useState<Section[]>(module.sections);
     const [editingPath, setEditingPath] = useState<string | null>(null);
     const [adding, setAdding] = useState(false);
+    // Briefs repliés par défaut : trois lignes de texte par section noient le tableau quand on
+    // vient y piloter les contenus. On les déplie d'un coup quand on vient les lire.
+    const [showBriefs, setShowBriefs] = useState(false);
 
     const sortedSections = [...sections].sort((first, second) => first.order - second.order);
     const editingSection = editingPath ? sortedSections.find((s) => s.path === editingPath) ?? null : null;
@@ -168,13 +171,31 @@ export default function SectionsStep({module, onSaved}: SectionsStepProps) {
 
     return (
         <div className="flex flex-col gap-4">
+            {sortedSections.some(hasSectionBrief) && (
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="min-h-11 gap-2 self-end text-brand-dark dark:text-bridge-200"
+                    onClick={() => setShowBriefs((previous) => !previous)}
+                    aria-pressed={showBriefs}
+                >
+                    {showBriefs
+                        ? <EyeOff className="size-4" aria-hidden="true"/>
+                        : <Eye className="size-4" aria-hidden="true"/>}
+                    {showBriefs ? "Masquer les briefs" : "Afficher les briefs"}
+                </Button>
+            )}
+
             <AdminDataTable
                 columns={columns}
                 data={sortedSections}
                 emptyMessage="Aucune section dans ce module."
                 getRowKey={(section) => section.path}
-                renderSubRow={(section) =>
-                    hasSectionBrief(section) ? <SectionBriefPreview section={section}/> : null
+                renderSubRow={
+                    showBriefs
+                        ? (section) => (hasSectionBrief(section) ? <SectionBriefPreview section={section}/> : null)
+                        : undefined
                 }
                 card={false}
             />
