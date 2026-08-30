@@ -24,10 +24,11 @@ export interface CodePanelData {
     /** Lignes à mettre en avant, ex. "2,5-7". Les autres sont estompées.
      *  Alimenté par étapes depuis une slide (cf. `SlideCodeWithPreview`). */
     highlightLines?: string;
-    /** Replie les lignes trop longues au lieu de les faire défiler horizontalement.
-     *  Réservé aux slides : sur un vidéoprojecteur, une ligne coupée est une ligne
-     *  perdue — personne ne fera défiler. Dans un cours, le défilement reste
-     *  préférable, il garde l'indentation lisible. */
+    /** Replie les lignes trop longues au lieu de les faire défiler. Vrai par défaut,
+     *  comme dans `CodeCard` : le panneau ne fait qu'une demi-largeur quand l'aperçu
+     *  est affiché, et sans repli la fin d'une ligne sort du cadre sans que rien ne
+     *  le signale. Passer `false` pour un code dont l'alignement compte plus que la
+     *  complétude — un tableau de données, une colonne de valeurs. */
     wrap?: boolean;
 }
 
@@ -185,7 +186,7 @@ export default function CodeWithPreviewCard({panels, sources, className, current
         </div>
     );
 
-    const highlighterProps = (language: string, highlightLines?: string, wrap?: boolean) => {
+    const highlighterProps = (language: string, highlightLines?: string, wrap: boolean = true) => {
         const highlighted = highlightLines ? parseHighlightLines(highlightLines) : [];
         const wrapStyle: React.CSSProperties = wrap
             ? {whiteSpace: 'pre-wrap', wordBreak: 'break-word'}
@@ -203,6 +204,7 @@ export default function CodeWithPreviewCard({panels, sources, className, current
             // `wrapLongLines` et `wrapLines` s'excluent : le second est requis pour que
             // `lineProps` s'applique. On ne l'active donc que lorsqu'il y a des lignes à
             // estomper, pour ne rien changer au rendu des blocs sans surlignage.
+            wrapLongLines: wrap,
             ...(highlighted.length > 0
                 ? {
                     wrapLines: true,
@@ -215,7 +217,7 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                         } as React.CSSProperties,
                     }),
                 }
-                : {wrapLongLines: Boolean(wrap)}),
+                : {}),
             showLineNumbers: true,
         };
     };
