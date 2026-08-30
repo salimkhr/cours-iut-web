@@ -23,6 +23,11 @@ interface SlideCodeWithPreviewProps {
  *
  * Comme `SlideCode`, le bloc se laisse comprimer (`min-h-0`) au lieu d'imposer une
  * hauteur : c'est la slide qui décide de la place disponible.
+ *
+ * `size` doit rester aligné sur celui de `SlideCode` : la règle de police est injectée
+ * en GLOBAL sur `.slide-code-container pre`, que les deux composants partagent. Deux
+ * tailles différentes sur une même slide ne cohabitent pas — la dernière montée gagne,
+ * pour les deux blocs.
  */
 export const SlideCodeWithPreview: React.FC<SlideCodeWithPreviewProps> = ({
                                                                              language,
@@ -30,7 +35,7 @@ export const SlideCodeWithPreview: React.FC<SlideCodeWithPreviewProps> = ({
                                                                              secondaryLanguage,
                                                                              secondaryCode,
                                                                              preview,
-                                                                             size = "default",
+                                                                             size = "xl",
                                                                              className,
                                                                          }) => {
     const {fontSize, lineHeight} = slideCodeTextMetrics[size];
