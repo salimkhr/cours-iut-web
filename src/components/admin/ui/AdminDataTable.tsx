@@ -42,6 +42,14 @@ interface AdminDataTableProps<TData> {
      * surface déjà levée (ex: `SectionsStep`, dans la carte du workflow module).
      */
     card?: boolean;
+    /**
+     * Contenu secondaire rendu sur une ligne pleine largeur sous la ligne principale (retourner
+     * `null` pour ne rien ajouter). Indispensable pour du texte long : les cellules portent
+     * `whitespace-nowrap`, donc un paragraphe placé dans une colonne étire le tableau au lieu de
+     * revenir à la ligne. Ici le `colSpan` couvre toute la largeur et le retour à la ligne est
+     * rétabli.
+     */
+    renderSubRow?: (row: TData, index: number) => ReactNode;
 }
 
 const headClassName =
@@ -58,6 +66,7 @@ export default function AdminDataTable<TData>({
     tableClassName,
     getRowHref,
     card = true,
+    renderSubRow,
 }: AdminDataTableProps<TData>) {
     const prefersReducedMotion = useReducedMotion();
     const router = useRouter();
@@ -79,6 +88,7 @@ export default function AdminDataTable<TData>({
                         data.map((row, rowIndex) => {
                             const rowKey = getRowKey ? getRowKey(row, rowIndex) : String(rowIndex);
                             const rowHref = getRowHref?.(row, rowIndex);
+                            const subRow = renderSubRow?.(row, rowIndex);
 
                             const navigateToRow = (target: EventTarget) => {
                                 if ((target as HTMLElement).closest(INTERACTIVE_SELECTOR)) return;
@@ -95,7 +105,11 @@ export default function AdminDataTable<TData>({
                                         animate={{opacity: 1, y: 0}}
                                         transition={{duration: 0.18, ease: "easeOut"}}
                                         className={cn(
-                                            "border-b border-bridge-700/10 last:border-b-0 dark:border-bridge-500/10",
+                                            // Une ligne suivie de son sous-contenu ne porte pas de séparateur :
+                                            // c'est la ligne du sous-contenu qui ferme le bloc.
+                                            subRow
+                                                ? "border-b-0"
+                                                : "border-b border-bridge-700/10 last:border-b-0 dark:border-bridge-500/10",
                                             rowHref && "cursor-pointer",
                                         )}
                                         onClick={rowHref ? (e: MouseEvent<HTMLTableRowElement>) => navigateToRow(e.target) : undefined}
@@ -114,6 +128,16 @@ export default function AdminDataTable<TData>({
                                             </TableCell>
                                         ))}
                                     </MotionTableRow>
+                                    {subRow && (
+                                        <TableRow className="border-b border-bridge-700/10 last:border-b-0 hover:bg-transparent dark:border-bridge-500/10">
+                                            <TableCell
+                                                colSpan={columns.length}
+                                                className="whitespace-normal px-4 pb-3 pt-0"
+                                            >
+                                                {subRow}
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
                                 </Fragment>
                             );
                         })

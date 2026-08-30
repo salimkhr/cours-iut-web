@@ -9,6 +9,7 @@ import {Button} from "@/components/ui/button";
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import AdminDataTable, {type AdminColumn} from "@/components/admin/ui/AdminDataTable";
 import {
+    hasSectionBrief,
     SectionBriefPreview,
     SectionContentLinks,
     SectionDeleteDialog,
@@ -137,7 +138,6 @@ export default function SectionsStep({module, onSaved}: SectionsStepProps) {
                         {section.title}
                     </p>
                     <SectionContentLinks section={section} modData={module}/>
-                    <SectionBriefPreview section={section}/>
                 </div>
             ),
         },
@@ -173,6 +173,9 @@ export default function SectionsStep({module, onSaved}: SectionsStepProps) {
                 data={sortedSections}
                 emptyMessage="Aucune section dans ce module."
                 getRowKey={(section) => section.path}
+                renderSubRow={(section) =>
+                    hasSectionBrief(section) ? <SectionBriefPreview section={section}/> : null
+                }
                 card={false}
             />
 

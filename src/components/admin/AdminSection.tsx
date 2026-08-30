@@ -226,26 +226,36 @@ export function SectionContentLinks({section, modData}: SectionContentLinksProps
     );
 }
 
-/** Aperçu du brief sous le titre de la ligne — évite d'ouvrir la modale d'édition juste pour
- *  lire ce que la section doit produire. Affiche les textes tels quels (étape, résultat, base
- *  fournie), sans troncature : en attendant une refonte de cet écran, c'est la lecture complète
- *  qui manquait, pas juste un indice qu'il y a du contenu. */
+/** Brief de la section, destiné à une ligne pleine largeur sous la ligne principale du tableau
+ *  (cf. `renderSubRow` de `AdminDataTable`) — et non à une cellule de colonne : les cellules
+ *  portent `whitespace-nowrap`, un texte long y étirerait le tableau au lieu de revenir à la
+ *  ligne. Évite d'ouvrir la modale d'édition juste pour lire ce que la section doit produire. */
+export function hasSectionBrief(section: Section): boolean {
+    const brief = section.brief;
+    return Boolean(brief?.filRougeStep?.trim() || brief?.filRougeOutcome?.trim() || brief?.providedBase?.trim());
+}
+
 export function SectionBriefPreview({section}: {section: Section}) {
     const brief = section.brief;
-    if (!brief?.filRougeStep && !brief?.filRougeOutcome && !brief?.providedBase) return null;
+    if (!hasSectionBrief(section)) return null;
+
+    const lines = [
+        {label: "Étape", value: brief?.filRougeStep?.trim()},
+        {label: "Résultat", value: brief?.filRougeOutcome?.trim()},
+        {label: "Base fournie", value: brief?.providedBase?.trim()},
+    ].filter((line) => Boolean(line.value));
 
     return (
-        <div className="mt-1.5 flex max-w-md flex-col gap-0.5 text-xs text-bridge-500 dark:text-bridge-400">
-            {brief.filRougeStep && (
-                <p><span className="font-semibold">Étape :</span> {brief.filRougeStep}</p>
-            )}
-            {brief.filRougeOutcome && (
-                <p><span className="font-semibold">Résultat :</span> {brief.filRougeOutcome}</p>
-            )}
-            {brief.providedBase && (
-                <p><span className="font-semibold">Base fournie :</span> {brief.providedBase}</p>
-            )}
-        </div>
+        <dl className="flex max-w-4xl flex-col gap-1 text-xs leading-relaxed text-bridge-600 dark:text-bridge-400">
+            {lines.map((line) => (
+                <div key={line.label} className="flex flex-wrap gap-x-1.5">
+                    <dt className="font-semibold text-brand-dark/70 dark:text-bridge-300">
+                        {line.label}
+                    </dt>
+                    <dd className="min-w-0 flex-1">{line.value}</dd>
+                </div>
+            ))}
+        </dl>
     );
 }
 
