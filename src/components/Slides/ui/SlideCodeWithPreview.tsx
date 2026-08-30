@@ -69,12 +69,15 @@ export const SlideCodeWithPreview: React.FC<SlideCodeWithPreviewProps> = ({
         }
     }, [stepCount, registerSteps]);
 
+    // `wrap` systématique : projeté, un bout de ligne hors cadre est un bout de ligne
+    // perdu, personne ne fera défiler pendant un cours.
     const panels = [
-        {language, code, highlightLines: highlightGroups[currentStep] || undefined},
+        {language, code, highlightLines: highlightGroups[currentStep] || undefined, wrap: true},
         {
             language: secondaryLanguage ?? "",
             code: secondaryCode ?? "",
             highlightLines: secondaryGroups[currentStep] || undefined,
+            wrap: true,
         },
     ].filter((panel) => panel.code.length > 0);
 

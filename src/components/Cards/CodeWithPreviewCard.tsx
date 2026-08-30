@@ -24,6 +24,11 @@ export interface CodePanelData {
     /** Lignes à mettre en avant, ex. "2,5-7". Les autres sont estompées.
      *  Alimenté par étapes depuis une slide (cf. `SlideCodeWithPreview`). */
     highlightLines?: string;
+    /** Replie les lignes trop longues au lieu de les faire défiler horizontalement.
+     *  Réservé aux slides : sur un vidéoprojecteur, une ligne coupée est une ligne
+     *  perdue — personne ne fera défiler. Dans un cours, le défilement reste
+     *  préférable, il garde l'indentation lisible. */
+    wrap?: boolean;
 }
 
 /** "2,5-7" → [2, 5, 6, 7]. Même grammaire que `CodeCard`. */
@@ -180,8 +185,11 @@ export default function CodeWithPreviewCard({panels, sources, className, current
         </div>
     );
 
-    const highlighterProps = (language: string, highlightLines?: string) => {
+    const highlighterProps = (language: string, highlightLines?: string, wrap?: boolean) => {
         const highlighted = highlightLines ? parseHighlightLines(highlightLines) : [];
+        const wrapStyle: React.CSSProperties = wrap
+            ? {whiteSpace: 'pre-wrap', wordBreak: 'break-word'}
+            : {};
 
         return {
             language: normalizeLanguage(language),
@@ -202,11 +210,12 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                         style: {
                             display: 'block',
                             width: '100%',
+                            ...wrapStyle,
                             ...(highlighted.includes(lineNumber) ? {} : {opacity: 0.4}),
                         } as React.CSSProperties,
                     }),
                 }
-                : {wrapLongLines: false}),
+                : {wrapLongLines: Boolean(wrap)}),
             showLineNumbers: true,
         };
     };
@@ -275,12 +284,12 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                 ) : (
                     <>
                         <div className="block dark:hidden">
-                            <SyntaxHighlighter style={courseCodeLight} {...highlighterProps(panel.language, panel.highlightLines)}>
+                            <SyntaxHighlighter style={courseCodeLight} {...highlighterProps(panel.language, panel.highlightLines, panel.wrap)}>
                                 {currentCode}
                             </SyntaxHighlighter>
                         </div>
                         <div className="hidden dark:block">
-                            <SyntaxHighlighter style={courseCodeDark} {...highlighterProps(panel.language, panel.highlightLines)}>
+                            <SyntaxHighlighter style={courseCodeDark} {...highlighterProps(panel.language, panel.highlightLines, panel.wrap)}>
                                 {currentCode}
                             </SyntaxHighlighter>
                         </div>
