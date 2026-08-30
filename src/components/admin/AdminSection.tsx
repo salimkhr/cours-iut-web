@@ -176,7 +176,9 @@ interface SectionContentLinksProps {
 }
 
 /** Liens rapides vers les contenus (cours/TP/slide/examen), le rendu public, et le badge de
- *  code d'accès examen — extrait du `<li>` pour être réutilisé dans une cellule de tableau. */
+ *  code d'accès examen. Rendus en `ghost` et sans marge propre : ils vivent dans la colonne
+ *  « Actions », aux côtés des boutons modifier/supprimer, et doivent former un groupe homogène
+ *  avec eux plutôt que se distinguer visuellement. */
 export function SectionContentLinks({section, modData}: SectionContentLinksProps) {
     const hasExamen = hasContentType(section.contents, "examen");
     const sortedContents = getContentTypes(section.contents).sort(
@@ -184,16 +186,16 @@ export function SectionContentLinks({section, modData}: SectionContentLinksProps
     );
 
     return (
-        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1">
             {sortedContents.map((content) => {
                 const key = content as ContentKey;
                 return (
                     <Button
                         key={content}
                         asChild
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="h-8 gap-1.5 border-bridge-500/45 px-2.5 text-xs"
+                        className="h-8 gap-1.5 px-2.5 text-xs text-bridge-600 dark:text-bridge-300"
                     >
                         <Link href={`/admin/content/${modData.path}/${section.path}/${content}`}>
                             <Pencil className="size-3" aria-hidden="true"/>
@@ -204,9 +206,9 @@ export function SectionContentLinks({section, modData}: SectionContentLinksProps
             })}
             <Button
                 asChild
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                className="h-8 gap-1.5 border-bridge-500/45 px-2.5 text-xs"
+                className="h-8 gap-1.5 px-2.5 text-xs text-bridge-600 dark:text-bridge-300"
             >
                 <Link href={`/${modData.path}/${section.path}`}>
                     <ExternalLink className="size-3" aria-hidden="true"/>

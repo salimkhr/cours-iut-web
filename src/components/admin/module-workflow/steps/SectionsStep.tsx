@@ -136,12 +136,9 @@ export default function SectionsStep({module, onSaved}: SectionsStepProps) {
             id: "title",
             header: "Section",
             cell: (section) => (
-                <div className="min-w-56">
-                    <p className="text-sm font-semibold leading-tight text-brand-dark dark:text-bridge-100">
-                        {section.title}
-                    </p>
-                    <SectionContentLinks section={section} modData={module}/>
-                </div>
+                <p className="min-w-56 text-sm font-semibold leading-tight text-brand-dark dark:text-bridge-100">
+                    {section.title}
+                </p>
             ),
         },
         {
@@ -158,13 +155,16 @@ export default function SectionsStep({module, onSaved}: SectionsStepProps) {
             id: "actions",
             header: "Actions",
             cell: (section) => (
-                <SectionActionsCell
-                    key={`${section.path}:${section.title}`}
-                    section={section}
-                    module={module}
-                    onEdit={() => setEditingPath(section.path)}
-                    onDeleted={handleDeleted}
-                />
+                <div className="flex flex-wrap items-center justify-end gap-1">
+                    <SectionContentLinks section={section} modData={module}/>
+                    <SectionActionsCell
+                        key={`${section.path}:${section.title}`}
+                        section={section}
+                        module={module}
+                        onEdit={() => setEditingPath(section.path)}
+                        onDeleted={handleDeleted}
+                    />
+                </div>
             ),
         },
     ];
