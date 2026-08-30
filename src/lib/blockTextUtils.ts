@@ -265,7 +265,7 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
             const label = CALLOUT_LABELS[variant] ?? "Info";
             const title = str(props.title);
             const heading = title
-                ? `${annotation}\n> **${label} — ${title}**`
+                ? `${annotation}\n> **${label} : ${title}**`
                 : `${annotation}\n> **${label}**`;
             const childParts = renderBlocks(children, depth, limitations);
             if (childParts.length > 0) {
