@@ -132,6 +132,19 @@ export const blockPropsSchemas: Record<string, z.ZodTypeAny> = {
         title: z.string().optional(),
         alt: z.string().optional(),
     }),
+    "slide-code-with-preview": z.object({
+        language: z.string(),
+        code: z.string(),
+        preview: z.string().optional(),
+        secondaryLanguage: z.string().optional(),
+        secondaryCode: z.string().optional(),
+    }).refine(
+        (props) => !props.secondaryCode?.trim() || Boolean(props.secondaryLanguage?.trim()),
+        {
+            path: ["secondaryLanguage"],
+            message: "Le langage du second panneau est requis si un second code est fourni.",
+        },
+    ),
 };
 
 export interface ContainerRule {
@@ -163,7 +176,7 @@ export const containerRules: Record<string, ContainerRule> = {
     "slide": {
         allowedChildren: [
             "slide-text", "slide-code", "slide-list", "slide-note", "columns", "diagram",
-            "slide-table", "slide-image",
+            "slide-table", "slide-image", "slide-code-with-preview",
         ],
         allowedParents: [null],
     },
@@ -171,6 +184,7 @@ export const containerRules: Record<string, ContainerRule> = {
     "slide-code": { allowedChildren: [], allowedParents: ["slide", "column"] },
     "slide-table": { allowedChildren: [], allowedParents: ["slide", "column"] },
     "slide-image": { allowedChildren: [], allowedParents: ["slide", "column"] },
+    "slide-code-with-preview": { allowedChildren: [], allowedParents: ["slide", "column"] },
     "slide-list": {
         allowedChildren: ["slide-list-item"],
         allowedParents: ["slide", "column"],
@@ -192,7 +206,8 @@ export function isContainer(type: string): boolean {
  *  de slides ne sait pas les afficher, ils disparaissaient) et inversement. */
 const SLIDE_UNIVERSE_TYPES = new Set([
     "slide", "slide-text", "slide-code", "slide-list", "slide-list-item",
-    "slide-note", "slide-table", "slide-image", "columns", "column", "diagram",
+    "slide-note", "slide-table", "slide-image", "slide-code-with-preview",
+    "columns", "column", "diagram",
 ]);
 
 /** Ce type de bloc a-t-il sa place dans ce type de contenu (cours/TP vs slide) ? */

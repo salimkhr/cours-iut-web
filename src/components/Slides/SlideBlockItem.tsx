@@ -10,6 +10,7 @@ import {SlideNote} from "@/components/Slides/ui/SlideNote";
 import {SlideText} from "@/components/Slides/ui/SlideText";
 import {SlideTable} from "@/components/Slides/ui/SlideTable";
 import {SlideImage} from "@/components/Slides/ui/SlideImage";
+import {SlideCodeWithPreview} from "@/components/Slides/ui/SlideCodeWithPreview";
 
 const slideColumnSpanClass: Record<number, string> = {
     3: "md:col-span-3",
@@ -75,6 +76,16 @@ export function SlideBlockItem({block, renderNested}: SlideBlockItemProps) {
                     src={String(block.props.src ?? "")}
                     title={block.props.title ? String(block.props.title) : undefined}
                     alt={String(block.props.alt ?? "")}
+                />
+            );
+        case "slide-code-with-preview":
+            return (
+                <SlideCodeWithPreview
+                    language={String(block.props.language ?? "html")}
+                    code={String(block.props.code ?? "")}
+                    secondaryLanguage={block.props.secondaryLanguage ? String(block.props.secondaryLanguage) : undefined}
+                    secondaryCode={block.props.secondaryCode ? String(block.props.secondaryCode) : undefined}
+                    preview={block.props.preview ? String(block.props.preview) : undefined}
                 />
             );
         case "diagram":

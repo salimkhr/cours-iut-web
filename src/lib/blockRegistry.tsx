@@ -31,6 +31,7 @@ import { SlideList, SlideListItem } from "@/components/Slides/ui/SlideList";
 import { SlideNote } from "@/components/Slides/ui/SlideNote";
 import { SlideTable } from "@/components/Slides/ui/SlideTable";
 import { SlideImage } from "@/components/Slides/ui/SlideImage";
+import { SlideCodeWithPreview } from "@/components/Slides/ui/SlideCodeWithPreview";
 import { blockDefs, getBlockDef, createBlockInstance } from "@/lib/blockDefs";
 import type { BlockDef, FieldDef, BlockCategory } from "@/lib/blockDefs";
 import type Module from "@/types/Module";
@@ -416,6 +417,18 @@ const clientParts: Record<string, ClientPart> = {
             <SlideTable
                 headers={(headers as string[]) ?? []}
                 rows={(rows as string[][]) ?? []}
+            />
+        ),
+    },
+    "slide-code-with-preview": {
+        icon: Eye,
+        render: ({ language, code, secondaryLanguage, secondaryCode, preview }: BlockRenderProps) => (
+            <SlideCodeWithPreview
+                language={String(language ?? "html")}
+                code={String(code ?? "")}
+                secondaryLanguage={secondaryLanguage ? String(secondaryLanguage) : undefined}
+                secondaryCode={secondaryCode ? String(secondaryCode) : undefined}
+                preview={preview ? String(preview) : undefined}
             />
         ),
     },

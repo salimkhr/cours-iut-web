@@ -53,6 +53,7 @@ export function extractTextFields(block: Block): string[] {
             return [str(p.code), str(p.filename)].filter(Boolean);
 
         case "code-with-preview":
+        case "slide-code-with-preview":
             return [str(p.code), str(p.secondaryCode)].filter(Boolean);
 
         case "diagram":
@@ -323,7 +324,8 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
             return `${annotation}\n\`\`\`${lang}\n${code}\n\`\`\``;
         }
 
-        case "code-with-preview": {
+        case "code-with-preview":
+        case "slide-code-with-preview": {
             limitations.add(
                 "L'aperçu live des blocs code-with-preview n'est pas représentable en Markdown"
             );

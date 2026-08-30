@@ -21,12 +21,14 @@ const COURSE_TO_SLIDE: Record<string, string> = {
     "list-item": "slide-list-item",
     "table": "slide-table",
     "image-card": "slide-image",
+    "code-with-preview": "slide-code-with-preview",
 };
 
 /** Types déjà valides dans une slide : traversés sans être renommés. */
 const ALREADY_SLIDE = new Set([
     "slide", "slide-text", "slide-code", "slide-list", "slide-list-item",
-    "slide-note", "slide-table", "slide-image", "diagram", "columns", "column",
+    "slide-note", "slide-table", "slide-image", "slide-code-with-preview",
+    "diagram", "columns", "column",
 ]);
 
 /**
