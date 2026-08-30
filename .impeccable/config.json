@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/lib/blockRegistry.tsx"
+        ],
+        "createdAt": "2026-08-30T09:04:47.249Z",
+        "reason": "Claude: la ligne signalee est un <blockquote> du bloc quote (border-l-4 + italique), convention typographique de la citation, pas un bandeau lateral de carte. Code preexistant, non modifie par ce commit."
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "0.8125rem",
+        "files": [
+          "src/components/Cards/CodeWithPreviewCard.tsx"
+        ],
+        "createdAt": "2026-08-30T13:34:14.081Z",
+        "reason": "Claude: taille preexistante du panneau de code de CodeWithPreviewCard, non introduite par ce changement. Le refactor de highlighterProps l'a seulement deplacee de quelques lignes."
+      }
+    ]
+  }
+}

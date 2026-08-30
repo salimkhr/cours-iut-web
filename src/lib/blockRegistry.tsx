@@ -422,13 +422,15 @@ const clientParts: Record<string, ClientPart> = {
     },
     "slide-code-with-preview": {
         icon: Eye,
-        render: ({ language, code, secondaryLanguage, secondaryCode, preview }: BlockRenderProps) => (
+        render: ({ language, code, secondaryLanguage, secondaryCode, preview, highlight, secondaryHighlight }: BlockRenderProps) => (
             <SlideCodeWithPreview
                 language={String(language ?? "html")}
                 code={String(code ?? "")}
                 secondaryLanguage={secondaryLanguage ? String(secondaryLanguage) : undefined}
                 secondaryCode={secondaryCode ? String(secondaryCode) : undefined}
                 preview={preview ? String(preview) : undefined}
+                highlight={highlight ? String(highlight) : undefined}
+                secondaryHighlight={secondaryHighlight ? String(secondaryHighlight) : undefined}
             />
         ),
     },

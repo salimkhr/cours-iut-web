@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, {useEffect, useMemo} from 'react';
 import CodeWithPreviewCard from "@/components/Cards/CodeWithPreviewCard";
 import {cn} from "@/lib/utils";
 import {slideCodeTextMetrics} from "@/components/Slides/ui/SlideCode";
+import {useSlides} from "@/components/Slides/context/SlidesContext";
 
 interface SlideCodeWithPreviewProps {
     language: string;
@@ -11,6 +12,13 @@ interface SlideCodeWithPreviewProps {
     secondaryLanguage?: string;
     secondaryCode?: string;
     preview?: string;
+    /** Étapes d'animation du premier panneau, séparées par `|`, ex. "1 | 2-4 | 5-7".
+     *  Chaque groupe s'affiche à l'appui sur →, comme dans `SlideCode`. */
+    highlight?: string;
+    /** Étapes du second panneau, sur le MÊME rythme que `highlight` : à l'étape N,
+     *  les deux panneaux s'allument ensemble. C'est ce qui permet de montrer quelles
+     *  lignes de code produisent quelles lignes de résultat. */
+    secondaryHighlight?: string;
     size?: keyof typeof slideCodeTextMetrics;
     className?: string;
 }
@@ -35,14 +43,39 @@ export const SlideCodeWithPreview: React.FC<SlideCodeWithPreviewProps> = ({
                                                                              secondaryLanguage,
                                                                              secondaryCode,
                                                                              preview,
+                                                                             highlight,
+                                                                             secondaryHighlight,
                                                                              size = "xl",
                                                                              className,
                                                                          }) => {
     const {fontSize, lineHeight} = slideCodeTextMetrics[size];
+    const {currentStep, registerSteps} = useSlides();
+
+    const groups = useMemo(
+        () => (value?: string) => (value ? value.split('|').map((group) => group.trim()) : []),
+        [],
+    );
+
+    const highlightGroups = useMemo(() => groups(highlight), [groups, highlight]);
+    const secondaryGroups = useMemo(() => groups(secondaryHighlight), [groups, secondaryHighlight]);
+
+    // Le nombre d'étapes est celui du panneau qui en déclare le plus : un panneau
+    // à court de groupes reste simplement sans surlignage sur les étapes suivantes.
+    const stepCount = Math.max(highlightGroups.length, secondaryGroups.length);
+
+    useEffect(() => {
+        if (stepCount > 0) {
+            registerSteps(stepCount - 1);
+        }
+    }, [stepCount, registerSteps]);
 
     const panels = [
-        {language, code},
-        {language: secondaryLanguage ?? "", code: secondaryCode ?? ""},
+        {language, code, highlightLines: highlightGroups[currentStep] || undefined},
+        {
+            language: secondaryLanguage ?? "",
+            code: secondaryCode ?? "",
+            highlightLines: secondaryGroups[currentStep] || undefined,
+        },
     ].filter((panel) => panel.code.length > 0);
 
     const previewValue = preview?.trim() ?? "";

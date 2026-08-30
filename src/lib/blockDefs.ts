@@ -501,13 +501,15 @@ export const blockDefs: BlockDef[] = [
         type: "slide-code-with-preview",
         label: "Code + aperçu slide",
         category: "Slides",
-        description: "Un ou deux codes avec leur rendu live côte à côte, dans une slide. Mêmes props que le bloc `code-with-preview` des cours : le champ « Gabarit de l'aperçu » est un document HTML complet où l'on pose des marqueurs indiquant où injecter chaque code — /* @edit:css */ dans un <style>, <!-- @edit:html --> dans le corps, /* @edit:js */ dans un <script>. Sans marqueur, le gabarit sert directement de rendu. À préférer aux rendus décrits en texte : sur une slide HTML, montrer le vrai rendu vaut mieux que le raconter.",
+        description: "Un ou deux codes avec leur rendu live côte à côte, dans une slide. Mêmes props que le bloc `code-with-preview` des cours : le champ « Gabarit de l'aperçu » est un document HTML complet où l'on pose des marqueurs indiquant où injecter chaque code — /* @edit:css */ dans un <style>, <!-- @edit:html --> dans le corps, /* @edit:js */ dans un <script>. Sans marqueur, le gabarit sert directement de rendu. `highlight` et `secondaryHighlight` animent chacun leur panneau par étapes séparées par `|` (ex: \"1 | 2-4 | 5-7\"), comme `slide-code`. Les deux avancent au MÊME rythme : à l'étape N, les deux panneaux s'allument ensemble, ce qui montre quelles lignes de code produisent quelles lignes de résultat. À préférer aux rendus décrits en texte : sur une slide HTML, montrer le vrai rendu vaut mieux que le raconter.",
         defaultProps: {
             language: "html",
             code: "",
             preview: "",
             secondaryLanguage: "",
             secondaryCode: "",
+            highlight: "",
+            secondaryHighlight: "",
         },
         schema: z.object({
             language: z.string(),
@@ -515,6 +517,8 @@ export const blockDefs: BlockDef[] = [
             preview: z.string().optional(),
             secondaryLanguage: z.string().optional(),
             secondaryCode: z.string().optional(),
+            highlight: z.string().optional(),
+            secondaryHighlight: z.string().optional(),
         }),
         fields: [
             { key: "language", label: "Langage", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx", "rust"] },
@@ -522,6 +526,8 @@ export const blockDefs: BlockDef[] = [
             { key: "secondaryLanguage", label: "Langage du second panneau", type: "select", options: ["javascript", "typescript", "html", "css", "php", "sql", "json", "bash", "jsx", "tsx", "rust"], placeholder: "Choisir un langage…" },
             { key: "secondaryCode", label: "Second code", type: "code", languageFrom: "secondaryLanguage", rows: 12 },
             { key: "preview", label: "Gabarit de l'aperçu", type: "code", language: "html", rows: 8, placeholder: "<!doctype html><html lang=\"fr\"><head><style>/* @edit:css */</style></head><body><!-- @edit:html --></body></html>" },
+            { key: "highlight", label: "Étapes (highlight)", type: "text", placeholder: "1 | 2-4 | 5-7" },
+            { key: "secondaryHighlight", label: "Étapes du second panneau", type: "text", placeholder: "1 | 3 | 5" },
         ],
     },
 ];

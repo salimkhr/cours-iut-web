@@ -21,6 +21,23 @@ import type Module from "@/types/Module";
 export interface CodePanelData {
     language: string;
     code: string;
+    /** Lignes à mettre en avant, ex. "2,5-7". Les autres sont estompées.
+     *  Alimenté par étapes depuis une slide (cf. `SlideCodeWithPreview`). */
+    highlightLines?: string;
+}
+
+/** "2,5-7" → [2, 5, 6, 7]. Même grammaire que `CodeCard`. */
+function parseHighlightLines(highlightString: string): number[] {
+    const highlighted: number[] = [];
+    for (const range of highlightString.split(',').map((r) => r.trim())) {
+        if (range.includes('-')) {
+            const [start, end] = range.split('-').map(Number);
+            for (let i = start; i <= end; i++) highlighted.push(i);
+        } else if (range) {
+            highlighted.push(Number(range));
+        }
+    }
+    return highlighted;
 }
 
 interface CodeWithPreviewCardProps {
@@ -163,18 +180,36 @@ export default function CodeWithPreviewCard({panels, sources, className, current
         </div>
     );
 
-    const highlighterProps = (language: string) => ({
-        language: normalizeLanguage(language),
-        customStyle: {
-            margin: 0,
-            fontSize: '0.8125rem',
-            lineHeight: '1.65',
-            height: 'auto',
-            background: 'transparent',
-        },
-        wrapLongLines: false,
-        showLineNumbers: true,
-    });
+    const highlighterProps = (language: string, highlightLines?: string) => {
+        const highlighted = highlightLines ? parseHighlightLines(highlightLines) : [];
+
+        return {
+            language: normalizeLanguage(language),
+            customStyle: {
+                margin: 0,
+                fontSize: '0.8125rem',
+                lineHeight: '1.65',
+                height: 'auto',
+                background: 'transparent',
+            },
+            // `wrapLongLines` et `wrapLines` s'excluent : le second est requis pour que
+            // `lineProps` s'applique. On ne l'active donc que lorsqu'il y a des lignes à
+            // estomper, pour ne rien changer au rendu des blocs sans surlignage.
+            ...(highlighted.length > 0
+                ? {
+                    wrapLines: true,
+                    lineProps: (lineNumber: number) => ({
+                        style: {
+                            display: 'block',
+                            width: '100%',
+                            ...(highlighted.includes(lineNumber) ? {} : {opacity: 0.4}),
+                        } as React.CSSProperties,
+                    }),
+                }
+                : {wrapLongLines: false}),
+            showLineNumbers: true,
+        };
+    };
 
     const codePanels = panels.map((panel, index) => {
         const field = fieldForPanel[index];
@@ -240,12 +275,12 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                 ) : (
                     <>
                         <div className="block dark:hidden">
-                            <SyntaxHighlighter style={courseCodeLight} {...highlighterProps(panel.language)}>
+                            <SyntaxHighlighter style={courseCodeLight} {...highlighterProps(panel.language, panel.highlightLines)}>
                                 {currentCode}
                             </SyntaxHighlighter>
                         </div>
                         <div className="hidden dark:block">
-                            <SyntaxHighlighter style={courseCodeDark} {...highlighterProps(panel.language)}>
+                            <SyntaxHighlighter style={courseCodeDark} {...highlighterProps(panel.language, panel.highlightLines)}>
                                 {currentCode}
                             </SyntaxHighlighter>
                         </div>

@@ -138,6 +138,8 @@ export const blockPropsSchemas: Record<string, z.ZodTypeAny> = {
         preview: z.string().optional(),
         secondaryLanguage: z.string().optional(),
         secondaryCode: z.string().optional(),
+        highlight: z.string().optional(),
+        secondaryHighlight: z.string().optional(),
     }).refine(
         (props) => !props.secondaryCode?.trim() || Boolean(props.secondaryLanguage?.trim()),
         {

@@ -86,6 +86,8 @@ export function SlideBlockItem({block, renderNested}: SlideBlockItemProps) {
                     secondaryLanguage={block.props.secondaryLanguage ? String(block.props.secondaryLanguage) : undefined}
                     secondaryCode={block.props.secondaryCode ? String(block.props.secondaryCode) : undefined}
                     preview={block.props.preview ? String(block.props.preview) : undefined}
+                    highlight={block.props.highlight ? String(block.props.highlight) : undefined}
+                    secondaryHighlight={block.props.secondaryHighlight ? String(block.props.secondaryHighlight) : undefined}
                 />
             );
         case "diagram":
