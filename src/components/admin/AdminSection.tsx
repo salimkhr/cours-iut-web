@@ -175,12 +175,27 @@ interface SectionContentLinksProps {
     modData: Module;
 }
 
-/** Liens rapides vers les contenus (cours/TP/slide/examen), le rendu public, et le badge de
- *  code d'accès examen. Rendus en `ghost` et sans marge propre : ils vivent dans la colonne
- *  « Actions », aux côtés des boutons modifier/supprimer, et doivent former un groupe homogène
- *  avec eux plutôt que se distinguer visuellement. */
+/** Badge du code d'accès examen. Séparé de `SectionContentLinks` : c'est une information sur la
+ *  section, pas une action — il s'affiche donc en ligne avec le titre et non dans la colonne
+ *  « Actions ». */
+export function SectionExamCode({section, modData}: SectionContentLinksProps) {
+    if (!hasContentType(section.contents, "examen")) return null;
+
+    return (
+        <span
+            className="inline-flex items-center gap-1.5 rounded-md bg-bridge-100 px-2 py-0.5 font-mono text-xs font-bold text-brand-primary dark:bg-bridge-900"
+            title="Code d'accès à l'examen"
+        >
+            <KeyRound className="size-3" aria-hidden="true"/>
+            {modData._id?.toString().slice(-6).toUpperCase()}
+        </span>
+    );
+}
+
+/** Liens rapides vers les contenus (cours/TP/slide/examen) et le rendu public. Rendus en `ghost`
+ *  et sans marge propre : ils vivent dans la colonne « Actions », aux côtés des boutons
+ *  modifier/supprimer, et doivent former un groupe homogène avec eux. */
 export function SectionContentLinks({section, modData}: SectionContentLinksProps) {
-    const hasExamen = hasContentType(section.contents, "examen");
     const sortedContents = getContentTypes(section.contents).sort(
         (first, second) => CONTENT_ORDER.indexOf(first as ContentKey) - CONTENT_ORDER.indexOf(second as ContentKey)
     );
@@ -215,15 +230,6 @@ export function SectionContentLinks({section, modData}: SectionContentLinksProps
                     Voir
                 </Link>
             </Button>
-            {hasExamen && (
-                <span
-                    className="inline-flex h-8 items-center gap-1.5 rounded-md bg-bridge-100 px-2.5 font-mono text-xs font-bold text-brand-primary dark:bg-bridge-900"
-                    title="Code d'accès à l'examen"
-                >
-                    <KeyRound className="size-3" aria-hidden="true"/>
-                    {modData._id?.toString().slice(-6).toUpperCase()}
-                </span>
-            )}
         </div>
     );
 }

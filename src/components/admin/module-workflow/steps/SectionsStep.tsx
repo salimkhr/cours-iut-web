@@ -13,6 +13,7 @@ import {
     SectionBriefPreview,
     SectionContentLinks,
     SectionDeleteDialog,
+    SectionExamCode,
     SectionStateSwitches,
     useSectionRowState,
 } from "@/components/admin/AdminSection";
@@ -136,9 +137,12 @@ export default function SectionsStep({module, onSaved}: SectionsStepProps) {
             id: "title",
             header: "Section",
             cell: (section) => (
-                <p className="min-w-56 text-sm font-semibold leading-tight text-brand-dark dark:text-bridge-100">
-                    {section.title}
-                </p>
+                <div className="flex min-w-56 flex-wrap items-center gap-2">
+                    <span className="text-sm font-semibold leading-tight text-brand-dark dark:text-bridge-100">
+                        {section.title}
+                    </span>
+                    <SectionExamCode section={section} modData={module}/>
+                </div>
             ),
         },
         {
