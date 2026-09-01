@@ -64,12 +64,26 @@ export function useLiveSession(moduleSlug: string, sectionSlug: string): UseLive
     }, [base]);
 
     const start = useCallback(async () => {
-        await fetch(`${base}/start`, { method: "POST" });
+        const res = await fetch(`${base}/start`, { method: "POST" });
+        // Sans ce contrôle, un 403 (rôle non admin, session expirée) passait
+        // inaperçu : startedHere restait posé côté client alors qu'aucune
+        // session n'existait côté serveur, et l'interface restait bloquée sur
+        // le bouton « Démarrer » sans le moindre signal d'échec.
+        if (!res.ok) {
+            throw new Error(
+                res.status === 403
+                    ? "Seul un compte admin peut démarrer une présentation en direct."
+                    : "Impossible de démarrer la présentation en direct."
+            );
+        }
         persistStarted(true);
     }, [base, persistStarted]);
 
     const stop = useCallback(async () => {
-        await fetch(`${base}/stop`, { method: "POST" });
+        const res = await fetch(`${base}/stop`, { method: "POST" });
+        if (!res.ok) {
+            throw new Error("Impossible d'arrêter la présentation en direct.");
+        }
         persistStarted(false);
     }, [base, persistStarted]);
 

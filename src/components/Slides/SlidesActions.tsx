@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight, Maximize, Minimize, StopCircle, Wifi, WifiOff } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -24,6 +25,27 @@ export const SlidesActions = ({ className }: { className?: string }) => {
     } = useSlides();
 
     const [hovered, setHovered] = useState(false);
+
+    // Sans ce catch, un echec silencieux (403 role non admin, session expiree)
+    // laissait l'interface bloquee sur le bouton de depart sans aucun signal :
+    // le clic semblait ne rien faire.
+    const handleStart = async () => {
+        if (!startPresenting) return;
+        try {
+            await startPresenting();
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Impossible de démarrer la présentation en direct.");
+        }
+    };
+
+    const handleStop = async () => {
+        if (!stopPresenting) return;
+        try {
+            await stopPresenting();
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Impossible d'arrêter la présentation en direct.");
+        }
+    };
 
     const isLive = live?.isLive ?? false;
     const isController = live?.isController ?? false;
@@ -106,7 +128,7 @@ export const SlidesActions = ({ className }: { className?: string }) => {
                         )}
 
                         {isController && (
-                            <Button size="icon" variant="ghost" className="cursor-pointer" onClick={stopPresenting} title="Arrêter la présentation">
+                            <Button size="icon" variant="ghost" className="cursor-pointer" onClick={handleStop} title="Arrêter la présentation">
                                 <StopCircle className="text-brand-primary dark:text-brand-accent" />
                             </Button>
                         )}
@@ -115,7 +137,7 @@ export const SlidesActions = ({ className }: { className?: string }) => {
                     </>
                 ) : startPresenting ? (
                     <>
-                        <Button size="icon" variant="ghost" className="cursor-pointer" onClick={startPresenting} title="Démarrer la présentation en direct">
+                        <Button size="icon" variant="ghost" className="cursor-pointer" onClick={handleStart} title="Démarrer la présentation en direct">
                             <LaptopMinimalCheckIcon size={18} />
                         </Button>
                         <div className="w-px h-6 bg-border/50" />
