@@ -36,7 +36,7 @@ export default function CardBridgeBackground() {
                     sizes="(max-width: 640px) 62vw, (max-width: 1024px) 31vw, 20vw"
                     // object-right-bottom : même point d'ancrage que le hero
                     // de la home.
-                    className="object-contain object-right-bottom opacity-50 transition-transform duration-700 group-hover:scale-105 dark:opacity-50 dark:saturate-[0.86] dark:contrast-110"
+                    className="object-contain object-right-bottom opacity-65 transition-transform duration-700 group-hover:scale-105 dark:opacity-65 dark:saturate-[0.86] dark:contrast-110"
                 />
             </div>
             <div
