@@ -53,7 +53,7 @@ export const SlideScreen: React.FC<SlideScreenProps> = ({title, order, children}
                     réglage du dégradé. La transparence se joue dans l'image,
                     pas en CSS. */}
                 <div
-                    className="absolute bottom-[-1px] right-0 z-10 h-[34%] w-[30%] bg-contain bg-right-bottom bg-no-repeat bg-[url('/images/card/pont-light.png')] opacity-[0.7] dark:bg-[url('/images/card/pont-dark.png')] dark:opacity-[0.58]"
+                    className="absolute bottom-[-1px] right-0 z-10 h-[34%] w-[30%] bg-contain bg-right-bottom bg-no-repeat bg-[url('/images/card/pont-light.png')] opacity-50 dark:bg-[url('/images/card/pont-dark.png')] dark:opacity-50"
                 />
             </div>
 

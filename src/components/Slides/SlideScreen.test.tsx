@@ -59,7 +59,7 @@ test("rend le pont des cards en bas a droite sur les slides de contenu", () => {
     expect(html).toContain("bg-right-bottom");
     expect(html).toContain("bottom-[-1px] right-0");
     expect(html).toContain("z-10 h-[34%] w-[30%]");
-    expect(html).toContain("opacity-[0.7]");
+    expect(html).toContain("opacity-50");
     expect(html.indexOf("bg-linear-to-br")).toBeLessThan(html.indexOf("/images/card/pont-light.png"));
     expect(html).not.toContain("slide-banner");
 });
