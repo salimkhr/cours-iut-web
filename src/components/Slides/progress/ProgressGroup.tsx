@@ -2,6 +2,7 @@ import React from "react";
 import {cn} from "@/lib/utils";
 import {ProgressPoint} from "./ProgressPoint";
 import {useMounted} from "@/hook/useMounted";
+import {computeStepMarkers} from "@/components/Slides/utils/stepMarkers";
 
 interface ProgressGroupProps {
     /** Slide de transition : marquée d'un trait, pas d'un point. */
@@ -35,17 +36,25 @@ export const ProgressGroup: React.FC<ProgressGroupProps> = ({
                     : "border-transparent"
             )}
         >
-            {Array.from({length: steps}).map((_, stepIdx) => {
-                const isActive = currentSlide === sIdx && currentStep === stepIdx;
-                const isPast = sIdx < currentSlide || (sIdx === currentSlide && stepIdx < currentStep);
+            {computeStepMarkers(steps).map((marker) => {
+                const isActive = currentSlide === sIdx && (
+                    marker.kind === "dot"
+                        ? currentStep === marker.stepIndex
+                        : currentStep >= marker.from && currentStep <= marker.to
+                );
+                const isPast = sIdx < currentSlide || (sIdx === currentSlide && (
+                    marker.kind === "dot" ? currentStep > marker.stepIndex : currentStep > marker.to
+                ));
+                const key = marker.kind === "dot" ? `dot-${marker.stepIndex}` : `pill-${marker.from}-${marker.to}`;
 
                 return (
                     <ProgressPoint
-                        key={`${sIdx}-${stepIdx}`}
+                        key={`${sIdx}-${key}`}
                         ref={isActive ? activeRef : null}
                         isActive={isActive}
                         isPast={isPast}
                         isTransition={isTransition}
+                        stretched={marker.kind === "pill"}
                     />
                 );
             })}

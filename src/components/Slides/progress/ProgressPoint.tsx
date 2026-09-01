@@ -8,9 +8,13 @@ interface ProgressPointProps {
      *  rail vertical, le trait se lit comme une séparation de parties — ce
      *  qu'est une transition — et non comme une slide de contenu de plus. */
     isTransition?: boolean;
+    /** Étapes intermédiaires d'une slide à plusieurs étapes, fondues en une
+     *  seule pastille : même forme ronde que les points, juste étirée en
+     *  hauteur. Voir `ProgressGroup`. */
+    stretched?: boolean;
 }
 
-export const ProgressPoint = forwardRef<HTMLDivElement, ProgressPointProps>(({isActive, isPast, isTransition = false}, ref) => (
+export const ProgressPoint = forwardRef<HTMLDivElement, ProgressPointProps>(({isActive, isPast, isTransition = false, stretched = false}, ref) => (
     <div
         ref={ref}
         className={cn(
@@ -22,7 +26,7 @@ export const ProgressPoint = forwardRef<HTMLDivElement, ProgressPointProps>(({is
             // autres points. Seule la hauteur change, et elle suffit à le lire
             // comme une séparation. `scale` sur l'actif ne compte pas : une
             // transformation ne pousse pas la mise en page.
-            isTransition ? "h-1 w-2.5" : "w-2.5 h-2.5",
+            isTransition ? "h-1 w-2.5" : stretched ? "w-2.5 h-4" : "w-2.5 h-2.5",
             isActive
                 ? "scale-140 bg-(--module-color) dark:bg-(--module-color-dark)"
                 : isPast
