@@ -44,21 +44,16 @@ export const SlideScreen: React.FC<SlideScreenProps> = ({title, order, children}
                 className="absolute inset-0 z-0 select-none pointer-events-none overflow-hidden"
             >
                 <div className="absolute inset-0 bg-linear-to-br from-bridge-50 via-bridge-50/86 to-bridge-50/30 dark:from-bridge-900 dark:via-bridge-900/88 dark:to-bridge-900/44"/>
-                {/* Le PNG du pont a un fond crème opaque, très proche de bridge-50
-                    mais pas identique : sans masque, son cadre se lit comme un
-                    rectangle net dans le coin. Le fondu radial l'ancre au coin
-                    bas-droit et le dissout dans la surface de slide.
-                    Le point le plus eloigne du calque (coin haut-gauche) tombe a
-                    ~87 % sur l'echelle du degrade — trop pres de l'ancien palier
-                    « transparent 84% » pour y arriver vraiment a zero, d'ou une
-                    arete encore visible. Le palier redescend a 60% pour laisser
-                    une vraie marge avant d'atteindre le bord le plus proche. */}
+                {/* Ces PNG sont un simple trait de pont, fond transparent : plus
+                    besoin de masque pour dissoudre un cadre. Un fond opaque
+                    (même très proche de bridge-50/900) masqué par un dégradé
+                    radial ne se dissout JAMAIS proprement dans un coin — les
+                    bords du calque, plus proches du centre du dégradé que son
+                    coin le plus éloigné, restent visibles quel que soit le
+                    réglage du dégradé. La transparence se joue dans l'image,
+                    pas en CSS. */}
                 <div
                     className="absolute bottom-[-1px] right-0 z-10 h-[34%] w-[30%] bg-contain bg-right-bottom bg-no-repeat bg-[url('/images/card/pont-light.png')] opacity-[0.7] dark:bg-[url('/images/card/pont-dark.png')] dark:opacity-[0.58]"
-                    style={{
-                        maskImage: "radial-gradient(115% 115% at 100% 100%, #000 42%, transparent 60%)",
-                        WebkitMaskImage: "radial-gradient(115% 115% at 100% 100%, #000 42%, transparent 60%)",
-                    }}
                 />
             </div>
 

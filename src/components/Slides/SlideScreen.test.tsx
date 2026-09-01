@@ -64,7 +64,7 @@ test("rend le pont des cards en bas a droite sur les slides de contenu", () => {
     expect(html).not.toContain("slide-banner");
 });
 
-test("fond le pont dans la surface plutot que d'en montrer le cadre", () => {
+test("ne masque plus le pont : la transparence vient desormais du PNG lui-meme", () => {
     const html = renderToStaticMarkup(
         <SlidesContext.Provider value={contextValue}>
             <SlideScreen title="Plan">
@@ -73,9 +73,12 @@ test("fond le pont dans la surface plutot que d'en montrer le cadre", () => {
         </SlidesContext.Provider>
     );
 
-    // Le PNG a un fond creme opaque : sans masque, son cadre se lit comme un
-    // rectangle net dans le coin bas droit de chaque slide.
-    expect(html).toContain("radial-gradient");
+    // Un fond opaque masque par un degrade radial ne se dissout jamais
+    // proprement dans un coin (les bords du calque restent plus proches du
+    // centre du degrade que son coin le plus eloigne, donc visibles quel que
+    // soit le reglage) : la transparence se joue dans l'image, pas en CSS.
+    expect(html).not.toContain("radial-gradient");
+    expect(html).not.toContain("mask-image");
 });
 
 test("garde le fond dark staging des slides de contenu", () => {
