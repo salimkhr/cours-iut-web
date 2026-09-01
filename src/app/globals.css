@@ -90,7 +90,13 @@ body {
     color: var(--color-brand-dark);
 }
 
-:where(a, button, [role="button"], input, select, textarea):focus-visible {
+/* Filet d'accessibilité pour les <button>/<a> bruts du contenu de cours, sans
+   focus-visible dédié. Exclu partout où un composant shadcn (Input, Button…)
+   porte déjà .outline-none : ces composants dessinent leur propre bague
+   ronde en focus-visible:ring-*, et cette règle n'étant dans aucun @layer,
+   elle bat toujours leur outline-none tailwind — un rectangle à angles
+   droits se superposait alors à leur bague arrondie. */
+:where(a, button, [role="button"], input, select, textarea):focus-visible:not(.outline-none) {
     outline: 2px solid var(--color-ring);
     outline-offset: 3px;
 }
