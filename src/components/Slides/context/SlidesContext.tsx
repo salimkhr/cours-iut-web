@@ -23,6 +23,9 @@ export interface SlidesContextType {
     /* Identité (pour l'eyebrow du bandeau) */
     moduleTitle?: string;
     sectionTitle?: string;
+    /** Titre de la slide courante, tel que saisi dans le builder. Sert au mode
+     *  télécommande mobile, qui n'affiche pas le contenu du deck. */
+    currentSlideTitle?: string | null;
 
     /** Index des slides de transition dans le deck, garde de section comprise.
      *  Le rail de progression les marque d'un trait au lieu d'un point : ce ne
@@ -41,8 +44,8 @@ export interface SlidesContextType {
         paused: boolean;
         resync: () => void;
     };
-    startPresenting?: () => void;
-    stopPresenting?: () => void;
+    startPresenting?: () => Promise<void>;
+    stopPresenting?: () => Promise<void>;
     /** Admin : reprendre le contrôle sans redémarrer la session (après rechargement) */
     takeControl?: () => void;
 }

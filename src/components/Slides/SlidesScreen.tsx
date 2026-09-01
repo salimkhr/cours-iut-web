@@ -17,6 +17,8 @@ import {SlidesActions} from "@/components/Slides/SlidesActions";
 import {useLiveSession} from "@/components/Slides/hooks/useLiveSession";
 import {useFollowerSync} from "@/components/Slides/hooks/useFollowerSync";
 import {authClient} from "@/lib/auth-client";
+import {useMediaQuery} from "@/hook/useMediaQuery";
+import {RemoteControlView} from "@/components/Slides/ui/RemoteControlView";
 
 interface SlidesScreenProps {
     children: React.ReactNode;
@@ -30,6 +32,10 @@ interface SlidesScreenProps {
      *  pour préremplir le rail dès le premier rendu au lieu d'attendre que
      *  chaque slide soit visitée. */
     stepCounts?: number[];
+    /** Titre de chaque slide de `children`, dans l'ordre. Même décalage que
+     *  `transitionIndices`. Sert au mode télécommande mobile (voir
+     *  `RemoteControlView`), qui affiche le titre sans monter le contenu. */
+    slideTitles?: string[];
 }
 
 // Une transition porte son propre fond, photo calée en bas à droite : le
@@ -71,6 +77,7 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                                                               section,
                                                               transitionIndices,
                                                               stepCounts,
+                                                              slideTitles,
                                                           }) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -105,6 +112,15 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
         return steps;
     }, [stepCounts, module, section]);
 
+    // Même décalage que `transitionSlides`/`initialSlideSteps`.
+    const titles = useMemo(() => {
+        const offset = module && section ? 1 : 0;
+        const arr: string[] = [];
+        if (offset) arr[0] = section?.title ?? "";
+        (slideTitles ?? []).forEach((t, i) => { arr[i + offset] = t; });
+        return arr;
+    }, [slideTitles, module, section]);
+
     /* ---------- Navigation ---------- */
     const navigation = useSlidesNavigation(slides.length, initialSlideSteps);
 
@@ -121,6 +137,13 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
 
     /* ---------- Live ---------- */
     const hasSlugCtx = !!(module && section);
+
+    // Mode télécommande : sur petit écran, un admin n'a pas besoin de lire le
+    // deck sur son téléphone — seulement de le piloter à distance pendant
+    // qu'il est projeté ailleurs. Toujours actif pour lui sur mobile, live
+    // ou pas (RemoteControlView gère elle-même l'état "rien à démarrer").
+    const isMobile = useMediaQuery("(max-width: 768px)");
+    const isRemoteMode = hasSlugCtx && isPresenter && isMobile;
     const live = useLiveSession(module?.path ?? "", section?.path ?? "");
     const {isLive: sessionIsLive, presenter, sendCommand, connection, presenterName, start, stop, startedHere, takeControl} = live;
 
@@ -191,6 +214,7 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                 /* Identité */
                 moduleTitle: module?.title,
                 sectionTitle: section?.title,
+                currentSlideTitle: titles[navigation.currentSlide] ?? null,
                 transitionSlides,
 
                 /* Live */
@@ -209,22 +233,26 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                 takeControl: hasSlugCtx && isPresenter && !isController ? takeControl : undefined,
             }}
         >
-            <div
-                ref={containerRef}
-                className={slidesContainerClassName(isFullscreen)}
-                style={slidesContainerStyle(isFullscreen)}
-            >
-                {/* Progression latérale */}
-                <SlidesProgress/>
+            {isRemoteMode ? (
+                <RemoteControlView/>
+            ) : (
+                <div
+                    ref={containerRef}
+                    className={slidesContainerClassName(isFullscreen)}
+                    style={slidesContainerStyle(isFullscreen)}
+                >
+                    {/* Progression latérale */}
+                    <SlidesProgress/>
 
-                {/* Slide courante */}
-                <div className={slideViewportClassName(isFullscreen, transitionSlides.includes(navigation.currentSlide))}>
-                    {slides[navigation.currentSlide]}
+                    {/* Slide courante */}
+                    <div className={slideViewportClassName(isFullscreen, transitionSlides.includes(navigation.currentSlide))}>
+                        {slides[navigation.currentSlide]}
+                    </div>
+
+                    {/* Actions */}
+                    <SlidesActions/>
                 </div>
-
-                {/* Actions */}
-                <SlidesActions/>
-            </div>
+            )}
         </SlidesContext.Provider>
     );
 };

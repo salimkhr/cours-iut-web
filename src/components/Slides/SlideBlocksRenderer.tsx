@@ -32,7 +32,8 @@ export function isTransitionSlide(slide: Block): boolean {
 
 export function SlideBlocksRenderer({ blocks, module, section }: SlideBlocksRendererProps) {
     const slideBlocks = blocks.filter(isSlideContainerBlock);
-    const orders = computeSlideOrders(slideBlocks.map((slide) => String(slide.props.title ?? "")));
+    const titles = slideBlocks.map((slide) => String(slide.props.title ?? ""));
+    const orders = computeSlideOrders(titles);
 
     const transitionIndices = slideBlocks
         .map((slide, index) => (isTransitionSlide(slide) ? index : -1))
@@ -40,7 +41,7 @@ export function SlideBlocksRenderer({ blocks, module, section }: SlideBlocksRend
     const stepCounts = computeSlideStepCounts(slideBlocks);
 
     return (
-        <SlidesScreen module={module} section={section} transitionIndices={transitionIndices} stepCounts={stepCounts}>
+        <SlidesScreen module={module} section={section} transitionIndices={transitionIndices} stepCounts={stepCounts} slideTitles={titles}>
             {slideBlocks.map((slide, index) =>
                 isTransitionSlide(slide) ? (
                     <SlideBlockItem key={slide.id} block={(slide.children ?? [])[0]} />

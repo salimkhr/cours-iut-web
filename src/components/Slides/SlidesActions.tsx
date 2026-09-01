@@ -1,12 +1,12 @@
 'use client';
 
 import { ChevronLeft, ChevronRight, Maximize, Minimize, StopCircle, Wifi, WifiOff } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useSlides } from "@/components/Slides/context/SlidesContext";
 import { LaptopMinimalCheckIcon } from "@/components/icons/laptop-minimal-check";
+import { runLiveAction } from "@/components/Slides/utils/liveActionFeedback";
 
 export const SlidesActions = ({ className }: { className?: string }) => {
     const {
@@ -26,26 +26,8 @@ export const SlidesActions = ({ className }: { className?: string }) => {
 
     const [hovered, setHovered] = useState(false);
 
-    // Sans ce catch, un echec silencieux (403 role non admin, session expiree)
-    // laissait l'interface bloquee sur le bouton de depart sans aucun signal :
-    // le clic semblait ne rien faire.
-    const handleStart = async () => {
-        if (!startPresenting) return;
-        try {
-            await startPresenting();
-        } catch (err) {
-            toast.error(err instanceof Error ? err.message : "Impossible de démarrer la présentation en direct.");
-        }
-    };
-
-    const handleStop = async () => {
-        if (!stopPresenting) return;
-        try {
-            await stopPresenting();
-        } catch (err) {
-            toast.error(err instanceof Error ? err.message : "Impossible d'arrêter la présentation en direct.");
-        }
-    };
+    const handleStart = () => startPresenting && runLiveAction(startPresenting, "Impossible de démarrer la présentation en direct.");
+    const handleStop = () => stopPresenting && runLiveAction(stopPresenting, "Impossible d'arrêter la présentation en direct.");
 
     const isLive = live?.isLive ?? false;
     const isController = live?.isController ?? false;
