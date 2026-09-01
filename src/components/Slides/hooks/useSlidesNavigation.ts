@@ -15,10 +15,18 @@ export interface SlidesNavigation {
     registerSteps: (slideIndex: number, steps: number) => void;
 }
 
-export function useSlidesNavigation(slidesCount: number): SlidesNavigation {
+export function useSlidesNavigation(
+    slidesCount: number,
+    initialSteps?: Record<number, number>
+): SlidesNavigation {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [currentStep, setCurrentStep] = useState(0);
-    const [slideSteps, setSlideSteps] = useState<Record<number, number>>({});
+    // Préempli depuis les props (highlight/secondaryHighlight) plutôt que
+    // vide : sans ça, seule la slide courante est montée à un instant donné,
+    // et le nombre d'étapes d'une slide n'était connu qu'au moment où
+    // `registerSteps` s'exécutait à son premier montage — le rail semblait
+    // alors se charger au fur et à mesure qu'on avançait dans le diaporama.
+    const [slideSteps, setSlideSteps] = useState<Record<number, number>>(initialSteps ?? {});
 
     const registerSteps = useCallback((slideIndex: number, steps: number) => {
         setSlideSteps(prev => {

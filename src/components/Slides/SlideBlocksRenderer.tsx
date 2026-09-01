@@ -6,6 +6,7 @@ import { SlidesScreen } from "@/components/Slides/SlidesScreen";
 import { SlideScreen } from "@/components/Slides/SlideScreen";
 import { SlideBlockItem } from "@/components/Slides/SlideBlockItem";
 import { computeSlideOrders } from "@/components/Slides/utils/slideOrder";
+import { computeSlideStepCounts } from "@/components/Slides/utils/slideSteps";
 
 interface SlideBlocksRendererProps {
     blocks: Block[];
@@ -36,9 +37,10 @@ export function SlideBlocksRenderer({ blocks, module, section }: SlideBlocksRend
     const transitionIndices = slideBlocks
         .map((slide, index) => (isTransitionSlide(slide) ? index : -1))
         .filter((index) => index >= 0);
+    const stepCounts = computeSlideStepCounts(slideBlocks);
 
     return (
-        <SlidesScreen module={module} section={section} transitionIndices={transitionIndices}>
+        <SlidesScreen module={module} section={section} transitionIndices={transitionIndices} stepCounts={stepCounts}>
             {slideBlocks.map((slide, index) =>
                 isTransitionSlide(slide) ? (
                     <SlideBlockItem key={slide.id} block={(slide.children ?? [])[0]} />

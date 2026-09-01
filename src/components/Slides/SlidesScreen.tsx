@@ -25,6 +25,11 @@ interface SlidesScreenProps {
     /** Index, dans `children`, des slides de transition. Décalés de 1 ici quand
      *  la garde de section est ajoutée en tête. */
     transitionIndices?: number[];
+    /** Nombre d'étapes de chaque slide de `children`, dans l'ordre — voir
+     *  `computeSlideStepCounts`. Décalé de 1 ici comme `transitionIndices`,
+     *  pour préremplir le rail dès le premier rendu au lieu d'attendre que
+     *  chaque slide soit visitée. */
+    stepCounts?: number[];
 }
 
 // Une transition porte son propre fond, photo calée en bas à droite : le
@@ -65,6 +70,7 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                                                               module,
                                                               section,
                                                               transitionIndices,
+                                                              stepCounts,
                                                           }) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -87,8 +93,20 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
         return (transitionIndices ?? []).map((i) => i + offset);
     }, [transitionIndices, module, section]);
 
+    // Même décalage que `transitionSlides`, sur le compte d'étapes plutôt que
+    // sur une liste d'index.
+    const initialSlideSteps = useMemo(() => {
+        if (!stepCounts) return undefined;
+        const offset = module && section ? 1 : 0;
+        const steps: Record<number, number> = {};
+        stepCounts.forEach((count, i) => {
+            if (count > 0) steps[i + offset] = count;
+        });
+        return steps;
+    }, [stepCounts, module, section]);
+
     /* ---------- Navigation ---------- */
-    const navigation = useSlidesNavigation(slides.length);
+    const navigation = useSlidesNavigation(slides.length, initialSlideSteps);
 
     /* ---------- Notes ---------- */
     const currentNotes = useSlideNotes(slides, navigation.currentSlide);
