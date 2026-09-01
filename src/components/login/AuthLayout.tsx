@@ -20,10 +20,10 @@ export default function AuthLayout({title, description, children, wide = false}:
         : "/images/header/pont-light.png";
     const authLineEffectsStyle = {
         "--hero-accent": "var(--color-brand-primary)",
-        "--hero-grid-x-peak": "0.44",
-        "--hero-grid-x-mid": "0.18",
-        "--hero-grid-y-peak": "0.36",
-        "--hero-grid-y-mid": "0.14",
+        "--hero-grid-x-peak": "0.7",
+        "--hero-grid-x-mid": "0.3",
+        "--hero-grid-y-peak": "0.6",
+        "--hero-grid-y-mid": "0.26",
         "--hero-grid-x-travel": "68vw",
         "--hero-grid-y-travel": "100vh",
         maskImage: "linear-gradient(to right, black 0%, black 82%, transparent 100%)",

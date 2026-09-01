@@ -63,10 +63,10 @@ export default function HeroSection({
     const heroStyle = {
         backgroundImage: `url(${heroImage})`,
         "--hero-accent": heroAccent,
-        "--hero-grid-x-peak": compact ? "0.7" : "0.44",
-        "--hero-grid-x-mid": compact ? "0.32" : "0.18",
-        "--hero-grid-y-peak": compact ? "0.62" : "0.36",
-        "--hero-grid-y-mid": compact ? "0.28" : "0.14",
+        "--hero-grid-x-peak": "0.7",
+        "--hero-grid-x-mid": compact ? "0.32" : "0.3",
+        "--hero-grid-y-peak": compact ? "0.62" : "0.6",
+        "--hero-grid-y-mid": compact ? "0.28" : "0.26",
         "--hero-grid-x-travel": compact ? "38vw" : "68vw",
     } as CSSProperties & Record<`--${string}`, string>;
     const gridMask = compact

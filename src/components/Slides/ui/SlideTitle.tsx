@@ -20,10 +20,10 @@ export const SlideTitle: React.FC<SlideTitleProps> = ({module, section}) => {
         .slice(0, 2);
     const heroLineEffectsStyle = {
         "--hero-accent": "var(--module-color)",
-        "--hero-grid-x-peak": "0.58",
-        "--hero-grid-x-mid": "0.26",
-        "--hero-grid-y-peak": "0.48",
-        "--hero-grid-y-mid": "0.22",
+        "--hero-grid-x-peak": "0.8",
+        "--hero-grid-x-mid": "0.38",
+        "--hero-grid-y-peak": "0.7",
+        "--hero-grid-y-mid": "0.34",
         "--hero-grid-x-travel": "58vw",
         "--hero-grid-y-travel": "92vh",
         maskImage: "linear-gradient(to right, black 0%, black 72%, transparent 100%)",
