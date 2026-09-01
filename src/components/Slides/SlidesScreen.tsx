@@ -27,9 +27,12 @@ interface SlidesScreenProps {
     transitionIndices?: number[];
 }
 
-export const slideViewportClassName = (isFullscreen: boolean) => cn(
+// Une transition porte son propre fond, photo calée en bas à droite : le
+// padding du cadre l'en décolle et le pont ne touche plus le coin. Elle se rend
+// donc bord à bord, comme la garde de section dont elle reprend la direction.
+export const slideViewportClassName = (isFullscreen: boolean, isTransition = false) => cn(
     "flex-1 min-h-0 flex items-center justify-center",
-    isFullscreen ? "p-0" : "p-6"
+    isFullscreen || isTransition ? "p-0" : "p-6"
 );
 
 // Une slide est une scène de dimensions fixes : le cadre ne doit jamais suivre
@@ -197,7 +200,7 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                 <SlidesProgress/>
 
                 {/* Slide courante */}
-                <div className={slideViewportClassName(isFullscreen)}>
+                <div className={slideViewportClassName(isFullscreen, transitionSlides.includes(navigation.currentSlide))}>
                     {slides[navigation.currentSlide]}
                 </div>
 

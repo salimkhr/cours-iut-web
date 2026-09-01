@@ -10,6 +10,14 @@ test("supprime le padding du viewport de slide en plein ecran", () => {
     expect(slideViewportClassName(true)).not.toContain("p-6");
 });
 
+test("supprime le padding du viewport pour une slide de transition", () => {
+    // Sans ca, le fond de la transition est decolle des bords du cadre et sa
+    // photo n'est plus calee dans le coin bas droit.
+    expect(slideViewportClassName(false, true)).toContain("p-0");
+    expect(slideViewportClassName(false, true)).not.toContain("p-6");
+    expect(slideViewportClassName(false, false)).toContain("p-6");
+});
+
 test("supprime les bordures et arrondis du conteneur en plein ecran", () => {
     expect(slidesContainerClassName(true)).toContain("!border-0");
     expect(slidesContainerClassName(true)).toContain("!rounded-none");
@@ -40,4 +48,14 @@ test("ne rend pas de barre de progression basse invisible", () => {
 
     expect(source).not.toContain("Progress bar bas");
     expect(source).not.toContain("absolute bottom-0 left-0 h-1 w-full");
+});
+
+test("le marqueur de transition garde la largeur d'un point du rail", () => {
+    // Un marqueur plus large que les points elargit le rail entier et decale
+    // tous les autres points : la largeur reste celle d'un point, seule la
+    // hauteur distingue la separation.
+    const source = readFileSync(join(process.cwd(), "src/components/Slides/progress/ProgressPoint.tsx"), "utf8");
+
+    expect(source).toContain('isTransition ? "h-1 w-2.5" : "w-2.5 h-2.5"');
+    expect(source).not.toContain("h-1 w-5");
 });

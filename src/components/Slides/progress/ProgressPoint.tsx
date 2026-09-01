@@ -17,7 +17,12 @@ export const ProgressPoint = forwardRef<HTMLDivElement, ProgressPointProps>(({is
             // 6px était illisible, a fortiori projeté au fond d'une salle :
             // le rail est le seul repère de position pendant une présentation.
             "relative rounded-full transition-transform",
-            isTransition ? "h-1 w-5" : "w-2.5 h-2.5",
+            // Le trait garde l'empreinte horizontale d'un point : un marqueur
+            // plus large élargirait le rail entier et déplacerait tous les
+            // autres points. Seule la hauteur change, et elle suffit à le lire
+            // comme une séparation. `scale` sur l'actif ne compte pas : une
+            // transformation ne pousse pas la mise en page.
+            isTransition ? "h-1 w-2.5" : "w-2.5 h-2.5",
             isActive
                 ? "scale-140 bg-(--module-color) dark:bg-(--module-color-dark)"
                 : isPast
