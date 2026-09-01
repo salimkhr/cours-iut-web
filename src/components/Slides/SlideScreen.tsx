@@ -47,12 +47,17 @@ export const SlideScreen: React.FC<SlideScreenProps> = ({title, order, children}
                 {/* Le PNG du pont a un fond crème opaque, très proche de bridge-50
                     mais pas identique : sans masque, son cadre se lit comme un
                     rectangle net dans le coin. Le fondu radial l'ancre au coin
-                    bas-droit et le dissout dans la surface de slide. */}
+                    bas-droit et le dissout dans la surface de slide.
+                    Le point le plus eloigne du calque (coin haut-gauche) tombe a
+                    ~87 % sur l'echelle du degrade — trop pres de l'ancien palier
+                    « transparent 84% » pour y arriver vraiment a zero, d'ou une
+                    arete encore visible. Le palier redescend a 60% pour laisser
+                    une vraie marge avant d'atteindre le bord le plus proche. */}
                 <div
                     className="absolute bottom-[-1px] right-0 z-10 h-[34%] w-[30%] bg-contain bg-right-bottom bg-no-repeat bg-[url('/images/card/pont-light.png')] opacity-[0.7] dark:bg-[url('/images/card/pont-dark.png')] dark:opacity-[0.58]"
                     style={{
-                        maskImage: "radial-gradient(115% 115% at 100% 100%, #000 42%, transparent 84%)",
-                        WebkitMaskImage: "radial-gradient(115% 115% at 100% 100%, #000 42%, transparent 84%)",
+                        maskImage: "radial-gradient(115% 115% at 100% 100%, #000 42%, transparent 60%)",
+                        WebkitMaskImage: "radial-gradient(115% 115% at 100% 100%, #000 42%, transparent 60%)",
                     }}
                 />
             </div>

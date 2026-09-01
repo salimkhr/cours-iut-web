@@ -20,6 +20,15 @@
         ],
         "createdAt": "2026-08-30T13:34:14.081Z",
         "reason": "Claude: taille preexistante du panneau de code de CodeWithPreviewCard, non introduite par ce changement. Le refactor de highlighterProps l'a seulement deplacee de quelques lignes."
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#000",
+        "files": [
+          "src/components/Slides/SlideScreen.tsx"
+        ],
+        "createdAt": "2026-09-01T18:05:49.193Z",
+        "reason": "mask-image gradient (alpha channel only, no visible color) - deja present avant modification, hors perimetre DESIGN.md"
       }
     ]
   }
