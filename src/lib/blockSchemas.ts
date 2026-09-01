@@ -132,6 +132,14 @@ export const blockPropsSchemas: Record<string, z.ZodTypeAny> = {
         title: z.string().optional(),
         alt: z.string().optional(),
     }),
+    // Slide de respiration entre deux parties : pas de contenu, une annonce.
+    // Seul `title` est requis — le numéro de partie et la phrase d'accroche
+    // aident, mais toutes les transitions n'en ont pas besoin.
+    "slide-transition": z.object({
+        eyebrow: z.string().optional(),
+        title: z.string(),
+        subtitle: z.string().optional(),
+    }),
     "slide-code-with-preview": z.object({
         language: z.string(),
         code: z.string(),
@@ -179,6 +187,7 @@ export const containerRules: Record<string, ContainerRule> = {
         allowedChildren: [
             "slide-text", "slide-code", "slide-list", "slide-note", "columns", "diagram",
             "slide-table", "slide-image", "slide-code-with-preview",
+            "slide-transition",
         ],
         allowedParents: [null],
     },
@@ -186,6 +195,9 @@ export const containerRules: Record<string, ContainerRule> = {
     "slide-code": { allowedChildren: [], allowedParents: ["slide", "column"] },
     "slide-table": { allowedChildren: [], allowedParents: ["slide", "column"] },
     "slide-image": { allowedChildren: [], allowedParents: ["slide", "column"] },
+    // Pas de `column` : une transition occupe l'écran entier, la loger dans une
+    // colonne produirait une demi-annonce à côté d'autre chose.
+    "slide-transition": { allowedChildren: [], allowedParents: ["slide"] },
     "slide-code-with-preview": { allowedChildren: [], allowedParents: ["slide", "column"] },
     "slide-list": {
         allowedChildren: ["slide-list-item"],
@@ -209,6 +221,7 @@ export function isContainer(type: string): boolean {
 const SLIDE_UNIVERSE_TYPES = new Set([
     "slide", "slide-text", "slide-code", "slide-list", "slide-list-item",
     "slide-note", "slide-table", "slide-image", "slide-code-with-preview",
+    "slide-transition",
     "columns", "column", "diagram",
 ]);
 

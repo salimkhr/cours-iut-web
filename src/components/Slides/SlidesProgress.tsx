@@ -5,7 +5,7 @@ import {ProgressGroup} from "./progress/ProgressGroup";
 import {useSlides} from "@/components/Slides/context/SlidesContext";
 
 export const SlidesProgress = () => {
-    const {slidesCount, currentSlide, currentStep, slideSteps} = useSlides();
+    const {slidesCount, currentSlide, currentStep, slideSteps, transitionSlides} = useSlides();
     const railRef = useRef<HTMLDivElement>(null);
     const activeRef = useRef<HTMLDivElement>(null);
 
@@ -37,6 +37,7 @@ export const SlidesProgress = () => {
                         currentSlide={currentSlide}
                         currentStep={currentStep}
                         activeRef={currentSlide === sIdx ? activeRef : undefined}
+                        isTransition={transitionSlides?.includes(sIdx) ?? false}
                         isCurrentSlide={sIdx === currentSlide} // ✅ add this
                     />
                 ))}

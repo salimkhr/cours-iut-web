@@ -4,6 +4,8 @@ import {ProgressPoint} from "./ProgressPoint";
 import {useMounted} from "@/hook/useMounted";
 
 interface ProgressGroupProps {
+    /** Slide de transition : marquée d'un trait, pas d'un point. */
+    isTransition?: boolean;
     isCurrentSlide: boolean;
     steps: number;
     sIdx: number;
@@ -13,6 +15,7 @@ interface ProgressGroupProps {
 }
 
 export const ProgressGroup: React.FC<ProgressGroupProps> = ({
+                                                                isTransition = false,
                                                                 isCurrentSlide,
                                                                 steps,
                                                                 sIdx,
@@ -42,6 +45,7 @@ export const ProgressGroup: React.FC<ProgressGroupProps> = ({
                         ref={isActive ? activeRef : null}
                         isActive={isActive}
                         isPast={isPast}
+                        isTransition={isTransition}
                     />
                 );
             })}

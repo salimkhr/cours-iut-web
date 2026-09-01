@@ -406,12 +406,12 @@ describe("blocksToMarkdown", () => {
         expect(md).toContain("| Bob | 25 |");
     });
 
-    it("callout avec variant tip → '> **Astuce — Titre**'", () => {
+    it("callout avec variant tip → '> **Astuce : Titre**'", () => {
         const blocks: Block[] = [
             { id: "ca1", type: "callout", props: { variant: "tip", title: "Mon conseil" } },
         ];
         const md = blocksToMarkdown(blocks);
-        expect(md).toContain("> **Astuce — Mon conseil**");
+        expect(md).toContain("> **Astuce : Mon conseil**");
     });
 
     it("collapsible → '### <title>' avec enfants", () => {
@@ -542,10 +542,10 @@ describe("blocksToMarkdown", () => {
         const md = blocksToMarkdown(blocks);
         expect(md).toContain("> **Info**");
     });
-    it("callout warning, title 'Danger' → **Attention — Danger**", () => {
+    it("callout warning, title 'Danger' → **Attention : Danger**", () => {
         const blocks: Block[] = [{ id: "ca1", type: "callout", props: { variant: "warning", title: "Danger" }, children: [] }];
         const md = blocksToMarkdown(blocks);
-        expect(md).toContain("> **Attention — Danger**");
+        expect(md).toContain("> **Attention : Danger**");
     });
     it("callout reminder, empty title → **Rappel**", () => {
         const blocks: Block[] = [{ id: "ca1", type: "callout", props: { variant: "reminder", title: "" }, children: [] }];

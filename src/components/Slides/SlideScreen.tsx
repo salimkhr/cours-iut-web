@@ -5,6 +5,9 @@ import {SlideNote} from "./ui/SlideNote";
 import {useSlides} from "@/components/Slides/context/SlidesContext";
 
 export interface SlideScreenProps {
+    /** Vide = pas de bandeau de titre. C'est ce qui laisse toute la surface aux
+     *  slides de transition (`slide-transition`), dont l'annonce EST le titre :
+     *  un bandeau au-dessus ferait doublon et écraserait l'effet. */
     title: string;
     /** Rang de la slide dans le deck, porté par le badge du bandeau de titre.
      *  Absent (aperçu builder) → on retombe sur la position du contexte. */
@@ -69,16 +72,18 @@ export const SlideScreen: React.FC<SlideScreenProps> = ({title, order, children}
                     du cours (globals.css §course-section-head) : la couleur
                     module vit dans le badge, le titre reste en encre neutre.
                     Mêmes classes, donc une seule source de vérité. */}
-                <div className="course-section-head course-section-head--top mb-8 shrink-0">
-                    <span className="course-section-badge" aria-hidden="true">
-                        {badgeLabel}
-                    </span>
-                    <div className="course-section-headline">
-                        <SlideHeading level={1}>
-                            {title}
-                        </SlideHeading>
+                {title.trim() && (
+                    <div className="course-section-head course-section-head--top mb-8 shrink-0">
+                        <span className="course-section-badge" aria-hidden="true">
+                            {badgeLabel}
+                        </span>
+                        <div className="course-section-headline">
+                            <SlideHeading level={1}>
+                                {title}
+                            </SlideHeading>
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <div className="relative z-10 flex min-h-0 flex-1 flex-col slide-body overflow-hidden">
                     {filteredChildren}

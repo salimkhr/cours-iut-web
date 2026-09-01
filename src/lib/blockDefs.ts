@@ -498,6 +498,28 @@ export const blockDefs: BlockDef[] = [
         ],
     },
     {
+        type: "slide-transition",
+        label: "Transition slide",
+        category: "Slides",
+        description: "Écran d'annonce entre deux parties du deck : une étiquette courte (le numéro de partie), un titre en très grand, un sous-titre. Ne porte aucun contenu pédagogique, il marque une respiration dans le déroulé. Reprend la direction artistique de la garde de section : photo de fond, dégradé, titre géant ponctué de la couleur du module. Seul bloc de sa slide, il en occupe toute la surface — ni bandeau, ni numéro de slide, quel que soit le titre saisi.",
+        defaultProps: { eyebrow: "", title: "", subtitle: "" },
+        schema: z.object({
+            eyebrow: z.string().optional(),
+            title: z.string(),
+            subtitle: z.string().optional(),
+        }),
+        fields: [
+            { key: "eyebrow", label: "Étiquette", type: "text", placeholder: "2" },
+            { key: "title", label: "Titre", type: "text", placeholder: "Les fonctions" },
+            {
+                key: "subtitle",
+                label: "Sous-titre",
+                type: "text",
+                placeholder: "Écrire une fois, appeler autant de fois qu'on veut",
+            },
+        ],
+    },
+    {
         type: "slide-code-with-preview",
         label: "Code + aperçu slide",
         category: "Slides",

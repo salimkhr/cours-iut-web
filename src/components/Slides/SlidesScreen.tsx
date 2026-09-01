@@ -22,6 +22,9 @@ interface SlidesScreenProps {
     children: React.ReactNode;
     module?: Module;
     section?: Section;
+    /** Index, dans `children`, des slides de transition. Décalés de 1 ici quand
+     *  la garde de section est ajoutée en tête. */
+    transitionIndices?: number[];
 }
 
 export const slideViewportClassName = (isFullscreen: boolean) => cn(
@@ -58,6 +61,7 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                                                               children,
                                                               module,
                                                               section,
+                                                              transitionIndices,
                                                           }) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -72,6 +76,13 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
         }
         return baseSlides;
     }, [children, module, section]);
+
+    // La garde de section est ajoutée en tête : les index remontés par le
+    // renderer portent sur `children`, pas sur le deck final.
+    const transitionSlides = useMemo(() => {
+        const offset = module && section ? 1 : 0;
+        return (transitionIndices ?? []).map((i) => i + offset);
+    }, [transitionIndices, module, section]);
 
     /* ---------- Navigation ---------- */
     const navigation = useSlidesNavigation(slides.length);
@@ -159,6 +170,7 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                 /* Identité */
                 moduleTitle: module?.title,
                 sectionTitle: section?.title,
+                transitionSlides,
 
                 /* Live */
                 live: hasSlugCtx ? {

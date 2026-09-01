@@ -73,6 +73,9 @@ export function extractTextFields(block: Block): string[] {
         case "slide-image":
             return [str(p.alt), str(p.title)].filter(Boolean);
 
+        case "slide-transition":
+            return [str(p.eyebrow), str(p.title), str(p.subtitle)].filter(Boolean);
+
         case "quote":
             return [str(p.text), str(p.source)].filter(Boolean);
 
@@ -389,6 +392,17 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
             const title = str(props.title);
             const titlePart = title ? ` "${title}"` : "";
             return `${annotation}\n![${alt}](${src}${titlePart})`;
+        }
+
+        case "slide-transition": {
+            const eyebrow = str(props.eyebrow);
+            const title = str(props.title);
+            const subtitle = str(props.subtitle);
+            const heading = [eyebrow, title].filter(Boolean).join(" ");
+            return `${annotation}
+## ${heading}${subtitle ? `
+
+${subtitle}` : ""}`;
         }
 
         case "quote": {

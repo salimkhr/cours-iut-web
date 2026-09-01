@@ -24,6 +24,11 @@ export interface SlidesContextType {
     moduleTitle?: string;
     sectionTitle?: string;
 
+    /** Index des slides de transition dans le deck, garde de section comprise.
+     *  Le rail de progression les marque d'un trait au lieu d'un point : ce ne
+     *  sont pas des slides de contenu mais des séparations de parties. */
+    transitionSlides?: number[];
+
     // Live (optionnel : absent hors mode présentation)
     live?: {
         isLive: boolean;

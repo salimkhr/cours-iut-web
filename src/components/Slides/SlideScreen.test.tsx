@@ -25,6 +25,26 @@ const contextValue: SlidesContextType = {
     sectionTitle: "Twig",
 };
 
+test("efface le bandeau de titre quand le titre est vide", () => {
+    const avecTitre = renderToStaticMarkup(
+        <SlidesContext.Provider value={contextValue}>
+            <SlideScreen title="Plan"><p>Contenu</p></SlideScreen>
+        </SlidesContext.Provider>
+    );
+    const sansTitre = renderToStaticMarkup(
+        <SlidesContext.Provider value={contextValue}>
+            <SlideScreen title=""><p>Contenu</p></SlideScreen>
+        </SlidesContext.Provider>
+    );
+
+    expect(avecTitre).toContain("course-section-head");
+    // Sans titre, ni bandeau ni badge : c'est ce qui laisse tout l'écran aux
+    // slides de transition, dont l'annonce tient lieu de titre.
+    expect(sansTitre).not.toContain("course-section-head");
+    expect(sansTitre).not.toContain("course-section-badge");
+    expect(sansTitre).toContain("Contenu");
+});
+
 test("rend le pont des cards en bas a droite sur les slides de contenu", () => {
     const html = renderToStaticMarkup(
         <SlidesContext.Provider value={contextValue}>

@@ -11,6 +11,7 @@ import {SlideText} from "@/components/Slides/ui/SlideText";
 import {SlideTable} from "@/components/Slides/ui/SlideTable";
 import {SlideImage} from "@/components/Slides/ui/SlideImage";
 import {SlideCodeWithPreview} from "@/components/Slides/ui/SlideCodeWithPreview";
+import {SlideTransition} from "@/components/Slides/ui/SlideTransition";
 
 const slideColumnSpanClass: Record<number, string> = {
     3: "md:col-span-3",
@@ -88,6 +89,14 @@ export function SlideBlockItem({block, renderNested}: SlideBlockItemProps) {
                     preview={block.props.preview ? String(block.props.preview) : undefined}
                     highlight={block.props.highlight ? String(block.props.highlight) : undefined}
                     secondaryHighlight={block.props.secondaryHighlight ? String(block.props.secondaryHighlight) : undefined}
+                />
+            );
+        case "slide-transition":
+            return (
+                <SlideTransition
+                    eyebrow={block.props.eyebrow ? String(block.props.eyebrow) : undefined}
+                    title={String(block.props.title ?? "")}
+                    subtitle={block.props.subtitle ? String(block.props.subtitle) : undefined}
                 />
             );
         case "diagram":

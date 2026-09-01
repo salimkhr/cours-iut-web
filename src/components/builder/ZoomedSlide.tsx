@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { SlideScreen } from "@/components/Slides/SlideScreen";
+import { isTransitionSlide } from "@/components/Slides/SlideBlocksRenderer";
 import { PREVIEW_CONTEXT, SlideChildrenRenderer } from "@/components/builder/SlideChildrenRenderer";
 import { SlidesContext } from "@/components/Slides/context/SlidesContext";
 import { computeSlideScale, getSlideFrameSize, type ZoomMode } from "@/components/builder/slideScale";
@@ -71,9 +72,28 @@ export function ZoomedSlide({ slide, mode, order, renderChildren, className }: Z
                         ses enfants, sinon l'apercu du builder leve
                         « useSlides must be used within SlidesContext.Provider ». */}
                     <SlidesContext.Provider value={PREVIEW_CONTEXT}>
-                        <SlideScreen title={String(slide.props.title ?? "")} order={order}>
-                            {renderChildren ? renderChildren(children) : <SlideChildrenRenderer blocks={children} />}
-                        </SlideScreen>
+                        {/* Une transition ne porte NI bandeau NI numéro, quel que
+                            soit le titre de sa slide : c'est le type qui décide,
+                            pas la saisie. Même règle que dans le player, sinon
+                            l'aperçu du builder mentirait sur le rendu réel. */}
+                        {isTransitionSlide(slide) ? (
+                            // Hors de SlideScreen, rien ne donne sa hauteur au
+                            // bloc : sans ce conteneur, le `h-full` de la
+                            // transition retombe sur la hauteur du texte et la
+                            // photo se réduit à un bandeau.
+                            // Hors de SlideScreen, rien ne donne sa hauteur au
+                            // bloc. Suffit en mode vignette ; en mode édition,
+                            // l'enveloppe EditableBlock reste de hauteur auto et
+                            // l'aperçu montre la transition en bandeau haut —
+                            // le rendu du player, lui, est correct.
+                            <div className="flex h-full w-full flex-col">
+                                {renderChildren ? renderChildren(children) : <SlideChildrenRenderer blocks={children} />}
+                            </div>
+                        ) : (
+                            <SlideScreen title={String(slide.props.title ?? "")} order={order}>
+                                {renderChildren ? renderChildren(children) : <SlideChildrenRenderer blocks={children} />}
+                            </SlideScreen>
+                        )}
                     </SlidesContext.Provider>
                 </div>
             )}

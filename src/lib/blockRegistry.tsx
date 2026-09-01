@@ -20,7 +20,7 @@ import {
     LayoutPanelLeft, PanelLeft, MessageSquare, ChevronsUpDown,
     Image, Table as TableIcon, Link, Code, Eye,
     Share2, Download, Quote, Minus,
-    Monitor, StickyNote, FileCode,
+    Monitor, StickyNote, FileCode, Milestone,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import CourseReminder from "@/components/CourseReminder";
@@ -32,6 +32,7 @@ import { SlideNote } from "@/components/Slides/ui/SlideNote";
 import { SlideTable } from "@/components/Slides/ui/SlideTable";
 import { SlideImage } from "@/components/Slides/ui/SlideImage";
 import { SlideCodeWithPreview } from "@/components/Slides/ui/SlideCodeWithPreview";
+import { SlideTransition } from "@/components/Slides/ui/SlideTransition";
 import { blockDefs, getBlockDef, createBlockInstance } from "@/lib/blockDefs";
 import type { BlockDef, FieldDef, BlockCategory } from "@/lib/blockDefs";
 import type Module from "@/types/Module";
@@ -451,6 +452,16 @@ const clientParts: Record<string, ClientPart> = {
                 <SlideImage src={url} title={title ? String(title) : undefined} alt={String(alt ?? "")} />
             );
         },
+    },
+    "slide-transition": {
+        icon: Milestone,
+        render: ({ eyebrow, title, subtitle }: BlockRenderProps) => (
+            <SlideTransition
+                eyebrow={eyebrow ? String(eyebrow) : undefined}
+                title={String(title ?? "")}
+                subtitle={subtitle ? String(subtitle) : undefined}
+            />
+        ),
     },
 };
 
