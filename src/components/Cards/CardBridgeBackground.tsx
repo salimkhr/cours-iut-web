@@ -24,17 +24,21 @@ export default function CardBridgeBackground() {
 
     return (
         <div className="absolute inset-0 z-0 select-none pointer-events-none">
-            <Image
-                src={src}
-                alt=""
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                // object-right-bottom : même point d'ancrage que le hero
-                // de la home. Évite que des hauteurs de card différentes
-                // (descriptions de tailles variables) recadrent le pont
-                // différemment d'une card à l'autre.
-                className="object-cover object-right-bottom opacity-90 transition-transform duration-700 group-hover:scale-105 dark:opacity-65 dark:saturate-[0.86] dark:contrast-110"
-            />
+            {/* Boîte plus petite qu'avant que le fond soit devenu transparent :
+                en pleine card (inset-0 + object-cover), l'image n'avait plus
+                son fond opaque pour s'estomper dans les coins vides, et le
+                pont se lisait bien plus grand qu'un simple décor de fond. */}
+            <div className="absolute bottom-0 right-0 h-full w-[62%]">
+                <Image
+                    src={src}
+                    alt=""
+                    fill
+                    sizes="(max-width: 640px) 62vw, (max-width: 1024px) 31vw, 20vw"
+                    // object-right-bottom : même point d'ancrage que le hero
+                    // de la home.
+                    className="object-contain object-right-bottom transition-transform duration-700 group-hover:scale-105 dark:saturate-[0.86] dark:contrast-110"
+                />
+            </div>
             <div
                 className={cn(
                     "absolute inset-0 bg-gradient-to-r",
