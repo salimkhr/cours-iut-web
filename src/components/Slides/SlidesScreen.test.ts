@@ -56,6 +56,7 @@ test("le marqueur de transition garde la largeur d'un point du rail", () => {
     // hauteur distingue la separation.
     const source = readFileSync(join(process.cwd(), "src/components/Slides/progress/ProgressPoint.tsx"), "utf8");
 
-    expect(source).toContain('isTransition ? "h-1 w-2.5" : stretched ? "w-2.5 h-4" : "w-2.5 h-2.5"');
+    expect(source).toContain('"relative w-2.5 rounded-full transition-transform"');
+    expect(source).toContain('isTransition && "h-1"');
     expect(source).not.toContain("h-1 w-5");
 });

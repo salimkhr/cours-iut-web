@@ -6,7 +6,6 @@ import {cn} from "@/lib/utils";
 import {SlidesContext} from "./context/SlidesContext";
 import {useFullscreen} from "./hooks/useFullscreen";
 import {useKeyboardNav} from "./hooks/useKeyboardNav";
-import {useSlideNotes} from "./hooks/useSlideNotes";
 
 import {SlideTitle} from "./ui/SlideTitle";
 import Module from "@/types/Module";
@@ -36,6 +35,9 @@ interface SlidesScreenProps {
      *  `transitionIndices`. Sert au mode télécommande mobile (voir
      *  `RemoteControlView`), qui affiche le titre sans monter le contenu. */
     slideTitles?: string[];
+    /** Note de présentateur de chaque slide de `children`, dans l'ordre. Même
+     *  décalage que `transitionIndices`. Sert au mode télécommande mobile. */
+    slideNotes?: (string | null)[];
 }
 
 // Une transition porte son propre fond, photo calée en bas à droite : le
@@ -78,6 +80,7 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                                                               transitionIndices,
                                                               stepCounts,
                                                               slideTitles,
+                                                              slideNotes,
                                                           }) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -121,11 +124,19 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
         return arr;
     }, [slideTitles, module, section]);
 
+    // Même décalage que `titles`.
+    const notesArr = useMemo(() => {
+        const offset = module && section ? 1 : 0;
+        const arr: (string | null)[] = [];
+        (slideNotes ?? []).forEach((n, i) => { arr[i + offset] = n; });
+        return arr;
+    }, [slideNotes, module, section]);
+
     /* ---------- Navigation ---------- */
     const navigation = useSlidesNavigation(slides.length, initialSlideSteps);
 
     /* ---------- Notes ---------- */
-    const currentNotes = useSlideNotes(slides, navigation.currentSlide);
+    const currentNotes = notesArr[navigation.currentSlide] ?? null;
     const [showNotes, setShowNotes] = useState(false);
 
     /* ---------- Fullscreen ---------- */
@@ -215,6 +226,7 @@ export const SlidesScreen: React.FC<SlidesScreenProps> = ({
                 moduleTitle: module?.title,
                 sectionTitle: section?.title,
                 currentSlideTitle: titles[navigation.currentSlide] ?? null,
+                slideTitles: titles,
                 transitionSlides,
 
                 /* Live */

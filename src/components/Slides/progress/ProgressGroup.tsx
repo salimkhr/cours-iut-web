@@ -1,63 +1,44 @@
 import React from "react";
-import {cn} from "@/lib/utils";
 import {ProgressPoint} from "./ProgressPoint";
 import {useMounted} from "@/hook/useMounted";
-import {computeStepMarkers} from "@/components/Slides/utils/stepMarkers";
 
 interface ProgressGroupProps {
     /** Slide de transition : marquée d'un trait, pas d'un point. */
     isTransition?: boolean;
-    isCurrentSlide: boolean;
-    steps: number;
+    /** Étapes de highlight au-delà de la première (`slideSteps[sIdx] || 0`) —
+     *  étire le point plutôt que d'en empiler plusieurs. */
+    extraSteps: number;
     sIdx: number;
     currentSlide: number;
-    currentStep: number;
     activeRef?: React.RefObject<HTMLDivElement | null>;
 }
 
+// Un point par slide, pas par étape : le rail suit le déplacement entre
+// slides, pas la progression interne d'une slide à étapes. La couleur et
+// l'échelle du point actif suffisent à le signaler — un halo bordé en plus
+// donnait un plafond de rail plus large que le corps, du fait de sa propre
+// forme "rounded-full" plus étroite empilée dans celle du rail.
 export const ProgressGroup: React.FC<ProgressGroupProps> = ({
                                                                 isTransition = false,
-                                                                isCurrentSlide,
-                                                                steps,
+                                                                extraSteps,
                                                                 sIdx,
                                                                 currentSlide,
-                                                                currentStep,
                                                                 activeRef
                                                             }) => {
 
     const mounted = useMounted();
     if (!mounted) return null;
-    return (
-        <div
-            className={cn(
-                "flex flex-col items-center gap-1.5 p-1 rounded-full border",
-                isCurrentSlide
-                    ? "border-(--module-color)/35 dark:border-(--module-color-dark)/35"
-                    : "border-transparent"
-            )}
-        >
-            {computeStepMarkers(steps).map((marker) => {
-                const isActive = currentSlide === sIdx && (
-                    marker.kind === "dot"
-                        ? currentStep === marker.stepIndex
-                        : currentStep >= marker.from && currentStep <= marker.to
-                );
-                const isPast = sIdx < currentSlide || (sIdx === currentSlide && (
-                    marker.kind === "dot" ? currentStep > marker.stepIndex : currentStep > marker.to
-                ));
-                const key = marker.kind === "dot" ? `dot-${marker.stepIndex}` : `pill-${marker.from}-${marker.to}`;
 
-                return (
-                    <ProgressPoint
-                        key={`${sIdx}-${key}`}
-                        ref={isActive ? activeRef : null}
-                        isActive={isActive}
-                        isPast={isPast}
-                        isTransition={isTransition}
-                        stretched={marker.kind === "pill"}
-                    />
-                );
-            })}
-        </div>
+    const isActive = sIdx === currentSlide;
+    const isPast = sIdx < currentSlide;
+
+    return (
+        <ProgressPoint
+            ref={isActive ? activeRef : null}
+            isActive={isActive}
+            isPast={isPast}
+            isTransition={isTransition}
+            extraSteps={extraSteps}
+        />
     );
 };

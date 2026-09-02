@@ -98,13 +98,13 @@ export const SlidesActions = ({ className }: { className?: string }) => {
                         </div>
 
                         {isDetached && (
-                            <Button size="sm" variant="default" className="h-6 px-2 text-xs cursor-pointer" onClick={live!.resync}>
+                            <Button size="sm" variant="ghost" className="h-6 px-2 text-xs cursor-pointer" onClick={live!.resync}>
                                 Rejoindre
                             </Button>
                         )}
 
                         {takeControl && (
-                            <Button size="sm" variant="outline" className="h-6 px-2 text-[11px] cursor-pointer" onClick={takeControl}>
+                            <Button size="sm" variant="ghost" className="h-6 px-2 text-[11px] cursor-pointer" onClick={takeControl}>
                                 Reprendre
                             </Button>
                         )}

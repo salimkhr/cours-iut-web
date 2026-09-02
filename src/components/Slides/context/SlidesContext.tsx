@@ -26,6 +26,9 @@ export interface SlidesContextType {
     /** Titre de la slide courante, tel que saisi dans le builder. Sert au mode
      *  télécommande mobile, qui n'affiche pas le contenu du deck. */
     currentSlideTitle?: string | null;
+    /** Titre de chaque slide du deck, dans l'ordre. Sert au sélecteur de
+     *  slide de la télécommande (aller directement à n'importe laquelle). */
+    slideTitles?: string[];
 
     /** Index des slides de transition dans le deck, garde de section comprise.
      *  Le rail de progression les marque d'un trait au lieu d'un point : ce ne
