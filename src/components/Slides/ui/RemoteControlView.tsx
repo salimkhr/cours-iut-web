@@ -85,12 +85,12 @@ export const RemoteControlView = () => {
                                 ? "bg-brand-primary dark:bg-brand-accent animate-pulse"
                                 : "border-2 border-bridge-600 dark:border-bridge-300"
                         )} />
-                        <span className="text-sm font-semibold text-bridge-600 dark:text-bridge-300">
+                        <span className="text-lg font-semibold text-bridge-600 dark:text-bridge-300">
                             {isController ? "Vous contrôlez" : `Suit ${live!.presenterName ?? "…"}`}
                         </span>
                     </div>
                 ) : (
-                    <span className="text-sm font-semibold text-bridge-600/80 dark:text-bridge-300/80">
+                    <span className="text-lg font-semibold text-bridge-600/80 dark:text-bridge-300/80">
                         Aucune présentation en cours
                     </span>
                 )}
@@ -109,7 +109,7 @@ export const RemoteControlView = () => {
                     // Zone tactile de 44px minimum (recommandation mobile) : le
                     // texte seul, sans marge, ne faisait qu'une vingtaine de px.
                     className={cn(
-                        "flex min-h-11 touch-manipulation items-center gap-1.5 px-3 text-xs font-semibold uppercase tracking-[0.18em] text-bridge-600/70 dark:text-bridge-300/70",
+                        "flex min-h-11 touch-manipulation items-center gap-1.5 px-3 text-sm font-semibold uppercase tracking-[0.18em] text-bridge-600/70 dark:text-bridge-300/70",
                         isLive && "cursor-pointer hover:text-bridge-600 dark:hover:text-bridge-300"
                     )}
                     onClick={() => isLive && setPickerOpen(true)}
@@ -118,11 +118,11 @@ export const RemoteControlView = () => {
                     Slide {currentSlide + 1} / {slidesCount}
                     <List className="size-3.5" />
                 </button>
-                <h2 className="text-2xl font-extrabold text-brand-dark dark:text-brand-light">
+                <h2 className="text-3xl font-extrabold text-brand-dark dark:text-brand-light">
                     {currentSlideTitle || "—"}
                 </h2>
                 {currentNotes && (
-                    <p className="whitespace-pre-line text-left text-sm leading-relaxed text-bridge-700 dark:text-bridge-200">
+                    <p className="whitespace-pre-line text-left text-lg leading-relaxed text-bridge-700 dark:text-bridge-200">
                         {currentNotes}
                     </p>
                 )}
@@ -161,7 +161,7 @@ export const RemoteControlView = () => {
                 </div>
 
                 {!isLive && (
-                    <p className="text-xs text-bridge-600/70 dark:text-bridge-300/70">
+                    <p className="text-sm text-bridge-600/70 dark:text-bridge-300/70">
                         Démarrez une présentation pour naviguer.
                     </p>
                 )}
@@ -186,8 +186,8 @@ export const RemoteControlView = () => {
                                 )}
                                 onClick={() => handleJumpTo(i)}
                             >
-                                <span className="w-7 shrink-0 text-sm font-semibold text-bridge-500">{i + 1}</span>
-                                <span className="truncate text-sm">{slideTitles?.[i] || `Slide ${i + 1}`}</span>
+                                <span className="w-7 shrink-0 text-lg font-semibold text-bridge-500">{i + 1}</span>
+                                <span className="truncate text-lg">{slideTitles?.[i] || `Slide ${i + 1}`}</span>
                             </button>
                         ))}
                     </div>
