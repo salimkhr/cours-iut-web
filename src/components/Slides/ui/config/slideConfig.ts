@@ -21,6 +21,13 @@ export const slideTextSizes = {
         xl: "text-[1.2rem] md:text-[1.8rem] lg:text-[2.4rem]",
     },
 
+    // Tableaux : paliers du thème, avec davantage de place en plein écran.
+    table: {
+        default: "text-lg md:text-xl lg:text-2xl [:fullscreen_&]:text-3xl",
+        large: "text-xl md:text-2xl lg:text-3xl [:fullscreen_&]:text-4xl",
+        xl: "text-2xl md:text-3xl lg:text-4xl [:fullscreen_&]:text-5xl",
+    },
+
     // Slide de titre
     title: {
         module: "text-[0.6875rem] font-semibold tracking-[0.2em] uppercase",

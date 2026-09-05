@@ -1,5 +1,5 @@
 'use client'
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import dynamic from "next/dynamic";
 import type {BeforeMount, OnMount} from "@monaco-editor/react";
 import BaseCard from "@/components/Cards/BaseCard";
@@ -52,12 +52,16 @@ interface CodeWithPreviewCardProps {
     sources?: PreviewSources;
     className?: string;
     currentModule?: Module;
+    /** Dans une slide, partager la hauteur disponible entre les panneaux. */
+    fillAvailableHeight?: boolean;
 }
 
 type MobileTab = 'code' | 'preview';
 
 /** Clé de champ dans `PreviewSources` — jamais un index dans `panels` (Task 6 le filtre). */
 type EditableField = "code" | "secondaryCode";
+
+type EditorTypography = {fontSize: number; lineHeight: number; fontFamily: string};
 
 // Monaco n'est pas SSR-safe → import client only, chargé seulement quand un
 // panneau passe en édition (voir `openFields`). Même pattern que CodeField.tsx.
@@ -77,7 +81,8 @@ const handleMonacoMount: OnMount = (editor) => {
 
 const EDITABLE_FIELDS: EditableField[] = ["code", "secondaryCode"];
 
-export default function CodeWithPreviewCard({panels, sources, className, currentModule}: CodeWithPreviewCardProps) {
+export default function CodeWithPreviewCard({panels, sources, className, currentModule, fillAvailableHeight = false}: CodeWithPreviewCardProps) {
+    const rootRef = useRef<HTMLDivElement>(null);
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
     const [mobileTab, setMobileTab] = useState<MobileTab>('code');
     const isDark = useIsDark();
@@ -90,7 +95,37 @@ export default function CodeWithPreviewCard({panels, sources, className, current
     const [edited, setEdited] = useState<Partial<Record<EditableField, string>>>({});
     const [debouncedEdited, setDebouncedEdited] = useState<Partial<Record<EditableField, string>>>({});
     const [openFields, setOpenFields] = useState<ReadonlySet<EditableField>>(new Set());
+    const [editorTypography, setEditorTypography] = useState<Partial<Record<EditableField, EditorTypography>>>({});
     const isDirty = Object.keys(edited).length > 0;
+    const highlightKey = JSON.stringify(panels.map(panel => panel.highlightLines ?? ""));
+
+    useEffect(() => {
+        if (!fillAvailableHeight || !rootRef.current) return;
+        const highlights: string[] = JSON.parse(highlightKey);
+        const panelElements = rootRef.current.querySelectorAll<HTMLElement>('[data-code-panel]');
+        const reveal = () => {
+            panelElements.forEach((panel, index) => {
+                const lines = parseHighlightLines(highlights[index] ?? "").filter(n => Number.isInteger(n) && n > 0);
+                if (!lines.length) return;
+                const scroller = [...panel.querySelectorAll<HTMLElement>('[data-preview-code-scroll]')]
+                    .find(element => element.getClientRects().length > 0);
+                if (!scroller) return;
+                const first = scroller.querySelector<HTMLElement>(`[data-code-line="${lines[0]}"]`);
+                if (!first) return;
+                const frame = scroller.getBoundingClientRect();
+                const target = first.getBoundingClientRect();
+                if (target.top >= frame.top && target.bottom <= frame.bottom) return;
+                scroller.scrollTo({
+                    top: Math.max(0, scroller.scrollTop + target.top - frame.top - Math.min(target.height * 2, frame.height / 4)),
+                    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+                });
+            });
+        };
+        const frame = requestAnimationFrame(reveal);
+        const observer = new ResizeObserver(reveal);
+        rootRef.current.querySelectorAll('[data-preview-code-scroll]').forEach(element => observer.observe(element));
+        return () => { cancelAnimationFrame(frame); observer.disconnect(); };
+    }, [fillAvailableHeight, highlightKey, openFields, mobileTab, isDark]);
 
     // Recalcul de l'aperçu 300 ms après la dernière frappe, jamais à chaque
     // caractère : `debouncedEdited` ne suit `edited` qu'après un silence clavier.
@@ -136,7 +171,20 @@ export default function CodeWithPreviewCard({panels, sources, className, current
         });
     };
 
-    const openField = (field: EditableField) => {
+    const openField = (field: EditableField, button: HTMLButtonElement) => {
+        // Mesurer le viewer visible avant son démontage : les slides et le
+        // thème peuvent remplacer la taille de base du highlighter via CSS.
+        const viewer = [...(button.closest('[data-code-panel]')?.querySelectorAll('pre') ?? [])]
+            .find(element => element.getClientRects().length > 0);
+        if (viewer) {
+            const style = getComputedStyle(viewer);
+            const fontSize = parseFloat(style.fontSize);
+            setEditorTypography(prev => ({...prev, [field]: {
+                fontSize,
+                lineHeight: parseFloat(style.lineHeight) || fontSize * 1.65,
+                fontFamily: getComputedStyle(viewer.querySelector('code') ?? viewer).fontFamily,
+            }}));
+        }
         setOpenFields((prev) => new Set(prev).add(field));
     };
 
@@ -209,6 +257,7 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                 ? {
                     wrapLines: true,
                     lineProps: (lineNumber: number) => ({
+                        'data-code-line': lineNumber,
                         style: {
                             display: 'block',
                             width: '100%',
@@ -227,17 +276,25 @@ export default function CodeWithPreviewCard({panels, sources, className, current
         const canEdit = editable && field !== undefined;
         const isOpen = field !== undefined && openFields.has(field);
         const currentCode = (field && edited[field]) ?? panel.code;
+        // Deux lignes de marge représentent l'en-tête et les espacements :
+        // un résultat d'une ligne reste lisible sans prendre la moitié de la slide.
+        const heightWeight = currentCode.trimEnd().split(/\r?\n/).length + 2;
 
         return (
-            <div key={index} className="flex flex-col">
-                <div className="flex items-center justify-between gap-2 border-b border-bridge-400/40 px-3 py-1.5 dark:border-bridge-600/40">
+            <div
+                key={index}
+                data-code-panel
+                className={cn("flex min-w-0 w-full flex-col", fillAvailableHeight && "min-h-0 flex-1")}
+                style={fillAvailableHeight ? {flexGrow: heightWeight} : undefined}
+            >
+                <div className="flex shrink-0 items-center justify-between gap-2 border-b border-bridge-400/40 px-3 py-1.5 dark:border-bridge-600/40">
                     <span className="text-xs font-mono uppercase text-bridge-500 dark:text-bridge-400">
                         {panel.language.toLowerCase()}
                     </span>
                     <div className="flex items-center gap-3">
                         {canEdit && !isOpen && (
                             <button
-                                onClick={() => openField(field)}
+                                onClick={(event) => openField(field, event.currentTarget)}
                                 className="flex items-center gap-1.5 text-xs text-bridge-500 hover:text-bridge-800 dark:text-bridge-400 dark:hover:text-bridge-100"
                                 aria-label={`Modifier le code ${panel.language}`}
                             >
@@ -266,9 +323,10 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                     </div>
                 </div>
                 {isOpen && field ? (
-                    <div style={{height: '320px'}}>
+                    <div className={cn("w-full min-w-0 overflow-hidden", fillAvailableHeight ? "min-h-0 flex-1" : "h-80")}>
                         <MonacoEditor
                             height="100%"
+                            width="100%"
                             language={panel.language.toLowerCase()}
                             value={currentCode}
                             theme={isDark ? MONACO_THEME_DARK : MONACO_THEME_LIGHT}
@@ -276,8 +334,9 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                             onMount={handleMonacoMount}
                             onChange={(value) => setEdited((prev) => ({...prev, [field]: value ?? ''}))}
                             options={{
+                                automaticLayout: true,
                                 minimap: {enabled: false},
-                                fontSize: 14,
+                                ...editorTypography[field],
                                 scrollBeyondLastLine: false,
                                 wordWrap: 'on',
                             }}
@@ -285,12 +344,12 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                     </div>
                 ) : (
                     <>
-                        <div className="block dark:hidden">
+                        <div data-preview-code-scroll className={cn("block dark:hidden", fillAvailableHeight && "min-h-0 flex-1 overflow-auto")}>
                             <SyntaxHighlighter style={courseCodeLight} {...highlighterProps(panel.language, panel.highlightLines, panel.wrap)}>
                                 {currentCode}
                             </SyntaxHighlighter>
                         </div>
-                        <div className="hidden dark:block">
+                        <div data-preview-code-scroll className={cn("hidden dark:block", fillAvailableHeight && "min-h-0 flex-1 overflow-auto")}>
                             <SyntaxHighlighter style={courseCodeDark} {...highlighterProps(panel.language, panel.highlightLines, panel.wrap)}>
                                 {currentCode}
                             </SyntaxHighlighter>
@@ -302,7 +361,7 @@ export default function CodeWithPreviewCard({panels, sources, className, current
     });
 
     const codeColumn = (
-        <div className="divide-y divide-bridge-400/40 dark:divide-bridge-600/40">
+        <div className={cn("divide-y divide-bridge-400/40 dark:divide-bridge-600/40", fillAvailableHeight && "flex h-full min-h-0 flex-col")}>
             {codePanels}
         </div>
     );
@@ -381,9 +440,9 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                 `.course-code-card .code-with-preview-preview { display: flex }`
                 de globals.css (spécificité 0,2,0) l'emporterait sur `.hidden`
                 (0,1,0) et l'aperçu ne se cacherait jamais. */}
-            <div className="lg:flex lg:h-full">
+            <div className={cn("lg:flex lg:h-full", fillAvailableHeight && "h-full min-h-0")}>
                 <div className={cn("lg:contents", mobileTab !== 'code' && "hidden")}>
-                    <div className="code-with-preview-mobile-scroll min-w-0 overflow-x-auto border-bridge-400/40 dark:border-bridge-600/40 lg:flex-1 lg:border-r">
+                    <div className={cn("code-with-preview-mobile-scroll min-w-0 overflow-x-auto border-bridge-400/40 dark:border-bridge-600/40 lg:flex-1 lg:border-r", fillAvailableHeight && "h-full min-h-0")}>
                         {codeColumn}
                     </div>
                 </div>
@@ -398,8 +457,9 @@ export default function CodeWithPreviewCard({panels, sources, className, current
     );
 
     return (
-        <div className={cn("course-code-card my-8 sm:my-10", className)}>
+        <div ref={rootRef} className={cn("course-code-card my-8 sm:my-10", fillAvailableHeight && "!my-0 min-h-0 flex-1", className)}>
             <BaseCard
+                className={fillAvailableHeight ? "min-h-0" : undefined}
                 header={headerCard}
                 content={content}
                 currentModule={currentModule}
