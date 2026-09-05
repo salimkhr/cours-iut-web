@@ -127,7 +127,7 @@ export default function SectionCard({section, currentModule, isAdmin, correction
     );
 
     const btnBase = cn(
-        "group/btn flex-1 min-w-[88px] min-h-[44px] rounded-lg",
+        "group/btn min-w-[88px] min-h-[44px] rounded-lg",
         "text-xs font-semibold tracking-wide uppercase",
         "border-2 border-(--module-color) text-brand-dark dark:border-(--module-color-dark) dark:text-bridge-100",
         "bg-transparent dark:bg-bridge-900/18 shadow-none",
@@ -240,7 +240,7 @@ export default function SectionCard({section, currentModule, isAdmin, correction
                 )}
 
                 {/* Actions */}
-                <div className="flex flex-wrap gap-2.5 pt-3 mt-auto border-t border-bridge-700/20 dark:border-bridge-500/20 pointer-events-auto">
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(88px,1fr))] gap-2.5 pt-3 mt-auto border-t border-bridge-700/20 dark:border-bridge-500/20 pointer-events-auto">
                     {sortedContents.map((item) => {
                         const key = item as ContentKey;
                         // Type de contenu venant de la DB : un type inconnu (casse/typo/legacy)
