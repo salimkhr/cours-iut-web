@@ -82,7 +82,7 @@ export const SlideTitle: React.FC<SlideTitleProps> = ({module, section}) => {
 
             <div className="relative z-10 flex min-h-full w-full items-center px-6 py-10 sm:px-10 lg:pl-32 lg:pr-14 xl:pl-44">
                 <div className="w-full max-w-[860px] xl:max-w-[920px]">
-                    <div className="mb-5 flex flex-wrap items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-brand-dark/70 dark:text-bridge-100/75 md:text-base lg:text-lg">
+                    <div className="mb-5 flex flex-wrap items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-brand-dark/70 dark:text-bridge-100/75 md:text-base lg:text-[0.9rem]">
                         <span>{module.title}</span>
                         <span
                             aria-hidden="true"
@@ -91,7 +91,7 @@ export const SlideTitle: React.FC<SlideTitleProps> = ({module, section}) => {
                         <span>Section {orderLabel}</span>
                     </div>
 
-                    <h2 className="max-w-5xl text-balance text-5xl font-extrabold leading-[0.9] tracking-normal !text-brand-dark dark:!text-brand-light sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl">
+                    <h2 className="max-w-5xl text-balance text-[2.4rem] font-extrabold leading-[0.9] tracking-normal !text-brand-dark dark:!text-brand-light sm:text-[3rem] md:text-[3.6rem] lg:text-[4.8rem] xl:text-[6.4rem]">
                         {section.title}
                         <span className="text-(--module-color) dark:text-(--module-color-dark)">.</span>
                     </h2>
@@ -102,7 +102,7 @@ export const SlideTitle: React.FC<SlideTitleProps> = ({module, section}) => {
                     />
 
                     {section.description && (
-                        <p className="mt-6 max-w-3xl text-xl font-normal leading-relaxed text-bridge-600 dark:text-bridge-300 md:text-2xl lg:text-3xl">
+                        <p className="mt-6 max-w-3xl text-[1rem] font-normal leading-relaxed text-bridge-600 dark:text-bridge-300 md:text-[1.2rem] lg:text-[1.5rem]">
                             {section.description}
                         </p>
                     )}
@@ -112,7 +112,7 @@ export const SlideTitle: React.FC<SlideTitleProps> = ({module, section}) => {
                             <div className={`${slideTextSizes.title.module} text-brand-dark/60 dark:text-bridge-100/65`}>
                                 À retenir
                             </div>
-                            <div className="mt-2 grid gap-2 text-lg font-semibold leading-snug text-brand-dark dark:text-brand-light md:text-xl">
+                            <div className="mt-2 grid gap-2 text-[0.9rem] font-semibold leading-snug text-brand-dark dark:text-brand-light md:text-[1rem]">
                                 {keyObjectives.map((objective) => (
                                     <p key={objective}>
                                         {objective}

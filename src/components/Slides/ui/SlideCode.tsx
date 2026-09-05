@@ -14,9 +14,9 @@ interface SlideCodeProps extends CodeCardProps {
 // heureusement son propre 1.5, mais la valeur fausse servait encore au calcul
 // de défilement des étapes (voir plus bas).
 export const slideCodeTextMetrics = {
-    default: {fontSize: "1.5rem", lineHeight: "1.5"},
-    large: {fontSize: "1.75rem", lineHeight: "1.5"},
-    xl: {fontSize: "2rem", lineHeight: "1.5"},
+    default: {fontSize: "1.2rem", lineHeight: "1.5"},
+    large: {fontSize: "1.4rem", lineHeight: "1.5"},
+    xl: {fontSize: "1.6rem", lineHeight: "1.5"},
 } as const;
 
 export const SlideCode: React.FC<SlideCodeProps> = ({

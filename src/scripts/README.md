@@ -1,5 +1,33 @@
 # Scripts de maintenance
 
+## Initialiser une nouvelle base
+
+Avec `MONGODB_URI` dans `.env` ou `.env.local`, lancer `bun run db:init`.
+Le script crée les collections applicatives et d'authentification, les index
+uniques des modules et contenus, puis les modules et sections répertoriés dans
+`src/lib/contentImports.ts`. Les cours sont servis depuis leurs fichiers TSX,
+sans conversion pouvant perdre les composants interactifs.
+
+Pour créer également un administrateur, ajouter dans `.env.local` :
+
+```dotenv
+ADMIN_EMAIL=admin@example.com
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=remplacer-par-un-mot-de-passe-personnel
+```
+
+Puis lancer `bun run db:init`. `ADMIN_USERNAME` vaut `admin` par défaut.
+Le mot de passe est haché au format Better Auth. Un administrateur existant
+conserve ses identifiants ; un compte non admin n'est pas promu automatiquement.
+Sans ces variables, la création du compte est ignorée. Une configuration partielle
+ou invalide arrête la commande avant toute écriture. Exécuter une seule initialisation
+à la fois.
+
+Les modules existants ne sont jamais remplacés. Les titres de sections sont dérivés des chemins ; la durée
+initiale est d'une séance, à ajuster dans l'administration. Les examens restent
+verrouillés. Pour rendre les contenus éditables dans le builder, utiliser ensuite
+la migration `migrate:db` après vérification de ses avertissements.
+
 ## migrate-contents-refs.ts
 
 Convertit les `Section.contents` de `string[]` en `ContentRef[]` dans MongoDB.

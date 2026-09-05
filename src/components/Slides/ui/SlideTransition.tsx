@@ -109,12 +109,12 @@ export const SlideTransition: React.FC<SlideTransitionProps> = ({
 
         <div className="relative z-10 w-full max-w-[860px] px-8 md:px-12 lg:px-16 xl:max-w-[920px]">
             {eyebrow && (
-                <div className="mb-3 text-3xl font-extrabold uppercase tracking-[-0.01em] text-(--module-color) dark:text-(--module-color-dark) md:text-5xl lg:text-6xl">
+                <div className="mb-3 text-[1.5rem] font-extrabold uppercase tracking-[-0.01em] text-(--module-color) dark:text-(--module-color-dark) md:text-[2.4rem] lg:text-[3rem]">
                     {eyebrow}
                 </div>
             )}
 
-            <h2 className="text-balance text-5xl font-extrabold leading-[0.92] tracking-[-0.025em] !text-brand-dark dark:!text-brand-light md:text-7xl lg:text-8xl">
+            <h2 className="text-balance text-[2.4rem] font-extrabold leading-[0.92] tracking-[-0.025em] !text-brand-dark dark:!text-brand-light md:text-[3.6rem] lg:text-[4.8rem]">
                 {title}
                 <span className="text-(--module-color) dark:text-(--module-color-dark)">.</span>
             </h2>
@@ -125,7 +125,7 @@ export const SlideTransition: React.FC<SlideTransitionProps> = ({
             />
 
             {subtitle && (
-                <p className="mt-6 max-w-3xl text-xl font-light leading-relaxed text-bridge-600 dark:text-bridge-300 md:text-2xl lg:text-3xl">
+                <p className="mt-6 max-w-3xl text-[1rem] font-light leading-relaxed text-bridge-600 dark:text-bridge-300 md:text-[1.2rem] lg:text-[1.5rem]">
                     {subtitle}
                 </p>
             )}

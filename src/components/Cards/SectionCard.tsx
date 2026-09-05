@@ -3,7 +3,7 @@
 import React, {useRef, useState} from 'react';
 import Link from "next/link";
 import {motion, useReducedMotion} from 'motion/react';
-import {Lock, Unlock} from "lucide-react";
+import {Lock} from "lucide-react";
 import {ClockIcon} from "@/components/icons/clock";
 
 import Section from "@/types/Section";
@@ -177,58 +177,44 @@ export default function SectionCard({section, currentModule, isAdmin, correction
 
             <div className="relative z-20 flex flex-col gap-7 h-full pointer-events-none">
 
-                {/* Header: order chip + title + duration + lock state */}
-                <header className="flex items-center gap-3">
+                {/* Align the first title line with the number; keep duration at the top. */}
+                <header className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3">
                     <div className="inline-flex h-9 min-w-9 items-center justify-center rounded-lg px-2.5 text-white dark:text-brand-dark font-mono font-bold shadow-sm shrink-0 bg-(--module-color) dark:bg-(--module-color-dark)">
                         {section.order.toString().padStart(2, '0')}
                     </div>
-                    <h3 className="text-xl lg:text-2xl font-bold tracking-tight leading-tight flex-1 min-w-0 text-(--module-color) dark:text-(--module-color-dark)">
+                    <h3 className="col-start-2 row-start-1 min-w-0 pt-1 wrap-break-word text-xl lg:text-2xl font-bold tracking-tight leading-tight text-(--module-color) dark:text-(--module-color-dark)">
                         {section.title}
                     </h3>
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="col-start-3 row-start-1 flex flex-col items-end gap-2 pt-2">
                         <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark dark:text-bridge-200/70 whitespace-nowrap">
                             <ClockIcon size={14} className="shrink-0"/>
                             {section.totalDuration}
                             <span className="hidden sm:inline">&nbsp;séance{section.totalDuration > 1 ? 's' : ''}</span>
                         </span>
-                        {isAdmin ? (
+                        {!isAvailable && (isAdmin ? (
                             <button
                                 type="button"
                                 onClick={handleToggleLock}
                                 disabled={pending}
                                 aria-busy={pending}
-                                aria-label={isAvailable ? "Verrouiller la section" : "Déverrouiller la section"}
+                                aria-label="Déverrouiller la section"
+                                title="Déverrouiller la section"
                                 className={cn(
                                     "pointer-events-auto inline-flex items-center gap-1 rounded-md px-2 py-1.5",
                                     "text-[11px] uppercase tracking-[0.18em] font-semibold",
                                     "transition-colors duration-200 cursor-pointer",
                                     "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                                     pending && "opacity-60 cursor-wait",
-                                    isAvailable
-                                        ? "bg-brand-primary/12 text-brand-accent-dark dark:bg-brand-primary/20 dark:text-brand-primary hover:bg-brand-primary/25 dark:hover:bg-brand-primary/35"
-                                        : "bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100 hover:bg-bridge-700/45 dark:hover:bg-bridge-500/45"
+                                    "bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100 hover:bg-bridge-700/45 dark:hover:bg-bridge-500/45"
                                 )}
                             >
-                                {isAvailable ? (
-                                    <>
-                                        <Unlock className="size-3" aria-hidden="true"/>
-                                        <span className="hidden sm:inline">Disponible</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Lock className="size-3" aria-hidden="true"/>
-                                        <span className="hidden sm:inline">Verrouillé</span>
-                                    </>
-                                )}
+                                <Lock className="size-3" aria-hidden="true"/>
                             </button>
                         ) : (
-                            isLocked && (
-                                <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100">
+                                <span aria-label="Section indisponible" title="Section indisponible" className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] uppercase tracking-[0.18em] font-semibold bg-bridge-700/30 text-brand-dark dark:bg-bridge-500/30 dark:text-bridge-100">
                                     <Lock className="size-3" aria-hidden="true"/>
-                                    <span className="hidden sm:inline">Verrouillé</span>
                                 </span>
-                            )
-                        )}
+                        ))}
                     </div>
                 </header>
 
