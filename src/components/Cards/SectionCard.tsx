@@ -61,16 +61,15 @@ function AnimatedActionButton({
 
     const inner = (
         <>
-            <IconComp ref={iconRef} size={16} className={iconClassName}/>
-            <span className="hidden md:inline">{label}</span>
+            <IconComp ref={iconRef} size={17} className={iconClassName}/>
+            <span className="hidden md:inline text-[10px] tracking-wide">{label}</span>
         </>
     );
 
     return (
         <Button
             asChild
-            variant="outline"
-            size="sm"
+            variant="ghost"
             className={btnClassName}
             onMouseEnter={() => {
                 if (!prefersReducedMotion && !disabled) iconRef.current?.startAnimation();
@@ -127,15 +126,14 @@ export default function SectionCard({section, currentModule, isAdmin, correction
     );
 
     const btnBase = cn(
-        "group/btn min-w-[88px] min-h-[44px] rounded-lg",
-        "text-xs font-semibold tracking-wide uppercase",
-        "border-2 border-(--module-color) text-brand-dark dark:border-(--module-color-dark) dark:text-bridge-100",
-        "bg-transparent dark:bg-bridge-900/18 shadow-none",
-        "hover:bg-(--module-color) hover:text-white hover:shadow-md dark:hover:bg-(--module-color-dark) dark:hover:text-brand-dark",
+        "group/btn flex-1 flex-col gap-1 min-h-[52px] rounded-none",
+        "text-xs font-semibold uppercase",
+        "text-brand-dark/70 dark:text-bridge-100/70 shadow-none",
+        "hover:bg-(--module-color)/8 hover:text-(--module-color) dark:hover:bg-(--module-color-dark)/12 dark:hover:text-(--module-color-dark)",
         "active:translate-y-px focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        "transition-[color,border-color,background-color,box-shadow,transform] duration-300",
+        "transition-colors duration-300",
     );
-    const iconBase = "size-4 shrink-0 text-(--module-color) dark:text-(--module-color-dark) group-hover/btn:text-white dark:group-hover/btn:text-brand-dark transition-colors duration-300";
+    const iconBase = "size-[18px] shrink-0 text-(--module-color) dark:text-(--module-color-dark) transition-colors duration-300";
 
     return (
         <motion.article
@@ -239,8 +237,10 @@ export default function SectionCard({section, currentModule, isAdmin, correction
                     </div>
                 )}
 
-                {/* Actions */}
-                <div className="grid grid-cols-[repeat(auto-fit,minmax(88px,1fr))] gap-2.5 pt-3 mt-auto border-t border-bridge-700/20 dark:border-bridge-500/20 pointer-events-auto">
+                {/* Actions : footer de liens divisés par des filets, plutôt qu'une
+                    rangée de pilules à largeur égale forcée (le mot le plus long
+                    contraignait tous les autres, cf. section-card-footer). */}
+                <div className="flex divide-x divide-bridge-700/20 dark:divide-bridge-500/20 -mx-7 lg:-mx-9 -mb-7 lg:-mb-9 mt-auto border-t border-bridge-700/20 dark:border-bridge-500/20 pointer-events-auto">
                     {sortedContents.map((item) => {
                         const key = item as ContentKey;
                         // Type de contenu venant de la DB : un type inconnu (casse/typo/legacy)
@@ -272,7 +272,6 @@ export default function SectionCard({section, currentModule, isAdmin, correction
                                 href={correctionBaseUrl ? `${correctionBaseUrl}/${modulePath}/${section.path}` : "#"}
                                 btnClassName={cn(
                                     btnBase,
-                                    "border-dashed hover:border-solid",
                                     correctionDisabled && "opacity-50 pointer-events-none cursor-not-allowed"
                                 )}
                                 iconClassName={iconBase}

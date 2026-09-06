@@ -68,13 +68,12 @@ export default function ContentCard({content, section, currentModule, isAdmin = 
     const href = isLocked ? '#' : `/${currentModule.path}/${section.path}/${content}`;
     const prefersReducedMotion = useReducedMotion();
     const btnBase = cn(
-        "group/btn w-full min-h-[44px] rounded-lg",
-        "text-xs font-semibold tracking-wide uppercase",
-        "border-2 border-(--module-color) text-brand-dark dark:border-(--module-color-dark) dark:text-bridge-100",
-        "bg-transparent dark:bg-bridge-900/18 shadow-none",
-        "hover:bg-(--module-color) hover:text-white hover:shadow-md dark:hover:bg-(--module-color-dark) dark:hover:text-brand-dark",
+        "group/btn flex-1 flex-row gap-2 min-h-[52px] rounded-none",
+        "text-xs font-semibold uppercase",
+        "text-brand-dark/70 dark:text-bridge-100/70 shadow-none",
+        "hover:bg-(--module-color)/8 hover:text-(--module-color) dark:hover:bg-(--module-color-dark)/12 dark:hover:text-(--module-color-dark)",
         "active:translate-y-px focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        "transition-[color,border-color,background-color,box-shadow,transform] duration-300",
+        "transition-colors duration-300",
     );
 
     return (
@@ -149,24 +148,22 @@ export default function ContentCard({content, section, currentModule, isAdmin = 
                     </p>
                 )}
 
-                {/* CTA */}
-                <div className="pt-3 mt-auto border-t border-bridge-700/20 dark:border-bridge-500/20 pointer-events-auto">
+                {/* CTA : même footer que SectionCard (icône au-dessus du label,
+                    étiré aux bords de la carte) — un seul lien ici, pas de filet. */}
+                <div className="flex -mx-6 lg:-mx-7 -mb-6 lg:-mb-7 mt-auto border-t border-bridge-700/20 dark:border-bridge-500/20 pointer-events-auto">
                     {isLocked ? (
                         <span
                             aria-disabled="true"
-                            className={cn(btnBase, "inline-flex items-center justify-center gap-2 px-3 opacity-50 pointer-events-none cursor-not-allowed")}
+                            className={cn(btnBase, "flex items-center justify-center opacity-50 pointer-events-none cursor-not-allowed")}
                         >
-                            Indisponible
+                            <Lock className="size-[18px]"/>
+                            <span className="tracking-wide">Indisponible</span>
                         </span>
                     ) : (
-                        <Button
-                            asChild
-                            variant="outline"
-                            size="sm"
-                            className={btnBase}
-                        >
+                        <Button asChild variant="ghost" className={btnBase}>
                             <Link href={href} aria-label={`Ouvrir ${label}`}>
-                                <span>Ouvrir {label}</span>
+                                <IconComp size={17} className="text-(--module-color) dark:text-(--module-color-dark)"/>
+                                <span className="tracking-wide">{label}</span>
                             </Link>
                         </Button>
                     )}
