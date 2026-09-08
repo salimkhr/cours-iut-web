@@ -3,13 +3,7 @@ import {List, ListItem} from "@/components/ui/List";
 import Code from "@/components/ui/Code";
 import Heading from "@/components/ui/Heading";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import ClickableBox from "@/cours/javascript/2-les-evenements/Exemple/ClickableBox";
 import CodeCard from "@/components/Cards/CodeCard";
-import ColorClickableBox from "@/cours/javascript/2-les-evenements/Exemple/ColorClickableBox";
-import MouseTrackerBox from "@/cours/javascript/2-les-evenements/Exemple/MouseTrackerBox";
-import ClickCounterBox from "@/cours/javascript/2-les-evenements/Exemple/ClickCounterBox";
-import KeyPressBox from "@/cours/javascript/2-les-evenements/Exemple/KeyPressBox";
-import FormBox from "@/cours/javascript/2-les-evenements/Exemple/FormBox";
 import CoursePrerequisites from "@/components/CoursePrerequisites";
 
 export default function Cours() {

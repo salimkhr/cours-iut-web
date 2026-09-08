@@ -1,7 +1,7 @@
 "use client";
 
 import {useState} from "react";
-import {useForm, type Resolver} from "react-hook-form";
+import {useForm, useWatch, type Resolver} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import {X} from "lucide-react";
@@ -41,9 +41,9 @@ export default function ProjetStep({module, onSaved}: ProjetStepProps) {
     const validated = module.projectSpec?.status === "validated";
 
     const {
+        control,
         register,
         handleSubmit,
-        watch,
         setValue,
         getValues,
         formState: {errors, isSubmitting},
@@ -63,7 +63,7 @@ export default function ProjetStep({module, onSaved}: ProjetStepProps) {
         },
     });
 
-    const entities = watch("projectSpec.entities");
+    const entities = useWatch({control, name: "projectSpec.entities"});
 
     const addEntity = () => {
         const trimmed = newEntity.trim();
