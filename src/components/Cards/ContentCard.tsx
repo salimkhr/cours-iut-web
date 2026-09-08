@@ -3,7 +3,7 @@
 import React, {useRef} from "react";
 import Link from "next/link";
 import {useReducedMotion} from 'motion/react';
-import {Lock} from "lucide-react";
+import {Lock, Pencil} from "lucide-react";
 import Module from "@/types/Module";
 import Section from "@/types/Section";
 import {cn} from "@/lib/utils";
@@ -150,7 +150,7 @@ export default function ContentCard({content, section, currentModule, isAdmin = 
 
                 {/* CTA : même footer que SectionCard (icône au-dessus du label,
                     étiré aux bords de la carte) — un seul lien ici, pas de filet. */}
-                <div className="flex -mx-6 lg:-mx-7 -mb-6 lg:-mb-7 mt-auto border-t border-bridge-700/20 dark:border-bridge-500/20 pointer-events-auto">
+                <div className="flex -mx-6 lg:-mx-7 -mb-6 lg:-mb-7 mt-auto divide-x divide-bridge-700/20 border-t border-bridge-700/20 dark:divide-bridge-500/20 dark:border-bridge-500/20 pointer-events-auto">
                     {isLocked ? (
                         <span
                             aria-disabled="true"
@@ -164,6 +164,17 @@ export default function ContentCard({content, section, currentModule, isAdmin = 
                             <Link href={href} aria-label={`Ouvrir ${label}`}>
                                 <IconComp size={17} className="text-(--module-color) dark:text-(--module-color-dark)"/>
                                 <span className="tracking-wide">{label}</span>
+                            </Link>
+                        </Button>
+                    )}
+                    {isAdmin && (
+                        <Button asChild variant="ghost" className={btnBase}>
+                            <Link
+                                href={`/admin/content/${currentModule.path}/${section.path}/${content}`}
+                                aria-label={`Modifier ${label}`}
+                            >
+                                <Pencil className="size-[17px] text-(--module-color) dark:text-(--module-color-dark)" aria-hidden="true"/>
+                                <span className="tracking-wide">Modifier</span>
                             </Link>
                         </Button>
                     )}

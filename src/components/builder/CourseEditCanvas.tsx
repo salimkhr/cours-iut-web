@@ -33,6 +33,7 @@ export function CourseEditCanvas({ onInsertAfter }: CourseEditCanvasProps) {
     const [codeModal, setCodeModal] = useState<{ id: string; value: string; language: string } | null>(null);
     const [imageModal, setImageModal] = useState<{ id: string } | null>(null);
     const [propsPanelOpen, setPropsPanelOpen] = useState(false);
+    let rootSectionCounter = 0;
 
     const selectedId = useBuilderStore((s) => s.selectedId);
     const selectBlock = useBuilderStore((s) => s.selectBlock);
@@ -89,7 +90,7 @@ export function CourseEditCanvas({ onInsertAfter }: CourseEditCanvasProps) {
             />
 
             <div className="flex min-h-0 flex-1 overflow-hidden">
-                <div className="min-h-0 flex-1 overflow-y-auto bg-bridge-100 px-6 py-8 dark:bg-bridge-900/40">
+                <div className="min-h-0 flex-1 overflow-y-auto bg-bridge-100 px-5 py-8 dark:bg-bridge-900/40 sm:px-6 sm:py-10 lg:px-8 lg:py-14">
                     {blocks.length === 0 ? (
                         <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-lg border border-dashed border-bridge-300 bg-card px-6 py-10 text-center dark:border-bridge-600">
                             <Blocks className="size-7 text-bridge-500 dark:text-bridge-300" aria-hidden="true" />
@@ -113,24 +114,28 @@ export function CourseEditCanvas({ onInsertAfter }: CourseEditCanvasProps) {
                             </p>
                         </div>
                     ) : (
-                        <div
-                            className={cn("mx-auto flex max-w-3xl flex-col gap-3", moduleSlug ? "header-module" : "")}
-                            style={moduleSlug ? {
-                                '--module-color': moduleColorLight || `var(--color-${moduleSlug})`,
-                                '--module-color-dark': moduleColorDark || moduleColorLight || `var(--color-${moduleSlug})`,
-                            } as React.CSSProperties : undefined}
-                        >
-                            {blocks.map((block, i) => (
-                                <EditableCourseBlock
-                                    key={block.id}
+                        <div className="course-content">
+                            <div
+                                className={cn("course-blocks flex flex-col gap-4 lg:gap-5", moduleSlug ? "header-module" : "")}
+                                style={moduleSlug ? {
+                                    '--module-color': moduleColorLight || `var(--color-${moduleSlug})`,
+                                    '--module-color-dark': moduleColorDark || moduleColorLight || `var(--color-${moduleSlug})`,
+                                } as React.CSSProperties : undefined}
+                            >
+                                {blocks.map((block, i) => (
+                                    <EditableCourseBlock
+                                        key={block.id}
                                     block={block}
                                     parentId={null}
                                     index={i}
-                                    registerEditor={setActiveEditor}
-                                    onInsertAfter={onInsertAfter}
-                                    onOpenCodeModal={openCodeModal}
-                                />
-                            ))}
+                                    depth={0}
+                                    sectionIndex={block.type === "section" ? rootSectionCounter++ : undefined}
+                                        registerEditor={setActiveEditor}
+                                        onInsertAfter={onInsertAfter}
+                                        onOpenCodeModal={openCodeModal}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
@@ -162,11 +167,13 @@ export function CourseEditCanvas({ onInsertAfter }: CourseEditCanvasProps) {
 
 /** Bloc éditable récursif : wraps chaque bloc ET ses enfants dans EditableBlock. */
 function EditableCourseBlock({
-    block, parentId, index, registerEditor, onInsertAfter, onOpenCodeModal,
+    block, parentId, index, depth, sectionIndex, registerEditor, onInsertAfter, onOpenCodeModal,
 }: {
     block: Block;
     parentId: string | null;
     index: number;
+    depth: number;
+    sectionIndex?: number;
     registerEditor: (h: InlineTextEditorHandle | null) => void;
     onInsertAfter: (parentId: string | null, index: number) => void;
     onOpenCodeModal: (id: string) => void;
@@ -174,18 +181,22 @@ function EditableCourseBlock({
     const def = getBlockDefinition(block.type);
     const isCode = block.type === "code" || block.type === "code-runnable";
     const Render = def?.render;
+    const childDepth = block.type === "section" ? depth + 1 : depth;
+    let childSectionCounter = 0;
 
     const rendered = Render ? (
         <div
             onClick={isCode ? (e) => { e.stopPropagation(); onOpenCodeModal(block.id); } : undefined}
         >
-            <Render {...block.props}>
+            <Render {...block.props} depth={depth} sectionIndex={sectionIndex}>
                 {block.children?.map((child, i) => (
                     <EditableCourseBlock
                         key={child.id}
                         block={child}
                         parentId={block.id}
                         index={i}
+                        depth={childDepth}
+                        sectionIndex={child.type === "section" ? childSectionCounter++ : undefined}
                         registerEditor={registerEditor}
                         onInsertAfter={onInsertAfter}
                         onOpenCodeModal={onOpenCodeModal}

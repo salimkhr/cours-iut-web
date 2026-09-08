@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import {usePathname} from "next/navigation";
-import {BookOpen, FileText, GraduationCap, Users, Wrench} from "lucide-react";
+import {FileText, GraduationCap, Users, Wrench} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {ADMIN_NAV_GROUPS, type AdminNavIconId, type AdminNavItem} from "@/components/admin/adminDashboardConfig";
 
-const NAV_ICONS: Record<AdminNavIconId, typeof BookOpen> = {
-    modules: BookOpen,
+const NAV_ICONS: Record<AdminNavIconId, typeof Users> = {
     users: Users,
     tools: Wrench,
     calibrage: GraduationCap,
@@ -21,15 +20,13 @@ export default function AdminSidebar() {
         exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 
     return (
-        <nav aria-label="Navigation administration" className="lg:w-56 lg:shrink-0">
-            <div className="lg:sticky lg:top-[calc(var(--navbar-h)+1.5rem)]">
-                {/* Mobile : pills horizontales scrollables — Desktop : rail vertical groupé */}
-                <div className="flex gap-1.5 overflow-x-auto pb-1 lg:flex-col lg:gap-6 lg:overflow-visible lg:pb-0">
+        <nav
+            aria-label="Navigation administration"
+            className="sticky top-(--navbar-h) z-30 -mx-4 border-b border-bridge-500/25 bg-background/95 px-4 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"
+        >
+            <div className="flex gap-5 overflow-x-auto">
                     {ADMIN_NAV_GROUPS.map((group) => (
-                        <div key={group.label} className="flex shrink-0 gap-1.5 lg:flex-col lg:gap-1">
-                            <p className="hidden text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-dark/55 dark:text-bridge-200/55 lg:block lg:px-3 lg:pb-1.5">
-                                {group.label}
-                            </p>
+                        <div key={group.label} className="flex shrink-0 gap-5">
                             {group.items.map((item: AdminNavItem) => {
                                 const Icon = NAV_ICONS[item.icon];
                                 const active = isActive(item.href, item.exact);
@@ -40,20 +37,19 @@ export default function AdminSidebar() {
                                         aria-current={active ? "page" : undefined}
                                         title={item.label}
                                         className={cn(
-                                            "flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2.5 whitespace-nowrap rounded-lg px-3 text-sm font-medium transition-colors lg:justify-start",
+                                            "flex min-h-14 shrink-0 items-center justify-center gap-2 whitespace-nowrap border-b-2 px-1 text-sm font-semibold transition-colors",
                                             active
-                                                ? "bg-brand-primary text-white shadow-[0_2px_10px_-4px_rgba(147,97,58,0.5)] dark:text-brand-dark dark:shadow-[0_2px_10px_-4px_rgba(0,0,0,0.5)]"
-                                                : "text-brand-dark/70 hover:bg-bridge-300/40 hover:text-brand-dark dark:text-bridge-100/70 dark:hover:bg-bridge-700/40 dark:hover:text-bridge-100",
+                                                ? "border-brand-primary text-brand-primary"
+                                                : "border-transparent text-brand-dark/60 hover:border-bridge-500/45 hover:text-brand-dark dark:text-bridge-100/60 dark:hover:text-bridge-100",
                                         )}
                                     >
                                         <Icon className="size-4 shrink-0" aria-hidden="true"/>
-                                        <span className="sr-only lg:not-sr-only">{item.label}</span>
+                                        <span>{item.label}</span>
                                     </Link>
                                 );
                             })}
                         </div>
                     ))}
-                </div>
             </div>
         </nav>
     );

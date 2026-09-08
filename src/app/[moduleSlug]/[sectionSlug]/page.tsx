@@ -15,6 +15,7 @@ import Section from "@/types/Section";
 import { getContentTypes, hasContentType } from "@/types/CourseContent";
 import {Metadata} from "next";
 import {getServerSession} from "@/lib/auth";
+import ContextualSectionAdmin from "@/components/admin/ContextualSectionAdmin";
 
 interface SectionPageProps {
     params: Promise<{
@@ -92,7 +93,11 @@ export default async function SectionPage({params}: SectionPageProps) {
                 compact
                 backHref={`/${moduleSlug}`}
                 backLabel={currentModule.title}
-            />
+            >
+                {isAdmin && currentSection && (
+                    <ContextualSectionAdmin module={currentModule} section={currentSection}/>
+                )}
+            </HeroSection>
 
             {/* Stats + Nav latérale */}
             {currentSection && (
