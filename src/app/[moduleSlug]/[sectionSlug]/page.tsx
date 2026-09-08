@@ -99,7 +99,7 @@ export default async function SectionPage({params}: SectionPageProps) {
                 )}
             </HeroSection>
 
-            {/* Stats + Nav latérale */}
+            {/* Statistiques */}
             {currentSection && (
                 <section className="relative w-full max-w-7xl mx-auto px-6 lg:px-12 -mt-6 lg:-mt-9 mb-6 lg:mb-8">
 
@@ -111,36 +111,6 @@ export default async function SectionPage({params}: SectionPageProps) {
                             position={positionLabel}
                             currentModule={currentModule}
                         />
-                    </div>
-
-                    {/* NAV — sous les stats sur mobile, latérale absolue sur desktop */}
-                    <div className={cn(
-                        "mt-3 flex flex-col gap-2",
-                        "lg:mt-0 lg:flex-row lg:absolute lg:inset-0 lg:items-center lg:justify-between lg:pointer-events-none lg:translate-y-6"
-                    )}>
-                        <div className="w-full min-w-0 lg:flex-none lg:w-[210px] lg:pointer-events-auto">
-                            {prevSection ? (
-                                <SectionNavCard
-                                    href={`/${moduleSlug}/${prevSection.path}`}
-                                    direction="prev"
-                                    section={prevSection}
-                                />
-                            ) : (
-                                <div className="lg:hidden"/>
-                            )}
-                        </div>
-
-                        <div className="w-full min-w-0 lg:flex-none lg:w-[210px] lg:pointer-events-auto">
-                            {nextSection ? (
-                                <SectionNavCard
-                                    href={`/${moduleSlug}/${nextSection.path}`}
-                                    direction="next"
-                                    section={nextSection}
-                                />
-                            ) : (
-                                <div className="lg:hidden"/>
-                            )}
-                        </div>
                     </div>
                 </section>
             )}
@@ -197,6 +167,30 @@ export default async function SectionPage({params}: SectionPageProps) {
                         </div>
                     ))}
                 </div>
+
+                {currentSection && (prevSection || nextSection) && (
+                    <nav aria-label="Navigation entre les sections" className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                        {prevSection && (
+                            <div className="w-full min-w-0 sm:max-w-[280px]">
+                                <SectionNavCard
+                                    href={`/${moduleSlug}/${prevSection.path}`}
+                                    direction="prev"
+                                    section={prevSection}
+                                />
+                            </div>
+                        )}
+
+                        {nextSection && (
+                            <div className="w-full min-w-0 sm:col-start-2 sm:justify-self-end sm:max-w-[280px]">
+                                <SectionNavCard
+                                    href={`/${moduleSlug}/${nextSection.path}`}
+                                    direction="next"
+                                    section={nextSection}
+                                />
+                            </div>
+                        )}
+                    </nav>
+                )}
             </section>
 
             <PageFooter path={currentModule.path}/>

@@ -11,7 +11,6 @@ describe("adminDashboardConfig", () => {
         const hrefs = ADMIN_NAV_GROUPS.flatMap((group) => group.items.map((item) => item.href));
         expect(hrefs).toEqual([
             "/admin/utilisateurs",
-            "/admin/pedagogie",
             "/admin/calibrage",
             "/admin/outils",
         ]);

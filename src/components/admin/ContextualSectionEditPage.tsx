@@ -7,6 +7,7 @@ import type Module from "@/types/Module";
 import type Section from "@/types/Section";
 import {Button} from "@/components/ui/button";
 import InlineSectionRow from "@/components/admin/module-workflow/InlineSectionRow";
+import SectionPedagogyPanel from "@/components/admin/SectionPedagogyPanel";
 
 interface ContextualSectionEditPageProps {
     module: Module;
@@ -46,6 +47,8 @@ export default function ContextualSectionEditPage({module, section}: ContextualS
                     }}
                 />
             </section>
+
+            <SectionPedagogyPanel section={section}/>
         </main>
     );
 }
