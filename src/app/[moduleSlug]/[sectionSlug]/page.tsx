@@ -1,6 +1,5 @@
 import {TelescopeIcon} from "@/components/icons/telescope";
 import {moduleColor} from "@/lib/moduleColor";
-import {redirect} from "next/navigation";
 
 import HeroSection from "@/components/page/HeroSection";
 import SectionStats from "@/components/page/SectionStats";
@@ -42,10 +41,6 @@ export default async function SectionPage({params}: SectionPageProps) {
     ]);
 
     const contentTypes = currentSection ? getContentTypes(currentSection.contents) : [];
-    if (contentTypes.length === 1) {
-        redirect(`/${moduleSlug}/${sectionSlug}/${contentTypes[0]}`);
-    }
-
     const isAdmin = session?.user.role === 'admin';
 
     const orderedSections = [...(currentModule.sections ?? [])].sort(
