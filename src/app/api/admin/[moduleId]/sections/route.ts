@@ -1,11 +1,12 @@
 import {NextResponse} from 'next/server';
+import {revalidateTag} from "next/cache";
 import {connectToDB} from "@/lib/mongodb";
 import Module from "@/types/Module";
 import {ObjectId} from "bson";
 import {withAdmin} from "@/lib/withAdmin";
 import {sectionApiSchema} from "@/lib/schemas/section.schema";
 import {z} from "zod";
-import { ContentRef } from "@/types/CourseContent";
+import { ContentRef, CourseContent } from "@/types/CourseContent";
 
 export const POST = withAdmin(async (
     req: Request,
@@ -113,6 +114,31 @@ export const PUT = withAdmin(async (
             return NextResponse.json({error: 'Erreur lors de la mise à jour'}, {status: 500});
         }
 
+        // Types décochés dans le formulaire : leur `ContentRef` disparaît de `contents`,
+        // mais le document `course_content` associé restait orphelin en base — jamais
+        // nettoyé, et réutilisable par erreur si le type est recoché plus tard.
+        // "projet" n'a pas de builder DB (pas de `contentType` correspondant dans
+        // `course_content`) : rien à supprimer pour ce type.
+        const courseContentTypes: readonly CourseContent["contentType"][] = ["cours", "TP", "examen", "slide"];
+        const newTypes = new Set<string>(updatedSection.contents);
+        const removedTypes = (oldSection.contents ?? [])
+            .map((c) => c.type)
+            .filter((type) => !newTypes.has(type))
+            .filter((type): type is CourseContent["contentType"] =>
+                (courseContentTypes as readonly string[]).includes(type));
+
+        if (removedTypes.length > 0) {
+            await db.collection<CourseContent>('course_content').deleteMany({
+                moduleSlug: currentModule.path,
+                sectionSlug: oldSection.path,
+                contentType: {$in: removedTypes},
+            });
+
+            for (const type of removedTypes) {
+                revalidateTag(`content:${currentModule.path}:${oldSection.path}:${type}`, {expire: 0});
+            }
+        }
+
         // Récupérer la section mise à jour
         const updatedModule = await db.collection<Module>('modules').findOne({
             _id: new ObjectId(moduleId)
@@ -145,6 +171,12 @@ export const DELETE = withAdmin(async (
         }
 
         const db = await connectToDB();
+
+        const mod = await db.collection<Module>('modules').findOne({_id: new ObjectId(moduleId)});
+        if (!mod) {
+            return NextResponse.json({error: 'Module introuvable'}, {status: 404});
+        }
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = await (db.collection('modules') as any).updateOne(
             {_id: new ObjectId(moduleId)},
@@ -153,6 +185,25 @@ export const DELETE = withAdmin(async (
 
         if (result.modifiedCount === 0) {
             return NextResponse.json({error: 'Module ou section introuvable'}, {status: 404});
+        }
+
+        // La section ne référence plus les contenus en base : les supprimer
+        // pour de bon plutôt que de laisser des `course_content` orphelins
+        // (jamais nettoyés sinon, cf. absence de cascade sur cette route).
+        const orphaned = await db.collection<CourseContent>('course_content')
+            .find({moduleSlug: mod.path, sectionSlug: sectionPath})
+            .project({contentType: 1})
+            .toArray();
+
+        if (orphaned.length > 0) {
+            await db.collection<CourseContent>('course_content').deleteMany({
+                moduleSlug: mod.path,
+                sectionSlug: sectionPath,
+            });
+
+            for (const doc of orphaned) {
+                revalidateTag(`content:${mod.path}:${sectionPath}:${doc.contentType}`, {expire: 0});
+            }
         }
 
         return NextResponse.json({success: true});
