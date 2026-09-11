@@ -14,9 +14,9 @@ interface SlideCodeProps extends CodeCardProps {
 // heureusement son propre 1.5, mais la valeur fausse servait encore au calcul
 // de défilement des étapes (voir plus bas).
 export const slideCodeTextMetrics = {
-    default: {fontSize: "1.2rem", lineHeight: "1.5"},
-    large: {fontSize: "1.4rem", lineHeight: "1.5"},
-    xl: {fontSize: "1.6rem", lineHeight: "1.5"},
+    default: {fontSize: "1.05rem", lineHeight: "1.5"},
+    large: {fontSize: "1.2rem", lineHeight: "1.5"},
+    xl: {fontSize: "1.4rem", lineHeight: "1.5"},
 } as const;
 
 export const SlideCode: React.FC<SlideCodeProps> = ({
@@ -51,9 +51,19 @@ export const SlideCode: React.FC<SlideCodeProps> = ({
         if (isNaN(lineNumber)) return;
 
         const container = rootRef.current.querySelector<HTMLElement>('[data-code-scroll]');
+        if (!container) return;
+
+        // CodeCard monte en permanence deux SyntaxHighlighter (clair + sombre),
+        // le thème inactif étant masqué en CSS (`dark:hidden`/`hidden dark:block`)
+        // plutôt que démonté. Indexer `code > span` sur tout le conteneur mélange
+        // donc les deux jeux de lignes : en thème sombre, l'index tombait sur la
+        // ligne du bloc clair caché, dont le rect est nul (0,0,0,0) — le
+        // défilement n'atteignait alors jamais la ligne visée.
+        const visiblePre = [...container.querySelectorAll<HTMLElement>('pre')]
+            .find(pre => pre.getClientRects().length > 0);
         // Le rendu du highlighter émet une ligne = un span bloc.
-        const line = container?.querySelectorAll<HTMLElement>('code > span')[lineNumber - 1];
-        if (!container || !line) return;
+        const line = visiblePre?.querySelectorAll<HTMLElement>('code > span')[lineNumber - 1];
+        if (!line) return;
 
         // On mesure la ligne au lieu de la calculer : l'ancien
         // `parseFloat(lineHeight) * 16` donnait 28px pour des lignes rendues à
