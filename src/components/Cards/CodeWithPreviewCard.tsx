@@ -114,9 +114,15 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                 if (!first) return;
                 const frame = scroller.getBoundingClientRect();
                 const target = first.getBoundingClientRect();
-                if (target.top >= frame.top && target.bottom <= frame.bottom) return;
+                // Position absolue de la ligne dans le contenu scrollable, pas un delta
+                // depuis `scroller.scrollTop` : un delta accumule la dérive d'une étape
+                // à l'autre et la cible finit par dériver hors cadre. On recalcule donc
+                // systématiquement une cible absolue, sans court-circuiter sur la
+                // visibilité actuelle — chaque étape de highlight doit repartir de zéro,
+                // comme dans `SlideCode`.
+                const targetTop = target.top - frame.top + scroller.scrollTop;
                 scroller.scrollTo({
-                    top: Math.max(0, scroller.scrollTop + target.top - frame.top - Math.min(target.height * 2, frame.height / 4)),
+                    top: Math.max(0, targetTop - 2 * target.height),
                     behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
                 });
             });
