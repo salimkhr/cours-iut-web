@@ -1,10 +1,11 @@
 "use client";
 
 import {useState} from "react";
-import {ArrowRight, Database, UploadCloud} from "lucide-react";
+import {ArrowRight, Database, UploadCloud, Wrench} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import MigrateSheet from "@/components/admin/MigrateSheet";
 import ExportImportSheet from "@/components/admin/ExportImportSheet";
+import SlideRepairSheet from "@/components/admin/SlideRepairSheet";
 import {ADMIN_TOOL_ACTIONS} from "@/components/admin/adminDashboardConfig";
 import {ADMIN_CARD} from "@/components/admin/ui/adminStyles";
 import type {ModuleOption} from "@/components/admin/adminTypes";
@@ -12,6 +13,7 @@ import type {ModuleOption} from "@/components/admin/adminTypes";
 const TOOL_ICONS = {
     migration: Database,
     "export-import": UploadCloud,
+    "slide-repair": Wrench,
 } as const;
 
 export type {ModuleOption} from "@/components/admin/adminTypes";
@@ -23,6 +25,7 @@ interface AdminToolsPanelProps {
 export default function AdminToolsPanel({modules}: AdminToolsPanelProps) {
     const [migrationOpen, setMigrationOpen] = useState(false);
     const [exportImportOpen, setExportImportOpen] = useState(false);
+    const [slideRepairOpen, setSlideRepairOpen] = useState(false);
 
     return (
         <>
@@ -52,7 +55,8 @@ export default function AdminToolsPanel({modules}: AdminToolsPanelProps) {
                                 className="min-h-11 gap-2 border-bridge-500/45"
                                 onClick={() => {
                                     if (action.id === "migration") setMigrationOpen(true);
-                                    else setExportImportOpen(true);
+                                    else if (action.id === "export-import") setExportImportOpen(true);
+                                    else setSlideRepairOpen(true);
                                 }}
                             >
                                 Ouvrir
@@ -65,6 +69,7 @@ export default function AdminToolsPanel({modules}: AdminToolsPanelProps) {
 
             <MigrateSheet open={migrationOpen} onOpenChange={setMigrationOpen}/>
             <ExportImportSheet open={exportImportOpen} onOpenChange={setExportImportOpen} modules={modules}/>
+            <SlideRepairSheet open={slideRepairOpen} onOpenChange={setSlideRepairOpen}/>
         </>
     );
 }

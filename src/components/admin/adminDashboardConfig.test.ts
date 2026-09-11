@@ -22,6 +22,7 @@ describe("adminDashboardConfig", () => {
         expect(ADMIN_TOOL_ACTIONS.map((action) => action.id)).toEqual([
             "migration",
             "export-import",
+            "slide-repair",
         ]);
         expect(labels.some((label) => label.includes("synchron"))).toBe(false);
     });

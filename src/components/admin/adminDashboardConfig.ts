@@ -1,5 +1,5 @@
 export type AdminNavIconId = "users" | "tools" | "calibrage";
-export type AdminToolActionId = "migration" | "export-import";
+export type AdminToolActionId = "migration" | "export-import" | "slide-repair";
 
 export interface AdminNavItem {
     href: string;
@@ -41,5 +41,10 @@ export const ADMIN_TOOL_ACTIONS = [
         id: "export-import",
         title: "Exporter / importer",
         description: "Transférer les modules et sections entre environnements.",
+    },
+    {
+        id: "slide-repair",
+        title: "Réparer les slides",
+        description: "Convertit les présentations dont les blocs racine sont restés au format cours (`section`) au lieu du format slide.",
     },
 ] as const satisfies readonly AdminToolAction[];
