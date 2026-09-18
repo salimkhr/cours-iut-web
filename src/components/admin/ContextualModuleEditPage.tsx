@@ -32,6 +32,11 @@ export default function ContextualModuleEditPage({module}: ContextualModuleEditP
                 <p className="mt-2 text-sm text-bridge-600 dark:text-bridge-300">
                     Mettez à jour les informations affichées sur la page publique du module.
                 </p>
+                <Button asChild variant="link" className="mt-2 h-auto p-0 text-sm">
+                    <Link href={`/admin/modules/${module.path}`}>
+                        Notions, projet, dépôt de référence et sections →
+                    </Link>
+                </Button>
             </div>
 
             <section className="rounded-2xl border border-bridge-500/35 bg-bridge-50 p-5 shadow-sm dark:bg-bridge-800 sm:p-7">
