@@ -34,7 +34,7 @@ const COURSE_TO_SLIDE: Record<string, string> = {
 const ALREADY_SLIDE = new Set([
     "slide", "slide-text", "slide-code", "slide-list", "slide-list-item",
     "slide-note", "slide-table", "slide-image", "slide-code-with-preview",
-    "slide-transition", "diagram", "columns", "column",
+    "slide-transition", "diagram", "columns", "column", "file-tree",
 ]);
 
 /**

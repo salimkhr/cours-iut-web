@@ -30,6 +30,7 @@ export const MAX_DEPTH = 8;
 /** Schémas de props par type. Permissifs sur les strings vides : un bloc
  *  fraîchement inséré (defaultProps) doit pouvoir être sauvegardé. */
 export const blockPropsSchemas: Record<string, z.ZodTypeAny> = {
+    "file-tree": z.object({ title: z.string().optional(), paths: z.string() }),
     "text": z.object({ content: z.string() }),
     "heading": z.object({
         level: z.coerce.number().int().min(1).max(3),
@@ -169,7 +170,7 @@ export interface ContainerRule {
 const LIST_ITEM_CHILDREN = [
     "text", "list", "code", "code-with-preview", "image-card",
     "diagram", "callout", "quote", "table", "download-file", "section-card",
-    "input-card",
+    "input-card", "file-tree",
 ];
 
 export const containerRules: Record<string, ContainerRule> = {
@@ -187,7 +188,7 @@ export const containerRules: Record<string, ContainerRule> = {
         allowedChildren: [
             "slide-text", "slide-code", "slide-list", "slide-note", "columns", "diagram",
             "slide-table", "slide-image", "slide-code-with-preview",
-            "slide-transition",
+            "slide-transition", "file-tree",
         ],
         allowedParents: [null],
     },
@@ -222,7 +223,7 @@ const SLIDE_UNIVERSE_TYPES = new Set([
     "slide", "slide-text", "slide-code", "slide-list", "slide-list-item",
     "slide-note", "slide-table", "slide-image", "slide-code-with-preview",
     "slide-transition",
-    "columns", "column", "diagram",
+    "columns", "column", "diagram", "file-tree",
 ]);
 
 /** Ce type de bloc a-t-il sa place dans ce type de contenu (cours/TP vs slide) ? */

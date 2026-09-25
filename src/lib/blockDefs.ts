@@ -7,7 +7,7 @@
 //   - côté serveur par la route MCP (list_block_types / insert_block).
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
-import { containerRules } from "@/lib/blockSchemas";
+import { containerRules, blockPropsSchemas } from "@/lib/blockSchemas";
 import type { ContainerRule } from "@/lib/blockSchemas";
 import type { Block } from "@/types/CourseContent";
 
@@ -52,6 +52,18 @@ export interface BlockDef {
 }
 
 export const blockDefs: BlockDef[] = [
+    {
+        type: "file-tree",
+        label: "Arborescence de fichiers",
+        category: "Code",
+        description: "Arborescence de dossiers et fichiers, utilisable dans les cours et les slides. Dans paths, saisir un chemin relatif par ligne (ex. mon-projet/src/index.html). Les dossiers parents sont créés automatiquement ; terminer par / pour un dossier vide. Tous les niveaux restent visibles.",
+        defaultProps: { title: "Structure du projet", paths: "mon-projet/index.html\nmon-projet/css/style.css\nmon-projet/js/app.js\nmon-projet/images/" },
+        schema: blockPropsSchemas["file-tree"],
+        fields: [
+            { key: "title", label: "Titre", type: "text", placeholder: "Structure du projet" },
+            { key: "paths", label: "Chemins — un par ligne, / final pour un dossier vide", type: "textarea", rows: 12, placeholder: "mon-projet/index.html\nmon-projet/css/style.css\nmon-projet/images/" },
+        ],
+    },
     {
         type: "text",
         label: "Texte",
