@@ -87,12 +87,11 @@ export const auth = betterAuth({
     },
 
     session: {
-        // "Rester connecté" ne doit pas avoir de limite de jours : durée très longue
-        // (100 ans, valeur maximale praticable) au lieu d'une vraie infinité, non
-        // supportée par better-auth (expiresIn est une durée fixe, pas un flag).
+        // Une session persistante doit rester longue, mais la durée doit rester
+        // compatible avec les limites pratiques des cookies (1 an).
         // Le cookie associé n'est de toute façon posé que si rememberMe est coché ;
         // sinon la session expire en 1 jour côté better-auth (voir internal-adapter).
-        expiresIn: 60 * 60 * 24 * 365 * 100,
+        expiresIn: 60 * 60 * 24 * 365,
         updateAge: 60 * 60 * 24,      // refresh quotidien
     },
 
