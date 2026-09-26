@@ -7,6 +7,7 @@ import {SyntaxHighlighter, normalizeLanguage, courseCodeLight} from '@/lib/synta
 import {Button} from "@/components/ui/button";
 import Module from "@/types/Module";
 import {cn} from "@/lib/utils";
+import {buildPreviewDocument} from "@/lib/previewDocument";
 
 interface CodeCardProps {
     title: string;
@@ -105,6 +106,35 @@ export default function InputCard({
         </>
     );
 
+    const isHtml = language.trim().toLowerCase() === "html";
+    const hasHiddenInput = isHtml && /<input\b[^>]*\btype\s*=\s*["']hidden["']/i.test(code);
+    const previewDoc = isHtml
+        ? buildPreviewDocument({
+            language: "html",
+            code,
+            preview: `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body><!-- @edit:html -->${hasHiddenInput ? '<p style="color:#64748b;font:0.875rem system-ui;margin:1rem 0">Ce champ n’a pas de rendu visible.</p>' : ""}</body></html>`,
+        })
+        : null;
+
+    const codeContent = (
+        <div className="rounded-md border border-bridge-300/60 overflow-hidden bg-bridge-50">
+            <SyntaxHighlighter
+                language={normalizeLanguage(language)}
+                style={courseCodeLight}
+                customStyle={{
+                    margin: 0,
+                    fontSize: '0.875rem',
+                    lineHeight: '1.5rem',
+                    background: 'transparent',
+                }}
+                wrapLongLines={true}
+                showLineNumbers={showLineNumbers}
+            >
+                {code}
+            </SyntaxHighlighter>
+        </div>
+    );
+
     const content = (
         <div className="space-y-4">
             {description && (
@@ -113,22 +143,19 @@ export default function InputCard({
 
             {/* Fond et bordure teintés : le #fafafa / gray-200 d'origine posait
                 une surface froide au milieu du corpus crème. */}
-            <div className="rounded-md border border-bridge-300/60 overflow-hidden bg-bridge-50">
-                <SyntaxHighlighter
-                    language={normalizeLanguage(language)}
-                    style={courseCodeLight}
-                    customStyle={{
-                        margin: 0,
-                        fontSize: '0.875rem',
-                        lineHeight: '1.5rem',
-                        background: 'transparent',
-                    }}
-                    wrapLongLines={true}
-                    showLineNumbers={showLineNumbers}
-                >
-                    {code}
-                </SyntaxHighlighter>
-            </div>
+            {previewDoc ? (
+                <div className="grid min-w-0 gap-4 lg:grid-cols-2 lg:items-start">
+                    {codeContent}
+                    <div className="min-w-0 overflow-hidden rounded-md border border-bridge-300/60 bg-white dark:border-bridge-600/50">
+                        <iframe
+                            srcDoc={previewDoc.html}
+                            sandbox={previewDoc.needsScripts ? "allow-scripts allow-modals" : ""}
+                            title={`Aperçu HTML de ${title}`}
+                            className="block min-h-32 w-full border-0"
+                        />
+                    </div>
+                </div>
+            ) : codeContent}
 
             {inputElement && (
                 <div>

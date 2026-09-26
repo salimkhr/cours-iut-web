@@ -301,7 +301,7 @@ export const blockDefs: BlockDef[] = [
         type: "input-card",
         label: "Carte de code commentée",
         category: "Code",
-        description: "Extrait de code titré, accompagné d'une phrase qui explique à quoi il sert. Pour un catalogue d'exemples comparables — les types de champs d'un formulaire, les variantes d'une même balise. Sans aperçu rendu : utiliser « Code + aperçu » si le résultat visuel compte.",
+        description: "Extrait de code titré, accompagné d'une phrase qui explique à quoi il sert. Pour un catalogue d'exemples comparables — les types de champs d'un formulaire, les variantes d'une même balise. En HTML, le code source et son rendu interactif sont affichés côte à côte.",
         defaultProps: { title: "", description: "", language: "html", code: "" },
         schema: z.object({
             title: z.string(),
