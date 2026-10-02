@@ -98,6 +98,15 @@ describe("participation", () => {
     });
 });
 
+describe("confidentialité", () => {
+    test("un compte non participant ne lit pas l'état étudiant", async () => {
+        await seedQuiz();
+        const s = await create();
+        await live.join(s.id, ana);
+        await expect(live.getState(s.id, {userId: "intrus"})).rejects.toMatchObject({code: "not_participant"});
+    });
+});
+
 describe("réponses", () => {
     test("note calculée côté serveur, double envoi idempotent", async () => {
         const quiz = await seedQuiz();

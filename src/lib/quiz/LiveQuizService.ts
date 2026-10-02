@@ -142,6 +142,10 @@ export class LiveQuizService {
     /** État persistant pour une audience (reconnexion, état initial du flux SSE). */
     async getState(sessionId: string, audience: QuizAudience): Promise<QuizPublicState> {
         const session = await this.requireSession(sessionId);
+        if (audience !== "projection" && !(await this.participants.findOne({sessionId, userId: audience.userId}))) {
+            // Un compte qui n'a pas rejoint ne doit pas lire les énoncés.
+            throw new QuizSessionError("not_participant", "Vous ne participez pas à cette session");
+        }
         await this.ensureTimer(session);
         return buildState(await this.loadData(session), audience);
     }

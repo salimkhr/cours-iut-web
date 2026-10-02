@@ -19,7 +19,7 @@ import CaptchaPending, {BlinkingBot} from "@/components/login/CaptchaPending";
 import {loginSchema, LoginValues} from "@/lib/schemas/login.schema";
 
 
-export default function LoginForm() {
+export default function LoginForm({redirectTo = "/"}: {redirectTo?: string}) {
     const router = useRouter();
 
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
@@ -123,7 +123,7 @@ export default function LoginForm() {
                 return;
             }
 
-            router.push("/");
+            router.push(redirectTo);
             router.refresh();
         } catch (err) {
             setError(err instanceof Error ? err.message : String(err));
