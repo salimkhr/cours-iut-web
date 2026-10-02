@@ -31,3 +31,14 @@ describe("liveErrorResponse", () => {
         expect(liveErrorResponse(new InvalidTransitionError("lobby", "fermer")).status).toBe(409);
     });
 });
+
+describe("liveErrorResponse et rechargement à chaud", () => {
+    test("reconnaît une erreur d'une ancienne copie de la classe", () => {
+        const stale = Object.assign(new Error("Temps écoulé"), {name: "QuizSessionError", code: "question_closed"});
+        expect(liveErrorResponse(stale).status).toBe(409);
+    });
+
+    test("une erreur inconnue reste un 500", () => {
+        expect(liveErrorResponse(new Error("boom")).status).toBe(500);
+    });
+});

@@ -3,7 +3,6 @@ import {connectToDB} from "@/lib/mongodb";
 import {getServerSession} from "@/lib/auth";
 import {LiveQuizRegistry} from "@/lib/quiz/LiveQuizRegistry";
 import {LiveQuizService, QuizSessionError, type Identity} from "@/lib/quiz/LiveQuizService";
-import {InvalidTransitionError} from "@/lib/quiz/quizMachine";
 import {canManageQuiz} from "@/lib/quiz/permissions";
 import type {QuizAudience, QuizPublicState} from "@/lib/quiz/quizPublicState";
 
@@ -71,11 +70,21 @@ const STATUS: Record<QuizSessionError["code"], number> = {
     empty_choice: 422,
 };
 
+/**
+ * Reconnaissance par nom plutôt que par `instanceof` : le service est un singleton
+ * qui survit au rechargement à chaud, donc ses erreurs peuvent venir d'une
+ * ancienne copie de la classe.
+ */
+function isNamed(error: unknown, name: string): error is Error & {code?: string} {
+    return error instanceof Error && error.name === name;
+}
+
 export function liveErrorResponse(error: unknown): NextResponse {
-    if (error instanceof QuizSessionError) {
-        return NextResponse.json({error: error.message, code: error.code}, {status: STATUS[error.code]});
+    if (isNamed(error, "QuizSessionError") && error.code !== undefined && error.code in STATUS) {
+        const code = error.code as QuizSessionError["code"];
+        return NextResponse.json({error: error.message, code}, {status: STATUS[code]});
     }
-    if (error instanceof InvalidTransitionError) {
+    if (isNamed(error, "InvalidTransitionError")) {
         return NextResponse.json({error: error.message, code: "invalid_transition"}, {status: 409});
     }
     console.error(error);

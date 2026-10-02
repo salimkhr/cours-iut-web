@@ -177,13 +177,15 @@ export class LiveQuizService {
             score: 0,
             timeMs: 0,
         };
-        try {
-            await this.participants.insertOne({...participant});
-        } catch (error) {
-            if (!isDuplicate(error)) throw error;
-        }
-        await this.publish(sessionId);
-        return participant;
+        // Upsert atomique : deux `join` simultanés (double appel de l'effet React,
+        // deux onglets) ne créent jamais deux lignes, même sans index d'unicité.
+        const result = await this.participants.updateOne(
+            {sessionId, userId: identity.userId},
+            {$setOnInsert: participant},
+            {upsert: true},
+        );
+        if (result.upsertedCount > 0) await this.publish(sessionId);
+        return (await this.participants.findOne({sessionId, userId: identity.userId})) ?? participant;
     }
 
     // ── Pilotage ────────────────────────────────────────────────────────────

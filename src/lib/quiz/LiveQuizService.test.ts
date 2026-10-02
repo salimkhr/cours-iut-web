@@ -233,3 +233,14 @@ describe("déroulé complet", () => {
         expect((await live.getSession(s.id))?.phase).toBe("reveal");
     });
 });
+
+describe("join concurrent", () => {
+    test("deux join simultanés ne créent qu'un participant, même sans index", async () => {
+        await seedQuiz();
+        const s = await create();
+        await client.db("test-live-quiz").collection("quiz_participants").dropIndexes();
+        await Promise.all([live.join(s.id, ana), live.join(s.id, ana), live.join(s.id, ana)]);
+        const state = await live.getState(s.id, "projection");
+        expect(state.participantCount).toBe(1);
+    });
+});
