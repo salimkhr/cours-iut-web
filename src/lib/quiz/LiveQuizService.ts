@@ -177,10 +177,11 @@ export class LiveQuizService {
             score: 0,
             timeMs: 0,
         };
-        // Upsert atomique : deux `join` simultanés (double appel de l'effet React,
-        // deux onglets) ne créent jamais deux lignes, même sans index d'unicité.
-        const result = await this.participants.updateOne(
-            {sessionId, userId: identity.userId},
+        // Deux `join` simultanés (double appel de l'effet React, deux onglets) ne doivent
+        // jamais créer deux lignes. Un upsert sur (sessionId, userId) n'est atomique que
+        // grâce à un index unique ; l'`_id` déterministe garantit l'unicité même s'il manque.
+        const result = await this.db.collection<QuizParticipant & {_id: string}>("quiz_participants").updateOne(
+            {_id: `${sessionId}:${identity.userId}`},
             {$setOnInsert: participant},
             {upsert: true},
         );
