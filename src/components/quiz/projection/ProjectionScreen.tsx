@@ -90,17 +90,18 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
                 )}
 
                 {state.phase === "question_open" && question && (
-                    <div className="flex flex-col gap-8">
-                        <div className="text-3xl leading-snug [&_*]:max-w-none">
+                    <div className="flex flex-col gap-12">
+                        {/* L'énoncé est le héros de l'écran ; le chrono reste lisible mais discret. */}
+                        <div className="text-4xl font-semibold leading-tight tracking-tight md:text-6xl [&_*]:max-w-none">
                             <BlockRenderer blocks={question.blocks}/>
                         </div>
-                        <div className="grid items-end gap-8 md:grid-cols-[1fr_auto]">
-                            <Countdown deadline={state.deadline} serverNow={state.serverNow} total={question.durationSeconds}/>
-                            <div className="flex flex-col gap-1 text-right">
-                                <p className="text-2xl font-semibold">
+                        <div className="grid items-end gap-6 border-t pt-6 md:grid-cols-[minmax(12rem,20rem)_1fr]">
+                            <Countdown deadline={state.deadline} serverNow={state.serverNow} total={question.durationSeconds} size="md"/>
+                            <div className="flex flex-col gap-1 md:text-right">
+                                <p className="text-xl font-semibold">
                                     {question.expectedCount} bonne{question.expectedCount > 1 ? "s" : ""} réponse{question.expectedCount > 1 ? "s" : ""} attendue{question.expectedCount > 1 ? "s" : ""}
                                 </p>
-                                <p className="text-xl tabular-nums text-muted-foreground" role="status">
+                                <p className="text-lg tabular-nums text-muted-foreground" role="status">
                                     {state.answeredCount} / {state.participantCount} réponse{state.answeredCount > 1 ? "s" : ""} reçue{state.answeredCount > 1 ? "s" : ""}
                                 </p>
                             </div>
