@@ -5,6 +5,7 @@ import {Lock} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import Countdown from "@/components/quiz/Countdown";
 import {api} from "@/components/quiz/quizClient";
+import {quizCard} from "@/components/quiz/QuizStage";
 import {cn} from "@/lib/utils";
 import type {PublicQuestion} from "@/lib/quiz/quizPublicState";
 
@@ -66,9 +67,9 @@ export default function AnswerForm({sessionId, question, deadline, serverNow, lo
                         <label
                             key={option.id}
                             className={cn(
-                                "flex min-h-14 cursor-pointer items-center gap-4 rounded-lg border-2 px-4 py-3 text-lg font-medium",
+                                "flex min-h-14 cursor-pointer items-center gap-4 !rounded-xl border-2 px-4 py-3 text-lg font-medium", quizCard,
                                 "has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/60",
-                                checked ? "border-primary bg-primary/10" : "border-border bg-card",
+                                checked ? "border-brand-primary dark:border-brand-accent" : "border-bridge-500/40",
                                 isLocked && "cursor-default opacity-90",
                             )}
                         >
@@ -87,12 +88,12 @@ export default function AnswerForm({sessionId, question, deadline, serverNow, lo
             <div className="mt-auto flex flex-col gap-3">
                 <p
                     role="status"
-                    className={cn("min-h-6 text-sm", message?.tone === "error" ? "font-semibold text-destructive" : "text-muted-foreground")}
+                    className={cn("min-h-6 text-sm", message?.tone === "error" ? "font-semibold text-destructive" : "text-brand-gray-700 dark:text-brand-gray-300")}
                 >
                     {message?.text ?? (isLocked ? "" : `${selected.length} proposition${selected.length > 1 ? "s" : ""} sélectionnée${selected.length > 1 ? "s" : ""}`)}
                 </p>
                 {isLocked ? (
-                    <div className="flex min-h-12 items-center justify-center gap-2 rounded-lg bg-muted px-4 text-base font-semibold">
+                    <div className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-bridge-500/40 bg-bridge-100/80 px-4 text-base font-semibold dark:bg-bridge-700/60">
                         <Lock className="size-5" aria-hidden="true"/> Réponse verrouillée — en attente de la correction
                     </div>
                 ) : (

@@ -23,13 +23,13 @@ export default function Countdown({deadline, serverNow, total, size = "xl"}: Pro
             <div className={cn(
                 "font-extrabold tabular-nums leading-none",
                 size === "xl" ? "text-8xl" : "text-4xl",
-                urgent ? "text-destructive" : "text-foreground",
+                urgent ? "text-destructive" : "text-brand-dark dark:text-brand-light",
             )}>
-                {remaining}<span className={cn("ml-2 font-semibold text-muted-foreground", size === "xl" ? "text-3xl" : "text-lg")}>s</span>
+                {remaining}<span className={cn("ml-2 font-semibold text-brand-gray-700 dark:text-brand-gray-300", size === "xl" ? "text-3xl" : "text-lg")}>s</span>
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-muted" aria-hidden="true">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-bridge-500/20" aria-hidden="true">
                 <div
-                    className={cn("h-full rounded-full motion-safe:transition-[width] motion-safe:duration-300", urgent ? "bg-destructive" : "bg-primary")}
+                    className={cn("h-full rounded-full motion-safe:transition-[width] motion-safe:duration-300", urgent ? "bg-destructive" : "bg-brand-primary")}
                     style={{width: `${Math.min(100, (remaining / total) * 100)}%`}}
                 />
             </div>

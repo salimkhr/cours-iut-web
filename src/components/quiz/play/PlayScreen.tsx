@@ -3,6 +3,7 @@
 import {useEffect, useState} from "react";
 import Link from "next/link";
 import AnswerForm from "@/components/quiz/play/AnswerForm";
+import QuizStage, {QuizTitle, quizCard, quizEyebrow} from "@/components/quiz/QuizStage";
 import OptionResult from "@/components/quiz/OptionResult";
 import {api} from "@/components/quiz/quizClient";
 import {useQuizStream} from "@/components/quiz/useQuizStream";
@@ -12,17 +13,19 @@ const fmt = (n: number) => (Math.round(n * 100) / 100).toString().replace(".", "
 
 function Shell({title, children}: {title?: string; children: React.ReactNode}) {
     return (
-        <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-5 bg-background p-4 text-foreground">
-            {title && <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">{title}</p>}
-            {children}
-        </main>
+        <QuizStage>
+            <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 p-4 pt-8">
+                {title && <p className={quizEyebrow}>{title}</p>}
+                {children}
+            </div>
+        </QuizStage>
     );
 }
 
 function Failure({message}: {message: string}) {
     return (
         <Shell>
-            <h1 className="text-2xl font-bold">Impossible de rejoindre le quiz</h1>
+            <QuizTitle className="text-3xl">Impossible de rejoindre le quiz</QuizTitle>
             <p role="alert" className="text-base">{message}</p>
             <Link href="/" className="font-semibold underline underline-offset-4">Retour aux modules</Link>
         </Shell>
@@ -36,13 +39,13 @@ function StudentView({sessionId}: {sessionId: string}) {
     if (!state) return <Shell><p role="status">Connexion à la session…</p></Shell>;
 
     const question = state.question;
-    const status = connection === "reconnecting" && <p role="status" className="text-sm text-muted-foreground">Reconnexion en cours…</p>;
+    const status = connection === "reconnecting" && <p role="status" className="text-sm text-brand-gray-700 dark:text-brand-gray-300">Reconnexion en cours…</p>;
 
     if (state.phase === "lobby") {
         return (
             <Shell title={state.moduleTitle}>
-                <h1 className="text-3xl font-extrabold">Vous êtes connecté</h1>
-                <p className="text-lg text-muted-foreground" role="status">
+                <QuizTitle className="text-4xl">Vous êtes connecté</QuizTitle>
+                <p className="text-lg text-brand-gray-700 dark:text-brand-gray-300" role="status">
                     En attente du démarrage par l&apos;enseignant. {state.participantCount} participant{state.participantCount > 1 ? "s" : ""} dans la salle.
                 </p>
                 {status}
@@ -84,9 +87,9 @@ function StudentView({sessionId}: {sessionId: string}) {
                         />
                     ))}
                 </ul>
-                <p className="mt-auto rounded-lg bg-muted p-4 text-lg font-semibold tabular-nums">
+                <p className={`${quizCard} mt-auto p-4 text-lg font-semibold tabular-nums`}>
                     Score cumulé : {fmt(state.score)} / {fmt(state.scoreMax)}
-                    {state.rank !== null && <span className="block text-sm font-medium text-muted-foreground">Rang actuel : {state.rank}</span>}
+                    {state.rank !== null && <span className="block text-sm font-medium text-brand-gray-700 dark:text-brand-gray-300">Rang actuel : {state.rank}</span>}
                 </p>
                 {status}
             </Shell>
@@ -95,9 +98,9 @@ function StudentView({sessionId}: {sessionId: string}) {
 
     return (
         <Shell title={state.moduleTitle}>
-            <h1 className="text-3xl font-extrabold">Quiz terminé</h1>
+            <QuizTitle className="text-4xl">Quiz terminé</QuizTitle>
             <p className="text-5xl font-extrabold tabular-nums" role="status">
-                {fmt(state.score)} <span className="text-2xl font-semibold text-muted-foreground">/ {fmt(state.scoreMax)}</span>
+                {fmt(state.score)} <span className="text-2xl font-semibold text-brand-gray-700 dark:text-brand-gray-300">/ {fmt(state.scoreMax)}</span>
             </p>
             {state.rank !== null && <p className="text-lg">Classement final : {state.rank}<sup>e</sup></p>}
             <Link href="/" className="mt-auto font-semibold underline underline-offset-4">Retour aux modules</Link>
