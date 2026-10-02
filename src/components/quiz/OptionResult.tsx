@@ -14,7 +14,7 @@ export default function OptionResult({text, correct, selected, large = false}: P
     return (
         <li className={cn(
             "flex items-center gap-3 rounded-lg border-2 px-4 py-3",
-            large ? "text-2xl" : "text-base",
+            large ? "text-3xl md:text-4xl" : "text-base",
             correct
                 ? "border-emerald-700 bg-emerald-600/10 dark:border-emerald-400"
                 : "border-border bg-card",

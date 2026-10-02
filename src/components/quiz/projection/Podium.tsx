@@ -1,25 +1,41 @@
 import type {PodiumEntry} from "@/lib/quiz/quizPublicState";
+import {cn} from "@/lib/utils";
 
 const formatScore = (score: number) => (Math.round(score * 100) / 100).toString().replace(".", ",");
 
+interface Props {
+    entries: PodiumEntry[];
+    /** Écran final : le podium est le sujet. */
+    final?: boolean;
+    /** Pendant la correction : discret, pour laisser la place aux propositions. */
+    compact?: boolean;
+}
+
 /** Haut du classement uniquement, sous la forme « Prénom N. ». */
-export default function Podium({entries, final = false}: {entries: PodiumEntry[]; final?: boolean}) {
+export default function Podium({entries, final = false, compact = false}: Props) {
     if (entries.length === 0) return null;
     return (
-        <section aria-labelledby="podium-title" className="flex flex-col gap-4">
+        <section aria-labelledby="podium-title" className={cn("flex flex-col", compact ? "gap-3" : "gap-4")}>
             <h2 id="podium-title" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 {final ? "Podium final" : "Podium"}
             </h2>
-            <ol className="flex flex-col gap-3">
+            <ol className={cn("flex flex-col", compact ? "gap-2" : "gap-3")}>
                 {entries.map((entry) => (
                     <li key={`${entry.rank}-${entry.name}`}
-                        className="flex items-center gap-4 rounded-lg border bg-card px-5 py-4">
-                        <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary text-2xl font-extrabold tabular-nums text-primary-foreground">
+                        className={cn(
+                            "flex items-center rounded-lg border bg-card",
+                            compact ? "gap-3 px-3 py-2" : "gap-4 px-5 py-4",
+                        )}>
+                        <span className={cn(
+                            "flex shrink-0 items-center justify-center rounded-full bg-primary font-extrabold tabular-nums text-primary-foreground",
+                            compact ? "size-8 text-base" : "size-12 text-2xl",
+                        )}>
                             {entry.rank}
                         </span>
-                        <span className="flex-1 truncate text-3xl font-bold">{entry.name}</span>
-                        <span className="text-3xl font-extrabold tabular-nums">
-                            {formatScore(entry.score)} <span className="text-lg font-semibold text-muted-foreground">pts</span>
+                        <span className={cn("flex-1 truncate font-bold", compact ? "text-lg" : "text-3xl")}>{entry.name}</span>
+                        <span className={cn("font-extrabold tabular-nums", compact ? "text-lg" : "text-3xl")}>
+                            {formatScore(entry.score)}{" "}
+                            <span className={cn("font-semibold text-muted-foreground", compact ? "text-sm" : "text-lg")}>pts</span>
                         </span>
                     </li>
                 ))}

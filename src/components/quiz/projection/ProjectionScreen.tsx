@@ -110,7 +110,7 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
                 )}
 
                 {state.phase === "reveal" && question && (
-                    <div className="grid gap-10 md:grid-cols-2">
+                    <div className="grid gap-10 md:grid-cols-[3fr_2fr]">
                         <div className="flex flex-col gap-6">
                             <h1 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Correction</h1>
                             <ul className="flex flex-col gap-3">
@@ -120,7 +120,7 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
                                 ))}
                             </ul>
                         </div>
-                        <Podium entries={state.podium}/>
+                        <Podium entries={state.podium} compact/>
                     </div>
                 )}
 
