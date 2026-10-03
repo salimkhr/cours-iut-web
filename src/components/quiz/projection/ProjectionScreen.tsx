@@ -6,6 +6,7 @@ import {BlockRenderer} from "@/components/builder/BlockRenderer";
 import {Button} from "@/components/ui/button";
 import Countdown from "@/components/quiz/Countdown";
 import OptionResult from "@/components/quiz/OptionResult";
+import ProjectionFrame from "@/components/quiz/projection/ProjectionFrame";
 import Podium from "@/components/quiz/projection/Podium";
 import QuizStage, {QuizTitle, quizCard, quizEyebrow} from "@/components/quiz/QuizStage";
 import QrCode from "@/components/quiz/projection/QrCode";
@@ -64,24 +65,30 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
     const isLast = question !== null && question.index === question.total - 1;
 
     return (
-        <QuizStage ref={stageRef} mode={state.phase === "lobby" || state.phase === "finished" ? "hero" : "focus"} className="p-6 md:p-10">
+        <QuizStage
+            ref={stageRef}
+            mode={state.phase === "lobby" || state.phase === "finished" ? "hero" : "focus"}
+            // Hors plein écran, le menu du site occupe le haut ; en plein écran le cadre prend tout.
+            className="h-[calc(100dvh-var(--navbar-h))] min-h-0 [&:fullscreen]:h-dvh"
+        >
+            <ProjectionFrame>
             <header className="flex items-center justify-between gap-4">
                 <p className={quizEyebrow}>{state.moduleTitle}</p>
-                <div className="flex items-center gap-4 text-sm font-medium text-brand-gray-700 dark:text-brand-gray-300">
+                <div className="flex items-center gap-4 text-lg font-medium text-brand-gray-700 dark:text-brand-gray-300">
                     {connection === "reconnecting" && <span role="status">Reconnexion…</span>}
                     {question && <span className="tabular-nums">Question {question.index + 1} / {question.total}</span>}
                     <span className="tabular-nums">{state.participantCount} participant{state.participantCount > 1 ? "s" : ""}</span>
                 </div>
             </header>
 
-            <div className={`flex w-full flex-1 flex-col justify-center gap-8 py-8 ${state.phase === "lobby" ? "lg:pl-12" : "mx-auto max-w-6xl"}`}>
+            <div className={`flex w-full flex-1 flex-col justify-center gap-8 py-8 ${state.phase === "lobby" ? "pl-12" : "mx-auto max-w-6xl"}`}>
                 {state.phase === "lobby" && (
                     <div className="w-full">
-                        <QuizTitle className="text-5xl md:text-6xl">Rejoignez le quiz</QuizTitle>
-                        <p className="mt-4 max-w-prose text-lg text-brand-gray-700 dark:text-brand-gray-300 md:text-xl">
+                        <QuizTitle className="text-6xl">Rejoignez le quiz</QuizTitle>
+                        <p className="mt-4 max-w-prose text-xl text-brand-gray-700 dark:text-brand-gray-300">
                             Scannez le QR code avec votre téléphone et connectez-vous avec votre compte.
                         </p>
-                        <div className={`${quizCard} mt-7 flex flex-col items-center gap-5 p-6 sm:p-7 lg:max-w-[480px]`}>
+                        <div className={`${quizCard} mt-7 flex flex-col items-center gap-5 max-w-[480px] p-7`}>
                             <div className="w-full max-w-[15rem]">
                                 {joinUrl && <QrCode value={joinUrl} label="QR code pour rejoindre le quiz"/>}
                             </div>
@@ -102,13 +109,13 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
                 {state.phase === "question_open" && question && (
                     <div className="flex flex-col gap-12">
                         {/* L'énoncé est le héros de l'écran ; le chrono reste lisible mais discret. */}
-                        <div className="text-4xl font-semibold leading-tight tracking-tight md:text-6xl [&_*]:max-w-none">
+                        <div className="text-6xl font-semibold leading-tight tracking-tight [&_*]:max-w-none">
                             <BlockRenderer blocks={question.blocks}/>
                         </div>
-                        <div className="grid items-end gap-6 border-t border-bridge-500/30 pt-6 md:grid-cols-[minmax(12rem,20rem)_1fr]">
+                        <div className="grid items-end gap-6 border-t border-bridge-500/30 pt-6 grid-cols-[minmax(12rem,20rem)_1fr]">
                             <Countdown deadline={state.deadline} serverNow={state.serverNow} total={question.durationSeconds} size="md"/>
-                            <div className="flex flex-col gap-1 md:text-right">
-                                <p className="text-xl font-semibold">
+                            <div className="flex flex-col gap-1 text-right">
+                                <p className="text-2xl font-semibold">
                                     {question.expectedCount} bonne{question.expectedCount > 1 ? "s" : ""} réponse{question.expectedCount > 1 ? "s" : ""} attendue{question.expectedCount > 1 ? "s" : ""}
                                 </p>
                                 <p className="text-lg tabular-nums text-brand-gray-700 dark:text-brand-gray-300" role="status">
@@ -120,7 +127,7 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
                 )}
 
                 {state.phase === "reveal" && question && (
-                    <div className="grid gap-10 md:grid-cols-[3fr_2fr]">
+                    <div className="grid gap-10 grid-cols-[3fr_2fr]">
                         <div className="flex flex-col gap-6">
                             <h1 className={quizEyebrow}>Correction</h1>
                             <ul className="flex flex-col gap-3">
@@ -136,15 +143,15 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
 
                 {state.phase === "finished" && (
                     <div className="flex flex-col gap-8">
-                        <QuizTitle className="text-5xl md:text-7xl">Quiz terminé</QuizTitle>
+                        <QuizTitle className="text-7xl">Quiz terminé</QuizTitle>
                         <Podium entries={state.podium} final/>
                     </div>
                 )}
             </div>
 
             <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-bridge-500/30 pt-4">
-                <p className="text-sm text-brand-gray-700 dark:text-brand-gray-300" role={actionError ? "alert" : undefined}>
-                    {actionError ?? (state.phase === "lobby" || state.phase === "reveal" ? "Raccourcis : flèche droite ou espace, F pour le plein écran" : "F : plein écran")}
+                <p className="text-lg text-brand-gray-700 dark:text-brand-gray-300" role={actionError ? "alert" : undefined}>
+                    {actionError}
                 </p>
                 <div className="flex gap-2">
                     <Button size="lg" variant="outline" onClick={toggleFullscreen}
@@ -169,6 +176,7 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
                     )}
                 </div>
             </footer>
+            </ProjectionFrame>
         </QuizStage>
     );
 }
