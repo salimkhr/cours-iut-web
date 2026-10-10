@@ -3,7 +3,7 @@
 import Link from "next/link";
 import {useState} from "react";
 import {useRouter} from "next/navigation";
-import {Pencil, Plus, Settings2} from "lucide-react";
+import {LayoutDashboard, Pencil, Plus, Settings2} from "lucide-react";
 import type Module from "@/types/Module";
 import type Section from "@/types/Section";
 import {Button} from "@/components/ui/button";
@@ -57,6 +57,12 @@ export default function ContextualModuleAdmin({module}: ContextualModuleAdminPro
                     <DropdownMenuItem onSelect={() => setSectionOpen(true)}>
                         <Plus aria-hidden="true"/>
                         Ajouter une section
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link href={`/admin/modules/${module.path}`}>
+                            <LayoutDashboard aria-hidden="true"/>
+                            Administration du module
+                        </Link>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
