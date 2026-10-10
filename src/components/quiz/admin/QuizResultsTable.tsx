@@ -49,7 +49,12 @@ export default function QuizResultsTable({moduleId}: {moduleId: string}) {
     const columns: AdminColumn<ResultRow>[] = [
         {id: "student", header: "Étudiant", cell: (r) => `${r.lastName.toUpperCase()} ${r.firstName}`},
         {id: "group", header: "Groupe", cell: (r) => r.group ?? "—"},
-        {id: "session", header: "Session", cell: (r) => formatDate(r.sessionDate)},
+        {id: "session", header: "Session", cell: (r) => (
+            <span className="whitespace-nowrap">
+                <span className="font-mono font-semibold tracking-wider">{r.sessionCode}</span>
+                <span className="text-muted-foreground"> · {formatDate(r.sessionDate)}</span>
+            </span>
+        )},
         {id: "score", header: "Note", cell: (r) => `${formatPoints(r.score)} / ${formatPoints(r.scoreMax)}`},
         {id: "percent", header: "%", cell: (r) => `${r.percent.toString().replace(".", ",")} %`},
     ];
@@ -81,7 +86,7 @@ export default function QuizResultsTable({moduleId}: {moduleId: string}) {
                             <SelectItem value={ALL}>Toutes les sessions</SelectItem>
                             {(data?.sessions ?? []).map((s) => (
                                 <SelectItem key={s.id} value={s.id}>
-                                    {formatDate(s.createdAt)} · {s.participantCount} participant(s)
+                                    {s.shortCode} · {formatDate(s.createdAt)} · {s.participantCount} participant(s)
                                 </SelectItem>
                             ))}
                         </SelectContent>
