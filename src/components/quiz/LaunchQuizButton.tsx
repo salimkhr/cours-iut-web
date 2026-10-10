@@ -71,7 +71,7 @@ export default function LaunchQuizButton({moduleId, moduleSlug, accentColor, acc
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                        <Link href={`${adminQuiz}#resultats`}>
+                        <Link href={`/admin/modules/${moduleSlug}/resultats`}>
                             <ChartColumn aria-hidden="true"/>
                             Voir les résultats
                         </Link>

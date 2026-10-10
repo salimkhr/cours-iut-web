@@ -55,8 +55,8 @@ export default function QuizResultsTable({moduleId}: {moduleId: string}) {
     ];
 
     return (
-        <section id="resultats" className="flex scroll-mt-24 flex-col gap-4" aria-labelledby="quiz-results">
-            <h2 id="quiz-results" className="text-lg font-bold">Résultats</h2>
+        <section className="flex flex-col gap-4" aria-labelledby="quiz-results">
+            <h2 id="quiz-results" className="sr-only">Résultats</h2>
             <div className="flex flex-wrap items-end gap-4">
                 <div className="flex flex-col gap-2">
                     <Label htmlFor="quiz-search">Nom ou prénom</Label>
