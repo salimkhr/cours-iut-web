@@ -7,11 +7,16 @@ import {generatePageMetadata} from "@/lib/generatePageMetadata";
 
 export const metadata = generatePageMetadata({defaultTitle: "Module", noIndex: true});
 
-export default async function AdminModulePage({params}: {params: Promise<{slug: string}>}) {
+export default async function AdminModulePage({params, searchParams}: {
+    params: Promise<{slug: string}>;
+    searchParams: Promise<{onglet?: string}>;
+}) {
     const session = await getServerSession();
     if (session?.user.role !== "admin") notFound();
 
     const {slug} = await params;
+    // `?onglet=quiz` : lien direct depuis le menu « Quiz » de la page du module.
+    const initialTab = (await searchParams).onglet === "quiz" ? "quiz" : "workflow";
     const modules = await getModules();
     const mod = modules.find((candidate) => candidate.path === slug);
     if (!mod) notFound();
@@ -23,7 +28,7 @@ export default async function AdminModulePage({params}: {params: Promise<{slug: 
                 title={mod.title}
                 description="Concevez le projet, poussez le code de référence, puis pilotez la rédaction."
             />
-            <ModuleAdminTabs module={mod}/>
+            <ModuleAdminTabs module={mod} initialTab={initialTab}/>
         </>
     );
 }
