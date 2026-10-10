@@ -17,6 +17,7 @@ import {Label} from "@/components/ui/label";
 
 import CaptchaPending, {BlinkingBot} from "@/components/login/CaptchaPending";
 import {loginSchema, LoginValues} from "@/lib/schemas/login.schema";
+import {authErrorMessage} from "@/lib/authErrors";
 
 
 export default function LoginForm({redirectTo = "/"}: {redirectTo?: string}) {
@@ -117,7 +118,7 @@ export default function LoginForm({redirectTo = "/"}: {redirectTo?: string}) {
                 });
 
             if (res.error) {
-                setError(res.error.message ?? "Identifiants invalides.");
+                setError(authErrorMessage(res.error, "Identifiants invalides."));
                 resetCaptcha();
                 setLoading(false);
                 return;

@@ -109,7 +109,8 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
                 {state.phase === "question_open" && question && (
                     <div className="flex flex-col gap-12">
                         {/* L'énoncé est le héros de l'écran ; le chrono reste lisible mais discret. */}
-                        <div className="text-6xl font-semibold leading-tight tracking-tight [&_*]:max-w-none">
+                        {/* Le bloc de code impose 14 px : illisible projeté, d'où la surcharge ; « Copier » n'a pas de sens ici. */}
+                        <div className="text-6xl font-semibold leading-tight tracking-tight [&_*]:max-w-none [&_button]:hidden [&_pre]:!text-[1.75rem] [&_pre]:!leading-snug [&_pre_*]:!text-[1.75rem]">
                             <BlockRenderer blocks={question.blocks}/>
                         </div>
                         <div className="grid items-end gap-6 border-t border-bridge-500/30 pt-6 grid-cols-[minmax(12rem,20rem)_1fr]">

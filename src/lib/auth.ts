@@ -131,6 +131,9 @@ export const auth = betterAuth({
                 captcha({
                     provider: "cloudflare-turnstile",
                     secretKey: turnstileSecret,
+                    // Liste par défaut de better-auth + connexion par identifiant (plugin username),
+                    // sinon /sign-in/username contourne l'anti-robot.
+                    endpoints: ["/sign-up/email", "/sign-in/email", "/sign-in/username", "/request-password-reset"],
                 }),
             ]
             : []),

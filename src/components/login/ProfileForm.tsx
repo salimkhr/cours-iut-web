@@ -14,6 +14,7 @@ import {Field, FieldError, FieldLabel} from "@/components/ui/field";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {GROUPS, Group, STUDENT_EMAIL_DOMAIN} from "@/lib/schemas/register.schema";
 import {createProfileSchema, ProfileValues} from "@/lib/schemas/profile.schema";
+import {authErrorMessage} from "@/lib/authErrors";
 
 type Props = {
     initialFirstName: string;
@@ -81,10 +82,10 @@ export default function ProfileForm({initialFirstName, initialLastName, email, i
         };
         if (imageUrl !== undefined) updateData.image = imageUrl;
 
-        const res = await (authClient.updateUser as (data: Record<string, unknown>) => Promise<{error?: {message?: string}}>)(updateData);
+        const res = await (authClient.updateUser as (data: Record<string, unknown>) => Promise<{error?: {message?: string; code?: string; status?: number}}>)(updateData);
 
         if (res?.error) {
-            toast.error(res.error.message ?? "Mise à jour impossible.");
+            toast.error(authErrorMessage(res.error, "Mise à jour impossible."));
             return;
         }
 
