@@ -65,6 +65,14 @@ export default function QuizPanel({moduleId}: {moduleId: string}) {
         else setError(res.error);
     }
 
+    // Lien « Voir les résultats » (#resultats) : le tableau n'existe qu'une fois le quiz chargé,
+    // le navigateur ne peut donc pas y défiler seul.
+    useEffect(() => {
+        if (!loading && window.location.hash === "#resultats") {
+            document.getElementById("resultats")?.scrollIntoView({block: "start"});
+        }
+    }, [loading]);
+
     if (loading) return <p className="text-sm text-muted-foreground" role="status">Chargement du quiz…</p>;
 
     if (!quiz) {

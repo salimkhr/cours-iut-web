@@ -3,8 +3,14 @@
 import {useState} from "react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
-import {Play, Plus} from "lucide-react";
+import {ChartColumn, ChevronDown, ListChecks, Play} from "lucide-react";
 import {Button} from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {api} from "@/components/quiz/quizClient";
 
 interface Props {
@@ -19,23 +25,18 @@ interface Props {
 const BUTTON_CLASS =
     "group h-auto gap-2 rounded-lg border-[3px] border-(--module-color) bg-transparent px-6 py-3 text-sm font-semibold tracking-wide text-brand-dark shadow-none transition-all duration-300 hover:border-(--module-color) hover:bg-(--module-color) hover:text-white dark:text-brand-light dark:hover:text-brand-dark";
 
-/** Lance une session de quiz live depuis la page du module (enseignant uniquement). */
+/**
+ * Menu « Quiz » de la page du module (enseignant uniquement) : lancer une session live, gérer les
+ * questions, consulter les résultats. Ces deux dernières entrées ouvrent l'onglet Quiz de l'admin du
+ * module, qui n'était sinon accessible que par l'administration.
+ */
 export default function LaunchQuizButton({moduleId, moduleSlug, accentColor, accentColorDark, questionCount}: Props) {
     const router = useRouter();
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const style = {"--module-color": accentColor, "--module-color-dark": accentColorDark} as React.CSSProperties;
-
-    if (questionCount === 0) {
-        return (
-            <Button asChild variant="outline" style={style} className={BUTTON_CLASS}>
-                <Link href={`/admin/modules/${moduleSlug}`}>
-                    Préparer le quiz
-                    <Plus className="size-4" aria-hidden="true"/>
-                </Link>
-            </Button>
-        );
-    }
+    const adminQuiz = `/admin/modules/${moduleSlug}?onglet=quiz`;
+    const empty = questionCount === 0;
 
     async function launch() {
         setBusy(true);
@@ -51,11 +52,32 @@ export default function LaunchQuizButton({moduleId, moduleSlug, accentColor, acc
 
     return (
         <div className="flex flex-col gap-1">
-            <Button type="button" variant="outline" style={style} className={BUTTON_CLASS} disabled={busy}
-                    onClick={() => void launch()}>
-                {busy ? "Création de la session…" : "Lancer le quiz"}
-                <Play className="size-4" aria-hidden="true"/>
-            </Button>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button type="button" variant="outline" style={style} className={BUTTON_CLASS} disabled={busy}>
+                        {busy ? "Création de la session…" : "Quiz"}
+                        <ChevronDown className="size-4" aria-hidden="true"/>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="min-w-56">
+                    <DropdownMenuItem disabled={empty} onSelect={() => void launch()}>
+                        <Play aria-hidden="true"/>
+                        {empty ? "Lancer le quiz (aucune question)" : "Lancer le quiz"}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link href={adminQuiz}>
+                            <ListChecks aria-hidden="true"/>
+                            {empty ? "Préparer les questions" : `Gérer les questions (${questionCount})`}
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link href={`${adminQuiz}#resultats`}>
+                            <ChartColumn aria-hidden="true"/>
+                            Voir les résultats
+                        </Link>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
             {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         </div>
     );
