@@ -19,7 +19,7 @@ function Shell({mode = "title", moduleSlug, children}: {mode?: "title" | "conten
         // Le menu du site occupe le haut de l'écran : sans cette hauteur, la page dépasse d'autant et oblige à
         // faire défiler pour voir la question et le bouton « Valider » (même règle que la projection).
         <QuizStage mode={mode} moduleSlug={moduleSlug} className="min-h-[calc(100dvh-var(--navbar-h))]">
-            <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-5 pb-6 pt-5">{children}</div>
+            <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-5 pt-5 pb-[calc(2.5rem+env(safe-area-inset-bottom))]">{children}</div>
         </QuizStage>
     );
 }
