@@ -24,6 +24,8 @@ export interface ResultAnswerDetail {
 export interface ResultRow {
     sessionId: string;
     sessionDate: number;
+    /** Code court affiché au lobby : distingue deux sessions lancées le même jour. */
+    sessionCode: string;
     userId: string;
     firstName: string;
     lastName: string;
@@ -37,6 +39,7 @@ export interface ResultRow {
 export interface SessionSummary {
     id: string;
     createdAt: number;
+    shortCode: string;
     participantCount: number;
 }
 
@@ -52,7 +55,7 @@ export class QuizResultsRepository {
 
     async listSessions(moduleId: string): Promise<SessionSummary[]> {
         const sessions = await this.db.collection<SessionDoc>("quiz_sessions")
-            .find({moduleId}, {projection: {createdAt: 1}})
+            .find({moduleId}, {projection: {createdAt: 1, shortCode: 1}})
             .sort({createdAt: -1})
             .toArray();
         const counts = await this.db.collection<QuizParticipant>("quiz_participants")
@@ -61,7 +64,7 @@ export class QuizResultsRepository {
                 {$group: {_id: "$sessionId", n: {$sum: 1}}},
             ]).toArray();
         const byId = new Map(counts.map((c) => [c._id, c.n]));
-        return sessions.map((s) => ({id: s._id, createdAt: s.createdAt, participantCount: byId.get(s._id) ?? 0}));
+        return sessions.map((s) => ({id: s._id, createdAt: s.createdAt, shortCode: s.shortCode, participantCount: byId.get(s._id) ?? 0}));
     }
 
     async listGroups(moduleId: string): Promise<string[]> {
@@ -123,6 +126,7 @@ export class QuizResultsRepository {
                 return {
                     sessionId: p.sessionId,
                     sessionDate: session.createdAt,
+                    sessionCode: session.shortCode,
                     userId: p.userId,
                     firstName: p.firstName,
                     lastName: p.lastName,
