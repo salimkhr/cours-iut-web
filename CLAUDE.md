@@ -31,6 +31,7 @@ sous forme de cours, TPs, slides et examens, avec authentification et espace adm
   - **TypeScript 7** — `tsc --noEmit` et `next build` passent, mais `typescript-eslint` refuse
     explicitement (`Error: typescript-eslint does not support TS 7.0`), y compris en 8.66.0. C'est
     un garde-fou volontaire, pas un bug contournable. Rester en `typescript@6.0.3`.
+- **QR code** : `qrcode` (rendu SVG côté client du lobby de quiz).
 - **Builder / contenu** : `@monaco-editor/react` (éditeur), `recharts` (graphiques admin),
   `sharp` (images), `cheerio` / `turndown` / `gray-matter` (migration de contenu),
   `resend` (emails)
@@ -107,6 +108,13 @@ Modules :
 - `src/lib/upload/` — pipeline d'upload d'images (`config`, `mime`, `scanner`, `processor`, `storage`)
 - `src/lib/block*` — modèle de contenu par blocs migré en MongoDB (`blockDefs`, `blockRegistry`,
   `blockSchemas`, `blockTreeUtils`, `validateBlockTree`, `getContentBlocks`)
+- `src/lib/quiz/` — quiz live par module (spec `docs/superpowers/specs/2026-10-02-kahoot-live-design.md`) :
+  logique pure (`quizScoring`, `quizPodium`, `quizMachine`, `quizPublicState`), `QuizService` (seul point
+  d'écriture du quiz, partagé admin + MCP), `LiveQuizService` + `LiveQuizRegistry` (sessions, SSE par audience),
+  `QuizResultsRepository` (relevé enseignant). Routes `/api/quiz/*` et `/api/admin/modules/[moduleId]/quiz/*`,
+  pages `/quiz/[code]` (téléphone) et `/quiz/live/[sessionId]` (projection), outils MCP `*_quiz*`
+  (`src/lib/mcp/quizTools.ts`, jamais de notes ni de pilotage). Collections : `module_quizzes`, `quiz_sessions`
+  (TTL), `quiz_participants`, `quiz_answers`. `canManageQuiz` = admin pour l'instant.
 - `src/lib/store/` — stores Zustand (`builderStore`, `readingProgressStore`, `tocStore`)
 - `src/scripts/` — scripts de migration (`migrate-to-db`, `migrate-contents-refs`, `create-content-index`)
 - `src/cours/{html-css,javascript,php,brainfuck}/<n>-<slug>/` — `Cours.tsx`, `TP.tsx`, `Slide.tsx`,

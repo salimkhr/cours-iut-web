@@ -7,6 +7,7 @@ import { validateScalekitToken } from "@/lib/scalekit";
 import { getPublicOrigin } from "@/lib/publicOrigin";
 import { blockDefs, getBlockDef, createBlockInstance } from "@/lib/blockDefs";
 import { assertSectionAcceptsContent } from "@/lib/mcp/assertSectionAcceptsContent";
+import { registerQuizTools } from "@/lib/mcp/quizTools";
 import { validateBlockTree } from "@/lib/validateBlockTree";
 import {
     findBlock,
@@ -294,6 +295,8 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         { instructions: SERVER_INSTRUCTIONS }
     );
     const isAdmin = user.role === "admin";
+
+    registerQuizTools(server, { isAdmin, getDb: connectToDB });
 
     const iconNameSchema = z.string()
         .refine((v) => isValidIcon(v), {

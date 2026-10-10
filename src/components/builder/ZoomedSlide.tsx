@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback } from "react";
+import { useFitScale } from "@/hook/useFitScale";
 import { SlideScreen } from "@/components/Slides/SlideScreen";
 import { isTransitionSlide } from "@/components/Slides/SlideBlocksRenderer";
 import { PREVIEW_CONTEXT, SlideChildrenRenderer } from "@/components/builder/SlideChildrenRenderer";
@@ -25,30 +26,8 @@ interface ZoomedSlideProps {
  * depuis l'intérieur DOIT être portée hors de ce conteneur (Dialog radix le fait).
  */
 export function ZoomedSlide({ slide, mode, order, renderChildren, className }: ZoomedSlideProps) {
-    const outerRef = useRef<HTMLDivElement>(null);
-    const [scale, setScale] = useState<number | null>(null);
-
-    useEffect(() => {
-        const el = outerRef.current;
-        if (!el) return;
-
-        let raf = 0;
-        const measure = () => {
-            cancelAnimationFrame(raf);
-            raf = requestAnimationFrame(() => {
-                const { width, height } = el.getBoundingClientRect();
-                setScale(computeSlideScale(width, height, mode));
-            });
-        };
-
-        measure();
-        const ro = new ResizeObserver(measure);
-        ro.observe(el);
-        return () => {
-            ro.disconnect();
-            cancelAnimationFrame(raf);
-        };
-    }, [mode]);
+    const computeScale = useCallback((w: number, h: number) => computeSlideScale(w, h, mode), [mode]);
+    const { ref: outerRef, scale } = useFitScale<HTMLDivElement>(computeScale);
 
     const children = slide.children ?? [];
     const frame = getSlideFrameSize(mode);

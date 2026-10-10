@@ -15,6 +15,10 @@ import {Metadata} from "next";
 import {getServerSession} from "@/lib/auth";
 import {getCorrectionBaseUrl} from "@/lib/gitlab";
 import ContextualModuleAdmin from "@/components/admin/ContextualModuleAdmin";
+import LaunchQuizButton from "@/components/quiz/LaunchQuizButton";
+import {canManageQuiz} from "@/lib/quiz/permissions";
+import {QuizService} from "@/lib/quiz/QuizService";
+import {connectToDB} from "@/lib/mongodb";
 
 
 interface ModulePageProps {
@@ -37,6 +41,11 @@ export default async function Module({params}: ModulePageProps) {
 
     const session = await getServerSession();
     const isAdmin = session?.user.role === 'admin';
+
+    // Quiz live : lancement réservé à l'enseignant, seulement si le module a des questions.
+    const quizQuestionCount = canManageQuiz(session)
+        ? ((await new QuizService(await connectToDB()).get(String(currentModule._id)))?.questions.length ?? 0)
+        : 0;
 
     // Lu au runtime (serveur) : le bouton « Correction » n'est plus figé au build.
     const correctionBaseUrl = getCorrectionBaseUrl();
@@ -74,6 +83,15 @@ export default async function Module({params}: ModulePageProps) {
                         />
                     )}
                     <ModuleInfo currentModule={currentModule}/>
+                    {canManageQuiz(session) && (
+                        <LaunchQuizButton
+                            moduleId={String(currentModule._id)}
+                            moduleSlug={currentModule.path}
+                            accentColor={moduleColor(currentModule)}
+                            accentColorDark={moduleColor(currentModule, 'dark')}
+                            questionCount={quizQuestionCount}
+                        />
+                    )}
                     {isAdmin && <ContextualModuleAdmin module={currentModule}/>}
                 </div>
             </HeroSection>

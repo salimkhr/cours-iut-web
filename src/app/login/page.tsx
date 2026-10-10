@@ -2,14 +2,16 @@ import {redirect} from "next/navigation";
 import {getServerSession} from "@/lib/auth";
 import AuthLayout from "@/components/login/AuthLayout";
 import LoginForm from "@/components/login/LoginForm";
+import {safeRedirectPath} from "@/lib/safeRedirect";
 
 export const metadata = {
     title: "Connexion | Développement Web",
 };
 
-export default async function LoginPage() {
+export default async function LoginPage({searchParams}: {searchParams: Promise<{redirect_to?: string | string[]}>}) {
+    const redirectTo = safeRedirectPath((await searchParams).redirect_to);
     const session = await getServerSession();
-    if (session) redirect("/");
+    if (session) redirect(redirectTo);
     return (
         <AuthLayout
             title="Connexion"
@@ -18,7 +20,7 @@ export default async function LoginPage() {
             // Les deux entrées sont valables : on les nomme toutes les deux.
             description="Votre compte de cette plateforme (identifiant IUT ou email universitaire), ou le compte générique de l'intranet."
         >
-            <LoginForm/>
+            <LoginForm redirectTo={redirectTo}/>
         </AuthLayout>
     );
 }

@@ -11,6 +11,7 @@ import {authClient} from "@/lib/auth-client";
 import {Button} from "@/components/ui/button";
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group";
 import {Field, FieldError, FieldLabel} from "@/components/ui/field";
+import {authErrorMessage} from "@/lib/authErrors";
 
 const passwordSchema = z.object({
     currentPassword: z.string().min(1, "Mot de passe actuel requis"),
@@ -50,7 +51,7 @@ export default function PasswordForm() {
         });
 
         if (res.error) {
-            toast.error(res.error.message ?? "Impossible de changer le mot de passe.");
+            toast.error(authErrorMessage(res.error, "Impossible de changer le mot de passe."));
             return;
         }
 

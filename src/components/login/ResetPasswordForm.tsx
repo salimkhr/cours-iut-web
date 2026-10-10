@@ -11,6 +11,7 @@ import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import {authErrorMessage} from "@/lib/authErrors";
 
 const schema = z.object({
     newPassword: z.string().min(7, "Minimum 7 caractères"),
@@ -55,7 +56,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         });
 
         if (res.error) {
-            toast.error(res.error.message ?? "Lien invalide ou expiré.");
+            toast.error(authErrorMessage(res.error, "Lien invalide ou expiré."));
             return;
         }
 

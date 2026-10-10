@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import CaptchaPending, {BlinkingBot} from "@/components/login/CaptchaPending";
 import {GROUPS, registerSchema, RegisterValues, STUDENT_EMAIL_DOMAIN} from "@/lib/schemas/register.schema";
+import {authErrorMessage} from "@/lib/authErrors";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -123,7 +124,7 @@ export default function RegisterForm() {
             : undefined;
 
         try {
-            type SignUpResult = {data?: {session?: unknown} | null; error?: {message?: string} | null};
+            type SignUpResult = {data?: {session?: unknown} | null; error?: {message?: string; code?: string; status?: number} | null};
             const res = await (authClient.signUp.email as unknown as (data: Record<string, unknown>) => Promise<SignUpResult>)({
                 name: `${values.firstName} ${values.lastName}`,
                 email: values.email,
@@ -134,7 +135,7 @@ export default function RegisterForm() {
             });
 
             if (res.error) {
-                toast.error(res.error.message ?? "Inscription impossible.");
+                toast.error(authErrorMessage(res.error, "Inscription impossible."));
                 resetCaptcha();
                 return;
             }

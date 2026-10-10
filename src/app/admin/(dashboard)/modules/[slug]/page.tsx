@@ -2,7 +2,7 @@ import {notFound} from "next/navigation";
 import {getServerSession} from "@/lib/auth";
 import getModules from "@/lib/getModules";
 import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
-import ModuleWorkflow from "@/components/admin/module-workflow/ModuleWorkflow";
+import ModuleAdminTabs from "@/components/admin/module-workflow/ModuleAdminTabs";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 
 export const metadata = generatePageMetadata({defaultTitle: "Module", noIndex: true});
@@ -23,7 +23,7 @@ export default async function AdminModulePage({params}: {params: Promise<{slug: 
                 title={mod.title}
                 description="Concevez le projet, poussez le code de référence, puis pilotez la rédaction."
             />
-            <ModuleWorkflow module={mod}/>
+            <ModuleAdminTabs module={mod}/>
         </>
     );
 }
