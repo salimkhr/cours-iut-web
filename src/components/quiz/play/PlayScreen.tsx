@@ -16,8 +16,10 @@ const fmt = (n: number) => (Math.round(n * 100) / 100).toString().replace(".", "
 /** Même DA que la projection : garde de titre (attente, fin) ou slide de contenu (question, correction). */
 function Shell({mode = "title", moduleSlug, children}: {mode?: "title" | "content"; moduleSlug?: string; children: React.ReactNode}) {
     return (
-        <QuizStage mode={mode} moduleSlug={moduleSlug}>
-            <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-5 pb-8 pt-8">{children}</div>
+        // Le menu du site occupe le haut de l'écran : sans cette hauteur, la page dépasse d'autant et oblige à
+        // faire défiler pour voir la question et le bouton « Valider » (même règle que la projection).
+        <QuizStage mode={mode} moduleSlug={moduleSlug} className="min-h-[calc(100dvh-var(--navbar-h))]">
+            <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-5 pb-6 pt-5">{children}</div>
         </QuizStage>
     );
 }
