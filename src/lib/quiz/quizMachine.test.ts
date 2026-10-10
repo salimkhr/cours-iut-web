@@ -20,17 +20,22 @@ describe("quizMachine", () => {
         expect(s.deadline).toBe(31_000);
     });
 
-    test("question_open → reveal → question suivante", () => {
+    test("question_open → reveal → leaderboard → question suivante", () => {
         const reveal = closeQuestion(startQuiz(lobby(), 0));
         expect(reveal.phase).toBe("reveal");
         expect(reveal.deadline).toBeNull();
-        const next = nextQuestion(reveal, 50_000);
+        const board = nextQuestion(reveal, 40_000);
+        expect(board.phase).toBe("leaderboard");
+        expect(board.questionIndex).toBe(0);
+        expect(board.deadline).toBeNull();
+        const next = nextQuestion(board, 50_000);
+        expect(next.phase).toBe("question_open");
         expect(next.questionIndex).toBe(1);
         expect(next.deadline).toBe(60_000);
     });
 
-    test("dernière question → finished", () => {
-        let s = nextQuestion(closeQuestion(startQuiz(lobby(), 0)), 1);
+    test("dernière question → finished, sans classement intermédiaire", () => {
+        let s = nextQuestion(nextQuestion(closeQuestion(startQuiz(lobby(), 0)), 1), 1);
         s = nextQuestion(closeQuestion(s), 99);
         expect(s.phase).toBe("finished");
         expect(s.endedAt).toBe(99);
@@ -39,6 +44,9 @@ describe("quizMachine", () => {
     test("transitions invalides", () => {
         expect(() => closeQuestion(lobby())).toThrow(InvalidTransitionError);
         expect(() => nextQuestion(lobby(), 0)).toThrow(InvalidTransitionError);
+        expect(() => nextQuestion(startQuiz(lobby(), 0), 0)).toThrow(InvalidTransitionError);
+        const board = nextQuestion(closeQuestion(startQuiz(lobby(), 0)), 0);
+        expect(() => closeQuestion(board)).toThrow(InvalidTransitionError);
         expect(() => startQuiz(startQuiz(lobby(), 0), 0)).toThrow(InvalidTransitionError);
         const finished: State = {...lobby(), phase: "finished"};
         expect(() => startQuiz(finished, 0)).toThrow(InvalidTransitionError);

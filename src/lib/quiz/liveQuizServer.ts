@@ -27,6 +27,12 @@ export function getRegistry(): LiveQuizRegistry {
 
 export async function getLiveQuiz(): Promise<LiveQuizService> {
     const g = globals();
+    // En dev, le hot-reload recharge la classe mais l'instance survit dans globalThis : sans ce test,
+    // l'ancien code continue de piloter les sessions jusqu'au redémarrage du serveur. On recrée donc le
+    // service quand sa classe a changé. Les sessions vivent en MongoDB et le registre SSE est conservé ;
+    // les chronomètres de l'ancienne instance vont à leur terme (fermeture atomique, un seul gagnant) et
+    // getState() les reprogramme sur la nouvelle. En production, la classe ne change jamais : sans effet.
+    if (g.service && !(g.service instanceof LiveQuizService)) g.service = null;
     g.service ??= new LiveQuizService(await connectToDB(), g.registry);
     return g.service;
 }

@@ -46,9 +46,9 @@ async function main() {
     const client = await MongoClient.connect(URI);
     try {
         const db = client.db(DB_NAME);
-        const module = await db.collection("modules").findOne({path: MODULE_PATH});
-        if (!module) throw new Error(`Module « ${MODULE_PATH} » introuvable dans ${DB_NAME}`);
-        const moduleId = module._id.toString();
+        const phpModule = await db.collection("modules").findOne({path: MODULE_PATH});
+        if (!phpModule) throw new Error(`Module « ${MODULE_PATH} » introuvable dans ${DB_NAME}`);
+        const moduleId = phpModule._id.toString();
 
         const existing = await db.collection("module_quizzes").findOne({moduleId});
         if (existing && !REPLACE) {

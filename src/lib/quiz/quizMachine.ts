@@ -35,14 +35,19 @@ export function closeQuestion<T extends MachineState>(session: T): T {
     return {...session, phase: "reveal", questionStartedAt: null, deadline: null};
 }
 
-/** reveal → question_open (index + 1) ou finished après la dernière question. */
+/**
+ * « Suivant » de l'enseignant :
+ * - reveal → leaderboard : le classement s'intercale entre la correction et la question suivante ;
+ * - reveal de la dernière question → finished : l'écran final porte déjà le podium ;
+ * - leaderboard → question_open (index + 1).
+ */
 export function nextQuestion<T extends MachineState>(session: T, now: number): T {
+    if (session.phase === "leaderboard") return open(session, session.questionIndex + 1, now);
     if (session.phase !== "reveal") throw new InvalidTransitionError(session.phase, "question suivante");
-    const next = session.questionIndex + 1;
-    if (next >= session.quiz.questions.length) {
+    if (session.questionIndex + 1 >= session.quiz.questions.length) {
         return {...session, phase: "finished", questionStartedAt: null, deadline: null, endedAt: now};
     }
-    return open(session, next, now);
+    return {...session, phase: "leaderboard"};
 }
 
 /** Une réponse est acceptée tant que `now` est strictement avant l'échéance. */

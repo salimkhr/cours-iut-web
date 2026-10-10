@@ -5,9 +5,11 @@ import {Lock} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import Countdown from "@/components/quiz/Countdown";
 import {api} from "@/components/quiz/quizClient";
-import {quizCard} from "@/components/quiz/QuizStage";
+import {inlineCodeFit, quizCard} from "@/components/quiz/QuizStage";
+import {optionLetter} from "@/components/quiz/projection/OptionCard";
 import {cn} from "@/lib/utils";
 import type {PublicQuestion} from "@/lib/quiz/quizPublicState";
+import {renderInline} from "@/lib/inlineMarkdown";
 
 interface Props {
     sessionId: string;
@@ -61,7 +63,7 @@ export default function AnswerForm({sessionId, question, deadline, serverNow, lo
                 <legend className="mb-3 text-lg font-bold">
                     Choisissez {question.expectedCount} réponse{question.expectedCount > 1 ? "s" : ""}
                 </legend>
-                {question.options.map((option) => {
+                {question.options.map((option, index) => {
                     const checked = shown.includes(option.id);
                     return (
                         <label
@@ -79,7 +81,8 @@ export default function AnswerForm({sessionId, question, deadline, serverNow, lo
                                 checked={checked}
                                 onChange={() => toggle(option.id)}
                             />
-                            <span className="flex-1">{option.text}</span>
+                            <span aria-hidden="true" className="shrink-0 font-extrabold text-(--module-color) dark:text-(--module-color-dark)">{optionLetter(index)}</span>
+                            <span className={cn("flex-1", inlineCodeFit)}>{renderInline(option.text)}</span>
                         </label>
                     );
                 })}

@@ -23,7 +23,7 @@ export default function ProjectionFrame({children}: {children: ReactNode}) {
         <div ref={ref} className="relative min-h-0 w-full flex-1 overflow-hidden">
             {scale !== null && (
                 <div
-                    className="absolute left-1/2 top-1/2 flex flex-col p-10"
+                    className="absolute left-1/2 top-1/2 flex flex-col"
                     style={{
                         width: PROJECTION_W,
                         height: PROJECTION_H,

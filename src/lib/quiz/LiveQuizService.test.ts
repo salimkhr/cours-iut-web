@@ -182,6 +182,8 @@ describe("déroulé complet", () => {
         expect(state.reveal?.correctIds).toEqual(optionIds[q1].good);
 
         await live.next(s.id);
+        expect((await live.getSession(s.id))?.phase).toBe("leaderboard");
+        await live.next(s.id);
         now += 500;
         await live.submitAnswer(s.id, "u1", optionIds[q2].good);
         await live.closeCurrentQuestion(s.id);

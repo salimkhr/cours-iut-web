@@ -231,7 +231,8 @@ export class LiveQuizService {
         const now = this.clock();
         const next = nextQuestion(session, now);
         const result = await this.sessions.updateOne(
-            {_id: sessionId, phase: "reveal", questionIndex: session.questionIndex},
+            // Garde atomique sur la phase lue (reveal ou leaderboard) : un double clic n'avance qu'une fois.
+            {_id: sessionId, phase: session.phase, questionIndex: session.questionIndex},
             {$set: {
                 phase: next.phase,
                 questionIndex: next.questionIndex,

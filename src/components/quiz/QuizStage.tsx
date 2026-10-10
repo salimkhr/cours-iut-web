@@ -1,54 +1,58 @@
 "use client";
 
 import type {CSSProperties, ReactNode, Ref} from "react";
-import {useIsDark} from "@/hook/useIsDark";
 import {cn} from "@/lib/utils";
 
-/** Surface « carte » du système (cf. AuthLayout) : bridge, bordure chaude, ombre chaude, flou. */
+/** Surface « carte » du système : bridge, bordure chaude, ombre chaude. */
 export const quizCard = cn(
-    "rounded-2xl border border-bridge-400/40 bg-bridge-50/85 text-brand-dark",
-    "dark:border-bridge-500/45 dark:bg-bridge-800/80 dark:text-brand-light",
+    "rounded-2xl border border-bridge-400/40 bg-bridge-50/90 text-brand-dark",
+    "dark:border-bridge-500/45 dark:bg-bridge-800/85 dark:text-brand-light",
     "shadow-[0_12px_32px_-12px_rgba(147,97,58,0.45)] dark:shadow-[0_12px_32px_-12px_rgba(0,0,0,0.7)]",
-    "backdrop-blur-md",
 );
 
 /** Eyebrow structurel du système (DESIGN.md §3). */
 export const quizEyebrow = "text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-dark/70 dark:text-bridge-100/70";
 
+/** Couleur du module : accent du point, du filet, du badge et des traits animés. */
+/**
+ * Code en ligne à la taille du texte qui l'entoure : le composant Code impose `text-sm`, illisible dans
+ * une proposition en `text-4xl` (projection) ou `text-lg` (téléphone). Même règle que pour l'énoncé.
+ */
+export const inlineCodeFit = "[&_code]:!text-[1em] [&_code]:!leading-[inherit] [&_code]:!py-0";
+export const moduleAccent = "text-(--module-color) dark:text-(--module-color-dark)";
+export const moduleFill = "bg-(--module-color) dark:bg-(--module-color-dark)";
+
 type Line = {axis: "x" | "y"; pos: string; size: string; delay: number; alpha: number};
 
-/** Mêmes traits que le fond du login (AuthLayout) : `prefers-reduced-motion` est géré dans globals.css. */
+/** Mêmes traits que la garde de section des slides (`SlideTitle`). */
 const LINES: Line[] = [
-    {axis: "x", pos: "top-14", size: "w-24", delay: 0, alpha: 50},
-    {axis: "x", pos: "top-28", size: "w-32", delay: 1, alpha: 58},
-    {axis: "x", pos: "top-[168px]", size: "w-28", delay: 2, alpha: 44},
-    {axis: "x", pos: "top-[224px]", size: "w-40", delay: 3, alpha: 52},
-    {axis: "x", pos: "bottom-14", size: "w-36", delay: 1, alpha: 54},
-    {axis: "x", pos: "bottom-28", size: "w-44", delay: 3, alpha: 48},
-    {axis: "x", pos: "bottom-[168px]", size: "w-32", delay: 4, alpha: 42},
-    {axis: "y", pos: "left-[12%]", size: "h-24", delay: 0, alpha: 46},
-    {axis: "y", pos: "left-[30%]", size: "h-32", delay: 1, alpha: 52},
-    {axis: "y", pos: "left-[48%]", size: "h-28", delay: 2, alpha: 42},
-    {axis: "y", pos: "left-[68%]", size: "h-36", delay: 3, alpha: 56},
-    {axis: "y", pos: "left-[88%]", size: "h-24", delay: 4, alpha: 44},
+    {axis: "x", pos: "top-14", size: "w-32", delay: 0, alpha: 50},
+    {axis: "x", pos: "top-28", size: "w-44", delay: 1, alpha: 58},
+    {axis: "x", pos: "top-[168px]", size: "w-36", delay: 2, alpha: 44},
+    {axis: "x", pos: "bottom-20", size: "w-52", delay: 3, alpha: 52},
+    {axis: "y", pos: "left-14", size: "h-32", delay: 0, alpha: 46},
+    {axis: "y", pos: "left-28", size: "h-36", delay: 1, alpha: 52},
+    {axis: "y", pos: "left-[168px]", size: "h-40", delay: 2, alpha: 42},
+    {axis: "y", pos: "left-[224px]", size: "h-36", delay: 3, alpha: 56},
 ];
 
 const lineVars = {
-    "--hero-accent": "var(--color-brand-primary)",
-    "--hero-grid-x-peak": "0.7",
-    "--hero-grid-x-mid": "0.3",
-    "--hero-grid-y-peak": "0.6",
-    "--hero-grid-y-mid": "0.26",
-    "--hero-grid-x-travel": "68vw",
-    "--hero-grid-y-travel": "100vh",
-    maskImage: "linear-gradient(to right, black 0%, black 82%, transparent 100%)",
-    WebkitMaskImage: "linear-gradient(to right, black 0%, black 82%, transparent 100%)",
+    "--hero-accent": "var(--module-color)",
+    "--hero-grid-x-peak": "0.8",
+    "--hero-grid-x-mid": "0.38",
+    "--hero-grid-y-peak": "0.7",
+    "--hero-grid-y-mid": "0.34",
+    "--hero-grid-x-travel": "58vw",
+    "--hero-grid-y-travel": "92vh",
+    maskImage: "linear-gradient(to right, black 0%, black 72%, transparent 100%)",
+    WebkitMaskImage: "linear-gradient(to right, black 0%, black 72%, transparent 100%)",
 } as CSSProperties & Record<`--${string}`, string>;
 
+/** `prefers-reduced-motion` est géré dans globals.css (les traits disparaissent). */
 function GridLines() {
     return (
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 hidden overflow-hidden lg:block">
-            <div className="absolute inset-y-0 left-0 w-[68vw] overflow-hidden" style={lineVars}>
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 hidden overflow-hidden sm:block">
+            <div className="absolute inset-y-0 left-0 w-[78%] overflow-hidden sm:w-[68%] lg:w-[56%]" style={lineVars}>
                 {LINES.map((line, i) => (
                     <div
                         key={i}
@@ -68,50 +72,63 @@ function GridLines() {
 interface Props {
     children: ReactNode;
     /**
-     * `hero` : le pont reste visible à droite (lobby, écran final, téléphone).
-     * `focus` : voile quasi opaque, pour que l'énoncé et les propositions priment sur le décor.
+     * `title` : la garde de section des slides (photo du pont, traits animés) — lobby, écran final,
+     * attente sur téléphone. `content` : une slide de contenu (surface bridge, trait de pont discret) —
+     * question et correction.
      */
-    mode?: "hero" | "focus";
+    mode?: "title" | "content";
+    /** Slug du module : la couleur identitaire se propage au badge, au filet et aux traits. */
+    moduleSlug?: string;
     className?: string;
     /** Conteneur à passer en plein écran (la projection), comme le cadre des slides. */
     ref?: Ref<HTMLElement>;
 }
 
-/** Fond commun du quiz : même DA que les pages de connexion (pont en bois clair + dégradé). */
-export default function QuizStage({children, mode = "hero", className, ref}: Props) {
-    const isDark = useIsDark();
-    const image = isDark ? "/images/header/pont-dark.png" : "/images/header/pont-light.png";
+/** Fond commun du quiz : même direction artistique que les slides. */
+export default function QuizStage({children, mode = "content", moduleSlug, className, ref}: Props) {
+    const accent = moduleSlug ? `var(--color-${moduleSlug})` : "var(--color-brand-primary)";
+    const vars = {"--module-color": accent, "--module-color-dark": accent} as CSSProperties & Record<`--${string}`, string>;
 
     return (
         <main
             ref={ref}
-            className={cn("relative isolate flex min-h-dvh flex-col overflow-hidden bg-background bg-cover bg-right-bottom bg-no-repeat text-brand-dark dark:text-brand-light", className)}
-            style={{backgroundImage: `url(${image})`}}
+            style={vars}
+            className={cn(
+                "relative isolate flex min-h-dvh flex-col overflow-hidden text-brand-dark dark:text-brand-light",
+                mode === "title"
+                    ? "bg-bridge-50 bg-cover bg-right-bottom bg-no-repeat bg-[url('/images/header/pont-light.png')] dark:bg-bridge-900 dark:bg-[url('/images/header/pont-dark.png')]"
+                    : "slide-surface",
+                className,
+            )}
         >
-            <div
-                aria-hidden="true"
-                className={cn(
-                    "absolute inset-0 -z-10",
-                    mode === "hero"
-                        ? "bg-linear-to-b from-background via-background/90 to-background/60 lg:bg-linear-to-r lg:from-background lg:via-background/85 lg:to-transparent"
-                        : "bg-background/95",
-                )}
-            />
-            {mode === "hero" && <GridLines/>}
-            {children}
+            {mode === "title" ? (
+                <>
+                    <div
+                        aria-hidden="true"
+                        className="absolute inset-0 z-0 bg-linear-to-b from-bridge-50 via-bridge-50/95 to-bridge-50/76 dark:from-bridge-900 dark:via-bridge-900/96 dark:to-bridge-900/82 lg:bg-linear-to-r lg:from-bridge-50 lg:via-bridge-50/88 lg:to-transparent lg:dark:from-bridge-900 lg:dark:via-bridge-900/90 lg:dark:to-bridge-900/28"
+                    />
+                    <GridLines/>
+                </>
+            ) : (
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 select-none overflow-hidden">
+                    <div className="absolute inset-0 bg-linear-to-br from-bridge-50 via-bridge-50/86 to-bridge-50/30 dark:from-bridge-900 dark:via-bridge-900/88 dark:to-bridge-900/44"/>
+                    <div className="absolute bottom-[-1px] right-0 z-10 h-[34%] w-[30%] bg-[url('/images/card/pont-light.png')] bg-contain bg-right-bottom bg-no-repeat opacity-50 dark:bg-[url('/images/card/pont-dark.png')]"/>
+                </div>
+            )}
+            <div className="relative z-10 flex min-h-0 flex-1 flex-col">{children}</div>
         </main>
     );
 }
 
-/** Titre de page : display + point d'accent + soulignement, comme AuthLayout. */
+/** Titre géant de la garde de section : point et filet dans la couleur du module. */
 export function QuizTitle({children, className}: {children: ReactNode; className?: string}) {
     return (
         <div>
-            <h1 className={cn("font-extrabold leading-[0.95] tracking-tight text-brand-dark dark:text-brand-light", className ?? "text-4xl sm:text-5xl")}>
+            <h1 className={cn("text-balance font-extrabold leading-[0.9] tracking-normal !text-brand-dark dark:!text-brand-light", className ?? "text-4xl sm:text-5xl")}>
                 {children}
-                <span className="text-brand-accent-dark dark:text-brand-accent">.</span>
+                <span className={moduleAccent}>.</span>
             </h1>
-            <span aria-hidden="true" className="mt-4 block h-1 w-16 rounded-full bg-brand-accent-dark dark:bg-brand-accent"/>
+            <span aria-hidden="true" className={cn("mt-5 block h-1 w-16 rounded-full", moduleFill)}/>
         </div>
     );
 }

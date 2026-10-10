@@ -50,6 +50,13 @@ describe("état public", () => {
         expect(JSON.stringify(state)).not.toContain("u1");
     });
 
+    test("les absents enregistrés à la clôture ne comptent pas comme réponses reçues", () => {
+        const absent: QuizAnswer = {...answer("u2"), selectedIds: [], timeMs: 30_000, scoreObtained: 0};
+        const state = buildState(data({session: session({phase: "reveal"}), currentAnswers: [answer("u1"), absent]}), "projection");
+        if (state.audience !== "projection") throw new Error("audience");
+        expect(state.answeredCount).toBe(1);
+    });
+
     test("l'étudiant retrouve sa réponse verrouillée", () => {
         const state = buildState(data(), {userId: "u1"});
         if (state.audience !== "student") throw new Error("audience");
@@ -62,10 +69,13 @@ describe("état public", () => {
     test("question : options sans justesse et nombre de bonnes réponses attendues", () => {
         const state = buildState(data(), "projection");
         expect(state.question?.expectedCount).toBe(1);
-        expect(state.question?.options).toEqual([{id: "a", text: "A"}, {id: "b", text: "B"}]);
+        // Ordre mélangé : on vérifie le contenu (sans indicateur de justesse), pas la position.
+        expect(state.question?.options).toHaveLength(2);
+        expect(state.question?.options).toContainEqual({id: "a", text: "A"});
+        expect(state.question?.options).toContainEqual({id: "b", text: "B"});
     });
 
-    test("reveal : correction, points, podium limité à 3 avec Prénom N.", () => {
+    test("reveal : correction et points, sans podium (il a son propre écran)", () => {
         const participants = ["a", "b", "c", "d"].map((n, i) => participant(`u${i}`, n.toUpperCase(), 4 - i));
         const d = data({
             session: session({phase: "reveal", deadline: null}),
@@ -75,14 +85,41 @@ describe("état public", () => {
         const projection = buildState(d, "projection");
         if (projection.audience !== "projection") throw new Error("audience");
         expect(projection.correctIds).toEqual(["a"]);
-        expect(projection.podium).toHaveLength(3);
-        expect(projection.podium[0].name).toBe("A D.");
+        expect(projection.podium).toEqual([]);
 
         const student = buildState(d, {userId: "u0"});
         if (student.audience !== "student") throw new Error("audience");
         expect(student.reveal).toEqual({correctIds: ["a"], selectedIds: ["a"], scoreObtained: 2, scoreMax: 2});
         expect(student.rank).toBe(1);
         expect(student.scoreMax).toBe(2);
+    });
+
+    test("leaderboard : podium limité à 3 avec Prénom N., rang de l'étudiant, plus de correction", () => {
+        const participants = ["a", "b", "c", "d"].map((n, i) => participant(`u${i}`, n.toUpperCase(), 4 - i));
+        const d = data({session: session({phase: "leaderboard", deadline: null}), participants, currentAnswers: [answer("u0")]});
+        const projection = buildState(d, "projection");
+        if (projection.audience !== "projection") throw new Error("audience");
+        expect(projection.podium).toHaveLength(3);
+        expect(projection.podium[0].name).toBe("A D.");
+        expect(projection.correctIds).toBeNull();
+
+        const student = buildState(d, {userId: "u3"});
+        if (student.audience !== "student") throw new Error("audience");
+        expect(student.rank).toBe(4);
+        expect(student.reveal).toBeNull();
+    });
+
+    test("le slug du module est exposé aux deux audiences pour la couleur identitaire", () => {
+        expect(buildState(data(), "projection").moduleSlug).toBe("js");
+        expect(buildState(data(), {userId: "u1"}).moduleSlug).toBe("js");
+    });
+
+    test("projection et étudiant voient les propositions dans le même ordre", () => {
+        const options = ["a", "b", "c", "d", "e"].map((id) => ({id, text: id.toUpperCase(), correct: id === "a"}));
+        const d = data({session: session({quiz: {negativeMarking: false, questions: [{id: "q1", position: 0, blocks: [], weight: 1, durationSeconds: 30, options}]}})});
+        const ids = (state: ReturnType<typeof buildState>) => state.question?.options.map((o) => o.id).join("");
+        expect(ids(buildState(d, "projection"))).toBe(ids(buildState(d, {userId: "u1"})));
+        expect(ids(buildState(d, "projection"))).toBe(ids(buildState(d, "projection")));
     });
 
     test("lobby : pas de question", () => {

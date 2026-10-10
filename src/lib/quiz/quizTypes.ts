@@ -24,7 +24,8 @@ export interface Quiz {
     updatedAt: string;
 }
 
-export type QuizPhase = "lobby" | "question_open" | "reveal" | "finished";
+/** `leaderboard` : classement affiché entre la correction d'une question et la question suivante. */
+export type QuizPhase = "lobby" | "question_open" | "reveal" | "leaderboard" | "finished";
 
 /** Instantané du quiz copié dans la session au lancement. */
 export interface QuizSnapshot {

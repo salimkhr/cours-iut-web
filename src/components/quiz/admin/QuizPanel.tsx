@@ -9,6 +9,8 @@ import QuestionEditor, {emptyDraft, type QuestionDraft} from "@/components/quiz/
 import QuizResultsTable from "@/components/quiz/admin/QuizResultsTable";
 import {api, quizUrl, type ApiIssue, type QuizEnvelope} from "@/components/quiz/quizClient";
 import type {Quiz, QuizQuestion} from "@/lib/quiz/quizTypes";
+import {renderInline} from "@/lib/inlineMarkdown";
+import {inlineCodeFit} from "@/components/quiz/QuizStage";
 
 function summary(question: QuizQuestion): string {
     for (const block of question.blocks) {
@@ -169,7 +171,7 @@ export default function QuizPanel({moduleId}: {moduleId: string}) {
                                         {index + 1}
                                     </span>
                                     <div className="min-w-0 flex-1">
-                                        <p className="truncate font-medium">{summary(question)}</p>
+                                        <p className={`truncate font-medium ${inlineCodeFit}`}>{renderInline(summary(question))}</p>
                                         <p className="text-xs text-muted-foreground">
                                             {question.options.length} propositions · {question.options.filter((o) => o.correct).length} correcte(s) · poids {question.weight} · {question.durationSeconds} s
                                         </p>
