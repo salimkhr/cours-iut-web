@@ -3,7 +3,7 @@
 import {useState} from "react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
-import {ChartColumn, ChevronDown, ListChecks, Play} from "lucide-react";
+import {ChartColumn, ListChecks, Play} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -56,10 +56,10 @@ export default function LaunchQuizButton({moduleId, moduleSlug, accentColor, acc
                 <DropdownMenuTrigger asChild>
                     <Button type="button" variant="outline" style={style} className={BUTTON_CLASS} disabled={busy}>
                         {busy ? "Création de la session…" : "Quiz"}
-                        <ChevronDown className="size-4" aria-hidden="true"/>
+                        <Play className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true"/>
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="min-w-56">
+                <DropdownMenuContent align="start" className="min-w-52">
                     <DropdownMenuItem disabled={empty} onSelect={() => void launch()}>
                         <Play aria-hidden="true"/>
                         {empty ? "Lancer le quiz (aucune question)" : "Lancer le quiz"}
