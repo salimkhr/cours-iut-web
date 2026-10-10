@@ -19,7 +19,7 @@ export default function ModuleAdminTabs({module, initialTab = "workflow"}: {modu
                 <ModuleWorkflow module={module}/>
             </TabsContent>
             <TabsContent value="quiz">
-                <QuizPanel moduleId={String(module._id)}/>
+                <QuizPanel moduleId={String(module._id)} moduleSlug={module.path}/>
             </TabsContent>
         </Tabs>
     );

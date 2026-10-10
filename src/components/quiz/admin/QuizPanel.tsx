@@ -1,14 +1,13 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {ArrowDown, ArrowUp, Check, ChevronDown, Pencil, Play, Plus, Trash2, X} from "lucide-react";
+import Link from "next/link";
+import {ArrowDown, ArrowUp, ChartColumn, Check, ChevronDown, Pencil, Play, Plus, Trash2, X} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {Label} from "@/components/ui/label";
 import {Switch} from "@/components/ui/switch";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import QuestionEditor, {emptyDraft, type QuestionDraft} from "@/components/quiz/admin/QuestionEditor";
-import QuizResultsTable from "@/components/quiz/admin/QuizResultsTable";
 import {api, quizUrl, type ApiIssue, type QuizEnvelope} from "@/components/quiz/quizClient";
 import type {Quiz, QuizQuestion} from "@/lib/quiz/quizTypes";
 import {renderInline} from "@/lib/inlineMarkdown";
@@ -24,16 +23,13 @@ function summary(question: QuizQuestion): string {
 
 type Editing = {mode: "new"} | {mode: "edit"; id: string} | null;
 
-export default function QuizPanel({moduleId}: {moduleId: string}) {
+export default function QuizPanel({moduleId, moduleSlug}: {moduleId: string; moduleSlug: string}) {
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [editing, setEditing] = useState<Editing>(null);
     const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
     const [launching, setLaunching] = useState(false);
-    // Lien « Voir les résultats » du menu Quiz (#resultats) : ouvre directement le second onglet.
-    const [tab, setTab] = useState<"questions" | "results">(() =>
-        typeof window !== "undefined" && window.location.hash === "#resultats" ? "results" : "questions");
 
     const base = quizUrl(moduleId);
 
@@ -135,20 +131,24 @@ export default function QuizPanel({moduleId}: {moduleId: string}) {
                         <span id="quiz-negative-hint" className="text-xs text-muted-foreground">Une erreur annule une bonne réponse</span>
                     </div>
                 </div>
-                <Button onClick={() => void launch()} disabled={launching || questions.length === 0}>
-                    <Play className="size-4" aria-hidden="true"/>
-                    {launching ? "Création de la session…" : "Lancer le quiz"}
-                </Button>
+                <div className="flex flex-wrap items-center gap-2">
+                    <Button asChild variant="outline">
+                        <Link href={`/admin/modules/${moduleSlug}/resultats`}>
+                            <ChartColumn className="size-4" aria-hidden="true"/>
+                            Résultats
+                        </Link>
+                    </Button>
+                    <Button onClick={() => void launch()} disabled={launching || questions.length === 0}>
+                        <Play className="size-4" aria-hidden="true"/>
+                        {launching ? "Création de la session…" : "Lancer le quiz"}
+                    </Button>
+                </div>
                 {error && <p role="alert" className="basis-full text-sm text-destructive">{error}</p>}
             </section>
 
-            <Tabs value={tab} onValueChange={(value) => setTab(value as "questions" | "results")} className="gap-4">
-                <TabsList aria-label="Contenu du quiz">
-                    <TabsTrigger value="questions">Questions ({questions.length})</TabsTrigger>
-                    <TabsTrigger value="results">Résultats</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="questions" className="flex flex-col gap-3">
+            {/* Les résultats ont leur propre page (/resultats) : l'onglet Quiz ne gère que les questions. */}
+            <section className="flex flex-col gap-3" aria-labelledby="quiz-questions">
+                <h2 id="quiz-questions" className="text-lg font-bold">Questions</h2>
                     {editing === null && (
                         <Button variant="outline" className="self-start" onClick={() => setEditing({mode: "new"})}>
                             <Plus className="size-4" aria-hidden="true"/>
@@ -248,12 +248,7 @@ export default function QuizPanel({moduleId}: {moduleId: string}) {
                             </li>
                         ))}
                     </ol>
-                </TabsContent>
-
-                <TabsContent value="results">
-                    <QuizResultsTable moduleId={moduleId}/>
-                </TabsContent>
-            </Tabs>
+            </section>
         </div>
     );
 }
