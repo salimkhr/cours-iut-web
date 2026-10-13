@@ -13,6 +13,7 @@ describe("adminDashboardConfig", () => {
             "/admin/utilisateurs",
             "/admin/calibrage",
             "/admin/outils",
+            "/admin/vacations",
         ]);
     });
 

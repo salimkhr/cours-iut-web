@@ -90,8 +90,8 @@ au format hérité), `migrate-tables` (tableaux migrés sans `headers`/`rows`), 
 Modules :
 
 - `src/app/` — routing (`[moduleSlug]/[sectionSlug]/[contentSlug]`, `admin/(dashboard)`, `api`,
-  `login`, `register`, `oauth/consent`, `actions`). **29 routes API** dont `admin/*` (modules,
-  sections, users, export/import, push-to-prod, calibrage, content), `auth/[...all]`, `live/*`
+  `login`, `register`, `oauth/consent`, `actions`). **48 routes API** dont `admin/*` (modules,
+  sections, users, export/import, push-to-prod, calibrage, content, vacations), `auth/[...all]`, `live/*`
   (sessions temps réel SSE), `mcp`, `upload-avatar`, `avatar/[filename]`, `course-image/[filename]`,
   `health`.
 - `src/components/ui/` — primitives UI (`Text`, `Heading`, `List`, `Code`, `Stack`, `Grid`, etc.)
@@ -104,6 +104,12 @@ Modules :
   modules (`getModules.ts`), garde admin (`withAdmin.ts`), OAuth broker (`scalekit.ts`),
   publication GitLab (`gitlab.ts`)
 - `src/lib/schemas/` — schémas **Zod** (login, register, profile, module, section, pedagogy, user-edit)
+- `src/lib/vacation/` — fiche de vacations mensuelle : parseur iCal HyperPlanning (`ical`), regroupement
+  jour/matière (`fiche`, pur, partagé client/serveur), remplissage du modèle Excel embarqué (`xlsx`,
+  `template`) via un zip minimal sur `node:zlib` (`zip`) — pas de dépendance xlsx ; signature de l'admin
+  stockée en base (`signature`, collection `vacation_signatures`), normalisée en PNG par sharp
+  (`signatureImage`), jamais dans le dépôt ; brouillon e-mail `.eml` avec la fiche en pièce jointe (`eml`,
+  `generate`, route `admin/vacations/draft`)
 - `src/lib/live/` — sessions live SSE (`LiveSessionRegistry`, `drift`, `stopwatch`, `liveTypes`)
 - `src/lib/upload/` — pipeline d'upload d'images (`config`, `mime`, `scanner`, `processor`, `storage`)
 - `src/lib/block*` — modèle de contenu par blocs migré en MongoDB (`blockDefs`, `blockRegistry`,
@@ -149,7 +155,8 @@ assets publics, `/`) exigent une session connectée.
   Jamais exposer un `_id` brut.
 - **Index** : déclarés dans `src/lib/db/indexes.ts`, appliqués par `bun run create-indexes`
   (idempotent). Actuels : `modules.path` (unique), `course_content.{moduleSlug,sectionSlug,contentType}`
-  (unique). Tout nouvel index passe par ce fichier.
+  (unique), `vacation_signatures.userId` (unique) et les index du quiz live (`module_quizzes`, `quiz_sessions`,
+  `quiz_participants`, `quiz_answers`). Tout nouvel index passe par ce fichier.
 - **Transactions** : non utilisées. Nécessitent un replica set MongoDB.
 - **`bson` épinglé à `7.2.0`** (dépendance directe **et** entrée `overrides` dans `package.json`).
   À partir de `7.3.0`, `bson` exécute au chargement du module un bloc `static` qui lit
@@ -177,6 +184,8 @@ Toutes lues directement via `process.env.X` (pas de module `lib/env.ts`).
 | `GITLAB_CORRECTION_TOKEN`      | PAT GitLab (scope `api`) — publication des corrections de TP  | `src/lib/gitlab.ts`             |
 | `GITLAB_PROJET_URL`            | Base d'URL du serveur GitLab pour les projets privés créés via MCP (`publish_private_document`) — pas de groupe requis, écrit dans l'espace personnel du token, découplé de `GITLAB_CORRECTION_URL` | `src/lib/gitlab.ts` |
 | `GITLAB_PROJET_TOKEN`          | PAT GitLab (scope `api`) — création/écriture de projets privés via `publish_private_document`, distinct de `GITLAB_CORRECTION_TOKEN` | `src/lib/gitlab.ts` |
+| `HPLANNING_ICAL_URL`           | URL de l'export iCal HyperPlanning de l'enseignant — source de la fiche de vacations (`/admin/vacations`). Contient un identifiant privé : serveur uniquement | `api/admin/vacations` |
+| `VACATION_MAIL_TO`             | Destinataire proposé pour le brouillon e-mail de la fiche de vacations (optionnel, modifiable dans `/admin/vacations`) | `api/admin/vacations` |
 | `BETTER_AUTH_SECRET`           | **À définir** : non référencé explicitement dans `src/`, mais lu en interne par `better-auth` |     |
 
 Règles : `.env.local` est git-ignored. Jamais de secret en dur. Tout secret côté serveur uniquement
