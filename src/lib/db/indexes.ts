@@ -28,5 +28,12 @@ export async function ensureIndexes(db: Db): Promise<string[]> {
         ),
     );
 
+    created.push(
+        await db.collection("resources").createIndex(
+            { isVisible: 1, createdAt: -1 },
+            { name: "resources_visible_recent" },
+        ),
+    );
+
     return created;
 }
