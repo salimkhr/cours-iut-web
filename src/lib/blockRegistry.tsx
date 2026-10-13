@@ -9,6 +9,7 @@ import ImageCard from "@/components/Cards/ImageCard";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { renderInline } from "@/lib/inlineMarkdown";
 import CodeCard from "@/components/Cards/CodeCard";
+import FileTreeCard from "@/components/Cards/FileTreeCard";
 import InputCard from "@/components/Cards/InputCard";
 import CodeWithPreviewCard from "@/components/Cards/CodeWithPreviewCard";
 import dynamic from "next/dynamic";
@@ -20,7 +21,7 @@ import {
     LayoutPanelLeft, PanelLeft, MessageSquare, ChevronsUpDown,
     Image, Table as TableIcon, Link, Code, Eye,
     Share2, Download, Quote, Minus,
-    Monitor, StickyNote, FileCode, Milestone,
+    Monitor, StickyNote, FileCode, Milestone, FolderTree,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import CourseReminder from "@/components/CourseReminder";
@@ -77,6 +78,12 @@ interface ClientPart {
 }
 
 const clientParts: Record<string, ClientPart> = {
+    "file-tree": {
+        icon: FolderTree,
+        render: ({ title, paths }: BlockRenderProps) => (
+            <FileTreeCard title={String(title ?? "")} paths={String(paths ?? "")} />
+        ),
+    },
     "text": {
         icon: AlignLeft,
         render: ({ content }: BlockRenderProps) => (

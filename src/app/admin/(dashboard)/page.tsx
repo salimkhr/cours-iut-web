@@ -7,5 +7,5 @@ export default async function AdminIndexPage() {
         notFound();
     }
 
-    redirect("/admin/modules");
+    redirect("/admin/utilisateurs");
 }

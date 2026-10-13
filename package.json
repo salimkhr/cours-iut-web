@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "db:init": "bun src/scripts/init-db.ts",
     "dev": "bunx next dev",
     "build": "bunx next build",
     "postbuild": "node scripts/postbuild.js",

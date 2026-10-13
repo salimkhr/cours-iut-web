@@ -45,10 +45,10 @@ test("rend le hero pont de la slide titre sans attendre l hydratation", () => {
     expect(html).toContain("Pont en bois clair");
     expect(html).toContain("/images/header/pont-light.png");
     expect(html).toContain("/images/header/pont-dark.png");
-    expect(html).toContain("lg:text-8xl");
-    expect(html).toContain("xl:text-9xl");
+    expect(html).toContain("lg:text-[4.8rem]");
+    expect(html).toContain("xl:text-[6.4rem]");
     expect(html).not.toContain("xl:text-[10rem]");
-    expect(html).toContain("lg:text-lg");
+    expect(html).toContain("lg:text-[0.9rem]");
     expect(html).toContain("lg:pl-32");
     expect(html).not.toContain("lg:pr-32");
     expect(html).toContain("max-w-[860px]");

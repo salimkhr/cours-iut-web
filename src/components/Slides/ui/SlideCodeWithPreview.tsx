@@ -81,8 +81,9 @@ export const SlideCodeWithPreview: React.FC<SlideCodeWithPreviewProps> = ({
     const previewValue = preview?.trim() ?? "";
 
     return (
-        <div className={cn("flex w-full min-h-0 flex-col slide-code-container", className)}>
+        <div className={cn("flex w-full min-h-0 flex-1 flex-col slide-code-container", className)}>
             <CodeWithPreviewCard
+                fillAvailableHeight
                 panels={panels}
                 sources={previewValue ? {
                     language,

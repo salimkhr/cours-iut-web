@@ -1,5 +1,5 @@
-export type AdminNavIconId = "modules" | "users" | "tools" | "calibrage" | "pedagogie" | "vacations";
-export type AdminToolActionId = "migration" | "export-import";
+export type AdminNavIconId = "users" | "tools" | "calibrage" | "vacations";
+export type AdminToolActionId = "migration" | "export-import" | "slide-repair";
 
 export interface AdminNavItem {
     href: string;
@@ -22,18 +22,11 @@ export interface AdminToolAction {
 
 export const ADMIN_NAV_GROUPS = [
     {
-        label: "Pilotage",
+        label: "Administration",
         items: [
-            {href: "/admin/modules", label: "Modules & sections", icon: "modules"},
             {href: "/admin/utilisateurs", label: "Utilisateurs", icon: "users"},
-        ],
-    },
-    {
-        label: "Outils",
-        items: [
-            {href: "/admin/outils", label: "Outils techniques", icon: "tools"},
             {href: "/admin/calibrage", label: "Calibrage", icon: "calibrage"},
-            {href: "/admin/pedagogie", label: "Pédagogie", icon: "pedagogie"},
+            {href: "/admin/outils", label: "Outils", icon: "tools"},
             {href: "/admin/vacations", label: "Vacations", icon: "vacations"},
         ],
     },
@@ -49,5 +42,10 @@ export const ADMIN_TOOL_ACTIONS = [
         id: "export-import",
         title: "Exporter / importer",
         description: "Transférer les modules et sections entre environnements.",
+    },
+    {
+        id: "slide-repair",
+        title: "Réparer les slides",
+        description: "Convertit les présentations dont les blocs racine sont restés au format cours (`section`) au lieu du format slide.",
     },
 ] as const satisfies readonly AdminToolAction[];

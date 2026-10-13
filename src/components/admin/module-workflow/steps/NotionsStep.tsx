@@ -1,7 +1,7 @@
 "use client";
 
 import {useState} from "react";
-import {useForm, type Resolver} from "react-hook-form";
+import {useForm, useWatch, type Resolver} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import {X} from "lucide-react";
@@ -33,8 +33,8 @@ export default function NotionsStep({module, onSaved}: NotionsStepProps) {
     const [newNotion, setNewNotion] = useState("");
 
     const {
+        control,
         handleSubmit,
-        watch,
         setValue,
         formState: {isSubmitting},
     } = useForm<NotionsValues>({
@@ -42,7 +42,7 @@ export default function NotionsStep({module, onSaved}: NotionsStepProps) {
         defaultValues: {plannedNotions: module.plannedNotions ?? []},
     });
 
-    const notions = watch("plannedNotions");
+    const notions = useWatch({control, name: "plannedNotions"});
 
     const addNotion = () => {
         const trimmed = newNotion.trim();

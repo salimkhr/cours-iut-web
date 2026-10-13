@@ -52,7 +52,11 @@ export default function ModuleInfo({currentModule}: ModuleInfoProps) {
             <DialogTrigger asChild>
                 <Button
                     variant="outline"
-                    className="group inline-flex items-center justify-center gap-2 rounded-lg border-2 border-bridge-700/45 dark:border-bridge-300/45 bg-transparent text-brand-dark dark:text-bridge-100 hover:bg-bridge-700/10 hover:border-bridge-700/70 dark:hover:bg-bridge-300/10 dark:hover:border-bridge-300/70 px-6 py-3 text-sm font-semibold tracking-wide transition-all duration-300 h-auto"
+                    style={{
+                        "--module-color": moduleColor(currentModule),
+                        "--module-color-dark": moduleColor(currentModule, "dark"),
+                    } as React.CSSProperties}
+                    className="group h-auto rounded-lg border-[3px] border-(--module-color) bg-transparent px-6 py-3 text-sm font-semibold tracking-wide text-brand-dark shadow-none transition-all duration-300 hover:border-(--module-color) hover:bg-(--module-color) hover:text-white dark:text-brand-light dark:hover:text-brand-dark"
                 >
                     Plus d&apos;infos
                     <Info aria-hidden="true" className="size-4 transition-transform duration-300 group-hover:scale-110"/>

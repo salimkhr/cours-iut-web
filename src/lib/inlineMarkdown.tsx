@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import Code from "@/components/ui/Code";
 
 const SAFE_URL_PREFIXES = ["http://", "https://", "/", "#", "mailto:"];
@@ -88,6 +89,7 @@ function findClosing(
  *  - _italique_ / *italique*
  *  - `code`
  *  - [label](url)
+ *  - ![texte alternatif](url)
  *  - saut de ligne → <br/>
  *
  * Scope strict inline : pas de heading, liste, blockquote. Les marqueurs non
@@ -124,6 +126,32 @@ export function renderInline(text: string): React.ReactNode[] {
                 out.push(<Code key={key++}>{text.slice(i + 1, end)}</Code>);
                 i = end + 1;
                 continue;
+            }
+        }
+
+        if (ch === "!" && text[i + 1] === "[") {
+            const altEnd = text.indexOf("]", i + 2);
+            if (altEnd !== -1 && text[altEnd + 1] === "(") {
+                const urlEnd = text.indexOf(")", altEnd + 2);
+                if (urlEnd !== -1) {
+                    const alt = text.slice(i + 2, altEnd);
+                    const url = text.slice(altEnd + 2, urlEnd);
+                    if (isSafeUrl(url)) {
+                        flush();
+                        out.push(
+                            <Image
+                                key={key++}
+                                src={url}
+                                alt={alt}
+                                width={56}
+                                height={56}
+                                className="inline-block size-14 rounded-md object-cover shadow-sm ring-1 ring-black/10"
+                            />
+                        );
+                        i = urlEnd + 1;
+                        continue;
+                    }
+                }
             }
         }
 

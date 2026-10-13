@@ -74,6 +74,26 @@ describe("renderInline — liens", () => {
     });
 });
 
+describe("renderInline — images", () => {
+    it("rend une image sûre avec son texte alternatif", () => {
+        const [image] = renderInline("![Pochette de Rootkit](/pochettes/rootkit.png)") as React.ReactElement<{
+            alt: string;
+            src: string;
+            width: number;
+            height: number;
+        }>[];
+
+        expect(image.props.src).toBe("/pochettes/rootkit.png");
+        expect(image.props.alt).toBe("Pochette de Rootkit");
+        expect(image.props.width).toBe(56);
+        expect(image.props.height).toBe(56);
+    });
+
+    it("refuse une URL d'image non sûre", () => {
+        expect(render("![x](javascript:alert(1))")).toBe("![x](javascript:alert(1))");
+    });
+});
+
 describe("renderInline — sauts de ligne", () => {
     it("convertit les retours ligne en <br/>", () => {
         expect(render("Total collecté\nMoyenne des montants")).toBe(

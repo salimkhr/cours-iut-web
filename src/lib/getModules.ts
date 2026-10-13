@@ -7,7 +7,13 @@ import {WithId} from "mongodb";
 // le footer et la page peuvent appeler getModules() sans multiplier les requêtes DB.
 const getModules = cache(async function getModules(): Promise<(Module & { _id: string })[]> {
     const db = await connectToDB();
-    const modules: WithId<Module>[] = await db.collection<Module>("modules").find().toArray();
+    // Toutes les surfaces (accueil, navbar, footer) doivent recevoir le même ordre.
+    // Sans tri, MongoDB ne garantit pas l'ordre des documents entre deux requêtes.
+    const modules: WithId<Module>[] = await db
+        .collection<Module>("modules")
+        .find()
+        .sort({_id: 1})
+        .toArray();
 
     return modules.map(mod => ({
         ...mod,

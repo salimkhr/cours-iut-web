@@ -15,6 +15,12 @@ import type { Block } from "@/types/CourseContent";
 /** Équivalent slide de chaque type de bloc de cours. */
 const COURSE_TO_SLIDE: Record<string, string> = {
     "slide-screen": "slide",
+    // `section` : même schéma de props ({title}) que `slide` (cf.
+    // blockPropsSchemas). Un document `contentType: "slide"` migré ou
+    // enregistré avec des blocs racine `section` (structure d'article de
+    // cours) est invisible côté joueur — `SlideBlocksRenderer` ne garde que
+    // les racines `slide`/`slide-screen` et en fait un jeu de slides vide.
+    "section": "slide",
     "text": "slide-text",
     "code": "slide-code",
     "list": "slide-list",
@@ -28,7 +34,7 @@ const COURSE_TO_SLIDE: Record<string, string> = {
 const ALREADY_SLIDE = new Set([
     "slide", "slide-text", "slide-code", "slide-list", "slide-list-item",
     "slide-note", "slide-table", "slide-image", "slide-code-with-preview",
-    "slide-transition", "diagram", "columns", "column",
+    "slide-transition", "diagram", "columns", "column", "file-tree",
 ]);
 
 /**

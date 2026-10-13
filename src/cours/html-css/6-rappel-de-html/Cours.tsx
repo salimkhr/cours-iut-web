@@ -4,7 +4,6 @@ import {List, ListItem} from "@/components/ui/List";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import Code from "@/components/ui/Code";
 import Link from "next/link";
-import Image from "next/image";
 
 export default function Cours() {
 
@@ -1381,7 +1380,7 @@ interface InputExampleProps {
     preview?: React.ReactNode;
 }
 
-export function InputExample({title, description, code, preview}: InputExampleProps) {
+export function InputExample({title, description}: InputExampleProps) {
     return (
         <div className="space-y-2">
             <Heading level={4}>{title}</Heading>

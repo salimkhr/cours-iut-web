@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import FileTreeCard from "@/components/Cards/FileTreeCard";
 import type {Block} from "@/types/CourseContent";
 import {renderInline} from "@/lib/inlineMarkdown";
 import {SlideCode} from "@/components/Slides/ui/SlideCode";
@@ -31,6 +32,8 @@ interface SlideBlockItemProps {
 
 export function SlideBlockItem({block, renderNested}: SlideBlockItemProps) {
     switch (block.type) {
+        case "file-tree":
+            return <FileTreeCard title={String(block.props.title ?? "")} paths={String(block.props.paths ?? "")} presentation />;
         case "slide-text":
             return (
                 <SlideText>

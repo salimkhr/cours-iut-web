@@ -14,6 +14,7 @@ import ResumeCourseButton from "@/components/page/ResumeCourseButton";
 import {Metadata} from "next";
 import {getServerSession} from "@/lib/auth";
 import {getCorrectionBaseUrl} from "@/lib/gitlab";
+import ContextualModuleAdmin from "@/components/admin/ContextualModuleAdmin";
 
 
 interface ModulePageProps {
@@ -73,6 +74,7 @@ export default async function Module({params}: ModulePageProps) {
                         />
                     )}
                     <ModuleInfo currentModule={currentModule}/>
+                    {isAdmin && <ContextualModuleAdmin module={currentModule}/>}
                 </div>
             </HeroSection>
 
@@ -81,7 +83,6 @@ export default async function Module({params}: ModulePageProps) {
                 totalSections={totalSections}
                 totalAvailableSections={totalAvailableSections}
             />
-
             <CoursesSection title="Les cours">
                 {currentModule.sections.sort((s1, s2) => s1.order - s2.order).map((section, index) => (
                     <div
