@@ -1,4 +1,4 @@
-export type AdminNavIconId = "modules" | "users" | "tools" | "calibrage" | "pedagogie";
+export type AdminNavIconId = "modules" | "users" | "tools" | "calibrage" | "pedagogie" | "vacations";
 export type AdminToolActionId = "migration" | "export-import";
 
 export interface AdminNavItem {
@@ -34,6 +34,7 @@ export const ADMIN_NAV_GROUPS = [
             {href: "/admin/outils", label: "Outils techniques", icon: "tools"},
             {href: "/admin/calibrage", label: "Calibrage", icon: "calibrage"},
             {href: "/admin/pedagogie", label: "Pédagogie", icon: "pedagogie"},
+            {href: "/admin/vacations", label: "Vacations", icon: "vacations"},
         ],
     },
 ] as const satisfies readonly AdminNavGroup[];
