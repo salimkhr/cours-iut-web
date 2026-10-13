@@ -21,5 +21,12 @@ export async function ensureIndexes(db: Db): Promise<string[]> {
         ),
     );
 
+    created.push(
+        await db.collection("vacation_signatures").createIndex(
+            { userId: 1 },
+            { unique: true, name: "unique_vacation_signature_user" },
+        ),
+    );
+
     return created;
 }
