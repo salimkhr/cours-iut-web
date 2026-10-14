@@ -1,9 +1,9 @@
 "use client";
 
-import {useRef, useState, type ElementType, type KeyboardEvent} from "react";
+import {useRef, useState, type ElementType, type KeyboardEvent, type ReactNode} from "react";
 import {ArrowUpRight, BookOpen, ChevronDown, ChevronUp, FlaskConical, Play, PlayCircle, Wrench, type LucideIcon} from "lucide-react";
 import {getYouTubeId, youtubeThumbnailUrl} from "@/lib/youtube";
-import {RESOURCE_KIND_LABELS, type ResourceKind} from "@/lib/schemas/resource.schema";
+import {RESOURCE_KIND_LABELS, RESOURCE_KINDS, type ResourceKind} from "@/lib/schemas/resource.schema";
 import {cn} from "@/lib/utils";
 import CardBridgeBackground from "@/components/Cards/CardBridgeBackground";
 import type {Resource} from "@/types/Resource";
@@ -25,6 +25,16 @@ const KIND_ACTIONS: Record<ResourceKind, string> = {
     recherche: "Lire la recherche",
     outil: "Essayer l'outil",
 };
+
+/** Libellés pluriels des puces de filtre. */
+const FILTER_LABELS: Record<ResourceKind, string> = {
+    article: "Articles",
+    video: "Vidéos",
+    recherche: "Recherches",
+    outil: "Outils",
+};
+
+type Filter = ResourceKind | "all";
 
 // Fuseau fixé : le rendu serveur et le rendu client doivent produire la même date.
 const DATE_LONG = new Intl.DateTimeFormat("fr-FR", {day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Paris"});
@@ -172,7 +182,7 @@ function DetailCard({resource}: {resource: Resource}) {
 
                 {videoId && <VideoThumb videoId={videoId} durationMin={resource.durationMin}/>}
 
-                <p className="flex-1 text-base font-medium leading-relaxed text-brand-dark/85 dark:text-bridge-100/90">
+                <p className="max-w-[68ch] flex-1 text-base font-medium leading-relaxed text-brand-dark/85 dark:text-bridge-100/90">
                     {resource.description}
                 </p>
 
@@ -248,7 +258,7 @@ function MobileRow({resource, open, onToggle}: {resource: Resource; open: boolea
                             label={`${KIND_ACTIONS.video} : ${resource.title} (s'ouvre dans un nouvel onglet)`}
                         />
                     )}
-                    <p className="text-base font-medium leading-relaxed text-brand-dark/85 dark:text-bridge-100/90">
+                    <p className="max-w-[68ch] text-base font-medium leading-relaxed text-brand-dark/85 dark:text-bridge-100/90">
                         {resource.description}
                     </p>
                     {resource.note && <NoteBlock note={resource.note}/>}
@@ -273,7 +283,7 @@ function MobileRow({resource, open, onToggle}: {resource: Resource; open: boolea
  *   départ) ; le survol ou le focus d'une ligne change l'aperçu, un clic ouvre la ressource.
  * - Mobile / tactile : accordéon (voir MobileRow), sans carte séparée.
  */
-export default function ResourcesList({resources}: {resources: Resource[]}) {
+function ResourcesBrowser({resources}: {resources: Resource[]}) {
     const [selected, setSelected] = useState(0);
     const [openMobile, setOpenMobile] = useState<number | null>(0);
     const [expanded, setExpanded] = useState(false);
@@ -398,6 +408,72 @@ export default function ResourcesList({resources}: {resources: Resource[]}) {
                     </div>
                 )}
             </nav>
+        </div>
+    );
+}
+
+/** Puce de filtre : bouton à bascule (`aria-pressed`), zone tactile de 44 px. */
+function FilterChip({active, count, onClick, children}: {active: boolean; count: number; onClick: () => void; children: string}) {
+    return (
+        <button
+            type="button"
+            aria-pressed={active}
+            onClick={onClick}
+            className={cn(
+                "inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors duration-200",
+                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary",
+                active
+                    ? "border-brand-primary bg-brand-primary text-white dark:text-brand-dark"
+                    : "border-bridge-500/35 bg-bridge-50/60 text-brand-dark hover:bg-bridge-100 dark:bg-bridge-800/60 dark:text-brand-light dark:hover:bg-bridge-700",
+            )}
+        >
+            {children}
+            <span className={cn("text-xs tabular-nums", active ? "opacity-90" : "opacity-65")}>{count}</span>
+        </button>
+    );
+}
+
+/**
+ * Filtres par type au-dessus de la liste. Seuls les types présents ont une puce, et la barre n'apparaît
+ * que s'il y en a au moins deux. `key` remet à zéro la sélection, l'accordéon et le repli au changement.
+ */
+export default function ResourcesList({resources, heading}: {resources: Resource[]; heading: ReactNode}) {
+    const [filter, setFilter] = useState<Filter>("all");
+
+    if (resources.length === 0) return null;
+
+    const kinds = RESOURCE_KINDS.filter((kind) => resources.some((resource) => resource.kind === kind));
+    const shown = filter === "all" ? resources : resources.filter((resource) => resource.kind === filter);
+
+    return (
+        <div className="flex flex-col gap-6 lg:gap-8">
+            {/* Titre à gauche, filtres à droite sur la même ligne (au-dessus du sommaire) ; sous 640 px
+                les puces passent sous le titre et reviennent à la ligne. */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+                {/* Conteneur dédié : un élément issu d'un Server Component, placé à côté d'un autre enfant,
+                    déclenche l'avertissement React « unique key » (faux positif) ; seul enfant, il n'y a rien à valider. */}
+                <div className="min-w-0">{heading}</div>
+
+                {kinds.length > 1 && (
+                    <div role="group" aria-label="Filtrer les ressources par type" className="flex flex-wrap gap-2 sm:justify-end">
+                        <FilterChip active={filter === "all"} count={resources.length} onClick={() => setFilter("all")}>
+                            Tout
+                        </FilterChip>
+                        {kinds.map((kind) => (
+                            <FilterChip
+                                key={kind}
+                                active={filter === kind}
+                                count={resources.filter((resource) => resource.kind === kind).length}
+                                onClick={() => setFilter(kind)}
+                            >
+                                {FILTER_LABELS[kind]}
+                            </FilterChip>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <ResourcesBrowser key={filter} resources={shown}/>
         </div>
     );
 }
