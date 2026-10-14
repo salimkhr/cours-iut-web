@@ -3,7 +3,10 @@ import {connectToDB} from "@/lib/mongodb";
 import type {Resource} from "@/types/Resource";
 import type {ResourceFormData} from "@/lib/schemas/resource.schema";
 
-export const RESOURCES_COLLECTION = "resources";
+import {RESOURCES_COLLECTION} from "@/lib/resources";
+
+// Réexporté : la constante vit dans resources.ts (sans dépendance React ni Mongo), pour être testable.
+export {RESOURCES_COLLECTION};
 
 type ResourceDoc = ResourceFormData & {isVisible: boolean; createdAt: Date};
 
