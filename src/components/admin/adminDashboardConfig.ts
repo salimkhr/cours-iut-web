@@ -1,5 +1,5 @@
 export type AdminNavIconId = "users" | "tools" | "calibrage" | "vacations" | "veille";
-export type AdminToolActionId = "migration" | "export-import" | "slide-repair";
+export type AdminToolActionId = "migration" | "export-import" | "slide-repair" | "indexes";
 
 export interface AdminNavItem {
     href: string;
@@ -48,5 +48,10 @@ export const ADMIN_TOOL_ACTIONS = [
         id: "slide-repair",
         title: "Réparer les slides",
         description: "Convertit les présentations dont les blocs racine sont restés au format cours (`section`) au lieu du format slide.",
+    },
+    {
+        id: "indexes",
+        title: "Index MongoDB",
+        description: "Crée les index manquants de la base de cet environnement (modules, contenus, signatures, veille). Sans risque : ne touche pas aux données.",
     },
 ] as const satisfies readonly AdminToolAction[];

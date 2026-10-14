@@ -1,7 +1,8 @@
 "use client";
 
 import {useState} from "react";
-import {ArrowRight, Database, UploadCloud, Wrench} from "lucide-react";
+import {ArrowRight, Database, ListChecks, Loader2, UploadCloud, Wrench} from "lucide-react";
+import {toast} from "sonner";
 import {Button} from "@/components/ui/button";
 import MigrateSheet from "@/components/admin/MigrateSheet";
 import ExportImportSheet from "@/components/admin/ExportImportSheet";
@@ -14,6 +15,7 @@ const TOOL_ICONS = {
     migration: Database,
     "export-import": UploadCloud,
     "slide-repair": Wrench,
+    indexes: ListChecks,
 } as const;
 
 export type {ModuleOption} from "@/components/admin/adminTypes";
@@ -26,6 +28,22 @@ export default function AdminToolsPanel({modules}: AdminToolsPanelProps) {
     const [migrationOpen, setMigrationOpen] = useState(false);
     const [exportImportOpen, setExportImportOpen] = useState(false);
     const [slideRepairOpen, setSlideRepairOpen] = useState(false);
+    const [indexesBusy, setIndexesBusy] = useState(false);
+
+    /** Pas de panneau : l'action est instantanée, le résultat s'affiche dans une notification. */
+    async function runIndexes() {
+        setIndexesBusy(true);
+        try {
+            const res = await fetch("/api/admin/indexes", {method: "POST"});
+            const data = (await res.json().catch(() => ({}))) as {indexes?: string[]; error?: string};
+            if (!res.ok) throw new Error(data.error ?? "Création des index impossible");
+            toast.success(`${data.indexes?.length ?? 0} index en place.`, {description: data.indexes?.join(", ")});
+        } catch (e) {
+            toast.error(e instanceof Error ? e.message : "Création des index impossible");
+        } finally {
+            setIndexesBusy(false);
+        }
+    }
 
     return (
         <>
@@ -53,14 +71,18 @@ export default function AdminToolsPanel({modules}: AdminToolsPanelProps) {
                                 type="button"
                                 variant="outline"
                                 className="min-h-11 gap-2 border-bridge-500/45"
+                                disabled={action.id === "indexes" && indexesBusy}
                                 onClick={() => {
                                     if (action.id === "migration") setMigrationOpen(true);
                                     else if (action.id === "export-import") setExportImportOpen(true);
+                                    else if (action.id === "indexes") void runIndexes();
                                     else setSlideRepairOpen(true);
                                 }}
                             >
-                                Ouvrir
-                                <ArrowRight className="size-4" aria-hidden="true"/>
+                                {action.id === "indexes" ? (indexesBusy ? "En cours…" : "Lancer") : "Ouvrir"}
+                                {action.id === "indexes" && indexesBusy
+                                    ? <Loader2 className="size-4 animate-spin" aria-hidden="true"/>
+                                    : <ArrowRight className="size-4" aria-hidden="true"/>}
                             </Button>
                         </article>
                     );
