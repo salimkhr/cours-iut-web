@@ -5,10 +5,11 @@ import {getServerSession} from "@/lib/auth";
 import getModules from "@/lib/getModules";
 import HeroSection from "@/components/page/HeroSection";
 import CoursesSection from "@/components/page/CoursesSection";
-import AboutSection from "@/components/page/AboutSection";
 import AuthCTAPair from "@/components/page/AuthCTAPair";
 import PageFooter from "@/components/page/PageFooter";
 import ExtraModulesSection from "@/components/page/ExtraModulesSection";
+import ResourcesSection from "@/components/page/ResourcesSection";
+import {getResources} from "@/lib/getResources";
 import {Button} from "@/components/ui/button";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 import {Metadata} from "next";
@@ -18,8 +19,6 @@ export const metadata: Metadata = generatePageMetadata({
     noIndex: false,
 });
 
-const SHOW_HOME_ABOUT_SECTION = false;
-
 export default async function Home() {
     const session = await getServerSession();
     const isAuthed = !!session;
@@ -28,6 +27,7 @@ export default async function Home() {
     const isAdmin = session?.user.role === 'admin';
     const programModules = isAuthed ? allModules.filter(m => !m.isExtra && (isAdmin || m.isVisible !== false)) : [];
     const extraModules   = isAuthed ? allModules.filter(m => m.isExtra  && (isAdmin || m.isVisible !== false)) : [];
+    const resources = isAuthed ? await getResources(true) : [];
 
     return (
         <main className="flex flex-col w-full items-center justify-start min-h-screen bg-background">
@@ -80,6 +80,8 @@ export default async function Home() {
                 <ExtraModulesSection modules={extraModules} isAdmin={isAdmin} />
             )}
 
+            {isAuthed && <ResourcesSection resources={resources}/>}
+
             {!isAuthed && (
                 <section className="w-full max-w-7xl mx-auto px-6 lg:px-12 -mt-8 lg:-mt-12 mb-16 lg:mb-24 flex flex-col items-center gap-5">
                     <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-dark/60 dark:text-bridge-200/60">
@@ -88,10 +90,6 @@ export default async function Home() {
                     </span>
                     <AuthCTAPair className="justify-center"/>
                 </section>
-            )}
-
-            {SHOW_HOME_ABOUT_SECTION && (
-                <AboutSection modules={allModules} isAuthed={isAuthed} />
             )}
 
             <PageFooter/>

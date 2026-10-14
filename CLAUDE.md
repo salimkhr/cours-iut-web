@@ -90,7 +90,7 @@ au format hérité), `migrate-tables` (tableaux migrés sans `headers`/`rows`), 
 Modules :
 
 - `src/app/` — routing (`[moduleSlug]/[sectionSlug]/[contentSlug]`, `admin/(dashboard)`, `api`,
-  `login`, `register`, `oauth/consent`, `actions`). **48 routes API** dont `admin/*` (modules,
+  `login`, `register`, `oauth/consent`, `actions`). **51 routes API** dont `admin/*` (modules,
   sections, users, export/import, push-to-prod, calibrage, content, vacations), `auth/[...all]`, `live/*`
   (sessions temps réel SSE), `mcp`, `upload-avatar`, `avatar/[filename]`, `course-image/[filename]`,
   `health`.

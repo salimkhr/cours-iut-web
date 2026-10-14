@@ -40,6 +40,8 @@ import {
 import Module, { type ModuleUniverse } from "@/types/Module";
 import Section from "@/types/Section";
 import { SKILL_MANIFEST, SKILL_DOCUMENTS } from "@/lib/skills/pedagogy";
+import { RESOURCE_KINDS } from "@/lib/schemas/resource.schema";
+import { RESOURCES_COLLECTION, addResource } from "@/lib/resources";
 export const runtime = "nodejs";
 
 const SERVER_INSTRUCTIONS = `Ce serveur gère le référentiel pédagogique multi-supports du BUT Informatique.
@@ -50,6 +52,9 @@ Deux skills pédagogiques sont disponibles :
 
 Chargement : get_pedagogical_skill_manifest() puis get_pedagogical_skill_document(id)
 avec id = "module-design" ou "content-writer" selon la tâche.
+
+Veille : add_resource / list_resources gèrent les ressources de la section « À lire, à voir »
+de l'accueil (article, vidéo, recherche, outil). Appeler list_resources avant d'ajouter.
 
 Avant toute production, le workflow du skill impose de lire list_verdicts (critiques
 utilisateur passées) et list_exemplars (étalons annotés). Les outils d'écriture ne
@@ -1506,6 +1511,64 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 level: e.level,
                 annotations: e.annotations,
                 ...(withSnapshot && { snapshot: e.snapshot }),
+            }));
+            return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
+        }
+    );
+
+    // ── add_resource ──────────────────────────────────────────────────────────
+    server.tool(
+        "add_resource",
+        "Ajoute une ressource de veille (article, vidéo, recherche, outil) à la section « À lire, à voir » de l'accueil, visible des étudiants connectés. Idempotent sur l'URL : une URL déjà présente n'est pas dupliquée. Réservé aux admins.",
+        {
+            title: z.string().describe("Titre affiché (160 caractères max)"),
+            url: z.string().describe("Lien http(s) de la ressource, sans paramètres de suivi (?is=…, ?si=…)"),
+            description: z.string().describe("Description courte : de quoi ça parle, pourquoi c'est utile (600 caractères max)"),
+            kind: z.enum(RESOURCE_KINDS).describe("Type : article | video | recherche | outil"),
+            durationMin: intOrString.optional().describe("Temps de lecture ou de visionnage, en minutes (facultatif)"),
+            note: z.string().optional().describe("« Mot du prof » : pourquoi la conseiller, 300 caractères max (facultatif)"),
+        },
+        async (args) => {
+            if (!isAdmin) throw new Error("Forbidden");
+
+            const db = await connectToDB();
+            const result = await addResource(db.collection(RESOURCES_COLLECTION), {
+                title: args.title,
+                url: args.url,
+                description: args.description,
+                kind: args.kind,
+                durationMin: asInt(args.durationMin),
+                note: args.note,
+            });
+
+            const text = result.status === "created"
+                ? `Ressource ajoutée : « ${result.title} ». resourceId=${result.id}`
+                : `Déjà présente, rien ajouté : « ${result.title} ». resourceId=${result.id}`;
+            return { content: [{ type: "text" as const, text }] };
+        }
+    );
+
+    // ── list_resources ────────────────────────────────────────────────────────
+    server.tool(
+        "list_resources",
+        "Retourne les ressources de veille (« À lire, à voir »), les plus récentes d'abord. À appeler avant add_resource pour éviter les doublons.",
+        {
+            onlyVisible: boolOrString.optional().describe("true = seulement les ressources visibles des étudiants. Omis = toutes"),
+        },
+        async ({ onlyVisible }) => {
+            const db = await connectToDB();
+            const filter = asBool(onlyVisible) ? { isVisible: true } : {};
+            const docs = await db.collection(RESOURCES_COLLECTION).find(filter).sort({ createdAt: -1 }).toArray();
+            const result = docs.map((d) => ({
+                id: d._id.toString(),
+                title: d.title as string,
+                url: d.url as string,
+                kind: d.kind as string,
+                description: d.description as string,
+                isVisible: d.isVisible !== false,
+                ...(d.durationMin ? { durationMin: d.durationMin as number } : {}),
+                ...(d.note ? { note: d.note as string } : {}),
+                createdAt: new Date(d.createdAt as Date).toISOString(),
             }));
             return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
         }

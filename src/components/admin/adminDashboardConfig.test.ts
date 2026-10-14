@@ -14,6 +14,7 @@ describe("adminDashboardConfig", () => {
             "/admin/calibrage",
             "/admin/outils",
             "/admin/vacations",
+            "/admin/veille",
         ]);
     });
 
@@ -24,6 +25,7 @@ describe("adminDashboardConfig", () => {
             "migration",
             "export-import",
             "slide-repair",
+            "indexes",
         ]);
         expect(labels.some((label) => label.includes("synchron"))).toBe(false);
     });
