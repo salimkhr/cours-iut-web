@@ -8,20 +8,20 @@ sous forme de cours, TPs, slides et examens, avec authentification et espace adm
 
 ## 2. Stack technique
 
-- **Next.js** `16.3.0` (App Router exclusif, version épinglée sans `^`)
-- **React** `^19.2.8`, **TypeScript** `6.0.3` (strict, épinglé)
-- **MongoDB** : driver `mongodb@^7.5.0` (pas de Prisma) + `mongodb-memory-server` pour les tests.
+- **Next.js** `16.4.2` (App Router exclusif, version épinglée sans `^`)
+- **React** `^19.3.1`, **TypeScript** `6.0.3` (strict, épinglé)
+- **MongoDB** : driver `mongodb@~7.6.0` (pas de Prisma) + `mongodb-memory-server` pour les tests.
   `bson` est **épinglé à `7.2.0`** (dépendance directe + `overrides`) — voir section 6.
-- **better-auth** `^1.6.26` (`mongodbAdapter`, plugins `admin` + `captcha` Cloudflare Turnstile,
+- **better-auth** `^1.7.12` (`mongodbAdapter`, plugins `admin` + `captcha` Cloudflare Turnstile,
   `@better-auth/oauth-provider`)
-- **Zod** `^4.4.3` + `react-hook-form` / `@hookform/resolvers` — validation des formulaires et
+- **Zod** `^4.6.7` + `react-hook-form` / `@hookform/resolvers` — validation des formulaires et
   des frontières API (schémas dans `src/lib/schemas/`)
 - **Tailwind CSS v4** (`^4.3.3`) + `@tailwindcss/postcss`
-- **shadcn/ui** via `radix-ui` (`^1.6.7`), **Framer Motion / motion** `^13.0.0`,
-  **Zustand** `^5.0.14`. motion 13 a retiré `@emotion/is-prop-valid` des dépendances optionnelles ;
+- **shadcn/ui** via `radix-ui` (`^1.8.1`), **Framer Motion / motion** `^13.5.1`,
+  **Zustand** `^5.0.16`. motion 13 a retiré `@emotion/is-prop-valid` des dépendances optionnelles ;
   sans CSS-in-JS dans le projet, aucune injection `<MotionConfig isValidProp>` n'est nécessaire.
-- **MDX** : `@next/mdx@16.3.0`, `@mdx-js/react`, `remark-gfm`, `rehype-raw`
-- **Mermaid** `^11.16.1` pour les diagrammes pédagogiques
+- **MDX** : `@next/mdx@16.4.2`, `@mdx-js/react`, `remark-gfm`, `rehype-raw`
+- **Mermaid** `^11.17.2` pour les diagrammes pédagogiques
 - **MCP** : `@modelcontextprotocol/sdk` (serveur exposé via `/api/mcp`) + `@scalekit-sdk/node`
   (broker OAuth devant better-auth)
 - **Majeures bloquées en amont** (vérifié le 2026-08-09, ne pas retenter sans revérifier) :
@@ -139,7 +139,7 @@ assets publics, `/`) exigent une session connectée.
   (`NEXT_PHASE === 'phase-production-build'`) — ne jamais introduire d'appel DB synchrone au
   module-load qui casserait `next build`.
 - **Base** : nom en dur `cours-iut-web` (`connectToDB()` dans `src/lib/mongodb.ts`).
-- **Validation** : **Zod** (`^4.4.3`) en place. Schémas dans `src/lib/schemas/`, appliqués aux
+- **Validation** : **Zod** (`^4.6.7`) en place. Schémas dans `src/lib/schemas/`, appliqués aux
   frontières (Route Handlers, Server Actions, formulaires via `@hookform/resolvers`) avant insertion.
 - **Collections** : pas de constantes centralisées ; les noms sont passés ad-hoc à `db.collection(...)`.
   À documenter au cas par cas.
@@ -153,8 +153,9 @@ assets publics, `/`) exigent une session connectée.
   À partir de `7.3.0`, `bson` exécute au chargement du module un bloc `static` qui lit
   `process.getBuiltinModule('v8').startupSnapshot` ; sous Bun ce getter lève
   `NotImplementedError`, et l'optional chaining ne protège pas — **tout `import` de `mongodb`
-  échoue** (`bun test`, `bun dev`, scripts `src/scripts/*.ts`). `mongodb@^7.5.0` déclare
-  `bson: ^7.2.0`, la combinaison est donc supportée en amont. Ne pas relever `bson` sans avoir
+  échoue** (`bun test`, `bun dev`, scripts `src/scripts/*.ts`). `mongodb@7.6.0` déclare
+  `bson: ^7.2.0`, la combinaison est donc supportée en amont. `mongodb@7.7.0` exige `bson: ^7.3.2` :
+  le driver est donc borné à `~7.6.0` tant que `bson` reste épinglé. Ne pas relever `bson` sans avoir
   vérifié que Bun implémente `v8.startupSnapshot`.
 
 ## 7. Variables d'environnement
