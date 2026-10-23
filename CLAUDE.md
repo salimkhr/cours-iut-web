@@ -21,7 +21,9 @@ sous forme de cours, TPs, slides et examens, avec authentification et espace adm
   **Zustand** `^5.0.16`. motion 13 a retiré `@emotion/is-prop-valid` des dépendances optionnelles ;
   sans CSS-in-JS dans le projet, aucune injection `<MotionConfig isValidProp>` n'est nécessaire.
 - **MDX** : `@next/mdx@16.4.2`, `@mdx-js/react`, `remark-gfm`, `rehype-raw`
-- **Mermaid** `^11.17.2` pour les diagrammes pédagogiques
+- **Mermaid** `^11.17.2` pour les diagrammes pédagogiques. `katex` (rendu des formules) est forcé
+  en `^0.18.11` via `overrides` (faille GHSA-238p-pmpm-9mq7 en 0.16, plage de mermaid 11) ; mermaid 12
+  tire lui-même `katex@^0.18`, l'override pourra être retiré à ce moment-là.
 - **MCP** : `@modelcontextprotocol/sdk` (serveur exposé via `/api/mcp`) + `@scalekit-sdk/node`
   (broker OAuth devant better-auth)
 - **Majeures bloquées en amont** (vérifié le 2026-08-09, ne pas retenter sans revérifier) :

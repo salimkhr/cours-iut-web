@@ -132,6 +132,7 @@
   "overrides": {
     "bson": "7.2.0",
     "dompurify": "^3.4.17",
+    "katex": "^0.18.11",
     "lodash-es": "^4.17.23",
     "uuid": "^14.0.0",
     "postcss@8.4.31": "^8.5.10"
