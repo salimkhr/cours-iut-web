@@ -8,8 +8,8 @@ remplissage des contenus (cours/TP/slides/examen) est hors périmètre — voir 
 ## Pré-requis
 
 - Connecteur MCP **staging** actif (jamais la prod directement — cf. § Clôture).
-- Rôle admin résolu via l'allowlist `MCP_ADMIN_EMAILS` (sinon les outils d'écriture
-  répondent `Forbidden`).
+- Compte better-auth au rôle `admin` (sinon les outils d'écriture répondent
+  `Forbidden`).
 - Si le serveur MCP est injoignable : **arrêt immédiat**, ne pas improviser la
   conception « de tête ».
 

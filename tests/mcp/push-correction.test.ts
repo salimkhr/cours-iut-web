@@ -5,7 +5,10 @@ import type { Db } from "mongodb";
 let db: Db;
 
 // L'email du token de test doit être admin pour push_correction.
-process.env.MCP_ADMIN_EMAILS = "user@test.com";
+// Le compte better-auth du token de test est admin.
+mock.module("@/lib/mcp/findMcpUser", () => ({
+    findMcpUser: async () => ({ id: "u1", role: "admin" }),
+}));
 
 // ── Mock du client GitLab : on teste le contrat de l'outil, pas l'API ─────────
 let gitlabCalls: Array<{ fn: string; args: unknown[] }> = [];

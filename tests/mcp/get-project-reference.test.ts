@@ -5,11 +5,19 @@ import type { Db } from "mongodb";
 // get_project_reference n'avait pas le garde `if (!isAdmin) throw new Error("Forbidden")`
 // que TOUS les autres outils GitLab/données privées de ce fichier ont. Cet outil renvoie le
 // code source complet du projet de référence — la solution de chaque exercice du module — donc
-// un appelant non-admin (role "user", cf. MCP_ADMIN_EMAILS) ne doit jamais pouvoir le lire.
+// un appelant non-admin (role "user" du compte better-auth) ne doit jamais pouvoir le lire.
 // Pire : `ensurePrivateProject` CRÉE le dépôt GitLab s'il n'existe pas encore, donc un appel
 // non filtré déclenche une écriture (création de repo) même en lecture seule.
 
-process.env.MCP_ADMIN_EMAILS = "admin@test.com";
+// Comptes better-auth simulés, indexés par e-mail ; absent = compte inconnu.
+const authUsers: Record<string, { id: string; role: string; banned?: boolean; banExpires?: Date }> = {
+    "admin@test.com": { id: "ba-admin", role: "admin" },
+    "someone-else@test.com": { id: "ba-user", role: "user" },
+    "banned@test.com": { id: "ba-banned", role: "admin", banned: true },
+};
+mock.module("@/lib/mcp/findMcpUser", () => ({
+    findMcpUser: async (email: string) => authUsers[email] ?? null,
+}));
 
 let db: Db;
 let ensurePrivateProjectCalls = 0;
@@ -25,6 +33,8 @@ mock.module("@/lib/scalekit", () => ({
     validateScalekitToken: async (token: string) => {
         if (token === "admin-token") return { sub: "u-admin", email: "admin@test.com" };
         if (token === "user-token") return { sub: "u-user", email: "someone-else@test.com" };
+        if (token === "unknown-token") return { sub: "u-unknown", email: "nobody@test.com" };
+        if (token === "banned-token") return { sub: "u-banned", email: "banned@test.com" };
         return null;
     },
 }));
@@ -146,5 +156,36 @@ describe("outils de lecture — rôle résolu par la route", () => {
     test("masque projectSpec à un non-admin, pas à un admin", async () => {
         expect(resultText(await callTool("user-token", "get_module", { module: "rust" }))).not.toContain("Restaurant");
         expect(resultText(await callTool("admin-token", "get_module", { module: "rust" }))).toContain("Restaurant");
+    });
+});
+
+describe("rôle MCP résolu par better-auth", () => {
+    async function status(token: string) {
+        const res = await POST(new Request("http://localhost/api/mcp", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+                "Accept": "application/json, text/event-stream",
+            },
+            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }),
+        }));
+        return res.status;
+    }
+
+    test("refuse (403) un e-mail sans compte better-auth", async () => {
+        expect(await status("unknown-token")).toBe(403);
+    });
+
+    test("refuse (403) un compte banni, même admin", async () => {
+        expect(await status("banned-token")).toBe(403);
+    });
+
+    test("garde le 401 pour un token invalide", async () => {
+        expect(await status("bad-token")).toBe(401);
+    });
+
+    test("accepte un compte connu", async () => {
+        expect(await status("user-token")).toBe(200);
     });
 });

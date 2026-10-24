@@ -6,7 +6,10 @@ let db: Db;
 
 // Vue admin : examens et sections non publiées inclus (filtrage non-admin testé
 // dans src/lib/mcp/readTools.test.ts).
-process.env.MCP_ADMIN_EMAILS = "user@test.com";
+// Le compte better-auth du token de test est admin.
+mock.module("@/lib/mcp/findMcpUser", () => ({
+    findMcpUser: async () => ({ id: "u1", role: "admin" }),
+}));
 
 mock.module("@/lib/mongodb", () => ({
     connectToDB: async () => {

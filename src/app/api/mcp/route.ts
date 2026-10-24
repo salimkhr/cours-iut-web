@@ -4,6 +4,8 @@ import { revalidateTag } from "next/cache";
 import { z } from "zod";
 import { connectToDB } from "@/lib/mongodb";
 import { validateScalekitToken } from "@/lib/scalekit";
+import { findMcpUser } from "@/lib/mcp/findMcpUser";
+import { mcpRoleFor, type McpRole } from "@/lib/mcp/mcpRole";
 import { getPublicOrigin } from "@/lib/publicOrigin";
 import { blockDefs, getBlockDef, createBlockInstance } from "@/lib/blockDefs";
 import { assertSectionAcceptsContent } from "@/lib/mcp/assertSectionAcceptsContent";
@@ -79,26 +81,22 @@ interface ContentKey {
 
 // ── Validation du Bearer token (Scalekit) ─────────────────────────────────────
 
-/** Emails admin autorisés à écrire (phase 1). Allowlist en env, séparée par virgules. */
-function adminEmails(): string[] {
-    return (process.env.MCP_ADMIN_EMAILS ?? "")
-        .split(",")
-        .map((e) => e.trim().toLowerCase())
-        .filter(Boolean);
-}
-
-async function validateToken(req: Request): Promise<{ id: string; role: string } | null> {
+/**
+ * null : token absent ou invalide (401, relance l'OAuth).
+ * "forbidden" : token valide mais compte better-auth inconnu ou banni (403).
+ */
+async function validateToken(req: Request): Promise<{ id: string; role: McpRole } | "forbidden" | null> {
     const authHeader = req.headers.get("Authorization") ?? req.headers.get("authorization");
     if (!authHeader?.startsWith("Bearer ")) return null;
 
     const identity = await validateScalekitToken(authHeader.slice("Bearer ".length));
     if (!identity?.email) return null;
 
-    // Pas d'accès aux collections d'auth (fragiles au schéma better-auth) :
-    // le rôle est dérivé de l'allowlist MCP_ADMIN_EMAILS. La résolution « réelle »
-    // (claim OIDC ou auth.api) sera traitée en phase 2 avec l'accès étudiant.
-    const role = adminEmails().includes(identity.email.toLowerCase()) ? "admin" : "user";
-    return { id: identity.sub, role };
+    // Le rôle est celui du compte better-auth, comme pour /admin dans proxy.ts.
+    const user = await findMcpUser(identity.email);
+    const role = mcpRoleFor(user);
+    if (!user || !role) return "forbidden";
+    return { id: user.id, role };
 }
 
 // ── Helpers Mongo partagés (lecture/écriture de l'arbre de blocs) ──────────────
@@ -1122,6 +1120,12 @@ async function handleMcp(req: Request): Promise<Response> {
                 "Content-Type": "application/json",
                 "WWW-Authenticate": `Bearer realm="cours-iut", resource_metadata="${origin}/.well-known/oauth-protected-resource"`,
             },
+        });
+    }
+    if (user === "forbidden") {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+            status: 403,
+            headers: { "Content-Type": "application/json" },
         });
     }
 

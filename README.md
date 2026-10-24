@@ -117,8 +117,10 @@ Claude.ai
   └─ POST /api/mcp  (Authorization: Bearer <JWT Scalekit>)  → tools MCP
 ```
 
-`/api/mcp` valide le JWT Scalekit (`validateScalekitToken`, JWKS + audience) et dérive le
-rôle de l'allowlist `MCP_ADMIN_EMAILS`. Aucune lecture directe des collections d'auth.
+`/api/mcp` valide le JWT Scalekit (`validateScalekitToken`, JWKS + audience), retrouve le
+compte better-auth par son e-mail (`findMcpUser`, via l'adaptateur better-auth) et reprend son
+rôle (`admin` ou non). Un compte inconnu ou banni reçoit un 403. Aucune lecture directe des
+collections d'auth.
 
 #### Variables d’environnement
 
@@ -128,7 +130,6 @@ SCALEKIT_ENVIRONMENT_URL=https://<env>.scalekit.dev
 SCALEKIT_CLIENT_ID=skc_...
 SCALEKIT_CLIENT_SECRET=...
 SCALEKIT_RESOURCE_ID=res_...           # audience des JWT (Server Id du serveur MCP Scalekit)
-MCP_ADMIN_EMAILS=prof@exemple.fr       # emails admin (écriture), séparés par virgules
 BETTER_AUTH_URL=https://<domaine>      # issuer OIDC public vu par Scalekit
 ```
 

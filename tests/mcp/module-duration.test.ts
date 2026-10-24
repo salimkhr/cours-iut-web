@@ -4,7 +4,10 @@ import type { Db } from "mongodb";
 let db: Db;
 
 // L'email du token de test doit être admin pour edit_module.
-process.env.MCP_ADMIN_EMAILS = "user@test.com";
+// Le compte better-auth du token de test est admin.
+mock.module("@/lib/mcp/findMcpUser", () => ({
+    findMcpUser: async () => ({ id: "u1", role: "admin" }),
+}));
 
 mock.module("@/lib/mongodb", () => ({
     connectToDB: async () => {
