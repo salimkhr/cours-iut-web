@@ -4,6 +4,10 @@ import type { Db } from "mongodb";
 // ── Shared mutable state ──────────────────────────────────────────────────────
 let db: Db;
 
+// Vue admin : examens et sections non publiées inclus (filtrage non-admin testé
+// dans src/lib/mcp/readTools.test.ts).
+process.env.MCP_ADMIN_EMAILS = "user@test.com";
+
 mock.module("@/lib/mongodb", () => ({
     connectToDB: async () => {
         if (!db) throw new Error("DB not initialised");
