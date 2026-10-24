@@ -1,5 +1,5 @@
 import {afterAll, beforeAll, describe, expect, test} from "bun:test";
-import {EXAM_CODE_LENGTH, examAccessToken, examCode, hasExamAccess, isExamCodeValid, schoolYear} from "@/lib/examAccess";
+import {EXAM_CODE_LENGTH, examAccessToken, examCode, hasExamAccess, isExamCodeValid, examDay} from "@/lib/examAccess";
 
 const previous = process.env.BETTER_AUTH_SECRET;
 beforeAll(() => { process.env.BETTER_AUTH_SECRET = "secret-de-test"; });
@@ -21,18 +21,17 @@ describe("code d'examen", () => {
         process.env.BETTER_AUTH_SECRET = "secret-de-test";
     });
 
-    test("change à chaque année universitaire, bascule au 1er septembre", () => {
-        const autumn = new Date("2026-10-24T09:00:00Z");
-        const january = new Date("2027-01-15T09:00:00Z");
-        const august = new Date("2027-08-31T09:00:00Z");
-        const nextYear = new Date("2027-09-01T09:00:00Z");
-        expect(schoolYear(autumn)).toBe("2026-2027");
-        expect(schoolYear(august)).toBe("2026-2027");
-        expect(schoolYear(nextYear)).toBe("2027-2028");
-        // Même année universitaire : le code survit au 1er janvier, en plein semestre.
-        expect(examCode("javascript", "6-examen", january)).toBe(examCode("javascript", "6-examen", autumn));
-        expect(examCode("javascript", "6-examen", nextYear)).not.toBe(examCode("javascript", "6-examen", autumn));
-        expect(isExamCodeValid(examCode("javascript", "6-examen", autumn), "javascript", "6-examen", nextYear)).toBe(false);
+    test("change chaque jour, à minuit heure de Paris", () => {
+        const monday = new Date("2026-10-26T08:00:00Z");
+        const mondayEvening = new Date("2026-10-26T22:30:00Z"); // 23 h 30 à Paris
+        const thursday = new Date("2026-10-29T08:00:00Z");
+        const afterMidnight = new Date("2026-10-26T23:30:00Z"); // 0 h 30 le mardi à Paris
+        expect(examDay(mondayEvening)).toBe("2026-10-26");
+        expect(examDay(afterMidnight)).toBe("2026-10-27");
+        expect(examCode("javascript", "6-examen", mondayEvening)).toBe(examCode("javascript", "6-examen", monday));
+        expect(examCode("javascript", "6-examen", afterMidnight)).not.toBe(examCode("javascript", "6-examen", monday));
+        // Le code du groupe de lundi n'ouvre pas l'examen du groupe de jeudi.
+        expect(isExamCodeValid(examCode("javascript", "6-examen", monday), "javascript", "6-examen", thursday)).toBe(false);
     });
 
     test("validation insensible à la casse et aux espaces", () => {

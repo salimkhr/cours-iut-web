@@ -3,7 +3,7 @@ import {createHmac, timingSafeEqual} from "node:crypto";
 /**
  * Accès aux examens verrouillés (`Section.examenIsLock`), vérifié côté serveur.
  *
- * Le code distribué en salle est un HMAC de la section : il ne se déduit d'aucune
+ * Le code distribué en salle est un HMAC de la section et du jour : il ne se déduit d'aucune
  * donnée envoyée au navigateur (l'ancien code valait la fin de l'`_id` du module,
  * présent dans la page). Une fois le code accepté, la route pose un cookie httpOnly
  * lié à l'utilisateur, à la section et au jour ; la page ne rend l'énoncé qu'à sa vue.
@@ -31,27 +31,20 @@ function safeEqual(a: string, b: string): boolean {
     return left.length === right.length && timingSafeEqual(left, right);
 }
 
-/** Jour UTC au format AAAAMMJJ : le déverrouillage ne vaut que pour la journée. */
-function day(now: Date): string {
-    return now.toISOString().slice(0, 10).replace(/-/g, "");
-}
-
 /**
- * Année universitaire (« 2026-2027 »), qui bascule le 1er septembre : le changement de code
- * tombe pendant l'été, jamais entre la distribution d'un code et l'examen d'un semestre.
+ * Jour calendaire à Paris (« 2026-10-24 ») : le code et le déverrouillage basculent à minuit
+ * heure locale, pas à 1 h ou 2 h du matin comme avec le jour UTC.
  */
-export function schoolYear(now: Date): string {
-    const year = now.getUTCFullYear();
-    const start = now.getUTCMonth() >= 8 ? year : year - 1;
-    return `${start}-${start + 1}`;
+export function examDay(now: Date): string {
+    return new Intl.DateTimeFormat("en-CA", {timeZone: "Europe/Paris"}).format(now);
 }
 
 /**
- * Code d'accès de l'examen d'une section : change chaque année universitaire, pour qu'un
- * code transmis par une promotion ne serve pas à la suivante.
+ * Code d'accès de l'examen d'une section : change chaque jour, pour qu'un code transmis
+ * par un groupe ne serve pas au groupe qui passe le même examen un autre jour.
  */
 export function examCode(moduleSlug: string, sectionSlug: string, now = new Date()): string {
-    const bytes = mac("exam-code", schoolYear(now), moduleSlug, sectionSlug);
+    const bytes = mac("exam-code", examDay(now), moduleSlug, sectionSlug);
     let code = "";
     for (let i = 0; i < EXAM_CODE_LENGTH; i++) code += CODE_ALPHABET[bytes[i] % CODE_ALPHABET.length];
     return code;
@@ -67,7 +60,7 @@ export function examAccessCookieName(moduleSlug: string, sectionSlug: string): s
 }
 
 export function examAccessToken(userId: string, moduleSlug: string, sectionSlug: string, now = new Date()): string {
-    return mac("exam-access", userId, moduleSlug, sectionSlug, day(now)).toString("base64url");
+    return mac("exam-access", userId, moduleSlug, sectionSlug, examDay(now)).toString("base64url");
 }
 
 export function hasExamAccess(

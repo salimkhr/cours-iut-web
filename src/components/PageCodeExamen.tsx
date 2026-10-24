@@ -48,6 +48,13 @@ export default function PageCodeExamen({moduleSlug, sectionSlug}: PageCodeExamen
                 body: JSON.stringify({moduleSlug, sectionSlug, code}),
             });
             valid = res.ok;
+            if (res.status === 429) {
+                const {retryAfter} = await res.json().catch(() => ({retryAfter: 0})) as {retryAfter?: number};
+                const minutes = Math.max(1, Math.ceil((retryAfter ?? 0) / 60));
+                setError(`Trop de tentatives : réessayez dans ${minutes} min`);
+                setIsValidating(false);
+                return;
+            }
             if (!valid && res.status !== 403) {
                 setError('Vérification impossible, réessayez');
                 setIsValidating(false);
