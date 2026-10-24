@@ -29,7 +29,9 @@ describe("Podium", () => {
         expect(html).toContain("2,5");
     });
 
-    test("rien sans entrée", () => {
-        expect(renderToStaticMarkup(<Podium entries={[]}/>)).toBe("");
+    test("sans entrée : marches vides et message explicite", () => {
+        const html = renderToStaticMarkup(<Podium entries={[]}/>);
+        expect(html).toContain("le classement est vide");
+        expect(html).not.toContain("Ana M.");
     });
 });

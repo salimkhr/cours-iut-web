@@ -42,7 +42,8 @@ test("un admin peut ouvrir le contenu d'une section verrouillee", () => {
 
     expect(html).toContain('href="/html-css/1-les-formulaires/cours"');
     expect(html).toContain("Ouvrir Cours");
-    expect(html).toContain("border-(--module-color)");
+    // Footer de liens (c0345d3) : plus de pilule bordée, l'accent passe par le texte au survol.
+    expect(html).toContain("hover:text-(--module-color)");
     expect(html).toContain("hover:bg-(--module-color)");
     expect(html).toContain("uppercase");
     expect(html).not.toContain("group-hover/btn:text-white");
