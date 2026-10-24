@@ -66,8 +66,13 @@ export function isSectionReadable(section: { isAvailable?: boolean }, isAdmin: b
     return isAdmin || section.isAvailable !== false;
 }
 
+// Insensible à la casse : des documents antérieurs à normalizeContentKey peuvent
+// porter `Examen` ou `EXAMEN`.
+const EXAMEN_PATTERN = /^\s*examen\s*$/i;
+const NOT_EXAMEN = {$not: EXAMEN_PATTERN};
+
 export function isContentTypeReadable(type: string, isAdmin: boolean): boolean {
-    return isAdmin || type !== "examen";
+    return isAdmin || !EXAMEN_PATTERN.test(type);
 }
 
 /** Retire d'une section ce qu'un non-admin ne voit pas sur les pages. */
@@ -388,7 +393,7 @@ export function registerReadTools(
             const allowed = isAdmin ? null : await readableSectionMap(db);
             if (allowed) {
                 if (!moduleFilter) filter.moduleSlug = { $in: [...allowed.keys()] };
-                if (!typeFilter) filter.contentType = { $ne: "examen" };
+                if (!typeFilter) filter.contentType = NOT_EXAMEN;
             }
 
             const docs = (await db
@@ -468,7 +473,7 @@ export function registerReadTools(
             const filter: Record<string, unknown> = { moduleSlug };
             if (sectionSlug) filter.sectionSlug = sectionSlug;
             if (contentType) filter.contentType = contentType;
-            else if (!isAdmin) filter.contentType = { $ne: "examen" };
+            else if (!isAdmin) filter.contentType = NOT_EXAMEN;
 
             const readable = new Set(readableSections(mod, isAdmin).map((s) => s.path));
             const db = await getDb();

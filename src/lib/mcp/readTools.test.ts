@@ -8,7 +8,7 @@ type Handler = (args: Record<string, unknown>) => Promise<{content: {text: strin
 
 const DB_NAME = "test-mcp-read";
 // Marqueurs posés dans tout ce qu'un non-admin ne doit jamais lire.
-const SECRETS = ["SECRET_EXAM", "SECRET_S2", "SECRET_HIDDEN", "SECRET_BRIEF", "SECRET_SPEC", "SECRET_RESOURCE"];
+const SECRETS = ["SECRET_EXAM", "SECRET_S2", "SECRET_HIDDEN", "SECRET_BRIEF", "SECRET_SPEC", "SECRET_RESOURCE", "SECRET_LEGACY"];
 
 let server: MongoMemoryServer;
 let client: MongoClient;
@@ -41,7 +41,7 @@ beforeEach(async () => {
                     title: "Publiée",
                     isAvailable: true,
                     brief: {objectives: ["SECRET_BRIEF"]},
-                    contents: [{type: "cours", source: "db"}, {type: "examen", source: "db"}],
+                    contents: [{type: "cours", source: "db"}, {type: "examen", source: "db"}, {type: "Examen", source: "db"}],
                 },
                 {path: "s2", title: "SECRET_S2", isAvailable: false, contents: [{type: "cours", source: "db"}]},
             ],
@@ -56,6 +56,8 @@ beforeEach(async () => {
     await db.collection("course_content").insertMany([
         {moduleSlug: "js", sectionSlug: "s1", contentType: "cours", version: 1, blocks: textBlock("b1", "public commun")},
         {moduleSlug: "js", sectionSlug: "s1", contentType: "examen", version: 1, blocks: textBlock("b2", "SECRET_EXAM commun")},
+        // Casse héritée d'avant normalizeContentKey.
+        {moduleSlug: "js", sectionSlug: "s1", contentType: "Examen", version: 1, blocks: textBlock("b5", "SECRET_LEGACY commun")},
         {moduleSlug: "js", sectionSlug: "s2", contentType: "cours", version: 1, blocks: textBlock("b3", "SECRET_S2 commun")},
         {moduleSlug: "hidden", sectionSlug: "h1", contentType: "cours", version: 1, blocks: textBlock("b4", "SECRET_HIDDEN commun")},
     ]);
@@ -97,6 +99,7 @@ const PROBES: Array<[string, Record<string, unknown>]> = [
     ["search_content", {query: "commun", module: "hidden"}],
     ["export_content_compact", {module: "js"}],
     ["export_content_compact", {module: "js", section: "s2"}],
+    ["export_content_compact", {module: "js", section: "s1"}],
     ["list_resources", {}],
     ["list_resources", {onlyVisible: false}],
 ];
@@ -156,7 +159,7 @@ describe("outils MCP de lecture", () => {
         const seen = (await Promise.all(PROBES.map(([tool, args]) => text(h, tool, args).catch(() => "")))).join("\n")
             + await text(h, "get_content", {module: "js", section: "s1", type: "examen"});
         for (const secret of SECRETS) expect(seen).toContain(secret);
-        expect(JSON.parse(await text(h, "search_content", {query: "commun"})).total).toBe(4);
+        expect(JSON.parse(await text(h, "search_content", {query: "commun"})).total).toBe(5);
         expect(JSON.parse(await text(h, "list_verdicts")).length).toBe(1);
         expect(await text(h, "get_pedagogical_skill_document", {id: "content-writer"})).not.toBe("");
     });

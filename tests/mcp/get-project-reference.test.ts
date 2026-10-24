@@ -129,3 +129,22 @@ describe("get_project_reference — garde admin", () => {
         expect(ensurePrivateProjectCalls).toBeGreaterThan(0);
     });
 });
+
+// Chaîne complète validateToken → rôle → registerReadTools : le filtrage
+// non-admin des outils de lecture doit tenir en passant par la route.
+describe("outils de lecture — rôle résolu par la route", () => {
+    function resultText(payload: Record<string, unknown> | null): string {
+        const result = payload?.result as { content?: Array<{ text?: string }> } | undefined;
+        return (payload?.error as { message?: string } | undefined)?.message ?? result?.content?.[0]?.text ?? "";
+    }
+
+    test("refuse l'examen à un non-admin", async () => {
+        const payload = await callTool("user-token", "get_content", { module: "rust", section: "s1", type: "examen" });
+        expect(resultText(payload)).toContain("Forbidden");
+    });
+
+    test("masque projectSpec à un non-admin, pas à un admin", async () => {
+        expect(resultText(await callTool("user-token", "get_module", { module: "rust" }))).not.toContain("Restaurant");
+        expect(resultText(await callTool("admin-token", "get_module", { module: "rust" }))).toContain("Restaurant");
+    });
+});
