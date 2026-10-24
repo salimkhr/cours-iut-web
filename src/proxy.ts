@@ -1,6 +1,11 @@
 import {NextRequest, NextResponse} from "next/server";
 import {getSessionCookie} from "better-auth/cookies";
 import {E2E_BYPASS_COOKIE, E2E_BYPASS_HEADER} from "@/lib/e2eBypass";
+import {applySecurityHeaders, isCrossSiteWrite} from "@/lib/securityHeaders";
+
+// Exclus du contrôle d'origine : better-auth vérifie lui-même l'origine (et porte le flux
+// OAuth), /api/mcp s'authentifie par Bearer — un jeton qu'un site tiers ne peut pas joindre.
+const CSRF_EXEMPT_PREFIXES = ["/api/auth", "/api/mcp"];
 
 const PUBLIC_PATHS = [
     "/",
@@ -44,8 +49,23 @@ function withBypassHeader(req: NextRequest, active: boolean): NextResponse {
 }
 
 export default function proxy(req: NextRequest) {
+    return applySecurityHeaders(route(req));
+}
+
+function route(req: NextRequest): NextResponse {
     const {pathname} = req.nextUrl;
     const sessionCookie = getSessionCookie(req);
+
+    // CSRF : une écriture sur l'API ne peut venir que du site lui-même. Les cookies
+    // better-auth sont SameSite=Lax, ce qui laisse passer les autres sous-domaines du
+    // même site (forge GitLab, staging…) : on exige donc la même origine.
+    if (
+        pathname.startsWith("/api/") &&
+        !CSRF_EXEMPT_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/")) &&
+        isCrossSiteWrite(req.method, req.headers)
+    ) {
+        return NextResponse.json({error: "Origine refusée"}, {status: 403});
+    }
 
     // Bypass e2e/dev — NE JAMAIS ACTIVER EN PRODUCTION.
     // Doublement verrouillé : (1) inactif si NODE_ENV === "production",
