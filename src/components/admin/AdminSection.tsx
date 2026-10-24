@@ -4,7 +4,7 @@ import Link from "next/link";
 import Section from "@/types/Section";
 import {Label} from "@/components/ui/label";
 import {Switch} from "@/components/ui/switch";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {toast} from "sonner";
 import updateSectionState from "@/hook/admin/updateSectionState";
 import Module from "@/types/Module";
@@ -179,7 +179,22 @@ interface SectionContentLinksProps {
  *  section, pas une action — il s'affiche donc en ligne avec le titre et non dans la colonne
  *  « Actions ». */
 export function SectionExamCode({section, modData}: SectionContentLinksProps) {
-    if (!hasContentType(section.contents, "examen")) return null;
+    const isExamen = hasContentType(section.contents, "examen");
+    const [code, setCode] = useState<string | null>(null);
+
+    // Le code est un HMAC calculé côté serveur : il n'existe dans aucune donnée publique du module.
+    useEffect(() => {
+        if (!isExamen) return;
+        const query = new URLSearchParams({module: modData.path, section: section.path});
+        let cancelled = false;
+        fetch(`/api/admin/examen-code?${query}`)
+            .then((res) => (res.ok ? res.json() as Promise<{code: string}> : null))
+            .then((data) => { if (!cancelled && data) setCode(data.code); })
+            .catch(() => {});
+        return () => { cancelled = true; };
+    }, [isExamen, modData.path, section.path]);
+
+    if (!isExamen) return null;
 
     return (
         <span
@@ -187,7 +202,7 @@ export function SectionExamCode({section, modData}: SectionContentLinksProps) {
             title="Code d'accès à l'examen"
         >
             <KeyRound className="size-3" aria-hidden="true"/>
-            {modData._id?.toString().slice(-6).toUpperCase()}
+            {code ?? "······"}
         </span>
     );
 }

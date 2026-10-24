@@ -3,17 +3,22 @@ import {ArrowRight, Check, ShieldCheck, X} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import Heading from "@/components/ui/Heading";
 import BaseCard from "@/components/Cards/BaseCard";
-import Module from "@/types/Module";
 import {useState} from "react";
+import {useRouter} from "next/navigation";
 import {Button} from "@/components/ui/button";
 
 interface PageCodeExamenProps {
-    currentModule: Module;
-    onSuccess?: () => void;
-    examKey: string;
+    moduleSlug: string;
+    sectionSlug: string;
 }
 
-export default function PageCodeExamen({currentModule, onSuccess, examKey}: PageCodeExamenProps) {
+/**
+ * Saisie du code d'un examen verrouillé. La vérification est faite par le serveur
+ * (`/api/examen/unlock`), qui pose un cookie d'accès ; la page, rechargée, rend alors l'énoncé.
+ * Avant cela, l'énoncé n'est jamais envoyé au navigateur.
+ */
+export default function PageCodeExamen({moduleSlug, sectionSlug}: PageCodeExamenProps) {
+    const router = useRouter();
     const [code, setCode] = useState<string>('');
     const [isValidating, setIsValidating] = useState<boolean>(false);
     const [isValid, setIsValid] = useState<boolean | null>(null);
@@ -35,11 +40,24 @@ export default function PageCodeExamen({currentModule, onSuccess, examKey}: Page
         setIsValidating(true);
         setError('');
 
-        // Simulation de la validation
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const validCode = currentModule._id?.toString().slice(-6).toUpperCase() || '';
-        const valid = code === validCode;
+        let valid = false;
+        try {
+            const res = await fetch('/api/examen/unlock', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({moduleSlug, sectionSlug, code}),
+            });
+            valid = res.ok;
+            if (!valid && res.status !== 403) {
+                setError('Vérification impossible, réessayez');
+                setIsValidating(false);
+                return;
+            }
+        } catch {
+            setError('Vérification impossible, réessayez');
+            setIsValidating(false);
+            return;
+        }
 
         setIsValid(valid);
         setIsValidating(false);
@@ -52,13 +70,8 @@ export default function PageCodeExamen({currentModule, onSuccess, examKey}: Page
                 setError('');
             }, 1500);
         } else {
-            // Stocker dans sessionStorage que l'examen est débloqué pour ce module
-            sessionStorage.setItem(examKey, 'true');
-
-            // Appeler le callback de succès après un court délai
-            setTimeout(() => {
-                onSuccess?.();
-            }, 1000);
+            // Le cookie d'accès est posé : le rendu serveur renvoie désormais l'énoncé.
+            router.refresh();
         }
     };
 

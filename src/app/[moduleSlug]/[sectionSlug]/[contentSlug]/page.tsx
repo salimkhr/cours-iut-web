@@ -9,7 +9,7 @@ import ContentSidebarNav from "@/components/page/ContentSidebarNav";
 import PromptModeButton from "@/components/page/PromptModeButton";
 import SectionPager from "@/components/page/SectionPager";
 import LastVisitedTracker from "@/components/page/LastVisitedTracker";
-import ExamenWrapper from "@/components/ExamenWrapper";
+import PageCodeExamen from "@/components/PageCodeExamen";
 import TableOfContents from "@/components/TableOfContents";
 import {getModuleData} from "@/hook/getModuleData";
 import {moduleColor} from "@/lib/moduleColor";
@@ -20,6 +20,8 @@ import {CONTENT_DESC, CONTENT_ICON, CONTENT_LABELS, ContentKey, normalizeContent
 import {getContentTypes, hasContentType} from "@/types/CourseContent";
 import {Metadata} from "next";
 import {getServerSession} from "@/lib/auth";
+import {examAccessCookieName, hasExamAccess} from "@/lib/examAccess";
+import {cookies} from "next/headers";
 
 const SPLIT_SLUG = 'split';
 
@@ -77,6 +79,14 @@ export default async function Content({params}: ContentPageProps) {
     } else if (!currentContent) {
         notFound();
     }
+
+    // Examen verrouillé : l'énoncé n'est rendu — donc envoyé au navigateur — qu'aux admins
+    // et aux comptes qui ont validé le code du jour (cookie signé, cf. examAccess).
+    const examLocked = currentContent === 'examen' && !!currentSection.examenIsLock && !isAdmin
+        && !hasExamAccess(
+            (await cookies()).get(examAccessCookieName(moduleSlug, sectionSlug))?.value,
+            session?.user.id ?? '', moduleSlug, sectionSlug,
+        );
 
     type AnyComponent = React.ComponentType;
     let CoursComponent: AnyComponent | null = null;
@@ -227,10 +237,8 @@ export default async function Content({params}: ContentPageProps) {
                         } as React.CSSProperties}
                     >
                         <div className={cn("course-content", currentContent === "TP" && "course-content-practice")}>
-                            {currentContent === "examen" && currentSection.examenIsLock ? (
-                                <ExamenWrapper currentModule={currentModule}>
-                                    <ComponentToRender/>
-                                </ExamenWrapper>
+                            {examLocked ? (
+                                <PageCodeExamen moduleSlug={moduleSlug} sectionSlug={sectionSlug}/>
                             ) : (
                                 <ComponentToRender/>
                             )}
