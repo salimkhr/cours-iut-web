@@ -14,7 +14,7 @@ const SHORT_CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 export class QuizSessionError extends Error {
     constructor(readonly code:
         | "no_quiz" | "empty_quiz" | "session_not_found" | "session_ended" | "not_participant"
-        | "question_closed" | "invalid_choice" | "empty_choice", message: string) {
+        | "question_closed" | "invalid_choice" | "empty_choice" | "too_many_choices", message: string) {
         super(message);
         this.name = "QuizSessionError";
     }
@@ -298,6 +298,11 @@ export class LiveQuizService {
         const known = new Set(question.options.map((o) => o.id));
         if (!unique.every((id) => known.has(id))) {
             throw new QuizSessionError("invalid_choice", "Proposition inconnue");
+        }
+        // Sans ce plafond, tout cocher rapporte le poids entier quand les points négatifs sont coupés.
+        const expected = question.options.filter((o) => o.correct).length;
+        if (unique.length > expected) {
+            throw new QuizSessionError("too_many_choices", `Sélectionnez au plus ${expected} proposition${expected > 1 ? "s" : ""}`);
         }
 
         const scoreObtained = scoreQuestion({

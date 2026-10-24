@@ -129,7 +129,7 @@ describe("réponses", () => {
         expect(state.answer?.selectedIds).toEqual([optionIds[q1].good[0]]);
     });
 
-    test("refuse l'inconnu, le vide et l'étranger à la session", async () => {
+    test("refuse l'inconnu, le vide, le trop-plein et l'étranger à la session", async () => {
         const quiz = await seedQuiz();
         const q1 = quiz.questions[0].id;
         const s = await create();
@@ -138,6 +138,9 @@ describe("réponses", () => {
         await expect(live.submitAnswer(s.id, "u1", ["zzz"])).rejects.toMatchObject({code: "invalid_choice"});
         await expect(live.submitAnswer(s.id, "u1", [])).rejects.toMatchObject({code: "empty_choice"});
         await expect(live.submitAnswer(s.id, "inconnu", optionIds[q1].good)).rejects.toMatchObject({code: "not_participant"});
+        // Tout cocher : plus de propositions que de bonnes réponses attendues.
+        await expect(live.submitAnswer(s.id, "u1", [...optionIds[q1].good, ...optionIds[q1].bad]))
+            .rejects.toMatchObject({code: "too_many_choices"});
     });
 
     test("refuse une réponse tardive d'après l'horloge serveur", async () => {

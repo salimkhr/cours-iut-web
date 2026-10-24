@@ -30,8 +30,15 @@ export default function AnswerForm({sessionId, question, deadline, serverNow, lo
     const isLocked = locked || lockedWith !== null;
     const shown = lockedWith ?? selected;
 
+    // Une seule bonne réponse : boutons radio. Sinon cases à cocher, plafonnées au nombre attendu
+    // (le serveur refuse de toute façon une réponse qui en contient davantage).
+    const single = question.expectedCount === 1;
     const toggle = (id: string) =>
-        setSelected((current) => (current.includes(id) ? current.filter((x) => x !== id) : [...current, id]));
+        setSelected((current) => {
+            if (single) return [id];
+            if (current.includes(id)) return current.filter((x) => x !== id);
+            return current.length < question.expectedCount ? [...current, id] : current;
+        });
 
     async function submit() {
         setSending(true);
@@ -73,12 +80,16 @@ export default function AnswerForm({sessionId, question, deadline, serverNow, lo
                                 "has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/60",
                                 checked ? "border-brand-primary dark:border-brand-accent" : "border-bridge-500/40",
                                 isLocked && "cursor-default opacity-90",
+                                // Plafond atteint : les propositions restantes sont visiblement inactives.
+                                !isLocked && !single && !checked && selected.length >= question.expectedCount && "cursor-not-allowed opacity-50",
                             )}
                         >
                             <input
-                                type="checkbox"
+                                type={single ? "radio" : "checkbox"}
+                                name={single ? `quiz-${question.id}` : undefined}
                                 className="size-6 shrink-0 accent-[var(--color-brand-primary)]"
                                 checked={checked}
+                                disabled={!checked && !single && selected.length >= question.expectedCount}
                                 onChange={() => toggle(option.id)}
                             />
                             <span aria-hidden="true" className="shrink-0 font-extrabold text-(--module-color) dark:text-(--module-color-dark)">{optionLetter(index)}</span>

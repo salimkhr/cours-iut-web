@@ -74,6 +74,7 @@ const STATUS: Record<QuizSessionError["code"], number> = {
     question_closed: 409,
     invalid_choice: 422,
     empty_choice: 422,
+    too_many_choices: 422,
 };
 
 /**
