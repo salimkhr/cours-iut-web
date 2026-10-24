@@ -5,6 +5,8 @@
  *   SUMMARY: "3.01 Dev web - <IUT 2EME ANNEE INFORMATIQUE> G - TD"
  *   DESCRIPTION: "Matière : 3.01 Dev web\nEnseignant : …\nTD : &lt\;IUT 2EME ANNEE…&gt\; G\nSalle : …\nType : TD\n"
  *   DTSTART/DTEND en UTC (suffixe Z) ; vacances et jours fériés en journées entières (VALUE=DATE).
+ * Cours annulé : HyperPlanning n'émet pas STATUS:CANCELLED mais garde l'événement avec un UID
+ * « COURSANNULE-… » et un SUMMARY / une DESCRIPTION préfixés par « Annulation : ».
  */
 
 export const ICAL_TIME_ZONE = "Europe/Paris";
@@ -18,6 +20,8 @@ export interface IcalEvent {
     /** Durée en minutes (0 pour un événement « journée entière »). */
     durationMinutes: number;
     allDay: boolean;
+    /** Cours annulé dans HyperPlanning (toujours présent dans le flux, à ne pas compter). */
+    cancelled: boolean;
 }
 
 interface RawDate {
@@ -47,6 +51,13 @@ function unescapeText(value: string): string {
         .replace(/&quot;/g, "\"")
         .replace(/&#39;|&apos;/g, "'")
         .replace(/&amp;/g, "&");
+}
+
+const CANCELLED_UID = /^COURSANNULE-/i;
+const CANCELLED_TEXT = /^Annul(?:ation|é)\b/i;
+
+export function isCancelled(uid: string, summary: string, description: string): boolean {
+    return CANCELLED_UID.test(uid) || CANCELLED_TEXT.test(summary) || CANCELLED_TEXT.test(description);
 }
 
 function parseDate(params: string, value: string): RawDate | null {
@@ -79,13 +90,17 @@ export function parseIcal(text: string): IcalEvent[] {
                 const end = current.DTEND ? parseDate(current.DTEND.params, current.DTEND.value) : null;
                 if (start) {
                     const allDay = start.allDay;
+                    const uid = current.UID?.value ?? "";
+                    const summary = unescapeText(current.SUMMARY?.value ?? "").trim();
+                    const description = unescapeText(current.DESCRIPTION?.value ?? "").trim();
                     events.push({
-                        uid: current.UID?.value ?? "",
-                        summary: unescapeText(current.SUMMARY?.value ?? "").trim(),
-                        description: unescapeText(current.DESCRIPTION?.value ?? "").trim(),
+                        uid,
+                        summary,
+                        description,
                         date: toCalendarDate(start),
                         durationMinutes: allDay || !end ? 0 : Math.max(0, Math.round((end.ms - start.ms) / 60000)),
                         allDay,
+                        cancelled: isCancelled(uid, summary, description),
                     });
                 }
             }

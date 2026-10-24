@@ -1,5 +1,5 @@
 import {describe, expect, it} from "bun:test";
-import {parseIcal} from "@/lib/vacation/ical";
+import {isCancelled, parseIcal} from "@/lib/vacation/ical";
 import {academicYear, buildFicheRows, computeTotals, parseSession} from "@/lib/vacation/fiche";
 
 // Extrait réel de l'export HyperPlanning (CRLF, échappements \; et entités HTML).
@@ -40,6 +40,23 @@ const ICS = [
     "END:VCALENDAR",
 ].join("\r\n");
 
+// Cours annulé tel qu'exporté par HyperPlanning (octobre 2026) : pas de STATUS, UID et textes préfixés.
+const CANCELLED_ICS = [
+    "BEGIN:VEVENT",
+    "UID:COURSANNULE-32016-8-Khraimeche_Salim-Index-Education",
+    "DTSTART:20261009T114500Z",
+    "DTEND:20261009T131500Z",
+    "SUMMARY;LANGUAGE=fr:Annulation : 3.01 Dev web - <IUT 2EME ANNEE INFORMATIQUE> G - TD",
+    "DESCRIPTION;LANGUAGE=fr:Annulation : \\nMatière : 3.01 Dev web\\nTD : &lt\\;IUT 2EME ANNEE INFORMATIQUE&gt\\; G\\nType : TD\\n",
+    "END:VEVENT",
+    "BEGIN:VEVENT",
+    "UID:COURSANNULE-32016-9-Khraimeche_Salim-Index-Education",
+    "DTSTART:20261009T133000Z",
+    "DTEND:20261009T150000Z",
+    "SUMMARY;LANGUAGE=fr:Annulation : 3.01 Dev web - <IUT 2EME ANNEE INFORMATIQUE> G - TD",
+    "END:VEVENT",
+].join("\r\n");
+
 describe("parseIcal", () => {
     it("déplie les lignes, déséchappe et convertit l'heure UTC en jour parisien", () => {
         const [first] = parseIcal(ICS);
@@ -58,6 +75,19 @@ describe("parseIcal", () => {
     it("rattache un créneau tardif UTC au bon jour à Paris", () => {
         const ics = "BEGIN:VEVENT\nDTSTART:20261231T230000Z\nDTEND:20270101T003000Z\nSUMMARY:1.01 Init - TD\nEND:VEVENT";
         expect(parseIcal(ics)[0].date).toBe("2027-01-01");
+    });
+
+    it("détecte les cours annulés HyperPlanning", () => {
+        expect(parseIcal(ICS).every((e) => !e.cancelled)).toBe(true);
+        const [annule] = parseIcal(CANCELLED_ICS);
+        expect(annule.cancelled).toBe(true);
+        expect(annule.description).toContain("Matière : 3.01 Dev web");
+    });
+
+    it("reconnaît une annulation par l'UID seul ou par le texte seul", () => {
+        expect(isCancelled("COURSANNULE-1-x", "3.01 Dev web - TD", "")).toBe(true);
+        expect(isCancelled("Cours-1", "Annulation : 3.01 Dev web", "")).toBe(true);
+        expect(isCancelled("Cours-1", "3.01 Dev web - TD", "Matière : 3.01 Dev web")).toBe(false);
     });
 });
 
@@ -100,6 +130,17 @@ describe("buildFicheRows", () => {
         const {rows, warnings} = buildFicheRows(parseIcal(ics), "2026-09");
         expect(rows[0].td).toBe(2);
         expect(warnings).toHaveLength(1);
+    });
+
+    it("écarte les cours annulés et les signale une fois par jour et matière", () => {
+        const ics = [ICS.replace("END:VCALENDAR", ""), CANCELLED_ICS, "END:VCALENDAR"].join("\r\n");
+        const {rows, warnings} = buildFicheRows(parseIcal(ics), "2026-10");
+        expect(rows).toEqual([
+            {date: "2026-10-02", code: "R3.01", label: "Dev web", annee: 2, cours: 0, td: 1.5, tp: 0},
+        ]);
+        expect(warnings).toEqual([
+            "2026-10-09 — R3.01 Dev web : 3 h annulée(s) dans HyperPlanning, non comptée(s).",
+        ]);
     });
 });
 

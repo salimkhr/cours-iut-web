@@ -76,14 +76,27 @@ const round2 = (n: number) => Math.round(n * 100) / 100;
 
 /**
  * Garde les créneaux horaires du mois demandé et les regroupe par jour + matière + année.
+ * Les cours annulés sont écartés et signalés dans `warnings`.
  * `month` au format `YYYY-MM`.
  */
 export function buildFicheRows(events: IcalEvent[], month: string): FicheBuildResult {
     const warnings: string[] = [];
     const byKey = new Map<string, FicheRow>();
+    /** Heures annulées par jour + matière, pour un seul avertissement par ligne écartée. */
+    const cancelled = new Map<string, {date: string; matiere: string; hours: number}>();
 
     for (const event of events) {
         if (event.allDay || event.durationMinutes <= 0 || !event.date.startsWith(`${month}-`)) continue;
+
+        if (event.cancelled) {
+            const s = parseSession(event.summary.replace(/^Annulation\s*:\s*/i, ""), event.description);
+            const matiere = s.code ? `${s.code} ${s.label}`.trim() : s.label || event.summary;
+            const key = `${event.date}|${matiere}`;
+            const entry = cancelled.get(key) ?? {date: event.date, matiere, hours: 0};
+            entry.hours = round2(entry.hours + event.durationMinutes / 60);
+            cancelled.set(key, entry);
+            continue;
+        }
 
         const session = parseSession(event.summary, event.description);
         const hours = event.durationMinutes / 60;
@@ -109,6 +122,10 @@ export function buildFicheRows(events: IcalEvent[], month: string): FicheBuildRe
         };
         row[kind] = round2(row[kind] + hours);
         byKey.set(key, row);
+    }
+
+    for (const c of cancelled.values()) {
+        warnings.push(`${c.date} — ${c.matiere} : ${String(c.hours).replace(".", ",")} h annulée(s) dans HyperPlanning, non comptée(s).`);
     }
 
     const rows = [...byKey.values()].sort((a, b) => a.date.localeCompare(b.date) || a.code.localeCompare(b.code));
