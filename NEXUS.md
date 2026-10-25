@@ -54,5 +54,5 @@ avant de vous fier à un résultat sur du code récent.
 | `gitnexus://repo/cours-iut-web/processes` | Flux d'exécution |
 | `gitnexus://repo/cours-iut-web/process/{name}` | Trace pas à pas d'un flux |
 
-Guides détaillés par tâche : `.claude/skills/gitnexus-*/SKILL.md` (exploring,
+Guides détaillés par tâche : `.claude/skills/gitnexus/gitnexus-*/SKILL.md` (exploring,
 impact-analysis, debugging, refactoring, guide, cli).
