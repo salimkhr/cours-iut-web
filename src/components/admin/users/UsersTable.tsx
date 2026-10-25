@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Pencil, Search } from 'lucide-react';
 import EditUserDialog from './EditUserDialog';
 import DeleteUserDialog from './DeleteUserDialog';
+import CreateUserDialog from './CreateUserDialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -47,6 +48,10 @@ export default function UsersTable({ users: initialUsers }: { users: AdminUser[]
 
     const handleUpdated = useCallback((updated: AdminUser) => {
         setUsers(prev => prev.map(u => u.id === updated.id ? updated : u));
+    }, []);
+
+    const handleCreated = useCallback((created: AdminUser) => {
+        setUsers(prev => [created, ...prev]);
     }, []);
 
     const normalizedQuery = normalize(query.trim());
@@ -180,24 +185,27 @@ export default function UsersTable({ users: initialUsers }: { users: AdminUser[]
                         className="min-h-11 border-bridge-500/35 bg-bridge-50 pl-9 dark:bg-bridge-800"
                     />
                 </div>
-                <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Filtrer par rôle">
-                    {ROLE_FILTERS.map(({ value, label }) => (
-                        <Button
-                            key={value}
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            aria-pressed={roleFilter === value}
-                            onClick={() => setRoleFilter(value)}
-                            className={cn(
-                                'min-h-9 border-bridge-500/45',
-                                roleFilter === value &&
-                                    'border-brand-primary bg-brand-primary text-white hover:bg-brand-accent-dark hover:text-white dark:text-brand-dark dark:hover:bg-brand-primary/80 dark:hover:text-brand-dark',
-                            )}
-                        >
-                            {label}
-                        </Button>
-                    ))}
+                <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Filtrer par rôle">
+                        {ROLE_FILTERS.map(({ value, label }) => (
+                            <Button
+                                key={value}
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                aria-pressed={roleFilter === value}
+                                onClick={() => setRoleFilter(value)}
+                                className={cn(
+                                    'min-h-9 border-bridge-500/45',
+                                    roleFilter === value &&
+                                        'border-brand-primary bg-brand-primary text-white hover:bg-brand-accent-dark hover:text-white dark:text-brand-dark dark:hover:bg-brand-primary/80 dark:hover:text-brand-dark',
+                                )}
+                            >
+                                {label}
+                            </Button>
+                        ))}
+                    </div>
+                    <CreateUserDialog onCreated={handleCreated}/>
                 </div>
             </div>
 
