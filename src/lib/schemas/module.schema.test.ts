@@ -96,6 +96,28 @@ describe("projectSpecSchema", () => {
     });
 });
 
+describe("moduleFormSchema — champs null venus de Mongo", () => {
+    test("accepte universe, sessionDurationMinutes, projectSpec et exampleDomain à null", () => {
+        // Repro bug : un module créé par l'outil MCP create_module stocke ces champs à `null`.
+        // moduleToFormValues les recopie tels quels, et .optional() seul rejetait le PUT de
+        // toutes les étapes du workflow (« Erreur lors de l'enregistrement du projet »).
+        const result = moduleFormSchema.safeParse({
+            ...baseModule,
+            universe: null,
+            sessionDurationMinutes: null,
+            projectSpec: null,
+            exampleDomain: null,
+        });
+        expect(result.success).toBe(true);
+        if (result.success) {
+            expect(result.data.universe).toBeUndefined();
+            expect(result.data.sessionDurationMinutes).toBeUndefined();
+            expect(result.data.projectSpec).toBeUndefined();
+            expect(result.data.exampleDomain).toBeUndefined();
+        }
+    });
+});
+
 describe("exampleDomainSchema", () => {
     test("exige un nom et une description", () => {
         expect(exampleDomainSchema.safeParse({name: "", description: "x"}).success).toBe(false);

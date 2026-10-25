@@ -27,6 +27,13 @@ export const hexColorSchema = z
     .string()
     .regex(/^#[0-9a-fA-F]{6}$/, "Couleur hex invalide (#rrggbb)");
 
+// Mongo renvoie `null` (jamais `undefined`) pour un champ jamais renseigné — c'est ce que stocke
+// l'outil MCP create_module — et moduleToFormValues le recopie tel quel. `.optional()` seul
+// rejette ce `null` et bloque le PUT de toutes les étapes du workflow module. Le preprocess
+// (plutôt qu'un .transform) garde le champ optionnel dans le type inféré.
+const nullableOptional = <T extends z.ZodType>(schema: T) =>
+    z.preprocess((v) => (v === null ? undefined : v), schema.optional());
+
 export const universeSchema = z.object({
     name: z.string().trim().min(1, "Le nom de l'univers est obligatoire"),
     description: z.string().trim().min(1, "La description de l'univers est obligatoire"),
@@ -45,13 +52,7 @@ export const projectSpecSchema = z.object({
     finalDeliverable: z.string().trim().min(1, "Le livrable final est obligatoire"),
     entities: z.array(z.string().trim().min(1)).default([]),
     status: z.enum(["draft", "validated"]).default("draft"),
-    // preprocess null → undefined : Mongo renvoie `null` (jamais `undefined`) pour un champ jamais
-    // renseigné, et moduleToFormValues recopie module.projectSpec.referenceRepo tel quel —
-    // .optional() seul rejette ce `null` et bloquait le PUT de n'importe quelle étape du workflow
-    // module tant qu'aucun dépôt de référence n'existait. Le preprocess (plutôt qu'un .transform
-    // sur le champ optional) garde `referenceRepo` optionnel dans le type inféré, pas juste
-    // `| undefined` toujours présent.
-    referenceRepo: z.preprocess((v) => (v === null ? undefined : v), referenceRepoSchema.optional()),
+    referenceRepo: nullableOptional(referenceRepoSchema),
 });
 
 export const exampleDomainSchema = z.object({
@@ -76,13 +77,13 @@ export const moduleFormSchema = z.object({
     manager: instructorSchema.optional(),
     instructors: z.array(instructorSchema).default([]),
     isExtra: z.boolean().default(false),
-    sessionDurationMinutes: z.number().int().min(1).optional(),
-    universe: universeSchema.optional(),
+    sessionDurationMinutes: nullableOptional(z.number().int().min(1)),
+    universe: nullableOptional(universeSchema),
     projectIcon: z.string().optional(),
     colorLight: hexColorSchema.optional(),
     colorDark: hexColorSchema.optional(),
-    projectSpec: projectSpecSchema.optional(),
-    exampleDomain: exampleDomainSchema.optional(),
+    projectSpec: nullableOptional(projectSpecSchema),
+    exampleDomain: nullableOptional(exampleDomainSchema),
     plannedNotions: z.array(z.string().trim().min(1)).default([]),
 });
 
