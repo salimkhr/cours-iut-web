@@ -59,3 +59,36 @@ describe("moduleFormSchema — sessionDurationMinutes", () => {
         expect(moduleFormSchema.safeParse({ ...base, sessionDurationMinutes: 90.5 }).success).toBe(false);
     });
 });
+
+describe("moduleFormSchema — order", () => {
+    const base = {
+        title: "PHP",
+        path: "php",
+        iconName: "Code",
+        associatedSae: [],
+        coefficients: [],
+        instructors: [],
+        isExtra: false,
+    };
+
+    test("accepte un entier ≥ 1", () => {
+        const r = moduleFormSchema.safeParse({ ...base, order: 3 });
+        expect(r.success).toBe(true);
+        if (r.success) expect(r.data.order).toBe(3);
+    });
+
+    test("est optionnel et accepte null (champ absent renvoyé par Mongo)", () => {
+        const absent = moduleFormSchema.safeParse(base);
+        expect(absent.success).toBe(true);
+        if (absent.success) expect(absent.data.order).toBeUndefined();
+        const nul = moduleFormSchema.safeParse({ ...base, order: null });
+        expect(nul.success).toBe(true);
+        if (nul.success) expect(nul.data.order).toBeUndefined();
+    });
+
+    test("rejette zéro, négatif et non-entier", () => {
+        expect(moduleFormSchema.safeParse({ ...base, order: 0 }).success).toBe(false);
+        expect(moduleFormSchema.safeParse({ ...base, order: -1 }).success).toBe(false);
+        expect(moduleFormSchema.safeParse({ ...base, order: 1.5 }).success).toBe(false);
+    });
+});

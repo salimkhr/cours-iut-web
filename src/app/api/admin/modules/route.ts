@@ -3,6 +3,7 @@ import {connectToDB} from "@/lib/mongodb";
 import {withAdmin} from "@/lib/withAdmin";
 import {moduleFormSchema} from "@/lib/schemas/module.schema";
 import {assignModuleColor} from "@/lib/assignModuleColor";
+import {nextModuleOrder} from "@/lib/moduleOrder";
 
 export const POST = withAdmin(async (request: Request) => {
     try {
@@ -14,16 +15,23 @@ export const POST = withAdmin(async (request: Request) => {
         const db = await connectToDB();
         const collection = db.collection('modules');
 
-        const hasColor = !!(parsed.data.colorLight && parsed.data.colorDark);
-        const colors = hasColor
-            ? {}
-            : assignModuleColor(
-                await collection
-                    .find<{colorLight?: string}>({}, {projection: {colorLight: 1}})
-                    .toArray(),
-            );
+        const existing = await collection
+            .find<{colorLight?: string; order?: number | null}>({}, {projection: {colorLight: 1, order: 1}})
+            .toArray();
 
-        const result = await collection.insertOne({...parsed.data, ...colors, isVisible: false});
+        const hasColor = !!(parsed.data.colorLight && parsed.data.colorDark);
+        const colors = hasColor ? {} : assignModuleColor(existing);
+
+        // Sans ordre fourni, le module se range après les modules ordonnés (max + 1) ;
+        // tant qu'aucun module n'a d'ordre, on n'en pose pas (ordre de création conservé).
+        const order = parsed.data.order ?? nextModuleOrder(existing);
+
+        const result = await collection.insertOne({
+            ...parsed.data,
+            ...colors,
+            ...(order !== undefined && {order}),
+            isVisible: false,
+        });
 
         return NextResponse.json({insertedId: result.insertedId}, {status: 201});
     } catch (error) {

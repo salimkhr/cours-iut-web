@@ -28,6 +28,7 @@ import { addVerdictSchema, promoteExemplarSchema, VERDICT_FORMATS, EXEMPLAR_FORM
 import type { PedagogyVerdict, PedagogyExemplar } from "@/types/Pedagogy";
 import { ObjectId } from "bson";
 import { assignModuleColor } from "@/lib/assignModuleColor";
+import { nextModuleOrder } from "@/lib/moduleOrder";
 import { getGitlabConfig, getPrivateProjectConfig, ensureGroup, ensureProject, ensurePrivateProject, commitFiles, listRepoFiles, readRepoFile } from "@/lib/gitlab";
 import { isValidIcon } from "@/lib/iconMap";
 import { sectionApiSchema, briefSchema, curriculumSchema } from "@/lib/schemas/section.schema";
@@ -250,8 +251,11 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                     + "Le cours ne doit jamais illustrer avec le domaine du projet."),
             plannedNotions: z.array(z.string()).optional()
                 .describe("Notions à couvrir sur l'ensemble du module, posées avant le choix du projet."),
+            order: z.number().int().min(1).optional()
+                .describe("Ordre d'affichage (accueil, menu, footer). Défaut : max des ordres existants + 1 ; "
+                    + "aucun ordre posé si aucun module n'en a encore (ordre de création)."),
         },
-        async ({ title, iconName, path, description, sessionDurationMinutes, universe, projectSpec, exampleDomain, plannedNotions }) => {
+        async ({ title, iconName, path, description, sessionDurationMinutes, universe, projectSpec, exampleDomain, plannedNotions, order }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
             const slug = path ? slugify(path) : slugify(title);
@@ -275,19 +279,21 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 projectSpec: projectSpec !== undefined ? forceDraft(projectSpec) : undefined,
                 exampleDomain,
                 plannedNotions,
+                order,
             });
             if (!parsed.success) {
                 throw new Error(`Module invalide : ${JSON.stringify(parsed.error.flatten())}`);
             }
 
-            const colors = assignModuleColor(
-                await db.collection<Module>("modules")
-                    .find({}, {projection: {colorLight: 1}}).toArray(),
-            );
+            const existing = await db.collection<Module>("modules")
+                .find({}, {projection: {colorLight: 1, order: 1}}).toArray();
+            const colors = assignModuleColor(existing);
+            const finalOrder = parsed.data.order ?? nextModuleOrder(existing);
 
             const r = await db.collection<Omit<Module, "_id">>("modules").insertOne({
                 ...parsed.data,
                 ...colors,
+                ...(finalOrder !== undefined && { order: finalOrder }),
                 sections: [],
                 isVisible: false,
                 updatedAt: new Date().toISOString(),
@@ -305,7 +311,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     // ── edit_module ────────────────────────────────────────────────────────────
     server.tool(
         "edit_module",
-        "Édite les métadonnées d'un module : titre, description, icône, couleurs thème (colorLight/colorDark en hex), sessionDurationMinutes, universe, projectIcon, projectSpec, exampleDomain, plannedNotions. Réservé aux admins.",
+        "Édite les métadonnées d'un module : titre, description, icône, couleurs thème (colorLight/colorDark en hex), sessionDurationMinutes, order (ordre d'affichage), universe, projectIcon, projectSpec, exampleDomain, plannedNotions. Réservé aux admins.",
         {
             module:                  z.string().describe("Slug du module à éditer"),
             title:                   z.string().optional().describe("Nouveau titre affiché"),
@@ -317,6 +323,9 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 .describe("Couleur sombre du thème en hex (#rrggbb)"),
             sessionDurationMinutes:  z.number().int().min(1).optional()
                 .describe("Durée d'une séance en minutes (ex: 150 pour 2h30)"),
+            order:                   z.number().int().min(1).optional()
+                .describe("Ordre d'affichage du module (entier ≥ 1, croissant) sur l'accueil, le menu et le footer. "
+                    + "Les modules sans ordre passent après, dans l'ordre de création."),
             universe: universeSchema.optional()
                 .describe("Univers thématique du module (fil rouge cumulatif) : name (ex: Netflex), description (domaine + données types)"),
             projectIcon: iconNameSchema.optional()
@@ -332,7 +341,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             plannedNotions: z.array(z.string()).optional()
                 .describe("Notions à couvrir sur l'ensemble du module, posées avant le choix du projet."),
         },
-        async ({ module, title, iconName, description, colorLight, colorDark, sessionDurationMinutes, universe, projectIcon, isVisible, projectSpec, exampleDomain, plannedNotions }) => {
+        async ({ module, title, iconName, description, colorLight, colorDark, sessionDurationMinutes, order, universe, projectIcon, isVisible, projectSpec, exampleDomain, plannedNotions }) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
 
@@ -346,6 +355,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             if (colorLight !== undefined) set.colorLight = colorLight;
             if (colorDark !== undefined) set.colorDark = colorDark;
             if (sessionDurationMinutes !== undefined) set.sessionDurationMinutes = sessionDurationMinutes;
+            if (order !== undefined) set.order = order;
             if (universe !== undefined) set.universe = universe;
             if (projectIcon !== undefined) set.projectIcon = projectIcon;
             if (isVisible !== undefined) set.isVisible = isVisible;

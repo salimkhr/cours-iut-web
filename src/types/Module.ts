@@ -18,6 +18,9 @@ export default interface Module {
     manager?: Instructor;
     associatedSae: string[];
     isExtra?: boolean;
+    /** Ordre d'affichage (entier ≥ 1). Absent : le module passe après les modules ordonnés,
+     *  dans l'ordre de création. Cf. `compareModules` (`@/lib/moduleOrder`). */
+    order?: number;
     sessionDurationMinutes?: number;
     universe?: ModuleUniverse;
     projectIcon?: string;

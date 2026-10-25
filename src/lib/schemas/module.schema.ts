@@ -77,6 +77,8 @@ export const moduleFormSchema = z.object({
     manager: instructorSchema.optional(),
     instructors: z.array(instructorSchema).default([]),
     isExtra: z.boolean().default(false),
+    // Ordre d'affichage (accueil, menu, footer, admin) : cf. compareModules.
+    order: nullableOptional(z.number().int().min(1)),
     sessionDurationMinutes: nullableOptional(z.number().int().min(1)),
     universe: nullableOptional(universeSchema),
     projectIcon: z.string().optional(),

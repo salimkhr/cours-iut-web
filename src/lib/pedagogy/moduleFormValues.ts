@@ -25,6 +25,7 @@ export function moduleToFormValues(module: Module): ModuleFormValues {
             ? module.instructors
             : [{firstName: "", lastName: "", email: ""}],
         isExtra: module.isExtra ?? false,
+        order: module.order,
         sessionDurationMinutes: module.sessionDurationMinutes,
         colorLight: module.colorLight ?? "#C2410C",
         colorDark: module.colorDark ?? "#FB923C",

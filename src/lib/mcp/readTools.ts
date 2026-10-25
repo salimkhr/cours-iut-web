@@ -11,6 +11,7 @@ import type {ModuleUniverse} from "@/types/Module";
 import type Section from "@/types/Section";
 import {SKILL_DOCUMENTS, SKILL_MANIFEST} from "@/lib/skills/pedagogy";
 import {RESOURCES_COLLECTION} from "@/lib/resources";
+import {sortModules} from "@/lib/moduleOrder";
 
 // Outils MCP de lecture. Un admin voit tout ; un non-admin suit les règles des
 // pages : module `isVisible !== false`, section `isAvailable !== false`, jamais
@@ -228,17 +229,20 @@ export function registerReadTools(
     // ── list_modules ──────────────────────────────────────────────────────────
     server.tool(
         "list_modules",
-        "Retourne la liste de tous les modules disponibles.",
+        "Retourne la liste de tous les modules disponibles, dans l'ordre d'affichage du site (order croissant, puis ordre de création).",
         {},
         async () => {
             const db = await getDb();
-            const modules = await db.collection<{ path: string; title?: string; isExtra?: boolean; sessionDurationMinutes?: number; universe?: ModuleUniverse }>("modules")
-                .find(isAdmin ? {} : {isVisible: {$ne: false}}, { projection: { path: 1, title: 1, isExtra: 1, sessionDurationMinutes: 1, universe: 1, _id: 0 } })
-                .toArray();
+            // `_id` est projeté uniquement pour départager les modules sans `order` (ordre de
+            // création, cf. compareModules) ; il n'est jamais renvoyé.
+            const modules = sortModules(await db.collection<{ _id: ObjectId; path: string; title?: string; isExtra?: boolean; order?: number | null; sessionDurationMinutes?: number; universe?: ModuleUniverse }>("modules")
+                .find(isAdmin ? {} : {isVisible: {$ne: false}}, { projection: { _id: 1, path: 1, title: 1, isExtra: 1, order: 1, sessionDurationMinutes: 1, universe: 1 } })
+                .toArray());
             const result = modules.map((m) => ({
                 slug: m.path,
                 title: m.title ?? m.path,
                 isExtra: m.isExtra ?? false,
+                ...(typeof m.order === "number" && { order: m.order }),
                 ...(m.sessionDurationMinutes !== undefined && { sessionDurationMinutes: m.sessionDurationMinutes }),
                 ...(m.universe !== undefined && { universe: m.universe }),
             }));

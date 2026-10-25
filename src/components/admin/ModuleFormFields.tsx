@@ -24,6 +24,15 @@ interface ModuleFormFieldsProps {
 const inputCn = "bg-bridge-100/60 dark:bg-bridge-800/60 border-bridge-500/45 focus-visible:ring-bridge-500/50";
 const labelCn = "text-sm font-semibold text-brand-dark dark:text-bridge-200";
 
+/** Champ « ordre » facultatif : un champ vide doit donner `undefined`. `valueAsNumber`
+ *  donnerait `NaN`, que `z.number()` rejette, et bloquerait tout enregistrement d'un module
+ *  sans ordre. */
+export function parseOptionalOrder(value: unknown): number | undefined {
+    if (value === null || value === undefined) return undefined;
+    if (typeof value === 'string' && value.trim() === '') return undefined;
+    return Number(value);
+}
+
 export default function ModuleFormFields({
     register,
     control,
@@ -76,6 +85,23 @@ export default function ModuleFormFields({
                 <div>
                     <Label htmlFor="mf-desc" className={labelCn}>Description</Label>
                     <Textarea id="mf-desc" rows={3} className={inputCn} {...register('description')}/>
+                </div>
+                <div className="w-56">
+                    <Label htmlFor="mf-order" className={labelCn}>Ordre d&apos;affichage</Label>
+                    <Input
+                        id="mf-order"
+                        type="number"
+                        min={1}
+                        step={1}
+                        className={inputCn}
+                        {...register('order', {setValueAs: parseOptionalOrder})}
+                        aria-invalid={errors.order ? 'true' : 'false'}
+                        aria-describedby="mf-order-hint"
+                    />
+                    <p id="mf-order-hint" className="text-xs text-muted-foreground mt-1">
+                        Entier ≥ 1, ordre croissant sur l&apos;accueil, le menu et le pied de page. Les modules sans ordre s&apos;affichent après, par date de création.
+                    </p>
+                    {errors.order && <p className="text-red-500 text-xs mt-1">{errors.order.message}</p>}
                 </div>
                 <Controller
                     control={control}

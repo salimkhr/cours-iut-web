@@ -51,6 +51,19 @@ describe("moduleToFormValues", () => {
         expect(values.exampleDomain).toEqual(mod.exampleDomain);
     });
 
+    test("préserve l'ordre d'affichage (sinon chaque PUT du workflow l'effacerait)", () => {
+        const values = moduleToFormValues({...baseModule, order: 4});
+        expect(values.order).toBe(4);
+        expect(moduleFormSchema.parse(values).order).toBe(4);
+    });
+
+    test("un ordre null (champ absent côté Mongo) reste valide et sans valeur", () => {
+        const mod = {...baseModule, order: null} as unknown as Module;
+        const parsed = moduleFormSchema.safeParse(moduleToFormValues(mod));
+        expect(parsed.success).toBe(true);
+        expect(parsed.data?.order).toBeUndefined();
+    });
+
     test("ne perd aucun champ de moduleFormSchema entre deux évolutions du schéma", () => {
         // Filet mécanique : chaque clé du schéma doit être assignée par la fonction (même à une
         // valeur par défaut) — sinon le prochain PUT écraserait ce champ pour tout module chargé

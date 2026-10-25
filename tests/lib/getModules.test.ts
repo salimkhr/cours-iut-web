@@ -10,7 +10,7 @@ mock.module("@/lib/mongodb", () => ({
     },
 }));
 
-const { fetchModulesTheme } = await import("@/lib/getModules");
+const { fetchModules, fetchModulesTheme } = await import("@/lib/getModules");
 
 let stopDb: () => Promise<void>;
 beforeAll(async () => {
@@ -50,5 +50,33 @@ describe("fetchModulesTheme", () => {
 
     test("renvoie un tableau vide si la collection est vide", async () => {
         expect(await fetchModulesTheme()).toEqual([]);
+    });
+});
+
+describe("fetchModules", () => {
+    test("sans ordre posé, renvoie les modules dans l'ordre de création", async () => {
+        await db.collection("modules").insertMany([
+            { path: "html-css", title: "HTML", sections: [] },
+            { path: "javascript", title: "JS", sections: [] },
+            { path: "php", title: "PHP", sections: [] },
+        ]);
+
+        const modules = await fetchModules();
+
+        expect(modules.map((m) => m.path)).toEqual(["html-css", "javascript", "php"]);
+    });
+
+    test("trie par order, les modules sans order (ou order null) passent après", async () => {
+        await db.collection("modules").insertMany([
+            { path: "html-css", title: "HTML", sections: [] },
+            { path: "javascript", title: "JS", sections: [], order: 2 },
+            { path: "php", title: "PHP", sections: [], order: null },
+            { path: "rust", title: "Rust", sections: [], order: 1 },
+        ]);
+
+        const modules = await fetchModules();
+
+        expect(modules.map((m) => m.path)).toEqual(["rust", "javascript", "html-css", "php"]);
+        expect(typeof modules[0]._id).toBe("string");
     });
 });
