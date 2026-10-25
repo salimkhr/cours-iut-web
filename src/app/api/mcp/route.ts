@@ -63,6 +63,9 @@ type ContentType = CourseContent["contentType"];
 // Les clients MCP dont le schéma d'outils est mis en cache (connecteurs claude.ai)
 // transmettent les paramètres ajoutés depuis en chaîne : on tolère string → typé.
 const intOrString = z.union([z.number().int().min(0), z.string().regex(/^\d+$/)]);
+// Même tolérance pour un entier ≥ 1 : un client MCP au schéma en cache (connecté avant
+// l'ajout du champ) envoie l'entier en texte.
+const positiveIntOrString = z.union([z.number().int().min(1), z.string().regex(/^[1-9]\d*$/)]);
 
 function asInt(v: number | string | undefined): number | undefined {
     return v === undefined ? undefined : typeof v === "string" ? parseInt(v, 10) : v;
@@ -251,7 +254,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                     + "Le cours ne doit jamais illustrer avec le domaine du projet."),
             plannedNotions: z.array(z.string()).optional()
                 .describe("Notions à couvrir sur l'ensemble du module, posées avant le choix du projet."),
-            order: z.number().int().min(1).optional()
+            order: positiveIntOrString.optional()
                 .describe("Ordre d'affichage (accueil, menu, footer). Défaut : max des ordres existants + 1 ; "
                     + "aucun ordre posé si aucun module n'en a encore (ordre de création)."),
         },
@@ -279,7 +282,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 projectSpec: projectSpec !== undefined ? forceDraft(projectSpec) : undefined,
                 exampleDomain,
                 plannedNotions,
-                order,
+                order: asInt(order),
             });
             if (!parsed.success) {
                 throw new Error(`Module invalide : ${JSON.stringify(parsed.error.flatten())}`);
@@ -323,7 +326,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 .describe("Couleur sombre du thème en hex (#rrggbb)"),
             sessionDurationMinutes:  z.number().int().min(1).optional()
                 .describe("Durée d'une séance en minutes (ex: 150 pour 2h30)"),
-            order:                   z.number().int().min(1).optional()
+            order:                   positiveIntOrString.optional()
                 .describe("Ordre d'affichage du module (entier ≥ 1, croissant) sur l'accueil, le menu et le footer. "
                     + "Les modules sans ordre passent après, dans l'ordre de création."),
             universe: universeSchema.optional()
@@ -355,7 +358,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             if (colorLight !== undefined) set.colorLight = colorLight;
             if (colorDark !== undefined) set.colorDark = colorDark;
             if (sessionDurationMinutes !== undefined) set.sessionDurationMinutes = sessionDurationMinutes;
-            if (order !== undefined) set.order = order;
+            if (order !== undefined) set.order = asInt(order);
             if (universe !== undefined) set.universe = universe;
             if (projectIcon !== undefined) set.projectIcon = projectIcon;
             if (isVisible !== undefined) set.isVisible = isVisible;

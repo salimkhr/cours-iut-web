@@ -129,7 +129,18 @@ describe("MCP — ordre d'affichage des modules", () => {
         await db.collection("modules").insertOne({ path: "php", title: "PHP", sections: [], order: 2 });
         await expect(callTool("edit_module", { module: "php", order: 0 })).rejects.toThrow();
         await expect(callTool("edit_module", { module: "php", order: 1.5 })).rejects.toThrow();
+        await expect(callTool("edit_module", { module: "php", order: "0" })).rejects.toThrow();
         const mod = await db.collection("modules").findOne({ path: "php" });
         expect(mod?.order).toBe(2);
+    });
+
+    test("order envoyé en chaîne par un client au schéma en cache est accepté", async () => {
+        // Repro : un client MCP connecté avant l'ajout de `order` ne connaît pas son type et
+        // l'envoie en texte ("1"), comme pour courseIntroMinutes (cf. intOrString).
+        await db.collection("modules").insertOne({ path: "php", title: "PHP", sections: [] });
+        await callTool("edit_module", { module: "php", order: "3" });
+        expect((await db.collection("modules").findOne({ path: "php" }))?.order).toBe(3);
+        await callTool("create_module", { title: "Rust", order: "1" });
+        expect((await db.collection("modules").findOne({ path: "rust" }))?.order).toBe(1);
     });
 });
