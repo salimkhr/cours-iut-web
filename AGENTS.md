@@ -1,159 +1,128 @@
 # AGENTS.md
 
-Instructions pour les agents de code (Codex CLI, Cursor, etc.) travaillant sur ce dépôt.
-Claude Code lit `CLAUDE.md` (référence complète) ; ce fichier en reprend l'essentiel.
+Site de cours de l'IUT (BUT Informatique) : modules, sections, cours, TP, slides, examens,
+quiz live, espace admin et serveur MCP. Next.js 16 (App Router), React 19, TypeScript strict,
+MongoDB (driver natif), better-auth, Zod, Tailwind v4 + shadcn/ui. Runtime et paquets : **Bun**.
 
-## Stack
-
-Next.js 16 (App Router exclusif), React 19, TypeScript 6 (strict), MongoDB (driver natif,
-pas de Prisma, `bson` épinglé à `7.2.0`), better-auth, Zod, Tailwind CSS v4, shadcn/ui
-(`radix-ui`), Zustand. Runtime/gestionnaire de paquets : **Bun**.
-
-## Skills à utiliser
-
-Installés en scope user (`claude plugin list`) — nécessitent un redémarrage de session pour
-être actifs après installation. À invoquer proactivement selon la tâche, pas seulement sur
-demande explicite :
-
-- **`ui-ux-pro-max`** — **obligatoire avant toute tâche de design/UI/UX** (nouveau composant,
-  révision visuelle, layout, navigation, couleurs, typographie), cf. section 11 de `CLAUDE.md`.
-  Sous-skills : `design`, `design-system`, `ui-styling`, `brand`, `slides`, `banner-design`.
-- **`impeccable`** — vocabulaire de commandes pour maintenir la cohérence design du projet :
-  `/impeccable teach` (met à jour `PRODUCT.md` — stratégie produit) et `/impeccable document`
-  (met à jour `DESIGN.md` — système visuel) sont les commandes de référence pour ces deux
-  fichiers (cf. section 11 de `CLAUDE.md` — **ne jamais les éditer à la main**). Autres verbes
-  utiles sur une UI existante : `/impeccable polish`, `/impeccable audit`, `/impeccable critique`.
-- **`superpowers`** — méthodologie de développement. Skills clés : `brainstorming` (cadrer une
-  feature avant de coder), `test-driven-development` (tests avant code — cohérent avec
-  `bun test`), `systematic-debugging`, `writing-plans` / `executing-plans`,
-  `requesting-code-review` / `receiving-code-review`, `subagent-driven-development`. En cas de
-  doute sur quel skill s'applique, passer par `using-superpowers`.
-- **`gitnexus`** — analyse de code intelligence (impact, dépendances, flux d'exécution). Voir
-  le bloc généré automatiquement plus bas dans ce fichier (section « GitNexus — Code
-  Intelligence ») pour les commandes MCP/CLI exactes ; ne pas l'éditer à la main, il est
-  régénéré par `gitnexus analyze`.
+Avant de modifier une fonction ou de committer, suivez `NEXUS.md` (analyse d'impact GitNexus).
 
 ## Commandes
 
-```
-bun dev                # serveur de dev
-bun run build           # build production (standalone)
-bun run lint            # eslint .
-bun run lint:fix
-bun test                # bun test (runner natif Bun, *.test.ts)
+```bash
+bun dev                          # serveur de dev (http://localhost:3000)
+bun run lint                     # eslint
+bunx tsc --noEmit                # typecheck
+bun test                         # tous les tests
+bun test tests/lib/getModules    # un fichier (filtre sur le chemin)
+bun test -t "nom du test"        # un test par nom (regex)
+bun run build                    # build standalone, à lancer si config ou dépendances touchées
+bun run create-indexes           # applique src/lib/db/indexes.ts (idempotent)
 ```
 
-Hooks pre-commit via husky (`prepare`) — ne jamais les contourner (`--no-verify`).
+Les scripts qui touchent la base passent par `dotenv-cli` (`.env` + `.env.local`) : utilisez
+les scripts `package.json` plutôt que `bun src/scripts/x.ts` en direct.
+
+## Avant de rendre la main
+
+Le hook pre-commit (husky) lance seulement `lint` et `tsc --noEmit`, pas les tests. Lancez
+vous-même `bun test` sur la zone modifiée, et `bun run build` si vous avez touché
+`next.config.ts`, `package.json` ou `src/proxy.ts`. Ne contournez jamais le hook (`--no-verify`).
+
+## Tests
+
+Runner natif `bun:test`, timeout 30 s (`bunfig.toml`). Deux emplacements :
+
+- `tests/{api,lib,mcp}/` — tests d'intégration sur une vraie base en mémoire
+  (`startMemoryDb()` de `tests/helpers/db.ts`, `mongodb-memory-server`).
+- `src/**/*.test.ts(x)` — tests unitaires colocalisés. Les composants se testent avec
+  `renderToStaticMarkup` (`react-dom/server`), sans bibliothèque DOM.
+
+Pour une route API, mockez avant d'importer la route, sinon le vrai module est chargé :
+
+```ts
+mock.module("@/lib/mongodb", () => ({ connectToDB: async () => db }));
+mock.module("@/lib/auth", () => ({ getServerSession: async () => session, auth: {} }));
+const { POST } = await import("@/app/api/admin/modules/route");
+```
+
+Pour un bug, écrivez d'abord le test qui le reproduit. Pas d'e2e en place (Playwright est
+installé mais sans configuration).
 
 ## Architecture
 
-- App Router exclusif, pas de dossier `pages/`.
-- Server Components par défaut ; `"use client"` seulement si nécessaire (hooks, état, événements).
-- API en Route Handlers (`src/app/api/.../route.ts`).
-- Auth + CSRF + CSP dans `src/proxy.ts` (anciennement middleware, renommé depuis Next 16).
-- `src/lib/schemas/` : validation Zod aux frontières (API, formulaires) avant toute insertion DB.
+- App Router exclusif. Server Components par défaut, `"use client"` seulement pour l'état,
+  les événements ou les animations.
+- API en Route Handlers (`src/app/api/**/route.ts`). Les Server Actions se limitent à
+  `src/app/actions/auth-actions.ts`.
+- `src/proxy.ts` porte l'auth, le CSRF, la CSP et les headers de sécurité. C'est le nom
+  officiel du middleware depuis Next 16 : ne le renommez pas.
+- Accès : `/admin/*` et `/register` exigent `role === 'admin'` ; tout le reste sauf `/`,
+  `/login`, `/api/auth` et les assets exige une session.
+- Le contenu pédagogique vit dans MongoDB sous forme d'arbre de blocs (`src/lib/block*`),
+  édité par le builder (`src/components/builder/`) ou les outils MCP (`src/lib/mcp/`).
+- Le quiz live n'écrit que par `QuizService` (`src/lib/quiz/`), partagé admin et MCP.
+- Validation Zod (`src/lib/schemas/`) à chaque frontière, avant toute écriture en base.
 
 ## Conventions
 
-- Imports via alias `@/*` (pas de relatifs longs).
-- TypeScript strict : pas d'`any`, pas de `@ts-ignore` sans `// reason: ...`.
-- Function components uniquement, pas de classes.
-- `PascalCase` composants, `camelCase` fonctions/variables, `kebab-case` routes.
-- Indentation 4 espaces.
-- `ObjectId` MongoDB toujours converti en `string` avant renvoi au client.
+- Imports via `@/*`. Indentation 4 espaces. Function components uniquement.
+- Pas d'`any` ; un `@ts-ignore` porte un commentaire `// reason: ...`.
+- Un `ObjectId` est converti en `string` avant d'aller au client.
+- Les listes de modules, sections ou contenus viennent de la base (`getModules()`), jamais
+  d'une constante en dur.
+- Utilisez les composants shadcn de `src/components/ui/` (Button, Card, Tabs…) avant d'écrire
+  un `<div>` stylé. Vérifiez `ui/` et `Cards/` avant de créer un composant.
+- Tables admin : `AdminDataTable` + type `AdminColumn<TData>`, pas de `@tanstack/react-table`.
+- Tout nouvel index MongoDB se déclare dans `src/lib/db/indexes.ts`.
 
-## À ne jamais faire
+## Pièges connus
 
-- Importer du code serveur (`src/lib/auth.ts`, `src/lib/mongodb.ts`) dans un Client Component.
-- Exposer un secret côté client (pas de `NEXT_PUBLIC_` pour un secret).
-- Modifier `next.config.ts` ou `package.json` sans valider `bun run build` ensuite.
-- Toucher `src/components/ui/` ou `src/components/Cards/` pour une tâche de contenu de cours —
-  ce sont les composants source de vérité, utilisés par tout `src/cours/`.
-- Inventer un composant déjà existant : vérifier `src/components/ui/` et `src/components/Cards/`
-  avant d'en écrire un nouveau.
-- Sauter les hooks pre-commit (`--no-verify`).
+- **`bson` épinglé à `7.2.0`** (dépendance + `overrides`) : dès 7.3, son chargement lit
+  `v8.startupSnapshot`, que Bun n'implémente pas, et tout `import "mongodb"` plante. Le driver
+  reste donc en `mongodb@~7.6.0`, car 7.7 exige `bson ^7.3.2`.
+- **ESLint 10 bloqué** : `eslint-plugin-react` appelle `context.getFilename()`, supprimé.
+  Restez en `eslint@^9`.
+- **TypeScript 7 bloqué** : `typescript-eslint` le refuse explicitement. Restez en `6.0.3`.
+- **Pas d'appel DB au chargement d'un module** : `src/lib/mongodb.ts` renvoie un mock pendant
+  `next build` (`NEXT_PHASE`), un appel synchrone au top-level casse le build.
+- **`src/cours/` est figé** : ces `.tsx` ont été importés en base et ne sont plus lus par
+  l'app. Ne les modifiez pas pour corriger un cours, corrigez en base.
+- **`bun run migrate:db` est un import, pas une synchro** : il saute ce qui a été modifié depuis
+  la migration, et `--force` écrase les corrections faites au builder.
+- **`migrate-clean-content` n'est pas idempotent** : ne le rejouez pas à l'aveugle.
+- `NEXT_PUBLIC_*` est inliné au build : changer la valeur exige un rebuild.
 
-## Piloter le navigateur pour tester une modif UI
+## Données et environnement
 
-`@playwright/test` est une dépendance du projet (`node_modules/playwright` est déjà installé,
-Chromium headless aussi). Pour vérifier visuellement un changement, piloter Chromium en
-headless directement depuis Bash plutôt que de tenter d'ouvrir une fenêtre visible :
+- Base `cours-iut-web`, connexion via `connectToDB()` de `src/lib/mongodb.ts`.
+- Les collections de better-auth (`user`, `session`, `oauthClient`…) se manipulent uniquement
+  via l'API better-auth : leur schéma interne change entre versions.
+- Variables lues via `process.env`, secrets dans `.env.local` (git-ignoré). Un secret n'a
+  jamais le préfixe `NEXT_PUBLIC_`. Pour savoir où une variable est lue :
+  `grep -rn "process.env.NOM" src`.
+- Deux environnements, staging et prod. Le contenu passe de l'un à l'autre via
+  `/api/admin/push-to-prod` (`SYNC_SECRET`).
 
-```js
-import { chromium } from 'playwright';
+## Limites
 
-const browser = await chromium.launch();
-const page = await browser.newPage();
-await page.goto('http://localhost:3000/...', { waitUntil: 'domcontentloaded' });
-await page.screenshot({ path: '/chemin/vers/capture.png' });
-await browser.close();
-```
+✅ **Toujours** : lancer les tests de la zone touchée ; valider les entrées avec Zod ; garder
+le code serveur (`@/lib/auth`, `@/lib/mongodb`) hors des Client Components.
 
-Le serveur de dev doit tourner (`bun dev`, vérifier `http://localhost:3000`). Écrire le script
-dans le répertoire du projet (pas dans `/tmp`) pour que la résolution de module Bun prenne la
-version de `playwright` épinglée par `package.json` plutôt qu'une version globale en cache — un
-écart de version entre `playwright` et les binaires déjà téléchargés dans
-`~/.cache/ms-playwright/` fait échouer `chromium.launch()`. Supprimer le script une fois le test
-terminé (ne pas le committer). Relire la capture avec l'outil de lecture d'image pour juger du
-rendu.
+⚠️ **Demander d'abord** : toute écriture sur la base de staging ou de prod (scripts de
+migration, outils MCP, push-to-prod), même si un constat semble l'appeler ; ajouter ou monter
+une dépendance ; modifier `next.config.ts` ; rejouer un script de migration.
 
-Cette méthode headless suffit pour vérifier/tester par moi-même (screenshots, clics, navigation).
-Elle ne montre rien à l'écran de l'utilisateur — si l'utilisateur doit voir la fenêtre, un autre
-mécanisme est nécessaire (non résolu à ce jour : Chromium via Playwright sous WSLg reste invisible
-côté utilisateur malgré un lancement réussi).
+🚫 **Jamais** : exposer un secret au client ; contourner les hooks ; requêter une grosse
+collection sans filtre indexé ; modifier `src/components/ui/` ou `src/components/Cards/` dans
+le cadre d'une tâche de contenu ; éditer `PRODUCT.md` ou `DESIGN.md` à la main (ils sont
+maintenus par l'outil `impeccable`, proposez le changement à l'utilisateur).
 
-## Contenu pédagogique (`src/cours/`)
+<!-- BEGIN:nextjs-agent-rules -->
 
-Voir section 10 de `CLAUDE.md` pour les règles détaillées (impératif vouvoyé, structure
-`<article><section>`, composants imposés, apostrophes échappées). Ne jamais utiliser de
-balises HTML brutes (`<p>`, `<ul>`, `<h2>`, `<code>`) dans le contenu pédagogique.
+## This is NOT the Next.js you know
 
-## Détails complets
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
 
-Stack précise (versions, majeures bloquées), variables d'environnement, conventions MongoDB
-détaillées, tests : voir `CLAUDE.md` à la racine.
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
-<!-- gitnexus:start -->
-# GitNexus — Code Intelligence
-
-This project is indexed by GitNexus as **cours-iut-web** (8100 symbols, 14761 relationships, 351 execution flows).
-
-> Index stale? Run `node .gitnexus/run.cjs analyze --index-only` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? Bootstrap with `npx`, `bunx`, or `pnpm dlx` — e.g. `bunx gitnexus@latest analyze` (npm 11 npx crash; #1939).
-
-## Always Do
-
-- **MUST run impact before editing.** Use `impact({target: "symbolName", direction: "upstream"})` or `node .gitnexus/run.cjs impact "symbolName" --direction upstream --repo .`; report callers, processes, and risk. Never substitute grep for graph analysis.
-- **MUST analyze graph changes before committing.** Use `detect_changes({scope: "all"})` (MCP) or `node .gitnexus/run.cjs detect-changes --scope all --repo .` (CLI fallback). `partial: true` or `truncated: true` is not a clean check — a zero means unseen, not unaffected; re-run it. For regression review: `detect_changes({scope: "compare", base_ref: "main"})` or `node .gitnexus/run.cjs detect-changes --scope compare --base-ref "main" --repo .`.
-- MUST warn on HIGH/CRITICAL `risk` pre-edit; never use `riskSharedAxes` to waive a HIGH/CRITICAL `risk` warning. Compare File/symbol: MCP File omits axes; Graph-RAG expands File.
-- **MUST treat `risk: UNKNOWN` as unresolved, not as low.** An empty caller set is not evidence the symbol is unused — it can also mean the callers are not resolvable by the index (plain-object property access, dynamic dispatch, cross-language calls). `impact` pairs `UNKNOWN` with a `riskNote` saying so. Confirm with a text search before treating the symbol as safe to change or delete; do not proceed on the strength of a zero.
-- **MUST use `query({search_query: "concept"})` for concepts/flows, `context({name: "symbolName"})` for a named symbol, or `impact` for blast radius, on read-only callers, dependencies, imports, or execution flow.** Graph first; text search only for empty/`UNKNOWN`/literals.
-- For security review, `explain({target: "fileOrSymbol"})` lists taint findings (source→sink flows; needs `analyze --pdg`).
-
-## Never Do
-
-- NEVER edit a function, class, or method before MCP/CLI impact analysis.
-- NEVER ignore HIGH or CRITICAL risk warnings from impact analysis, and never read `UNKNOWN` as an all-clear — it means the walk could not answer, which is the one verdict that requires confirming by other means.
-- NEVER rename symbols with find-and-replace — use `rename` which understands the call graph.
-- NEVER commit before MCP/CLI graph change analysis.
-
-## Resources
-
-| Resource | Use for |
-| --- | --- |
-| `gitnexus://repo/cours-iut-web/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/cours-iut-web/clusters` | All functional areas |
-| `gitnexus://repo/cours-iut-web/processes` | All execution flows |
-| `gitnexus://repo/cours-iut-web/process/{name}` | Step-by-step execution trace |
-
-## CLI
-
-| Task | Read this skill file |
-| --- | --- |
-| Understand architecture / "How does X work?" | `.claude/skills/gitnexus-exploring/SKILL.md` |
-| Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus-impact-analysis/SKILL.md` |
-| Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus-debugging/SKILL.md` |
-| Rename / extract / split / refactor | `.claude/skills/gitnexus-refactoring/SKILL.md` |
-| Tools, resources, schema reference | `.claude/skills/gitnexus-guide/SKILL.md` |
-| Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus-cli/SKILL.md` |
-
-<!-- gitnexus:end -->
+<!-- END:nextjs-agent-rules -->
