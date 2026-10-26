@@ -164,6 +164,7 @@ L'enregistrement du client se fait automatiquement (DCR Scalekit) — pas de cli
 | `insert_block` | Admin uniquement |
 | `edit_block` | Admin uniquement |
 | `delete_block` | Admin uniquement |
+| `move_block` | Admin uniquement |
 
 ---
 
