@@ -15,6 +15,8 @@ import { validateBlockTree } from "@/lib/validateBlockTree";
 import {
     findBlock,
     insertBlock,
+    isDescendant,
+    moveBlock,
     removeBlock,
     updateBlockProps,
     updateBlockChildren,
@@ -953,6 +955,59 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
 
             await saveBlocks(key, updated);
             return { content: [{ type: "text" as const, text: "Blocs réordonnés." }] };
+        }
+    );
+
+    // ── move_block ────────────────────────────────────────────────────────────
+    server.tool(
+        "move_block",
+        "Déplace un bloc (avec ses enfants, ID conservé) vers un autre parent ou une autre position. "
+        + "parentBlockId null = racine. afterBlockId = frère du parent cible après lequel placer le bloc ; absent = en fin de parent. Réservé aux admins.",
+        {
+            module:  z.string(),
+            section: z.string(),
+            type:    CONTENT_TYPE,
+            blockId: z.string().describe("ID du bloc à déplacer"),
+            parentBlockId: z.string().nullable().describe("ID du nouveau parent. null = racine"),
+            afterBlockId:  z.string().nullable().optional().describe("Placer après ce bloc du parent cible. null/absent = à la fin"),
+        },
+        async ({ module, section, type, blockId, parentBlockId, afterBlockId }) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            await assertModuleWritable(module);
+            const key: ContentKey = { moduleSlug: module, sectionSlug: section, contentType: type };
+            const blocks = await loadBlocks(key);
+            if (!findBlock(blocks, blockId)) throw new Error(`Bloc ${blockId} introuvable`);
+            if (parentBlockId !== null) {
+                if (!findBlock(blocks, parentBlockId)) throw new Error(`Bloc parent ${parentBlockId} introuvable`);
+                if (parentBlockId === blockId || isDescendant(blocks, blockId, parentBlockId)) {
+                    throw new Error("Un bloc ne peut pas être déplacé dans lui-même ou dans un de ses descendants");
+                }
+            }
+
+            // Index calculé sur l'arbre sans le bloc : c'est la position finale
+            // attendue par moveBlock.
+            const without = removeBlock(blocks, blockId);
+            const siblings = parentBlockId === null ? without : (findBlock(without, parentBlockId)?.children ?? []);
+            let index = siblings.length;
+            if (afterBlockId) {
+                const pos = siblings.findIndex((b) => b.id === afterBlockId);
+                if (pos === -1) throw new Error(`afterBlockId ${afterBlockId} n'est pas un enfant du parent cible`);
+                index = pos + 1;
+            }
+
+            const updated = moveBlock(blocks, blockId, parentBlockId, index);
+            const validation = validateBlockTree(updated);
+            if (!validation.valid) {
+                throw new Error(`Déplacement invalide : ${JSON.stringify(validation.errors)}`);
+            }
+
+            await saveBlocks(key, updated);
+            return {
+                content: [{
+                    type: "text" as const,
+                    text: `Bloc ${blockId} déplacé dans ${parentBlockId ?? "la racine"} à l'index ${index}.`,
+                }],
+            };
         }
     );
 
