@@ -11,7 +11,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {authClient} from "@/lib/auth-client";
 import {Button} from "@/components/ui/button";
 import {Checkbox} from "@/components/ui/checkbox";
-import {Field, FieldContent, FieldDescription, FieldLabel, FieldTitle} from "@/components/ui/field";
+import {Field, FieldLabel} from "@/components/ui/field";
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group";
 import {Label} from "@/components/ui/label";
 
@@ -40,9 +40,9 @@ export default function LoginForm({redirectTo = "/"}: {redirectTo?: string}) {
     } = useForm<LoginValues>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
-            // Décoché par défaut : les postes des salles de TP sont partagés,
-            // garder la session active doit être un choix explicite.
-            rememberMe: false,
+            // Coché par défaut pour éviter de se reconnecter à chaque visite ;
+            // sur un poste partagé de salle de TP, il faut le décocher.
+            rememberMe: true,
         },
     });
 
@@ -217,20 +217,16 @@ export default function LoginForm({redirectTo = "/"}: {redirectTo?: string}) {
                 {/* Remember me — présentation sobre : ce n'est pas l'action
                     principale de la page, il ne doit pas capter l'œil avant le
                     bouton de connexion. */}
-                <FieldLabel>
-                    <Field orientation="horizontal">
-                        <Checkbox
-                            checked={rememberMe}
-                            onCheckedChange={(v) => setValue("rememberMe", !!v)}
-                        />
-                        <FieldContent>
-                            <FieldTitle>Rester connecté</FieldTitle>
-                            <FieldDescription>
-                                Conserver ma session active sur cet appareil.
-                            </FieldDescription>
-                        </FieldContent>
-                    </Field>
-                </FieldLabel>
+                <Field orientation="horizontal">
+                    <Checkbox
+                        id="rememberMe"
+                        checked={rememberMe}
+                        onCheckedChange={(v) => setValue("rememberMe", !!v)}
+                    />
+                    <FieldLabel htmlFor="rememberMe" className="font-normal">
+                        Rester connecté
+                    </FieldLabel>
+                </Field>
 
                 {/* Captcha */}
                 {sitekey && (
