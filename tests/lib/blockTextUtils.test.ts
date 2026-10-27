@@ -414,7 +414,7 @@ describe("blocksToMarkdown", () => {
         expect(md).toContain("> **Astuce : Mon conseil**");
     });
 
-    it("collapsible → '### <title>' avec enfants", () => {
+    it("collapsible → '> [repliable] <title>', enfants indentés, marque de fin (pas un titre ###)", () => {
         const blocks: Block[] = [
             {
                 id: "col1", type: "collapsible", props: { title: "Voir plus" }, children: [
@@ -423,8 +423,10 @@ describe("blocksToMarkdown", () => {
             },
         ];
         const md = blocksToMarkdown(blocks);
-        expect(md).toContain("### Voir plus");
-        expect(md).toContain("Contenu caché");
+        expect(md).toContain("<!--col1-->\n> [repliable] Voir plus");
+        expect(md).toContain("  <!--t1-->\n  Contenu caché");
+        expect(md).toContain("> [fin du repliable]");
+        expect(md).not.toContain("### Voir plus");
     });
 
     it("divider → ---", () => {
@@ -435,13 +437,15 @@ describe("blocksToMarkdown", () => {
         expect(md).toContain("---");
     });
 
-    it("includeLimitations=true avec download-file → section Limitations en fin", () => {
+    it("download-file sans contenu → nom du fichier et « (contenu vide) », sans limitation", () => {
         const blocks: Block[] = [
             { id: "dl1", type: "download-file", props: { filename: "fichier.zip", language: "zip" } },
         ];
         const md = blocksToMarkdown(blocks, true);
-        expect(md).toContain("**Limitations de cet export :**");
-        expect(md).toContain("download-file");
+        expect(md).toContain("<!--dl1-->");
+        expect(md).toContain("`fichier.zip`");
+        expect(md).toContain("(contenu vide)");
+        expect(md).not.toContain("**Limitations de cet export :**");
     });
 
     it("columns avec includeLimitations=true → section Limitations mentionnant columns", () => {
@@ -552,13 +556,13 @@ describe("blocksToMarkdown", () => {
         const md = blocksToMarkdown(blocks);
         expect(md).toContain("> **Rappel**");
     });
-    it("text bloc vide → omis (pas de <!--id-->)", () => {
+    it("text bloc vide → marqueur <!--id--> et « (vide) »", () => {
         const blocks: Block[] = [
             { id: "empty", type: "text", props: { content: "" } },
             { id: "nonempty", type: "text", props: { content: "Visible" } },
         ];
         const md = blocksToMarkdown(blocks);
-        expect(md).not.toContain("<!--empty-->");
+        expect(md).toContain("<!--empty-->\n(vide)");
         expect(md).toContain("<!--nonempty-->");
         expect(md).toContain("Visible");
     });

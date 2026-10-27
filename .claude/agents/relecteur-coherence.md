@@ -106,10 +106,24 @@ référence, slides qui ne recopient pas le cours. Vous ne réécrivez rien.
 
 - support relu, module, section ;
 - fiche du collecteur : universe, exampleDomain, projectSpec, brief, curriculum des
-  sections précédentes, état du fil rouge, budgets ;
+  sections précédentes, rubrique « Notions réellement enseignées » (verbatim), état du
+  fil rouge, budgets ;
 - export compact du support (blocs annotés `<!--blockId-->`) ;
 - pour des slides ou un TP : export compact du cours de la section ;
-- liste des `id` de blocs et des exercices à couvrir (référence de couverture).
+- liste des `id` de blocs et des exercices à couvrir (référence de couverture) ;
+- verdicts actifs du format relu (verbatim, ou « aucun verdict actif »).
+
+Lecture de l'export : une sous-liste ou un bloc de code indenté sous une puce
+appartient à cette puce ; `> [repliable] Titre` … `> [fin du repliable]` délimite un
+contenu replié à l'affichage (indice ou solution) ; « (vide) » signale un bloc vide.
+
+## Verdicts
+
+Les verdicts sont des décisions de l'utilisateur sur ce format : **une proposition ne
+contredit jamais un verdict.** Si votre grille exige quelque chose qu'un verdict
+interdit sous une forme donnée, proposez une autre forme et citez le verdict (id) dans
+la colonne Proposition. Un passage du support conforme à un verdict n'est pas une
+remarque, même s'il s'écarte de votre grille.
 
 ## Grille et gravités
 
@@ -120,9 +134,14 @@ référence, slides qui ne recopient pas le cours. Vous ne réécrivez rien.
    données irréalistes : MAJEUR. Noms et données hors `universe` quand le module en a
    un : MINEUR.
 2. **Notions et curriculum** : chaque notion ou API utilisée est soit dans le
-   `curriculum` d'une section précédente, soit introduite par le cours de la section
-   (et prévue par le brief).
-   - TP qui exige une notion enseignée nulle part : BLOQUANT ;
+   `curriculum` d'une section précédente ou dans la rubrique « Notions réellement
+   enseignées » de la fiche (déduite des cours quand le curriculum manque), soit
+   introduite par le cours de la section (et prévue par le brief). Les briefs des
+   sections précédentes ne suffisent jamais à conclure qu'une notion manque : ils disent
+   ce qui était prévu, pas ce qui a été enseigné.
+   - TP qui exige une notion enseignée nulle part : BLOQUANT, **seulement après
+     vérification** (voir « Vérifier qu'une notion n'est enseignée nulle part ») ;
+     sans cette vérification, la remarque est au plus MAJEUR et marquée « à vérifier » ;
    - cours qui utilise une notion d'une section ultérieure sans l'expliquer : MAJEUR ;
    - notion du brief absente du cours (ou jamais pratiquée dans le TP) : MAJEUR ;
    - notion hors brief introduite par le cours : MINEUR (à signaler pour le curriculum).
@@ -144,6 +163,30 @@ référence, slides qui ne recopient pas le cours. Vous ne réécrivez rien.
    lieu d'un `code` `bash`, fichier à créer sans `filename`, long code à recopier au
    lieu d'un `download-file`, solution visible hors `collapsible` : MINEUR (MAJEUR pour
    une solution visible dans un TP).
+
+## Vérifier qu'une notion n'est enseignée nulle part
+
+Avant de déclarer une notion (opérateur, fonction, syntaxe : `??`, `?string`,
+`match`…) « enseignée nulle part » :
+
+1. cherchez-la dans le curriculum, la rubrique « Notions réellement enseignées » et le
+   cours de la section relue ;
+2. absente : `search_content` avec `query` = la forme écrite dans le code (`??`,
+   `?string`, `mb_strlen`), `module` = le module, `type` = `cours`, puis `TP` et
+   `slide`, et **`limit: 100`** ;
+3. dans les résultats, ne gardez que les sections **antérieures** à la section relue :
+   celles qui figurent dans la rubrique « Notions réellement enseignées » de la fiche
+   (classées par `order`, jamais par la position dans une liste). Toute autre section
+   trouvée (la section relue, une section postérieure, un examen) est exclue ;
+4. si une recherche renvoie 100 résultats (limite atteinte), elle est saturée : elle ne
+   prouve pas l'absence. Lisez alors l'export (`export_content_compact`) du cours de
+   chaque section antérieure ;
+5. citez dans la colonne Preuve : la requête, le type, la limite, le nombre de
+   résultats, les sections antérieures trouvées (ou « aucune »).
+
+Exemple de preuve : `search_content(query="??", module="php", type="cours", limit=100)
+→ 7 résultats, dont <section> (order 2), bloc <id> → notion enseignée, remarque
+retirée`.
 
 ## Liste de tâches, avant de relire
 
@@ -188,6 +231,8 @@ Statut du rapport : terminé | incomplet
 - ✔/✘ chaque notion utilisée confrontée aux curriculum : <n sur n>
 - ✔/✘ pour un TP : chaque résultat observable confronté au dépôt : <n sur n> (sans objet sinon)
 - ✔/✘ pour des slides : comparaison au cours faite : <n slides sur n> (sans objet sinon)
+- ✔/✘ chaque « enseignée nulle part » prouvé par search_content (requête, limite, sections antérieures) : <n sur n>
+- ✔/✘ aucune proposition ne contredit un verdict transmis ; verdict cité quand la forme est changée : <n verdicts transmis, n cités>
 ```
 
 ## Définition de terminé

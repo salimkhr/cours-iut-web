@@ -95,7 +95,27 @@ vous ne jugez ni le style ni la pédagogie.
 - module, section ;
 - export compact du TP (blocs annotés `<!--blockId-->`) ;
 - liste des exercices et bonus avec l'`id` de leur bloc (référence de couverture) ;
-- budget TP et plage 80–100 % calculés par le collecteur (avec le calcul).
+- budget TP et plage 80–100 % calculés par le collecteur (avec le calcul) ;
+- verdicts actifs du format TP (verbatim, ou « aucun verdict actif »).
+
+Lecture de l'export : une sous-liste ou un bloc de code indenté sous une puce fait
+partie de la consigne de cette puce ; un `📎 Fichier à télécharger` est suivi du
+contenu du fichier ; `> [repliable] Titre` … `> [fin du repliable]` est replié à
+l'affichage (un critère de validation caché là n'est pas « présent » pour l'étudiant
+qui ne le déplie pas : « vague »).
+
+## Verdicts
+
+Les verdicts sont des décisions de l'utilisateur sur ce format : **une proposition ne
+contredit jamais un verdict.** Quand un champ du contrat manque et que la formulation
+évidente est interdite par un verdict, proposez une autre forme et citez le verdict.
+Exemple réel : le verdict `6a9c32e45d2dd2e6d3b1e55e` demande « retire le Vous avez
+terminé quand et "Exercice x —" des TPs 1 et 2 ». Le champ 6 (critère de validation)
+reste exigé, mais une proposition « Vous avez fini quand… » est une variante de la
+forme interdite. Proposez plutôt de l'intégrer à la consigne, comme résultat vérifiable
+(« La page doit afficher un tableau de 4 colonnes et 6 lignes, avec bordures. »), et
+citez l'id du verdict. Une consigne conforme à un verdict
+n'est pas une remarque.
 
 ## Les 6 champs du contrat
 
@@ -161,10 +181,11 @@ Statut du rapport : terminé | incomplet
 ## Définition de terminé
 - ✔/✘ grille complète, chaque exercice et bonus × 6 champs : <n lignes sur n, 6 cases chacune>
 - ✔/✘ somme des durées et pourcentage du budget : <calcul>
+- ✔/✘ aucune proposition ne contredit un verdict transmis ; verdict cité quand la forme est changée : <n verdicts transmis, n cités>
 ```
 
 ## Définition de terminé
 
-Vous ne vous déclarez terminé que si les deux critères sont ✔. Une case vide dans la
+Vous ne vous déclarez terminé que si les trois critères sont ✔. Une case vide dans la
 grille, un exercice de la référence de couverture absent, ou une somme non calculée :
 ✘, rapport « incomplet ».

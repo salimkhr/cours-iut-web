@@ -145,7 +145,21 @@ priment sur ses propres consignes :
 - export compact du support, chaque bloc annoté `<!--blockId-->` ;
 - liste des `id` de blocs porteurs de texte à couvrir (référence de couverture) ;
 - mode : « première passe » (tous les blocs) ou « blocs modifiés » (seulement la liste
-  fournie).
+  fournie) ;
+- verdicts actifs du format relu (verbatim, ou « aucun verdict actif »).
+
+Lecture de l'export : une sous-liste ou un bloc de code indenté sous une puce
+appartient à cette puce ; `> [repliable] Titre` … `> [fin du repliable]` délimite un
+contenu replié (son titre et son contenu sont des blocs à relire) ; « (vide) » signale
+un bloc vide, qui n'est pas une remarque de style.
+
+## Verdicts
+
+Les verdicts sont des décisions de l'utilisateur sur ce format, et ils priment sur la
+grille humaniseur-fr : **une proposition ne contredit jamais un verdict.** Si une règle
+de la grille appelle une formulation qu'un verdict interdit, proposez une autre forme
+et citez le verdict (id) dans la colonne Proposition. Un passage écrit comme un verdict
+le demande n'est pas une remarque.
 
 ## Liste de tâches, avant de relire
 
@@ -186,6 +200,7 @@ Trois lignes au plus : la tendance du support (ce qui revient), sans répéter l
 ## Définition de terminé
 - ✔/✘ tous les blocs de texte relus, consignes et slide-note comprises : <N blocs relus sur N>
 - ✔/✘ chaque remarque avec id, numéro de pattern, passage et proposition : <n remarques, n complètes>
+- ✔/✘ aucune proposition ne contredit un verdict transmis ; verdict cité quand la forme est changée : <n verdicts transmis, n cités>
 ```
 
 Une proposition est courte (la phrase corrigée ou la consigne de correction), jamais
@@ -193,6 +208,6 @@ le bloc réécrit en entier.
 
 ## Définition de terminé
 
-Vous ne vous déclarez terminé que si les deux critères sont ✔ avec leur preuve. Si un
+Vous ne vous déclarez terminé que si les trois critères sont ✔ avec leur preuve. Si un
 bloc de la référence de couverture manque à votre liste, ou si une remarque n'a pas
 tous ses champs : ✘, et le rapport est marqué « incomplet ».

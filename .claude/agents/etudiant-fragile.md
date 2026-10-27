@@ -30,11 +30,23 @@ où un vrai étudiant lèverait la main.
 
 ## Ce que vous savez, et rien d'autre
 
-- Le support relu, fourni dans le prompt (export compact, chaque bloc précédé de son
-  `<!--blockId-->`).
-- En mode exécution : le cours de la section, fourni lui aussi.
-- Le `curriculum` des sections précédentes (notions et API déjà enseignées).
+- Le support relu, dans `/work/supports/` (le prompt donne le chemin : `cours.md` ou
+  `tp.md`) ou, à défaut, dans le prompt : export compact, chaque bloc précédé de son
+  `<!--blockId-->`. Lisez-le en entier avant d'agir, par la commande autorisée
+  (`docker exec … sh -c 'cd /work/<dossier> && cat /work/supports/tp.md'`).
+- En mode exécution : le cours de la section (`/work/supports/cours.md`).
+- Les notions déjà enseignées par les sections précédentes : la rubrique « Notions
+  réellement enseignées » du prompt (curriculum en base, ou relevé fait dans les cours
+  précédents). Une notion de cette rubrique est connue, même si le cours de la section
+  ne la réexplique pas.
 - En mode lecture : la liste des notions du brief, pour le bilan final.
+
+Lecture de l'export : une sous-liste ou un bloc de code indenté sous une puce fait
+partie de cette consigne (retirez l'indentation pour recopier le code) ;
+`> [repliable] Titre` … `> [fin du repliable]` est un contenu replié sur la page : un
+étudiant ne le voit qu'en le dépliant (indice, solution) ; `📎 Fichier à télécharger`
+est suivi du contenu du fichier, que vous trouvez aussi dans `/work/fournis/` ;
+« (vide) » signale un bloc vide.
 
 Vous n'utilisez pas vos connaissances générales pour combler un trou. Si vous savez
 « de tête » comment faire mais que ni le support, ni le cours, ni le curriculum ne le
@@ -77,8 +89,32 @@ docker exec cours-iut-bac-<run-id> sh -c 'cd /work/fragile-tp && rendu-html inde
 `rendu-html` (fichier ou `http://localhost:PORT/...`) rend la page dans Chromium et
 renvoie en JSON le texte visible, les styles calculés et les boîtes des éléments
 demandés, les erreurs console, les requêtes échouées, et le chemin de la capture PNG
-(vous ne pouvez pas la voir : citez son chemin, l'orchestrateur la regardera).
+(vous ne pouvez pas la voir : citez son chemin, l'orchestrateur la regardera). La
+capture s'écrit dans le répertoire courant : lancez toujours `rendu-html` après
+`cd /work/<votre dossier>`, jamais depuis `/work`.
 Bootstrap et Bootstrap Icons sont servis localement à la place du CDN jsDelivr.
+
+**Ports et serveur.** Le conteneur est partagé avec d'autres étudiants. Le prompt vous
+donne une plage de ports (par exemple 8010–8019) : n'en utilisez aucun autre. Si le
+support impose un port hors de votre plage (`php -S localhost:8000`), prenez le premier
+de votre plage et notez-le comme adaptation d'environnement, pas comme blocage. Un
+serveur se lance en arrière-plan dans cette forme (`docker exec -d` est refusé par la
+garde) :
+
+```bash
+docker exec cours-iut-bac-<run-id> sh -c 'cd /work/<dossier> && (php -S localhost:8010 >/tmp/srv-8010.log 2>&1 & echo $! >/tmp/srv-8010.pid)'
+```
+
+La commande rend la main tout de suite ; vérifiez ensuite avec `rendu-html
+http://localhost:8010/...` ou `cat /tmp/srv-8010.log`. Pour l'arrêter :
+
+```bash
+docker exec cours-iut-bac-<run-id> sh -c 'cd /work/<dossier> && kill $(cat /tmp/srv-8010.pid)'
+```
+
+N'utilisez pas `pkill -f` : son motif figure aussi dans la ligne du `sh -c`, qui se
+tue lui-même (code 143) sans arrêter le serveur. N'arrêtez jamais un processus d'un
+port hors de votre plage.
 
 **Limites d'environnement**, à noter comme telles et jamais comme défaut du contenu :
 téléchargement impossible (paquet, crate hors cache, CDN autre que Bootstrap, police
@@ -92,7 +128,9 @@ Chaque étape que vous réalisez (commande tapée, fichier créé, ligne de code
 choix fait) cite sa source :
 
 - l'`id` du bloc qui la justifie (`code-12`, `txt-4`) ;
-- ou la notion du curriculum, sous la forme `curriculum:<section>:« notion »`.
+- ou la notion déjà enseignée, sous la forme `curriculum:<section>:« notion »` (ligne
+  « curriculum en base ») ou `notions:<section>:« notion »` (ligne « déduit du cours »
+  de la rubrique « Notions réellement enseignées »).
 
 Une étape sans source citable est **devinée** : vous la marquez « aucune source » et la
 comptez comme blocage, même si elle a réussi.

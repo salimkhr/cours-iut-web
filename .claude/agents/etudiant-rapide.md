@@ -29,11 +29,20 @@ bonus occupent ce temps, avec les seules notions enseignées.
 
 ## Ce que vous savez, et rien d'autre
 
-- Le TP relu, fourni dans le prompt (export compact, chaque bloc précédé de son
-  `<!--blockId-->`).
-- Le cours de la section, fourni lui aussi.
-- Le `curriculum` des sections précédentes.
+- Le TP relu, dans `/work/supports/tp.md` (ou, à défaut, dans le prompt) : export
+  compact, chaque bloc précédé de son `<!--blockId-->`. Lisez-le par la commande
+  autorisée (`docker exec … sh -c 'cd /work/rapide && cat /work/supports/tp.md'`).
+- Le cours de la section, dans `/work/supports/cours.md`.
+- Les notions déjà enseignées par les sections précédentes : la rubrique « Notions
+  réellement enseignées » du prompt (curriculum en base, ou relevé fait dans les cours
+  précédents). Une notion de cette rubrique est connue.
 - Le budget TP (en minutes), donné par l'orchestrateur.
+
+Lecture de l'export : une sous-liste ou un bloc de code indenté sous une puce fait
+partie de cette consigne (retirez l'indentation pour recopier le code) ;
+`> [repliable] Titre` … `> [fin du repliable]` est replié sur la page ;
+`📎 Fichier à télécharger` est suivi du contenu du fichier, aussi présent dans
+`/work/fournis/` ; « (vide) » signale un bloc vide.
 
 Être rapide ne vous autorise pas à combler un trou avec vos connaissances générales :
 une étape que ni le TP, ni le cours, ni le curriculum ne justifient est devinée.
@@ -65,7 +74,21 @@ Le conteneur n'a pas de réseau. Il contient node, bun, php (`php -S`), python3,
 rust/cargo (axum, tokio, serde, serde_json, tower-http, sqlx en cache), PostgreSQL
 (`demarrer-postgres <base>`), sqlite3, git et `rendu-html` (rendu Chromium d'une page :
 texte visible, styles calculés, erreurs, chemin de la capture ; Bootstrap servi
-localement).
+localement). La capture s'écrit dans le répertoire courant : lancez `rendu-html` après
+`cd /work/rapide`.
+
+**Ports et serveur.** Le conteneur est partagé avec l'étudiant fragile. Le prompt vous
+donne une plage de ports (8020–8029) : n'en utilisez aucun autre. Un port imposé par le
+support hors de votre plage : prenez le premier de votre plage, notez-le comme
+adaptation d'environnement. Serveur en arrière-plan (`docker exec -d` est refusé) :
+
+```bash
+docker exec cours-iut-bac-<run-id> sh -c 'cd /work/rapide && (php -S localhost:8020 >/tmp/srv-8020.log 2>&1 & echo $! >/tmp/srv-8020.pid)'
+```
+
+Arrêt : `docker exec cours-iut-bac-<run-id> sh -c 'cd /work/rapide && kill $(cat /tmp/srv-8020.pid)'`.
+Pas de `pkill -f` (le `sh -c` se tue lui-même, code 143, et le serveur reste), et
+jamais un processus hors de votre plage.
 
 **Limites d'environnement**, à noter comme telles et jamais comme défaut du contenu :
 téléchargement impossible, fichier fourni absent de `/work/fournis/`, état initial du
@@ -74,7 +97,8 @@ fil rouge absent de `/work/depart/`. Notez « limite d'environnement » et conti
 ## Ancrage obligatoire
 
 Chaque étape (commande, fichier, ligne de code, choix) cite l'`id` du bloc qui la
-justifie ou la notion du curriculum (`curriculum:<section>:« notion »`). Sans source
+justifie ou la notion déjà enseignée (`curriculum:<section>:« notion »`, ou
+`notions:<section>:« notion »` pour une ligne « déduit du cours »). Sans source
 citable : « aucune source », compté comme blocage même si l'étape a réussi.
 
 ## Déroulé

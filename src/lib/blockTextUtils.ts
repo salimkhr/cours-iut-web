@@ -208,10 +208,57 @@ const CALLOUT_LABELS: Record<string, string> = {
     reminder: "Rappel",
 };
 
+/** Marque écrite à la place d'un contenu vide : le bloc garde son marqueur `<!--id-->`. */
+const VIDE = "(vide)";
+
+/** Au-delà, le contenu d'un `download-file` est tronqué (mention explicite). */
+const DOWNLOAD_MAX_LIGNES = 400;
+const DOWNLOAD_MAX_CARACTERES = 20000;
+
+/** Bloc de code clôturé par une suite de backticks plus longue que toute suite du code. */
+function fence(code: string, lang: string): string {
+    const plusLongue = Math.max(0, ...(code.match(/`+/g) ?? []).map((s) => s.length));
+    const ticks = "`".repeat(Math.max(3, plusLongue + 1));
+    return `${ticks}${lang}\n${code}\n${ticks}`;
+}
+
+/** Indente chaque ligne non vide (contenu imbriqué dans un élément de liste ou un repliable). */
+function indent(text: string, spaces: number): string {
+    const pad = " ".repeat(spaces);
+    return text.split("\n").map((l) => (l ? pad + l : l)).join("\n");
+}
+
+function tronquer(code: string): { code: string; mention: string | null } {
+    const lignes = code.split("\n");
+    let gardees = lignes.slice(0, DOWNLOAD_MAX_LIGNES);
+    while (gardees.length > 1 && gardees.join("\n").length > DOWNLOAD_MAX_CARACTERES) {
+        gardees = gardees.slice(0, Math.floor(gardees.length * 0.9));
+    }
+    if (gardees.length === lignes.length) return { code, mention: null };
+    return {
+        code: gardees.join("\n"),
+        mention: `_(tronqué : ${gardees.length} lignes affichées sur ${lignes.length} ; contenu complet via get_content)_`,
+    };
+}
+
+/** Élément de liste : son texte, puis TOUS ses enfants, indentés sous la puce. */
+function renderListItem(
+    child: Block,
+    prefix: string,
+    depth: number,
+    limitations: Set<string>
+): string {
+    const text = str(child.props.text);
+    const head = `<!--${child.id}-->\n${prefix} ${text || VIDE}`;
+    const childParts = renderBlocks(child.children ?? [], depth, limitations);
+    if (childParts.length === 0) return head;
+    return [head, indent(childParts.join("\n\n"), prefix.length + 1)].join("\n\n");
+}
+
 /**
- * Rend un bloc en Markdown. Retourne `null` si le bloc n'a pas de contenu à
- * émettre (ex. texte vide). Les limitations rencontrées sont ajoutées dans
- * le Set `limitations`.
+ * Rend un bloc en Markdown. Chaque bloc, même vide, émet son marqueur
+ * `<!--id-->` (le nombre de marqueurs égale le nombre de blocs de l'arbre).
+ * Les limitations rencontrées sont ajoutées dans le Set `limitations`.
  */
 function renderBlock(block: Block, depth: number, limitations: Set<string>): string | null {
     const { id, type, props } = block;
@@ -222,18 +269,22 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
         case "text":
         case "slide-text": {
             const content = str(props.content);
-            if (!content) return null;
-            return `${annotation}\n${content}`;
+            return `${annotation}\n${content || VIDE}`;
         }
 
         case "slide-note": {
             const content = str(props.content);
-            if (!content) return null;
+            if (!content) return `${annotation}\n_Note présentateur : ${VIDE}_`;
             return `${annotation}\n_Note présentateur : ${content}_`;
         }
 
+        case "heading": {
+            const level = Math.min(Math.max(Number(props.level) || 1, 1), 3);
+            return `${annotation}\n${"#".repeat(level + 1)} ${str(props.text) || VIDE}`;
+        }
+
         case "section": {
-            const title = str(props.title);
+            const title = str(props.title) || VIDE;
             const level = Math.min(2 + depth, 6);
             const hashes = "#".repeat(level);
             const heading = `${annotation}\n${hashes} ${title}`;
@@ -251,20 +302,17 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
         case "list":
         case "slide-list": {
             const ordered = !!(props.ordered as boolean | undefined);
-            const items: string[] = [];
-            for (const [i, child] of children.entries()) {
-                const text = str(child.props.text);
-                const prefix = ordered ? `${i + 1}.` : "-";
-                items.push(`<!--${child.id}-->\n${prefix} ${text}`);
-            }
-            if (children.some((c) => c.children?.length)) {
-                limitations.add(
-                    "list-item/slide-list-item : les blocs enfants d'un item de liste sont aplatis (contenu imbriqué non rendu)."
-                );
-            }
-            if (items.length === 0) return annotation;
+            const items = children.map((child, i) =>
+                renderListItem(child, ordered ? `${i + 1}.` : "-", depth, limitations)
+            );
+            if (items.length === 0) return `${annotation}\n_(liste ${VIDE})_`;
             return [annotation, ...items].join("\n\n");
         }
+
+        case "list-item":
+        case "slide-list-item":
+            // Hors d'une liste (arbre invalide) : rendu comme une puce isolée.
+            return renderListItem(block, "-", depth, limitations);
 
         case "callout": {
             const variant = str(props.variant) || "info";
@@ -281,13 +329,13 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
         }
 
         case "collapsible": {
-            const title = str(props.title);
-            const heading = `${annotation}\n### ${title}`;
+            // Replié à l'affichage : marqué comme tel (pas un titre), contenu indenté,
+            // fin explicite pour savoir où s'arrête le repli.
+            const title = str(props.title) || VIDE;
+            const heading = `${annotation}\n> [repliable] ${title}`;
             const childParts = renderBlocks(children, depth, limitations);
-            if (childParts.length > 0) {
-                return [heading, ...childParts].join("\n\n");
-            }
-            return heading;
+            const body = childParts.length > 0 ? indent(childParts.join("\n\n"), 2) : `  ${VIDE}`;
+            return [heading, body, "> [fin du repliable]"].join("\n\n");
         }
 
         case "columns": {
@@ -314,7 +362,7 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
             const code = str(props.code);
             const lang = str(props.language);
             const filename = str(props.filename);
-            const codeBlock = `\`\`\`${lang}\n${code}\n\`\`\``;
+            const codeBlock = fence(code, lang);
             if (filename) {
                 return `${annotation}\n_${filename}_\n${codeBlock}`;
             }
@@ -324,7 +372,7 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
         case "slide-code": {
             const code = str(props.code);
             const lang = str(props.language);
-            return `${annotation}\n\`\`\`${lang}\n${code}\n\`\`\``;
+            return `${annotation}\n${fence(code, lang)}`;
         }
 
         case "code-with-preview":
@@ -335,7 +383,7 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
             const code = str(props.code);
             const lang = str(props.language);
             const filename = str(props.filename);
-            const codeBlock = `\`\`\`${lang}\n${code}\n\`\`\``;
+            const codeBlock = fence(code, lang);
             const base = filename
                 ? `${annotation}\n_${filename}_\n${codeBlock}`
                 : `${annotation}\n${codeBlock}`;
@@ -345,7 +393,7 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
             const parts = [base];
 
             if (secondaryCode) {
-                const secondaryCodeBlock = `\`\`\`${secondaryLang}\n${secondaryCode}\n\`\`\``;
+                const secondaryCodeBlock = fence(secondaryCode, secondaryLang);
                 parts.push(secondaryCodeBlock);
             }
 
@@ -356,7 +404,7 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
         case "diagram": {
             const header = str(props.header);
             const chart = str(props.chart);
-            const codeBlock = `\`\`\`mermaid\n${chart}\n\`\`\``;
+            const codeBlock = fence(chart, "mermaid");
             if (header) {
                 return `${annotation}\n_${header}_\n${codeBlock}`;
             }
@@ -367,7 +415,7 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
         case "slide-table": {
             const headers = Array.isArray(props.headers) ? (props.headers as string[]) : [];
             const rows = Array.isArray(props.rows) ? (props.rows as string[][]) : [];
-            if (headers.length === 0) return annotation;
+            if (headers.length === 0) return `${annotation}\n_(tableau ${VIDE})_`;
             const headerRow = `| ${headers.join(" | ")} |`;
             const separator = `| ${headers.map(() => "---").join(" | ")} |`;
             const dataRows = rows.map((row) => `| ${row.join(" | ")} |`).join("\n");
@@ -416,12 +464,31 @@ ${subtitle}` : ""}`;
         }
 
         case "download-file": {
-            limitations.add(
-                "Les fichiers téléchargeables (download-file) nécessitent un lien non exportable"
-            );
-            const filename = str(props.filename);
+            const filename = str(props.filename) || VIDE;
             const language = str(props.language);
-            return `${annotation}\n📎 \`${filename}\` (${language})`;
+            const head = `${annotation}\n📎 Fichier à télécharger : \`${filename}\`${language ? ` (${language})` : ""}`;
+            const code = str(props.code);
+            if (!code) return `${head}\n_(contenu vide)_`;
+            const { code: shown, mention } = tronquer(code);
+            return [head, fence(shown, language), ...(mention ? [mention] : [])].join("\n");
+        }
+
+        case "file-tree": {
+            const title = str(props.title);
+            const paths = str(props.paths).trim();
+            const head = `${annotation}\n_Arborescence${title ? ` : ${title}` : ""}_`;
+            return paths ? `${head}\n${fence(paths, "text")}` : `${head}\n${VIDE}`;
+        }
+
+        case "input-card": {
+            const title = str(props.title);
+            const description = str(props.description);
+            const filename = str(props.filename);
+            const lines = [annotation, `**${title || VIDE}**`];
+            if (description) lines.push(description);
+            if (filename) lines.push(`_${filename}_`);
+            lines.push(fence(str(props.code), str(props.language)));
+            return lines.join("\n");
         }
 
         case "divider":

@@ -54,13 +54,14 @@ Desktop). Une seule tâche en cours à la fois. Liste type :
 2. Collecter le contexte (collecteur)
 3. Contrôler la fiche
 4. Exporter les supports et fixer la couverture
-5. Préparer le bac à sable
-6. Lancer les relectures en parallèle
-7. Contrôler couverture et preuves des rapports
-8. Arbitrer
-9. Nettoyer le bac à sable
-10. Mettre à jour le statut et l'état du module
-11. Présenter la synthèse
+5. Préparer le bac à sable (ports par étudiant)
+6. Préparer les supports dans le bac à sable (agent d'aide, § 5 bis)
+7. Lancer les relectures en parallèle
+8. Contrôler couverture et preuves des rapports
+9. Arbitrer
+10. Nettoyer le bac à sable
+11. Mettre à jour le statut et l'état du module
+12. Présenter la synthèse
 
 À la reprise d'une relecture interrompue, reconstruisez cette liste à partir du statut
 de section (étape 1) et reprenez à la première tâche non faite.
@@ -80,7 +81,7 @@ de contexte.
 
 ## 3. Contrôle de la fiche
 
-- Vérifiez sa définition de terminé : quatre ✔ avec preuve. Un ✘ ou une preuve absente
+- Vérifiez sa définition de terminé : cinq ✔ avec preuve (dont la rubrique « Notions réellement enseignées », une ligne par section précédente selon `order`). Un ✘ ou une preuve absente
   → relancez-le une fois en citant ce qui manque. Toujours incomplet → montrez le trou
   à l'utilisateur et demandez s'il faut continuer.
 - Recalculez vous-même les budgets à partir des valeurs citées.
@@ -106,6 +107,21 @@ support la liste des `id` à couvrir, et pour chaque agent son sous-ensemble (st
 blocs porteurs de texte ; cohérence : tous les blocs ; contrat et rapide : exercices et
 bonus ; fragile : exemples de code, variantes, erreurs fréquentes, exercices).
 
+**Compter les marqueurs.** Un marqueur est une ligne qui ne contient que `<!--id-->`
+(indentation tolérée) ; l'en-tête `<!-- export: … -->` et les commentaires HTML d'un
+bloc de code (`<!-- === Affichage === -->`) n'en sont pas, car ils contiennent une
+espace après `<!--`. L'export rend chaque bloc, vides compris (« (vide) »), sous-listes
+et code imbriqué compris (indentés sous leur puce), `collapsible` en
+`> [repliable] Titre` … `> [fin du repliable]`, contenu des `download-file` et chemins
+des `file-tree`. Comparez l'ensemble des ids extraits de l'export à celui de
+`get_content` : ils doivent être égaux. Un écart (export d'une version du serveur
+antérieure à cette correction, par exemple) se signale dans la synthèse, et les blocs
+manquants sont lus avec `get_content`.
+
+`get_content` dépasse la limite de sortie des outils MCP sur les gros supports (cours
+et TP de PHP 4, par exemple) : c'est l'agent de préparation (§ 5 bis) qui le lit, pas
+votre contexte.
+
 Repérez aussi les blocs `download-file` du TP et ce qui sert d'état de départ au fil
 rouge (fiche du collecteur, rubrique « état initial reconstituable »).
 
@@ -115,8 +131,8 @@ Seulement si un étudiant est lancé (cours ou TP dans le périmètre). Vérifie
 les prérequis de session (`bac-a-sable.md` § 0 : règle de permission, test de fumée de
 la garde). Suivez ensuite `bac-a-sable.md` : image `cours-iut-bac:1`, run-id, dossier
 `%TEMP%\cours-iut-bac\<run-id>` avec ses sous-dossiers, conteneur
-`cours-iut-bac-<run-id>` en `--network none`. Déposez dans `fournis/` les fichiers des
-`download-file` que vous pouvez obtenir, et dans `depart/` l'état initial du fil rouge
+`cours-iut-bac-<run-id>` en `--network none`. Les fichiers des `download-file` vont
+dans `fournis/` (agent de préparation, § 5 bis), et dans `depart/` l'état initial du fil rouge
 s'il est reconstituable depuis le dépôt de référence. Ce qui manque est dit aux
 étudiants dans leur prompt (limite d'environnement).
 
@@ -124,6 +140,55 @@ Ne lancez jamais un étudiant si le conteneur ne répond pas au contrôle de
 `bac-a-sable.md`, ni depuis une session non interactive (`claude -p`) ou un dossier
 non approuvé : les hooks de frontmatter d'un agent projet ne tournent qu'une fois la
 confiance du dossier acceptée, et sans hook la garde du bac à sable saute.
+
+**Ports.** Les trois étudiants partagent le conteneur. Chacun reçoit dans son prompt
+une plage de ports réservée, et n'en sort pas :
+
+| Étudiant | Dossier | Ports |
+|---|---|---|
+| fragile, cours | `/work/fragile-cours` | 8000–8009 |
+| fragile, TP | `/work/fragile-tp` | 8010–8019 |
+| rapide | `/work/rapide` | 8020–8029 |
+
+Un support qui impose un port (`php -S localhost:8000`) : l'étudiant prend le premier
+port de sa plage et le note comme adaptation d'environnement, pas comme blocage.
+
+## 5 bis. Préparation des supports (agent d'aide)
+
+Les supports ne sont pas collés dans les prompts des étudiants (trop de contexte
+pour l'orchestrateur). Un agent d'aide les dépose dans le bac à sable, une fois le
+dossier créé (`bac-a-sable.md` § 1) et avant le lancement des étudiants. **Écart à la
+lettre de la spec** (§ 2 et § 4 : contenu « dans le prompt ») : à faire valider par
+l'utilisateur ; il est noté dans la synthèse.
+
+Lancez un agent `general-purpose` avec ce prompt (valeurs entre chevrons remplies) :
+
+```
+Tâche de préparation, lecture seule. Outils MCP permis, sur le serveur prod
+uniquement (préfixe mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__ ou
+mcp__claude_ai_cours-iut-web__) : export_content_compact, get_content. Tout autre
+outil MCP est interdit (aucune écriture, aucun outil staging 95c87654-…, aucun
+get_pedagogical_skill_*). Outil d'écriture de fichiers : seulement dans les chemins
+ci-dessous.
+Module <module>, section <section>.
+1. export_content_compact type cours → <dir>\supports\cours.md ; type TP →
+   <dir>\supports\tp.md. Texte de l'outil verbatim, sans retouche.
+2. get_content du TP (et du cours) : pour chaque bloc download-file, écrire
+   props.code tel quel dans <dir>\fournis\<props.filename> (sous-dossiers créés si
+   le nom en contient).
+3. Fichier de couverture <scratchpad>\couverture-<run-id>.md : par support, la liste
+   des blocs (id, type, id du parent), le total, et les exercices et bonus (titre, id).
+   Comparer les ids à ceux des lignes `<!--id-->` de l'export ; écrire l'écart.
+4. Ne jamais copier les slides dans <dir>. Ne rien écrire ailleurs.
+Rendre : les chemins écrits avec leur taille, les totaux de blocs, l'écart
+export / get_content.
+```
+
+Vérifiez son rendu (fichiers présents, totaux cohérents avec votre référence de
+l'étape 4). Les étudiants lisent ensuite `/work/supports/` par la commande autorisée
+(`docker exec … sh -c 'cd /work/<dossier> && cat /work/supports/tp.md'`) ; leur prompt
+le dit, avec la liste des fichiers. Les relecteurs, eux, reçoivent toujours l'export
+dans leur prompt (ou le lisent par `export_content_compact`).
 
 ## 6. Relectures en parallèle (spec § 2, étape 5)
 
@@ -139,15 +204,27 @@ Lancez dans un même message tous les agents applicables, un par support :
 
 Aucun étudiant sur les slides. Chaque prompt d'agent contient, et seulement cela :
 
-- **relecteurs** : support, module, section, export compact du support, liste des `id`
-  à couvrir, mode « première passe » ; pour la cohérence, la fiche du collecteur et
-  l'export du cours (si le support relu est les slides ou le TP) ; pour le contrat, le
-  budget TP avec son calcul ;
-- **étudiants** : export compact du support relu, export du cours (mode exécution et
-  rapide), curriculum des sections précédentes (verbatim de la fiche), notions du brief
-  (fragile en mode lecture), budget TP (rapide), nom du conteneur, dossier de travail,
-  contenu de `fournis/` et `depart/` (ou leur absence). **Jamais** : universe,
-  exampleDomain, projectSpec, état du fil rouge, dépôt de référence, autres rapports.
+- **relecteurs** (style, cohérence, contrat) : support, module, section, export compact
+  du support, liste des `id` à couvrir, mode « première passe », et les **verdicts
+  actifs du format relu**, recopiés verbatim de la fiche du collecteur (rubrique
+  « Verdicts actifs par format » : format du support relu, plus `global` et le module) ;
+  aucun verdict pour ce format → écrivez « aucun verdict actif pour <format> ». Pour la
+  cohérence, en plus : la fiche du collecteur, dont la rubrique « Notions réellement
+  enseignées » **verbatim**, et l'export du cours (si le support relu est les slides ou
+  le TP). Pour le contrat, en plus : le budget TP avec son calcul ;
+- **étudiants** : chemin du support relu dans `/work/supports/` (mode lecture :
+  `cours.md` ; mode exécution et rapide : `tp.md` et `cours.md`), rubrique « Notions
+  réellement enseignées » de la fiche **verbatim** (à défaut : curriculum des sections
+  précédentes, verbatim), notions du brief (fragile en mode lecture), budget TP
+  (rapide), nom du conteneur, dossier de travail, **plage de ports** (§ 5), contenu de
+  `fournis/` et `depart/` (ou leur absence). **Jamais** : universe, exampleDomain,
+  projectSpec, état du fil rouge, dépôt de référence, verdicts, autres rapports.
+
+**Copie, jamais reformulation.** La rubrique des notions enseignées et les verdicts
+sont collés tels que la fiche les donne, en bloc. Vous n'en tirez pas une liste de
+mémoire ni un résumé : un oubli (`match`, `var_dump`, `count` au test des sections PHP)
+fait signaler à tort une notion « non enseignée ». Si la rubrique est trop longue,
+transmettez-la entière quand même, ou demandez à l'utilisateur.
 
 ## 7. Contrôle couverture et preuves
 
@@ -155,6 +232,9 @@ Pour chaque rapport :
 
 - la liste de tâches couvre toute la référence de l'étape 4 (chaque bloc, chaque
   exercice, chaque notion du brief pour le fragile) ;
+- aucune proposition d'un relecteur ne contredit un verdict transmis ; un BLOQUANT
+  « notion enseignée nulle part » de la cohérence cite sa recherche `search_content`
+  (sans elle, il est renvoyé à l'agent) ;
 - la définition de terminé est complète, chaque ✔ a sa preuve vérifiable (compte, calcul,
   sortie collée) ; recomptez les comptes contre votre référence ;
 - chaque remarque a ses champs (§ 5) ; pour les étudiants, chaque étape du journal a sa
@@ -190,6 +270,10 @@ Sur l'ensemble des remarques :
    budget TP → signalé comme désaccord à trancher (dans le pipeline complet, c'est un
    retour au plan que l'utilisateur revalide).
 7. **MINEURS** : listés à part, ignorables.
+7 bis. **Verdicts** : une proposition qui contredit un verdict actif (elle réintroduit
+   une forme qu'il interdit) est réécrite dans une forme compatible, en citant le
+   verdict, ou écartée avec la mention du verdict. Le relecteur aurait dû le faire :
+   notez-le dans le contrôle de son rapport.
 8. **Désaccord** : deux agents se contredisent sans qu'une règle tranche → désaccord en
    attente : bloc, remarque de chaque agent, votre recommandation.
 9. **Retour d'une remarque écartée** : une remarque déjà écartée lors d'une relecture

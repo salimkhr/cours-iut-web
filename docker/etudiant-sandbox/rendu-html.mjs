@@ -3,7 +3,9 @@
 //
 // Usage :
 //   rendu-html <fichier.html | http://localhost:PORT/chemin> [options]
-//     --capture <png>        capture pleine page (défaut : <fichier>.rendu.png dans /work)
+//     --capture <png>        capture pleine page (défaut : dans le répertoire courant,
+//                            <nom du fichier>.rendu.png ou rendu-<port>.png pour une URL ;
+//                            lancez la commande depuis votre dossier, jamais depuis /work)
 //     --selecteurs "a,b"     éléments à décrire (défaut : "h1,h2,h3,nav,main,header,footer,img,a,button,form,table")
 //     --largeur <px>         largeur du viewport (défaut 1280)
 //     --hauteur <px>         hauteur du viewport (défaut 800)
@@ -58,11 +60,19 @@ function versUrl(cible) {
     return pathToFileURL(absolu).href;
 }
 
+// Toujours dans le répertoire courant : plusieurs étudiants partagent le conteneur, chacun
+// travaille dans son dossier ; une capture à côté du fichier rendu (ex. /work/fournis) ou
+// dans /work écraserait celle d'un autre.
+function nomCaptureParDefaut(cible, url) {
+    if (url.startsWith("file:")) return path.join(process.cwd(), `${path.basename(cible)}.rendu.png`);
+    const port = new URL(url).port || "80";
+    return path.join(process.cwd(), `rendu-${port}.png`);
+}
+
 async function main() {
     const opts = lireOptions(process.argv.slice(2));
     const url = versUrl(opts.cible);
-    const capture = opts.capture
-        ?? (url.startsWith("file:") ? `${path.resolve(opts.cible)}.rendu.png` : "/work/rendu.png");
+    const capture = path.resolve(opts.capture ?? nomCaptureParDefaut(opts.cible, url));
     const selecteurs = (opts.selecteurs ?? "h1,h2,h3,nav,main,header,footer,img,a,button,form,table")
         .split(",").map((s) => s.trim()).filter(Boolean);
 

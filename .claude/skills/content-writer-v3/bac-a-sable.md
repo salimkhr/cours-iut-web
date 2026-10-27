@@ -43,12 +43,13 @@ sous une racine fixe, en chemin long (pas la forme courte `UTILIS~1` de `%TEMP%`
 $run = "rust-structs-enums-20261027-143000"
 $racine = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) "Temp\cours-iut-bac"
 $dir = Join-Path $racine $run
-New-Item -ItemType Directory -Force $dir, "$dir\fragile-cours", "$dir\fragile-tp", "$dir\rapide", "$dir\fournis", "$dir\depart" | Out-Null
+New-Item -ItemType Directory -Force $dir, "$dir\fragile-cours", "$dir\fragile-tp", "$dir\rapide", "$dir\fournis", "$dir\depart", "$dir\supports" | Out-Null
 ```
 
-Déposez les fichiers fournis (`download-file`) dans `fournis\` et l'état de départ du
-fil rouge dans `depart\` avec l'outil d'écriture de fichiers, avant le démarrage. Ne
-copiez jamais là autre chose (ni fiche, ni dépôt de référence complet, ni rapport).
+L'agent de préparation (`SKILL.md` § 5 bis) écrit l'export du cours et du TP dans
+`supports\` (`cours.md`, `tp.md`) et les fichiers des `download-file` dans `fournis\`.
+Vous déposez l'état de départ du fil rouge dans `depart\`. Ne copiez jamais là autre
+chose : ni slides, ni fiche, ni verdicts, ni dépôt de référence complet, ni rapport.
 
 ## 2. Démarrage
 
@@ -66,6 +67,8 @@ docker exec "cours-iut-bac-$run" sh -c 'cd /work && echo ''<h1>ok</h1>'' > /tmp/
 ```
 
 Attendu : `etudiant`, les sous-dossiers, les versions, un JSON qui commence par `{`.
+Image construite avant le 2026-10-27 (capture par défaut dans `/work/rendu.png`) :
+reconstruisez-la (§ 0) ; `docker image inspect cours-iut-bac:1 --format "{{.Created}}"`.
 Piège de PowerShell 5.1 : un guillemet double à l'intérieur de l'argument `sh -c` est
 supprimé au passage vers `docker`. Dans ces commandes, n'utilisez que des apostrophes
 doublées (`''`) à l'intérieur de la chaîne.
@@ -81,17 +84,33 @@ Attendu : message « Bloqué par la garde du bac à sable » et `code 2`.
 
 ## 4. Ce que reçoivent les étudiants
 
-Dans leur prompt : `Conteneur : cours-iut-bac-<run-id>`, leur dossier (`/work/fragile-cours`,
-`/work/fragile-tp` ou `/work/rapide`), la liste des fichiers de `/work/fournis` et
-`/work/depart` (ou « aucun fichier fourni », « état initial du fil rouge non fourni »).
-Les étudiants ont déjà la forme de commande autorisée dans leur définition.
+Dans leur prompt : `Conteneur : cours-iut-bac-<run-id>`, leur dossier et leur plage de
+ports, les chemins de leurs supports dans `/work/supports`, la liste des fichiers de
+`/work/fournis` et `/work/depart` (ou « aucun fichier fourni », « état initial du fil
+rouge non fourni »).
+
+| Étudiant | Dossier | Ports | Supports |
+|---|---|---|---|
+| fragile, mode lecture | `/work/fragile-cours` | 8000–8009 | `cours.md` |
+| fragile, mode exécution | `/work/fragile-tp` | 8010–8019 | `tp.md`, `cours.md` |
+| rapide | `/work/rapide` | 8020–8029 | `tp.md`, `cours.md` |
+
+Les étudiants ont déjà dans leur définition la forme de commande autorisée, y compris
+celle d'un serveur en arrière-plan :
+`docker exec cours-iut-bac-<run-id> sh -c 'cd /work/<dossier> && (php -S localhost:PORT >/tmp/srv-PORT.log 2>&1 & echo $! >/tmp/srv-PORT.pid)'`,
+arrêt par `kill $(cat /tmp/srv-PORT.pid)` (pas `pkill -f`, qui tue le `sh -c` lui-même).
+Un serveur arrêté reste en zombie (`sleep infinity` en PID 1 ne récupère pas les
+processus) : c'est sans effet, le port est libéré.
+La garde accepte cette forme et refuse `docker exec -d` ; ses cas sont scriptés dans
+`tests/sandbox/garde-bac.test.ts` (`bun test tests/sandbox`).
 
 Si l'app demande une permission à chaque `docker exec`, proposez à l'utilisateur une
 règle d'autorisation `Bash(docker exec cours-iut-bac-:*)` ; ne la posez pas vous-même.
 
 ## 5. Captures et fichiers à regarder avant le nettoyage
 
-Les captures `rendu-html` sont dans `$dir\<sous-dossier>\...png` : lisez-les avec l'outil
+Les captures `rendu-html` sont dans le dossier de l'étudiant qui les a faites
+(`$dir\<sous-dossier>\<fichier>.rendu.png` ou `rendu-<port>.png`) : lisez-les avec l'outil
 de lecture de fichiers pour comparer au rendu annoncé.
 
 ## 6. Nettoyage (toujours, même après une erreur)

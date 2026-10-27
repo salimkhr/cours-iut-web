@@ -121,13 +121,16 @@ Construisez votre liste avec l'outil de liste de tâches s'il est disponible
 1. `list_modules` (universe, sessionDurationMinutes) ;
 2. `get_module` (projectSpec, exampleDomain, autres métadonnées utiles) ;
 3. `list_sections` (brief, totalDuration, courseIntroMinutes, curriculum, statut file/db
-   des contenus, ordre des sections) ;
+   des contenus, champ `order` de chaque section) ;
 4. `get_section` de la section cible ;
 5. `get_content` de chaque support à relire (compter les blocs, lister les exercices) ;
 6. `get_project_reference` (arbre, puis les fichiers utiles au TP de la section) ;
 7. repli fil rouge : `export_content_compact` des TP des sections précédentes, si le
    dépôt de référence est absent ou ne dit pas l'état avant la section ;
-8. `list_verdicts` par format relu ;
+7 bis. notions réellement enseignées : pour chaque section précédente sans
+   `curriculum`, `export_content_compact` de son cours (et de ses slides s'il y en a),
+   une tâche par section (voir « Notions réellement enseignées ») ;
+8. `list_verdicts` par format relu (et `global`) ;
 9. `list_exemplars` par format relu (métadonnées et annotations, sans snapshot) ;
 10. `list_block_types` ;
 11. `search_content` seulement pour vérifier un point précis (par exemple : la notion X
@@ -135,6 +138,42 @@ Construisez votre liste avec l'outil de liste de tâches s'il est disponible
 
 Recopiez cette liste en tête du rapport avec le statut de chaque tâche : faite, ou non
 faite avec la raison. Aucune tâche n'est abandonnée en silence.
+
+## Sections précédentes : par le champ `order`
+
+`list_sections` ne renvoie pas les sections dans l'ordre pédagogique (en prod, pour
+php, la section 2 sort en 10e position et l'examen 8 après la 9). Les « sections
+précédentes » sont celles dont le champ **`order`** (de `list_sections` ou
+`get_section`) est strictement inférieur à celui de la section cible, triées par
+`order` croissant. N'utilisez jamais la position dans la liste, ni le numéro du slug.
+Écrivez l'`order` de chaque section citée dans la fiche. Une section sans `order` : le
+signaler, et ne pas la classer.
+
+## Notions réellement enseignées
+
+Le `curriculum` est souvent vide en base. Sans lui, les relecteurs et les étudiants
+n'ont que les briefs, qui disent ce qui était prévu, pas ce qui a été enseigné : ils
+signalent alors à tort une notion « jamais enseignée ». Pour chaque section précédente
+(ordre `order` croissant) :
+
+- `curriculum` présent : recopiez-le tel quel (notions, apis, verbatim), mention
+  « curriculum en base » ;
+- `curriculum` absent : exportez son cours (`export_content_compact`, type `cours`, et
+  type `slide` s'il existe) et relevez **tout ce qui est montré dans un code ou expliqué
+  dans le texte** : notions, mots-clés, opérateurs (`??`, `?->`, `===`…), syntaxes
+  (`?string`, `match`, propriétés promues…), fonctions et méthodes de la bibliothèque
+  (`count`, `var_dump`, `usort`…), commandes. Soyez exhaustif plutôt que sélectif : un
+  oubli fait naître un faux BLOQUANT. Pas d'interprétation (« les bases de la POO ») :
+  les formes exactes, telles qu'écrites dans le cours.
+
+Format : une ligne par section, liste compacte séparée par des virgules, mention de la
+source en fin de ligne :
+
+```
+- <slug> (order 1) : <notion>, <opérateur>, <fonction>, <syntaxe>, … (déduit du
+  cours, pas de curriculum en base)
+- <slug> (order 2) : <notions et apis du curriculum> (curriculum en base)
+```
 
 ## Règles de calcul (reprises du content-writer v2)
 
@@ -181,8 +220,13 @@ Statut du rapport : terminé | incomplet
 | slides | file | — | invisible à export_content_compact et search_content |
 
 ## Curriculum des sections précédentes
-Pour chaque section précédente (ordre croissant) : slug, notions, apis, verbatim.
+Pour chaque section précédente (`order` croissant) : slug, order, notions, apis, verbatim.
 Section précédente sans curriculum : le signaler.
+
+## Notions réellement enseignées
+Une ligne par section précédente (`order` croissant), au format de la rubrique
+« Notions réellement enseignées » ci-dessus. Cette rubrique est transmise verbatim
+aux étudiants et au relecteur cohérence.
 
 ## État du fil rouge avant la section
 - source : get_project_reference (chemins lus) | export TP précédents (sections) | non disponible
@@ -191,7 +235,10 @@ Section précédente sans curriculum : le signaler.
 - état initial reconstituable pour un bac à sable : oui (chemins ou blocs sources) / non
 
 ## Verdicts actifs par format
-Pour chaque format relu : liste compacte (id, critique verbatim en une ligne).
+Pour chaque format relu (et `global`) : id, date, module, puis le texte **verbatim
+intégral** de la critique et de la règle validée, sans abréger ni résumer (une forme
+interdite perdue dans un résumé fait proposer cette forme par un relecteur). Ce bloc
+est transmis tel quel à tous les relecteurs.
 
 ## Exemplaire par format
 Pour chaque format relu : l'exemplaire le plus proche (id, titre, niveau, annotations).
@@ -208,6 +255,7 @@ Noms des types disponibles (une ligne).
 - ✔/✘ budgets calculés avec le calcul visible : <calcul>
 - ✔/✘ brief présent, ou absence signalée : <preuve>
 - ✔/✘ sources prévues toutes lues, ou indisponibilité signalée : <n sources lues sur n>
+- ✔/✘ notions réellement enseignées : une ligne par section précédente (par `order`), curriculum ou relevé du cours : <n lignes sur n sections précédentes>
 ```
 
 ## Points d'attention
@@ -222,6 +270,6 @@ Noms des types disponibles (une ligne).
 
 ## Définition de terminé
 
-Vous ne vous déclarez terminé que si les quatre critères ci-dessus sont ✔, chacun avec
+Vous ne vous déclarez terminé que si les cinq critères ci-dessus sont ✔, chacun avec
 sa preuve (un compte, un calcul, un message d'erreur collé). Un seul ✘ : le rapport est
 marqué « incomplet », jamais « terminé ».
