@@ -3,7 +3,7 @@
 ## Statut
 - **Phase** : relecture
 - **Mis à jour le** : 2026-10-27
-- **Validé** : rien pour l'instant
+- **Validé** : 24 corrections ponctuelles appliquées en prod le 2026-10-27 ; sl2-classe-res (suppression ou « aucune sortie ») en attente de décision
 - **Désaccords en attente** : 5 (voir « Relecture du 2026-10-27 »)
 - **Prochaine action** : l'utilisateur tranche les désaccords et choisit les remarques retenues à faire corriger.
 

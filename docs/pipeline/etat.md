@@ -1,6 +1,7 @@
 # État du déploiement du pipeline
 
-- **Étape courante** : 1 (relecture seule) terminée, en attente de validation ; 6 (skill retouche) terminée, déploiement en attente.
+- **Étape courante** : 1 (relecture seule) validée par l'utilisateur le 2026-10-27, après correction des défauts du pipeline (commit 53ae731) et ajout de l'agent `preparateur` (9b4169a) ; 6 (skill retouche) déployée en prod (merge d58efb0, manifeste 2.1.0), index `retouches_status_recent` pas encore créé en prod (page /admin/outils, connexion de l'utilisateur requise). Étape 2 : proposition faite (stockage recommandé : `docs/plans/`, sans `publish_private_document`), décisions à poser une par une avant implémentation.
+- **Corrections ponctuelles PHP 1 à 4 appliquées en prod le 2026-10-27** : 49 blocs (statuts dans `docs/plans/php/`) ; en attente : 8 corrections tirées de l'export (PHP 3 cours 1c7c414c, PHP 4 : 2 notes de slides, 2 consignes, 3 tableaux), `sl2-classe-res`, commentaire de `classement.php`. Préparation : scratchpad de la session `476b8c25…/corrections-php/`. Écritures `edit_block` en prod parfois refusées par le classifieur du mode automatique : réessayer avec confirmation.
 - **Fait** :
   - `docs/pipeline/spec.md` : spécification de référence (§ 1 et § 9 amendés le 2026-10-27).
   - `.claude/skills/humaniseur-fr/SKILL.md` : copie locale du skill (samber/cc-skills v1.1.3, MIT) ; `.gitignore` versionne `.claude/skills/` et `.claude/agents/`, ignore `.claude/skills/gitnexus/`.

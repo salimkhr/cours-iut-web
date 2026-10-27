@@ -3,7 +3,7 @@
 ## Statut
 - **Phase** : relecture
 - **Mis à jour le** : 2026-10-27
-- **Validé** : rien pour l'instant
+- **Validé** : 2 corrections ponctuelles appliquées en prod le 2026-10-27 (cours n° 2, TP n° 3) ; 7 préparées depuis l'export (slide4-render-note, 1d9315c8, tp4-ex3-4, ded93d6b, tables tp4-ex4-rules, 571dd9fc, 9a0a2e3c), à recouper avec get_content avant application
 - **Désaccords en attente** : 1 (voir « Relecture du 2026-10-27 »)
 - **Prochaine action** : l'utilisateur tranche le désaccord et choisit les remarques retenues à faire corriger.
 
