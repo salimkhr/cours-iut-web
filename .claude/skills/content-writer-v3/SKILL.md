@@ -55,7 +55,7 @@ Desktop). Une seule tâche en cours à la fois. Liste type :
 3. Contrôler la fiche
 4. Exporter les supports et fixer la couverture
 5. Préparer le bac à sable (ports par étudiant)
-6. Préparer les supports dans le bac à sable (agent d'aide, § 5 bis)
+6. Préparer les supports dans le bac à sable (`preparateur`, § 5 bis)
 7. Lancer les relectures en parallèle
 8. Contrôler couverture et preuves des rapports
 9. Arbitrer
@@ -119,7 +119,7 @@ antérieure à cette correction, par exemple) se signale dans la synthèse, et l
 manquants sont lus avec `get_content`.
 
 `get_content` dépasse la limite de sortie des outils MCP sur les gros supports (cours
-et TP de PHP 4, par exemple) : c'est l'agent de préparation (§ 5 bis) qui le lit, pas
+et TP de PHP 4, par exemple) : c'est `preparateur` (§ 5 bis) qui le lit, pas
 votre contexte.
 
 Repérez aussi les blocs `download-file` du TP et ce qui sert d'état de départ au fil
@@ -132,7 +132,7 @@ les prérequis de session (`bac-a-sable.md` § 0 : règle de permission, test de
 la garde). Suivez ensuite `bac-a-sable.md` : image `cours-iut-bac:1`, run-id, dossier
 `%TEMP%\cours-iut-bac\<run-id>` avec ses sous-dossiers, conteneur
 `cours-iut-bac-<run-id>` en `--network none`. Les fichiers des `download-file` vont
-dans `fournis/` (agent de préparation, § 5 bis), et dans `depart/` l'état initial du fil rouge
+dans `fournis/` (`preparateur`, § 5 bis), et dans `depart/` l'état initial du fil rouge
 s'il est reconstituable depuis le dépôt de référence. Ce qui manque est dit aux
 étudiants dans leur prompt (limite d'environnement).
 
@@ -153,39 +153,39 @@ une plage de ports réservée, et n'en sort pas :
 Un support qui impose un port (`php -S localhost:8000`) : l'étudiant prend le premier
 port de sa plage et le note comme adaptation d'environnement, pas comme blocage.
 
-## 5 bis. Préparation des supports (agent d'aide)
+## 5 bis. Préparation des supports (agent `preparateur`)
 
 Les supports ne sont pas collés dans les prompts des étudiants (trop de contexte
-pour l'orchestrateur). Un agent d'aide les dépose dans le bac à sable, une fois le
+pour l'orchestrateur). L'agent `preparateur` les dépose dans le bac à sable, une fois le
 dossier créé (`bac-a-sable.md` § 1) et avant le lancement des étudiants. **Écart à la
 lettre de la spec** (§ 2 et § 4 : contenu « dans le prompt ») : à faire valider par
 l'utilisateur ; il est noté dans la synthèse.
 
-Lancez un agent `general-purpose` avec ce prompt (valeurs entre chevrons remplies) :
+`preparateur` n'a que quatre outils MCP de lecture prod (`export_content_compact`,
+`get_content`, `list_sections`, `get_section`), aucun outil d'écriture MCP, et une garde
+(`docker/etudiant-sandbox/garde-preparateur.mjs`, hook de son frontmatter) qui limite
+`Write` à `<dir>\supports\cours.md`, `<dir>\supports\tp.md`, `<dir>\fournis\…` et
+`<scratchpad>\couverture-<run-id>.md`, et `Bash` à `curl` depuis
+`https://salimkhraimeche.dev/download/` et `unzip`, vers `<dir>\fournis\`. Ses cas sont
+scriptés dans `tests/sandbox/garde-preparateur.test.ts`. Comme pour les étudiants, la
+garde ne tourne que dans une session interactive dans un dossier approuvé : jamais de
+`preparateur` depuis `claude -p`.
+
+Lancez l'agent `preparateur` avec ce prompt (valeurs entre chevrons remplies), et rien
+d'autre :
 
 ```
-Tâche de préparation, lecture seule. Outils MCP permis, sur le serveur prod
-uniquement (préfixe mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__ ou
-mcp__claude_ai_cours-iut-web__) : export_content_compact, get_content. Tout autre
-outil MCP est interdit (aucune écriture, aucun outil staging 95c87654-…, aucun
-get_pedagogical_skill_*). Outil d'écriture de fichiers : seulement dans les chemins
-ci-dessous.
 Module <module>, section <section>.
-1. export_content_compact type cours → <dir>\supports\cours.md ; type TP →
-   <dir>\supports\tp.md. Texte de l'outil verbatim, sans retouche.
-2. get_content du TP (et du cours) : pour chaque bloc download-file, écrire
-   props.code tel quel dans <dir>\fournis\<props.filename> (sous-dossiers créés si
-   le nom en contient).
-3. Fichier de couverture <scratchpad>\couverture-<run-id>.md : par support, la liste
-   des blocs (id, type, id du parent), le total, et les exercices et bonus (titre, id).
-   Comparer les ids à ceux des lignes `<!--id-->` de l'export ; écrire l'écart.
-4. Ne jamais copier les slides dans <dir>. Ne rien écrire ailleurs.
-Rendre : les chemins écrits avec leur taille, les totaux de blocs, l'écart
-export / get_content.
+Supports à préparer : <cours, TP>.
+Run-id : <run-id>.
+Dossier du bac à sable : <dir>  (chemin Windows long, %LOCALAPPDATA%\Temp\cours-iut-bac\<run-id>)
+Scratchpad : <scratchpad>  (dossier qui finit par \scratchpad)
 ```
 
-Vérifiez son rendu (fichiers présents, totaux cohérents avec votre référence de
-l'étape 4). Les étudiants lisent ensuite `/work/supports/` par la commande autorisée
+Vérifiez son rendu (définition de terminé complète, fichiers présents, totaux et écart
+export / `get_content` cohérents avec votre référence de l'étape 4, liste « Non déposé »
+lue : un fichier écarté comme état de fin se tranche avec l'utilisateur). Un rapport
+incomplet se relance comme ceux des autres agents (§ 7). Les étudiants lisent ensuite `/work/supports/` par la commande autorisée
 (`docker exec … sh -c 'cd /work/<dossier> && cat /work/supports/tp.md'`) ; leur prompt
 le dit, avec la liste des fichiers. Les relecteurs, eux, reçoivent toujours l'export
 dans leur prompt (ou le lisent par `export_content_compact`).
