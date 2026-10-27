@@ -63,5 +63,14 @@ export async function ensureIndexes(db: Db): Promise<string[]> {
         ),
     );
 
+    // Journal des retouches : le workflow de propagation lit les entrées
+    // en attente, les plus récentes d'abord.
+    created.push(
+        await db.collection("pedagogy_retouches").createIndex(
+            { status: 1, date: -1 },
+            { name: "retouches_status_recent" },
+        ),
+    );
+
     return created;
 }

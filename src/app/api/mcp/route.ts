@@ -10,6 +10,7 @@ import { getPublicOrigin } from "@/lib/publicOrigin";
 import { blockDefs, getBlockDef, createBlockInstance } from "@/lib/blockDefs";
 import { assertSectionAcceptsContent } from "@/lib/mcp/assertSectionAcceptsContent";
 import { registerQuizTools } from "@/lib/mcp/quizTools";
+import { registerRetoucheTools } from "@/lib/mcp/retoucheTools";
 import { registerReadTools, CONTENT_TYPE, boolOrString, asBool, type ModuleDoc } from "@/lib/mcp/readTools";
 import { validateBlockTree } from "@/lib/validateBlockTree";
 import {
@@ -45,20 +46,24 @@ export const runtime = "nodejs";
 
 const SERVER_INSTRUCTIONS = `Ce serveur gère le référentiel pédagogique multi-supports du BUT Informatique.
 
-Deux skills pédagogiques sont disponibles :
+Trois skills pédagogiques sont disponibles :
 - "module-design" : concevoir un module (sections, univers fil rouge, découpage en séances).
 - "content-writer" : rédiger les supports d'une section (cours, slides, TP, examen).
+- "retouche" : petite correction d'un bloc ou d'une question de quiz depuis l'app Claude.
 
 Chargement : get_pedagogical_skill_manifest() puis get_pedagogical_skill_document(id)
-avec id = "module-design" ou "content-writer" selon la tâche.
+avec id = "module-design", "content-writer" ou "retouche" selon la tâche.
 
 Veille : add_resource / list_resources gèrent les ressources de la section « À lire, à voir »
 de l'accueil (article, vidéo, recherche, outil). Appeler list_resources avant d'ajouter.
 
 Avant toute production, le workflow du skill impose de lire list_verdicts (critiques
-utilisateur passées) et list_exemplars (étalons annotés). Les outils d'écriture ne
-visent QUE le serveur staging ; la copie vers la production exige une confirmation
-explicite de l'utilisateur.`;
+utilisateur passées) et list_exemplars (étalons annotés). module-design et content-writer
+écrivent sur le serveur staging ; la copie vers la production exige une confirmation
+explicite de l'utilisateur. Seul le skill retouche écrit directement sur la production,
+après confirmation explicite de l'avant/après par l'utilisateur ; une retouche qui touche
+un élément dont d'autres supports dépendent est consignée par log_retouche (journal lu par
+list_retouches et soldé par mark_retouches_processed).`;
 
 type ContentType = CourseContent["contentType"];
 
@@ -212,6 +217,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     const isAdmin = user.role === "admin";
 
     registerQuizTools(server, { isAdmin, getDb: connectToDB });
+    registerRetoucheTools(server, { isAdmin, getDb: connectToDB });
     registerReadTools(server, { isAdmin, getDb: connectToDB });
 
     const iconNameSchema = z.string()
@@ -1165,6 +1171,32 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
                 + `Chargez le document skill://pedagogy/content-writer `
                 + `(get_pedagogical_skill_document avec id="content-writer") et suivez son workflow `
                 + `en entier, en commençant par son étape 1 (choix des supports à rédiger).`;
+            return {
+                messages: [{role: "user" as const, content: {type: "text" as const, text}}],
+            };
+        }
+    );
+
+    // ── Prompt retouche ──────────────────────────────────────────────────────
+    server.registerPrompt(
+        "retouche",
+        {
+            title: "Retoucher un bloc ou une question de quiz",
+            description: "Petite correction en production depuis l'app Claude, en suivant le skill retouche.",
+            argsSchema: {
+                module: z.string().describe("Slug du module, ex: rust"),
+                section: z.string().optional().describe("Slug de la section, ex: ownership (omis pour une question de quiz)"),
+            },
+        },
+        ({module, section}) => {
+            if (!isAdmin) throw new Error("Forbidden");
+            const where = section
+                ? `Le module concerné est "${module}", la section "${section}". `
+                : `Le module concerné est "${module}". `;
+            const text = where
+                + `Chargez le document skill://pedagogy/retouche `
+                + `(get_pedagogical_skill_document avec id="retouche") et suivez son déroulé `
+                + `en entier, en commençant par identifier le bloc ou la question à retoucher.`;
             return {
                 messages: [{role: "user" as const, content: {type: "text" as const, text}}],
             };

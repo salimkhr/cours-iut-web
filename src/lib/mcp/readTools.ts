@@ -634,7 +634,7 @@ export function registerReadTools(
     // ── get_pedagogical_skill_manifest ────────────────────────────────────────
     server.tool(
         "get_pedagogical_skill_manifest",
-        "Retourne le manifeste des skills pédagogiques (module-design, content-writer) : version, hash, liste des documents.",
+        "Retourne le manifeste des skills pédagogiques (module-design, content-writer, retouche) : version, hash, liste des documents.",
         {},
         async () => {
             if (!isAdmin) throw new Error("Forbidden");
@@ -647,9 +647,9 @@ export function registerReadTools(
     // ── get_pedagogical_skill_document ────────────────────────────────────────
     server.tool(
         "get_pedagogical_skill_document",
-        "Retourne un document de skill pédagogique. id = module-design (conception de module) | content-writer (rédaction cours/TP/slides/examen).",
+        "Retourne un document de skill pédagogique. id = module-design (conception de module) | content-writer (rédaction cours/TP/slides/examen) | retouche (petite correction en prod depuis l'app Claude).",
         {
-            id: z.string().describe("ID du document : module-design | content-writer"),
+            id: z.string().describe("ID du document : module-design | content-writer | retouche"),
         },
         async ({ id }) => {
             if (!isAdmin) throw new Error("Forbidden");

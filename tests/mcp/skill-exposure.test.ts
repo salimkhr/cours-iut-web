@@ -5,14 +5,15 @@ import path from "path";
 import { SKILL_MANIFEST, SKILL_DOCUMENTS } from "../../src/lib/skills/pedagogy";
 
 describe("Skills pédagogiques — manifeste", () => {
-    it("expose les deux skills avec les champs obligatoires", () => {
+    it("expose les trois skills avec les champs obligatoires", () => {
         expect(SKILL_MANIFEST.id).toBe("pedagogy");
         expect(typeof SKILL_MANIFEST.version).toBe("string");
         expect(typeof SKILL_MANIFEST.content_hash).toBe("string");
         const ids = SKILL_MANIFEST.documents.map((d) => d.id);
         expect(ids).toContain("module-design");
         expect(ids).toContain("content-writer");
-        expect(ids.length).toBe(2);
+        expect(ids).toContain("retouche");
+        expect(ids.length).toBe(3);
     });
 
     it("chaque document a un uri et un path sûrs", () => {
@@ -76,6 +77,18 @@ describe("Skills pédagogiques — documents", () => {
         const doc = SKILL_DOCUMENTS["content-writer"];
         expect(doc.content).toContain("Format de l'arbre de blocs");
         expect(doc.content).toContain("get_project_reference");
+    });
+
+    it("retouche décrit le déroulé, les outils autorisés et le journal", () => {
+        const rt = SKILL_DOCUMENTS["retouche"].content;
+        for (const kw of ["edit_block", "insert_block", "get_content", "search_content",
+            "log_retouche", "dependencyNote", "get_quiz", "edit_quiz_question",
+            "save_content", "vouvoy", "curriculum", "exampleDomain", "prod",
+            "humaniseur-fr", "/content-writer-v3"]) {
+            expect(rt).toContain(kw);
+        }
+        // save_content n'apparaît que pour être interdit.
+        expect(rt).toMatch(/[Jj]amais\s+`?save_content/);
     });
 
     it("module-design décrit le code de référence", () => {
