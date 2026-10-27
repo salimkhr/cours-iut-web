@@ -16,6 +16,7 @@ beforeEach(async () => {
     await db.collection("course_content").deleteMany({});
     await db.collection("modules").dropIndexes().catch(() => {});
     await db.collection("course_content").dropIndexes().catch(() => {});
+    await db.collection("pedagogy_retouches").dropIndexes().catch(() => {});
 });
 
 describe("ensureIndexes", () => {
@@ -39,6 +40,16 @@ describe("ensureIndexes", () => {
         expect(contentIndex).toBeDefined();
         expect(contentIndex?.unique).toBe(true);
         expect(contentIndex?.key).toEqual({ moduleSlug: 1, sectionSlug: 1, contentType: 1 });
+    });
+
+    test("crée l'index du journal des retouches (status, date décroissante)", async () => {
+        await ensureIndexes(db);
+
+        const indexes = await db.collection("pedagogy_retouches").indexes();
+        const index = indexes.find((i) => i.name === "retouches_status_recent");
+
+        expect(index).toBeDefined();
+        expect(index?.key).toEqual({ status: 1, date: -1 });
     });
 
     test("est idempotent : un second appel ne lève pas et ne duplique pas les index", async () => {

@@ -3,6 +3,10 @@
  * src/lib/skills/pedagogy.ts, servi par les outils MCP
  * get_pedagogical_skill_manifest / get_pedagogical_skill_document.
  *
+ * Documents : module-design (conception de module), content-writer (rédaction
+ * des supports, sur staging) et retouche (petite correction en prod depuis l'app
+ * Claude, journalisée par log_retouche).
+ *
  * Usage : bun run generate-skill
  * Ne JAMAIS éditer src/lib/skills/pedagogy.ts à la main.
  */
@@ -13,7 +17,7 @@ import path from "path";
 const ROOT = process.cwd();
 const SKILLS_DIR = path.join(ROOT, "skills");
 const OUT_FILE = path.join(ROOT, "src", "lib", "skills", "pedagogy.ts");
-const VERSION = "2.0.0";
+const VERSION = "2.1.0";
 
 interface DocEntry {
     id: string;
@@ -24,6 +28,7 @@ interface DocEntry {
 const docs: DocEntry[] = [
     { id: "module-design", path: "module-design/main.md", content: "" },
     { id: "content-writer", path: "content-writer/main.md", content: "" },
+    { id: "retouche", path: "retouche/main.md", content: "" },
 ];
 
 for (const doc of docs) {
@@ -61,7 +66,7 @@ const documentsRecord = Object.fromEntries(
 );
 
 const out = `// GÉNÉRÉ par scripts/generate-skill.ts — NE PAS ÉDITER À LA MAIN.
-// Sources canoniques : skills/module-design/main.md, skills/content-writer/main.md
+// Sources canoniques : ${docs.map((d) => "skills/" + d.path).join(", ")}
 // Régénérer : bun run generate-skill
 
 export interface SkillDocument {

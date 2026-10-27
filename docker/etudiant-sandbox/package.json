@@ -1,0 +1,11 @@
+{
+    "name": "cours-iut-bac",
+    "private": true,
+    "type": "module",
+    "description": "Outils du bac à sable des agents étudiants : rendu HTML headless et copies locales des CDN.",
+    "dependencies": {
+        "playwright": "1.64.1",
+        "bootstrap": "5.3.8",
+        "bootstrap-icons": "1.13.1"
+    }
+}

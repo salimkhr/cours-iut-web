@@ -56,7 +56,10 @@ data
 rag
 /public/sw.js
 /public/workbox*.js
-/.claude/
+/.claude/*
+!/.claude/skills/
+!/.claude/agents/
+/.claude/skills/gitnexus/
 /assets/
 /.agents/
 /uploads/

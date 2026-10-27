@@ -1,0 +1,2 @@
+# Fichiers exécutés dans le conteneur Linux : fins de ligne LF même avec core.autocrlf=true.
+* text=auto eol=lf

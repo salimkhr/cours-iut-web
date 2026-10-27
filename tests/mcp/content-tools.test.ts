@@ -360,7 +360,7 @@ describe("export_content_compact", () => {
         });
         expect(md).toContain("1. Créez");
         expect(md).toContain("2. Ajoutez");
-        expect(md).toContain("### Solution complète");
+        expect(md).toContain("> [repliable] Solution complète");
         expect(md).toContain("<!--li1-->");
         expect(md).toContain("<!--li2-->");
     });
