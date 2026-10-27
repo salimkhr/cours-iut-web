@@ -5,7 +5,7 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
 ## 1. Principes
 
 - Les agents sont des subagents Claude Code (`.claude/agents/*.md`, frontmatter `name`, `description`, `tools`, `model`), dans ce dépôt.
-- Un subagent ne peut pas lancer d'autres subagents : l'orchestrateur n'est PAS un agent, c'est le skill `content-writer` v3, exécuté dans la session principale. Il dialogue avec moi, lance les agents, arbitre leurs rapports et fait la clôture.
+- Les agents n'ont pas l'outil `Agent` : ils ne lancent aucun subagent (Claude Code le permettrait, jusqu'à trois niveaux). L'orchestrateur n'est PAS un agent, c'est le skill `content-writer` v3, exécuté dans la session principale. Il dialogue avec moi, lance les agents, arbitre leurs rapports et fait la clôture.
 - Méthode inspirée de obra/superpowers (brainstorming → plan → exécution) : toutes mes décisions remontent AVANT la rédaction, qui devient de l'exécution.
 - Aucun agent n'écrit en prod. Seul l'orchestrateur le fait, après ma confirmation explicite.
 - L'actuel `content-writer` (v2) reste en place et utilisable jusqu'à ce que je valide la v3.
@@ -138,9 +138,9 @@ Document de skill pédagogique servi par le serveur MCP (`get_pedagogical_skill_
 
 **Périmètre** : faute, reformulation, correction d'un exemple de code, callout, ajustement d'une consigne, question de quiz. Hors périmètre (nouvel exercice, nouvelle notion, restructuration, rédaction complète) → refus et renvoi vers le pipeline.
 
-**Déroulé** : identifier le bloc et me le montrer ; conserver le JSON d'origine dans la conversation ; proposer un avant/après court, lisible sur mobile ; écrire sur staging avec `edit_block` / `insert_block` (jamais `save_content`) ; vérification intégrée (domaine d'exemple, impératif vouvoyé, contrat si exercice touché, curriculum, passe rapide humaniseur-fr avec les exceptions du relecteur style) ; proposer la copie du bloc vers prod avec confirmation.
+**Déroulé** : identifier le bloc en prod et me le montrer ; conserver le JSON d'origine dans la conversation ; proposer un avant/après court, lisible sur mobile ; après ma confirmation explicite, écrire directement en prod avec `edit_block` / `insert_block` (jamais `save_content`) ; vérification intégrée (domaine d'exemple, impératif vouvoyé, contrat si exercice touché, curriculum, passe humaniseur-fr si le skill est disponible, avec les exceptions du relecteur style). Pas de passage par staging : les ids de blocs divergent entre les deux serveurs (décision du 2026-10-27).
 
-**Dépendances** : si la retouche touche un élément dont d'autres dépendent, rien n'est propagé depuis l'app. La retouche est consignée dans un **journal des retouches** accessible via le MCP (section, bloc, avant/après, date), lu par le workflow de propagation.
+**Dépendances** : si la retouche touche un élément dont d'autres dépendent, rien n'est propagé depuis l'app. La retouche est alors consignée dans un **journal des retouches** accessible via le MCP (section, bloc, avant/après, date), tenu en prod, lu par le workflow de propagation. Les retouches sans dépendance ne sont pas journalisées.
 
 ## 10. Points ouverts
 

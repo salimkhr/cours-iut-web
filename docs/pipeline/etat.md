@@ -1,10 +1,34 @@
 # État du déploiement du pipeline
 
-- **Étape courante** : 0 (installation de la spécification), terminée.
+- **Étape courante** : 1 (relecture seule) et 6 (skill retouche), en cours, menées en parallèle dans la même session.
 - **Fait** :
-  - `docs/pipeline/spec.md` : spécification de référence.
-  - `docs/pipeline/etat.md` : ce fichier.
-- **Décisions prises en session** : aucune.
-- **Écarts à la spec** : aucun.
-- **Résultats des tests** : sans objet.
-- **À faire avant l'étape suivante** : rien.
+  - `docs/pipeline/spec.md` : spécification de référence (§ 1 et § 9 amendés le 2026-10-27).
+  - `.claude/skills/humaniseur-fr/SKILL.md` : copie locale du skill (samber/cc-skills v1.1.3, MIT).
+  - `.gitignore` : `.claude/skills/` et `.claude/agents/` versionnés, `.claude/skills/gitnexus/` ignoré.
+  - Étape 1 : six agents dans `.claude/agents/` (collecteur, relecteur-style, relecteur-coherence, relecteur-contrat, etudiant-fragile, etudiant-rapide).
+  - Étape 1 : orchestrateur `.claude/skills/content-writer-v3/` (`SKILL.md`, `bac-a-sable.md`, `suivi.md`), mode relecture seul.
+  - Étape 1 : bac à sable `docker/etudiant-sandbox/` (Dockerfile, hook `garde-bac.mjs`, `rendu-html.mjs`, `demarrer-postgres.sh`, `package.json`, `.gitattributes`) ; image `cours-iut-bac:1` (4,09 Go) construite.
+  - Étape 6 : document `skills/retouche/main.md` ; manifeste 2.1.0 (`scripts/generate-skill.ts`, `src/lib/skills/pedagogy.ts` régénéré).
+  - Étape 6 : outils `log_retouche`, `list_retouches`, `mark_retouches_processed` (`src/lib/mcp/retoucheTools.ts`, `src/lib/schemas/retouche.schema.ts`, type dans `src/types/Pedagogy.ts`), index `retouches_status_recent`, prompt MCP `retouche`, `SERVER_INSTRUCTIONS` corrigé.
+  - Étape 6 : tests `src/lib/mcp/retoucheTools.test.ts`, `tests/mcp/retouche-tools.test.ts`, `skill-exposure` et `indexes` mis à jour.
+- **Décisions prises en session (2026-10-27)** :
+  - Étape 1 : agents en lecture seule sur **prod uniquement** (outils listés sous les préfixes Desktop et CLI) ; bac à sable étudiants = conteneur Docker `--network none`, Chromium headless pour HTML/CSS ; collecteur avec `search_content`, `list_block_types`, `get_project_reference` ; style : désactivés partie 4 (argot, abréviations, « je » dans les consignes, ignorance feinte), patterns 36 et 28 ; temps des étudiants au barème fixe ; couverture = arbre `get_content` + brief ; statut de section et état du module écrits dès l'étape 1 ; un seul cycle de relecture ; la v3 ne charge jamais la v2.
+  - Spec § 1 corrigée : les agents n'ont pas l'outil `Agent` (Claude Code permet les sous-agents imbriqués).
+  - Étape 6 : la retouche écrit **directement en prod** après confirmation (ids staging/prod divergents) ; journal = collection `pedagogy_retouches` (outils `log_retouche`, `list_retouches`, `mark_retouches_processed`), tenu en prod, seulement pour les retouches qui touchent une dépendance ; humaniseur-fr par renvoi au skill, sans version condensée. Spec § 9 amendée.
+  - Choix d'implémentation de l'étape 1 : préfixes prod `mcp__d1db0efe-…__` (Desktop) et `mcp__claude_ai_cours-iut-web__` (CLI, déduit) ; `omitClaudeMd` et `disallowedTools` (écriture, staging, `Agent`) sur tous les agents ; étudiants limités à `docker exec cours-iut-bac-<id> sh -c 'cd /work …'` par un hook ; PostgreSQL, crates Rust et Bootstrap embarqués dans l'image (pas de réseau) ; commandes de l'orchestrateur en PowerShell.
+  - Staging ne sert qu'à tester des features : les cours vivent en prod.
+  - Hors pipeline : rendre les tests bloquants en CI (retirer `bun test || true`), après vérification que la suite passe.
+- **Écarts à la spec** :
+  - § 9 : plus de passage par staging ni de copie bloc par bloc vers prod (voir décisions).
+  - L'entrée `cours-iut-mcp` de `.mcp.json` pointe vers `mcp-server/`, absent : connexion en échec, non corrigée.
+  - Étape 1 : un seul cycle de relecture (§ 6 en prévoit deux) ; pattern 28 désactivé (§ 4 non amendé) ; outils du collecteur au-delà du § 3 ; « bac à sable supprimé » passe de la DoD des étudiants à celle de l'orchestrateur (§ 13).
+  - CLAUDE.md demande de charger la v2 : neutralisé localement dans la v3 et par `omitClaudeMd`, CLAUDE.md inchangé.
+- **Résultats des tests** :
+  - Étape 1 : garde du hook 25/25 ; conteneur (runtimes, rendu Chromium, cargo hors ligne, PostgreSQL, nettoyage) OK ; 6 agents détectés par Claude Code. Garde vérifiée dans un vrai subagent `etudiant-fragile` (Desktop) : `ls` refusé, `docker exec` accepté, rapport rendu après correction du hook (il bloquait `SubagentHandback`). Relecture de test : pas encore faite.
+  - Étape 6 : `bun test` complet 833/833 ; tests MCP 105/105 ; lint et tsc OK.
+- **À faire avant l'étape suivante** :
+  - Étape 1 : sections de test à fournir ; décider d'une règle de permission `Bash(docker exec cours-iut-bac-:*)` ; confirmer et authentifier le connecteur CLI « claude.ai cours-iut-web » (prod).
+  - Étape 6 : déploiement (push, merge vers `main`), `create-indexes` en prod avec accord, reconnexion des connecteurs claude.ai, puis test d'une retouche depuis l'app.
+  - **Contradiction à trancher avant l'étape 3** : staging ne sert qu'à tester des features, les cours vivent en prod (dit le 2026-10-27). Or la spec fait écrire les rédacteurs sur staging (§ 3) et interdit toute écriture d'agent en prod (§ 1). Il faut choisir comment les rédacteurs écrivent en prod sans exposer un brouillon aux étudiants.
+  - Étape 4 : le protocole de lecture du journal ne doit plus reporter les retouches sur staging (journal et contenu sont en prod).
+  - Étape 5 : la copie du quiz staging → prod n'a pas de mécanisme (push-to-prod ne copie pas les quiz).
