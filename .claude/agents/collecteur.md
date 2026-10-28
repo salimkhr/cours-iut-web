@@ -110,8 +110,30 @@ rapportez, avec la source de chaque information.
 
 ## Entrées (dans le prompt de l'orchestrateur)
 
+- mode : `relecture` (par défaut) ou `conception` ;
 - `module` (slug) et `section` (slug) ;
-- supports à relire (cours, slides, TP, examen).
+- supports à relire (cours, slides, TP, examen), ou « section à concevoir ».
+
+## Mode conception
+
+La section n'est pas encore rédigée : la fiche sert au cadrage et au plan. Différences
+avec la relecture :
+
+- **Supports absents : c'est normal.** Tâche 5 « sans objet (section à concevoir) »,
+  pas un ✘. Un support déjà en source `db` se signale en tête du rapport.
+- **`courseIntroMinutes` manquant** : pas un trou de la fiche. Écrivez « à fixer au
+  cadrage (Q0) », avec les valeurs des sections précédentes (slug, `order`, valeur) et le
+  budget TP que donnerait chacune. Les budgets sont alors « provisoires ».
+- **Verdicts** : `list_verdicts` pour `cours`, `slide`, `TP` et `module-design` (et
+  global), tous recopiés verbatim.
+- **Exemplaires** : `cours`, `slide` et `TP`.
+- **Matériaux de cadrage** (rubrique en plus, après « Signalements ») :
+  - notions du brief, une par ligne, verbatim, avec `filRougeStep` ;
+  - erreurs fréquentes déjà montrées dans les cours des sections précédentes (`callout`
+    `warning` de leurs exports : section, verbatim court du message) ;
+  - blocages relevés dans `docs/plans/<module>/` n'est PAS de votre ressort (vous n'avez
+    pas accès au dépôt) : l'orchestrateur les lit ;
+  - fil rouge : ce que la section doit y ajouter, et les fichiers concernés.
 
 ## Liste de tâches, avant toute lecture
 
@@ -182,7 +204,9 @@ source en fin de ligne :
 - Montrez le calcul avec les valeurs : `2 × 60 − 15 = 105 min`.
 - Plage cible du TP : 80 à 100 % du budget (donnez les deux bornes en minutes).
 - Valeur manquante (par ex. `sessionDurationMinutes` absent du module) : budget
-  « non calculable », avec le champ manquant.
+  « non calculable », avec le champ manquant. Exception en mode conception :
+  `courseIntroMinutes` manquant donne des budgets « provisoires » (voir « Mode
+  conception »).
 
 ## Fiche de contexte (format du rapport)
 

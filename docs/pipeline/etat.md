@@ -1,39 +1,48 @@
 # État du déploiement du pipeline
 
-- **Étape courante** : 1 (relecture seule) validée par l'utilisateur le 2026-10-27, après correction des défauts du pipeline (commit 53ae731) et ajout de l'agent `preparateur` (9b4169a) ; 6 (skill retouche) déployée en prod (merge d58efb0, manifeste 2.1.0), index `retouches_status_recent` pas encore créé en prod (page /admin/outils, connexion de l'utilisateur requise). Étape 2 : proposition faite (stockage recommandé : `docs/plans/`, sans `publish_private_document`), décisions à poser une par une avant implémentation.
-- **Corrections ponctuelles PHP 1 à 4 appliquées en prod le 2026-10-27** : 49 blocs (statuts dans `docs/plans/php/`) ; en attente : 8 corrections tirées de l'export (PHP 3 cours 1c7c414c, PHP 4 : 2 notes de slides, 2 consignes, 3 tableaux), `sl2-classe-res`, commentaire de `classement.php`. Préparation : scratchpad de la session `476b8c25…/corrections-php/`. Écritures `edit_block` en prod parfois refusées par le classifieur du mode automatique : réessayer avec confirmation.
+- **Étape courante** : 2 (cadrage et plan) terminée et validée par l'utilisateur le 2026-10-28 (test sur `php/7-sessions-et-authentification`, plan v3 validé, reprise vérifiée en nouvelle session). Étapes 1 (relecture) et 6 (retouche) validées et déployées (prod 2.1.0). Prochaine : étape 3 (rédaction).
+- **Corrections ponctuelles PHP 1 à 4 (prod, 2026-10-27)** : 49 blocs appliqués ; 8 en attente, tirées de l'export, à recouper avec `get_content` (statuts dans `docs/plans/php/`). `edit_block` en prod parfois refusé par le classifieur du mode automatique : réessayer avec confirmation.
 - **Fait** :
-  - `docs/pipeline/spec.md` : spécification de référence (§ 1 et § 9 amendés le 2026-10-27).
-  - `.claude/skills/humaniseur-fr/SKILL.md` : copie locale du skill (samber/cc-skills v1.1.3, MIT) ; `.gitignore` versionne `.claude/skills/` et `.claude/agents/`, ignore `.claude/skills/gitnexus/`.
-  - Étape 1 : six agents dans `.claude/agents/` ; orchestrateur `.claude/skills/content-writer-v3/` (`SKILL.md`, `bac-a-sable.md`, `suivi.md`) ; bac à sable `docker/etudiant-sandbox/` (image `cours-iut-bac:1`, 4,09 Go) ; hook `garde-bac.mjs` corrigé (il bloquait `SubagentHandback`).
-  - Étape 6 : `skills/retouche/main.md`, manifeste 2.1.0, outils `log_retouche` / `list_retouches` / `mark_retouches_processed`, index `retouches_status_recent`, prompt MCP `retouche`, tests.
-  - Test de l'étape 1 : `docs/plans/php/` (statut et synthèse arbitrée des sections 1 à 4, `etat.md` du module, rapports bruts dans `rapports/2026-10-27-relecture-php-1-4.md`).
-- **Décisions prises en session (2026-10-27)** :
-  - Étape 1 : lecture sur **prod uniquement** ; bac à sable Docker `--network none` avec Chromium ; collecteur avec `search_content`, `list_block_types`, `get_project_reference` ; style : désactivés partie 4 (argot, abréviations, « je » dans les consignes, ignorance feinte), patterns 36 et 28 ; barème de temps fixe ; couverture = arbre `get_content` + brief ; statut de section écrit dès l'étape 1 ; un seul cycle ; la v3 ne charge jamais la v2.
-  - Spec § 1 : les agents n'ont pas l'outil `Agent`. Spec § 9 : la retouche écrit directement en prod après confirmation ; journal en prod, seulement pour les retouches à dépendance ; humaniseur-fr par renvoi.
-  - Staging ne sert qu'à tester des features : les cours vivent en prod.
-  - Test : `courseIntroMinutes` absent en prod pour PHP 2 à 4 → hypothèse de 20 min, comme PHP 1 (rien écrit en base).
-  - Hors pipeline : rendre les tests bloquants en CI (`bun test || true`), après vérification que la suite passe.
+  - `docs/pipeline/spec.md` : référence ; § 1 et § 9 amendés le 2026-10-27 ; § 2, § 3, § 6 et § 12 amendés le 2026-10-28 (étape 2).
+  - `.claude/skills/humaniseur-fr/` (copie locale, MIT) ; `.gitignore` versionne `.claude/skills/` et `.claude/agents/`.
+  - Étape 1 : sept agents (`.claude/agents/`, dont `preparateur`) ; orchestrateur `.claude/skills/content-writer-v3/` ; bac à sable `docker/etudiant-sandbox/` (image `cours-iut-bac:1`), gardes `garde-bac.mjs` et `garde-preparateur.mjs`.
+  - Étape 6 : `skills/retouche/main.md`, outils `log_retouche` / `list_retouches` / `mark_retouches_processed`, index `retouches_status_recent`.
+  - Étape 2 :
+    - `content-writer-v3/cadrage.md` (nouveau) : Q0 à Q5 une par une avec défaut argumenté, 2 ou 3 angles, fiche de conception ;
+    - `content-writer-v3/plan.md` (nouveau) : repères N/S/E/B, format du plan, messages d'erreur exécutés dans le bac à sable, relecture en deux cycles, validation ;
+    - `content-writer-v3/SKILL.md` : modes `relecture`, `conception`, `conception-rapide` ; commits des fichiers de suivi ; reprise fine ; règle 5 de l'arbitrage (jamais d'indice) ;
+    - `content-writer-v3/suivi.md` : champs Mode et Étape en cours, rubriques Cadrage, Fiche de conception, Plan, Relectures du plan ;
+    - `relecteur-coherence.md`, `relecteur-contrat.md` : mode plan, `Read` gardé ; le contrat ne signale plus l'absence de durée dans un TP rédigé ;
+    - `collecteur.md` : mode conception (supports absents normaux, `courseIntroMinutes` → Q0, verdicts cours/slide/TP/module-design, matériaux de cadrage) ;
+    - `docker/etudiant-sandbox/garde-relecteur.mjs` + `tests/sandbox/garde-relecteur.test.ts` : `Read` limité à `docs/plans/<module>/<fichier>.md` et aux tool-results.
+  - Tests : `docs/plans/php/` (relecture PHP 1 à 4 ; cadrage et plan de PHP 7, commits 6cf4cb9 et d4f747d).
+- **Décisions prises en session** :
+  - 2026-10-27, étape 1 : lecture sur prod uniquement ; bac à sable `--network none` ; un seul cycle en relecture ; la v3 ne charge jamais la v2 ; staging ne sert qu'aux features.
+  - 2026-10-27/28, étape 2 :
+    - plans dans `docs/plans/<module>/<section>.md`, commit des seuls fichiers de suivi à chaque point de validation (pas `publish_private_document`) ;
+    - relecteurs : `Read` ajouté (plutôt que le plan collé), limité par une garde ;
+    - durées obligatoires dans le plan, jamais dans le rendu étudiant ;
+    - jamais d'indice ni de solution dans un TP ; la règle prime, dans le skill seulement, sur la phrase « indice replié » du verdict `6ac67a63` (rien écrit en prod) ;
+    - blocage du fragile sur la notion visée : au premier exercice qui la pratique → retour au cours ; plus loin → désaccord tranché par l'utilisateur ;
+    - `courseIntroMinutes` fixé au cadrage, gardé dans le plan, écrit en prod à la clôture ;
+    - « Étape en cours » et réponses du cadrage écrites au fil de l'eau, sans commit ;
+    - phase « relecture » ajoutée au § 12 ;
+    - le bac à sable sert dès le plan (messages d'erreur réels) ;
+    - test de PHP 7 : guidage en lecture stricte du verdict `6ac67a63` (chaque geste nouveau guidé par étapes d'action, sans code).
 - **Écarts à la spec** :
-  - § 9 : plus de passage par staging ni de copie bloc par bloc vers prod.
-  - Étape 1 : un seul cycle (§ 6 en prévoit deux) ; pattern 28 désactivé (§ 4 non amendé) ; outils du collecteur au-delà du § 3 ; « bac à sable supprimé » passe de la DoD des étudiants à celle de l'orchestrateur (§ 13).
-  - Test : les supports ont été déposés dans `/work/supports/` du bac à sable par un agent d'aide, au lieu d'être collés dans le prompt des étudiants (volume de contexte de l'orchestrateur).
-  - `.mcp.json` : l'entrée `cours-iut-mcp` pointe vers `mcp-server/`, absent ; non corrigée.
+  - § 9 : plus de passage par staging pour la retouche.
+  - Étape 1 : un seul cycle ; pattern 28 désactivé (§ 4 non amendé) ; outils du collecteur au-delà du § 3 ; supports déposés dans le bac à sable par `preparateur` au lieu d'être collés dans le prompt des étudiants.
+  - Étape 2 : la garde de `Read` accepte le plan de n'importe quelle section, pas seulement celle en cours ; les corrections du second cycle de relecture du plan ne sont relues par personne (limite de deux cycles), elles sont présentées à l'utilisateur.
+  - `.mcp.json` : `cours-iut-mcp` pointe vers `mcp-server/`, absent ; non corrigé.
 - **Résultats des tests** :
-  - Étape 1, relecture de PHP 1 à 4 (prod) : 41 agents lancés (4 collecteurs, 11 style, 4 cohérence, 4 contrat, 14 étudiants, 1 préparation, 2 tests de garde, 1 relance de couverture). Erreurs factuelles confirmées par exécution en PHP 8.3 (« douze », paramètre optionnel, `string(7)`, propriété inconnue) ; notions exigées non enseignées (`htmlspecialchars` au TP3, `mb_strlen` au TP4, `const`/`self::` au TP2) ; aucun TP n'indique de durée ; bonus trop courts dans les quatre TP (79 à 180 min non occupées). Fragile : 78 %, 76 %, 70 %, 91 % du budget. Garde vérifiée dans de vrais subagents.
-  - Étape 6 : `bun test` complet 833/833 ; lint et tsc OK.
+  - Étape 1 : relecture de PHP 1 à 4 par 41 agents ; erreurs factuelles confirmées par exécution ; défauts du pipeline corrigés (53ae731).
+  - Étape 2 : `bun test tests/sandbox` 172/172, lint OK. Test de PHP 7 : 1 collecteur, Q0 à Q5 puis 3 angles, fiche validée ; plan v1 relu (cohérence 10 remarques, contrat 10), v2 relu (3 et 1), v3 validé ; erreurs exécutées (PHP 8.3.6, psql 16.15, Chromium) ; tronc commun 145/160 min (91 %) ; reprise en nouvelle session : résumé en deux lignes conforme.
 - **À faire avant l'étape suivante** :
-  - Votre jugement sur la pertinence des rapports (validation de l'étape 1), et les désaccords des quatre sections.
-  - Défauts du pipeline relevés par le test, à corriger avant ou pendant l'étape 2 :
-    - le relecteur contrat ne reçoit pas les verdicts (conflit « Vous avez fini quand… » contre le verdict des TP 1 et 2) ;
-    - sans curriculum en base, la cohérence se replie sur les briefs seuls : faux BLOQUANTS (`??`, `?string`) ; le collecteur doit fournir les notions réellement enseignées par les cours précédents ;
-    - l'export compact aplatit les sous-listes, n'exporte ni `download-file`, ni `file-tree`, ni le code imbriqué, et rend un `collapsible` en titre : faux blocages chez les étudiants ;
-    - `get_content` dépasse la limite de sortie pour les gros supports (cours et TP de PHP 4) : comptes de couverture approximatifs ;
-    - étudiants dans un même conteneur : conflits de ports (`php -S`) ; attribuer une plage par étudiant ; `rendu-html` écrit dans `/work` ;
-    - le dépôt de référence (`get_project_reference`) est injoignable (ECONNREFUSED) : pas d'état de départ du fil rouge ni de confrontation au dépôt ;
-    - `courseIntroMinutes` absent pour la plupart des sections PHP : budgets non calculables sans hypothèse.
-  - Connecteur CLI « claude.ai cours-iut-web » (prod) : préfixe déduit, à confirmer et authentifier.
-  - Règle de permission `Bash(docker exec cours-iut-bac-:*)` : à décider (non requise dans l'app Desktop pendant le test).
-  - Étape 6 : déploiement (push, merge vers `main`), `create-indexes` en prod avec accord, reconnexion des connecteurs claude.ai, test d'une retouche depuis l'app.
-  - **Avant l'étape 3** : la spec fait écrire les rédacteurs sur staging (§ 3) et interdit toute écriture d'agent en prod (§ 1), alors que les cours vivent en prod. À trancher.
+  - **Avant l'étape 3, à trancher** : la spec fait écrire les rédacteurs sur staging (§ 3) et interdit toute écriture d'agent en prod (§ 1), alors que les cours vivent en prod.
+  - Image `cours-iut-bac:1` sans `php-pgsql` : les étudiants ne peuvent pas faire les TP PHP 5 à 7 (PDO PostgreSQL) ; rebuild à proposer (ajout d'un paquet).
+  - Dépôt de référence (`get_project_reference`) injoignable (ECONNREFUSED) : état initial du fil rouge non reconstituable, nom de la table `users` de PHP 7 non vérifié.
+  - Le verdict prod `6ac67a63` dit encore « un indice replié » : le mettre à jour en prod si l'utilisateur le souhaite (écriture prod, avec confirmation).
+  - Connecteur MCP prod parfois absent de la session : le réactiver avant toute étape qui lit la prod.
+  - Index `retouches_status_recent` à créer en prod depuis `/admin/outils` (connexion de l'utilisateur).
+  - Règle de permission `Bash(docker exec cours-iut-bac-:*)` : à décider.
   - Étape 4 : le protocole de lecture du journal ne reporte plus les retouches sur staging. Étape 5 : la copie du quiz staging → prod n'a pas de mécanisme.

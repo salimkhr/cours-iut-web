@@ -19,7 +19,7 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
    - slides : liste des slides (titre, idée unique, type de bloc principal, minutage) ;
    - TP : chaque exercice avec son contrat de consigne entièrement rempli, sa durée, sa part guidée ou fil rouge ; les bonus avec leur contrat.
    `relecteur-coherence` et `relecteur-contrat` relisent le PLAN avant que je le voie (fuite du fil rouge, notions hors curriculum, budget hors plage, contrat incomplet). Puis je le valide.
-   Le plan est persistant : `docs/plans/<module>/<section>.md` (ou via `publish_private_document` si plus adapté, à me proposer).
+   Le plan est persistant : `docs/plans/<module>/<section>.md`, commité (fichiers de suivi seuls) à chaque point de validation (décision du 2026-10-27 ; `publish_private_document` écarté : il remplace toute l'arborescence du dépôt GitLab, n'a pas d'outil de relecture et dépend de GitLab). Les messages d'erreur du plan sont exécutés dans le bac à sable.
 4. **Exécution** séquentielle, chaque support validé avant le suivant : `redacteur-cours` → `redacteur-slides` → `redacteur-tp`. Chaque rédacteur reçoit le plan de son support et les supports déjà validés. Il suit le plan à la lettre : un écart nécessaire est signalé à l'orchestrateur, jamais improvisé.
 5. **Relecture** en parallèle :
    - `relecteur-style`, `relecteur-coherence` : tous les supports ;
@@ -44,8 +44,8 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
 | redacteur-slides | sonnet | MCP lecture + écriture staging uniquement |
 | redacteur-tp | opus | MCP lecture + écriture staging + get_project_reference |
 | relecteur-style | sonnet | MCP lecture seule |
-| relecteur-coherence | sonnet | MCP lecture seule + get_project_reference |
-| relecteur-contrat | haiku | MCP lecture seule |
+| relecteur-coherence | sonnet | MCP lecture seule + get_project_reference + Read limité aux plans (`docs/plans/<module>/*.md`, garde en hook) |
+| relecteur-contrat | haiku | MCP lecture seule + Read limité aux plans (garde en hook) |
 | etudiant-fragile | sonnet | lecture du contenu de la section uniquement + Bash (bac à sable) |
 | etudiant-rapide | sonnet | idem fragile |
 | correction | sonnet | Bash, push_correction |
@@ -93,7 +93,7 @@ Liste de remarques, chacune avec : `id` du bloc, gravité (BLOQUANT / MAJEUR / M
 3. Le style s'applique à tout, y compris au guidage ajouté.
 4. L'étudiant rapide ne modifie que les bonus.
 
-Si le fragile bloque sur la notion visée elle-même : indice en `collapsible`, jamais la réponse.
+Jamais d'indice ni de solution dans un TP (décision du 2026-10-27). Si le fragile bloque sur la notion visée elle-même : au premier exercice qui la pratique, le cours est insuffisant (retour au plan du cours ; la consigne ne gagne au plus qu'une précision sur la méthode imposée) ; plus loin dans le TP, désaccord que je tranche.
 Durées : la mesure du fragile fait foi ; hors plage 80–100 % → retour au plan (que je revalide).
 Les MINEURS peuvent être ignorés.
 
@@ -165,7 +165,7 @@ Le fichier reste court : on remplace le contenu d'une étape terminée par sa sy
 
 `docs/pipeline/etat.md` (§ 11) ne suit que le déploiement du pipeline. La production des contenus est suivie à part, au niveau section, module et agent.
 
-**Statut de section**, en tête du plan `docs/plans/<module>/<section>.md` : phase en cours (cadrage, plan, cours, slides, TP, relecture navigateur, correction, clôture), ce qui est validé et quand, désaccords en attente, prochaine action. L'orchestrateur le met à jour à chaque point de validation. À la reprise d'une section, il le lit et me résume en deux lignes où on en est avant de continuer.
+**Statut de section**, en tête du plan `docs/plans/<module>/<section>.md` : phase en cours (cadrage, plan, cours, slides, TP, relecture, relecture navigateur, correction, clôture), étape en cours, ce qui est validé et quand, désaccords en attente, prochaine action. L'orchestrateur le met à jour à chaque point de validation (et commite alors les fichiers de suivi), et met aussi à jour l'étape en cours et les réponses du cadrage au fil de l'eau, sans commit, pour la reprise fine. À la reprise d'une section, il le lit et me résume en deux lignes où on en est avant de continuer.
 
 **État du module**, `docs/plans/<module>/etat.md` : tableau des sections avec leur phase, et pour le quiz : dernier cadrage, sections couvertes, nombre de questions publiées. Mis à jour à chaque clôture de section et à chaque fin de workflow quiz ou propagation.
 

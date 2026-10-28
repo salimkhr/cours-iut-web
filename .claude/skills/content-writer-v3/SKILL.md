@@ -1,11 +1,11 @@
 ---
 name: content-writer-v3
-description: Orchestrateur du pipeline multi-agents de relecture d'une section de cours (étape 1, relecture seule). Lance le collecteur, les relecteurs et les étudiants simulés sur les supports existants en prod, arbitre leurs rapports et présente une synthèse, sans rien corriger.
+description: Orchestrateur du pipeline multi-agents de rédaction de cours. Mode relecture (supports existants en prod, synthèse arbitrée sans correction) et modes conception / conception-rapide (cadrage, puis plan relu par les relecteurs et validé, sans rédaction). Lance les agents, arbitre leurs rapports, tient le statut de section.
 disable-model-invocation: true
-argument-hint: "[module] [section]"
+argument-hint: "[relecture|conception|conception-rapide] [module] [section]"
 ---
 
-# content-writer v3 : relecture d'une section (étape 1)
+# content-writer v3 : orchestrateur d'une section
 
 **Ce skill ne charge JAMAIS le content-writer v2** : ni le fichier
 `skills/content-writer/main.md`, ni `get_pedagogical_skill_manifest`, ni
@@ -14,41 +14,88 @@ déjà réparties dans les agents de `.claude/agents/`. Pendant ce workflow, la 
 générale du `CLAUDE.md` du dépôt (« charger d'abord le skill pédagogique du serveur »)
 ne s'applique pas.
 
-Référence : `docs/pipeline/spec.md` (§ 2 étape 5, § 5, § 6, § 12, § 13). En cas de
+Référence : `docs/pipeline/spec.md` (§ 2, § 5, § 6, § 12, § 13). En cas de
 contradiction entre ce skill et la spec, arrêtez-vous et signalez-la à l'utilisateur.
+
+## Modes
+
+| Mode | Ce qu'il fait | Suite |
+|---|---|---|
+| `relecture` | relit des supports déjà rédigés (cours, slides, TP) et présente une synthèse arbitrée, sans rien corriger | § 1 à § 11 ci-dessous |
+| `conception` | section non rédigée : cadrage (questions une par une, angles, fiche de conception validée), puis plan relu et validé | § 1 à § 3, puis `cadrage.md`, puis `plan.md` |
+| `conception-rapide` | section simple : plan relu et validé, sans cadrage (seule Q0 si `courseIntroMinutes` manque) | § 1 à § 3, puis `plan.md` |
+
+Mode absent : déduisez-le (section sans support en source `db` → `conception`, sinon
+`relecture`) et demandez confirmation en une question. À la reprise, le mode est celui
+du statut de section.
 
 ## Ce que fait ce skill, et ce qu'il ne fait pas
 
-- Mode unique : **relecture** de supports déjà rédigés (cours, slides, TP) d'une
-  section que l'utilisateur désigne.
 - Source : le serveur MCP **prod**, en lecture seule. Outils de prod : préfixe
   `mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__` dans l'app Desktop,
   `mcp__claude_ai_cours-iut-web__` en CLI. N'utilisez jamais le serveur staging
   (`95c87654-…`, `claude_ai_cours-iut-staging`) ni le serveur local `cours-iut-mcp`.
-- **Aucune écriture MCP**, ni prod ni staging. **Aucune correction** des supports :
-  la sortie est une synthèse arbitrée. Les seules écritures sont les deux fichiers de
-  suivi (`docs/plans/<module>/<section>.md` et `docs/plans/<module>/etat.md`) et le
-  dossier temporaire du bac à sable. Rien n'est commité.
-- **Un seul cycle** de relecture. Relancer un agent dont le rapport est incomplet
-  (couverture ou preuves) est permis et ne compte pas comme cycle.
+- **Aucune écriture MCP**, ni prod ni staging, dans aucun mode. **Aucune rédaction ni
+  correction** de supports : la sortie est une synthèse arbitrée (relecture) ou un plan
+  validé (conception). Les seules écritures sont les fichiers de suivi
+  (`docs/plans/<module>/<section>.md` et `docs/plans/<module>/etat.md`), les dossiers
+  temporaires du bac à sable et les commits de ces fichiers de suivi (« Commits »).
+- Relecture : **un seul cycle**. Plan : **deux cycles** au plus (`plan.md` § 4).
+  Relancer un agent dont le rapport est incomplet (couverture ou preuves) est permis et
+  ne compte pas comme cycle.
 
 Annexes de ce dossier, à lire au moment indiqué :
 
+- `cadrage.md` : questions du cadrage, angles, fiche de conception (mode `conception`) ;
+- `plan.md` : format du plan, messages d'erreur exécutés, relecture et validation du plan ;
 - `bac-a-sable.md` : commandes de création, de contrôle et de nettoyage du conteneur ;
 - `suivi.md` : format du statut de section et de l'état du module.
 
 ## Arguments
 
-`$0` = slug du module, `$1` = slug de la section. Si l'un manque ou n'existe pas en prod
-(`list_modules`, `list_sections`), proposez la liste des slugs et attendez le choix de
-l'utilisateur. Demandez aussi quels supports relire si ce n'est pas dit : par défaut,
-tous ceux qui existent en source `db`.
+`$0` = mode, `$1` = slug du module, `$2` = slug de la section. Si le module ou la
+section manque ou n'existe pas en prod (`list_modules`, `list_sections`), proposez la
+liste des slugs et attendez le choix de l'utilisateur. En relecture, demandez aussi
+quels supports relire si ce n'est pas dit : par défaut, tous ceux qui existent en source
+`db`.
+
+## Commits
+
+À chaque **point de validation** obtenu de l'utilisateur (fiche de conception, plan,
+réponse à la synthèse d'une relecture), commitez les seuls fichiers de suivi du module :
+
+```bash
+git add -- docs/plans/<module>/<section>.md docs/plans/<module>/etat.md
+git commit -m "docs(plans): <module>/<section>, <point validé>" -- docs/plans/<module>/<section>.md docs/plans/<module>/etat.md
+```
+
+Chemins explicites seulement : jamais `git add -A` ni `git add .` (le dossier est partagé
+avec d'autres sessions et contient des fichiers non suivis). Jamais `--no-verify` : si
+le hook pre-commit échoue, montrez l'erreur à l'utilisateur. Pas de push. Les mises à
+jour entre deux points de validation (« Étape en cours », réponses du cadrage) sont
+écrites sans commit.
 
 ## Liste de tâches de l'orchestrateur
 
 Tenez une liste de tâches visible par l'utilisateur avec l'outil de liste de tâches de
 votre client (`TodoWrite` ou `TaskCreate`/`TaskUpdate` en CLI, `update_plan` dans l'app
-Desktop). Une seule tâche en cours à la fois. Liste type :
+Desktop). Une seule tâche en cours à la fois.
+
+Liste type du mode `conception` (`conception-rapide` : sans les tâches 4 à 6) :
+
+1. Lire le statut de la section (reprise)
+2. Collecter le contexte (collecteur, mode conception)
+3. Contrôler la fiche
+4. Cadrage : Q0 à Q5, une par une
+5. Proposer les angles, faire choisir
+6. Fiche de conception : validation, commit
+7. Écrire le plan
+8. Exécuter les erreurs et les exemples dans le bac à sable
+9. Relecture du plan (cohérence, contrat), cycle 1
+10. Arbitrer, amender le plan (cycle 2 si besoin)
+11. Validation du plan, statut, état du module, commit
+
+Liste type du mode `relecture` :
 
 1. Lire le statut de la section (reprise)
 2. Collecter le contexte (collecteur)
@@ -63,20 +110,29 @@ Desktop). Une seule tâche en cours à la fois. Liste type :
 11. Mettre à jour le statut et l'état du module
 12. Présenter la synthèse
 
-À la reprise d'une relecture interrompue, reconstruisez cette liste à partir du statut
-de section (étape 1) et reprenez à la première tâche non faite.
+À la reprise d'une section interrompue, reconstruisez la liste du mode à partir du
+statut de section (étape 1) et reprenez à la première tâche non faite.
 
 ## 1. Reprise
 
 Lisez `docs/plans/<module>/<section>.md` et `docs/plans/<module>/etat.md` s'ils
 existent (format dans `suivi.md`). S'il y a un statut, résumez en deux lignes à
-l'utilisateur où en est la section (phase, dernière relecture, désaccords en attente)
-avant de continuer. Gardez la liste des **remarques écartées** des relectures
-précédentes : elle sert à l'arbitrage (règle 9).
+l'utilisateur où en est la section (phase, étape en cours, ce qui est validé ;
+désaccords en attente et prochaine action) avant de continuer. Gardez la liste des
+**remarques écartées** des relectures précédentes (de supports ou du plan) : elle sert à
+l'arbitrage (règle 9).
+
+Reprise fine : « Étape en cours » dit où la session s'est arrêtée (« cadrage : Q3
+posée », « plan : relecture, cycle 1 »…). Les réponses déjà notées ne sont pas reposées ;
+une question posée sans réponse notée est reposée. La fiche du collecteur n'est pas
+gardée : relancez le collecteur (§ 2), puis comparez ses budgets et ses verdicts à ceux
+de la fiche de conception ou du plan ; un changement en prod depuis (verdict ajouté,
+`totalDuration` modifié) se signale à l'utilisateur avant de continuer.
 
 ## 2. Collecteur
 
-Lancez l'agent `collecteur` avec : module, section, supports à relire. Il rend la fiche
+Lancez l'agent `collecteur` avec : mode (`relecture` ou `conception`), module, section,
+supports à relire (relecture) ou « section à concevoir » (conception). Il rend la fiche
 de contexte.
 
 ## 3. Contrôle de la fiche
@@ -91,6 +147,11 @@ de contexte.
 - **Support en source « file »** : il est invisible à `export_content_compact`, il ne
   peut pas être relu. Signalez-le et retirez-le du périmètre.
 - Serveur MCP prod indisponible : arrêt immédiat, dites-le.
+- **Mode conception** : la section a déjà un support en source `db` → demandez s'il
+  faut passer en relecture ou le reconcevoir (rien n'est écrasé : le plan est un
+  fichier du dépôt). `courseIntroMinutes` manquant n'est pas un trou de la fiche : c'est
+  la Q0 du cadrage. Puis passez à `cadrage.md` (ou `plan.md` en mode rapide) ; les § 4
+  à § 11 ci-dessous ne concernent que la relecture.
 
 ## 4. Supports et référence de couverture
 
@@ -211,7 +272,10 @@ Aucun étudiant sur les slides. Chaque prompt d'agent contient, et seulement cel
   aucun verdict pour ce format → écrivez « aucun verdict actif pour <format> ». Pour la
   cohérence, en plus : la fiche du collecteur, dont la rubrique « Notions réellement
   enseignées » **verbatim**, et l'export du cours (si le support relu est les slides ou
-  le TP). Pour le contrat, en plus : le budget TP avec son calcul ;
+  le TP). Pour le contrat, en plus : le budget TP avec son calcul, et les durées du
+  plan s'il existe (sinon « pas de plan : durées non disponibles »). Pour un TP, à tous :
+  la règle « jamais d'indice ni de solution dans un TP, elle prime sur la phrase sur
+  l'indice replié du verdict `6ac67a63137711fbe6236783` » ;
 - **étudiants** : chemin du support relu dans `/work/supports/` (mode lecture :
   `cours.md` ; mode exécution et rapide : `tp.md` et `cours.md`), rubrique « Notions
   réellement enseignées » de la fiche **verbatim** (à défaut : curriculum des sections
@@ -263,9 +327,17 @@ Sur l'ensemble des remarques :
    retenue en conséquence.
 4. **Étudiant rapide** : il ne fait modifier que les bonus. Ses remarques hors bonus
    sont écartées, sauf si un autre agent fait la même.
-5. **Notion visée** : si le fragile bloque sur la notion que l'exercice travaille,
-   la proposition retenue est un indice en `collapsible`, jamais la réponse. Réécrivez
-   toute proposition qui donnerait la réponse.
+5. **Notion visée** : jamais d'indice ni de solution dans un TP (décision de
+   l'utilisateur du 2026-10-27 ; elle prime sur la phrase « un indice replié qui donne
+   le principe et le piège » du verdict `6ac67a63137711fbe6236783`). Si le fragile bloque
+   sur la notion que l'exercice travaille :
+   - au **premier exercice qui pratique cette notion** (début de la partie guidée) :
+     le cours est insuffisant. La remarque part au plan du cours (exemple ou variante à
+     renforcer) ; la consigne ne gagne au plus qu'une précision sur la méthode ou l'API
+     imposée, jamais la solution ni un renvoi « relisez le cours » ;
+   - **plus loin** dans le TP : désaccord à trancher par l'utilisateur (règle 8), avec
+     votre recommandation.
+   Réécrivez ou écartez toute proposition qui donnerait la réponse ou un indice.
 6. **Durées** : la mesure du fragile fait foi. Total du tronc commun hors 80–100 % du
    budget TP → signalé comme désaccord à trancher (dans le pipeline complet, c'est un
    retour au plan que l'utilisateur revalide).
@@ -296,6 +368,7 @@ Créez ou mettez à jour `docs/plans/<module>/<section>.md` (statut en tête, ph
 « relecture », date, synthèse arbitrée, désaccords en attente, remarques écartées,
 prochaine action) et `docs/plans/<module>/etat.md` (tableau des sections avec leur
 phase). Format exact dans `suivi.md`. Ne touchez pas au reste d'un plan existant.
+Commit (« Commits ») une fois que l'utilisateur a répondu à la synthèse.
 
 ## 11. Synthèse arbitrée
 
@@ -323,7 +396,20 @@ n'enchaînez sur rien d'autre.
 
 ## Définition de terminé de l'orchestrateur (spec § 13)
 
-À la fin, listez critère par critère, ✔ avec preuve ou ✘ avec raison :
+**Mode conception**, à la fin de chaque phase (fiche de conception, plan) :
+
+- ✔/✘ point de validation obtenu de l'utilisateur, explicitement (sa réponse citée) ;
+- ✔/✘ statut de section et état du module à jour, et commités (hash du commit) ;
+- ✔/✘ chaque notion du brief a son repère N, chaque élément du plan sa durée, totaux
+  calculés (phase plan) ;
+- ✔/✘ chaque message d'erreur du plan exécuté, avec outil et version, ou marqué « non
+  vérifié » avec la raison (phase plan) ;
+- ✔/✘ relecture du plan : rapports complets, au plus deux cycles, désaccords restants
+  présentés (phase plan) ;
+- ✔/✘ bac à sable supprimé (sorties de `bac-a-sable.md` § 6), s'il a servi ;
+- ✔/✘ aucune écriture MCP, aucun support rédigé.
+
+**Mode relecture**. À la fin, listez critère par critère, ✔ avec preuve ou ✘ avec raison :
 
 - ✔/✘ la synthèse arbitrée a été présentée à l'utilisateur (point de validation de la
   relecture ; sa réponse est attendue, pas supposée) ;
