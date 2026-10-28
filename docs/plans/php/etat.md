@@ -9,7 +9,7 @@ Mis à jour le 2026-10-28.
 | 4 | 4-formulaire | relecture | synthèse arbitrée présentée | 2026-10-27 | choix des remarques à corriger, 1 désaccord |
 | 5 | 5-lire-des-donnees-en-base | — | — | — | — |
 | 6 | 6-ecrire-des-donnees-en-base | — | — | — | — |
-| 7 | 7-sessions-et-authentification | plan | fiche de conception validée | 2026-10-28 | plan, relecture du plan |
+| 7 | 7-sessions-et-authentification | cours | plan v3 validé | 2026-10-28 | rédaction du cours |
 | 9 | 9-symfony | — | — | — | — |
 | 8 | 8-examen | — | — | — | — |
 | 10 | 10-twig | — | — | — | — |
