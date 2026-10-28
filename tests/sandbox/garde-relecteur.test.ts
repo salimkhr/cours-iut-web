@@ -82,6 +82,7 @@ const ACCEPTES: Cas[] = [
     ["forme courte de la base (UTILIS~1)", read(path.join(PHP, SECTION)), BASE !== BASE_LONGUE],
     ["plan sans tenir compte de la casse de docs\\plans (Windows)", read(path.join(DEPOT, "DOCS", "Plans", "php", SECTION)), WIN],
     ["tool-results", read(path.join(TOOL_RESULTS, "toolu_01abc.txt"))],
+    ["export d'un brouillon", read(path.join(PHP, "brouillons", "7-sessions-et-authentification", "cours.md"))],
     ["outil autre que Read (Bash)", { tool_name: "Bash", tool_input: { command: "rm -rf /" } }],
     ["outil autre que Read (Write)", { tool_name: "Write", tool_input: { file_path: path.join(DEPOT, ".env.local") } }],
 ];
@@ -89,6 +90,10 @@ const ACCEPTES: Cas[] = [
 const REFUSES: Cas[] = [
     ["sous-dossier de module", read(path.join(PHP, "rapports", "2026-10-27.md"))],
     ["fichier directement dans docs/plans", read(path.join(PLANS, "README.md"))],
+    ["JSON d'un brouillon", read(path.join(PHP, "brouillons", "7-sessions-et-authentification", "cours.json"))],
+    ["brouillon sans dossier de section", read(path.join(PHP, "brouillons", "cours.md"))],
+    ["sous-dossier d'un brouillon", read(path.join(PHP, "brouillons", "7-x", "fournis", "a.md"))],
+    ["dossier autre que brouillons", read(path.join(PHP, "autres", "7-x", "cours.md"))],
     ["docs/plans lui-même", read(PLANS)],
     ["dossier de module", read(PHP)],
     ["plan non .md", read(path.join(PHP, "7-sessions.txt"))],

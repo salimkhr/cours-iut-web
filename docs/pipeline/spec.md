@@ -21,6 +21,7 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
    `relecteur-coherence` et `relecteur-contrat` relisent le PLAN avant que je le voie (fuite du fil rouge, notions hors curriculum, budget hors plage, contrat incomplet). Puis je le valide.
    Le plan est persistant : `docs/plans/<module>/<section>.md`, commité (fichiers de suivi seuls) à chaque point de validation (décision du 2026-10-27 ; `publish_private_document` écarté : il remplace toute l'arborescence du dépôt GitLab, n'a pas d'outil de relecture et dépend de GitLab). Les messages d'erreur du plan sont exécutés dans le bac à sable.
 4. **Exécution** séquentielle, chaque support validé avant le suivant : `redacteur-cours` → `redacteur-slides` → `redacteur-tp`. Chaque rédacteur reçoit le plan de son support et les supports déjà validés. Il suit le plan à la lettre : un écart nécessaire est signalé à l'orchestrateur, jamais improvisé.
+   Les rédacteurs n'écrivent sur aucun serveur : chacun rend l'arbre de blocs de son support dans un **brouillon** (`docs/plans/<module>/brouillons/<section>/<support>.json`, ignoré par git), validé et exporté par un script local (`src/scripts/brouillon.ts`, même validation et même export que le serveur, mêmes `id` qu'en prod). Relecteurs et étudiants lisent cet export. Après ma validation d'un support, l'orchestrateur seul l'écrit en prod (`save_content`), avec ma confirmation explicite, et la relecture navigateur se fait en prod (décision du 2026-10-28 : staging n'a pas les cours, le push staging → prod pousse le module entier et les `id` divergent entre les serveurs).
 5. **Relecture** en parallèle :
    - `relecteur-style`, `relecteur-coherence` : tous les supports ;
    - `etudiant-fragile` : cours (mode lecture) et TP (mode exécution) ;
@@ -28,7 +29,7 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
    - aucun étudiant sur les slides.
 6. **Arbitrage** par l'orchestrateur (§ 6), puis les remarques retenues vont au rédacteur du format concerné, qui corrige.
 7. Relecture navigateur par moi.
-8. `correction` (TP uniquement) : écrit, exécute, vérifie, pousse.
+8. `correction` (TP uniquement) : écrit, exécute, vérifie dans le bac à sable. L'orchestrateur relit et pousse (`push_correction`) avec ma confirmation explicite : le push publie sur un GitLab public et écrit `hasCorrection` en prod (décision du 2026-10-28, § 1).
 9. **Clôture** par l'orchestrateur : `curriculum` de la section, verdicts, exemplaire, mise à jour du plan avec les écarts réellement faits, rubrique **« Matériau quiz »** dans le plan (gestes clés du TP : code, API imposée, résultat observé ; blocages relevés par l'étudiant fragile ; erreurs fréquentes du cours), copie vers prod avec ma confirmation explicite.
 
 **Mode rapide** (sur demande, section simple) : saute le cadrage, garde le plan et sa validation.
@@ -40,17 +41,19 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
 | Agent | Modèle | Outils |
 |---|---|---|
 | collecteur | haiku | MCP lecture seule (list_*, get_*, export_content_compact, list_verdicts, list_exemplars) |
-| redacteur-cours | opus | MCP lecture + écriture staging uniquement |
-| redacteur-slides | sonnet | MCP lecture + écriture staging uniquement |
-| redacteur-tp | opus | MCP lecture + écriture staging + get_project_reference |
+| redacteur-cours | opus | MCP lecture prod ; écriture de son seul brouillon + validation par le script (garde en hook) |
+| redacteur-slides | sonnet | idem cours |
+| redacteur-tp | opus | idem cours + get_project_reference, export_content_compact |
 | relecteur-style | sonnet | MCP lecture seule |
 | relecteur-coherence | sonnet | MCP lecture seule + get_project_reference + Read limité aux plans (`docs/plans/<module>/*.md`, garde en hook) |
 | relecteur-contrat | haiku | MCP lecture seule + Read limité aux plans (garde en hook) |
 | etudiant-fragile | sonnet | lecture du contenu de la section uniquement + Bash (bac à sable) |
 | etudiant-rapide | sonnet | idem fragile |
-| correction | sonnet | Bash, push_correction |
+| correction | sonnet | Bash (bac à sable, garde en hook) ; le push est fait par l'orchestrateur |
 | redacteur-quiz-section | sonnet | MCP lecture + get_quiz, aucune écriture |
 | redacteur-quiz-transversal | opus | MCP lecture + get_quiz, aucune écriture |
+
+Amendement du 2026-10-28 (étape 3) : aucune écriture MCP pour les rédacteurs ni pour `correction` (§ 1, § 2 étapes 4 et 8). Relecteurs : `Read` aussi limité aux exports de brouillon (`docs/plans/<module>/brouillons/<section>/*.md`), y compris pour `relecteur-style`.
 
 Modèles : les rédacteurs cours et TP restent en opus au départ. Le plan prenant les décisions en amont, sonnet pourrait suffire : comparaison à prévoir avec skill-creator (même section, opus vs sonnet).
 
@@ -193,7 +196,7 @@ Chaque agent a une définition de terminé (ci-dessous). Il ne se déclare termi
 **redacteur-cours**
 - chaque notion du plan rédigée avec ses trois temps (exemple, variante, erreur fréquente avec message réel) ;
 - aucun écart au plan, ou chaque écart signalé ;
-- écriture sur staging relue avec `get_content` : l'arbre correspond à ce qui était prévu ;
+- brouillon validé par le script (sortie collée) : l'arbre correspond à ce qui était prévu ;
 - uniquement des types de blocs du registre ;
 - minutage total dans le budget.
 
@@ -201,7 +204,7 @@ Chaque agent a une définition de terminé (ci-dessous). Il ne se déclare termi
 - chaque slide du plan présente, une idée par slide ;
 - une `slide-note` sur chaque slide ;
 - aucune notion absente du cours ;
-- écriture relue avec `get_content` ;
+- brouillon validé par le script (sortie collée) ;
 - minutage total dans le budget.
 
 **redacteur-tp**
@@ -209,7 +212,7 @@ Chaque agent a une définition de terminé (ci-dessous). Il ne se déclare termi
 - budget recalculé, entre 80 et 100 % ;
 - chaque résultat observable rattaché au dépôt de référence (ou aux TP précédents à défaut) ;
 - impératif vouvoyé dans toutes les consignes ;
-- écriture relue avec `get_content` ;
+- brouillon validé par le script (sortie collée) ;
 - liste des contrats prête pour `correction`.
 
 **relecteur-style**
@@ -242,7 +245,7 @@ Chaque agent a une définition de terminé (ci-dessous). Il ne se déclare termi
 - un dossier par exercice, plus `fil-rouge/` et `README.md` ;
 - noms de fichiers identiques aux contrats ;
 - chaque fichier exécuté, sa sortie collée dans le rapport et comparée au résultat observable annoncé ;
-- push effectué, rappel `correctionIsAvailable` fait.
+- (orchestrateur, après ma confirmation) push effectué, rappel `correctionIsAvailable` fait.
 
 **redacteur-quiz-section**
 - chaque geste du matériau quiz de la section examiné (retenu comme point de départ ou écarté avec la raison) ;
@@ -257,4 +260,5 @@ Chaque agent a une définition de terminé (ci-dessous). Il ne se déclare termi
 - le point de validation prévu a été obtenu de moi, explicitement ;
 - statut de section et état du module à jour ;
 - aucun rapport d'agent marqué « incomplet » laissé sans suite ;
+- chaque écriture prod précédée de ma confirmation explicite et relue (`comparer` du brouillon à `get_content` : identique) ;
 - en fin de session de déploiement : `docs/pipeline/etat.md` à jour.

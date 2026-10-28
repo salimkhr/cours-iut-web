@@ -11,6 +11,8 @@
 //   exactement deux segments sous docs\plans (pas de sous-dossier, pas de fichier posé
 //   directement dans docs\plans) et des noms en a-z, 0-9, - (ex. php\7-sessions.md,
 //   php\etat.md) ;
+// - l'export d'un brouillon (étape « rédaction ») :
+//   docs\plans\<module>\brouillons\<section>\<fichier>.md, jamais le JSON ;
 // - les fichiers tool-results de Claude Code (sortie MCP trop longue enregistrée sur
 //   disque) sous <config>\projects\, avec <config> = CLAUDE_CONFIG_DIR, sinon
 //   %USERPROFILE%\.claude (ou $HOME/.claude).
@@ -109,7 +111,8 @@ function lecturePermise(chemin, R) {
     const pl = sous(chemin, R.plans);
     if (pl) {
         if (pl.length === 2 && SLUG.test(pl[0]) && PLAN.test(pl[1])) return null;
-        return "sous docs\\plans, seul <module>\\<section>.md est permis (pas de sous-dossier, noms en a-z, 0-9, -).";
+        if (pl.length === 4 && SLUG.test(pl[0]) && pl[1] === "brouillons" && SLUG.test(pl[2]) && PLAN.test(pl[3])) return null;
+        return "sous docs\\plans, seuls <module>\\<section>.md et <module>\\brouillons\\<section>\\<support>.md sont permis (noms en a-z, 0-9, -).";
     }
     const pr = sous(chemin, R.projets);
     if (pr && pr.slice(0, -1).some((s) => cle(s) === "tool-results")) return null;

@@ -111,15 +111,17 @@ référence, slides qui ne recopient pas le cours. Vous ne réécrivez rien.
 - Vous ne chargez jamais le content-writer v2 ni un autre skill pédagogique.
 - Une remarque s'appuie sur une preuve : le verbatim du bloc, la ligne du curriculum,
   le chemin et l'extrait du fichier du dépôt. Pas de preuve, pas de remarque.
-- `Read` ne sert qu'à lire le fichier de plan dont l'orchestrateur vous donne le chemin
-  (une garde refuse tout autre fichier, sauf les tool-results de Claude Code).
+- `Read` ne sert qu'à lire le plan et l'export d'un brouillon dont l'orchestrateur vous
+  donne le chemin (une garde refuse tout autre fichier, sauf les tool-results de Claude
+  Code).
 - Jamais d'indice ni de solution dans un TP : ne proposez ni indice replié, ni ligne de
   code de solution, ni corrigé. Cette règle de l'utilisateur prime sur la phrase « un
   indice replié qui donne le principe et le piège » du verdict
   `6ac67a63137711fbe6236783`.
 
-Deux modes, donnés par le prompt : **relecture** (un support rédigé, sections
-ci-dessous) et **plan** (le plan d'une section, voir « Mode plan » à la fin).
+Trois modes, donnés par le prompt : **relecture** (un support rédigé, sections
+ci-dessous), **plan** (le plan d'une section, voir « Mode plan ») et **brouillon** (un
+support rédigé mais pas encore en prod, voir « Mode brouillon » à la fin).
 
 ## Entrées (dans le prompt de l'orchestrateur)
 
@@ -305,3 +307,29 @@ colonne « Repère » à la place de « id du bloc ».
 - ✔/✘ chaque résultat observable du TP confronté au dépôt ou aux TP précédents : <n sur n>
 - ✔/✘ chaque « enseignée nulle part » prouvé par search_content : <n sur n>
 - ✔/✘ aucune proposition ne contredit un verdict transmis : <n verdicts transmis, n cités>
+
+## Mode brouillon
+
+Vous relisez un support que le rédacteur vient d'écrire d'après le plan validé, avant
+qu'il soit en prod. Même grille, mêmes gravités, même rapport qu'en mode relecture.
+
+**Entrées** : les mêmes qu'en mode relecture, sauf l'export, qui n'est pas collé dans
+le prompt : vous recevez le **chemin absolu** de l'export du brouillon
+(`docs/plans/<module>/brouillons/<section>/<support>.md`) et le lisez avec `Read`, par
+tranches s'il est long. Les `<!--id-->` sont ceux qui iront en prod : citez-les comme
+des `id` de bloc. Le mode dit « brouillon, première passe » (tous les blocs) ou
+« brouillon, cycle 2 : ids <liste> » (seulement ces blocs). En plus : chemin absolu du plan de la section
+(rubrique « Plan ») et, pour des slides ou un TP, chemin absolu de l'export du cours
+validé (`cours.md`), à lire avec `Read` au lieu de l'export collé.
+
+**Critère 7, conformité au plan** : chaque élément du plan pour ce support (notion `N`,
+slide `S`, exercice `E`, bonus `B`) se retrouve dans le support avec ce que le plan a
+fixé (exemple et données, message d'erreur verbatim, contrat, nom de fichier). Élément
+du plan absent : MAJEUR. Contenu qui s'écarte du plan sans écart signalé (exemple, donnée
+ou message différent) : MAJEUR. Ce que le plan prévoit n'est pas une remarque, même si
+votre grille l'aurait voulu autrement, sauf fuite du fil rouge ou notion enseignée nulle
+part (le plan a pu se tromper : signalez-le, colonne Proposition « amender le plan »).
+
+**Définition de terminé** (mode brouillon) : celle du mode relecture, plus
+- ✔/✘ chaque repère du plan pour ce support confronté au brouillon : <n sur n>
+- ✔/✘ cycle 2 : seuls les ids de la liste relus : <n sur n>

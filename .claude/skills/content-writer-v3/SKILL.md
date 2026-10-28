@@ -1,8 +1,8 @@
 ---
 name: content-writer-v3
-description: Orchestrateur du pipeline multi-agents de rédaction de cours. Mode relecture (supports existants en prod, synthèse arbitrée sans correction) et modes conception / conception-rapide (cadrage, puis plan relu par les relecteurs et validé, sans rédaction). Lance les agents, arbitre leurs rapports, tient le statut de section.
+description: Orchestrateur du pipeline multi-agents de rédaction de cours. Mode relecture (supports existants en prod, synthèse arbitrée sans correction), modes conception / conception-rapide (cadrage, puis plan relu et validé) et mode redaction (supports rédigés en brouillon d'après le plan, relus, validés, écrits en prod par l'orchestrateur seul, puis correction et clôture). Lance les agents, arbitre leurs rapports, tient le statut de section.
 disable-model-invocation: true
-argument-hint: "[relecture|conception|conception-rapide] [module] [section]"
+argument-hint: "[relecture|conception|conception-rapide|redaction|examen] [module] [section]"
 ---
 
 # content-writer v3 : orchestrateur d'une section
@@ -24,10 +24,14 @@ contradiction entre ce skill et la spec, arrêtez-vous et signalez-la à l'utili
 | `relecture` | relit des supports déjà rédigés (cours, slides, TP) et présente une synthèse arbitrée, sans rien corriger | § 1 à § 11 ci-dessous |
 | `conception` | section non rédigée : cadrage (questions une par une, angles, fiche de conception validée), puis plan relu et validé | § 1 à § 3, puis `cadrage.md`, puis `plan.md` |
 | `conception-rapide` | section simple : plan relu et validé, sans cadrage (seule Q0 si `courseIntroMinutes` manque) | § 1 à § 3, puis `plan.md` |
+| `redaction` | plan validé : cours, slides puis TP rédigés en brouillon, relus, validés un par un, écrits en prod par vous ; correction et clôture | § 1 à § 3, puis `redaction.md`, puis `cloture.md` |
+| `examen` | examen de fin de module, hors fil rouge, sur les seuls `curriculum` : plan écrit pour la traçabilité (sans cadrage ni validation du plan), rédaction par `redacteur-tp` en mode examen, sans correction | § 1 à § 3, `plan.md` § 2 (sans § 4 et § 5), puis `redaction.md` |
 
-Mode absent : déduisez-le (section sans support en source `db` → `conception`, sinon
-`relecture`) et demandez confirmation en une question. À la reprise, le mode est celui
-du statut de section.
+Mode absent : à la reprise, **le statut de section fait foi** (son champ « Mode »), même
+si des supports sont déjà en source `db` : une section en cours de rédaction a son cours
+en prod avant son TP. Sans statut : section sans support en source `db` → `conception`,
+plan validé dans `docs/plans/` → `redaction`, sinon `relecture` ; demandez confirmation
+en une question.
 
 ## Ce que fait ce skill, et ce qu'il ne fait pas
 
@@ -35,12 +39,20 @@ du statut de section.
   `mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__` dans l'app Desktop,
   `mcp__claude_ai_cours-iut-web__` en CLI. N'utilisez jamais le serveur staging
   (`95c87654-…`, `claude_ai_cours-iut-staging`) ni le serveur local `cours-iut-mcp`.
-- **Aucune écriture MCP**, ni prod ni staging, dans aucun mode. **Aucune rédaction ni
-  correction** de supports : la sortie est une synthèse arbitrée (relecture) ou un plan
-  validé (conception). Les seules écritures sont les fichiers de suivi
+- Modes `relecture`, `conception`, `conception-rapide` : **aucune écriture MCP**, ni
+  prod ni staging, **aucune rédaction ni correction** de supports. La sortie est une
+  synthèse arbitrée (relecture) ou un plan validé (conception).
+- Modes `redaction` et `examen` : les rédacteurs écrivent des **brouillons**
+  (`docs/plans/<module>/brouillons/<section>/`, ignoré par git), jamais sur un serveur.
+  **Vous êtes le seul à écrire en prod** (`save_content`, `edit_section`,
+  `push_correction`, `add_verdict`, `promote_exemplar`), chaque fois après la
+  confirmation explicite de l'utilisateur pour cette écriture précise. Jamais staging,
+  jamais `isAvailable` sans sa demande (`redaction.md` § 0).
+- Dans tous les modes, les autres écritures sont les fichiers de suivi
   (`docs/plans/<module>/<section>.md` et `docs/plans/<module>/etat.md`), les dossiers
   temporaires du bac à sable et les commits de ces fichiers de suivi (« Commits »).
 - Relecture : **un seul cycle**. Plan : **deux cycles** au plus (`plan.md` § 4).
+  Rédaction : **deux cycles** « relecture → correction » par support (`redaction.md` § 5).
   Relancer un agent dont le rapport est incomplet (couverture ou preuves) est permis et
   ne compte pas comme cycle.
 
@@ -48,6 +60,9 @@ Annexes de ce dossier, à lire au moment indiqué :
 
 - `cadrage.md` : questions du cadrage, angles, fiche de conception (mode `conception`) ;
 - `plan.md` : format du plan, messages d'erreur exécutés, relecture et validation du plan ;
+- `redaction.md` : brouillons, rédacteurs, relecture, arbitrage et correction, validation,
+  écriture en prod, relecture navigateur (mode `redaction`) ;
+- `cloture.md` : correction du TP et clôture de la section (mode `redaction`) ;
 - `bac-a-sable.md` : commandes de création, de contrôle et de nettoyage du conteneur ;
 - `suivi.md` : format du statut de section et de l'état du module.
 
@@ -62,7 +77,8 @@ quels supports relire si ce n'est pas dit : par défaut, tous ceux qui existent 
 ## Commits
 
 À chaque **point de validation** obtenu de l'utilisateur (fiche de conception, plan,
-réponse à la synthèse d'une relecture), commitez les seuls fichiers de suivi du module :
+réponse à la synthèse d'une relecture, support validé, relecture navigateur, clôture),
+commitez les seuls fichiers de suivi du module (les brouillons sont ignorés par git) :
 
 ```bash
 git add -- docs/plans/<module>/<section>.md docs/plans/<module>/etat.md
@@ -94,6 +110,18 @@ Liste type du mode `conception` (`conception-rapide` : sans les tâches 4 à 6) 
 9. Relecture du plan (cohérence, contrat), cycle 1
 10. Arbitrer, amender le plan (cycle 2 si besoin)
 11. Validation du plan, statut, état du module, commit
+
+Liste type du mode `redaction` (tâches 4 à 6 répétées pour les slides puis le TP ; le
+détail de chaque support est dans `redaction.md` § 1) :
+
+1. Lire le statut de la section (reprise)
+2. Collecter le contexte (collecteur, mode conception)
+3. Contrôler la fiche, comparer budgets et verdicts au plan validé
+4. Cours : rédaction, relecture, arbitrage, correction (deux cycles au plus)
+5. Cours : validation, écriture en prod (confirmation), commit
+6. Cours : relecture navigateur, commit
+7. Correction du TP, push (confirmation)
+8. Clôture : curriculum, verdicts, matériau quiz, statut, commit
 
 Liste type du mode `relecture` :
 
@@ -147,6 +175,9 @@ de contexte.
 - **Support en source « file »** : il est invisible à `export_content_compact`, il ne
   peut pas être relu. Signalez-le et retirez-le du périmètre.
 - Serveur MCP prod indisponible : arrêt immédiat, dites-le.
+- **Mode redaction** : le plan validé fait foi. Un budget ou un verdict qui a changé en
+  prod depuis sa validation se signale à l'utilisateur (amendement possible du plan,
+  `redaction.md` § 7). Passez ensuite à `redaction.md`.
 - **Mode conception** : la section a déjà un support en source `db` → demandez s'il
   faut passer en relecture ou le reconcevoir (rien n'est écrasé : le plan est un
   fichier du dépôt). `courseIntroMinutes` manquant n'est pas un trou de la fiche : c'est
@@ -408,6 +439,9 @@ n'enchaînez sur rien d'autre.
   présentés (phase plan) ;
 - ✔/✘ bac à sable supprimé (sorties de `bac-a-sable.md` § 6), s'il a servi ;
 - ✔/✘ aucune écriture MCP, aucun support rédigé.
+
+**Mode redaction** : définition de terminé par support (`redaction.md` § 8), puis celle
+de la correction et de la clôture (`cloture.md` § 3).
 
 **Mode relecture**. À la fin, listez critère par critère, ✔ avec preuve ou ✘ avec raison :
 

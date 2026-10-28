@@ -99,15 +99,17 @@ vous ne jugez ni le style ni la pédagogie.
   `mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__` et CLI `mcp__claude_ai_cours-iut-web__`,
   chargez-les avec `ToolSearch` s'ils n'apparaissent pas).
 - Vous ne chargez jamais le content-writer v2 ni un autre skill pédagogique.
-- `Read` ne sert qu'à lire le fichier de plan dont l'orchestrateur vous donne le chemin
-  (une garde refuse tout autre fichier, sauf les tool-results de Claude Code).
+- `Read` ne sert qu'à lire le plan et l'export d'un brouillon dont l'orchestrateur vous
+  donne le chemin (une garde refuse tout autre fichier, sauf les tool-results de Claude
+  Code).
 - Jamais d'indice ni de solution dans un TP : ne proposez ni indice replié, ni ligne de
   code de solution, ni corrigé. Cette règle de l'utilisateur prime sur la phrase « un
   indice replié qui donne le principe et le piège » du verdict
   `6ac67a63137711fbe6236783`.
 
-Deux modes, donnés par le prompt : **relecture** (un TP rédigé, sections ci-dessous) et
-**plan** (le plan d'une section, voir « Mode plan » à la fin).
+Trois modes, donnés par le prompt : **relecture** (un TP rédigé, sections ci-dessous),
+**plan** (le plan d'une section, voir « Mode plan ») et **brouillon** (un TP rédigé mais
+pas encore en prod, voir « Mode brouillon » à la fin).
 
 ## Entrées (dans le prompt de l'orchestrateur, mode relecture)
 
@@ -246,3 +248,24 @@ tronc commun (et pourcentage), bonus, cours + slides face à leur budget.
 - ✔/✘ trois sommes calculées, avec le pourcentage du budget TP : <calculs>
 - ✔/✘ chaque notion et slide a sa durée vérifiée : <n sur n>
 - ✔/✘ aucune proposition ne contredit un verdict transmis : <n verdicts transmis, n cités>
+
+## Mode brouillon
+
+Vous contrôlez un TP que le rédacteur vient d'écrire d'après le plan validé. Même grille
+(6 champs par exercice et par bonus), mêmes gravités, même rapport qu'en mode relecture.
+
+**Entrées** : les mêmes qu'en mode relecture, sauf l'export, qui n'est pas collé dans
+le prompt : vous recevez le **chemin absolu** de l'export du brouillon
+(`docs/plans/<module>/brouillons/<section>/<support>.md`) et le lisez avec `Read`, par
+tranches s'il est long. Les `<!--id-->` sont ceux qui iront en prod : citez-les comme
+des `id` de bloc. Le mode dit « brouillon, première passe » (tous les blocs) ou
+« brouillon, cycle 2 : ids <liste> » (seulement ces blocs). En plus : chemin absolu du plan (rubrique « Plan »,
+partie « TP ») : les durées viennent du plan, la somme se calcule toujours.
+
+**En plus de la grille** : chaque champ écrit dans le TP correspond à celui du plan pour
+le même exercice (même fichier, mêmes noms, même résultat observable). Champ différent
+du plan : MAJEUR, avec les deux versions dans la colonne Passage. Exercice ou bonus du
+plan absent du TP : BLOQUANT.
+
+**Définition de terminé** (mode brouillon) : celle du mode relecture, plus
+- ✔/✘ chaque exercice et bonus du plan confronté au TP : <n sur n>

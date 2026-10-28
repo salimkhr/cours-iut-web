@@ -7,15 +7,15 @@ réponses du cadrage sont mises à jour sans commit.
 ## `docs/plans/<module>/<section>.md`
 
 Le statut est TOUJOURS en tête du fichier. Ordre des rubriques : Statut, Cadrage, Fiche
-de conception, Plan, Relectures du plan, Relectures (de supports), Matériau quiz. Une
-rubrique sans objet est omise. Mettez à jour seulement la rubrique concernée, sans
-toucher aux autres.
+de conception, Plan, Relectures du plan, Rédaction, Écarts réalisés, Relectures (de
+supports), Matériau quiz. Une rubrique sans objet est omise. Mettez à jour seulement la
+rubrique concernée, sans toucher aux autres.
 
 ```markdown
 # <Titre de la section> (`<module>/<section>`)
 
 ## Statut
-- **Mode** : conception | conception-rapide | relecture
+- **Mode** : conception | conception-rapide | relecture | redaction | examen
 - **Phase** : cadrage | plan | cours | slides | TP | relecture | relecture navigateur | correction | clôture
 - **Étape en cours** : cadrage : Q3 posée | plan : relecture, cycle 1 | en attente de rédaction | …
 - **Mis à jour le** : 2026-10-27
@@ -49,12 +49,49 @@ toucher aux autres.
 | # | Repère | Agent | Remarque (une ligne) | Règle ou raison de l'écart |
 |---|---|---|---|---|
 
+## Rédaction
+### Cours
+- **Brouillon** : docs/plans/<module>/brouillons/<section>/cours.json (<n> blocs)
+- **Rédacteur** : rendu le <date> (<n> relance(s)) ; écarts au plan : aucun | <repère : décision>
+- **Cycle 1** (<date>) : rapports style ✔, cohérence ✔, fragile ✔ ; retenues <n>, écartées <n> ; ids modifiés : <liste>
+| # | id | Gravité | Agents | Problème | Décision | Fait au cycle |
+|---|---|---|---|---|---|---|
+- **Cycle 2** (<date>) : ids relus <liste> ; retenues <n> | sans objet
+- **Désaccords** : aucun | voir tableau (tranchés par l'utilisateur le <date>)
+- **Validé** : <date> (réponse de l'utilisateur)
+- **Prod** : save_content le <date>, contentId <id>, version <n>, comparer IDENTIQUE
+- **Relecture navigateur** : OK le <date> | corrections : <ids>, réécrit version <n>
+#### Remarques écartées
+| # | id | Agent | Remarque (une ligne) | Règle ou raison de l'écart |
+|---|---|---|---|---|
+### Slides
+...
+### TP
+...
+### Correction
+- **Run** : <run-id> ; dossiers : <liste> ; vérifications conformes <n sur n> ; non exécuté : <liste>
+- **Push** : push_correction le <date> (<n> fichiers) | échec : <raison>, fichiers gardés dans <chemin>
+
+## Écarts réalisés
+| Repère | Plan validé | Réalisé | Raison | Date |
+|---|---|---|---|---|
+
 ## Relectures
 <rubriques « Relecture du <date> » du mode relecture, ci-dessous>
 
 ## Matériau quiz
-Rempli à la clôture.
+### Gestes clés du TP
+| Exercice | Code écrit (extrait) | API imposée | Résultat observé |
+|---|---|---|---|
+### Blocages de l'étudiant fragile
+- <exercice ou notion> : <ce qu'il a dû deviner> (<id du bloc>)
+### Erreurs fréquentes du cours
+- <notion> : <code fautif> → `<message réel>`
 ```
+
+La rubrique « Rédaction » est remplie au fil de `redaction.md` ; « Écarts réalisés » et
+« Matériau quiz » à la clôture (`cloture.md`). Les remarques écartées des supports sont
+relues comme celles du plan (règle 9 de l'arbitrage).
 
 En mode relecture, la rubrique « Relectures » a cette forme :
 

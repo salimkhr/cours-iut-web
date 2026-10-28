@@ -8,6 +8,7 @@ skills:
 tools:
   - ToolSearch
   - TodoWrite
+  - Read
   - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__get_section
   - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__get_content
   - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__export_content_compact
@@ -16,6 +17,15 @@ tools:
   - mcp__claude_ai_cours-iut-web__get_content
   - mcp__claude_ai_cours-iut-web__export_content_compact
   - mcp__claude_ai_cours-iut-web__list_block_types
+hooks:
+  PreToolUse:
+    - matcher: "Read"
+      hooks:
+        - type: command
+          command: node
+          args: ["${CLAUDE_PROJECT_DIR}/docker/etudiant-sandbox/garde-relecteur.mjs"]
+          onFailure: block
+          timeout: 10
 disallowedTools:
   - Agent
   - "mcp__95c87654-e293-4528-a7a1-bb0ab25fa0f5__*"
@@ -91,6 +101,9 @@ courte, que le rédacteur appliquera ou non après arbitrage.
   `mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__` et CLI `mcp__claude_ai_cours-iut-web__`,
   chargez-les avec `ToolSearch` s'ils n'apparaissent pas). Le contenu vous est normalement
   fourni dans le prompt ; l'outil sert à vérifier un bloc (`get_content`) en cas de doute.
+- `Read` ne sert qu'à lire l'export d'un brouillon dont l'orchestrateur vous donne le
+  chemin (mode brouillon ; une garde refuse tout autre fichier, sauf le plan et les
+  tool-results de Claude Code).
 - Vous ne chargez jamais le content-writer v2 ni un autre skill pédagogique.
 
 ## Le skill humaniseur-fr, en mode diagnostic
@@ -211,3 +224,18 @@ le bloc réécrit en entier.
 Vous ne vous déclarez terminé que si les trois critères sont ✔ avec leur preuve. Si un
 bloc de la référence de couverture manque à votre liste, ou si une remarque n'a pas
 tous ses champs : ✘, et le rapport est marqué « incomplet ».
+
+## Mode brouillon
+
+Vous relisez un support que le rédacteur vient d'écrire, avant qu'il soit en prod. Même
+grille, mêmes gravités, même rapport qu'en mode « première passe » ou « blocs modifiés ».
+
+**Entrées** : les mêmes qu'en mode relecture, sauf l'export, qui n'est pas collé dans
+le prompt : vous recevez le **chemin absolu** de l'export du brouillon
+(`docs/plans/<module>/brouillons/<section>/<support>.md`) et le lisez avec `Read`, par
+tranches s'il est long. Les `<!--id-->` sont ceux qui iront en prod : citez-les comme
+des `id` de bloc. Le mode dit « brouillon, première passe » (tous les blocs) ou
+« brouillon, cycle 2 : ids <liste> » (seulement ces blocs).
+
+Les messages d'erreur recopiés dans un bloc `code` (sortie d'un outil) ne sont pas du
+texte de l'enseignant : ils ne se relisent pas au style.
