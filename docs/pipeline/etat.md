@@ -1,48 +1,47 @@
 # État du déploiement du pipeline
 
-- **Étape courante** : 2 (cadrage et plan) terminée et validée par l'utilisateur le 2026-10-28 (test sur `php/7-sessions-et-authentification`, plan v3 validé, reprise vérifiée en nouvelle session). Étapes 1 (relecture) et 6 (retouche) validées et déployées (prod 2.1.0). Prochaine : étape 3 (rédaction).
+- **Étape courante** : 3 (rédaction) **implémentée, test à faire** en nouvelle session (2026-10-28). Les agents créés en cours de session ne sont pas chargés par Claude Code avant un redémarrage (`Agent type 'redacteur-cours' not found`). Étapes 1, 2 et 6 validées (prod 2.1.0 pour la 6).
 - **Corrections ponctuelles PHP 1 à 4 (prod, 2026-10-27)** : 49 blocs appliqués ; 8 en attente, tirées de l'export, à recouper avec `get_content` (statuts dans `docs/plans/php/`). `edit_block` en prod parfois refusé par le classifieur du mode automatique : réessayer avec confirmation.
 - **Fait** :
-  - `docs/pipeline/spec.md` : référence ; § 1 et § 9 amendés le 2026-10-27 ; § 2, § 3, § 6 et § 12 amendés le 2026-10-28 (étape 2).
-  - `.claude/skills/humaniseur-fr/` (copie locale, MIT) ; `.gitignore` versionne `.claude/skills/` et `.claude/agents/`.
-  - Étape 1 : sept agents (`.claude/agents/`, dont `preparateur`) ; orchestrateur `.claude/skills/content-writer-v3/` ; bac à sable `docker/etudiant-sandbox/` (image `cours-iut-bac:1`), gardes `garde-bac.mjs` et `garde-preparateur.mjs`.
+  - `docs/pipeline/spec.md` : référence ; § 1 et § 9 amendés le 2026-10-27 ; § 2, § 3, § 6 et § 12 amendés le 2026-10-28 (étape 2) ; § 2 (étapes 4 et 8), § 3 et § 13 amendés le 2026-10-28 (étape 3).
+  - `.claude/skills/humaniseur-fr/` (copie locale, MIT) ; `.gitignore` versionne `.claude/skills/` et `.claude/agents/`, ignore `docs/plans/*/brouillons/`.
+  - Étape 1 : sept agents, dont `preparateur` ; orchestrateur `.claude/skills/content-writer-v3/` ; bac à sable `docker/etudiant-sandbox/` (image `cours-iut-bac:1`), gardes `garde-bac.mjs` et `garde-preparateur.mjs`.
   - Étape 6 : `skills/retouche/main.md`, outils `log_retouche` / `list_retouches` / `mark_retouches_processed`, index `retouches_status_recent`.
-  - Étape 2 :
-    - `content-writer-v3/cadrage.md` (nouveau) : Q0 à Q5 une par une avec défaut argumenté, 2 ou 3 angles, fiche de conception ;
-    - `content-writer-v3/plan.md` (nouveau) : repères N/S/E/B, format du plan, messages d'erreur exécutés dans le bac à sable, relecture en deux cycles, validation ;
-    - `content-writer-v3/SKILL.md` : modes `relecture`, `conception`, `conception-rapide` ; commits des fichiers de suivi ; reprise fine ; règle 5 de l'arbitrage (jamais d'indice) ;
-    - `content-writer-v3/suivi.md` : champs Mode et Étape en cours, rubriques Cadrage, Fiche de conception, Plan, Relectures du plan ;
-    - `relecteur-coherence.md`, `relecteur-contrat.md` : mode plan, `Read` gardé ; le contrat ne signale plus l'absence de durée dans un TP rédigé ;
-    - `collecteur.md` : mode conception (supports absents normaux, `courseIntroMinutes` → Q0, verdicts cours/slide/TP/module-design, matériaux de cadrage) ;
-    - `docker/etudiant-sandbox/garde-relecteur.mjs` + `tests/sandbox/garde-relecteur.test.ts` : `Read` limité à `docs/plans/<module>/<fichier>.md` et aux tool-results.
+  - Étape 2 : `cadrage.md`, `plan.md`, modes `conception` et `conception-rapide`, mode plan des relecteurs, `garde-relecteur.mjs` (synthèse : commit 54e6279).
+  - Étape 3 (commit 761c688, puis correctif de la garde) :
+    - agents `redacteur-cours` (opus), `redacteur-slides` (sonnet), `redacteur-tp` (opus, mode examen) : brouillon JSON seulement, liste de tâches, définition de terminé, cadre commun (format des blocs, grammaire, anti-tics, mode correction) ; `correction` (sonnet, garde `garde-bac.mjs`, ne pousse pas) ;
+    - `src/scripts/brouillon.ts` (+ test) : `valider` (même `validateBlockTree` que `save_content`, plus blocs permis par type), `exporter` (même `blocksToMarkdown` que l'export du serveur), `couverture`, `deposer` (supports et `download-file` dans le bac à sable, à la place de `preparateur`), `comparer` (brouillon face à `get_content` après écriture) ;
+    - `docker/etudiant-sandbox/garde-redacteur.mjs` (+ test) : `Write`/`Edit` sur son seul brouillon, `Bash` réduit à `valider`, `Read` selon le support (cours : `plan-cours.md` et `cours.*` seulement, jamais le plan complet ni le TP) ;
+    - `garde-relecteur.mjs` : lit aussi `docs/plans/<module>/brouillons/<section>/<support>.md` ;
+    - `content-writer-v3/redaction.md` (nouveau) : brouillons et extraits du plan, rédacteur, contrôle, relecture en mode brouillon, arbitrage, deux cycles, validation, écriture prod par l'orchestrateur (confirmation, contrôle de version, `comparer`), relecture navigateur, amendement du plan et retour au cours ;
+    - `content-writer-v3/cloture.md` (nouveau) : correction dans le bac à sable puis push par l'orchestrateur, `curriculum`, `courseIntroMinutes`, verdicts, exemplaire, « Écarts réalisés », « Matériau quiz » ;
+    - `SKILL.md` : modes `redaction` et `examen`, le statut de section fait foi pour le mode à la reprise, écritures prod réservées à l'orchestrateur ; `suivi.md` : rubriques « Rédaction », « Écarts réalisés », format du « Matériau quiz » ;
+    - relecteurs cohérence, contrat, style : mode brouillon (export lu par `Read`, conformité au plan) ; `relecteur-style` gagne `Read` et la garde.
   - Tests : `docs/plans/php/` (relecture PHP 1 à 4 ; cadrage et plan de PHP 7, commits 6cf4cb9 et d4f747d).
 - **Décisions prises en session** :
   - 2026-10-27, étape 1 : lecture sur prod uniquement ; bac à sable `--network none` ; un seul cycle en relecture ; la v3 ne charge jamais la v2 ; staging ne sert qu'aux features.
-  - 2026-10-27/28, étape 2 :
-    - plans dans `docs/plans/<module>/<section>.md`, commit des seuls fichiers de suivi à chaque point de validation (pas `publish_private_document`) ;
-    - relecteurs : `Read` ajouté (plutôt que le plan collé), limité par une garde ;
-    - durées obligatoires dans le plan, jamais dans le rendu étudiant ;
-    - jamais d'indice ni de solution dans un TP ; la règle prime, dans le skill seulement, sur la phrase « indice replié » du verdict `6ac67a63` (rien écrit en prod) ;
-    - blocage du fragile sur la notion visée : au premier exercice qui la pratique → retour au cours ; plus loin → désaccord tranché par l'utilisateur ;
-    - `courseIntroMinutes` fixé au cadrage, gardé dans le plan, écrit en prod à la clôture ;
-    - « Étape en cours » et réponses du cadrage écrites au fil de l'eau, sans commit ;
-    - phase « relecture » ajoutée au § 12 ;
-    - le bac à sable sert dès le plan (messages d'erreur réels) ;
-    - test de PHP 7 : guidage en lecture stricte du verdict `6ac67a63` (chaque geste nouveau guidé par étapes d'action, sans code).
+  - 2026-10-27/28, étape 2 : plans dans `docs/plans/<module>/<section>.md`, commit des seuls fichiers de suivi ; durées dans le plan, jamais dans le rendu ; jamais d'indice ni de solution dans un TP (prime sur la phrase « indice replié » du verdict `6ac67a63`, dans le skill seulement) ; blocage du fragile sur la notion visée : premier exercice → retour au cours, plus loin → l'utilisateur tranche ; `courseIntroMinutes` fixé au cadrage, écrit en prod à la clôture ; bac à sable dès le plan.
+  - 2026-10-28, étape 3 :
+    - **les rédacteurs n'écrivent sur aucun serveur** (option A) : brouillon JSON dans `docs/plans/<module>/brouillons/<section>/`, ignoré par git ; l'orchestrateur seul écrit en prod (`save_content`) après chaque validation, avec confirmation explicite ; relecture navigateur en prod. Raisons : staging a l'ancienne arborescence PHP (pas de `7-sessions-et-authentification`), le push staging → prod pousse le module entier, les ids divergent ; une section `isAvailable: false` est invisible des étudiants (`notFound`) et visible d'un admin ; `save_content` bascule la source en `db` et garde les `id` fournis ;
+    - `push_correction` fait par l'orchestrateur après confirmation (GitLab public + `hasCorrection` en prod), plus par l'agent `correction` ;
+    - spec § 2, § 3 et § 13 amendés en conséquence (accord de l'utilisateur).
 - **Écarts à la spec** :
   - § 9 : plus de passage par staging pour la retouche.
   - Étape 1 : un seul cycle ; pattern 28 désactivé (§ 4 non amendé) ; outils du collecteur au-delà du § 3 ; supports déposés dans le bac à sable par `preparateur` au lieu d'être collés dans le prompt des étudiants.
-  - Étape 2 : la garde de `Read` accepte le plan de n'importe quelle section, pas seulement celle en cours ; les corrections du second cycle de relecture du plan ne sont relues par personne (limite de deux cycles), elles sont présentées à l'utilisateur.
+  - Étape 2 : la garde de `Read` des relecteurs accepte le plan de n'importe quelle section ; les corrections du second cycle de relecture du plan ne sont relues par personne.
+  - Étape 3 : test de rédaction de PHP 7 non fait dans la session d'implémentation (agents non chargés) ; `relecteur-style` a désormais `Read` (§ 3 le donnait seulement à cohérence et contrat, amendé) ; les corrections faites après le cycle 2 ne sont plus relues par les agents, elles sont montrées à l'utilisateur.
   - `.mcp.json` : `cours-iut-mcp` pointe vers `mcp-server/`, absent ; non corrigé.
 - **Résultats des tests** :
   - Étape 1 : relecture de PHP 1 à 4 par 41 agents ; erreurs factuelles confirmées par exécution ; défauts du pipeline corrigés (53ae731).
-  - Étape 2 : `bun test tests/sandbox` 172/172, lint OK. Test de PHP 7 : 1 collecteur, Q0 à Q5 puis 3 angles, fiche validée ; plan v1 relu (cohérence 10 remarques, contrat 10), v2 relu (3 et 1), v3 validé ; erreurs exécutées (PHP 8.3.6, psql 16.15, Chromium) ; tronc commun 145/160 min (91 %) ; reprise en nouvelle session : résumé en deux lignes conforme.
-- **À faire avant l'étape suivante** :
-  - **Avant l'étape 3, à trancher** : la spec fait écrire les rédacteurs sur staging (§ 3) et interdit toute écriture d'agent en prod (§ 1), alors que les cours vivent en prod.
-  - Image `cours-iut-bac:1` sans `php-pgsql` : les étudiants ne peuvent pas faire les TP PHP 5 à 7 (PDO PostgreSQL) ; rebuild à proposer (ajout d'un paquet).
-  - Dépôt de référence (`get_project_reference`) injoignable (ECONNREFUSED) : état initial du fil rouge non reconstituable, nom de la table `users` de PHP 7 non vérifié.
-  - Le verdict prod `6ac67a63` dit encore « un indice replié » : le mettre à jour en prod si l'utilisateur le souhaite (écriture prod, avec confirmation).
+  - Étape 2 : `bun test tests/sandbox` 172/172, lint OK ; test de PHP 7 : fiche validée, plan v3 validé après deux cycles, reprise en nouvelle session conforme.
+  - Étape 3 : `bun test tests/sandbox src/scripts/brouillon` vert (gardes rédacteur et relecteur, script), `tsc` et lint OK ; `blockSchemas`, `validateBlockTree`, `blockTextUtils`, route MCP identiques entre `origin/main` et `staging` ; aller-retour du script sur le cours de PHP 6 en prod (v95, 114 blocs, 57 851 caractères) : `valider` VALIDE, `exporter` 114 marqueurs pour 114 blocs, `comparer` au `get_content` IDENTIQUE bloc par bloc (après déballage de l'enveloppe MCP, corrigé depuis dans le script). Non vérifiés : le diff texte de l'export face à `export_content_compact` (sortie revenue en ligne, impossible à mettre en fichier sans la recopier) et l'aller-retour d'un jeu de slides.
+- **À faire avant de valider l'étape 3** :
+  - **Test en nouvelle session** : `/content-writer-v3 redaction php 7-sessions-et-authentification`, en session interactive dans le dossier approuvé (hooks des gardes). D'abord un test de fumée de `redacteur-cours` (prompt incomplet : `valider` sur un fichier absent → erreur du script ; `ls` → refus ; `Write` du plan → refus), puis cours → slides → TP → correction → clôture.
+  - **Écriture en prod pendant le test** : le prompt de l'étape 3 interdisait toute copie vers prod pendant le test ; avec l'option A, la relecture navigateur en a besoin. Demander l'accord avant le premier `save_content` (PHP 7 est `isAvailable: false`).
+  - **Image `cours-iut-bac:1` sans `php-pgsql`** : les étudiants et `correction` ne peuvent pas exécuter les TP PHP 5 à 7 (PDO PostgreSQL). Proposer l'ajout du paquet au `Dockerfile` et le rebuild (plusieurs minutes, à lancer en arrière-plan pendant la rédaction du cours).
+  - **Taille du TP** : `save_content` et le `Write` du rédacteur passent l'arbre entier ; mesurer `cours.json` au premier passage. Si le TP est trop gros, écrire un squelette puis des `insert_block` par section, après avoir vérifié qu'`insert_block` garde les `id` fournis.
+  - Dépôt de référence (`get_project_reference`) injoignable (ECONNREFUSED) : état initial du fil rouge non reconstituable, nom de la table `users` non vérifié ; `push_correction` en dépend probablement aussi.
+  - Le verdict prod `6ac67a63` dit encore « un indice replié » : proposé à la clôture (`cloture.md` § 2.5), écriture prod avec confirmation.
   - Connecteur MCP prod parfois absent de la session : le réactiver avant toute étape qui lit la prod.
-  - Index `retouches_status_recent` à créer en prod depuis `/admin/outils` (connexion de l'utilisateur).
-  - Règle de permission `Bash(docker exec cours-iut-bac-:*)` : à décider.
-  - Étape 4 : le protocole de lecture du journal ne reporte plus les retouches sur staging. Étape 5 : la copie du quiz staging → prod n'a pas de mécanisme.
+  - Index `retouches_status_recent` à créer en prod depuis `/admin/outils` ; règle de permission `Bash(docker exec cours-iut-bac-:*)` à décider.
+  - Après validation de l'étape 3 : proposer (sans l'appliquer) la bascule v2 → v3 et le devenir du document `content-writer` servi par le MCP. Puis étapes 4 (propagation : le journal des retouches ne passe plus par staging) et 5 (quiz : la copie staging → prod n'a pas de mécanisme ; à aligner sur l'option A).

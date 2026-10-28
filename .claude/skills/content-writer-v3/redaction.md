@@ -11,6 +11,7 @@ Chaque support vit dans un **brouillon** :
 
 ```
 docs/plans/<module>/brouillons/<section>/
+  plan-cours.md   plan-slides.md                  (extraits du plan, écrits par vous)
   cours.json   cours.md   cours-couverture.md
   slides.json  slides.md  slides-couverture.md
   tp.json      tp.md      tp-couverture.md      (examen.json en mode examen)
@@ -61,7 +62,15 @@ Prompt de l'agent (`redacteur-cours`, `redacteur-slides` ou `redacteur-tp`), et 
 d'autre :
 
 - mode `rédaction` (ou `examen`), module, section ;
-- chemin absolu du plan, chemin absolu du brouillon à écrire ;
+- cours : chemin absolu de `plan-cours.md` ; slides : de `plan-slides.md` et
+  `plan-cours.md` ; TP : du plan complet. Les extraits, vous les écrivez avant de lancer
+  le rédacteur, par copie verbatim du plan validé : `plan-cours.md` = l'angle, la
+  progression et « À voir absolument / à éviter » de la fiche de conception, puis la
+  partie « Cours » du plan ; `plan-slides.md` = la partie « Slides ». Rien du TP, de
+  l'état du fil rouge ni du `projectSpec` (spec § 4 : le rédacteur du cours n'a que le
+  nom du domaine du fil rouge, et la garde lui refuse le plan complet). Réécrivez-les
+  après chaque amendement du plan ;
+- chemin absolu du brouillon à écrire ;
 - slides et TP : chemin absolu de l'export du cours validé (`cours.md`) ;
 - `exampleDomain`, `universe` (fiche du collecteur) ; pour le cours et les slides, le
   **seul nom** du domaine du fil rouge ; pour le TP, `projectSpec`, état du fil rouge à
@@ -180,9 +189,12 @@ statut (« Validé : … ; cours le <date> »), état du module, commit (`SKILL.
 3. Annoncez l'écriture en une phrase (`save_content`, module, section, type, nombre de
    blocs) et demandez la confirmation. Attendez un oui explicite.
 4. `save_content` (prod) avec le tableau `blocks` lu dans le `.json` (`Read`), tel quel.
-5. Contrôle : `get_content` (prod) ; si la sortie est rangée dans un fichier
-   `tool-results`, passez ce fichier à `comparer` ; sinon, écrivez-la dans le scratchpad
-   puis `comparer`. Attendu : `IDENTIQUE`. Un écart : montrez-le, ne réécrivez pas sans
+5. Contrôle : `get_content` (prod). Si la sortie est rangée dans un fichier
+   `tool-results`, passez ce fichier tel quel à `comparer` (il déballe l'enveloppe MCP).
+   Attendu : `IDENTIQUE`. Si elle revient en ligne (support de moins de 25 Ko environ),
+   ne la recopiez pas dans un fichier : vérifiez que la `version` a augmenté de 1 et que
+   les `id` racine et le nombre de blocs correspondent à `<support>-couverture.md`, et
+   notez « comparaison partielle ». Un écart : montrez-le, ne réécrivez pas sans
    l'accord de l'utilisateur.
 6. Notez `contentId`, `version` et la date dans la rubrique « Rédaction ».
 

@@ -99,8 +99,10 @@ cours donne le minimum pour démarrer le TP, pas l'exhaustivité.
 ## Entrées (dans le prompt de l'orchestrateur)
 
 - mode (`rédaction` ou `correction`, avec le cycle), module, section ;
-- chemin absolu du plan (`Read` : rubriques « Fiche de conception » et « Plan », partie
-  « Cours ») et chemin absolu du brouillon à écrire (`cours.json`) ;
+- chemin absolu de l'**extrait du plan** pour le cours (`plan-cours.md` : partie
+  « Cours » du plan validé, avec l'angle et les « à voir / à éviter » de la fiche de
+  conception) et chemin absolu du brouillon à écrire (`cours.json`). Vous ne lisez pas
+  le plan complet : il contient le détail du fil rouge ;
 - `exampleDomain` et `universe` du module ;
 - le **seul nom** du domaine du projet fil rouge, pour l'éviter (vous ne recevez ni le
   dépôt de référence, ni l'état du fil rouge, ni le `projectSpec`) ;
@@ -134,7 +136,7 @@ Il manque une entrée : rapport « incomplet », sans rien écrire.
 2. `list_block_types` (props exactes). Exemplaire : `list_exemplars` avec
    `withSnapshot: true`, puis lisez ses annotations ; imitez la voix et le niveau de
    détail, pas le sujet.
-3. `Read` du plan.
+3. `Read` de l'extrait du plan.
 4. `Write` du brouillon complet, puis validation.
 5. Passe « écriture humaine » sur chaque bloc de texte et chaque `callout`, `Edit`,
    puis validation de nouveau.
@@ -168,8 +170,9 @@ Un ✘ rend le rapport « incomplet », jamais « terminé ».
   content-writer v2 ni un autre skill pédagogique (`get_pedagogical_skill_*`).
 - Une garde (hook `PreToolUse`) limite vos outils :
   - `Write` et `Edit` : votre seul brouillon ;
-  - `Read` : le plan (`docs/plans/<module>/<section>.md`), les fichiers de
-    `docs/plans/<module>/brouillons/<section>/` (supports déjà validés et leurs exports)
+  - `Read` : les fichiers de `docs/plans/<module>/brouillons/<section>/` utiles à votre
+    support (cours : `plan-cours.md` et `cours.*` ; slides : en plus `plan-slides.md` et
+    `slides.*` ; TP : tout ce dossier et le plan complet `docs/plans/<module>/<section>.md`)
     et les tool-results de Claude Code ;
   - `Bash` : une seule commande, la validation de votre brouillon, en chemin relatif
     depuis la racine du dépôt :

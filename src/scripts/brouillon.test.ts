@@ -147,6 +147,13 @@ describe("comparer", () => {
         expect(r.enTrop).toEqual(["intrus"]);
     });
 
+    test("déballe l'enveloppe MCP d'un fichier tool-results", () => {
+        const enveloppe = JSON.stringify([{ type: "text", text: JSON.stringify({ contentId: "x", blocks: cours, version: 3 }) }]);
+        const r = comparer(cours, enveloppe);
+        expect(r.forme).toBe("arbre");
+        expect(r.identique).toBe(true);
+    });
+
     test("compare les ids d'un export compact", () => {
         const md = exporter(cours, "cours", "PHP / Sessions");
         const r = comparer(cours, md);

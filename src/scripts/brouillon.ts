@@ -225,12 +225,33 @@ export interface ResultatComparaison {
 }
 
 /**
+ * Fichier tool-results de Claude Code : enveloppe MCP [{ type: "text", text }]. On en
+ * rend le texte ; tout autre contenu est rendu tel quel.
+ */
+export function deballer(contenu: string): string {
+    try {
+        const json = JSON.parse(contenu.replace(/^﻿/, "")) as unknown;
+        if (
+            Array.isArray(json) && json.length > 0
+            && json.every((p) => p && typeof p === "object" && (p as { type?: unknown }).type === "text"
+                && typeof (p as { text?: unknown }).text === "string")
+        ) {
+            return (json as { text: string }[]).map((p) => p.text).join("");
+        }
+    } catch {
+        // pas du JSON : export compact
+    }
+    return contenu;
+}
+
+/**
  * Compare un brouillon à ce que la prod renvoie. `relu` est soit la sortie JSON de
  * get_content ({ blocks } ou tableau), comparée bloc par bloc, soit un export compact,
  * dont on ne compare que les ids des marqueurs.
  */
 export function comparer(brouillon: Block[], relu: string): ResultatComparaison {
     const attendus = listerBlocs(brouillon).map((l) => l.id);
+    relu = deballer(relu);
     let arbre: Block[] | null = null;
     try {
         const json = JSON.parse(relu.replace(/^﻿/, "")) as unknown;

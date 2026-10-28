@@ -204,8 +204,9 @@ Un ✘ rend le rapport « incomplet », jamais « terminé ».
   content-writer v2 ni un autre skill pédagogique (`get_pedagogical_skill_*`).
 - Une garde (hook `PreToolUse`) limite vos outils :
   - `Write` et `Edit` : votre seul brouillon ;
-  - `Read` : le plan (`docs/plans/<module>/<section>.md`), les fichiers de
-    `docs/plans/<module>/brouillons/<section>/` (supports déjà validés et leurs exports)
+  - `Read` : les fichiers de `docs/plans/<module>/brouillons/<section>/` utiles à votre
+    support (cours : `plan-cours.md` et `cours.*` ; slides : en plus `plan-slides.md` et
+    `slides.*` ; TP : tout ce dossier et le plan complet `docs/plans/<module>/<section>.md`)
     et les tool-results de Claude Code ;
   - `Bash` : une seule commande, la validation de votre brouillon, en chemin relatif
     depuis la racine du dépôt :

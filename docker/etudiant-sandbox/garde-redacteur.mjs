@@ -9,9 +9,14 @@
 // Permis :
 // - Write, Edit : <dépôt>\docs\plans\<module>\brouillons\<section>\<support>.json, pour
 //   un <support> de l'argument ;
-// - Read : <dépôt>\docs\plans\<module>\<fichier>.md (plan, état du module), tout
-//   fichier .json ou .md de <dépôt>\docs\plans\<module>\brouillons\<section>\ (supports
-//   déjà validés, exports), et les tool-results de Claude Code ;
+// - Read, selon le support (spec § 4 : le rédacteur du cours ne voit pas le détail du
+//   fil rouge, donc ni le plan complet ni le TP) :
+//   - cours : dans <dépôt>\docs\plans\<module>\brouillons\<section>\, les fichiers
+//     cours.* , cours-* et plan-cours.md ;
+//   - slides : en plus, slides.*, slides-* et plan-slides.md ;
+//   - tp, examen : tout fichier .json ou .md de ce dossier, et les plans
+//     <dépôt>\docs\plans\<module>\<fichier>.md ;
+//   pour tous : les tool-results de Claude Code ;
 // - Bash : une seule commande, la validation de son propre brouillon, en chemin
 //   relatif depuis la racine du dépôt :
 //     bun src/scripts/brouillon.ts valider docs/plans/<module>/brouillons/<section>/<support>.json
@@ -119,12 +124,27 @@ function ecriturePermise(chemin, R, supports) {
     return `écriture permise seulement dans docs\\plans\\<module>\\brouillons\\<section>\\{${[...supports].join(",")}}.json.`;
 }
 
-function lecturePermise(chemin, R) {
+/** Préfixes des fichiers de brouillon lisibles par support ; null = tout le dossier et les plans. */
+const LECTURES = {
+    cours: ["cours.", "cours-", "plan-cours."],
+    slides: ["cours.", "cours-", "plan-cours.", "slides.", "slides-", "plan-slides."],
+    tp: null,
+    examen: null,
+};
+
+function lecturePermise(chemin, R, supports) {
+    const complet = [...supports].some((s) => LECTURES[s] === null);
+    const prefixes = [...supports].flatMap((s) => LECTURES[s] ?? []);
     const seg = sous(chemin, R.plans);
     if (seg) {
-        if (seg.length === 2 && SLUG.test(seg[0]) && PLAN.test(seg[1])) return null;
-        if (estBrouillon(seg) && BROUILLON.test(seg[3])) return null;
-        return "sous docs\\plans, seuls <module>\\<fichier>.md et <module>\\brouillons\\<section>\\<fichier>.{json,md} sont permis.";
+        if (complet && seg.length === 2 && SLUG.test(seg[0]) && PLAN.test(seg[1])) return null;
+        if (estBrouillon(seg) && BROUILLON.test(seg[3])) {
+            if (complet || prefixes.some((p) => seg[3].startsWith(p))) return null;
+            return `le rédacteur ${[...supports].join(",")} ne lit dans les brouillons que ${prefixes.join(" ")}* (pas le plan complet ni les autres supports).`;
+        }
+        return complet
+            ? "sous docs\\plans, seuls <module>\\<fichier>.md et <module>\\brouillons\\<section>\\<fichier>.{json,md} sont permis."
+            : "sous docs\\plans, seuls vos fichiers de brouillons\\<section>\\ sont permis (pas le plan complet).";
     }
     const pr = sous(chemin, R.projets);
     if (pr && pr.slice(0, -1).some((s) => cle(s) === "tool-results")) return null;
@@ -163,7 +183,7 @@ function verifier(entree, supports) {
     if (outil === "Read") {
         const n = normaliser(entree?.tool_input?.file_path);
         if (n.erreur) return `Read : ${n.erreur}`;
-        const e = lecturePermise(n.chemin, R);
+        const e = lecturePermise(n.chemin, R, supports);
         return e ? `Read : ${e}` : null;
     }
     if (outil === "Bash") {
