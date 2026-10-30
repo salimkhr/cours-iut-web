@@ -276,7 +276,7 @@ génère. Le texte des blocs `text` accepte le Markdown inline (gras, `code`, li
 | Renvoi vers le cours depuis le TP | `section-card` |
 | Schéma de concept (flux, cycle) | `diagram` (Mermaid) |
 | Comparaison, récapitulatif d'API | `table` |
-| Lignes clés d'un code | `code` avec `highlightLines` |
+| Ligne qui porte seule l'idée du bloc | `code` avec `highlightLines` : une ligne, pas de plage, rien si plusieurs lignes comptent autant |
 | Note pour l'oral d'une slide | `slide-note` (jamais visible des étudiants) |
 
 ## Écriture humaine (passe obligatoire avant de rendre)
