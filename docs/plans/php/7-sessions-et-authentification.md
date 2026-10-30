@@ -3,9 +3,9 @@
 ## Statut
 - **Mode** : redaction
 - **Phase** : TP
-- **Étape en cours** : TP : correction hors cycle, puis relecture, cycle 1
+- **Étape en cours** : TP : correction, cycle 1 ; étudiants en attente du projet Onzer (dépôt de référence)
 - **Mis à jour le** : 2026-10-30
-- **Validé** : fiche de conception le 2026-10-28 ; plan v7 le 2026-10-30 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30
+- **Validé** : fiche de conception le 2026-10-28 ; plan v8 le 2026-10-30 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30
 - **Désaccords en attente** : aucun
 - **Prochaine action** : rédaction du TP, relecture avec les étudiants, validation.
 
@@ -39,7 +39,9 @@ Signalements du collecteur (2026-10-27), à régler au plan :
 - `redirect()` : `: void` au TP3, `: never` au cours 6 ;
 - `password_hash`, `session_start`, `try/catch` : enseignés nulle part avant la section 7.
 
-## Plan (version 7, 2026-10-30)
+## Plan (version 8, 2026-10-30)
+
+v8, véto cohérence (`search_content` « php -r » : 0 résultat en cours et en TP) : le contrat de E1 n'impose plus `php -r`, les hachages sont produits par `password_hash()` avec `PASSWORD_DEFAULT`, moyen libre. Les passages de E1, E3 et E4 ci-dessous se lisent avec les notes v7 et v8.
 
 v7, décision de l'utilisateur du 2026-10-30 : le contrat de E1 impose `(int) $user->isAdmin()` dans `toParams()`. Exécuté (PHP 8.3.6, PostgreSQL 16, pdo_pgsql) : `false` PHP donne `SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type boolean: ""`, `(int) false` passe. E3 gagne l'essai `inconnu@onzer.local`, son critère affiche `array(0) { }` ; E4 appelle `requireAdmin()` après le chargement de `core/functions.php` ; le critère de E1 porte sur les valeurs.
 
@@ -372,6 +374,11 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 - **Prod** : `save_content` le 2026-10-30 après validation (« Oui aux deux »), contentId 6ae4cbd0e54feb2a7a7efa84, version 1, 36 blocs. S9 passée en deux panneaux PHP et HTML avant l'écriture : sans panneau exécutable, l'aperçu ne s'affiche pas. Relecture navigateur des slides non faite.
 
 - **Retrait du 2026-10-30** (demande de l'utilisateur) : `n3-erreur`, `s6` et `s1` supprimés en prod par `delete_block` et dans les brouillons ; cours 104 blocs, slides 29 blocs.
+
+### TP
+- **Brouillon** : docs/plans/php/brouillons/7-sessions-et-authentification/tp.json (90 blocs, 145 min sur 160, 91 %)
+- **Hors cycle** : `is_admin` false refusé par PostgreSQL (exécuté), contrat E1 en `(int) $user->isAdmin()` ; E3, E4 corrigés (plan v7).
+- **Cycle 1** (2026-10-30) : style ✔ (90 blocs, 13 remarques), cohérence ✔ (1 BLOQUANT `php -r`, 4 MINEURS), contrat ✔ (grille 6 sur 6, écarts d'alignement du plan) ; étudiants non lancés. 12 remarques retenues. Écartées : style n° 3, 5, 7, 8, 10, 12, le champ « méthode imposée » est exigé par le contrat, ce n'est pas un indice ; style n° 6, fusion des étapes de E2, le guidage strict a été tranché le 2026-10-28.
 
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).
