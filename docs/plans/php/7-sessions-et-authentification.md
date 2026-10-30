@@ -3,9 +3,9 @@
 ## Statut
 - **Mode** : redaction
 - **Phase** : TP
-- **Étape en cours** : TP : rédaction (redacteur-tp)
+- **Étape en cours** : TP : correction hors cycle, puis relecture, cycle 1
 - **Mis à jour le** : 2026-10-30
-- **Validé** : fiche de conception le 2026-10-28 ; plan v6 le 2026-10-30 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30
+- **Validé** : fiche de conception le 2026-10-28 ; plan v7 le 2026-10-30 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30
 - **Désaccords en attente** : aucun
 - **Prochaine action** : rédaction du TP, relecture avec les étudiants, validation.
 
@@ -39,7 +39,9 @@ Signalements du collecteur (2026-10-27), à régler au plan :
 - `redirect()` : `: void` au TP3, `: never` au cours 6 ;
 - `password_hash`, `session_start`, `try/catch` : enseignés nulle part avant la section 7.
 
-## Plan (version 6, 2026-10-30)
+## Plan (version 7, 2026-10-30)
+
+v7, décision de l'utilisateur du 2026-10-30 : le contrat de E1 impose `(int) $user->isAdmin()` dans `toParams()`. Exécuté (PHP 8.3.6, PostgreSQL 16, pdo_pgsql) : `false` PHP donne `SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type boolean: ""`, `(int) false` passe. E3 gagne l'essai `inconnu@onzer.local`, son critère affiche `array(0) { }` ; E4 appelle `requireAdmin()` après le chargement de `core/functions.php` ; le critère de E1 porte sur les valeurs.
 
 v6, décision de l'utilisateur du 2026-10-30 : l'erreur fréquente de N3 (`CREATE TABLE user`) et la slide S6 sont retirées du cours et des slides ; N3 n'a plus d'erreur fréquente, S1 retirée aussi : les slides sont 8 pour 17 min. Le contrat de E1 impose `users` sans le justifier par le cours. Les lignes correspondantes ci-dessous ne s'appliquent plus.
 
@@ -369,7 +371,7 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 
 - **Prod** : `save_content` le 2026-10-30 après validation (« Oui aux deux »), contentId 6ae4cbd0e54feb2a7a7efa84, version 1, 36 blocs. S9 passée en deux panneaux PHP et HTML avant l'écriture : sans panneau exécutable, l'aperçu ne s'affiche pas. Relecture navigateur des slides non faite.
 
-- **Retrait du 2026-10-30** (demande de l'utilisateur) : `n3-erreur`, `s6` et `s1` supprimés en prod par `delete_block` et dans les brouillons ; cours 104 blocs, slides 30 blocs.
+- **Retrait du 2026-10-30** (demande de l'utilisateur) : `n3-erreur`, `s6` et `s1` supprimés en prod par `delete_block` et dans les brouillons ; cours 104 blocs, slides 29 blocs.
 
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).
