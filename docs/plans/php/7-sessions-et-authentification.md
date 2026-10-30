@@ -357,6 +357,8 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 
 - **Prod, version 2** : `save_content` le 2026-10-30 après confirmation (« Oui, réécris en prod »), 110 blocs, deux parties ; version 1 vérifiée avant écriture. Comparaison partielle : arbre recomposé à la main pour l'envoi, `get_content` revenu en ligne et relu, `comparer` non lancé.
 
+- **Prod, version 8** : surlignage retiré de 6 blocs par `edit_block` le 2026-10-30 après confirmation (« Applique en prod ») ; gardé sur `n2-variante`, `n4-verif-code`, `n4-exemple`, `n4-variante`, `n6-exemple`. Version déduite : une par `edit_block`, à confirmer avant la prochaine écriture.
+
 ### Slides
 - **Brouillon** : docs/plans/php/brouillons/7-sessions-et-authentification/slides.json (36 blocs, 10 slides)
 - **Cycle 1** (2026-10-30) : style ✔ (36 blocs, 3 MINEURS), cohérence ✔ (10 slides, 0 BLOQUANT, 0 MAJEUR, 3 MINEURS) ; 5 remarques appliquées, 1 notée pour le curriculum (`unset`). S10 replacée après S3 pour suivre le cours. Pas de cycle 2 prévu : aucune remarque BLOQUANTE ou MAJEURE.
