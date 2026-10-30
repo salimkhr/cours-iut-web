@@ -2,12 +2,12 @@
 
 ## Statut
 - **Mode** : redaction
-- **Phase** : cours
-- **Étape en cours** : cours : validé, écriture en prod à confirmer
+- **Phase** : slides
+- **Étape en cours** : slides : rédaction (redacteur-slides)
 - **Mis à jour le** : 2026-10-30
-- **Validé** : fiche de conception le 2026-10-28 ; plan v5 le 2026-10-30 ; cours le 2026-10-30
+- **Validé** : fiche de conception le 2026-10-28 ; plan v5 le 2026-10-30 ; cours le 2026-10-30, relecture navigateur OK le 2026-10-30
 - **Désaccords en attente** : aucun
-- **Prochaine action** : écrire le cours en prod (confirmation), relecture navigateur, puis slides.
+- **Prochaine action** : rédaction des slides, relecture, validation.
 
 ## Cadrage
 | # | Question | Défaut proposé | Réponse de l'utilisateur | Date |
@@ -350,6 +350,8 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 
 - **Après le cycle 2** (2026-10-30, demandé par l'utilisateur) : `humaniseur-fr` passé sur les 6 derniers blocs, 2 MAJEURS levés, 3 MINEURS corrigés (`n1-erreur-suite`, `n4-exemple-texte` en liste, `n4-verif-texte`) ; ces 3 retouches ne sont pas relues.
 - **Validé** : 2026-10-30 (« Oui, corrige et valide ») ; 95 blocs.
+
+- **Prod** : `save_content` le 2026-10-30 après confirmation (« Oui, écris en prod »), contentId 6ae4c663e54feb2a7a7efa83, version 1, source `db`, `isAvailable` inchangé à `false`. Comparaison partielle : `get_content` revenu en ligne, version 1 et 6 sections racine conformes, `comparer` non lancé.
 
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).
