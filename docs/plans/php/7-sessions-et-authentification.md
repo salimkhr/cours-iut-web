@@ -3,9 +3,9 @@
 ## Statut
 - **Mode** : redaction
 - **Phase** : cours
-- **Étape en cours** : cours : relecture du plan v4 (N1, N4), puis correction, cycle 1
+- **Étape en cours** : cours : correction, cycle 2 (dernière correction, non relue par les agents)
 - **Mis à jour le** : 2026-10-30
-- **Validé** : fiche de conception le 2026-10-28 ; plan v4 le 2026-10-30
+- **Validé** : fiche de conception le 2026-10-28 ; plan v5 le 2026-10-30
 - **Désaccords en attente** : aucun
 - **Prochaine action** : appliquer les remarques retenues au cours, puis cycle 2.
 
@@ -39,7 +39,9 @@ Signalements du collecteur (2026-10-27), à régler au plan :
 - `redirect()` : `: void` au TP3, `: never` au cours 6 ;
 - `password_hash`, `session_start`, `try/catch` : enseignés nulle part avant la section 7.
 
-## Plan (version 4, 2026-10-30)
+## Plan (version 5, 2026-10-30)
+
+v5, décision de l'utilisateur du 2026-10-30 : la variante de N3 est réduite au contrôle d'adresse déjà utilisée (`findByEmail` puis `$errors`), pour ne pas donner la structure de E2 ; `password_hash` et `insert` restent montrés séparément en N2 et N3. La ligne de N3 ci-dessous est lue avec cette réduction.
 
 Choix de la v4, validés par l'utilisateur le 2026-10-30 : noms `save_recipe.php`, `list_recipes.php`, `edit_recipe.php` gardés ; `findByEmail` gardé, avec une phrase sur l'exception à la convention `findOneBy...` (l'adresse est unique, comme l'identifiant) ; `htmlspecialchars()` à l'affichage en N1 et N6, sorties présentées comme celles de `curl`.
 
@@ -343,6 +345,8 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 | 17 | n6-exemple | MINEUR | `redirect()` sans `require_once` | retenue |
 | 18 | n1-probleme | MINEUR | cours cités par leur numéro | écartée : usage des cours 5 et 6 |
 | 19 | n5-exemple | MINEUR | `session_start()` avant le header | fusionnée avec la remarque 9, retenue |
+
+- **Cycle 2** (2026-10-30, 15 ids relus par la cohérence, 12 par le style, 8 blocs exécutés par le fragile ; bac à sable supprimé) : 0 BLOQUANT. Retenues : style n4-verif-suite (nommer les deux cas), n4-exemple-texte (couper en deux, retirer la répétition), n1-erreur-suite (notation) ; fragile : phrase « message produit par ce code en ligne de commande », `findById` à écrire comme `findByEmail` ; cohérence : « un paramètre de plus, après `$photoFile` », `delete_recipe.php` sur le modèle de `delete_ingredient.php` ; titres de callouts réalignés sur les cours 5 et 6 (majuscule après « Attention : », remarque 1 du cycle 1 annulée). Écartées : fragile, `Repository` non fourni (reste du projet de l'étudiant, artefact du bac à sable) ; fragile, squelette de connexion absent (voulu, condition de l'utilisateur du 2026-10-30). n3-variante face à E2 : tranché le 2026-10-30, réduite (plan v5).
 
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).
