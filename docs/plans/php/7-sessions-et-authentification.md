@@ -3,11 +3,11 @@
 ## Statut
 - **Mode** : redaction
 - **Phase** : slides
-- **Étape en cours** : cours : réécriture en prod à confirmer (deux parties) ; slides : cycle 1 fait, validation à venir
+- **Étape en cours** : cours réécrit en prod (version 2), relecture navigateur ; slides à valider
 - **Mis à jour le** : 2026-10-30
 - **Validé** : fiche de conception le 2026-10-28 ; plan v5 le 2026-10-30 ; cours le 2026-10-30, relecture navigateur OK le 2026-10-30
 - **Désaccords en attente** : aucun
-- **Prochaine action** : rédaction des slides, relecture, validation.
+- **Prochaine action** : OK navigateur sur la version 2, validation des slides, écriture des slides, puis TP.
 
 ## Cadrage
 | # | Question | Défaut proposé | Réponse de l'utilisateur | Date |
@@ -354,6 +354,8 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 - **Validé** : 2026-10-30 (« Oui, corrige et valide ») ; 95 blocs.
 
 - **Prod** : `save_content` le 2026-10-30 après confirmation (« Oui, écris en prod »), contentId 6ae4c663e54feb2a7a7efa83, version 1, source `db`, `isAvailable` inchangé à `false`. Comparaison partielle : `get_content` revenu en ligne, version 1 et 6 sections racine conformes, `comparer` non lancé.
+
+- **Prod, version 2** : `save_content` le 2026-10-30 après confirmation (« Oui, réécris en prod »), 110 blocs, deux parties ; version 1 vérifiée avant écriture. Comparaison partielle : arbre recomposé à la main pour l'envoi, `get_content` revenu en ligne et relu, `comparer` non lancé.
 
 ### Slides
 - **Brouillon** : docs/plans/php/brouillons/7-sessions-et-authentification/slides.json (36 blocs, 10 slides)
