@@ -884,13 +884,14 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     // ── edit_block ────────────────────────────────────────────────────────────
     server.tool(
         "edit_block",
-        "Remplace entièrement les props d'un bloc existant (replace, pas merge). Réservé aux admins.",
+        "Fusionne les props données avec celles d'un bloc existant (merge, pas replace) : une prop omise est conservée. "
+        + "Pour retirer l'effet d'une prop, passez-la avec une valeur vide. Réservé aux admins.",
         {
             module:  z.string(),
             section: z.string(),
             type:    CONTENT_TYPE,
             blockId: z.string().describe("ID du bloc à modifier"),
-            props:   z.record(z.string(), z.unknown()).describe("Nouvelles props complètes"),
+            props:   z.record(z.string(), z.unknown()).describe("Props à modifier, fusionnées avec les props existantes"),
         },
         async ({ module, section, type, blockId, props }) => {
             if (!isAdmin) throw new Error("Forbidden");
