@@ -41,7 +41,7 @@ Signalements du collecteur (2026-10-27), à régler au plan :
 
 ## Plan (version 6, 2026-10-30)
 
-v6, décision de l'utilisateur du 2026-10-30 : l'erreur fréquente de N3 (`CREATE TABLE user`) et la slide S6 sont retirées du cours et des slides ; N3 n'a plus d'erreur fréquente, les slides sont 9 pour 18 min. Le contrat de E1 impose `users` sans le justifier par le cours. Les lignes correspondantes ci-dessous ne s'appliquent plus.
+v6, décision de l'utilisateur du 2026-10-30 : l'erreur fréquente de N3 (`CREATE TABLE user`) et la slide S6 sont retirées du cours et des slides ; N3 n'a plus d'erreur fréquente, S1 retirée aussi : les slides sont 8 pour 17 min. Le contrat de E1 impose `users` sans le justifier par le cours. Les lignes correspondantes ci-dessous ne s'appliquent plus.
 
 v5, décision de l'utilisateur du 2026-10-30 : la variante de N3 est réduite au contrôle d'adresse déjà utilisée (`findByEmail` puis `$errors`), pour ne pas donner la structure de E2 ; `password_hash` et `insert` restent montrés séparément en N2 et N3. La ligne de N3 ci-dessous est lue avec cette réduction.
 
@@ -369,7 +369,7 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 
 - **Prod** : `save_content` le 2026-10-30 après validation (« Oui aux deux »), contentId 6ae4cbd0e54feb2a7a7efa84, version 1, 36 blocs. S9 passée en deux panneaux PHP et HTML avant l'écriture : sans panneau exécutable, l'aperçu ne s'affiche pas. Relecture navigateur des slides non faite.
 
-- **Retrait du 2026-10-30** (demande de l'utilisateur) : `n3-erreur` et `s6` supprimés en prod par `delete_block` et dans les brouillons ; cours 104 blocs, slides 32 blocs.
+- **Retrait du 2026-10-30** (demande de l'utilisateur) : `n3-erreur`, `s6` et `s1` supprimés en prod par `delete_block` et dans les brouillons ; cours 104 blocs, slides 30 blocs.
 
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).
