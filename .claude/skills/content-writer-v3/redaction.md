@@ -70,6 +70,12 @@ d'autre :
   l'état du fil rouge ni du `projectSpec` (spec § 4 : le rédacteur du cours n'a que le
   nom du domaine du fil rouge, et la garde lui refuse le plan complet). Réécrivez-les
   après chaque amendement du plan ;
+- cours : les **cours des sections précédentes** dont le code est repris (classes,
+  fonctions, conventions de l'`exampleDomain`), déposés par vous en
+  `cours-precedent-<order>.md` : `get_content` (prod) de chaque cours, rangé dans un
+  `tool-results`, puis extraction des `blocks` et `exporter` du script. Ce sont des
+  exemples du domaine d'illustration, pas le fil rouge. Sans eux, le rédacteur invente
+  l'API (test de PHP 7 : `$this->pdo` au lieu de `self::getPdo()`) ;
 - chemin absolu du brouillon à écrire ;
 - slides et TP : chemin absolu de l'export du cours validé (`cours.md`) ;
 - `exampleDomain`, `universe` (fiche du collecteur) ; pour le cours et les slides, le

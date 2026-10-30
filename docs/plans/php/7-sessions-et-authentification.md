@@ -3,11 +3,11 @@
 ## Statut
 - **Mode** : redaction
 - **Phase** : cours
-- **Étape en cours** : cours : correction, cycle 2 (dernière correction, non relue par les agents)
+- **Étape en cours** : cours : validé, écriture en prod à confirmer
 - **Mis à jour le** : 2026-10-30
-- **Validé** : fiche de conception le 2026-10-28 ; plan v5 le 2026-10-30
+- **Validé** : fiche de conception le 2026-10-28 ; plan v5 le 2026-10-30 ; cours le 2026-10-30
 - **Désaccords en attente** : aucun
-- **Prochaine action** : appliquer les remarques retenues au cours, puis cycle 2.
+- **Prochaine action** : écrire le cours en prod (confirmation), relecture navigateur, puis slides.
 
 ## Cadrage
 | # | Question | Défaut proposé | Réponse de l'utilisateur | Date |
@@ -347,6 +347,9 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 | 19 | n5-exemple | MINEUR | `session_start()` avant le header | fusionnée avec la remarque 9, retenue |
 
 - **Cycle 2** (2026-10-30, 15 ids relus par la cohérence, 12 par le style, 8 blocs exécutés par le fragile ; bac à sable supprimé) : 0 BLOQUANT. Retenues : style n4-verif-suite (nommer les deux cas), n4-exemple-texte (couper en deux, retirer la répétition), n1-erreur-suite (notation) ; fragile : phrase « message produit par ce code en ligne de commande », `findById` à écrire comme `findByEmail` ; cohérence : « un paramètre de plus, après `$photoFile` », `delete_recipe.php` sur le modèle de `delete_ingredient.php` ; titres de callouts réalignés sur les cours 5 et 6 (majuscule après « Attention : », remarque 1 du cycle 1 annulée). Écartées : fragile, `Repository` non fourni (reste du projet de l'étudiant, artefact du bac à sable) ; fragile, squelette de connexion absent (voulu, condition de l'utilisateur du 2026-10-30). n3-variante face à E2 : tranché le 2026-10-30, réduite (plan v5).
+
+- **Après le cycle 2** (2026-10-30, demandé par l'utilisateur) : `humaniseur-fr` passé sur les 6 derniers blocs, 2 MAJEURS levés, 3 MINEURS corrigés (`n1-erreur-suite`, `n4-exemple-texte` en liste, `n4-verif-texte`) ; ces 3 retouches ne sont pas relues.
+- **Validé** : 2026-10-30 (« Oui, corrige et valide ») ; 95 blocs.
 
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).
