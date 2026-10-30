@@ -2,12 +2,12 @@
 
 ## Statut
 - **Mode** : redaction
-- **Phase** : slides
-- **Étape en cours** : cours réécrit en prod (version 2), relecture navigateur ; slides à valider
+- **Phase** : TP
+- **Étape en cours** : TP : rédaction (redacteur-tp)
 - **Mis à jour le** : 2026-10-30
-- **Validé** : fiche de conception le 2026-10-28 ; plan v5 le 2026-10-30 ; cours le 2026-10-30, relecture navigateur OK le 2026-10-30
+- **Validé** : fiche de conception le 2026-10-28 ; plan v5 le 2026-10-30 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30
 - **Désaccords en attente** : aucun
-- **Prochaine action** : OK navigateur sur la version 2, validation des slides, écriture des slides, puis TP.
+- **Prochaine action** : rédaction du TP, relecture avec les étudiants, validation.
 
 ## Cadrage
 | # | Question | Défaut proposé | Réponse de l'utilisateur | Date |
@@ -364,6 +364,8 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 ### Slides
 - **Brouillon** : docs/plans/php/brouillons/7-sessions-et-authentification/slides.json (36 blocs, 10 slides)
 - **Cycle 1** (2026-10-30) : style ✔ (36 blocs, 3 MINEURS), cohérence ✔ (10 slides, 0 BLOQUANT, 0 MAJEUR, 3 MINEURS) ; 5 remarques appliquées, 1 notée pour le curriculum (`unset`). S10 replacée après S3 pour suivre le cours. Pas de cycle 2 prévu : aucune remarque BLOQUANTE ou MAJEURE.
+
+- **Prod** : `save_content` le 2026-10-30 après validation (« Oui aux deux »), contentId 6ae4cbd0e54feb2a7a7efa84, version 1, 36 blocs. S9 passée en deux panneaux PHP et HTML avant l'écriture : sans panneau exécutable, l'aperçu ne s'affiche pas. Relecture navigateur des slides non faite.
 
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).
