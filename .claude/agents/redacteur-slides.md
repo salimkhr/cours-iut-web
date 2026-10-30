@@ -227,6 +227,7 @@ génère. Le texte des blocs `text` accepte le Markdown inline (gras, `code`, li
 | Commande à exécuter dans le terminal | `code` avec `language: "bash"` (jamais dans un bloc texte) |
 | Fichier à créer ou modifier | `code` avec `filename` (le nom exact du plan) |
 | Rendu visuel attendu (HTML/CSS) | `code-with-preview` |
+| Code serveur et son rendu | un seul `code-with-preview` à deux panneaux : `language: "php"` et `secondaryLanguage: "html"`, le gabarit injecte le HTML (`<!-- @edit:html -->`) ; le nom du fichier va en commentaire, le bloc n'a pas de `filename` |
 | Fichier de départ, données fournies | `download-file` (jamais « recopiez ce long code ») |
 | Piège, erreur fréquente | `callout` variant `warning` |
 | Astuce, bonne pratique | `callout` variant `tip` |
