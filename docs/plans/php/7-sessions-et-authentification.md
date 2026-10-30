@@ -1,13 +1,13 @@
 # Sessions et authentification (`php/7-sessions-et-authentification`)
 
 ## Statut
-- **Mode** : conception
+- **Mode** : redaction
 - **Phase** : cours
-- **Étape en cours** : en attente de rédaction
-- **Mis à jour le** : 2026-10-28
-- **Validé** : fiche de conception le 2026-10-28 ; plan v3 le 2026-10-28
+- **Étape en cours** : cours : relecture du plan v4 (N1, N4), puis correction, cycle 1
+- **Mis à jour le** : 2026-10-30
+- **Validé** : fiche de conception le 2026-10-28 ; plan v4 le 2026-10-30
 - **Désaccords en attente** : aucun
-- **Prochaine action** : rédaction du cours (étape ultérieure du pipeline).
+- **Prochaine action** : appliquer les remarques retenues au cours, puis cycle 2.
 
 ## Cadrage
 | # | Question | Défaut proposé | Réponse de l'utilisateur | Date |
@@ -39,7 +39,9 @@ Signalements du collecteur (2026-10-27), à régler au plan :
 - `redirect()` : `: void` au TP3, `: never` au cours 6 ;
 - `password_hash`, `session_start`, `try/catch` : enseignés nulle part avant la section 7.
 
-## Plan (version 3, 2026-10-28)
+## Plan (version 4, 2026-10-30)
+
+Choix de la v4, validés par l'utilisateur le 2026-10-30 : noms `save_recipe.php`, `list_recipes.php`, `edit_recipe.php` gardés ; `findByEmail` gardé, avec une phrase sur l'exception à la convention `findOneBy...` (l'adresse est unique, comme l'identifiant) ; `htmlspecialchars()` à l'affichage en N1 et N6, sorties présentées comme celles de `curl`.
 
 Vérifications d'exécution : `cours-iut-bac:1`, PHP 8.3.6 (cli, `php -S`), PostgreSQL 16.15 (`psql`), Chromium (`rendu-html`), le 2026-10-28. L'image n'a pas l'extension `pdo_pgsql` : les erreurs SQL sont vérifiées avec `psql` ; le préfixe PDO (`SQLSTATE[…]: …`) est reconstitué au format du cours 5 (SQLSTATE[HY093], [42702]), non exécuté.
 
@@ -86,7 +88,7 @@ Fil conducteur : Recettes de cuisine (exampleDomain). Auteur de démonstration :
   ```
   Warning: session_start(): Session cannot be started after headers have already been sent in /work/erreurs/n1_sortie_avant.php on line 3
   ```
-  Vérifié le 2026-10-28 : PHP 8.3.6, `php -d display_errors=1 -S`. Avec la configuration par défaut (`display_errors => Off`), rien ne s'affiche : la session ne démarre pas, sans message. Le cours dit les deux.
+  Vérifié le 2026-10-28 en ligne de commande (`php -d display_errors=1`). Corrigé en v4 après vérification du 2026-10-30 sous `php -S` (`output_buffering` à 0 et à 4096) : sur une page courte, PHP retient encore la sortie, il n'y a pas de warning et la session démarre ; dès qu'une sortie part vraiment (20 Ko de HTML, ou `flush()`), le warning tombe et `session_status()` vaut 1 (session non démarrée). Avec `display_errors => Off`, la session ne démarre pas, sans message. Le cours dit : l'erreur peut rester invisible sur une petite page de test et surgir quand la page grandit, donc `session_start()` toujours avant toute sortie.
 - **Erreur fréquente 2** (`callout warning`) : croire que `session_destroy()` vide `$_SESSION` tout de suite.
   ```php
   <?php
@@ -136,6 +138,15 @@ Fil conducteur : Recettes de cuisine (exampleDomain). Auteur de démonstration :
   }
   ```
   avec `redirect()` du cours 6 (`header` + `exit`, type `never`).
+- **Vérifier un mot de passe (v4)** : pas de page de connexion dans le cours, c'est le travail de E3. Le geste est montré sur une autre situation, `delete_recipe.php` : l'auteur connecté confirme son mot de passe avant de supprimer une recette.
+  ```php
+  $author = $authorRepository->findById($_SESSION['author']['id']);
+
+  if (!password_verify($_POST['password'] ?? '', $author->getPasswordHash())) {
+      $errors['password'] = 'Mot de passe incorrect.';
+  }
+  ```
+  Puis une phrase, sans code : une page de connexion fait ce contrôle après `findByEmail`, qui peut renvoyer `null` ; les deux cas donnent le même message, pour ne pas révéler quelles adresses ont un compte. Déconnexion : une phrase, sans fichier `logout.php` : c'est le geste de `vider_favoris.php` (N1).
 - **Variante réaliste** : `edit_recipe.php` appelle `requireAuthor($recipe)` juste après avoir chargé la recette, avant tout traitement du formulaire.
 - **Erreur fréquente 1** (`callout warning`) : `header('Location: …')` sans `exit`.
   ```php
@@ -301,6 +312,37 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 |---|---|---|---|---|
 | 1 | E3 | cohérence | `index.php` n'existerait pas | il existe : état du fil rouge relevé par le collecteur (« index.php, accueil sans menu ») |
 | 2 | E1 | cohérence | `schema.sql` contredit le brief | écart déjà tracé dans la fiche ; à reconfirmer quand le dépôt répond |
+
+## Rédaction
+### Cours
+- **Brouillon** : docs/plans/php/brouillons/7-sessions-et-authentification/cours.json (85 blocs, 23 Ko au premier jet)
+- **Rédacteur** : rendu le 2026-10-28 ; correction hors cycle terminée le 2026-10-30 (code aligné sur les cours 5 et 6, `self::getPdo()` ; clé `$_SESSION['author']['id']`). Écarts acceptés : blocs ajoutés en Recettes, pas de code fautif inventé pour n4-erreur-2, n5-erreur, n6-erreur, sorties mises en forme, langage `text`.
+- **Écarts tranchés** (plan v4, 2026-10-30) : `findByEmail` et noms de fichiers gardés ; n6-exemple-liste garde `if isset` / `echo` / `unset` (sortie vérifiée).
+- **Cycle 1** (2026-10-30) : style ✔ (52 blocs sur 52, 2 MINEURS), cohérence ✔ (85 blocs, 0 BLOQUANT, 0 MAJEUR, 8 MINEURS) ; étudiant fragile en attente de Docker.
+| # | id | Gravité | Agent | Problème | Décision |
+|---|---|---|---|---|---|
+| 1 | n2-erreur, n2-erreur-2, n3-erreur, n4-erreur-2, n5-erreur, n6-erreur | MINEUR | style | majuscule après « Attention : » | en attente |
+| 2 | n2-erreur-suite, n5-erreur-suite, n6-erreur-suite | MINEUR | style | trois attaques « Aucun message » | en attente |
+| 3 | n6-exemple, n6-exemple-liste, n6-erreur-texte | MINEUR | cohérence | `save_recipe.php`, `list_recipes.php` absents du cours 6 | à trancher |
+| 4 | n4-variante, n5-variante, n5-erreur-message | MINEUR | cohérence | `edit_recipe.php`, `recipe.php` hors convention du cours 6 | à trancher |
+| 5 | n3-exemple-repository, n3-exemple-texte | MINEUR | cohérence | `findByEmail` et la convention `findOneBy...` | à trancher |
+| 6 | n4-exemple-texte | MINEUR | cohérence | renseignement de `author_id` non dit | en attente |
+| 7 | n1-probleme | MINEUR | cohérence | « sans état » attribué au cours 1, qui ne le dit pas | en attente |
+| 8 | n1-exemple, n6-exemple-liste | MINEUR | cohérence | affichage sans `htmlspecialchars`, `\n` dans un navigateur | en attente |
+| 9 | n5-exemple, n5-probleme | MINEUR | cohérence | `session_start()` non rappelé pour le header | en attente |
+| 10 | n6-probleme | MINEUR | cohérence | `unset()` hors brief | note pour le curriculum |
+- **Fragile** (2026-10-30, 12 exemples exécutés sur 13, 5 variantes sur 5, bilan 6 sur 6, 14 min de lecture ; bac à sable supprimé : `conteneurs : []`, `dossier présent : False`) : 3 MAJEURS, 7 MINEURS.
+| # | id | Gravité | Problème | Décision |
+|---|---|---|---|---|
+| 11 | n1-erreur-* | MAJEUR | « la session ne démarre pas » faux sur une page courte : sous `php -S`, `<h1>` puis `session_start()` donne 200 et un cookie, sans warning. Vérifié par l'orchestrateur : warning et session non démarrée dès qu'une sortie est réellement envoyée (20 Ko de HTML, ou `flush()`), avec `output_buffering` à 0 comme à 4096 ; le message du plan reste exact | retenue : amendement du plan (conditions de l'erreur) |
+| 12 | n3-exemple-repository | MAJEUR | `Repository` non rappelé | retenue : rappel d'une ligne vers le cours 5 |
+| 13 | n4-connexion | MAJEUR | ni `login.php` ni `logout.php` dans le cours | tranché le 2026-10-30 : pas de pages à recopier (condition de l'utilisateur) ; `password_verify` sur `delete_recipe.php`, plan v4 |
+| 14 | n3-variante | MINEUR | fragment non signalé comme tel | retenue |
+| 15 | n4-exemple-texte | MINEUR | cast de `author_id` non montré | retenue, avec la remarque 6 |
+| 16 | n4-erreur-2 | MINEUR | erreur non reproductible sans code | écartée : `login.php`, s'il est ajouté, suffit à la décrire |
+| 17 | n6-exemple | MINEUR | `redirect()` sans `require_once` | retenue |
+| 18 | n1-probleme | MINEUR | cours cités par leur numéro | écartée : usage des cours 5 et 6 |
+| 19 | n5-exemple | MINEUR | `session_start()` avant le header | fusionnée avec la remarque 9, retenue |
 
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).
