@@ -31,7 +31,7 @@ de conception (`suivi.md`). Format :
 
 ### Cours — budget cours + slides : <n> min
 #### N1 — <notion> (brief : « <notion verbatim> ») — <n> min
-- **Sous-parties** : <titre 1> ; <titre 2> ; <titre 3> (dans quelle sous-partie va chaque élément ci-dessous)
+- **Place dans l'arborescence** : partie <titre> ; sous-sous-parties : <titre 1> ; <titre 2> (où va chaque élément ci-dessous)
 - **Exemple minimal** : <ce qu'il montre>. Code exact :
   ```php
   <code complet, données comprises>
@@ -76,11 +76,11 @@ Règles :
 - **Durées obligatoires** pour chaque notion, slide, exercice et bonus, avec les
   totaux. Elles restent dans le plan : le rédacteur ne les reporte jamais dans le rendu
   étudiant (verdict TP sur les durées).
-- **Arborescence** : le plan fixe les parties et sous-parties de chaque support, sur le
-  modèle des cours existants du module (`section` racine, `section` imbriquées). Cours :
-  une partie par notion, au moins deux sous-parties titrées par ce qu'on y apprend. TP :
-  des parties qui regroupent les exercices. Les slides restent à plat
-  (`slide-transition`).
+- **Arborescence** : le plan fixe trois niveaux pour le cours et le TP, en `section`
+  imbriquées : deux ou trois grandes parties par thème (PHP 7 : « Les sessions »,
+  « L'authentification »), des sous-parties (une par notion ou groupe d'exercices), des
+  sous-sous-parties titrées par ce qu'on y apprend. Les slides restent à plat
+  (`slide-transition`), dans l'ordre du cours.
 - **Pas d'indice ni de solution** dans le plan d'un TP : ni ligne de code de solution
   dans une consigne, ni corrigé ou indice en `collapsible`. La consigne impose la
   méthode (champ 4). Cette règle prime sur la phrase « un indice replié qui donne le

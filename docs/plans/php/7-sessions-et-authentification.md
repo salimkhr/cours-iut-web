@@ -3,7 +3,7 @@
 ## Statut
 - **Mode** : redaction
 - **Phase** : slides
-- **Étape en cours** : slides : rédaction (redacteur-slides)
+- **Étape en cours** : cours : réécriture en prod à confirmer (deux parties) ; slides : cycle 1 fait, validation à venir
 - **Mis à jour le** : 2026-10-30
 - **Validé** : fiche de conception le 2026-10-28 ; plan v5 le 2026-10-30 ; cours le 2026-10-30, relecture navigateur OK le 2026-10-30
 - **Désaccords en attente** : aucun
@@ -42,6 +42,8 @@ Signalements du collecteur (2026-10-27), à régler au plan :
 ## Plan (version 5, 2026-10-30)
 
 v5, décision de l'utilisateur du 2026-10-30 : la variante de N3 est réduite au contrôle d'adresse déjà utilisée (`findByEmail` puis `$errors`), pour ne pas donner la structure de E2 ; `password_hash` et `insert` restent montrés séparément en N2 et N3. La ligne de N3 ci-dessous est lue avec cette réduction.
+
+Arborescence du cours (demande de l'utilisateur du 2026-10-30) : deux parties, « Les sessions » (N1, N6) et « L'authentification » (N2, N3, N4, N5) ; sous-sous-parties : N1 Ouvrir une session, Vider une session ; N2 Hacher puis vérifier, Ranger le hash en base ; N3 L'entité et son repository, Refuser une adresse déjà prise ; N4 Se connecter, c'est ranger l'auteur en session, Confirmer un mot de passe, Réserver une page à son auteur ; N5 Un header selon la connexion, Un bouton réservé à l'auteur ; N6 Écrire, afficher, effacer, Un seul endroit pour l'afficher. Restructuration du brouillon par script, texte inchangé.
 
 Choix de la v4, validés par l'utilisateur le 2026-10-30 : noms `save_recipe.php`, `list_recipes.php`, `edit_recipe.php` gardés ; `findByEmail` gardé, avec une phrase sur l'exception à la convention `findOneBy...` (l'adresse est unique, comme l'identifiant) ; `htmlspecialchars()` à l'affichage en N1 et N6, sorties présentées comme celles de `curl`.
 
@@ -352,6 +354,10 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 - **Validé** : 2026-10-30 (« Oui, corrige et valide ») ; 95 blocs.
 
 - **Prod** : `save_content` le 2026-10-30 après confirmation (« Oui, écris en prod »), contentId 6ae4c663e54feb2a7a7efa83, version 1, source `db`, `isAvailable` inchangé à `false`. Comparaison partielle : `get_content` revenu en ligne, version 1 et 6 sections racine conformes, `comparer` non lancé.
+
+### Slides
+- **Brouillon** : docs/plans/php/brouillons/7-sessions-et-authentification/slides.json (36 blocs, 10 slides)
+- **Cycle 1** (2026-10-30) : style ✔ (36 blocs, 3 MINEURS), cohérence ✔ (10 slides, 0 BLOQUANT, 0 MAJEUR, 3 MINEURS) ; 5 remarques appliquées, 1 notée pour le curriculum (`unset`). S10 replacée après S3 pour suivre le cours. Pas de cycle 2 prévu : aucune remarque BLOQUANTE ou MAJEURE.
 
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).

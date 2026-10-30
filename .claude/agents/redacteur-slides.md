@@ -211,12 +211,11 @@ qui iront en prod et que les relecteurs citent : en correction, vous ne renommez
 un `id` existant ; un bloc ajouté prend un `id` neuf ; l'`id` d'un bloc supprimé n'est
 pas réutilisé.
 
-**Arborescence obligatoire : parties et sous-parties.** Un support n'est jamais une suite
-de sections à plat. Une `section` racine est une **partie** ; ses sous-parties sont des
-`section` imbriquées, comme aux cours 5 et 6 (« Insérer une ligne » contient « Insérer une
-recette », « Refuser un doublon »…). L'arborescence suit celle du plan. Une partie
-contient au moins deux sous-parties, sauf si le plan dit le contraire ; une sous-partie ne
-se redécoupe pas. Exception : les slides, à plat, découpées par `slide-transition`.
+**Arborescence obligatoire : parties, sous-parties, sous-sous-parties.** Un support n'est
+jamais une suite de sections à plat. Les `section` racine sont les quelques grandes
+**parties** du sujet (deux ou trois) ; elles contiennent des **sous-parties**, qui
+contiennent des **sous-sous-parties**, toutes en `section` imbriquées. L'arborescence est
+celle du plan. Exception : les slides, à plat, découpées par `slide-transition`.
 
 Pas de numérotation dans les titres (« 1. », « A — », « Exercice 3 — ») : le rendu la
 génère. Le texte des blocs `text` accepte le Markdown inline (gras, `code`, liens).
