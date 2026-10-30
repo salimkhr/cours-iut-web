@@ -5,7 +5,7 @@
 - **Phase** : TP
 - **Étape en cours** : TP : rédaction (redacteur-tp)
 - **Mis à jour le** : 2026-10-30
-- **Validé** : fiche de conception le 2026-10-28 ; plan v5 le 2026-10-30 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30
+- **Validé** : fiche de conception le 2026-10-28 ; plan v6 le 2026-10-30 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30
 - **Désaccords en attente** : aucun
 - **Prochaine action** : rédaction du TP, relecture avec les étudiants, validation.
 
@@ -39,7 +39,9 @@ Signalements du collecteur (2026-10-27), à régler au plan :
 - `redirect()` : `: void` au TP3, `: never` au cours 6 ;
 - `password_hash`, `session_start`, `try/catch` : enseignés nulle part avant la section 7.
 
-## Plan (version 5, 2026-10-30)
+## Plan (version 6, 2026-10-30)
+
+v6, décision de l'utilisateur du 2026-10-30 : l'erreur fréquente de N3 (`CREATE TABLE user`) et la slide S6 sont retirées du cours et des slides ; N3 n'a plus d'erreur fréquente, les slides sont 9 pour 18 min. Le contrat de E1 impose `users` sans le justifier par le cours. Les lignes correspondantes ci-dessous ne s'appliquent plus.
 
 v5, décision de l'utilisateur du 2026-10-30 : la variante de N3 est réduite au contrôle d'adresse déjà utilisée (`findByEmail` puis `$errors`), pour ne pas donner la structure de E2 ; `password_hash` et `insert` restent montrés séparément en N2 et N3. La ligne de N3 ci-dessous est lue avec cette réduction.
 
@@ -366,6 +368,8 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 - **Cycle 1** (2026-10-30) : style ✔ (36 blocs, 3 MINEURS), cohérence ✔ (10 slides, 0 BLOQUANT, 0 MAJEUR, 3 MINEURS) ; 5 remarques appliquées, 1 notée pour le curriculum (`unset`). S10 replacée après S3 pour suivre le cours. Pas de cycle 2 prévu : aucune remarque BLOQUANTE ou MAJEURE.
 
 - **Prod** : `save_content` le 2026-10-30 après validation (« Oui aux deux »), contentId 6ae4cbd0e54feb2a7a7efa84, version 1, 36 blocs. S9 passée en deux panneaux PHP et HTML avant l'écriture : sans panneau exécutable, l'aperçu ne s'affiche pas. Relecture navigateur des slides non faite.
+
+- **Retrait du 2026-10-30** (demande de l'utilisateur) : `n3-erreur` et `s6` supprimés en prod par `delete_block` et dans les brouillons ; cours 104 blocs, slides 32 blocs.
 
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).
