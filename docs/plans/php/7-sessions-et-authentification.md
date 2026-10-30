@@ -358,7 +358,8 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 - **Prod, version 2** : `save_content` le 2026-10-30 après confirmation (« Oui, réécris en prod »), 110 blocs, deux parties ; version 1 vérifiée avant écriture. Comparaison partielle : arbre recomposé à la main pour l'envoi, `get_content` revenu en ligne et relu, `comparer` non lancé.
 
 - **Prod, version 8** : surlignage retiré de 6 blocs par `edit_block` le 2026-10-30 après confirmation (« Applique en prod ») ; gardé sur `n2-variante`, `n4-verif-code`, `n4-exemple`, `n4-variante`, `n6-exemple`. Version déduite : une par `edit_block`, à confirmer avant la prochaine écriture.
-- **Prod, version 10** (déduite) : `n5-exemple` fusionné dans `n5-rendu` (panneaux PHP et HTML), après confirmation (« Oui, applique ») ; 109 blocs.
+- **Prod, version 15** (relue) : premier retrait du surlignage sans effet, `edit_block` fusionne les props ; refait avec `highlightLines: ""` sur 5 blocs, confirmé par relecture. Le brouillon n'a pas cette prop : `comparer` signalera ces 5 blocs.
+- **Prod, version 10** : `n5-exemple` fusionné dans `n5-rendu` (panneaux PHP et HTML), après confirmation (« Oui, applique ») ; 109 blocs.
 
 ### Slides
 - **Brouillon** : docs/plans/php/brouillons/7-sessions-et-authentification/slides.json (36 blocs, 10 slides)
