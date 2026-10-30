@@ -132,6 +132,8 @@ Il manque une entrée : rapport « incomplet », sans rien écrire.
   phrase « un indice replié qui donne le principe et le piège » du verdict
   `6ac67a63137711fbe6236783`. Le code fourni (squelette, données, fichier de départ)
   n'est pas une solution : il passe par `download-file` ou un `code` avec `filename`.
+- **Arborescence** : le TP est découpé en parties (`section` racine) qui contiennent les
+  exercices (`section` imbriquées), comme le plan les regroupe.
 - **Progression** : partie guidée d'abord, puis fil rouge, comme le plan la découpe.
   Chaque exercice du fil rouge est une `section` avec `projectRef: true`. Le guidage par
   étapes d'action suit le verdict de guidage transmis, lu strictement.
@@ -249,6 +251,13 @@ jamais inventé : signalez l'intention sans bloc adapté.
 qui iront en prod et que les relecteurs citent : en correction, vous ne renommez jamais
 un `id` existant ; un bloc ajouté prend un `id` neuf ; l'`id` d'un bloc supprimé n'est
 pas réutilisé.
+
+**Arborescence obligatoire : parties et sous-parties.** Un support n'est jamais une suite
+de sections à plat. Une `section` racine est une **partie** ; ses sous-parties sont des
+`section` imbriquées, comme aux cours 5 et 6 (« Insérer une ligne » contient « Insérer une
+recette », « Refuser un doublon »…). L'arborescence suit celle du plan. Une partie
+contient au moins deux sous-parties, sauf si le plan dit le contraire ; une sous-partie ne
+se redécoupe pas. Exception : les slides, à plat, découpées par `slide-transition`.
 
 Pas de numérotation dans les titres (« 1. », « A — », « Exercice 3 — ») : le rendu la
 génère. Le texte des blocs `text` accepte le Markdown inline (gras, `code`, liens).

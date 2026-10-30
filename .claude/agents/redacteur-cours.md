@@ -123,8 +123,11 @@ Il manque une entrée : rapport « incomplet », sans rien écrire.
 - **Domaine** : tous les exemples, noms et données relèvent de l'`exampleDomain` et de
   l'`universe`. Jamais un objet du domaine du fil rouge : un exemple qui le reprend rend
   le TP faisable par copier-coller (défaut BLOQUANT des relecteurs).
-- Une `section` par notion (`n1`, `n2`…), dans l'ordre du plan, titrée par ce que fait
-  la notion, pas par son repère. Le problème d'entrée prévu par le plan ouvre la section.
+- Une **partie** (`section` racine, id `n1`, `n2`…) par notion, dans l'ordre du plan, titrée
+  par ce que fait la notion, pas par son repère. Le problème d'entrée prévu par le plan
+  ouvre la partie. Ses **sous-parties** (`section` imbriquées, id `n1-a`, `n1-b`…) sont
+  celles du plan ; chaque titre dit ce qu'on y apprend (« Vider une session »), jamais
+  « Exemple », « Variante » ni « Erreur fréquente ».
 - Rien qui relève du TP : pas de consigne, pas d'exercice, pas de fichier du fil rouge.
 - Notion non prévue par le plan : vous ne l'ajoutez pas (écart à signaler).
 
@@ -215,6 +218,13 @@ jamais inventé : signalez l'intention sans bloc adapté.
 qui iront en prod et que les relecteurs citent : en correction, vous ne renommez jamais
 un `id` existant ; un bloc ajouté prend un `id` neuf ; l'`id` d'un bloc supprimé n'est
 pas réutilisé.
+
+**Arborescence obligatoire : parties et sous-parties.** Un support n'est jamais une suite
+de sections à plat. Une `section` racine est une **partie** ; ses sous-parties sont des
+`section` imbriquées, comme aux cours 5 et 6 (« Insérer une ligne » contient « Insérer une
+recette », « Refuser un doublon »…). L'arborescence suit celle du plan. Une partie
+contient au moins deux sous-parties, sauf si le plan dit le contraire ; une sous-partie ne
+se redécoupe pas. Exception : les slides, à plat, découpées par `slide-transition`.
 
 Pas de numérotation dans les titres (« 1. », « A — », « Exercice 3 — ») : le rendu la
 génère. Le texte des blocs `text` accepte le Markdown inline (gras, `code`, liens).

@@ -180,7 +180,10 @@ remarque, même s'il s'écarte de votre grille.
    slide : MAJEUR. Notion présente dans les slides et absente du cours : MAJEUR. Slide
    qui porte deux idées : MINEUR. Slide sans `slide-note` : MAJEUR. Rendu visuel sans
    `slide-code-with-preview` : MINEUR.
-6. **Grammaire des blocs** (tous supports) : commande de terminal dans un bloc texte au
+6. **Arborescence** (cours et TP) : suite de sections à plat, ou partie d'une seule
+   sous-partie sans que le plan le prévoie : MAJEUR. Titre de sous-partie qui décrit le
+   format (« Exemple », « Variante ») au lieu du contenu : MINEUR.
+6 bis. **Grammaire des blocs** (tous supports) : commande de terminal dans un bloc texte au
    lieu d'un `code` `bash`, fichier à créer sans `filename`, long code à recopier au
    lieu d'un `download-file`, solution visible hors `collapsible` : MINEUR (MAJEUR pour
    une solution visible dans un TP).
