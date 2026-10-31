@@ -5,7 +5,7 @@
 - **Phase** : relecture navigateur
 - **Étape en cours** : TP écrit en prod, relecture navigateur du TP et des slides
 - **Mis à jour le** : 2026-10-30
-- **Validé** : fiche de conception le 2026-10-28 ; plan v9 le 2026-10-31 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30 ; TP le 2026-10-31
+- **Validé** : fiche de conception le 2026-10-28 ; plan v10 le 2026-10-31 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30 ; TP le 2026-10-31
 - **Désaccords en attente** : aucun
 - **Prochaine action** : OK navigateur, puis correction et clôture.
 
@@ -39,7 +39,9 @@ Signalements du collecteur (2026-10-27), à régler au plan :
 - `redirect()` : `: void` au TP3, `: never` au cours 6 ;
 - `password_hash`, `session_start`, `try/catch` : enseignés nulle part avant la section 7.
 
-## Plan (version 9, 2026-10-31)
+## Plan (version 10, 2026-10-31)
+
+v10, décision de l'utilisateur du 2026-10-31 : plus d'erreur fréquente servie dans le cours ni les slides ; les erreurs fréquentes de N1 à N6 ci-dessous et le test `===` de S5 ne s'appliquent plus. Quatre règles restent en une phrase : `session_start()` avant toute sortie, vider `$_SESSION` avant `session_destroy()`, `redirect()` arrête le script, cacher un bouton ne protège pas une page. L'analyse d'erreurs n'est pas une activité du TP.
 
 v9 : le rapide laissait 85 min inoccupées ; trois bonus ajoutés avec l'accord de l'utilisateur (2026-10-31), contrats dans la partie TP. Bonus : B1 20, B2 15, B3 10, B4 35 = 80 min, hors budget.
 
@@ -411,6 +413,8 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 - **Cycle 2** (2026-10-31, rapide refait sur tout le TP, contrat sur b2 à b4 ; bac à sable supprimé) : les 4 bonus conformes, aucune notion non enseignée ; 70 min de tronc commun, 31 min de bonus, 59 min inoccupées. Corrections : critère de b2 précisé, clause sur `redirect()` retirée de b1-methode. Limite de deux cycles atteinte, désaccord présenté : temps restant du rapide.
 
 - **Prod** : `save_content` le 2026-10-31 après validation (« Oui, valide et écris »), contentId 6ae5c054e54feb2a7a7efa85, version 1, 112 blocs. Désaccord du temps restant du rapide : accepté par l'utilisateur en validant.
+
+- **Retrait des erreurs fréquentes** (2026-10-31, confirmé par « Oui, écris en prod ») : 8 callouts supprimés et 4 blocs modifiés au cours (67 blocs), 9 blocs modifiés aux slides (29 blocs), par `delete_block` et `edit_block`.
 
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).
