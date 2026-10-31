@@ -3,7 +3,7 @@
 ## Statut
 - **Mode** : redaction
 - **Phase** : TP
-- **Étape en cours** : TP : correction, cycle 2 ; relecture des bonus à faire
+- **Étape en cours** : TP : validation par l'utilisateur, désaccord du temps restant du rapide
 - **Mis à jour le** : 2026-10-30
 - **Validé** : fiche de conception le 2026-10-28 ; plan v9 le 2026-10-31 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30
 - **Désaccords en attente** : aucun
@@ -282,7 +282,7 @@ Point de départ : le projet à la fin du TP6 (CRUD album/artiste en base, PRG, 
 - **Notions pratiquées** : N1, N4, N6 (`unset`).
 
 **Total tronc commun** : 30 + 20 + 35 + 35 + 25 = 145 min, soit 91 % du budget (plage 80–100 %).
-**Bonus** (hors budget) : 20 min.
+**Bonus** (hors budget) : 80 min.
 
 #### B2 — Confirmer son mot de passe avant de supprimer un album — bonus — 15 min
 1. **Fichiers cibles** : `delete_album.php`, `views/view_delete_album.php`, `repositories/UserRepository.php`.
@@ -407,6 +407,8 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 - **Cycle 1** (2026-10-30) : style ✔ (90 blocs, 13 remarques), cohérence ✔ (1 BLOQUANT `php -r`, 4 MINEURS), contrat ✔ (grille 6 sur 6, écarts d'alignement du plan) ; étudiants non lancés. 12 remarques retenues. Écartées : style n° 3, 5, 7, 8, 10, 12, le champ « méthode imposée » est exigé par le contrat, ce n'est pas un indice ; style n° 6, fusion des étapes de E2, le guidage strict a été tranché le 2026-10-28.
 
 - **Étudiants** (2026-10-31, projet de départ reconstruit depuis les TP 3 à 6, car `main` du dépôt diverge des TP ; bac à sable supprimé) : fragile 5 exercices sur 5, aucun blocage, 135 min, soit 84 % ; rapide 71 min et bonus 4 min, 85 min non occupées. Retenues du fragile : hachages (e1-etape-2), nom en texte dans le header (e4-etape-4), saisie valide pour `Eclipses` (e5-essais), `require_once` (e2), `var_dump` (e1), clé `flash` (e5). Retenues du rapide : destination de `logout.php`, chemin de `REQUEST_URI`. Écartées : `php -r` proposé par les deux étudiants (non enseigné, véto cohérence). À trancher : bonus supplémentaires.
+
+- **Cycle 2** (2026-10-31, rapide refait sur tout le TP, contrat sur b2 à b4 ; bac à sable supprimé) : les 4 bonus conformes, aucune notion non enseignée ; 70 min de tronc commun, 31 min de bonus, 59 min inoccupées. Corrections : critère de b2 précisé, clause sur `redirect()` retirée de b1-methode. Limite de deux cycles atteinte, désaccord présenté : temps restant du rapide.
 
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).
