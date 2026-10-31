@@ -166,9 +166,8 @@ remarque, même s'il s'écarte de votre grille.
    - cours qui utilise une notion d'une section ultérieure sans l'expliquer : MAJEUR ;
    - notion du brief absente du cours (ou jamais pratiquée dans le TP) : MAJEUR ;
    - notion hors brief introduite par le cours : MINEUR (à signaler pour le curriculum).
-3. **Structure du cours** : chaque notion suit exemple minimal → variante réaliste →
-   erreur fréquente en `callout` `warning` avec un message d'erreur réel. Un temps
-   manquant : MAJEUR. Message d'erreur qui semble inventé (format ou code d'erreur qui
+3. **Structure du cours** : chaque notion suit exemple minimal → variante réaliste. Un
+   temps manquant : MAJEUR. Aucune erreur fréquente n'est exigée. Message qui semble inventé (format ou code d'erreur qui
    ne correspond pas à l'outil) : MAJEUR, marqué « à confirmer par etudiant-fragile ».
 4. **TP et dépôt de référence** : chaque résultat observable est confronté au code du
    dépôt, branche `fin-tp-<n>` pour la cible et `fin-tp-<n-1>` pour l'état d'entrée
@@ -281,17 +280,16 @@ second cycle : la liste des seuls repères modifiés, que vous relisez seuls.
 
 **Grille** (mêmes gravités que ci-dessus, appliquées au plan) :
 
-1. **Domaine** : chaque exemple, variante et erreur fréquente du cours, et chaque slide,
+1. **Domaine** : chaque exemple et variante du cours, et chaque slide,
    relève de l'`exampleDomain` ; reprise du domaine ou des objets du fil rouge : fuite,
    BLOQUANT.
 2. **Notions** : chaque notion du brief a son repère `N` ; chaque notion exigée par un
    exercice est dans le plan du cours ou dans « Notions réellement enseignées » (sinon
    BLOQUANT, après la vérification `search_content` décrite plus haut) ; notion hors
    brief et hors fiche de conception : MAJEUR.
-3. **Trois temps** : chaque `N` a son exemple minimal (code et données complets), sa
-   variante réaliste et son erreur fréquente avec un message marqué « vérifié »
-   (outil et version). Temps manquant : MAJEUR ; message « non vérifié » ou dont le
-   format ne correspond pas à l'outil : MAJEUR.
+3. **Deux temps** : chaque `N` a son exemple minimal (code et données complets) et sa
+   variante réaliste, avec des sorties exécutées (outil et version). Temps manquant :
+   MAJEUR ; sortie « non vérifiée » : MAJEUR.
 4. **TP** : chaque résultat observable confronté au dépôt de référence ou, à défaut, aux
    TP précédents ; progression guidée puis fil rouge conforme à la fiche de conception ;
    exercice fil rouge qui contredit l'état du fil rouge à l'entrée : BLOQUANT ; indice ou
@@ -308,7 +306,7 @@ colonne « Repère » à la place de « id du bloc ».
 **Définition de terminé** (mode plan) :
 - ✔/✘ chaque exemple et chaque slide vérifiés contre l'exampleDomain : <n sur n>
 - ✔/✘ chaque notion du brief a son repère, chaque notion exigée par le TP confrontée : <n sur n>
-- ✔/✘ chaque `N` vérifiée sur ses trois temps : <n sur n>
+- ✔/✘ chaque `N` vérifiée sur ses deux temps : <n sur n>
 - ✔/✘ chaque résultat observable du TP confronté au dépôt ou aux TP précédents : <n sur n>
 - ✔/✘ chaque « enseignée nulle part » prouvé par search_content : <n sur n>
 - ✔/✘ aucune proposition ne contredit un verdict transmis : <n verdicts transmis, n cités>

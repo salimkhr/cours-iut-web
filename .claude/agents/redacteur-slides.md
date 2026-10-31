@@ -179,7 +179,7 @@ Un ✘ rend le rapport « incomplet », jamais « terminé ».
   registre) : vous ne l'improvisez pas, vous le signalez dans la rubrique « Écarts au
   plan » du rapport, avec votre proposition, et vous rédigez la version du plan.
 - Les **durées** du plan ne figurent jamais dans le rendu étudiant.
-- **Les messages d'erreur sont recopiés du plan**, caractère pour caractère : ils y ont
+- **Les sorties et messages sont recopiés du plan**, caractère pour caractère : ils y ont
   été exécutés dans le bac à sable. Vous n'en écrivez aucun de mémoire.
 
 ## Format de l'arbre de blocs
@@ -229,7 +229,6 @@ génère. Le texte des blocs `text` accepte le Markdown inline (gras, `code`, li
 | Rendu visuel attendu (HTML/CSS) | `code-with-preview` |
 | Code serveur et son rendu | un seul `code-with-preview` à deux panneaux : `language: "php"` et `secondaryLanguage: "html"`, le gabarit injecte le HTML (`<!-- @edit:html -->`) ; le nom du fichier va en commentaire, le bloc n'a pas de `filename` |
 | Fichier de départ, données fournies | `download-file` (jamais « recopiez ce long code ») |
-| Piège, erreur fréquente | `callout` variant `warning` |
 | Astuce, bonne pratique | `callout` variant `tip` |
 | Rappel d'une notion d'une section précédente | `callout` variant `reminder` |
 | Partie fil rouge d'un TP | `section` avec `projectRef: true` |

@@ -115,7 +115,9 @@ ne réécrivez rien.
   les contredisez jamais.** Une décision qui vous semble coûteuse n'est pas un problème.
 - Jamais d'indice ni de solution dans un TP, même proposés. Cette règle prime sur la
   phrase « un indice replié » du verdict `6ac67a63137711fbe6236783`.
-- **Vous n'exigez pas de `callout warning`** : ni comme garde-fou, ni comme proposition.
+- **Vous n'exigez et ne proposez jamais d'erreur fréquente servie dans le cours**, ni en
+  `callout warning`, ni en texte : les étudiants apprennent en analysant leurs erreurs.
+  Une erreur factuelle se signale, elle.
 - Vous n'avez pas de véto, et il n'y a pas de gravité : l'utilisateur tranche. Une case
   vide de la matrice d'alignement renvoie au rédacteur.
 - Une remarque s'appuie sur ce qui est écrit. Pas de goût personnel, pas de reformulation,
@@ -145,8 +147,9 @@ problème. Un TP qui exige un verbe plus haut que celui enseigné aussi.
   des problèmes.
 - PRIMM par notion : l'étudiant peut-il prédire, exécuter, examiner, modifier, créer ?
   Une étape absente pour une notion centrale est un problème.
-- Inventaire des idées fausses : pour chaque notion, l'idée fausse la plus probable est-elle
-  traitée quelque part ? Sa forme est libre.
+- Inventaire des idées fausses : pour chaque notion, l'idée fausse la plus probable
+  a-t-elle une chance de se manifester, puis d'être analysée, dans une activité (prédiction,
+  essai, exercice) ? Elle ne se corrige pas en la servant dans le cours.
 
 **TP.**
 - Bloom et ICAP par exercice : verbe réellement exigé, et mode d'engagement (passif, actif,
@@ -188,6 +191,6 @@ d'éloge. Rien à redire sur un support : écrivez « rien à signaler » à la 
 - ✔/✘ chaque grille applicable remplie : <grille : n lignes sur n> ;
 - ✔/✘ chaque objectif et notion du brief placé dans la matrice d'alignement : <n sur n> ;
 - ✔/✘ aucune proposition ne contredit un verdict ou la fiche de conception ;
-- ✔/✘ aucun indice ni solution proposé, aucun `callout warning` exigé.
+- ✔/✘ aucun indice ni solution proposé, aucune erreur fréquente servie proposée.
 
 Un ✘ rend le rapport « incomplet », jamais « terminé ».

@@ -32,7 +32,7 @@ réponse.
 |---|---|---|---|
 | Q0 | `courseIntroMinutes` de la section (temps de cours + slides en début de séance) | seulement s'il manque en prod | la valeur des sections précédentes du module (fiche), sinon 20 min ; montrez le budget TP qui en découle |
 | Q1 | Ce que les étudiants ratent d'habitude sur ce sujet | toujours | 2 ou 3 points tirés des notions du brief et des blocages relevés dans les relectures précédentes du module (`docs/plans/<module>/`) |
-| Q2 | Les erreurs que vous voyez réellement en TP | toujours | les erreurs fréquentes plausibles des notions du brief, chacune avec l'outil qui l'émet (PHP, navigateur, compilateur) |
+| Q2 | Les erreurs que vous voyez réellement en TP | toujours | les erreurs plausibles des notions du brief, chacune avec l'outil qui l'émet. Elles servent à concevoir le TP et le quiz : le cours ne les sert jamais |
 | Q3 | Les exemples qui marchent en classe | toujours | 2 exemples dans l'`exampleDomain`, avec les noms de l'`universe`, jamais dans le domaine du fil rouge |
 | Q4 | Ce que vous voulez absolument voir ou éviter | toujours | rappel des verdicts actifs du module qui s'appliquent (id + une ligne), et « rien de plus » |
 | Q5 | Répartition du TP entre partie guidée et fil rouge (`projectRef: true`) | toujours, sauf mode examen | à partir du `filRougeStep` du brief et de l'état du fil rouge : par exemple « 2 exercices guidés (40 %), puis 3 exercices fil rouge » ; rappelez le verdict « seul le premier exercice d'un geste nouveau est guidé pas à pas » s'il est actif |
@@ -70,7 +70,7 @@ peut combiner : notez la combinaison telle qu'il la décrit.
 - **Angle retenu** : <nom> — <idée directrice>
 - **Progression des notions** : N1 <notion> → N2 … (liste complète du brief, aucune ajoutée sans réponse de l'utilisateur)
 - **Exemple fil conducteur du cours** : <domaine, données>
-- **Erreurs fréquentes à montrer** : <une par notion qui en a, avec l'outil qui l'émet>
+- **Erreurs vues en TP** : <Q2 ; matière du TP et du quiz, jamais servie dans le cours>
 - **À voir absolument / à éviter** : <réponses Q4, verdicts cités par id>
 - **TP** : <n> exercices guidés puis <n> fil rouge ; bonus : <idée en une ligne>
 - **Budgets** : cours + slides <n> min ; TP <calcul> (plage <a>–<b> min)

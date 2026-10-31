@@ -63,7 +63,7 @@ Dans cet ordre, chaque écriture prod avec sa confirmation :
    - gestes clés du TP : pour chaque exercice, le code écrit (extrait court), l'API
      imposée, le résultat observé (sortie de `correction` quand elle existe) ;
    - blocages relevés par l'étudiant fragile (exercice, ce qu'il a dû deviner) ;
-   - erreurs fréquentes du cours (notion, code fautif, message réel).
+   - erreurs réellement rencontrées pendant le TP (geste, message réel).
 8. **Statut** : phase « clôture », « Validé : … ; clôture le <date> », prochaine action ;
    **état du module** : ligne de la section ; commit des fichiers de suivi.
 

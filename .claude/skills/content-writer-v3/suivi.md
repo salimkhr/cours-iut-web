@@ -85,8 +85,8 @@ rubrique concernée, sans toucher aux autres.
 |---|---|---|---|
 ### Blocages de l'étudiant fragile
 - <exercice ou notion> : <ce qu'il a dû deviner> (<id du bloc>)
-### Erreurs fréquentes du cours
-- <notion> : <code fautif> → `<message réel>`
+### Erreurs rencontrées au TP
+- <geste> : `<message réel>`
 ```
 
 La rubrique « Rédaction » est remplie au fil de `redaction.md` ; « Écarts réalisés » et

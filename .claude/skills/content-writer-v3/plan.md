@@ -38,11 +38,6 @@ de conception (`suivi.md`). Format :
   ```
   Sortie : `<sortie exacte>`
 - **Variante réaliste** : <ce qui change et pourquoi>. Code exact (ou diff sur l'exemple) ; sortie.
-- **Erreur fréquente** (`callout warning`) : <l'erreur, en une phrase>. Code fautif ; message réel :
-  ```
-  <message verbatim>
-  ```
-  Vérifié le <date> : `<outil et version>` dans `cours-iut-bac:1` (§ 3).
 - **Blocs prévus** : <types du registre, dans l'ordre>
 
 ### Slides — <n> slides, <n> min
@@ -93,29 +88,28 @@ Règles :
   chose : ajoutez la notion au cours (avec l'accord de l'utilisateur) ou changez
   l'exercice.
 - Slides : 1 à 2 min par slide, une idée par slide, aucune notion absente du plan du
-  cours, une `slide-note` prévue sur chacune (oral, erreur fréquente, question à la
-  salle).
+  cours, une `slide-note` prévue sur chacune (oral, question à la salle).
 - TP : partie guidée d'abord, puis fil rouge, selon la répartition Q5 ; contrats des
   résultats observables rattachés au dépôt de référence, ou aux TP précédents à défaut.
 
-## 3. Messages d'erreur réels (bac à sable)
+## 3. Sorties exécutées (bac à sable)
 
-Chaque « erreur fréquente » du plan porte un message exécuté, jamais un message de
-mémoire. Une fois les erreurs du cours écrites :
+Le cours ne sert aucune erreur fréquente : les étudiants apprennent en analysant les
+leurs. Chaque sortie et chaque message du plan est néanmoins exécuté, jamais écrit de
+mémoire. Une fois les exemples écrits :
 
 1. Vérifiez les prérequis Docker (`bac-a-sable.md` § 0, sans le test de fumée des
    étudiants : aucun étudiant n'est lancé).
 2. Run-id `plan-<module>-<section tronquée>-<AAAAMMJJ-HHMMSS>`, dossier et conteneur
    comme `bac-a-sable.md` § 1 et § 2 (sous-dossier unique `erreurs\`).
-3. Écrivez chaque extrait fautif dans `erreurs\` et exécutez-le dans le conteneur
+3. Écrivez chaque extrait dans `erreurs\` et exécutez-le dans le conteneur
    (`docker exec "cours-iut-bac-$run" sh -c 'cd /work/erreurs && php n1.php'`, ou
    `cargo`, `node`, `rendu-html` selon le module). Pour un message de navigateur,
    `rendu-html` donne la console.
 4. Collez la sortie exacte dans le plan, avec l'outil et sa version (`php -v | head -1`).
    Un message qui diffère de ce que vous attendiez : c'est la sortie qui fait foi ;
    adaptez l'explication.
-5. Faites de même pour la sortie des exemples minimaux et des variantes, et pour les
-   résultats observables du TP quand ils ne dépendent pas d'un fil rouge absent.
+5. Faites de même pour les résultats observables du TP quand ils ne dépendent pas d'un fil rouge absent.
 6. Nettoyage (`bac-a-sable.md` § 6), preuve collée dans votre définition de terminé.
 
 Docker absent : marquez chaque message « non vérifié (Docker absent) » et dites-le à

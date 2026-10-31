@@ -129,8 +129,6 @@ avec la relecture :
 - **Exemplaires** : `cours`, `slide` et `TP`.
 - **Matériaux de cadrage** (rubrique en plus, après « Signalements ») :
   - notions du brief, une par ligne, verbatim, avec `filRougeStep` ;
-  - erreurs fréquentes déjà montrées dans les cours des sections précédentes (`callout`
-    `warning` de leurs exports : section, verbatim court du message) ;
   - blocages relevés dans `docs/plans/<module>/` n'est PAS de votre ressort (vous n'avez
     pas accès au dépôt) : l'orchestrateur les lit ;
   - fil rouge : ce que la section doit y ajouter, et les fichiers concernés.

@@ -148,9 +148,7 @@ comptez comme blocage, même si elle a réussi.
 3. **Avant chaque variante réaliste** : écrivez votre prédiction du résultat (sortie,
    erreur, rendu), PUIS exécutez, PUIS comparez. Mauvaise prédiction = explication
    insuffisante en amont (citez le bloc qui aurait dû vous préparer).
-4. **Chaque erreur fréquente** (`callout warning`) : reproduisez-la si elle est
-   reproductible et comparez le message obtenu au message cité.
-5. **Bilan final**, pour chaque notion du brief : pouvez-vous dire à quoi elle sert
+4. **Bilan final**, pour chaque notion du brief : pouvez-vous dire à quoi elle sert
    (une phrase, avec le bloc source) et l'utiliser (un mini-exemple exécuté, autre que
    ceux du cours) ? Réponses : oui / partiellement / non, avec la raison.
 
@@ -192,7 +190,7 @@ reçoit une remarque MAJEUR (« démarrage > 2 min »).
 ## Liste de tâches, avant d'agir
 
 Avec l'outil de liste de tâches s'il est disponible, sinon écrite : une tâche par
-exemple de code, par variante à prédire, par erreur fréquente à reproduire et par
+exemple de code, par variante à prédire et par
 notion du bilan (mode lecture) ; une tâche par exercice (mode exécution). Recopiez-la en
 tête du rapport avec le statut de chacune.
 

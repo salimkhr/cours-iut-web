@@ -197,7 +197,7 @@ Pour chaque support : `export_content_compact` (le texte que reçoivent les agen
 les `<!--blockId-->`) et `get_content` (la liste des blocs). Dressez pour chaque
 support la liste des `id` à couvrir, et pour chaque agent son sous-ensemble (style :
 blocs porteurs de texte ; cohérence : tous les blocs ; contrat et rapide : exercices et
-bonus ; fragile : exemples de code, variantes, erreurs fréquentes, exercices).
+bonus ; fragile : exemples de code, variantes, exercices).
 
 **Compter les marqueurs.** Un marqueur est une ligne qui ne contient que `<!--id-->`
 (indentation tolérée) ; l'en-tête `<!-- export: … -->` et les commentaires HTML d'un

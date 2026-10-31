@@ -15,7 +15,7 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
 1. `collecteur` → fiche de contexte compacte.
 2. **Cadrage** (session principale) : à partir de la fiche, l'orchestrateur me pose ses questions UNE PAR UNE (ce que les étudiants ratent d'habitude sur ce sujet, les erreurs que je vois réellement en TP, les exemples qui marchent en classe, ce que je veux absolument voir ou éviter). Il propose ensuite 2 ou 3 angles pédagogiques avec leurs compromis et en recommande un. Sortie : une **fiche de conception** que je valide. Aucune rédaction pendant cette phase.
 3. **Plan**, écrit par l'orchestrateur, assez détaillé pour que les rédacteurs n'aient plus de décision à prendre :
-   - cours : pour chaque notion, l'exemple exact (données comprises), la variante réaliste, l'erreur fréquente avec son message réel, le minutage ;
+   - cours : pour chaque notion, l'exemple exact (données comprises), la variante réaliste, le minutage (décision du 2026-10-31 : plus d'erreur fréquente servie dans le cours, ni en `callout warning` ni en texte, car les étudiants apprennent en analysant leurs erreurs) ;
    - slides : liste des slides (titre, idée unique, type de bloc principal, minutage) ;
    - TP : chaque exercice avec son contrat de consigne entièrement rempli, sa durée, sa part guidée ou fil rouge ; les bonus avec leur contrat.
    `relecteur-coherence` et `relecteur-contrat` relisent le PLAN avant que je le voie (fuite du fil rouge, notions hors curriculum, budget hors plage, contrat incomplet). Puis je le valide.
@@ -31,7 +31,7 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
 7. Relecture navigateur par moi.
    Le dépôt de référence a une branche `fin-tp-<n>` par fin de TP (décision du 2026-10-31) : l'entrée d'un TP est `fin-tp-<n-1>`, `main` est l'état final.
 8. `correction` (TP uniquement) : écrit, exécute, vérifie dans le bac à sable. L'orchestrateur relit et pousse (`push_correction`) avec ma confirmation explicite : le push publie sur un GitLab public et écrit `hasCorrection` en prod (décision du 2026-10-28, § 1).
-9. **Clôture** par l'orchestrateur : `curriculum` de la section, verdicts, exemplaire, mise à jour du plan avec les écarts réellement faits, rubrique **« Matériau quiz »** dans le plan (gestes clés du TP : code, API imposée, résultat observé ; blocages relevés par l'étudiant fragile ; erreurs fréquentes du cours), copie vers prod avec ma confirmation explicite.
+9. **Clôture** par l'orchestrateur : `curriculum` de la section, verdicts, exemplaire, mise à jour du plan avec les écarts réellement faits, rubrique **« Matériau quiz »** dans le plan (gestes clés du TP : code, API imposée, résultat observé ; blocages relevés par l'étudiant fragile), copie vers prod avec ma confirmation explicite.
 
 **Mode rapide** (sur demande, section simple) : saute le cadrage, garde le plan et sa validation.
 
@@ -65,9 +65,9 @@ Les règles du `content-writer` v2 sont réparties entre les agents. En plus :
 
 **collecteur** : fiche structurée (budgets calculés, universe, exampleDomain, projectSpec, brief, curriculum précédents, état du fil rouge, verdicts et exemplaire pertinents par format ; pour le quiz : matériaux quiz des plans et questions existantes). Section sans brief → le signaler, ne rien inventer.
 
-**redacteur-cours** : ne reçoit PAS le dépôt de référence ni le détail du fil rouge, seulement le nom de son domaine pour l'éviter. Le minimum pour démarrer le TP. Chaque notion : exemple minimal → variante réaliste → erreur fréquente (`callout warning`, message d'erreur réel). Domaine d'illustration = `exampleDomain`, noms et données = `universe`.
+**redacteur-cours** : ne reçoit PAS le dépôt de référence ni le détail du fil rouge, seulement le nom de son domaine pour l'éviter. Le minimum pour démarrer le TP. Chaque notion : exemple minimal → variante réaliste, sans erreur fréquente servie. Domaine d'illustration = `exampleDomain`, noms et données = `universe`.
 
-**redacteur-slides** : part du cours validé, n'ajoute aucune notion (signale si besoin). Une idée par slide, `slide-transition` entre les parties, `slide-code` avec `highlight`, `slide-code-with-preview` pour tout rendu visuel, une `slide-note` par slide (oral, erreur fréquente, question à la salle). Repère : 1 à 2 min par slide.
+**redacteur-slides** : part du cours validé, n'ajoute aucune notion (signale si besoin). Une idée par slide, `slide-transition` entre les parties, `slide-code` avec `highlight`, `slide-code-with-preview` pour tout rendu visuel, une `slide-note` par slide (oral, question à la salle). Repère : 1 à 2 min par slide.
 
 **redacteur-tp** : contrat de consigne complet par exercice, bonus compris (fichier cible, noms exacts, données d'entrée, API imposée, résultat observable, critère de validation). Budget 80–100 %, bonus hors budget. Progression guidée → fil rouge (`projectRef: true`). Cible réelle via get_project_reference (repli : export_content_compact des TP précédents). Démarrage < 2 min pour l'étudiant fragile. Impératif vouvoyé. Notion manquante dans le cours → le signaler à l'orchestrateur, ne pas l'expliquer dans le TP. Après validation, transmet la liste des contrats à `correction`.
 Mode examen : hors fil rouge, curriculum uniquement, pas de cadrage ni de validation du plan (le plan est quand même écrit pour la traçabilité), pas de correction ; curriculum vide → arrêt.
@@ -196,7 +196,7 @@ Chaque agent a une définition de terminé (ci-dessous). Il ne se déclare termi
 - sources prévues toutes lues, ou indisponibilité signalée (dépôt de référence absent, etc.).
 
 **redacteur-cours**
-- chaque notion du plan rédigée avec ses trois temps (exemple, variante, erreur fréquente avec message réel) ;
+- chaque notion du plan rédigée avec son exemple et sa variante ;
 - aucun écart au plan, ou chaque écart signalé ;
 - brouillon validé par le script (sortie collée) : l'arbre correspond à ce qui était prévu ;
 - uniquement des types de blocs du registre ;
