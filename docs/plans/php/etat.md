@@ -1,6 +1,6 @@
 # État du module `php`
 
-Mis à jour le 2026-10-30.
+Mis à jour le 2026-10-31.
 
 | # | Section | Phase | Dernière action | Date | Prochaine action |
 |---|---|---|---|---|---|
@@ -9,7 +9,7 @@ Mis à jour le 2026-10-30.
 | 4 | 4-formulaire | relecture | synthèse arbitrée présentée | 2026-10-27 | choix des remarques à corriger, 1 désaccord |
 | 5 | 5-lire-des-donnees-en-base | — | — | — | — |
 | 6 | 6-ecrire-des-donnees-en-base | — | — | — | — |
-| 7 | 7-sessions-et-authentification | TP | cours et slides en prod (non publiés) | 2026-10-30 | rédaction du TP |
+| 7 | 7-sessions-et-authentification | relecture navigateur | cours, slides et TP en prod (non publiés) | 2026-10-31 | OK navigateur, correction, clôture |
 | 9 | 9-symfony | — | — | — | — |
 | 8 | 8-examen | — | — | — | — |
 | 10 | 10-twig | — | — | — | — |

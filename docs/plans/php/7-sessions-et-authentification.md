@@ -2,12 +2,12 @@
 
 ## Statut
 - **Mode** : redaction
-- **Phase** : TP
-- **Étape en cours** : TP : validation par l'utilisateur, désaccord du temps restant du rapide
+- **Phase** : relecture navigateur
+- **Étape en cours** : TP écrit en prod, relecture navigateur du TP et des slides
 - **Mis à jour le** : 2026-10-30
-- **Validé** : fiche de conception le 2026-10-28 ; plan v9 le 2026-10-31 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30
+- **Validé** : fiche de conception le 2026-10-28 ; plan v9 le 2026-10-31 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30 ; TP le 2026-10-31
 - **Désaccords en attente** : aucun
-- **Prochaine action** : rédaction du TP, relecture avec les étudiants, validation.
+- **Prochaine action** : OK navigateur, puis correction et clôture.
 
 ## Cadrage
 | # | Question | Défaut proposé | Réponse de l'utilisateur | Date |
@@ -409,6 +409,8 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 - **Étudiants** (2026-10-31, projet de départ reconstruit depuis les TP 3 à 6, car `main` du dépôt diverge des TP ; bac à sable supprimé) : fragile 5 exercices sur 5, aucun blocage, 135 min, soit 84 % ; rapide 71 min et bonus 4 min, 85 min non occupées. Retenues du fragile : hachages (e1-etape-2), nom en texte dans le header (e4-etape-4), saisie valide pour `Eclipses` (e5-essais), `require_once` (e2), `var_dump` (e1), clé `flash` (e5). Retenues du rapide : destination de `logout.php`, chemin de `REQUEST_URI`. Écartées : `php -r` proposé par les deux étudiants (non enseigné, véto cohérence). À trancher : bonus supplémentaires.
 
 - **Cycle 2** (2026-10-31, rapide refait sur tout le TP, contrat sur b2 à b4 ; bac à sable supprimé) : les 4 bonus conformes, aucune notion non enseignée ; 70 min de tronc commun, 31 min de bonus, 59 min inoccupées. Corrections : critère de b2 précisé, clause sur `redirect()` retirée de b1-methode. Limite de deux cycles atteinte, désaccord présenté : temps restant du rapide.
+
+- **Prod** : `save_content` le 2026-10-31 après validation (« Oui, valide et écris »), contentId 6ae5c054e54feb2a7a7efa85, version 1, 112 blocs. Désaccord du temps restant du rapide : accepté par l'utilisateur en validant.
 
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).
