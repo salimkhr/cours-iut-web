@@ -47,6 +47,7 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
 | redacteur-tp | opus | idem cours + get_project_reference, export_content_compact |
 | relecteur-style | sonnet | MCP lecture seule |
 | relecteur-coherence | sonnet | MCP lecture seule + get_project_reference + Read limité aux plans (`docs/plans/<module>/*.md`, garde en hook) |
+| relecteur-pedagogie | sonnet | MCP lecture seule + get_project_reference + Read limité aux plans et aux exports de brouillon (garde en hook) ; décision du 2026-10-31 : relit le plan et chaque support, ne rend que les problèmes, sans véto, sans cycle supplémentaire |
 | relecteur-contrat | haiku | MCP lecture seule + Read limité aux plans (garde en hook) |
 | etudiant-fragile | sonnet | lecture du contenu de la section uniquement + Bash (bac à sable) |
 | etudiant-rapide | sonnet | idem fragile |
