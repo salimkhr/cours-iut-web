@@ -85,9 +85,11 @@ Il manque une entrée : rapport « incomplet ».
   accents, avec des tirets (2e exercice « Créer un compte » →
   `exercice-2-creer-un-compte/`) ;
 - les bonus de même (`bonus-1-…/`) ;
-- `fil-rouge/` : l'état du projet fil rouge à la fin de la section (partir de
-  `/work/depart/` s'il existe ; sinon, seulement les fichiers créés ou modifiés par la
-  section, et le dire dans le README) ;
+- `fil-rouge/` : l'état du projet fil rouge à la fin de la section. Partez de
+  `/work/depart/`, l'état de la branche `fin-tp-<n-1>` du dépôt de référence. S'il manque,
+  seulement les fichiers créés ou modifiés par la section, et dites-le dans le README.
+  L'orchestrateur en fera la branche `fin-tp-<n>`, à condition que ce dossier contienne
+  le projet complet ;
 - `README.md` sobre : titre de la section, sujet en une phrase, lien vers le TP.
 
 Noms de fichiers, de fonctions, de classes et de champs : **exactement** ceux des

@@ -28,9 +28,14 @@ explicite de l'utilisateur, une confirmation par écriture.
    attendez la confirmation, puis appelez-le avec tous les fichiers de
    `<dir>\correction\` (chemins relatifs, contenu texte). Rappelez ensuite que
    `correctionIsAvailable` reste à activer dans l'admin : vous ne le faites pas.
-5. Nettoyage du bac à sable, preuve collée. Statut (phase « correction »), commit.
+5. **Branche `fin-tp-<n>`** (si `fil-rouge/` contient le projet complet) : proposez à
+   l'utilisateur de la créer depuis `fin-tp-<n-1>` dans son clone, avec le contenu de
+   `fil-rouge/`, puis de la pousser. C'est une écriture sur sa forge : montrez la liste
+   des fichiers et attendez sa confirmation. Une correction d'un TP passé se reporte sur
+   les branches suivantes par le workflow de propagation.
+6. Nettoyage du bac à sable, preuve collée. Statut (phase « correction »), commit.
 
-GitLab injoignable : le push échoue ; gardez les fichiers (copiez `<dir>\correction\`
+GitLab injoignable : le push échoue, branche comprise ; gardez les fichiers (copiez `<dir>\correction\`
 dans le scratchpad avant le nettoyage), notez-le dans le statut et passez à la clôture.
 
 ## 2. Clôture

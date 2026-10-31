@@ -133,8 +133,8 @@ bun src/scripts/brouillon.ts deposer "<dir>" docs/plans/<m>/brouillons/<s>/cours
 ```
 
 Le fragile en mode lecture reçoit `cours.md` ; le fragile en mode exécution et le
-rapide, `tp.md` et `cours.md`. `depart\` reçoit l'état initial du fil rouge s'il est
-reconstituable (dépôt de référence), sinon les prompts le disent. Les liens
+rapide, `tp.md` et `cours.md`. `depart\` reçoit la branche `fin-tp-<n-1>` du dépôt de référence (§ 4 bis) ; sans
+cette branche, les prompts le disent. Les liens
 `/download/...` d'un brouillon se téléchargent comme dans `preparateur` (étape 3) ; s'il
 y en a, lancez `preparateur` avec la mention « liens seulement » ou faites-le à la main
 avec `curl` vers `fournis\`.
@@ -144,6 +144,20 @@ exige (`docker exec … sh -c 'cd /work && php -m'` : `pdo_pgsql` pour un TP PDO
 PostgreSQL). Il en manque une : dites-le à l'utilisateur, proposez le rebuild de l'image
 (ajout de paquet dans `docker/etudiant-sandbox/Dockerfile`, avec son accord), ou lancez
 les étudiants en le leur signalant comme limite d'environnement.
+
+## 4 bis. Dépôt de référence : une branche par fin de TP
+
+`fin-tp-<n>` est ce qu'un étudiant a à la fin du TP n, et part de `fin-tp-<n-1>`. `main`
+est l'état final. Récupérez l'état d'entrée dans un clone local, jamais par le serveur
+MCP, avec `git archive` ou `git worktree`, sans `.git` dans le bac à sable :
+
+```bash
+git -C <clone> archive fin-tp-<n-1> | tar -x -C "<dir>/depart"
+```
+
+Branche absente : dites-le à l'utilisateur et proposez de reconstruire l'état depuis les
+énoncés des TP précédents, qui font foi sur `main`. Le clone exige ses identifiants : ne
+les saisissez jamais.
 
 ## 5. Contrôle, arbitrage, correction
 

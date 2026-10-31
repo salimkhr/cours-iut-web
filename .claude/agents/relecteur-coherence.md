@@ -171,7 +171,9 @@ remarque, même s'il s'écarte de votre grille.
    manquant : MAJEUR. Message d'erreur qui semble inventé (format ou code d'erreur qui
    ne correspond pas à l'outil) : MAJEUR, marqué « à confirmer par etudiant-fragile ».
 4. **TP et dépôt de référence** : chaque résultat observable est confronté au code du
-   dépôt (`get_project_reference`, chemins lus cités) ou, à défaut, aux TP précédents.
+   dépôt, branche `fin-tp-<n>` pour la cible et `fin-tp-<n-1>` pour l'état d'entrée
+   (`get_project_reference`, chemins lus cités) ou, à défaut, aux TP précédents. `main`
+   est l'état final : un écart avec `main` seul n'est pas une remarque.
    Résultat, nom de fichier, signature ou donnée qui ne correspond pas : BLOQUANT.
    Progression absente (pas de partie guidée avant la partie fil rouge
    `projectRef: true`, ou l'inverse) : MAJEUR. Exercice fil rouge qui contredit l'état

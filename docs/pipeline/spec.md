@@ -29,6 +29,7 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
    - aucun étudiant sur les slides.
 6. **Arbitrage** par l'orchestrateur (§ 6), puis les remarques retenues vont au rédacteur du format concerné, qui corrige.
 7. Relecture navigateur par moi.
+   Le dépôt de référence a une branche `fin-tp-<n>` par fin de TP (décision du 2026-10-31) : l'entrée d'un TP est `fin-tp-<n-1>`, `main` est l'état final.
 8. `correction` (TP uniquement) : écrit, exécute, vérifie dans le bac à sable. L'orchestrateur relit et pousse (`push_correction`) avec ma confirmation explicite : le push publie sur un GitLab public et écrit `hasCorrection` en prod (décision du 2026-10-28, § 1).
 9. **Clôture** par l'orchestrateur : `curriculum` de la section, verdicts, exemplaire, mise à jour du plan avec les écarts réellement faits, rubrique **« Matériau quiz »** dans le plan (gestes clés du TP : code, API imposée, résultat observé ; blocages relevés par l'étudiant fragile ; erreurs fréquentes du cours), copie vers prod avec ma confirmation explicite.
 

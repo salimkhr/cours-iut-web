@@ -137,10 +137,13 @@ Il manque une entrée : rapport « incomplet », sans rien écrire.
 - **Progression** : partie guidée d'abord, puis fil rouge, comme le plan la découpe.
   Chaque exercice du fil rouge est une `section` avec `projectRef: true`. Le guidage par
   étapes d'action suit le verdict de guidage transmis, lu strictement.
-- **Cible réelle** : chaque résultat observable vient du plan, qui l'a tiré du dépôt de
-  référence ou des TP précédents. Vérifiez-le : `get_project_reference` (code cible du
-  fil rouge) ; s'il échoue, `export_content_compact` (`module`, `section`, `type: TP`)
-  des TP précédents. Un résultat qui ne correspond pas : écart à signaler, vous ne le
+- **Cible réelle** : le dépôt de référence a une branche par fin de TP : `fin-tp-<n>` est
+  ce qu'un étudiant a à la fin du TP n ; `main` est l'état final, à ne pas confondre avec
+  l'état d'entrée du TP. L'entrée de votre TP est `fin-tp-<n-1>`, sa cible `fin-tp-<n>`
+  si elle existe. Chaque résultat observable vient du plan, qui l'a tiré de ces branches
+  ou des TP précédents. Vérifiez-le : `get_project_reference` si l'outil lit la bonne
+  branche ; sinon `export_content_compact` (`module`, `section`, `type: TP`) des TP
+  précédents, qui font foi sur `main` en cas d'écart. Un résultat qui ne correspond pas : écart à signaler, vous ne le
   corrigez pas de vous-même.
 - **Budget** : somme des durées du tronc commun du plan entre 80 et 100 % du budget TP,
   bonus hors budget et marqués « bonus » dans leur titre. Les durées ne figurent jamais
