@@ -184,7 +184,7 @@ critères de la grille :
 - A. vocabulaire et tournures (patterns 1 à 15, 24, 25, 29) ;
 - B. structure et discours (26, 27, 30 à 35, 37, 38) ;
 - C. typographie et mise en forme (16 à 20, abus seulement pour 16 et 17) ;
-- D. registre et voix (vouvoiement, impératif en consigne, partie 4 active) ;
+- D. registre et voix (vouvoiement, impératif en consigne, partie 4 active), et renvois à une séance par son sujet, jamais par son numéro (« Au cours sur les formulaires », pas « Au cours 4 ») ;
 - E. artéfacts (21 à 23, artefacts de génération hors grille).
 
 Les critères B et D se jugent aussi à l'échelle du support entier (une tâche

@@ -258,7 +258,10 @@ jugés en grappe (une occurrence isolée passe, trois dans un paragraphe non) :
 - conclusions plaquées (« vous voilà prêt à »), staccato dramatique, aphorismes ;
 - graisse semée, listes « **Terme** : définition » enchaînées, emojis dans les titres ;
 - plus d'une incise au tiret par paragraphe ; hedging (« peut potentiellement ») ;
-- faux intervalles (« de la simple variable aux architectures complexes »).
+- faux intervalles (« de la simple variable aux architectures complexes ») ;
+- renvoi à une séance par son numéro : n'écrivez jamais « Au cours 6 » ou « au TP 3 », nommez
+  le sujet (« Au cours sur l'écriture en base », « au TP sur les formulaires »). L'étudiant ne
+  retient pas les numéros, et ils changent quand le module évolue.
 
 Produisez des signaux humains : détail précis (version, message verbatim, comportement
 réel), avis assumé (« préférez X »), rythme varié. L'exemplaire reste la référence de
