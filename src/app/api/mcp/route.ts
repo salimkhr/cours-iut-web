@@ -701,12 +701,16 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
         "get_project_reference",
         "Lit le projet de référence d'un module. Sans `path`, retourne l'arbre des fichiers ; "
         + "avec `path`, le contenu du fichier. À lire AVANT de rédiger un TP : le résultat "
-        + "observable de chaque exercice doit sortir de ce code, pas d'une invention.",
+        + "observable de chaque exercice doit sortir de ce code, pas d'une invention. "
+        + "`ref` choisit la branche : `fin-tp-<n>` est l'état du projet à la fin du TP n, "
+        + "`main` (défaut) son état final.",
         {
             module: z.string().describe("Slug du module, ex: rust"),
             path:   z.string().optional().describe("Chemin d'un fichier ; omis = arbre complet"),
+            ref:    z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._/-]*$/).optional()
+                .describe("Branche à lire, ex: fin-tp-6 ; omis = main"),
         },
-        async ({module, path: filePath}) => {
+        async ({module, path: filePath, ref}) => {
             if (!isAdmin) throw new Error("Forbidden");
             const db = await connectToDB();
             const mod = await db.collection<Module>("modules").findOne({path: module});
@@ -719,11 +723,11 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             const project = await ensurePrivateProject(cfg, referenceProjectSlug(module));
 
             if (filePath) {
-                const content = await readRepoFile(cfg, project.id, filePath);
+                const content = await readRepoFile(cfg, project.id, filePath, ref);
                 return {content: [{type: "text" as const, text: content}]};
             }
 
-            const files = await listRepoFiles(cfg, project.id);
+            const files = await listRepoFiles(cfg, project.id, ref);
             return {
                 content: [{
                     type: "text" as const,

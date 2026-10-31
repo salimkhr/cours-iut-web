@@ -141,8 +141,8 @@ Il manque une entrée : rapport « incomplet », sans rien écrire.
   ce qu'un étudiant a à la fin du TP n ; `main` est l'état final, à ne pas confondre avec
   l'état d'entrée du TP. L'entrée de votre TP est `fin-tp-<n-1>`, sa cible `fin-tp-<n>`
   si elle existe. Chaque résultat observable vient du plan, qui l'a tiré de ces branches
-  ou des TP précédents. Vérifiez-le : `get_project_reference` si l'outil lit la bonne
-  branche ; sinon `export_content_compact` (`module`, `section`, `type: TP`) des TP
+  ou des TP précédents. Vérifiez-le : `get_project_reference` avec `ref: "fin-tp-<n-1>"` ;
+  si l'outil échoue ou que la branche n'existe pas, `export_content_compact` (`module`, `section`, `type: TP`) des TP
   précédents, qui font foi sur `main` en cas d'écart. Un résultat qui ne correspond pas : écart à signaler, vous ne le
   corrigez pas de vous-même.
 - **Budget** : somme des durées du tronc commun du plan entre 80 et 100 % du budget TP,

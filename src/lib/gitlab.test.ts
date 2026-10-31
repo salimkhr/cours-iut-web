@@ -69,7 +69,7 @@ mock.module("node:http", () => ({ ...realHttp, request: fakeRequest }));
 
 const {
     getGitlabConfig, getCorrectionBaseUrl, ensureGroup, ensureProject, commitFiles,
-    getPrivateProjectConfig, ensurePrivateProject,
+    getPrivateProjectConfig, ensurePrivateProject, listRepoFiles, readRepoFile,
 } = await import("./gitlab");
 
 beforeEach(() => {
@@ -271,6 +271,34 @@ describe("ensureProject", () => {
             name: "1-decouverte", path: "1-decouverte", namespace_id: 13,
             visibility: "public", default_branch: "main",
         });
+    });
+});
+
+describe("lecture du dépôt par branche", () => {
+    test("listRepoFiles passe la ref et signale une branche absente", async () => {
+        routes = [{
+            match: (url) => url.includes("/repository/tree") && url.includes("ref=fin-tp-6"),
+            respond: () => json(200, [{ type: "blob", path: "index.php" }]),
+        }, {
+            match: (url) => url.includes("/repository/tree") && url.includes("ref=absente"),
+            respond: () => json(404, { message: "404 Tree Not Found" }),
+        }];
+        expect(await listRepoFiles(cfg, 1, "fin-tp-6")).toEqual(["index.php"]);
+        await expect(listRepoFiles(cfg, 1, "absente")).rejects.toThrow();
+    });
+
+    test("listRepoFiles sans ref garde le dépôt vide pour un 404", async () => {
+        routes = [{ match: (url) => url.includes("/repository/tree"), respond: () => json(404, {}) }];
+        expect(await listRepoFiles(cfg, 1)).toEqual([]);
+    });
+
+    test("readRepoFile lit la ref demandée, main par défaut", async () => {
+        const contenu = { content: Buffer.from("<?php").toString("base64") };
+        routes = [{ match: (url) => url.includes("/repository/files/"), respond: () => json(200, contenu) }];
+        await readRepoFile(cfg, 1, "a b.php", "fin-tp-6");
+        await readRepoFile(cfg, 1, "a b.php");
+        expect(calls.at(-2)?.url).toContain("ref=fin-tp-6");
+        expect(calls.at(-1)?.url).toContain("ref=main");
     });
 });
 

@@ -172,7 +172,7 @@ remarque, même s'il s'écarte de votre grille.
    ne correspond pas à l'outil) : MAJEUR, marqué « à confirmer par etudiant-fragile ».
 4. **TP et dépôt de référence** : chaque résultat observable est confronté au code du
    dépôt, branche `fin-tp-<n>` pour la cible et `fin-tp-<n-1>` pour l'état d'entrée
-   (`get_project_reference`, chemins lus cités) ou, à défaut, aux TP précédents. `main`
+   (`get_project_reference` avec `ref`, chemins lus cités) ou, à défaut, aux TP précédents. `main`
    est l'état final : un écart avec `main` seul n'est pas une remarque.
    Résultat, nom de fichier, signature ou donnée qui ne correspond pas : BLOQUANT.
    Progression absente (pas de partie guidée avant la partie fil rouge
