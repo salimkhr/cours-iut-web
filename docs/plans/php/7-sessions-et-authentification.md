@@ -416,5 +416,7 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 
 - **Retrait des erreurs fréquentes** (2026-10-31, confirmé par « Oui, écris en prod ») : 8 callouts supprimés et 4 blocs modifiés au cours (67 blocs), 9 blocs modifiés aux slides (29 blocs), par `delete_block` et `edit_block`.
 
+- **Critères renforcés** (2026-10-31, relecteur-pedagogie, accord de l'utilisateur) : e1-critere, e2-critere, e3-critere en prod et dans le brouillon ; non rejoués par un étudiant.
+
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).
