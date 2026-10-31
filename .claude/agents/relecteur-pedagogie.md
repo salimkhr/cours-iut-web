@@ -153,7 +153,10 @@ problème. Un TP qui exige un verbe plus haut que celui enseigné aussi.
 
 **TP.**
 - Bloom et ICAP par exercice : verbe réellement exigé, et mode d'engagement (passif, actif,
-  constructif, interactif). Une suite d'exercices au même niveau est un problème.
+  constructif, interactif). Écrire du code d'après un contrat est constructif : une suite
+  d'exercices d'écriture n'est pas un problème en soi, et un TP n'a pas à faire prédire ou
+  expliquer, le quiz s'en charge. Signalez seulement un exercice où l'étudiant recopie ou
+  coche sans rien construire.
 - SOLO : niveau que chaque critère de validation permet de vérifier. Un critère qui valide
   moins que l'objectif de l'exercice est un problème.
 - Estompage par geste : montré, guidé, contrat, autonome. Un geste qui saute une marche ou
