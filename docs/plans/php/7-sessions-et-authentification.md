@@ -3,9 +3,9 @@
 ## Statut
 - **Mode** : redaction
 - **Phase** : TP
-- **Étape en cours** : TP : correction, cycle 1 ; étudiants en attente du projet Onzer (dépôt de référence)
+- **Étape en cours** : TP : correction, cycle 2 ; relecture des bonus à faire
 - **Mis à jour le** : 2026-10-30
-- **Validé** : fiche de conception le 2026-10-28 ; plan v8 le 2026-10-30 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30
+- **Validé** : fiche de conception le 2026-10-28 ; plan v9 le 2026-10-31 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30
 - **Désaccords en attente** : aucun
 - **Prochaine action** : rédaction du TP, relecture avec les étudiants, validation.
 
@@ -39,7 +39,9 @@ Signalements du collecteur (2026-10-27), à régler au plan :
 - `redirect()` : `: void` au TP3, `: never` au cours 6 ;
 - `password_hash`, `session_start`, `try/catch` : enseignés nulle part avant la section 7.
 
-## Plan (version 8, 2026-10-30)
+## Plan (version 9, 2026-10-31)
+
+v9 : le rapide laissait 85 min inoccupées ; trois bonus ajoutés avec l'accord de l'utilisateur (2026-10-31), contrats dans la partie TP. Bonus : B1 20, B2 15, B3 10, B4 35 = 80 min, hors budget.
 
 v8, véto cohérence (`search_content` « php -r » : 0 résultat en cours et en TP) : le contrat de E1 n'impose plus `php -r`, les hachages sont produits par `password_hash()` avec `PASSWORD_DEFAULT`, moyen libre. Les passages de E1, E3 et E4 ci-dessous se lisent avec les notes v7 et v8.
 
@@ -282,6 +284,30 @@ Point de départ : le projet à la fin du TP6 (CRUD album/artiste en base, PRG, 
 **Total tronc commun** : 30 + 20 + 35 + 35 + 25 = 145 min, soit 91 % du budget (plage 80–100 %).
 **Bonus** (hors budget) : 20 min.
 
+#### B2 — Confirmer son mot de passe avant de supprimer un album — bonus — 15 min
+1. **Fichiers cibles** : `delete_album.php`, `views/view_delete_album.php`, `repositories/UserRepository.php`.
+2. **Noms exacts** : champ `password` ; `UserRepository::findById(int $id): ?User`.
+3. **Données d'entrée** : `admin@onzer.local`, `Admin123!` puis `admin123!`.
+4. **Méthode imposée** : `password_verify` sur l'utilisateur relu en base, dans le traitement POST.
+5. **Résultat observable** : mauvais mot de passe → « Mot de passe incorrect. », album conservé ; bon mot de passe → flash « Album supprimé. ».
+6. **Critère de validation** : les deux essais donnent ces résultats, le nombre d'albums le confirme.
+
+#### B3 — Écarter un utilisateur déjà connecté — bonus — 10 min
+1. **Fichiers cibles** : `login.php`, `create_user.php`.
+2. **Noms exacts** : `currentUser()`.
+3. **Données d'entrée** : `user@onzer.local` connecté ; visiteur.
+4. **Méthode imposée** : `redirect()` vers `list_albums.php` avant tout traitement.
+5. **Résultat observable** : connecté → les deux pages redirigent ; visiteur → formulaires affichés.
+6. **Critère de validation** : les quatre essais donnent ces résultats.
+
+#### B4 — Changer son mot de passe — bonus — 35 min
+1. **Fichiers cibles** : `change_password.php` (nouveau), `views/view_change_password.php` (nouveau), `repositories/UserRepository.php`, `views/header.php`.
+2. **Noms exacts** : champs `current_password`, `new_password`, `new_password_confirmation` ; `UserRepository::updatePassword(int $id, string $passwordHash): void` ; lien « Mot de passe » pour un utilisateur connecté.
+3. **Données d'entrée** : `user@onzer.local`, `User123!`, nouveau mot de passe `Sateur2026!`.
+4. **Méthode imposée** : `password_verify` sur l'ancien, `password_hash` sur le nouveau, `UPDATE` préparé ; page réservée aux connectés.
+5. **Résultat observable** : ancien faux → « Mot de passe actuel incorrect. » ; confirmation différente → « Les deux mots de passe ne correspondent pas. » ; succès → flash « Mot de passe modifié. » ; visiteur → redirigé vers `login.php`.
+6. **Critère de validation** : après déconnexion, `User123!` est refusé et `Sateur2026!` accepté.
+
 ## Relectures du plan
 ### Cycle 1, plan v1 (2026-10-28)
 - **Rapports** : cohérence ✔ (un ✘ sur le contenu du plan : N5, N6, préfixe PDO de N2) ; contrat ✔
@@ -379,6 +405,8 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 - **Brouillon** : docs/plans/php/brouillons/7-sessions-et-authentification/tp.json (90 blocs, 145 min sur 160, 91 %)
 - **Hors cycle** : `is_admin` false refusé par PostgreSQL (exécuté), contrat E1 en `(int) $user->isAdmin()` ; E3, E4 corrigés (plan v7).
 - **Cycle 1** (2026-10-30) : style ✔ (90 blocs, 13 remarques), cohérence ✔ (1 BLOQUANT `php -r`, 4 MINEURS), contrat ✔ (grille 6 sur 6, écarts d'alignement du plan) ; étudiants non lancés. 12 remarques retenues. Écartées : style n° 3, 5, 7, 8, 10, 12, le champ « méthode imposée » est exigé par le contrat, ce n'est pas un indice ; style n° 6, fusion des étapes de E2, le guidage strict a été tranché le 2026-10-28.
+
+- **Étudiants** (2026-10-31, projet de départ reconstruit depuis les TP 3 à 6, car `main` du dépôt diverge des TP ; bac à sable supprimé) : fragile 5 exercices sur 5, aucun blocage, 135 min, soit 84 % ; rapide 71 min et bonus 4 min, 85 min non occupées. Retenues du fragile : hachages (e1-etape-2), nom en texte dans le header (e4-etape-4), saisie valide pour `Eclipses` (e5-essais), `require_once` (e2), `var_dump` (e1), clé `flash` (e5). Retenues du rapide : destination de `logout.php`, chemin de `REQUEST_URI`. Écartées : `php -r` proposé par les deux étudiants (non enseigné, véto cohérence). À trancher : bonus supplémentaires.
 
 ## Matériau quiz
 Rempli à la clôture (étape ultérieure du pipeline).
