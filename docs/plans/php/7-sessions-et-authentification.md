@@ -3,11 +3,11 @@
 ## Statut
 - **Mode** : redaction
 - **Phase** : clôture
-- **Étape en cours** : clôture : curriculum et courseIntroMinutes à confirmer
+- **Étape en cours** : clôture faite, relecture navigateur du TP et des slides en attente
 - **Mis à jour le** : 2026-11-01
 - **Validé** : fiche de conception le 2026-10-28 ; plan v10 le 2026-10-31 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30 ; TP le 2026-10-31
 - **Désaccords en attente** : aucun
-- **Prochaine action** : confirmation de l'écriture du curriculum, puis relecture navigateur du TP et des slides.
+- **Prochaine action** : OK navigateur du TP et des slides ; visibilité de la correction ; publication décidée par l'utilisateur.
 
 ## Cadrage
 | # | Question | Défaut proposé | Réponse de l'utilisateur | Date |
@@ -420,6 +420,7 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 
 - **Correction** (2026-10-31) : 5 exercices, 4 bonus, `fil-rouge/`, `README.md` ; 9 sur 9 exécutés et conformes, aucun contrat à revoir ; bac à sable supprimé. Non poussée.
 
+- **Clôture** (2026-11-01) : `curriculum` et `courseIntroMinutes` (20) écrits en prod après confirmation (« Oui, écris-les »), relus.
 - **Publication** (2026-11-01) : branches `fin-tp-6` et `fin-tp-7` poussées sur le dépôt de référence, `main` inchangé ; projet `correction/php/7-sessions-et-authentification` créé par un push git (91 fichiers), visibilité à vérifier ; `push_correction` non utilisé.
 
 ## Écarts réalisés
