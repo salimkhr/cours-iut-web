@@ -9,7 +9,7 @@ Mis à jour le 2026-11-01.
 | 4 | 4-formulaire | relecture | synthèse arbitrée présentée | 2026-10-27 | choix des remarques à corriger, 1 désaccord |
 | 5 | 5-lire-des-donnees-en-base | — | — | — | — |
 | 6 | 6-ecrire-des-donnees-en-base | — | — | — | — |
-| 7 | 7-sessions-et-authentification | clôture | correction et branches publiées | 2026-11-01 | curriculum, relecture navigateur |
+| 7 | 7-sessions-et-authentification | clôture | curriculum écrit en prod | 2026-11-01 | relecture navigateur du TP et des slides |
 | 9 | 9-symfony | — | — | — | — |
 | 8 | 8-examen | — | — | — | — |
 | 10 | 10-twig | — | — | — | — |
