@@ -2,12 +2,12 @@
 
 ## Statut
 - **Mode** : redaction
-- **Phase** : correction
-- **Étape en cours** : TP écrit en prod, relecture navigateur du TP et des slides
-- **Mis à jour le** : 2026-10-30
+- **Phase** : clôture
+- **Étape en cours** : clôture : curriculum et courseIntroMinutes à confirmer
+- **Mis à jour le** : 2026-11-01
 - **Validé** : fiche de conception le 2026-10-28 ; plan v10 le 2026-10-31 ; cours et relecture navigateur le 2026-10-30 ; slides le 2026-10-30 ; TP le 2026-10-31
 - **Désaccords en attente** : aucun
-- **Prochaine action** : OK navigateur, puis correction et clôture.
+- **Prochaine action** : confirmation de l'écriture du curriculum, puis relecture navigateur du TP et des slides.
 
 ## Cadrage
 | # | Question | Défaut proposé | Réponse de l'utilisateur | Date |
@@ -420,5 +420,32 @@ Limite de deux cycles atteinte : les changements de la v3 n'ont pas été relus 
 
 - **Correction** (2026-10-31) : 5 exercices, 4 bonus, `fil-rouge/`, `README.md` ; 9 sur 9 exécutés et conformes, aucun contrat à revoir ; bac à sable supprimé. Non poussée.
 
+- **Publication** (2026-11-01) : branches `fin-tp-6` et `fin-tp-7` poussées sur le dépôt de référence, `main` inchangé ; projet `correction/php/7-sessions-et-authentification` créé par un push git (91 fichiers), visibilité à vérifier ; `push_correction` non utilisé.
+
+## Écarts réalisés
+| Repère | Plan validé | Réalisé | Raison | Date |
+|---|---|---|---|---|
+| Arborescence | notions à plat | deux parties, sous-parties, sous-sous-parties | demande de l'utilisateur | 2026-10-30 |
+| N4 | `login.php` non prévu | `password_verify` montré sur `delete_recipe.php` | pas de copier-coller de E3 | 2026-10-30 |
+| N3 | variante d'inscription complète | contrôle d'adresse seul | pas de copier-coller de E2 | 2026-10-30 |
+| N3, S6, S1 | erreur `user`, slides S1 et S6 | retirées | demande de l'utilisateur | 2026-10-30 |
+| N1 à N6 | erreurs fréquentes | retirées, quatre règles en une phrase | les étudiants apprennent en analysant leurs erreurs | 2026-10-31 |
+| E1 | `php -r` | moyen libre, `(int) $user->isAdmin()` imposé | notion non enseignée ; `false` refusé par PostgreSQL | 2026-10-31 |
+| B2 à B4 | absents | ajoutés | temps restant du rapide | 2026-10-31 |
+| Critères E1 à E3 | valeurs de sortie | hachage, `is_admin`, clés de session vérifiés | relecteur-pedagogie | 2026-10-31 |
+
 ## Matériau quiz
-Rempli à la clôture (étape ultérieure du pipeline).
+### Gestes clés du TP
+| Exercice | Code écrit (extrait) | API imposée | Résultat observé |
+|---|---|---|---|
+| E1 | `toParams()` avec `(int) $user->isAdmin()` | `RETURNING id`, `fetchColumn()`, `findByEmail` | `admin@onzer.local`, `t`, 60 ; `findByEmail` inconnu : `NULL` |
+| E2 | `password_hash($password, PASSWORD_DEFAULT)` puis `insert` | `findByEmail` pour le doublon | ligne `f`, `$2y$` ; « Cette adresse email est déjà utilisée. » |
+| E3 | `password_verify`, `$_SESSION['user']` à quatre clés | `session_start()` en tête, `session_destroy()` | arrivée sur `list_albums.php` ; « Identifiants incorrects. » ; `array(0) { }` |
+| E4 | `requireAdmin()`, `currentUser(): ?array` | `redirect()` vers `login.php` | neuf cases ; `delete_album.php?id=1` en visiteur ne supprime rien |
+| E5 | `setFlash()`, `takeFlash()` avec `unset` | un seul appel dans `header.php` | message affiché une fois, plus de `status=` |
+### Blocages de l'étudiant fragile
+- E1 : comment produire les hachages (e1-etape-2), corrigé par un script temporaire.
+- E4 : forme d'affichage du nom dans le menu (e4-etape-4), corrigée.
+- E5 : saisie valide de l'album `Eclipses` (e5-essais), corrigée.
+### Erreurs rencontrées au TP
+- E1, `false` PHP vers une colonne `BOOLEAN` : `SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type boolean: ""`.
