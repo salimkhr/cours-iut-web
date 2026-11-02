@@ -147,6 +147,9 @@ TP.
 - **Énoncé autosuffisant** : le code est remontré dans un bloc `code`. L'étudiant répond
   sans ouvrir son TP. Blocs permis : `text`, `list`, `list-item`, `table`, `code`,
   `image-card`, `diagram`, `callout`, `quote`, `file-tree`.
+- **Énoncé court** : droit au fait, sans nom de fichier du TP ni rappel de séance (« Vous écrivez
+  deux echo à la suite. », pas « Dans streamer.php, vous écrivez… » ni « comme au TP »). Il ne
+  dit pas quelle version vient du TP et n'annonce pas le résultat.
 - **Interdits** : récitation, piège de syntaxe sans enjeu, notion hors curriculum, doublon
   du quiz existant (`get_quiz`).
 - **Distracteurs** : de vraies idées fausses, tirées des erreurs fréquentes et des blocages
