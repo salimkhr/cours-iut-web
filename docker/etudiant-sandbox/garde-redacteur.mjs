@@ -1,25 +1,27 @@
 #!/usr/bin/env node
-// Hook PreToolUse des agents redacteur-cours, redacteur-slides et redacteur-tp
-// (pipeline content-writer-v3, étape « rédaction »).
+// Hook PreToolUse des agents redacteur-cours, redacteur-slides, redacteur-tp,
+// redacteur-quiz-section et redacteur-quiz-transversal (pipeline content-writer-v3).
 //
 // Les rédacteurs n'écrivent sur aucun serveur : ils rendent l'arbre de blocs de leur
 // support dans un brouillon JSON. Argument du hook : la liste des supports que l'agent
-// a le droit d'écrire, séparés par des virgules (cours | slides | tp | examen).
+// a le droit d'écrire, séparés par des virgules (cours | slides | tp | examen | quiz).
 //
 // Permis :
 // - Write, Edit : <dépôt>\docs\plans\<module>\brouillons\<section>\<support>.json, pour
-//   un <support> de l'argument ;
+//   un <support> de l'argument ; pour quiz :
+//   <dépôt>\docs\plans\<module>\brouillons\quiz\<nom>.json ;
 // - Read, selon le support (spec § 4 : le rédacteur du cours ne voit pas le détail du
 //   fil rouge, donc ni le plan complet ni le TP) :
 //   - cours : dans <dépôt>\docs\plans\<module>\brouillons\<section>\, les fichiers
 //     cours.* , cours-* et plan-cours.md ;
 //   - slides : en plus, slides.*, slides-* et plan-slides.md ;
-//   - tp, examen : tout fichier .json ou .md de ce dossier, et les plans
+//   - tp, examen, quiz : tout fichier .json ou .md de ce dossier, et les plans
 //     <dépôt>\docs\plans\<module>\<fichier>.md ;
 //   pour tous : les tool-results de Claude Code ;
 // - Bash : une seule commande, la validation de son propre brouillon, en chemin
 //   relatif depuis la racine du dépôt :
 //     bun src/scripts/brouillon.ts valider docs/plans/<module>/brouillons/<section>/<support>.json
+//     bun src/scripts/brouillon.ts valider-quiz docs/plans/<module>/brouillons/quiz/<nom>.json
 // Refusés : PowerShell, NotebookEdit, MultiEdit. Les autres outils (MCP de lecture,
 // TodoWrite, ToolSearch) traversent la garde : la liste tools: de l'agent les limite.
 //
@@ -41,7 +43,7 @@ const P = WIN ? path.win32 : path.posix;
 const SLUG = /^[a-z0-9][a-z0-9-]{0,120}$/;
 const PLAN = /^[a-z0-9][a-z0-9-]{0,120}\.md$/;
 const BROUILLON = /^[a-z0-9][a-z0-9.-]{0,120}\.(?:json|md)$/;
-const SUPPORTS = new Set(["cours", "slides", "tp", "examen"]);
+const SUPPORTS = new Set(["cours", "slides", "tp", "examen", "quiz"]);
 const REFUSES = new Set(["PowerShell", "NotebookEdit", "MultiEdit"]);
 
 function refuser(raison) {
@@ -118,8 +120,9 @@ function estBrouillon(seg) {
 function ecriturePermise(chemin, R, supports) {
     const seg = sous(chemin, R.plans);
     if (seg && estBrouillon(seg)) {
+        if (supports.has("quiz") && seg[2] === "quiz" && /^[a-z0-9][a-z0-9-]{0,120}\.json$/.test(seg[3])) return null;
         const m = /^([a-z]+)\.json$/.exec(seg[3]);
-        if (m && supports.has(m[1])) return null;
+        if (m && m[1] !== "quiz" && supports.has(m[1])) return null;
     }
     return `écriture permise seulement dans docs\\plans\\<module>\\brouillons\\<section>\\{${[...supports].join(",")}}.json.`;
 }
@@ -130,6 +133,7 @@ const LECTURES = {
     slides: ["cours.", "cours-", "plan-cours.", "slides.", "slides-", "plan-slides."],
     tp: null,
     examen: null,
+    quiz: null,
 };
 
 function lecturePermise(chemin, R, supports) {
@@ -152,9 +156,11 @@ function lecturePermise(chemin, R, supports) {
 }
 
 const COMMANDE = /^bun src\/scripts\/brouillon\.ts valider docs\/plans\/([a-z0-9][a-z0-9-]{0,120})\/brouillons\/([a-z0-9][a-z0-9-]{0,120})\/([a-z]+)\.json$/;
+const COMMANDE_QUIZ = /^bun src\/scripts\/brouillon\.ts valider-quiz docs\/plans\/[a-z0-9][a-z0-9-]{0,120}\/brouillons\/quiz\/[a-z0-9][a-z0-9-]{0,120}\.json$/;
 
 function bashPermis(commande, supports) {
     if (typeof commande !== "string") return "commande illisible.";
+    if (supports.has("quiz") && COMMANDE_QUIZ.test(commande.trim())) return null;
     const m = COMMANDE.exec(commande.trim());
     if (!m) return "seule « bun src/scripts/brouillon.ts valider docs/plans/<module>/brouillons/<section>/<support>.json » est permise.";
     if (!supports.has(m[3])) return `support « ${m[3]} » hors de votre périmètre.`;
@@ -165,7 +171,7 @@ function supportsDeLArgument() {
     const brut = process.argv[2] ?? "";
     const liste = brut.split(",").map((s) => s.trim()).filter(Boolean);
     if (liste.length === 0 || liste.some((s) => !SUPPORTS.has(s))) {
-        refuser(`argument du hook invalide (« ${brut} ») : attendu cours, slides, tp ou examen.`);
+        refuser(`argument du hook invalide (« ${brut} ») : attendu cours, slides, tp, examen ou quiz.`);
     }
     return new Set(liste);
 }

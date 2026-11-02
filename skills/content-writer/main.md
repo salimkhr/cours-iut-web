@@ -18,6 +18,7 @@ commande qui correspond à la demande, puis arrêtez-vous :
 | Relire des supports déjà en ligne | `/content-writer-v3 relecture <module> <section>` |
 | Écrire l'examen de fin de module | `/content-writer-v3 examen <module>` |
 | Répercuter une modification sur les autres supports | `/content-writer-v3 propagation <module> [<section>]` |
+| Ajouter des questions au quiz du module | `/content-writer-v3 quiz <module> <sections, ex. 1-4>` |
 
 ## Autres demandes
 

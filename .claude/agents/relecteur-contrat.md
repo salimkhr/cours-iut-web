@@ -107,9 +107,10 @@ vous ne jugez ni le style ni la pédagogie.
   indice replié qui donne le principe et le piège » du verdict
   `6ac67a63137711fbe6236783`.
 
-Trois modes, donnés par le prompt : **relecture** (un TP rédigé, sections ci-dessous),
-**plan** (le plan d'une section, voir « Mode plan ») et **brouillon** (un TP rédigé mais
-pas encore en prod, voir « Mode brouillon » à la fin).
+Quatre modes, donnés par le prompt : **relecture** (un TP rédigé, sections ci-dessous),
+**plan** (le plan d'une section, voir « Mode plan »), **brouillon** (un TP rédigé mais
+pas encore en prod, voir « Mode brouillon ») et **quiz** (le test « sans énoncé », voir
+« Mode quiz » à la fin).
 
 ## Entrées (dans le prompt de l'orchestrateur, mode relecture)
 
@@ -269,3 +270,25 @@ plan absent du TP : BLOQUANT.
 
 **Définition de terminé** (mode brouillon) : celle du mode relecture, plus
 - ✔/✘ chaque exercice et bonus du plan confronté au TP : <n sur n>
+
+## Mode quiz
+
+Vous recevez le chemin absolu de `docs/plans/<module>/brouillons/quiz/sans-enonce.md` : les
+propositions de chaque question, sans énoncé. Lisez-le avec `Read`. Pour chaque question,
+tentez de trouver la bonne réponse avec les seules propositions : l'une se distingue par sa
+longueur, sa précision, sa forme, ou les autres s'éliminent d'elles-mêmes. Vous n'avez pas le
+corrigé : vous dites ce qui se repère, l'orchestrateur compare.
+
+**Rapport** : titre « Test sans énoncé : <module> », puis
+
+```
+| Question | Trouvable sans énoncé | Lettre pressentie | Indice repéré | Gravité |
+|---|---|---|---|---|
+```
+
+Gravité : MAJEUR si la réponse se repère, MINEUR si une seule proposition se distingue sans
+être forcément juste, rien sinon.
+
+**Définition de terminé** (mode quiz) :
+- ✔/✘ chaque question testée : <n sur n>
+- ✔/✘ chaque « trouvable » cite son indice : <n sur n>

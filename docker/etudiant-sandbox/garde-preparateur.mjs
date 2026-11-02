@@ -6,6 +6,7 @@
 // - les quatre outils MCP de lecture prod, sous les deux préfixes (Desktop et CLI) ;
 // - Write vers :
 //     <racine bac>\<run-id>\supports\cours.md | tp.md
+//     <racine bac>\<run-id>\supports\<section>\cours.md | tp.md (quiz sur plusieurs sections)
 //     <racine bac>\<run-id>\fournis\...
 //     %LOCALAPPDATA%\Temp\claude\...\scratchpad\couverture-<run-id>.md
 //   avec <racine bac> = %LOCALAPPDATA%\Temp\cours-iut-bac ;
@@ -119,12 +120,13 @@ function ecriturePermise(chemin, R, { fournisSeulement = false } = {}) {
         if (!RUN_ID.test(run)) return `run-id « ${run} » invalide (a-z, 0-9, -).`;
         // fournis\ lui-même : seulement comme dossier de décompression (-d).
         if (cle(dossier) === "fournis" && (reste.length >= 1 || fournisSeulement)) return null;
-        if (!fournisSeulement && cle(dossier) === "supports" && reste.length === 1 && ["cours.md", "tp.md"].includes(cle(reste[0]))) {
+        const support = reste.length === 1 || (reste.length === 2 && RUN_ID.test(reste[0]));
+        if (!fournisSeulement && cle(dossier) === "supports" && support && ["cours.md", "tp.md"].includes(cle(reste.at(-1) ?? ""))) {
             return null;
         }
         return fournisSeulement
             ? "destination hors de <run-id>\\fournis\\."
-            : "dans le bac à sable, seuls supports\\cours.md, supports\\tp.md et fournis\\... sont permis.";
+            : "dans le bac à sable, seuls supports\\[<section>\\]cours.md, supports\\[<section>\\]tp.md et fournis\\... sont permis.";
     }
     if (!fournisSeulement) {
         const sc = sous(chemin, R.claude);

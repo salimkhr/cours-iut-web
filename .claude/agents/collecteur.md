@@ -17,6 +17,7 @@ tools:
   - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__list_exemplars
   - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__list_block_types
   - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__get_project_reference
+  - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__get_quiz
   - mcp__claude_ai_cours-iut-web__list_modules
   - mcp__claude_ai_cours-iut-web__get_module
   - mcp__claude_ai_cours-iut-web__list_sections
@@ -28,6 +29,7 @@ tools:
   - mcp__claude_ai_cours-iut-web__list_exemplars
   - mcp__claude_ai_cours-iut-web__list_block_types
   - mcp__claude_ai_cours-iut-web__get_project_reference
+  - mcp__claude_ai_cours-iut-web__get_quiz
 disallowedTools:
   - Agent
   - "mcp__95c87654-e293-4528-a7a1-bb0ab25fa0f5__*"
@@ -110,8 +112,8 @@ rapportez, avec la source de chaque information.
 
 ## Entrées (dans le prompt de l'orchestrateur)
 
-- mode : `relecture` (par défaut) ou `conception` ;
-- `module` (slug) et `section` (slug) ;
+- mode : `relecture` (par défaut), `conception` ou `quiz` ;
+- `module` (slug) et `section` (slug), ou la liste des sections en mode quiz ;
 - supports à relire (cours, slides, TP, examen), ou « section à concevoir ».
 
 ## Mode conception
@@ -132,6 +134,22 @@ avec la relecture :
   - blocages relevés dans `docs/plans/<module>/` n'est PAS de votre ressort (vous n'avez
     pas accès au dépôt) : l'orchestrateur les lit ;
   - fil rouge : ce que la section doit y ajouter, et les fichiers concernés.
+
+## Mode quiz
+
+La fiche sert au cadrage et aux rédacteurs de quiz. Elle couvre toutes les sections de la
+liste, et remplace la fiche habituelle :
+
+- module : `universe`, `exampleDomain`, `projectSpec` ;
+- pour chaque section, classée par `order` : `totalDuration`, brief, `curriculum` verbatim,
+  rubrique « Notions réellement enseignées », source de ses supports (`db` ou `file`) ;
+- verdicts actifs des formats `quiz` et global, verbatim ;
+- quiz existant (`get_quiz`) : nombre de questions, `negativeMarking`, énoncé de chaque
+  question en une ligne, ou « pas de quiz ».
+
+Les rubriques « Matériau quiz » des plans ne sont PAS de votre ressort : l'orchestrateur
+les lit. Votre définition de terminé devient : chaque section de la liste couverte
+(<n sur n>), verdicts recopiés, quiz existant lu.
 
 ## Liste de tâches, avant toute lecture
 

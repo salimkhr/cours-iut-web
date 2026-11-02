@@ -25,11 +25,28 @@
 //
 // Le type de contenu se déduit du nom du fichier : cours.json, slides.json, tp.json,
 // examen.json.
+//
+// Quiz de module : les candidates vivent dans docs/plans/<module>/brouillons/quiz/ :
+//
+//   bun src/scripts/brouillon.ts valider-quiz <fichier.json>
+//   bun src/scripts/brouillon.ts extraire-quiz <sortie.json> --ids a,b,c <fichier.json>...
+//   bun src/scripts/brouillon.ts exporter-quiz <fichier.json>... --sortie <q.md> [--cle <cle.md>] [--sans-enonce]
+//
+// - valider-quiz : même quizQuestionSchema que le serveur, plus les étiquettes
+//   (sections, geste, notion, type, Bloom, difficulté). Le fichier transversal.json
+//   exige au moins deux sections par candidate.
+// - extraire-quiz : rassemble les candidates retenues dans un seul fichier.
+// - exporter-quiz : énoncés et propositions, sans les bonnes réponses, propositions
+//   mélangées et lettrées ; --sans-enonce ne garde que les propositions ; --cle écrit la
+//   table des lettres justes, à ne jamais déposer dans le bac à sable.
 
+import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { z } from "zod";
 import { isTypeAllowedInContent } from "@/lib/blockSchemas";
 import { blocksToMarkdown } from "@/lib/blockTextUtils";
+import { quizQuestionSchema } from "@/lib/schemas/quiz.schema";
 import { validateBlockTree, type ValidationError } from "@/lib/validateBlockTree";
 import type { Block } from "@/types/CourseContent";
 
@@ -296,6 +313,96 @@ export function comparer(brouillon: Block[], relu: string): ResultatComparaison 
     };
 }
 
+const etiquettesSchema = z.object({
+    sections: z.array(z.string().min(1)).min(1),
+    geste: z.string().min(1),
+    notion: z.string().min(1),
+    type: z.enum(["prediction", "diagnostic", "choix", "justification"]),
+    bloom: z.enum(["comprendre", "appliquer", "analyser", "evaluer"]),
+    difficulte: z.enum(["facile", "moyenne", "difficile"]),
+});
+
+export type Etiquettes = z.infer<typeof etiquettesSchema>;
+
+export interface Candidate {
+    id: string;
+    blocks: Block[];
+    options: { id: string; text: string; correct: boolean }[];
+    weight?: number;
+    durationSeconds?: number;
+    etiquettes: Etiquettes;
+}
+
+export interface ResultatQuiz {
+    valide: boolean;
+    erreurs: ValidationError[];
+    questions: number;
+    bloom: Record<string, number>;
+}
+
+/** Ce que add_quiz_question accepterait, plus les étiquettes de la spec § 7. */
+export function validerQuiz(input: unknown, transversal = false): ResultatQuiz {
+    if (!Array.isArray(input)) {
+        return { valide: false, erreurs: [{ path: "", message: "Tableau de candidates attendu" }], questions: 0, bloom: {} };
+    }
+    const erreurs: ValidationError[] = [];
+    const bloom: Record<string, number> = {};
+    const vus = new Set<string>();
+    input.forEach((brut: Record<string, unknown>, i) => {
+        const id = typeof brut?.id === "string" ? brut.id : `#${i}`;
+        const signaler = (p: string, message: string) => erreurs.push({ path: `${id}${p}`, message });
+        if (vus.has(id)) signaler("", "Identifiant de candidate en double");
+        vus.add(id);
+        const { etiquettes, ...question } = brut ?? {};
+        const q = quizQuestionSchema.safeParse(question);
+        if (!q.success) q.error.issues.forEach((e) => signaler(`.${e.path.join(".")}`, e.message));
+        const e = etiquettesSchema.safeParse(etiquettes);
+        if (!e.success) {
+            e.error.issues.forEach((x) => signaler(`.etiquettes.${x.path.join(".")}`, x.message));
+            return;
+        }
+        bloom[e.data.bloom] = (bloom[e.data.bloom] ?? 0) + 1;
+        if (transversal && e.data.sections.length < 2) signaler(".etiquettes.sections", "Une candidate transversale relie au moins deux sections");
+    });
+    return { valide: erreurs.length === 0, erreurs, questions: input.length, bloom };
+}
+
+/** Rassemble les candidates demandées, dans l'ordre des ids. */
+export function extraireQuiz(candidates: Candidate[], ids: string[]): Candidate[] {
+    const parId = new Map(candidates.map((c) => [c.id, c]));
+    return ids.map((id) => {
+        const c = parId.get(id);
+        if (!c) throw new Error(`Candidate inconnue : ${id}`);
+        return c;
+    });
+}
+
+/** Ordre fixe mais sans lien avec l'ordre de rédaction : la bonne réponse ne se déduit pas de sa place. */
+function melanger<T extends { id: string }>(options: T[], graine: string): T[] {
+    const cle = (o: T) => createHash("sha256").update(`${graine}:${o.id}`).digest("hex");
+    return [...options].sort((a, b) => cle(a).localeCompare(cle(b)));
+}
+
+export function exporterQuiz(candidates: Candidate[], sansEnonce = false): { questions: string; cle: string } {
+    const questions: string[] = [];
+    const cle = ["| Question | Lettres justes | Id des propositions |", "|---|---|---|"];
+    for (const c of candidates) {
+        const options = melanger(c.options, c.id);
+        const lettre = (i: number) => String.fromCharCode(65 + i);
+        questions.push(
+            `## Question ${c.id}`,
+            ...(sansEnonce ? [] : ["", blocksToMarkdown(c.blocks, false)]),
+            "",
+            "Propositions (une ou plusieurs justes) :",
+            ...options.map((o, i) => `- ${lettre(i)}. ${o.text}`),
+            "",
+        );
+        const justes = options.flatMap((o, i) => (o.correct ? [lettre(i)] : []));
+        cle.push(`| ${c.id} | ${justes.join(", ")} | ${options.map((o, i) => `${lettre(i)} = ${o.id}`).join(", ")} |`);
+    }
+    return { questions: questions.join("\n"), cle: `${cle.join("\n")}\n` };
+}
+
 function lireBrouillon(fichier: string): unknown {
     return JSON.parse(readFileSync(fichier, "utf8").replace(/^﻿/, ""));
 }
@@ -392,8 +499,50 @@ function main(argv: string[]): number {
             if (r.differents.length) console.log(`contenu différent : ${r.differents.join(", ")}`);
             return r.identique ? 0 : 1;
         }
+        case "valider-quiz": {
+            const fichier = args[0];
+            if (!fichier) throw new Error("Usage : valider-quiz <fichier.json>");
+            const r = validerQuiz(lireBrouillon(fichier), path.basename(fichier).toLowerCase() === "transversal.json");
+            if (!r.valide) {
+                console.log(`INVALIDE : ${r.erreurs.length} erreur(s)`);
+                for (const e of r.erreurs) console.log(`- ${e.path} : ${e.message}`);
+                return 1;
+            }
+            const bloom = Object.entries(r.bloom).map(([k, n]) => `${k} ${n}`).join(", ");
+            console.log(`VALIDE : ${r.questions} candidates (${bloom})`);
+            return 0;
+        }
+        case "extraire-quiz": {
+            const ids = option(args, "--ids");
+            const i = args.indexOf("--ids");
+            const fichiers = args.filter((_, n) => n !== i && n !== i + 1);
+            const [sortie, ...sources] = fichiers;
+            if (!ids || !sortie || sources.length === 0) {
+                throw new Error("Usage : extraire-quiz <sortie.json> --ids a,b,c <fichier.json>...");
+            }
+            const candidates = sources.flatMap((f) => lireBrouillon(f) as Candidate[]);
+            const retenues = extraireQuiz(candidates, ids.split(",").map((s) => s.trim()).filter(Boolean));
+            writeFileSync(sortie, JSON.stringify(retenues, null, 1), "utf8");
+            console.log(`${sortie} : ${retenues.length} candidates`);
+            return 0;
+        }
+        case "exporter-quiz": {
+            const sortie = option(args, "--sortie");
+            const fichierCle = option(args, "--cle");
+            const fichiers = args.filter((a) => a.toLowerCase().endsWith(".json"));
+            if (!sortie || fichiers.length === 0) {
+                throw new Error("Usage : exporter-quiz <fichier.json>... --sortie <q.md> [--cle <cle.md>] [--sans-enonce]");
+            }
+            const candidates = fichiers.flatMap((f) => lireBrouillon(f) as Candidate[]);
+            const { questions, cle } = exporterQuiz(candidates, args.includes("--sans-enonce"));
+            mkdirSync(path.dirname(sortie), { recursive: true });
+            writeFileSync(sortie, questions, "utf8");
+            if (fichierCle) writeFileSync(fichierCle, cle, "utf8");
+            console.log(`${sortie} : ${candidates.length} questions`);
+            return 0;
+        }
         default:
-            console.log("Commandes : valider, exporter, couverture, deposer, comparer (voir l'en-tête du script).");
+            console.log("Commandes : valider, exporter, couverture, deposer, comparer, valider-quiz, extraire-quiz, exporter-quiz (voir l'en-tête du script).");
             return 1;
     }
 }

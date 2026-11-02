@@ -1,8 +1,8 @@
 ---
 name: content-writer-v3
-description: Orchestrateur du pipeline multi-agents de rédaction de cours. Mode relecture (supports existants en prod, synthèse arbitrée sans correction), modes conception / conception-rapide (cadrage, puis plan relu et validé), mode redaction (supports rédigés en brouillon d'après le plan, relus, validés, écrits en prod par l'orchestrateur seul, puis correction et clôture) et mode propagation (journal des retouches, analyse d'impact d'une modification, mises à jour sur accord). Lance les agents, arbitre leurs rapports, tient le statut de section.
+description: Orchestrateur du pipeline multi-agents de rédaction de cours. Mode relecture (supports existants en prod, synthèse arbitrée sans correction), modes conception / conception-rapide (cadrage, puis plan relu et validé), mode redaction (supports rédigés en brouillon d'après le plan, relus, validés, écrits en prod par l'orchestrateur seul, puis correction et clôture) et mode propagation (journal des retouches, analyse d'impact d'une modification, mises à jour sur accord) et mode quiz (questions sur une liste de sections, générées large, testées, sélectionnées). Lance les agents, arbitre leurs rapports, tient le statut de section.
 disable-model-invocation: true
-argument-hint: "[relecture|conception|conception-rapide|redaction|examen|propagation] [module] [section]"
+argument-hint: "[relecture|conception|conception-rapide|redaction|examen|propagation|quiz] [module] [section, ou sections du quiz : 1-4]"
 ---
 
 # content-writer v3 : orchestrateur d'une section
@@ -25,6 +25,7 @@ contradiction entre ce skill et la spec, arrêtez-vous et signalez-la à l'utili
 | `redaction` | plan validé : cours, slides puis TP rédigés en brouillon, relus, validés un par un, écrits en prod par vous ; correction et clôture | § 1 à § 3, puis `redaction.md`, puis `cloture.md` |
 | `examen` | examen de fin de module, hors fil rouge, sur les seuls `curriculum` : plan écrit pour la traçabilité (sans cadrage ni validation du plan), rédaction par `redacteur-tp` en mode examen, sans correction | § 1 à § 3, `plan.md` § 2 (sans § 4 et § 5), puis `redaction.md` |
 | `propagation` | un élément validé a changé après coup, ou le journal des retouches a des entrées en attente : inventaire des dépendances, analyse d'impact, rapport trié, mises à jour sur accord | § 1 à § 3, puis `propagation.md` |
+| `quiz` | quiz unique du module, sur une liste de sections (`1-4`) : cadrage, génération, présélection, tests, sélection, validation, écriture en prod par vous | § 1, puis `quiz.md` |
 
 Mode absent : à la reprise, **le statut de section fait foi** (son champ « Mode »), même
 si des supports sont déjà en source `db` : une section en cours de rédaction a son cours
@@ -50,6 +51,8 @@ en une question.
 - Mode `propagation` : le rapport d'impact n'écrit rien. Les mises à jour acceptées
   suivent les règles du mode `redaction` ; `mark_retouches_processed` s'y ajoute, après
   confirmation explicite (`propagation.md` § 0).
+- Mode `quiz` : vous seul écrivez en prod (`create_quiz`, `add_quiz_question`), après la
+  validation de la sélection et la confirmation de l'écriture (`quiz.md` § 7).
 - Dans tous les modes, les autres écritures sont les fichiers de suivi
   (`docs/plans/<module>/<section>.md` et `docs/plans/<module>/etat.md`), les dossiers
   temporaires du bac à sable et les commits de ces fichiers de suivi (« Commits »).
@@ -67,6 +70,7 @@ Annexes de ce dossier, à lire au moment indiqué :
 - `cloture.md` : correction du TP et clôture de la section (mode `redaction`) ;
 - `propagation.md` : dépendances, analyse d'impact, rapport et mises à jour (mode
   `propagation`) ;
+- `quiz.md` : cadrage, génération, tests, sélection et écriture du quiz (mode `quiz`) ;
 - `bac-a-sable.md` : commandes de création, de contrôle et de nettoyage du conteneur ;
 - `suivi.md` : format du statut de section et de l'état du module.
 
@@ -77,7 +81,8 @@ section manque ou n'existe pas en prod (`list_modules`, `list_sections`), propos
 liste des slugs et attendez le choix de l'utilisateur. En relecture, demandez aussi
 quels supports relire si ce n'est pas dit : par défaut, tous ceux qui existent en source
 `db`. En mode `propagation`, la section est facultative : sans elle, toutes les retouches
-en attente du module sont traitées.
+en attente du module sont traitées. En mode `quiz`, `$2` est une plage ou une liste de
+sections (`quiz.md` § 0).
 
 ## Commits
 
@@ -153,6 +158,18 @@ Liste type du mode `propagation` :
 6. Présenter le rapport trié, attendre la décision
 7. Mises à jour acceptées, une à une
 8. Solder les retouches (confirmation), état du module, commit
+
+Liste type du mode `quiz` :
+
+1. Lire le journal, `quiz.md` et l'état du module
+2. Collecter le contexte des sections visées
+3. Cadrage : Q1 à Q7, une par une
+4. Génération : un agent par section, un transversal
+5. Présélection
+6. Tests : deux étudiants, sans énoncé, lecture croisée
+7. Corriger ou écarter, sélection finale
+8. Validation, écriture en prod (confirmation), relecture
+9. `quiz.md`, état du module, commit
 
 À la reprise d'une section interrompue, reconstruisez la liste du mode à partir du
 statut de section (étape 1) et reprenez à la première tâche non faite.
@@ -468,6 +485,8 @@ n'enchaînez sur rien d'autre.
 de la correction et de la clôture (`cloture.md` § 3).
 
 **Mode propagation** : `propagation.md` § 7.
+
+**Mode quiz** : `quiz.md` § 9.
 
 **Mode relecture**. À la fin, listez critère par critère, ✔ avec preuve ou ✘ avec raison :
 

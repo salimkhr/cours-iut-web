@@ -4,12 +4,78 @@ import {
     comparer,
     compter,
     exporter,
+    exporterQuiz,
+    extraireQuiz,
     fichiersFournis,
     idsDesMarqueurs,
     typeDuFichier,
     valider,
+    validerQuiz,
+    type Candidate,
 } from "@/scripts/brouillon";
 import type { Block } from "@/types/CourseContent";
+
+const candidate = (id: string, sections = ["7-sessions"]): Candidate => ({
+    id,
+    blocks: [{ id: `${id}-t`, type: "text", props: { content: "Que renvoie `session_start()` ici ?" } }] as Block[],
+    options: [
+        { id: `${id}-a`, text: "Une erreur", correct: false },
+        { id: `${id}-b`, text: "true", correct: true },
+    ],
+    durationSeconds: 45,
+    etiquettes: { sections, geste: "E3", notion: "session", type: "prediction", bloom: "analyser", difficulte: "moyenne" },
+});
+
+describe("quiz", () => {
+    test("accepte une candidate et compte les niveaux de Bloom", () => {
+        const r = validerQuiz([candidate("q1"), candidate("q2")]);
+        expect(r.erreurs).toEqual([]);
+        expect(r.bloom).toEqual({ analyser: 2 });
+    });
+
+    test("refuse ce que le serveur refuserait", () => {
+        const c = candidate("q1");
+        c.options = c.options.map((o) => ({ ...o, correct: true }));
+        expect(validerQuiz([c]).valide).toBe(false);
+    });
+
+    test("refuse le niveau « se souvenir » et les étiquettes absentes", () => {
+        const c = candidate("q1");
+        (c.etiquettes as { bloom: string }).bloom = "se souvenir";
+        expect(validerQuiz([c]).valide).toBe(false);
+        const { etiquettes: _, ...nue } = candidate("q2");
+        expect(validerQuiz([nue]).valide).toBe(false);
+    });
+
+    test("refuse un doublon d'identifiant", () => {
+        expect(validerQuiz([candidate("q1"), candidate("q1")]).valide).toBe(false);
+    });
+
+    test("une transversale relie au moins deux sections", () => {
+        expect(validerQuiz([candidate("q1")], true).valide).toBe(false);
+        expect(validerQuiz([candidate("q1", ["6", "7"])], true).valide).toBe(true);
+    });
+
+    test("l'export ne contient ni le corrigé ni les id de propositions", () => {
+        const { questions, cle } = exporterQuiz([candidate("q1")]);
+        expect(questions).toContain("session_start()");
+        expect(questions).not.toContain("q1-b");
+        expect(questions).not.toContain("correct");
+        expect(cle).toMatch(/q1 \| [AB] \|/);
+    });
+
+    test("sans énoncé, seules les propositions restent", () => {
+        const { questions } = exporterQuiz([candidate("q1")], true);
+        expect(questions).not.toContain("session_start()");
+        expect(questions).toContain("Une erreur");
+    });
+
+    test("extraire garde l'ordre demandé et refuse un id inconnu", () => {
+        const liste = [candidate("q1"), candidate("q2")];
+        expect(extraireQuiz(liste, ["q2", "q1"]).map((c) => c.id)).toEqual(["q2", "q1"]);
+        expect(() => extraireQuiz(liste, ["q3"])).toThrow();
+    });
+});
 
 const cours: Block[] = [
     {

@@ -67,6 +67,7 @@ type Cas = [string, unknown, boolean?];
 const ACCEPTES: Cas[] = [
     ["Write supports/cours.md", write(path.join(RUN_DIR, "supports", "cours.md"))],
     ["Write supports/tp.md", write(path.join(RUN_DIR, "supports", "tp.md"))],
+    ["Write supports/<section>/cours.md", write(path.join(RUN_DIR, "supports", "4-formulaire", "cours.md"))],
     ["Write fournis/ avec sous-dossier", write(path.join(RUN_DIR, "fournis", "src", "index.php"))],
     ["Write fichier de couverture", write(path.join(SCRATCH, `couverture-${RUN}.md`))],
     ["Write en barres obliques", write(sl(path.join(RUN_DIR, "supports", "tp.md")))],
@@ -94,6 +95,9 @@ const REFUSES: Cas[] = [
     ["Write dans ~/.claude", write(path.join(CONFIG, "settings.json"))],
     ["Write dans le vrai C:\\Users\\Utilisateur\\.claude", write("C:\\Users\\Utilisateur\\.claude\\settings.json"), WIN],
     ["Write des slides dans supports/", write(path.join(RUN_DIR, "supports", "slides.md"))],
+    ["Write des slides dans supports/<section>/", write(path.join(RUN_DIR, "supports", "4-formulaire", "slides.md"))],
+    ["Write sous un dossier de section invalide", write(path.join(RUN_DIR, "supports", "Section X", "tp.md"))],
+    ["Write trop profond dans supports/", write(path.join(RUN_DIR, "supports", "a", "b", "tp.md"))],
     ["Write dans le dossier d'un étudiant", write(path.join(RUN_DIR, "fragile-tp", "a.php"))],
     ["Write dans depart/", write(path.join(RUN_DIR, "depart", "a.php"))],
     ["Write à la racine du bac", write(path.join(BAC, "x.md"))],

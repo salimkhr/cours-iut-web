@@ -20,7 +20,7 @@ export interface SkillManifest {
 export const SKILL_MANIFEST: SkillManifest = {
     "id": "pedagogy",
     "version": "2.1.0",
-    "content_hash": "0fa4b728fe98",
+    "content_hash": "551a8b5fb862",
     "documents": [
         {
             "id": "module-design",
@@ -54,8 +54,8 @@ export const SKILL_DOCUMENTS: Record<string, SkillDocument> = {
     "content-writer": {
         "id": "content-writer",
         "path": "content-writer/main.md",
-        "content": "# Skill content-writer — Renvoi vers le pipeline Claude Code\n\nLa rédaction ne se fait plus depuis ce serveur. Cours, slides, TP et examens passent par\nle pipeline `/content-writer-v3`, dans Claude Code, depuis le dépôt du site : il a besoin\nd'agents, d'un bac à sable Docker et de brouillons locaux, qu'une conversation de l'app\nClaude n'a pas.\n\n## Que faire\n\nNe rédigez aucun support et n'écrivez rien sur le serveur. Répondez en une phrase, avec la\ncommande qui correspond à la demande, puis arrêtez-vous :\n\n| Demande | Réponse |\n|---|---|\n| Préparer une section pas encore rédigée | `/content-writer-v3 conception <module> <section>` |\n| Préparer une section simple, sans cadrage | `/content-writer-v3 conception-rapide <module> <section>` |\n| Rédiger une section dont le plan est validé | `/content-writer-v3 redaction <module> <section>` |\n| Relire des supports déjà en ligne | `/content-writer-v3 relecture <module> <section>` |\n| Écrire l'examen de fin de module | `/content-writer-v3 examen <module>` |\n| Répercuter une modification sur les autres supports | `/content-writer-v3 propagation <module> [<section>]` |\n\n## Autres demandes\n\n- Une petite correction sur un support en ligne : chargez le document `retouche`\n  (`get_pedagogical_skill_document` avec `id=\"retouche\"`).\n- La conception d'un module entier : chargez le document `module-design`.\n",
-        "contentHash": "5d63120cd00e",
+        "content": "# Skill content-writer — Renvoi vers le pipeline Claude Code\n\nLa rédaction ne se fait plus depuis ce serveur. Cours, slides, TP et examens passent par\nle pipeline `/content-writer-v3`, dans Claude Code, depuis le dépôt du site : il a besoin\nd'agents, d'un bac à sable Docker et de brouillons locaux, qu'une conversation de l'app\nClaude n'a pas.\n\n## Que faire\n\nNe rédigez aucun support et n'écrivez rien sur le serveur. Répondez en une phrase, avec la\ncommande qui correspond à la demande, puis arrêtez-vous :\n\n| Demande | Réponse |\n|---|---|\n| Préparer une section pas encore rédigée | `/content-writer-v3 conception <module> <section>` |\n| Préparer une section simple, sans cadrage | `/content-writer-v3 conception-rapide <module> <section>` |\n| Rédiger une section dont le plan est validé | `/content-writer-v3 redaction <module> <section>` |\n| Relire des supports déjà en ligne | `/content-writer-v3 relecture <module> <section>` |\n| Écrire l'examen de fin de module | `/content-writer-v3 examen <module>` |\n| Répercuter une modification sur les autres supports | `/content-writer-v3 propagation <module> [<section>]` |\n| Ajouter des questions au quiz du module | `/content-writer-v3 quiz <module> <sections, ex. 1-4>` |\n\n## Autres demandes\n\n- Une petite correction sur un support en ligne : chargez le document `retouche`\n  (`get_pedagogical_skill_document` avec `id=\"retouche\"`).\n- La conception d'un module entier : chargez le document `module-design`.\n",
+        "contentHash": "eff319798a1d",
         "mimeType": "text/markdown"
     },
     "retouche": {

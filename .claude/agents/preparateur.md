@@ -110,8 +110,9 @@ rapport court.
 - Aucun outil d'écriture MCP, aucun serveur staging, aucun skill pédagogique
   (`get_pedagogical_skill_*`). Vous ne lancez aucun agent.
 - Une garde (hook `PreToolUse`) refuse tout ce qui sort de ce cadre :
-  - `Write` : seulement `<dir>\supports\cours.md`, `<dir>\supports\tp.md`,
-    `<dir>\fournis\...` et `<scratchpad>\couverture-<run-id>.md` ;
+  - `Write` : seulement `<dir>\supports\cours.md`, `<dir>\supports\tp.md`, leurs
+    équivalents `<dir>\supports\<section>\` en mode quiz, `<dir>\fournis\...` et
+    `<scratchpad>\couverture-<run-id>.md` ;
   - `Read` : ces mêmes fichiers, et les fichiers `tool-results` où Claude Code range une
     sortie d'outil trop longue (le message de l'outil donne le chemin) ;
   - `Bash` : deux commandes, détaillées à l'étape 3, rien d'autre (ni `ls`, ni `cd`, ni
@@ -127,6 +128,10 @@ rapport court.
   (`C:\Users\…\AppData\Local\Temp\cours-iut-bac\<run-id>`), avec ses sous-dossiers
   `supports\` et `fournis\` déjà créés ;
 - `<scratchpad>` : dossier où écrire le fichier de couverture.
+
+**Mode quiz** : le prompt donne une liste de sections au lieu d'une seule. Pour chacune,
+déposez le cours et le TP dans `<dir>\supports\<section>\cours.md` et `tp.md`. Rien dans
+`fournis\` et pas de fichier de couverture : ces tâches sont sans objet.
 
 Il manque une entrée : rapport « incomplet », sans rien écrire.
 

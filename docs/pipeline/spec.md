@@ -41,7 +41,7 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
 
 | Agent | Modèle | Outils |
 |---|---|---|
-| collecteur | haiku | MCP lecture seule (list_*, get_*, export_content_compact, list_verdicts, list_exemplars) |
+| collecteur | haiku | MCP lecture seule (list_*, get_*, get_quiz, export_content_compact, list_verdicts, list_exemplars) |
 | redacteur-cours | opus | MCP lecture prod ; écriture de son seul brouillon + validation par le script (garde en hook) |
 | redacteur-slides | sonnet | idem cours |
 | redacteur-tp | opus | idem cours + get_project_reference, export_content_compact |
@@ -52,8 +52,8 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
 | etudiant-fragile | sonnet | lecture du contenu de la section uniquement + Bash (bac à sable) |
 | etudiant-rapide | sonnet | idem fragile |
 | correction | sonnet | Bash (bac à sable, garde en hook) ; le push est fait par l'orchestrateur |
-| redacteur-quiz-section | sonnet | MCP lecture + get_quiz, aucune écriture |
-| redacteur-quiz-transversal | opus | MCP lecture + get_quiz, aucune écriture |
+| redacteur-quiz-section | sonnet | MCP lecture + get_quiz ; écriture de son seul brouillon + validation par le script (garde en hook) |
+| redacteur-quiz-transversal | opus | idem section + get_project_reference |
 
 Amendement du 2026-10-28 (étape 3) : aucune écriture MCP pour les rédacteurs ni pour `correction` (§ 1, § 2 étapes 4 et 8). Relecteurs : `Read` aussi limité aux exports de brouillon (`docs/plans/<module>/brouillons/<section>/*.md`), y compris pour `relecteur-style`.
 
@@ -106,7 +106,7 @@ Les MINEURS peuvent être ignorés.
 
 ## 7. Workflow quiz de module
 
-Le quiz est unique par module : workflow séparé, lancé sur demande, sur tout ou partie des sections rédigées. Principe : générer large, puis sélectionner.
+Le quiz est unique par module : workflow séparé, lancé sur demande, sur une liste de sections rédigées (par exemple `/content-writer-v3 quiz php 1-4`, décision du 2026-11-02). Principe : générer large, puis sélectionner.
 
 1. `collecteur` : cours et TP validés, matériaux quiz des plans, curriculum, questions existantes (get_quiz).
 2. **Cadrage** : l'orchestrateur me pose ses questions UNE PAR UNE, chacune avec une valeur par défaut argumentée : sections couvertes ; nombre total de questions et répartition par section ; part transversale (repère 20–30 %) ; usage (révision, début de séance, évaluation notée) ; points négatifs ; durée totale visée ; notions à cibler ou exclure. Récapitulatif, je valide.
@@ -115,7 +115,7 @@ Le quiz est unique par module : workflow séparé, lancé sur demande, sur tout 
 5. **Tests** sur la présélection ; les questions qui échouent sont corrigées une fois par leur auteur ou écartées.
 6. **Sélection finale**.
 7. Je valide ; les questions écartées me sont listées à part (une ligne chacune) pour échange éventuel.
-8. Ajout sur staging (`create_quiz` si besoin), puis proposition de copie vers prod.
+8. Après ma confirmation explicite, ajout en prod par l'orchestrateur (`create_quiz` si besoin, `add_quiz_question`), relu avec `get_quiz` (décision du 2026-11-02 : staging n'a pas les cours et aucun mécanisme ne copie un quiz ; une question n'atteint les étudiants qu'au lancement d'une session). Les étiquettes restent dans `docs/plans/<module>/quiz.md`, le schéma n'ayant pas de champ pour elles.
 
 **Règles de rédaction (section et transversal)** : vérifier la compréhension de la théorie derrière ce que l'étudiant a FAIT en TP. Chaque question part d'un geste réel du TP et interroge le pourquoi ou le « que se passe-t-il si » : prédire la sortie d'une variante, diagnostiquer une erreur, choisir entre deux codes apparemment équivalents, justifier une méthode imposée. Énoncé autosuffisant (code remontré dans un bloc `code`). Interdits : récitation, pièges de syntaxe sans enjeu, notion hors curriculum. Distracteurs = vraies idées fausses (erreurs fréquentes, blocages du fragile), jamais absurdes. Par question : propositions (≥ 1 correcte, ≥ 1 incorrecte), `durationSeconds` réaliste, `weight`, étiquettes (section(s), geste visé, notion, type, niveau de Bloom, difficulté). Niveaux de Bloom utilisés : comprendre, appliquer, analyser, évaluer. « Se souvenir » est exclu (c'est de la récitation) et « créer » ne se prête pas au QCM. Aucun doublon avec le quiz existant.
 

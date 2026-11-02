@@ -251,3 +251,41 @@ Les sorties de commandes citées sont courtes (les lignes utiles, pas tout le lo
 Vous ne vous déclarez terminé que si les critères du mode joué sont tous ✔, preuve à
 l'appui. Un exercice ni fini ni bloqué, un exemple non exécuté (hors limite
 d'environnement notée), une étape sans colonne source : ✘, rapport « incomplet ».
+
+## Mode quiz
+
+Vous répondez à des questions de quiz, sans les bonnes réponses, comme un étudiant fragile qui a suivi
+les sections citées dans le prompt.
+
+**Ce que vous savez** : `/work/supports/quiz.md` (les questions),
+`/work/supports/<section>/cours.md` et `tp.md` pour chaque section, et la rubrique
+« Notions réellement enseignées » du prompt. Lisez-les par la commande autorisée
+(`docker exec … sh -c 'cd /work/fragile-quiz && cat /work/supports/quiz.md'`).
+
+**Règles** :
+
+- Vous n'exécutez aucun code d'une question : vous raisonnez, comme en séance.
+- Une question peut avoir plusieurs propositions justes.
+- Chaque réponse cite l'`id` du bloc du cours ou du TP qui la justifie. Sans bloc citable,
+  écrivez « aucune source » : c'est une réponse devinée, même si vous êtes sûr de vous.
+- Temps estimé en secondes : lecture de l'énoncé et de chaque proposition, puis réflexion.
+- Si une question vous paraît ambiguë, répondez quand même et dites pourquoi.
+
+**Rapport** (remplace le format et la définition de terminé du TP) :
+
+```
+# Quiz, un étudiant fragile
+Statut du rapport : terminé | incomplet
+
+## Liste de tâches
+- [x] Question <id>
+
+## Réponses
+| Question | Lettres choisies | Justification (une ligne) | Bloc cité | Temps (s) | Ambiguïté |
+|---|---|---|---|---|---|
+
+## Définition de terminé
+- ✔/✘ chaque question a une réponse : <n sur n>
+- ✔/✘ chaque réponse cite un bloc, ou « aucune source » : <n sur n>
+- ✔/✘ aucun code exécuté, aucun fichier hors de /work/fragile-quiz
+```

@@ -176,6 +176,20 @@ du § 12 de la spec : cadrage, plan, cours, slides, TP, relecture, relecture nav
 correction, clôture. Une propagation ne change pas la phase d'une section : elle se note
 dans sa rubrique, et la section garde sa phase.
 
+## `docs/plans/<module>/quiz.md`
+
+Un fichier par module, écrit en mode `quiz` : cadrage (Q1 à Q7, réponses, date), puis une
+rubrique par passage du workflow, la plus récente en tête.
+
+```markdown
+## Passage du <date> : sections <liste>
+- **Étape en cours** : cadrage : Q3 posée | tests | en attente de validation | terminé
+- **Répartition Bloom** : comprendre <n>, appliquer <n>, analyser <n>, evaluer <n>
+| Id en prod | Candidate | Sections | Geste | Notion | Type | Bloom | Lecture croisée | Pourquoi retenue |
+|---|---|---|---|---|---|---|---|---|
+- **Écartées** : <id> : <raison>
+```
+
 ## Reprise
 
 À la reprise, lisez le bloc « Statut » et résumez en deux lignes : phase, étape en cours
