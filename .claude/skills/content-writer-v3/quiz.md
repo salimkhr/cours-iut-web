@@ -122,6 +122,12 @@ Extrayez `selection.json` dans l'ordre de difficulté voulu.
 
 ## 7. Validation et écriture
 
+Générez d'abord le fichier de relecture et envoyez-le à l'utilisateur, avec son chemin :
+
+```bash
+bun src/scripts/brouillon.ts relire-quiz docs/plans/<module>/brouillons/quiz/selection.json --sortie docs/plans/<module>/brouillons/quiz/selection.md
+```
+
 Présentez : les questions retenues en entier avec leur bonne réponse et leur justification,
 la lecture croisée avec le bloc cité pour chaque réponse, la répartition par niveau de
 Bloom, les écartées en une ligne chacune. L'utilisateur peut échanger.

@@ -8,6 +8,7 @@ import {
     extraireQuiz,
     fichiersFournis,
     idsDesMarqueurs,
+    relectureQuiz,
     typeDuFichier,
     valider,
     validerQuiz,
@@ -68,6 +69,15 @@ describe("quiz", () => {
         const { questions } = exporterQuiz([candidate("q1")], true);
         expect(questions).not.toContain("session_start()");
         expect(questions).toContain("Une erreur");
+    });
+
+    test("la relecture montre l'énoncé, la bonne réponse et les étiquettes", () => {
+        const md = relectureQuiz([candidate("q1")]);
+        expect(md).toContain("session_start()");
+        expect(md).toContain("- [x] **true**");
+        expect(md).toContain("- [ ] Une erreur");
+        expect(md).toContain("analyser");
+        expect(md).toContain("45 s");
     });
 
     test("extraire garde l'ordre demandé et refuse un id inconnu", () => {

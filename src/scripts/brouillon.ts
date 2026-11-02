@@ -31,6 +31,7 @@
 //   bun src/scripts/brouillon.ts valider-quiz <fichier.json>
 //   bun src/scripts/brouillon.ts extraire-quiz <sortie.json> --ids a,b,c <fichier.json>...
 //   bun src/scripts/brouillon.ts exporter-quiz <fichier.json>... --sortie <q.md> [--cle <cle.md>] [--sans-enonce]
+//   bun src/scripts/brouillon.ts relire-quiz <fichier.json> --sortie <selection.md>
 //
 // - valider-quiz : même quizQuestionSchema que le serveur, plus les étiquettes
 //   (sections, geste, notion, type, Bloom, difficulté). Le fichier transversal.json
@@ -39,6 +40,8 @@
 // - exporter-quiz : énoncés et propositions, sans les bonnes réponses, propositions
 //   mélangées et lettrées ; --sans-enonce ne garde que les propositions ; --cle écrit la
 //   table des lettres justes, à ne jamais déposer dans le bac à sable.
+// - relire-quiz : Markdown pour l'utilisateur, énoncés, bonnes réponses et étiquettes ;
+//   jamais déposé dans le bac à sable.
 
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -403,6 +406,26 @@ export function exporterQuiz(candidates: Candidate[], sansEnonce = false): { que
     return { questions: questions.join("\n"), cle: `${cle.join("\n")}\n` };
 }
 
+/** Relecture par l'utilisateur : tout y figure, corrigé compris. */
+export function relectureQuiz(candidates: Candidate[]): string {
+    const total = candidates.reduce((s, c) => s + (c.durationSeconds ?? 30), 0);
+    const lignes = [`# Quiz : sélection à valider`, "", `${candidates.length} questions, ${total} s. Bonne réponse cochée et en gras.`, ""];
+    candidates.forEach((c, i) => {
+        const e = c.etiquettes;
+        lignes.push(
+            `## ${i + 1}. ${c.id}`,
+            "",
+            `*${e.sections.join(", ")} | ${e.geste} | ${e.bloom} | ${e.type} | ${c.durationSeconds ?? 30} s*`,
+            "",
+            blocksToMarkdown(c.blocks, false),
+            "",
+            ...c.options.map((o) => (o.correct ? `- [x] **${o.text}**` : `- [ ] ${o.text}`)),
+            "",
+        );
+    });
+    return lignes.join("\n");
+}
+
 function lireBrouillon(fichier: string): unknown {
     return JSON.parse(readFileSync(fichier, "utf8").replace(/^﻿/, ""));
 }
@@ -541,8 +564,16 @@ function main(argv: string[]): number {
             console.log(`${sortie} : ${candidates.length} questions`);
             return 0;
         }
+        case "relire-quiz": {
+            const fichier = args[0];
+            const sortie = option(args, "--sortie");
+            if (!fichier || !sortie) throw new Error("Usage : relire-quiz <fichier.json> --sortie <selection.md>");
+            writeFileSync(sortie, relectureQuiz(lireBrouillon(fichier) as Candidate[]), "utf8");
+            console.log(`${sortie} écrit`);
+            return 0;
+        }
         default:
-            console.log("Commandes : valider, exporter, couverture, deposer, comparer, valider-quiz, extraire-quiz, exporter-quiz (voir l'en-tête du script).");
+            console.log("Commandes : valider, exporter, couverture, deposer, comparer, valider-quiz, extraire-quiz, exporter-quiz, relire-quiz (voir l'en-tête du script).");
             return 1;
     }
 }
