@@ -40,7 +40,7 @@
 | 4-q8 | 4 | `array_diff` | appliquer | C | C | C | facile | F/cours:form-errors-choice-text | même bloc | résultat exact, clé conservée |
 | 4-q11 | 4 | GET ou POST selon le formulaire (réécrite à la demande de l'utilisateur, non testée) | evaluer | à retester | — | — | à retester | F/cours (à confirmer au test) | — | choix de la méthode, geste du TP |
 | t-q6 | 1, 2 | `array_filter` et indice (simplifiée à la demande de l'utilisateur, non testée) | analyser | à retester | — | — | à retester | O/cours:tri-filter-callout-txt | — | indices conservés, en quatre lignes |
-| t-q8 | 2, 3 | Copie contre objet | comprendre | A | D | A | discriminante, sans source | aucune source | aucune source | seule discriminante restante ; à trancher |
+| t-q8 | 1, 2 | Copie d'un tableau (simplifiée à la demande de l'utilisateur, non testée) | comprendre | à retester | — | — | à retester, sans source au test précédent | aucune source | — | notion de fond ; à trancher |
 
 - **Réécriture du 2026-11-02** : les 21 questions sont transposées dans le cinéma (ni le TP ni le cours), propositions réduites au résultat, énoncés raccourcis. La lecture croisée ci-dessus porte sur la version d'avant : à refaire.
 - **Écartées à la présélection (12)** : 1-q1 et 1-q9 (niveau `analyser` plein ou récitation), 1-q4, 1-q5, 2-q1, 2-q5, 3-q2, 3-q3, 3-q7, 4-q1, 4-q3, t-q3 (proche de t-q2).
