@@ -417,7 +417,7 @@ export function relectureQuiz(candidates: Candidate[]): string {
             "",
             `*${e.sections.join(", ")} | ${e.geste} | ${e.bloom} | ${e.type} | ${c.durationSeconds ?? 30} s*`,
             "",
-            blocksToMarkdown(c.blocks, false),
+            blocksToMarkdown(c.blocks, false).replace(/^\s*<!--\S+-->\n/gm, ""),
             "",
             ...c.options.map((o) => (o.correct ? `- [x] **${o.text}**` : `- [ ] ${o.text}`)),
             "",

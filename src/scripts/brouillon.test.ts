@@ -78,6 +78,7 @@ describe("quiz", () => {
         expect(md).toContain("- [ ] Une erreur");
         expect(md).toContain("analyser");
         expect(md).toContain("45 s");
+        expect(md).not.toContain("<!--q1-t-->");
     });
 
     test("extraire garde l'ordre demandé et refuse un id inconnu", () => {

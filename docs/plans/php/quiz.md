@@ -29,18 +29,18 @@
 | 1-q7 | 1 | Argument manquant | comprendre | A | A | A | facile | B/cours:8592120e-ea85-4ed0-aad2-97a89fdde71e | B/cours:2e2dc2aa-ba67-4b5f-a705-b1cae9f14b53 | erreur provoquée au TP |
 | 4-q2 | 4 | `REQUEST_METHOD` | evaluer | C | C | C | facile | F/cours:form-simple-flow-text | même bloc | justifie un choix imposé |
 | 4-q3 | 4 | Toutes les cases cochées (remplace 4-q4, retirée par l'utilisateur) | comprendre | à retester | — | — | à retester | F/cours:form-complex-checkbox-text | — | `name="x[]"` donne un tableau |
-| 2-q3 | 2 | `usort` renvoie `true` | analyser | A | A | A | facile | O/cours:tri-usort-callout-txt | même bloc | diagnostic d'une idée fausse enseignée |
+| 2-q9 | 2 | `foreach` clé et valeur (remplace 2-q3, non testée) | comprendre | à retester | — | — | à retester | à confirmer au test | — | geste direct des tableaux associatifs |
 | 3-q1 | 3 | Passage de paramètres page → vue (réécrite à la demande de l'utilisateur, non testée) | appliquer | à retester | — | — | à retester | S/cours:29d1f832-84c5-46a0-8092-547e028c6421 | — | geste central de `render()` |
 | 2-q8 | 2 | `usort` et `<=>` (réécrite à la demande de l'utilisateur, non testée) | appliquer | à retester | — | — | à retester | O/cours:tri-usort-txt | — | garde le geste du tri |
 | t-q1 | 3, 1 | Portée dans `render` | analyser | B | B | B | facile | S/cours:3e326d3e-d65d-479d-a7cb-10ceee15752d | même bloc | relie portée et vue |
 | t-q9 | 1, 4 | `$_GET` et `===` (remplace t-q5, retirée par l'utilisateur, non testée) | analyser | à retester | — | — | à retester | F/cours:form-simple-conversion-warning-text | — | relie type et données d'URL |
-| t-q4 | 3, 4 | Double échappement | evaluer | A | A | A | facile | F/tp:tp4-ex5-warn-txt | F/tp:tp4-ex5-warn | remplace 4-q9, même notion |
+| t-q11 | 3, 4 | `htmlspecialchars` dans la vue (remplace t-q4, non testée) | evaluer | à retester | — | — | à retester | F/tp:tp4-ex5-warn-txt | — | relie vue et XSS, sans piège |
 | 4-q5 | 4 | `(int)` contre `filter_var` | analyser | B | B | B | facile | F/cours:form-simple-conversion-warning-text | même bloc | justifie l'API imposée |
 | 3-q8 | 3 | `const` et portée | evaluer | C | C | C | facile | S/tp:tp3-entities-3 | B/cours:be5cd8ac-fa7e-4f30-b2f1-16ad967d6262 | justifie une constante |
 | 4-q8 | 4 | `array_diff` | appliquer | C | C | C | facile | F/cours:form-errors-choice-text | même bloc | résultat exact, clé conservée |
 | 4-q11 | 4 | GET ou POST selon le formulaire (réécrite à la demande de l'utilisateur, non testée) | evaluer | à retester | — | — | à retester | F/cours (à confirmer au test) | — | choix de la méthode, geste du TP |
 | t-q6 | 1, 2 | `array_filter` et `fn` (réécrite à la demande de l'utilisateur, non testée) | appliquer | à retester | — | — | à retester | O/cours:tri-filter-callout-txt | — | usage direct du filtre |
-| t-q8 | 1, 2 | Copie d'un tableau (simplifiée à la demande de l'utilisateur, non testée) | comprendre | à retester | — | — | à retester, sans source au test précédent | aucune source | — | notion de fond ; à trancher |
+| t-q10 | 2, 3 | Getter dans une vue (remplace t-q8, non testée) | comprendre | à retester | — | — | à retester | à confirmer au test | — | relie objet et vue |
 
 - **Réécriture du 2026-11-02** : les 21 questions sont transposées dans le cinéma (ni le TP ni le cours), propositions réduites au résultat, énoncés raccourcis. La lecture croisée ci-dessus porte sur la version d'avant : à refaire.
 - **Écartées à la présélection (12)** : 1-q1 et 1-q9 (niveau `analyser` plein ou récitation), 1-q4, 1-q5, 2-q1, 2-q5, 3-q2, 3-q3, 3-q7, 4-q1, 4-q3, t-q3 (proche de t-q2).
