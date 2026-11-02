@@ -12,7 +12,7 @@
 | Q7 | Notions à cibler ou à exclure | aucune ; gestes vus seulement en TP gardés | aucune | 2026-11-02 |
 
 ## Passage du 2026-11-02 : sections 1, 2, 3, 4
-- **Étape en cours** : en attente de validation de la sélection (cadrage validé le 2026-11-02 : « Oui, lance »)
+- **Étape en cours** : en attente de validation ; propositions et énoncés raccourcis après les tests, à retester (cadrage validé le 2026-11-02)
 - **Contexte** : quiz prod `92466c6f-0119-457e-b6db-0214fe00649d`, 0 question, `negativeMarking: true` ; aucune de ces sections n'a de « Matériau quiz » ni de `curriculum` en base.
 - **Génération** : 44 candidates (S1 9, S2 8, S3 8, S4 11, transversal 8), présélection 32, sélection 21, 1 400 s (23 min 20).
 - **Répartition Bloom** : comprendre 4, appliquer 5, analyser 7, evaluer 5
