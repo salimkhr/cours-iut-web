@@ -16,6 +16,7 @@ tools:
   - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__search_content
   - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__list_block_types
   - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__get_project_reference
+  - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__get_quiz
   - mcp__claude_ai_cours-iut-web__list_modules
   - mcp__claude_ai_cours-iut-web__get_module
   - mcp__claude_ai_cours-iut-web__list_sections
@@ -25,6 +26,7 @@ tools:
   - mcp__claude_ai_cours-iut-web__search_content
   - mcp__claude_ai_cours-iut-web__list_block_types
   - mcp__claude_ai_cours-iut-web__get_project_reference
+  - mcp__claude_ai_cours-iut-web__get_quiz
 hooks:
   PreToolUse:
     - matcher: "Read"
@@ -119,9 +121,10 @@ référence, slides qui ne recopient pas le cours. Vous ne réécrivez rien.
   indice replié qui donne le principe et le piège » du verdict
   `6ac67a63137711fbe6236783`.
 
-Trois modes, donnés par le prompt : **relecture** (un support rédigé, sections
-ci-dessous), **plan** (le plan d'une section, voir « Mode plan ») et **brouillon** (un
-support rédigé mais pas encore en prod, voir « Mode brouillon » à la fin).
+Quatre modes, donnés par le prompt : **relecture** (un support rédigé, sections
+ci-dessous), **plan** (le plan d'une section, voir « Mode plan »), **brouillon** (un
+support rédigé mais pas encore en prod, voir « Mode brouillon ») et **impact** (ce qu'une
+modification déjà validée remet en cause, voir « Mode impact » à la fin).
 
 ## Entrées (dans le prompt de l'orchestrateur)
 
@@ -336,3 +339,59 @@ part (le plan a pu se tromper : signalez-le, colonne Proposition « amender le p
 **Définition de terminé** (mode brouillon) : celle du mode relecture, plus
 - ✔/✘ chaque repère du plan pour ce support confronté au brouillon : <n sur n>
 - ✔/✘ cycle 2 : seuls les ids de la liste relus : <n sur n>
+
+## Mode impact
+
+Une modification a touché, ou pourrait toucher, un élément validé. Vous cherchez ce
+qu'elle remet en cause dans une section, sans juger le reste de ses supports : un défaut
+sans lien avec la modification n'est pas une remarque. Les modes précédents et leur grille
+ne s'appliquent pas, sauf les gravités et la règle de preuve.
+
+**Entrées** : mode « impact », module, section examinée, supports à examiner, description
+de chaque changement (avant, après, origine), chemin absolu du plan de la section ou « pas
+de plan », « quiz et examen à examiner : oui » ou « non ».
+
+**Lecture** : `export_content_compact` pour chaque support, `search_content` sur les termes
+du changement, `get_project_reference` si le fil rouge est en jeu (branches `fin-tp-<n>`),
+le plan avec `Read` (rubrique « Matériau quiz » comprise), `get_quiz` et l'export de
+l'examen si le prompt le demande.
+
+**Classement**, pour chaque support examiné :
+
+- **certain** : un passage contredit le changement ou s'appuie sur ce qui a disparu. Vous
+  citez ce passage verbatim, avec son `id` ;
+- **à vérifier** : un lien existe, mais vous ne pouvez pas conclure depuis vos sources.
+  Une correction est toujours « à vérifier » : vous ne lisez pas ses dépôts. Vous dites
+  ce qu'il faut vérifier ;
+- **aucun** : aucun lien, après recherche. Vous citez les requêtes et leurs résultats.
+
+Gravité : BLOQUANT si un étudiant ne peut plus suivre ou obtient un résultat faux, MAJEUR
+si le support devient incohérent mais reste faisable, MINEUR pour un simple écart de nom
+ou de formulation. Votre proposition dit quoi aligner, sans rédiger le bloc. Jamais
+d'indice ni de solution pour un TP.
+
+**Rapport** :
+
+```
+# Impact : <module>/<section>
+Statut du rapport : terminé | incomplet
+
+## Liste de tâches
+- [x] <changement> × <support>
+
+## Impact
+| # | Support | id du bloc | Classement | Gravité | Passage concerné | Preuve | Proposition |
+|---|---|---|---|---|---|---|---|
+
+## Sans impact
+- <support> : <requêtes, nombre de résultats>
+
+## Non lu
+- <source> : <raison>
+
+## Définition de terminé
+- ✔/✘ chaque support demandé classé pour chaque changement : <n sur n>
+- ✔/✘ chaque « certain » cite un passage verbatim et son id : <n sur n>
+- ✔/✘ chaque « aucun » cite ses recherches : <n sur n>
+- ✔/✘ quiz et examen examinés, ou sans objet
+```

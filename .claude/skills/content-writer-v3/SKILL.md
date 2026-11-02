@@ -1,8 +1,8 @@
 ---
 name: content-writer-v3
-description: Orchestrateur du pipeline multi-agents de rédaction de cours. Mode relecture (supports existants en prod, synthèse arbitrée sans correction), modes conception / conception-rapide (cadrage, puis plan relu et validé) et mode redaction (supports rédigés en brouillon d'après le plan, relus, validés, écrits en prod par l'orchestrateur seul, puis correction et clôture). Lance les agents, arbitre leurs rapports, tient le statut de section.
+description: Orchestrateur du pipeline multi-agents de rédaction de cours. Mode relecture (supports existants en prod, synthèse arbitrée sans correction), modes conception / conception-rapide (cadrage, puis plan relu et validé), mode redaction (supports rédigés en brouillon d'après le plan, relus, validés, écrits en prod par l'orchestrateur seul, puis correction et clôture) et mode propagation (journal des retouches, analyse d'impact d'une modification, mises à jour sur accord). Lance les agents, arbitre leurs rapports, tient le statut de section.
 disable-model-invocation: true
-argument-hint: "[relecture|conception|conception-rapide|redaction|examen] [module] [section]"
+argument-hint: "[relecture|conception|conception-rapide|redaction|examen|propagation] [module] [section]"
 ---
 
 # content-writer v3 : orchestrateur d'une section
@@ -10,9 +10,7 @@ argument-hint: "[relecture|conception|conception-rapide|redaction|examen] [modul
 **Ce skill ne charge JAMAIS le content-writer v2** : ni le fichier
 `skills/content-writer/main.md`, ni `get_pedagogical_skill_manifest`, ni
 `get_pedagogical_skill_document` (sur aucun serveur). Les règles utiles de la v2 sont
-déjà réparties dans les agents de `.claude/agents/`. Pendant ce workflow, la consigne
-générale du `CLAUDE.md` du dépôt (« charger d'abord le skill pédagogique du serveur »)
-ne s'applique pas.
+déjà réparties dans les agents de `.claude/agents/`.
 
 Référence : `docs/pipeline/spec.md` (§ 2, § 5, § 6, § 12, § 13). En cas de
 contradiction entre ce skill et la spec, arrêtez-vous et signalez-la à l'utilisateur.
@@ -26,6 +24,7 @@ contradiction entre ce skill et la spec, arrêtez-vous et signalez-la à l'utili
 | `conception-rapide` | section simple : plan relu et validé, sans cadrage (seule Q0 si `courseIntroMinutes` manque) | § 1 à § 3, puis `plan.md` |
 | `redaction` | plan validé : cours, slides puis TP rédigés en brouillon, relus, validés un par un, écrits en prod par vous ; correction et clôture | § 1 à § 3, puis `redaction.md`, puis `cloture.md` |
 | `examen` | examen de fin de module, hors fil rouge, sur les seuls `curriculum` : plan écrit pour la traçabilité (sans cadrage ni validation du plan), rédaction par `redacteur-tp` en mode examen, sans correction | § 1 à § 3, `plan.md` § 2 (sans § 4 et § 5), puis `redaction.md` |
+| `propagation` | un élément validé a changé après coup, ou le journal des retouches a des entrées en attente : inventaire des dépendances, analyse d'impact, rapport trié, mises à jour sur accord | § 1 à § 3, puis `propagation.md` |
 
 Mode absent : à la reprise, **le statut de section fait foi** (son champ « Mode »), même
 si des supports sont déjà en source `db` : une section en cours de rédaction a son cours
@@ -48,6 +47,9 @@ en une question.
   `push_correction`, `add_verdict`, `promote_exemplar`), chaque fois après la
   confirmation explicite de l'utilisateur pour cette écriture précise. Jamais staging,
   jamais `isAvailable` sans sa demande (`redaction.md` § 0).
+- Mode `propagation` : le rapport d'impact n'écrit rien. Les mises à jour acceptées
+  suivent les règles du mode `redaction` ; `mark_retouches_processed` s'y ajoute, après
+  confirmation explicite (`propagation.md` § 0).
 - Dans tous les modes, les autres écritures sont les fichiers de suivi
   (`docs/plans/<module>/<section>.md` et `docs/plans/<module>/etat.md`), les dossiers
   temporaires du bac à sable et les commits de ces fichiers de suivi (« Commits »).
@@ -63,6 +65,8 @@ Annexes de ce dossier, à lire au moment indiqué :
 - `redaction.md` : brouillons, rédacteurs, relecture, arbitrage et correction, validation,
   écriture en prod, relecture navigateur (mode `redaction`) ;
 - `cloture.md` : correction du TP et clôture de la section (mode `redaction`) ;
+- `propagation.md` : dépendances, analyse d'impact, rapport et mises à jour (mode
+  `propagation`) ;
 - `bac-a-sable.md` : commandes de création, de contrôle et de nettoyage du conteneur ;
 - `suivi.md` : format du statut de section et de l'état du module.
 
@@ -72,7 +76,8 @@ Annexes de ce dossier, à lire au moment indiqué :
 section manque ou n'existe pas en prod (`list_modules`, `list_sections`), proposez la
 liste des slugs et attendez le choix de l'utilisateur. En relecture, demandez aussi
 quels supports relire si ce n'est pas dit : par défaut, tous ceux qui existent en source
-`db`.
+`db`. En mode `propagation`, la section est facultative : sans elle, toutes les retouches
+en attente du module sont traitées.
 
 ## Commits
 
@@ -138,6 +143,17 @@ Liste type du mode `relecture` :
 11. Mettre à jour le statut et l'état du module
 12. Présenter la synthèse
 
+Liste type du mode `propagation` :
+
+1. Lire le journal des retouches et les plans concernés
+2. Lister les changements, confirmer le périmètre
+3. Inventaire des dépendances
+4. Analyse d'impact (`relecteur-coherence`, un par section)
+5. Contrôler les rapports, écrire le suivi
+6. Présenter le rapport trié, attendre la décision
+7. Mises à jour acceptées, une à une
+8. Solder les retouches (confirmation), état du module, commit
+
 À la reprise d'une section interrompue, reconstruisez la liste du mode à partir du
 statut de section (étape 1) et reprenez à la première tâche non faite.
 
@@ -149,6 +165,12 @@ l'utilisateur où en est la section (phase, étape en cours, ce qui est validé 
 désaccords en attente et prochaine action) avant de continuer. Gardez la liste des
 **remarques écartées** des relectures précédentes (de supports ou du plan) : elle sert à
 l'arbitrage (règle 9).
+
+**Journal des retouches, à chaque lancement** : avant tout le reste, quel que soit le mode,
+appelez `list_retouches` en prod avec `status: pending` et `module`. S'il y a des entrées,
+dites-en le nombre, les sections touchées et le `summary` de chacune, puis proposez
+`propagation` en une question. L'utilisateur peut continuer le mode demandé : les entrées
+restent en attente. `list_retouches` indisponible : dites-le et continuez.
 
 Reprise fine : « Étape en cours » dit où la session s'est arrêtée (« cadrage : Q3
 posée », « plan : relecture, cycle 1 »…). Les réponses déjà notées ne sont pas reposées ;
@@ -178,6 +200,8 @@ de contexte.
 - **Mode redaction** : le plan validé fait foi. Un budget ou un verdict qui a changé en
   prod depuis sa validation se signale à l'utilisateur (amendement possible du plan,
   `redaction.md` § 7). Passez ensuite à `redaction.md`.
+- **Mode propagation** : pas de collecteur, ces § 2 et § 3 ne s'appliquent pas. Passez
+  directement à `propagation.md`, avec le plan et le journal lus au § 1.
 - **Mode conception** : la section a déjà un support en source `db` → demandez s'il
   faut passer en relecture ou le reconcevoir (rien n'est écrasé : le plan est un
   fichier du dépôt). `courseIntroMinutes` manquant n'est pas un trou de la fiche : c'est
@@ -442,6 +466,8 @@ n'enchaînez sur rien d'autre.
 
 **Mode redaction** : définition de terminé par support (`redaction.md` § 8), puis celle
 de la correction et de la clôture (`cloture.md` § 3).
+
+**Mode propagation** : `propagation.md` § 7.
 
 **Mode relecture**. À la fin, listez critère par critère, ✔ avec preuve ou ✘ avec raison :
 

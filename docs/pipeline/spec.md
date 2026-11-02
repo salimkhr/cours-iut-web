@@ -46,7 +46,7 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
 | redacteur-slides | sonnet | idem cours |
 | redacteur-tp | opus | idem cours + get_project_reference, export_content_compact |
 | relecteur-style | sonnet | MCP lecture seule |
-| relecteur-coherence | sonnet | MCP lecture seule + get_project_reference + Read limité aux plans (`docs/plans/<module>/*.md`, garde en hook) |
+| relecteur-coherence | sonnet | MCP lecture seule + get_project_reference + get_quiz (analyse d'impact, § 8) + Read limité aux plans (`docs/plans/<module>/*.md`, garde en hook) |
 | relecteur-pedagogie | sonnet | MCP lecture seule + get_project_reference + Read limité aux plans et aux exports de brouillon (garde en hook) ; décision du 2026-10-31 : relit le plan et chaque support, ne rend que les problèmes, sans véto, sans cycle supplémentaire |
 | relecteur-contrat | haiku | MCP lecture seule + Read limité aux plans (garde en hook) |
 | etudiant-fragile | sonnet | lecture du contenu de la section uniquement + Bash (bac à sable) |
@@ -136,6 +136,8 @@ Se déclenche quand un élément validé change après coup (support d'une secti
 3. **Rapport** trié de l'impact le plus fort au plus faible, avec propositions.
 4. **Mises à jour** par le circuit normal (amendement du plan → rédacteur → relecture → ma validation). Jamais de cascade sans mon accord explicite.
 5. Plans concernés mis à jour avec le changement et sa date.
+
+Le journal est lu à chaque lancement de `/content-writer-v3`, quel que soit le mode ; ses entrées sont soldées par `mark_retouches_processed` après ma confirmation. Limites : une correction dépendante reste « à vérifier », `relecteur-coherence` ne lisant pas ses dépôts.
 
 ## 9. Skill « retouche » (hors Claude Code)
 

@@ -1,6 +1,6 @@
 # État du déploiement du pipeline
 
-- **Étape courante** : 3 (rédaction) validée par l'utilisateur le 2026-11-01, après le test de bout en bout sur `php/7-sessions-et-authentification`. Cours, slides, TP, curriculum et `courseIntroMinutes` en prod, section non publiée (`isAvailable: false`) ; correction et branches `fin-tp-6`, `fin-tp-7` poussées par git. Relecture navigateur du TP et des slides à faire. Étapes 1, 2, 3 et 6 validées ; bascule v2 → v3 appliquée sur `staging` le 2026-11-02, à déployer ; étapes 4 et 5 non commencées.
+- **Étape courante** : 3 (rédaction) validée par l'utilisateur le 2026-11-01, après le test de bout en bout sur `php/7-sessions-et-authentification`. Cours, slides, TP, curriculum et `courseIntroMinutes` en prod, section non publiée (`isAvailable: false`) ; correction et branches `fin-tp-6`, `fin-tp-7` poussées par git. Relecture navigateur du TP et des slides à faire. Étapes 1, 2, 3 et 6 validées ; bascule v2 → v3 appliquée sur `staging` le 2026-11-02, à déployer. Étape 4 (propagation) implémentée le 2026-11-02, test du rapport d'impact à faire ; étape 5 non commencée.
 - **Corrections ponctuelles PHP 1 à 4 (prod)** : 49 blocs appliqués le 2026-10-27, 10 de plus le 2026-11-02 ; plus aucune en attente (statuts dans `docs/plans/php/`). `edit_block` en prod parfois refusé par le classifieur du mode automatique : réessayer avec confirmation. `delete_block` refusé le 2026-11-02 : `sl2-classe-res` affiche « (aucune sortie) » au lieu d'être supprimé.
 - **Fait** :
   - `docs/pipeline/spec.md` : référence ; § 1 et § 9 amendés le 2026-10-27 ; § 2, § 3, § 6 et § 12 amendés le 2026-10-28 (étape 2) ; § 2 (étapes 4 et 8), § 3 et § 13 amendés le 2026-10-28 (étape 3).
@@ -18,7 +18,9 @@
     - `SKILL.md` : modes `redaction` et `examen`, le statut de section fait foi pour le mode à la reprise, écritures prod réservées à l'orchestrateur ; `suivi.md` : rubriques « Rédaction », « Écarts réalisés », format du « Matériau quiz » ;
     - relecteurs cohérence, contrat, style : mode brouillon (export lu par `Read`, conformité au plan) ; `relecteur-style` gagne `Read` et la garde.
   - Tests : `docs/plans/php/` (relecture PHP 1 à 4 ; cadrage et plan de PHP 7, commits 6cf4cb9 et d4f747d).
+  - Étape 4 : `content-writer-v3/propagation.md` (déclenchement, inventaire, impact, rapport trié, mises à jour par le circuit normal, suivi) ; `SKILL.md` : mode `propagation`, `list_retouches` à chaque lancement ; `suivi.md` : rubrique « Propagations » ; `relecteur-coherence` : mode impact et `get_quiz` ; renvoi MCP et spec § 3 et § 8 alignés.
 - **Décisions prises en session** :
+  - 2026-11-02, étape 4 : journal lu à chaque lancement, sans bloquer le mode demandé ; un `relecteur-coherence` par section ; retouches soldées après confirmation ; une correction dépendante reste « à vérifier » (dépôts illisibles par l'agent).
   - 2026-10-27, étape 1 : lecture sur prod uniquement ; bac à sable `--network none` ; un seul cycle en relecture ; la v3 ne charge jamais la v2 ; staging ne sert qu'aux features.
   - 2026-10-27/28, étape 2 : plans dans `docs/plans/<module>/<section>.md`, commit des seuls fichiers de suivi ; durées dans le plan, jamais dans le rendu ; jamais d'indice ni de solution dans un TP (prime sur la phrase « indice replié » du verdict `6ac67a63`, dans le skill seulement) ; blocage du fragile sur la notion visée : premier exercice → retour au cours, plus loin → l'utilisateur tranche ; `courseIntroMinutes` fixé au cadrage, écrit en prod à la clôture ; bac à sable dès le plan.
   - 2026-10-28, étape 3 :
@@ -41,10 +43,12 @@
   - Dépôt de référence : `main` diverge des TP en prod (table `"user"`, `Repository`, sessions) ; à réaligner. Branches `fin-tp-1` à `fin-tp-5` à reconstituer à la demande.
   - Projet `correction/php/7-sessions-et-authentification` créé par un push git : visibilité à régler, `correctionIsAvailable` à activer dans l'admin.
   - `get_project_reference` et `push_correction` : adresse GitLab du serveur MCP à corriger en prod (`ECONNREFUSED 172.22.0.2:443`). `ref` et la description d'`edit_block` sont à déployer.
-  - **`relecteur-pedagogie`** ajouté le 2026-10-31 (spec § 3, `redaction.md`, `plan.md`) : garder ou non, à juger par l'utilisateur.
+  - **`relecteur-pedagogie`** ajouté le 2026-10-31 (spec § 3, `redaction.md`, `plan.md`) : gardé, décision de l'utilisateur du 2026-11-02.
   - **Règles ajoutées pendant le test** : arborescence à trois niveaux ; surlignage d'une seule ligne décisive ; code serveur et rendu dans un bloc à deux panneaux ; cours précédents déposés pour le rédacteur du cours ; pas de `login.php` ni `logout.php` complets dans un cours (pas de copier-coller du TP).
   - **`edit_block`** : il fusionne les props (`updateBlockProps`) ; la description annonçait un remplacement. Description corrigée dans `src/app/api/mcp/route.ts`, à déployer. Retirer une prop exige une valeur vide.
   - Le verdict prod `6ac67a63` dit encore « un indice replié » : proposé à la clôture (`cloture.md` § 2.5), écriture prod avec confirmation.
   - Connecteur MCP prod parfois absent de la session : le réactiver avant toute étape qui lit la prod.
   - Index `retouches_status_recent` à créer en prod depuis `/admin/outils` ; règle de permission `Bash(docker exec cours-iut-bac-:*)` à décider.
-  - Bascule v2 → v3 (`docs/pipeline/bascule-v2-v3.md`) à déployer : la v2 reste servie en prod jusque-là. Puis étapes 4 (propagation : le journal des retouches ne passe plus par staging) et 5 (quiz : la copie staging → prod n'a pas de mécanisme ; à aligner sur l'option A).
+  - Bascule v2 → v3 (`docs/pipeline/bascule-v2-v3.md`) à déployer : la v2 reste servie en prod jusque-là.
+  - Étape 4 : test à faire (modification fictive décrite par l'utilisateur, rapport d'impact seul, sans écriture). `list_retouches` répond en prod, journal vide le 2026-11-02 : le mode `propagation` n'a pas encore traité de vraie retouche.
+  - Étape 5 (quiz) : la copie staging → prod n'a pas de mécanisme ; à aligner sur l'option A.

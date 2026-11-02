@@ -58,7 +58,7 @@ describe("Skills pédagogiques — documents", () => {
 
     it("content-writer renvoie vers chaque mode du pipeline Claude Code", () => {
         const cw = SKILL_DOCUMENTS["content-writer"].content;
-        for (const mode of ["conception", "conception-rapide", "redaction", "relecture", "examen"]) {
+        for (const mode of ["conception", "conception-rapide", "redaction", "relecture", "examen", "propagation"]) {
             expect(cw).toContain(`/content-writer-v3 ${mode} <module>`);
         }
     });

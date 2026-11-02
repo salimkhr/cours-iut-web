@@ -8,7 +8,7 @@ réponses du cadrage sont mises à jour sans commit.
 
 Le statut est TOUJOURS en tête du fichier. Ordre des rubriques : Statut, Cadrage, Fiche
 de conception, Plan, Relectures du plan, Rédaction, Écarts réalisés, Relectures (de
-supports), Matériau quiz. Une rubrique sans objet est omise. Mettez à jour seulement la
+supports), Propagations, Matériau quiz. Une rubrique sans objet est omise. Mettez à jour seulement la
 rubrique concernée, sans toucher aux autres.
 
 ```markdown
@@ -78,6 +78,15 @@ rubrique concernée, sans toucher aux autres.
 
 ## Relectures
 <rubriques « Relecture du <date> » du mode relecture, ci-dessous>
+
+## Propagations
+### <date> : <changement en une phrase>
+- **Origine** : retouche <id> | décrit par l'utilisateur
+- **Rapports** : <section> ✔, <section> ✔ (1 relance)
+| # | Section | Support | id | Impact | Gravité | Passage concerné | Décision | Fait |
+|---|---|---|---|---|---|---|---|---|
+- **Sans impact** : <support> (<raison>)
+- **Journal** : soldé le <date> | en attente : <raison> | sans objet
 
 ## Matériau quiz
 ### Gestes clés du TP
@@ -154,6 +163,9 @@ Mis à jour le 2026-10-27.
 - Dernier cadrage : non renseigné
 - Sections couvertes : non renseigné
 - Questions publiées : non renseigné
+
+## Propagations
+- <date> : <changement> ; sections touchées : <liste> ; état : rapport présenté | en cours | terminé
 ```
 
 Le tableau liste TOUTES les sections du module dans l'ordre de `list_sections` (prod).
@@ -161,7 +173,8 @@ Une section jamais passée par le pipeline a une phase « — ». Mettez à jour
 ligne de la section traitée (et la date en tête), à chaque point de validation ;
 ajoutez les sections nouvelles si la liste a changé. Les phases possibles sont celles
 du § 12 de la spec : cadrage, plan, cours, slides, TP, relecture, relecture navigateur,
-correction, clôture.
+correction, clôture. Une propagation ne change pas la phase d'une section : elle se note
+dans sa rubrique, et la section garde sa phase.
 
 ## Reprise
 
