@@ -33,7 +33,7 @@
 | 3-q1 | 3 | Passage de paramètres page → vue (réécrite à la demande de l'utilisateur, non testée) | appliquer | à retester | — | — | à retester | S/cours:29d1f832-84c5-46a0-8092-547e028c6421 | — | geste central de `render()` |
 | 2-q8 | 2 | `usort` et `<=>` (réécrite à la demande de l'utilisateur, non testée) | appliquer | à retester | — | — | à retester | O/cours:tri-usort-txt | — | garde le geste du tri |
 | t-q1 | 3, 1 | Portée dans `render` | analyser | B | B | B | facile | S/cours:3e326d3e-d65d-479d-a7cb-10ceee15752d | même bloc | relie portée et vue |
-| t-q5 | 3, 4 | `redirect` sans `exit` | analyser | A | A | A | facile | F/cours:form-errors-prg-note-text | même bloc | effet concret sur le fichier |
+| t-q9 | 1, 4 | `$_GET` et `===` (remplace t-q5, retirée par l'utilisateur, non testée) | analyser | à retester | — | — | à retester | F/cours:form-simple-conversion-warning-text | — | relie type et données d'URL |
 | t-q4 | 3, 4 | Double échappement | evaluer | A | A | A | facile | F/tp:tp4-ex5-warn-txt | F/tp:tp4-ex5-warn | remplace 4-q9, même notion |
 | 4-q5 | 4 | `(int)` contre `filter_var` | analyser | B | B | B | facile | F/cours:form-simple-conversion-warning-text | même bloc | justifie l'API imposée |
 | 3-q5 | 3 | `empty` contre lecture | evaluer | B | B | B | facile | S/tp:tp3-extract-2 | même bloc | choix de deux versions, geste du TP |
