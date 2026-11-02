@@ -28,7 +28,7 @@
 | 4-q7 | 4 | Liste blanche serveur | comprendre | A | A | A | facile | F/cours:form-errors-choice-text | F/cours:form-errors-choices-def-text | la raison de sécurité, pas la syntaxe |
 | 1-q7 | 1 | Argument manquant | comprendre | A | A | A | facile | B/cours:8592120e-ea85-4ed0-aad2-97a89fdde71e | B/cours:2e2dc2aa-ba67-4b5f-a705-b1cae9f14b53 | erreur provoquée au TP |
 | 4-q2 | 4 | `REQUEST_METHOD` | evaluer | C | C | C | facile | F/cours:form-simple-flow-text | même bloc | justifie un choix imposé |
-| 4-q4 | 4 | `name` sans crochets | appliquer | A | A | A | facile, sans source | aucune source pour l'écrasement | aucune source | seule erreur fréquente sur `name="x[]"` ; à trancher |
+| 4-q3 | 4 | Toutes les cases cochées (remplace 4-q4, retirée par l'utilisateur) | comprendre | à retester | — | — | à retester | F/cours:form-complex-checkbox-text | — | `name="x[]"` donne un tableau |
 | 2-q3 | 2 | `usort` renvoie `true` | analyser | A | A | A | facile | O/cours:tri-usort-callout-txt | même bloc | diagnostic d'une idée fausse enseignée |
 | 3-q1 | 3 | `extract` et casse | analyser | B | B | B | facile | S/cours:29d1f832-84c5-46a0-8092-547e028c6421 | même bloc | relie `render` et la casse |
 | 2-q8 | 2 | `??` et clé absente | evaluer | B | B | B | facile | O/cours:assoc-modif-callout-txt | même bloc | compare deux codes proches |
