@@ -39,7 +39,7 @@
 | 3-q8 | 3 | `const` et portée | evaluer | C | C | C | facile | S/tp:tp3-entities-3 | B/cours:be5cd8ac-fa7e-4f30-b2f1-16ad967d6262 | justifie une constante |
 | 4-q8 | 4 | `array_diff` | appliquer | C | C | C | facile | F/cours:form-errors-choice-text | même bloc | résultat exact, clé conservée |
 | 4-q11 | 4 | GET ou POST selon le formulaire (réécrite à la demande de l'utilisateur, non testée) | evaluer | à retester | — | — | à retester | F/cours (à confirmer au test) | — | choix de la méthode, geste du TP |
-| t-q6 | 1, 2, 4 | `array_filter` et `for` | analyser | B | B | B | facile | O/cours:tri-filter-callout-txt | même bloc | relie trois sections |
+| t-q6 | 1, 2 | `array_filter` et indice (simplifiée à la demande de l'utilisateur, non testée) | analyser | à retester | — | — | à retester | O/cours:tri-filter-callout-txt | — | indices conservés, en quatre lignes |
 | t-q8 | 2, 3 | Copie contre objet | comprendre | A | D | A | discriminante, sans source | aucune source | aucune source | seule discriminante restante ; à trancher |
 
 - **Réécriture du 2026-11-02** : les 21 questions sont transposées dans le cinéma (ni le TP ni le cours), propositions réduites au résultat, énoncés raccourcis. La lecture croisée ci-dessus porte sur la version d'avant : à refaire.
