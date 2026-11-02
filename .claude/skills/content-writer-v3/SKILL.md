@@ -163,7 +163,7 @@ Liste type du mode `quiz` :
 
 1. Lire le journal, `quiz.md` et l'état du module
 2. Collecter le contexte des sections visées
-3. Cadrage : Q1 à Q7, une par une
+3. Cadrage : Q1 à Q8, une par une
 4. Génération : un agent par section, un transversal
 5. Présélection
 6. Tests : deux étudiants, sans énoncé, lecture croisée

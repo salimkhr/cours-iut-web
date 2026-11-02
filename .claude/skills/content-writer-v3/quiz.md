@@ -12,8 +12,8 @@ sur une liste de sections. Principe : générer large, puis sélectionner.
   l'écriture. Jamais staging : il n'a pas les cours et aucun mécanisme ne copie un quiz
   (décision du 2026-11-02). Une question en prod n'atteint les étudiants que lorsque
   l'enseignant lance une session.
-- Une question part d'un geste du TP, jamais de son exemple : elle est transposée dans
-  l'`exampleDomain` (décision du 2026-11-02).
+- Une question part d'un geste du TP, jamais de son exemple ni de celui du cours : elle se passe
+  dans un domaine neuf, fixé au cadrage (décision du 2026-11-02).
 - Les questions existantes ne sont ni modifiées ni supprimées, sauf demande.
 - Les étiquettes ne vont pas en base : le schéma n'a pas de champ pour elles. Elles
   restent dans `docs/plans/<module>/quiz.md`.
@@ -44,6 +44,7 @@ dans `docs/plans/<module>/quiz.md`, sans commit.
 | Q5 | Points négatifs | non : ils se justifient pour une évaluation notée |
 | Q6 | Durée totale visée | somme des `durationSeconds`, 1 min par question en repère |
 | Q7 | Notions à cibler ou à exclure | aucune |
+| Q8 | Domaine du quiz | trois domaines absents des supports du module (`search_content`), avec atouts et limites, un recommandé |
 
 Récapitulez, puis faites valider. Q5 ne s'applique que si le quiz n'a pas encore de
 questions ; sinon, gardez la configuration et dites-le.

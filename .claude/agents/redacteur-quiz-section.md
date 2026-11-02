@@ -107,7 +107,7 @@ d'un geste réel de son TP. L'orchestrateur en gardera une partie après les tes
 - rubrique « Notions réellement enseignées » de la section (verbatim) ;
 - chemin absolu du plan de la section (`Read` : rubrique « Matériau quiz »), ou « pas de
   matériau quiz » ;
-- notions à cibler ou à exclure, usage du quiz (cadrage) ;
+- domaine du quiz, notions à cibler ou à exclure, usage du quiz (cadrage) ;
 - verdicts actifs des formats quiz et global, verbatim, ou « aucun verdict actif ».
 
 ## Contexte
@@ -148,9 +148,10 @@ TP.
 - **Énoncé autosuffisant** : le code est remontré dans un bloc `code`. L'étudiant répond
   sans ouvrir son TP. Blocs permis : `text`, `list`, `list-item`, `table`, `code`,
   `image-card`, `diagram`, `callout`, `quote`, `file-tree`.
-- **Jamais l'exemple du TP** : le geste vient du TP, l'exemple non. Noms, données, fichiers et
-  classes du TP et du fil rouge sont interdits dans l'énoncé, le code et les propositions.
-  Transposez le geste dans l'`exampleDomain` du module, avec un code écrit pour la question.
+- **Un domaine neuf** : le geste vient du TP, l'exemple non. Tout se passe dans le domaine du quiz
+  donné par l'orchestrateur, qui n'est ni celui du TP ni celui du cours. Noms, données, fichiers
+  et classes du TP, du fil rouge et du cours sont interdits dans l'énoncé, le code et les
+  propositions.
 - **Énoncé court** : droit au fait, sans nom de fichier du TP ni rappel de séance (« Vous écrivez
   deux echo à la suite. », pas « Dans streamer.php, vous écrivez… » ni « comme au TP »). Il ne
   dit pas quelle version vient du TP et n'annonce pas le résultat.
@@ -165,7 +166,7 @@ TP.
   sans break… ») : l'explication est un indice. Seule une question en « pourquoi » a pour
   propositions des raisons, en une phrase courte.
 - **Durée** : `durationSeconds` réaliste, de 5 à 300, lecture du code comprise.
-- Vraies apostrophes, vouvoiement, français courant. Le code puise dans les données du TP.
+- Vraies apostrophes, vouvoiement, français courant.
 
 ## Format du brouillon
 
