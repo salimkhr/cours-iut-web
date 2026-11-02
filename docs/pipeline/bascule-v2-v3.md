@@ -1,6 +1,6 @@
-# Bascule du content-writer v2 vers la v3 (proposition)
+# Bascule du content-writer v2 vers la v3
 
-Rédigée le 2026-11-01. Rien n'est appliqué : `skills/content-writer/main.md` et le serveur MCP sont inchangés.
+Proposée le 2026-11-01, appliquée sur `staging` le 2026-11-02, à l'accord de l'utilisateur. Elle prend effet au prochain déploiement en prod.
 
 ## Ce qui change
 

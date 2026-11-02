@@ -1,6 +1,6 @@
 # État du déploiement du pipeline
 
-- **Étape courante** : 3 (rédaction) validée par l'utilisateur le 2026-11-01, après le test de bout en bout sur `php/7-sessions-et-authentification`. Cours, slides, TP, curriculum et `courseIntroMinutes` en prod, section non publiée (`isAvailable: false`) ; correction et branches `fin-tp-6`, `fin-tp-7` poussées par git. Relecture navigateur du TP et des slides à faire. Étapes 1, 2, 3 et 6 validées ; bascule v2 → v3 proposée, non appliquée ; étapes 4 et 5 non commencées.
+- **Étape courante** : 3 (rédaction) validée par l'utilisateur le 2026-11-01, après le test de bout en bout sur `php/7-sessions-et-authentification`. Cours, slides, TP, curriculum et `courseIntroMinutes` en prod, section non publiée (`isAvailable: false`) ; correction et branches `fin-tp-6`, `fin-tp-7` poussées par git. Relecture navigateur du TP et des slides à faire. Étapes 1, 2, 3 et 6 validées ; bascule v2 → v3 appliquée sur `staging` le 2026-11-02, à déployer ; étapes 4 et 5 non commencées.
 - **Corrections ponctuelles PHP 1 à 4 (prod, 2026-10-27)** : 49 blocs appliqués ; 8 en attente, tirées de l'export, à recouper avec `get_content` (statuts dans `docs/plans/php/`). `edit_block` en prod parfois refusé par le classifieur du mode automatique : réessayer avec confirmation.
 - **Fait** :
   - `docs/pipeline/spec.md` : référence ; § 1 et § 9 amendés le 2026-10-27 ; § 2, § 3, § 6 et § 12 amendés le 2026-10-28 (étape 2) ; § 2 (étapes 4 et 8), § 3 et § 13 amendés le 2026-10-28 (étape 3).
@@ -47,4 +47,4 @@
   - Le verdict prod `6ac67a63` dit encore « un indice replié » : proposé à la clôture (`cloture.md` § 2.5), écriture prod avec confirmation.
   - Connecteur MCP prod parfois absent de la session : le réactiver avant toute étape qui lit la prod.
   - Index `retouches_status_recent` à créer en prod depuis `/admin/outils` ; règle de permission `Bash(docker exec cours-iut-bac-:*)` à décider.
-  - Bascule v2 → v3 proposée le 2026-11-01 (document `content-writer` servi par le MCP réduit à un renvoi vers Claude Code et `retouche`), en attente de décision. Puis étapes 4 (propagation : le journal des retouches ne passe plus par staging) et 5 (quiz : la copie staging → prod n'a pas de mécanisme ; à aligner sur l'option A).
+  - Bascule v2 → v3 (`docs/pipeline/bascule-v2-v3.md`) à déployer : la v2 reste servie en prod jusque-là. Puis étapes 4 (propagation : le journal des retouches ne passe plus par staging) et 5 (quiz : la copie staging → prod n'a pas de mécanisme ; à aligner sur l'option A).

@@ -8,7 +8,7 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
 - Les agents n'ont pas l'outil `Agent` : ils ne lancent aucun subagent (Claude Code le permettrait, jusqu'à trois niveaux). L'orchestrateur n'est PAS un agent, c'est le skill `content-writer` v3, exécuté dans la session principale. Il dialogue avec moi, lance les agents, arbitre leurs rapports et fait la clôture.
 - Méthode inspirée de obra/superpowers (brainstorming → plan → exécution) : toutes mes décisions remontent AVANT la rédaction, qui devient de l'exécution.
 - Aucun agent n'écrit en prod. Seul l'orchestrateur le fait, après ma confirmation explicite.
-- L'actuel `content-writer` (v2) reste en place et utilisable jusqu'à ce que je valide la v3.
+- Le `content-writer` v2 a laissé place à la v3 le 2026-11-02 : le document servi par le MCP n'est plus qu'un renvoi vers `/content-writer-v3` et `retouche` (`docs/pipeline/bascule-v2-v3.md`).
 
 ## 2. Workflow de section
 

@@ -48,7 +48,8 @@ const SERVER_INSTRUCTIONS = `Ce serveur gère le référentiel pédagogique mult
 
 Trois skills pédagogiques sont disponibles :
 - "module-design" : concevoir un module (sections, univers fil rouge, découpage en séances).
-- "content-writer" : rédiger les supports d'une section (cours, slides, TP, examen).
+- "content-writer" : renvoi vers Claude Code. La rédaction des supports (cours, slides, TP,
+  examen) passe par le pipeline /content-writer-v3, jamais par ce serveur seul.
 - "retouche" : petite correction d'un bloc ou d'une question de quiz depuis l'app Claude.
 
 Chargement : get_pedagogical_skill_manifest() puis get_pedagogical_skill_document(id)
@@ -58,9 +59,9 @@ Veille : add_resource / list_resources gèrent les ressources de la section « �
 de l'accueil (article, vidéo, recherche, outil). Appeler list_resources avant d'ajouter.
 
 Avant toute production, le workflow du skill impose de lire list_verdicts (critiques
-utilisateur passées) et list_exemplars (étalons annotés). module-design et content-writer
-écrivent sur le serveur staging ; la copie vers la production exige une confirmation
-explicite de l'utilisateur. Seul le skill retouche écrit directement sur la production,
+utilisateur passées) et list_exemplars (étalons annotés). module-design écrit sur le
+serveur staging ; la copie vers la production exige une confirmation explicite de
+l'utilisateur. Depuis l'app Claude, seul le skill retouche écrit directement sur la production,
 après confirmation explicite de l'avant/après par l'utilisateur ; une retouche qui touche
 un élément dont d'autres supports dépendent est consignée par log_retouche (journal lu par
 list_retouches et soldé par mark_retouches_processed).`;
@@ -1163,8 +1164,8 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     server.registerPrompt(
         "content_writer",
         {
-            title: "Rédiger cours, TP, slides ou examen",
-            description: "Rédige les supports d'une section existante, en suivant le workflow content-writer.",
+            title: "Rédiger cours, TP, slides ou examen (renvoi vers Claude Code)",
+            description: "Indique la commande du pipeline /content-writer-v3 à lancer dans Claude Code pour une section existante.",
             argsSchema: {
                 module: z.string().describe("Slug du module, ex: rust"),
                 section: z.string().describe("Slug de la section, ex: ownership"),
@@ -1174,8 +1175,8 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
             if (!isAdmin) throw new Error("Forbidden");
             const text = `Le module concerné est "${module}", la section "${section}". `
                 + `Chargez le document skill://pedagogy/content-writer `
-                + `(get_pedagogical_skill_document avec id="content-writer") et suivez son workflow `
-                + `en entier, en commençant par son étape 1 (choix des supports à rédiger).`;
+                + `(get_pedagogical_skill_document avec id="content-writer") et donnez la commande `
+                + `qu'il indique pour cette demande, sans rédiger ni écrire sur le serveur.`;
             return {
                 messages: [{role: "user" as const, content: {type: "text" as const, text}}],
             };

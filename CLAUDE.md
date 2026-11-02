@@ -17,6 +17,8 @@ Ce fichier n'ajoute que ce qui est propre à Claude Code.
   slides, examen, e-mail), pour retirer les tics d'écriture IA.
 - **`gitnexus-*`** : guides détaillés d'analyse d'impact, de debug et de refactor (voir
   `NEXUS.md`).
-- **Serveur MCP du référentiel pédagogique** : pour rédiger ou concevoir du contenu pédagogique, chargez d'abord le
-  skill pédagogique du serveur (`get_pedagogical_skill_manifest`), puis lisez `list_verdicts`
+- **`content-writer-v3`** : pour rédiger ou relire cours, slides, TP et examens. Le pipeline lit
+  lui-même `list_verdicts` et `list_exemplars`.
+- **Serveur MCP du référentiel pédagogique** : pour concevoir un module, chargez d'abord le
+  skill `module-design` du serveur (`get_pedagogical_skill_manifest`), puis lisez `list_verdicts`
   et `list_exemplars`.
