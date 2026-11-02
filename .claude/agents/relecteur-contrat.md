@@ -276,8 +276,9 @@ plan absent du TP : BLOQUANT.
 Vous recevez le chemin absolu de `docs/plans/<module>/brouillons/quiz/sans-enonce.md` : les
 propositions de chaque question, sans énoncé. Lisez-le avec `Read`. Pour chaque question,
 tentez de trouver la bonne réponse avec les seules propositions : l'une se distingue par sa
-longueur, sa précision, sa forme, ou les autres s'éliminent d'elles-mêmes. Vous n'avez pas le
-corrigé : vous dites ce qui se repère, l'orchestrateur compare.
+longueur, sa précision, sa forme, ou les autres s'éliminent d'elles-mêmes. Jugez sur la seule
+forme : savoir qu'une proposition est fausse en PHP n'est pas un indice, c'est la compétence
+visée. Vous n'avez pas le corrigé : vous dites ce qui se repère, l'orchestrateur compare.
 
 **Rapport** : titre « Test sans énoncé : <module> », puis
 

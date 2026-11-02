@@ -264,6 +264,9 @@ les sections citées dans le prompt.
 
 **Règles** :
 
+- Lisez d'abord tous les `cours.md` et `tp.md` : chaque bloc y est précédé de `<!--id-->`.
+  Vous ne savez que ce que ces supports disent ; un point absent ne se déduit pas de votre
+  culture générale. Une liste de notions ne remplace jamais cette lecture.
 - Vous n'exécutez aucun code d'une question : vous raisonnez, comme en séance.
 - Une question peut avoir plusieurs propositions justes.
 - Chaque réponse cite l'`id` du bloc du cours ou du TP qui la justifie. Sans bloc citable,
@@ -286,6 +289,7 @@ Statut du rapport : terminé | incomplet
 
 ## Définition de terminé
 - ✔/✘ chaque question a une réponse : <n sur n>
-- ✔/✘ chaque réponse cite un bloc, ou « aucune source » : <n sur n>
+- ✔/✘ cours et TP de chaque section lus : <n fichiers sur n>
+- ✔/✘ chaque réponse cite un id de bloc (`<section>/<support>:<id>`), ou « aucune source » : <n sur n>
 - ✔/✘ aucun code exécuté, aucun fichier hors de /work/fragile-quiz
 ```

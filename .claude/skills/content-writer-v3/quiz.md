@@ -68,8 +68,9 @@ bun src/scripts/brouillon.ts extraire-quiz docs/plans/<module>/brouillons/quiz/p
 ## 5. Tests
 
 **Préparation** : bac à sable (`bac-a-sable.md`), avec les dossiers `fragile-quiz` et
-`rapide-quiz`. `preparateur` en mode quiz dépose `supports\<section>\cours.md` et `tp.md`.
-Puis, depuis le dépôt :
+`rapide-quiz`. Un `preparateur` par section, en mode quiz, dépose `supports\<section>\cours.md`
+et `tp.md` : chacun recopie ses exports verbatim, et un échec n'en touche qu'une. Puis, depuis
+le dépôt :
 
 ```bash
 bun src/scripts/brouillon.ts exporter-quiz docs/plans/<module>/brouillons/quiz/preselection.json --sortie <dir>/supports/quiz.md --cle docs/plans/<module>/brouillons/quiz/cle.md
@@ -99,7 +100,14 @@ est nettement trop courte. Test « sans énoncé » : réponse trouvée par éli
 distracteurs trop faibles.
 
 Une question qui échoue repart une fois à son auteur, ou elle est écartée. Une réponse sans
-bloc cité est une réponse devinée, même juste : elle se signale. Nettoyez le bac à sable.
+bloc cité est une réponse devinée, même juste : elle se signale. Si aucun des deux étudiants
+ne trouve de bloc pour le point central, la question porte sur une notion non enseignée :
+écartez-la, ou gardez-la en le disant à l'utilisateur. Une erreur du fragile sur une telle
+question ne prouve pas qu'elle est discriminante.
+
+Avant de présenter la sélection, exécutez dans le bac à sable les comportements dont dépendent
+les bonnes réponses : ni les rédacteurs ni les étudiants n'exécutent ce code. Nettoyez ensuite
+le bac à sable.
 
 ## 6. Sélection finale
 
