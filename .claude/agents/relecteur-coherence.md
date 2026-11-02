@@ -351,7 +351,8 @@ ne s'appliquent pas, sauf les gravités et la règle de preuve.
 de chaque changement (avant, après, origine), chemin absolu du plan de la section ou « pas
 de plan », « quiz et examen à examiner : oui » ou « non ».
 
-**Lecture** : `export_content_compact` pour chaque support, `search_content` sur les termes
+**Lecture** : `get_section` pour le `brief` et le `curriculum`, à classer comme un support,
+`export_content_compact` pour chaque support, `search_content` sur les termes
 du changement, `get_project_reference` si le fil rouge est en jeu (branches `fin-tp-<n>`),
 le plan avec `Read` (rubrique « Matériau quiz » comprise), `get_quiz` et l'export de
 l'examen si le prompt le demande.

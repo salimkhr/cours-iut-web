@@ -55,7 +55,8 @@ Lancez, dans un même message, un `relecteur-coherence` en mode impact par secti
 concernée, et aucun autre agent. Celui de la section modifiée reçoit aussi le quiz et
 l'examen du module. Chaque prompt contient, et seulement cela :
 
-- mode « impact », module, section examinée, supports à examiner ;
+- mode « impact », module, section examinée, supports à examiner (toujours avec le `brief`
+  et le `curriculum` de la section) ;
 - la description de chaque changement : avant, après, origine (id de retouche ou
   « décrit par l'utilisateur ») ;
 - chemin absolu du plan de la section s'il existe, sinon « pas de plan » ;
@@ -78,6 +79,9 @@ Fusionnez les rapports, puis triez : BLOQUANT avant MAJEUR avant MINEUR, et à l
 ### Impact : <module>, <changement en une phrase>
 Origine : retouche <id> | décrit par l'utilisateur (hypothétique ou fait)
 Rapports : <section> ✔, <section> ✔ (1 relance)
+
+Décisions préalables (n) : ce que le changement laisse ouvert et dont dépendent les lignes
+ci-dessous (périmètre, mécanisme à enseigner), avec votre recommandation.
 
 Certain (n)
 | # | Section | Support | id | Gravité | Passage concerné | Proposition |

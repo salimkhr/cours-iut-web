@@ -43,12 +43,12 @@
   - Dépôt de référence : `main` diverge des TP en prod (table `"user"`, `Repository`, sessions) ; à réaligner. Branches `fin-tp-1` à `fin-tp-5` à reconstituer à la demande.
   - Projet `correction/php/7-sessions-et-authentification` créé par un push git : visibilité à régler, `correctionIsAvailable` à activer dans l'admin.
   - `get_project_reference` et `push_correction` : adresse GitLab du serveur MCP à corriger en prod (`ECONNREFUSED 172.22.0.2:443`). `ref` et la description d'`edit_block` sont à déployer.
-  - **`relecteur-pedagogie`** ajouté le 2026-10-31 (spec § 3, `redaction.md`, `plan.md`) : gardé, décision de l'utilisateur du 2026-11-02.
+  - **`relecteur-pedagogie`** ajouté le 2026-10-31 (spec § 3, `redaction.md`, `plan.md`) : mis de côté le 2026-11-02 sur décision de l'utilisateur. L'agent reste dans `.claude/agents/`, mais `plan.md` et `redaction.md` ne le lancent plus ; pour le réactiver, y remettre ses appels.
   - **Règles ajoutées pendant le test** : arborescence à trois niveaux ; surlignage d'une seule ligne décisive ; code serveur et rendu dans un bloc à deux panneaux ; cours précédents déposés pour le rédacteur du cours ; pas de `login.php` ni `logout.php` complets dans un cours (pas de copier-coller du TP).
   - **`edit_block`** : il fusionne les props (`updateBlockProps`) ; la description annonçait un remplacement. Description corrigée dans `src/app/api/mcp/route.ts`, à déployer. Retirer une prop exige une valeur vide.
   - Le verdict prod `6ac67a63` dit encore « un indice replié » : proposé à la clôture (`cloture.md` § 2.5), écriture prod avec confirmation.
   - Connecteur MCP prod parfois absent de la session : le réactiver avant toute étape qui lit la prod.
   - Index `retouches_status_recent` à créer en prod depuis `/admin/outils` ; règle de permission `Bash(docker exec cours-iut-bac-:*)` à décider.
   - Bascule v2 → v3 (`docs/pipeline/bascule-v2-v3.md`) à déployer : la v2 reste servie en prod jusque-là.
-  - Étape 4 : test à faire (modification fictive décrite par l'utilisateur, rapport d'impact seul, sans écriture). `list_retouches` répond en prod, journal vide le 2026-11-02 : le mode `propagation` n'a pas encore traité de vraie retouche.
+  - Étape 4, test du 2026-11-02 : modification fictive de `insert()` en PHP 6 (`: int` devient l'entité), rapport d'impact seul, aucune écriture. Deux `relecteur-coherence`, un cycle : 10 passages « certain » confirmés en prod, le mécanisme d'identifiant manquant repéré par les deux agents, quiz et examens sans impact. Corrigé après le test : brief et curriculum demandés aux agents, rubrique « Décisions préalables » du rapport. Non testés : mises à jour, solde du journal (vide), branches `fin-tp-<n>` (`ref` à déployer), slides en source file. En attente de validation.
   - Étape 5 (quiz) : la copie staging → prod n'a pas de mécanisme ; à aligner sur l'option A.
