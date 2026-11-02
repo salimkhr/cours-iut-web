@@ -155,6 +155,9 @@ TP.
   se repère à sa longueur.
 - **Niveaux de Bloom** : `comprendre`, `appliquer`, `analyser`, `evaluer`. « Se souvenir »
   est exclu, « créer » ne se prête pas au QCM.
+- **Propositions** : le résultat seul, sans son explication (`goldsilver`, pas « goldsilver, car
+  sans break… ») : l'explication est un indice. Seule une question en « pourquoi » a pour
+  propositions des raisons, en une phrase courte.
 - **Durée** : `durationSeconds` réaliste, de 5 à 300, lecture du code comprise.
 - Vraies apostrophes, vouvoiement, français courant. Le code puise dans les données du TP.
 
