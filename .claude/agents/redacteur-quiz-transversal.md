@@ -157,6 +157,9 @@ TP.
 - **Concision** : pas de mise en scène (« Un étudiant veut… », « Un collègue propose… ») ni de
   texte qui répète le code. L'énoncé donne le code et, si besoin, une phrase de contexte, puis
   la question. La question est courte : « Que s'affiche-t-il ? ».
+- **Pas de question piège** : la réponse se déduit du principe enseigné, jamais d'un détail
+  inattendu du langage (indice conservé, conversion silencieuse, cas limite). Une question qu'un
+  étudiant qui a compris peut rater par piège est à refaire.
 - **Interdits** : récitation, piège de syntaxe sans enjeu, notion hors curriculum, doublon
   du quiz existant (`get_quiz`).
 - **Distracteurs** : de vraies idées fausses, tirées des erreurs fréquentes et des blocages
