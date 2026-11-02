@@ -21,7 +21,7 @@
 | Candidate | Sections | Geste | Bloom | Clé | F | R | Lecture | Bloc cité (fragile) | Bloc cité (rapide) | Pourquoi retenue |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1-q2 | 1 | Interpolation | appliquer | A | A | A | facile | B/cours:cc69ba21-35ae-4ef7-ba5f-c8e7c8591377 | même bloc | ouverture accessible, geste E3 |
-| 1-q3 | 1 | `switch` sans `break` | appliquer | C | C | C | facile | B/cours:ctrl-switch-callout-txt | même bloc | erreur classique, réellement testée au TP |
+| 1-q3 | 1 | `match` et type de la valeur (réécrite à la demande de l'utilisateur, non testée) | appliquer | à retester | — | — | à retester | B/cours:ctrl-match-txt | — | comparaison stricte du `match`, enseignée au cours |
 | 2-q2 | 2 | `usort`, `$b <=> $a` | appliquer | D | D | D | facile | O/cours:tri-usort-txt | O/cours:tri-usort-code | geste central du tri |
 | 2-q4 | 2 | `private` hors classe | comprendre | C | C | C | facile | O/cours:enc-private-res | même bloc | encapsulation, notion à garder |
 | 4-q7 | 4 | Liste blanche serveur | comprendre | A | A | A | facile | F/cours:form-errors-choice-text | F/cours:form-errors-choices-def-text | la raison de sécurité, pas la syntaxe |
