@@ -2,8 +2,8 @@
 
 ## Statut
 - **Phase** : relecture
-- **Mis à jour le** : 2026-10-27
-- **Validé** : 5 corrections ponctuelles appliquées en prod le 2026-10-27 (TP n° 3, 6, 10) ; cours n° 6 (1c7c414c) préparé depuis l'export, à recouper avec get_content avant application
+- **Mis à jour le** : 2026-11-02
+- **Validé** : 5 corrections ponctuelles appliquées en prod le 2026-10-27 (TP n° 3, 6, 10) ; cours n° 6 (1c7c414c) : emplacement de l'appel précisé en prod le 2026-11-02
 - **Désaccords en attente** : 3 (voir « Relecture du 2026-10-27 »)
 - **Prochaine action** : l'utilisateur tranche les désaccords et choisit les remarques retenues à faire corriger.
 

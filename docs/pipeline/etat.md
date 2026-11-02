@@ -1,7 +1,7 @@
 # État du déploiement du pipeline
 
 - **Étape courante** : 3 (rédaction) validée par l'utilisateur le 2026-11-01, après le test de bout en bout sur `php/7-sessions-et-authentification`. Cours, slides, TP, curriculum et `courseIntroMinutes` en prod, section non publiée (`isAvailable: false`) ; correction et branches `fin-tp-6`, `fin-tp-7` poussées par git. Relecture navigateur du TP et des slides à faire. Étapes 1, 2, 3 et 6 validées ; bascule v2 → v3 appliquée sur `staging` le 2026-11-02, à déployer ; étapes 4 et 5 non commencées.
-- **Corrections ponctuelles PHP 1 à 4 (prod, 2026-10-27)** : 49 blocs appliqués ; 8 en attente, tirées de l'export, à recouper avec `get_content` (statuts dans `docs/plans/php/`). `edit_block` en prod parfois refusé par le classifieur du mode automatique : réessayer avec confirmation.
+- **Corrections ponctuelles PHP 1 à 4 (prod)** : 49 blocs appliqués le 2026-10-27, 10 de plus le 2026-11-02 ; plus aucune en attente (statuts dans `docs/plans/php/`). `edit_block` en prod parfois refusé par le classifieur du mode automatique : réessayer avec confirmation. `delete_block` refusé le 2026-11-02 : `sl2-classe-res` affiche « (aucune sortie) » au lieu d'être supprimé.
 - **Fait** :
   - `docs/pipeline/spec.md` : référence ; § 1 et § 9 amendés le 2026-10-27 ; § 2, § 3, § 6 et § 12 amendés le 2026-10-28 (étape 2) ; § 2 (étapes 4 et 8), § 3 et § 13 amendés le 2026-10-28 (étape 3).
   - `.claude/skills/humaniseur-fr/` (copie locale, MIT) ; `.gitignore` versionne `.claude/skills/` et `.claude/agents/`, ignore `docs/plans/*/brouillons/`.

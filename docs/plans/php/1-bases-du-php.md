@@ -2,10 +2,10 @@
 
 ## Statut
 - **Phase** : relecture
-- **Mis à jour le** : 2026-10-27
-- **Validé** : 18 corrections ponctuelles appliquées en prod le 2026-10-27 (cours n° 1, 2, 3, 7, 8 ; slides n° 1, 4 ; TP n° 2, 3, 5, 7, 9) ; le « doublon » des slides n° 3 était un artefact de l'export, rien à corriger
+- **Mis à jour le** : 2026-11-02
+- **Validé** : 18 corrections ponctuelles appliquées en prod le 2026-10-27 (cours n° 1, 2, 3, 7, 8 ; slides n° 1, 4 ; TP n° 2, 3, 5, 7, 9) ; le « doublon » des slides n° 3 était un artefact de l'export, rien à corriger ; commentaires de `classement.php` (tp-ex6-file) alignés sur la consigne en prod le 2026-11-02
 - **Désaccords en attente** : 2 (voir « Relecture du 2026-10-27 »)
-- **Prochaine action** : trancher les désaccords ; corrections lourdes (callouts du cours n° 4, notions du TP n° 5, cours n° 6, bonus du TP n° 4, durées du TP n° 6) à faire par le pipeline ; commentaire de numérotation de `classement.php` (TP n° 9) préparé mais non montré.
+- **Prochaine action** : trancher les désaccords ; corrections lourdes (callouts du cours n° 4, notions du TP n° 5, cours n° 6, bonus du TP n° 4, durées du TP n° 6) à faire par le pipeline.
 
 ## Relectures
 
