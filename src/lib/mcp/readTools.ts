@@ -263,6 +263,7 @@ export function registerReadTools(
             const sections = readableSections(mod, isAdmin).map((s) => ({
                 slug: s.path,
                 title: s.title ?? s.path,
+                order: s.order,
                 // totalDuration: fallback à 1 pour la compatibilité avec les anciennes sections
                 // sans durée renseignée. La plupart des sections ont des valeurs explicites en DB.
                 totalDuration: s.totalDuration ?? 1,

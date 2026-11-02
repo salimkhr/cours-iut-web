@@ -127,6 +127,11 @@ describe("MCP — durées de séance", () => {
         expect(out[0].totalDuration).toBe(2);
     });
 
+    test("list_sections renvoie order", async () => {
+        const out = JSON.parse(await callTool("list_sections", { module: "php" }));
+        expect(out[0].order).toBe(1);
+    });
+
     test("create_module accepte sessionDurationMinutes", async () => {
         await callTool("create_module", { title: "Rust", sessionDurationMinutes: 120 });
         const mod = await db.collection("modules").findOne({ path: "rust" });
