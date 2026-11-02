@@ -30,7 +30,7 @@
 | 4-q2 | 4 | `REQUEST_METHOD` | evaluer | C | C | C | facile | F/cours:form-simple-flow-text | même bloc | justifie un choix imposé |
 | 4-q3 | 4 | Toutes les cases cochées (remplace 4-q4, retirée par l'utilisateur) | comprendre | à retester | — | — | à retester | F/cours:form-complex-checkbox-text | — | `name="x[]"` donne un tableau |
 | 2-q3 | 2 | `usort` renvoie `true` | analyser | A | A | A | facile | O/cours:tri-usort-callout-txt | même bloc | diagnostic d'une idée fausse enseignée |
-| 3-q1 | 3 | `extract` et casse | analyser | B | B | B | facile | S/cours:29d1f832-84c5-46a0-8092-547e028c6421 | même bloc | relie `render` et la casse |
+| 3-q1 | 3 | Passage de paramètres page → vue (réécrite à la demande de l'utilisateur, non testée) | appliquer | à retester | — | — | à retester | S/cours:29d1f832-84c5-46a0-8092-547e028c6421 | — | geste central de `render()` |
 | 2-q8 | 2 | `??` et clé absente | evaluer | B | B | B | facile | O/cours:assoc-modif-callout-txt | même bloc | compare deux codes proches |
 | t-q1 | 3, 1 | Portée dans `render` | analyser | B | B | B | facile | S/cours:3e326d3e-d65d-479d-a7cb-10ceee15752d | même bloc | relie portée et vue |
 | t-q5 | 3, 4 | `redirect` sans `exit` | analyser | A | A | A | facile | F/cours:form-errors-prg-note-text | même bloc | effet concret sur le fichier |
