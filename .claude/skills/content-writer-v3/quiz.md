@@ -12,6 +12,8 @@ sur une liste de sections. Principe : générer large, puis sélectionner.
   l'écriture. Jamais staging : il n'a pas les cours et aucun mécanisme ne copie un quiz
   (décision du 2026-11-02). Une question en prod n'atteint les étudiants que lorsque
   l'enseignant lance une session.
+- Une question part d'un geste du TP, jamais de son exemple : elle est transposée dans
+  l'`exampleDomain` (décision du 2026-11-02).
 - Les questions existantes ne sont ni modifiées ni supprimées, sauf demande.
 - Les étiquettes ne vont pas en base : le schéma n'a pas de champ pour elles. Elles
   restent dans `docs/plans/<module>/quiz.md`.

@@ -42,5 +42,6 @@
 | t-q6 | 1, 2, 4 | `array_filter` et `for` | analyser | B | B | B | facile | O/cours:tri-filter-callout-txt | même bloc | relie trois sections |
 | t-q8 | 2, 3 | Copie contre objet | comprendre | A | D | A | discriminante, sans source | aucune source | aucune source | seule discriminante restante ; à trancher |
 
+- **Réécriture du 2026-11-02** : les 21 questions sont transposées dans le domaine Recettes (plus aucun exemple du TP), propositions réduites au résultat, énoncés raccourcis. La lecture croisée ci-dessus porte sur la version d'avant : à refaire.
 - **Écartées à la présélection (12)** : 1-q1 et 1-q9 (niveau `analyser` plein ou récitation), 1-q4, 1-q5, 2-q1, 2-q5, 3-q2, 3-q3, 3-q7, 4-q1, 4-q3, t-q3 (proche de t-q2).
 - **Écartées après les tests (11)** : 1-q6, 1-q8, 2-q6 (notion non enseignée) ; 2-q7, 4-q10, t-q7 (point central sans source) ; 3-q4 et t-q2 (`===` entre entier et chaîne non expliqué) ; 4-q9 (doublon de t-q4) ; 3-q6 et 4-q6 (niveau `analyser` plein).

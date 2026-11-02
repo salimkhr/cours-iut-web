@@ -147,6 +147,9 @@ TP.
 - **Énoncé autosuffisant** : le code est remontré dans un bloc `code`. L'étudiant répond
   sans ouvrir son TP. Blocs permis : `text`, `list`, `list-item`, `table`, `code`,
   `image-card`, `diagram`, `callout`, `quote`, `file-tree`.
+- **Jamais l'exemple du TP** : le geste vient du TP, l'exemple non. Noms, données, fichiers et
+  classes du TP et du fil rouge sont interdits dans l'énoncé, le code et les propositions.
+  Transposez le geste dans l'`exampleDomain` du module, avec un code écrit pour la question.
 - **Énoncé court** : droit au fait, sans nom de fichier du TP ni rappel de séance (« Vous écrivez
   deux echo à la suite. », pas « Dans streamer.php, vous écrivez… » ni « comme au TP »). Il ne
   dit pas quelle version vient du TP et n'annonce pas le résultat.
