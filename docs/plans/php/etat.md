@@ -1,6 +1,6 @@
 # État du module `php`
 
-Mis à jour le 2026-11-01.
+Mis à jour le 2026-11-03.
 
 | # | Section | Phase | Dernière action | Date | Prochaine action |
 |---|---|---|---|---|---|
@@ -21,6 +21,6 @@ Ordre du tableau : celui de `list_sections` en prod (la section 2 y est en 10e p
 Rapports bruts de la relecture du 2026-10-27 : `docs/plans/php/rapports/2026-10-27-relecture-php-1-4.md`.
 
 ## Quiz
-- Dernier cadrage : non renseigné
-- Sections couvertes : non renseigné
-- Questions publiées : non renseigné
+- Dernier cadrage : 2026-11-02 (sections 1 à 4, évaluation notée, sans points négatifs, domaine cinéma)
+- Sections couvertes : 1-bases-du-php, 2-programmation-orientee-objet, 3-structurer-son-code, 4-formulaire
+- Questions publiées : 20, écrites en prod le 2026-11-03 (`docs/plans/php/quiz.md`)
