@@ -27,7 +27,7 @@
 | 2-q4 | 2 | `private` hors classe | comprendre | C | C | C | facile | O/cours:enc-private-res | même bloc | encapsulation, notion à garder |
 | 4-q7 | 4 | Liste blanche serveur | comprendre | A | A | A | facile | F/cours:form-errors-choice-text | F/cours:form-errors-choices-def-text | la raison de sécurité, pas la syntaxe |
 | 1-q7 | 1 | Argument manquant | comprendre | A | A | A | facile | B/cours:8592120e-ea85-4ed0-aad2-97a89fdde71e | B/cours:2e2dc2aa-ba67-4b5f-a705-b1cae9f14b53 | erreur provoquée au TP |
-| 4-q2 | 4 | `REQUEST_METHOD` | evaluer | C | C | C | facile | F/cours:form-simple-flow-text | même bloc | justifie un choix imposé |
+| 4-q2 | 4 | `REQUEST_METHOD` à l'ouverture par un lien (remplace le 2026-11-03 « Pourquoi préférer la version A ? », non testée) | appliquer | A | — | — | à retester | F/cours:form-simple-flow-text | — | `'GET'` à l'ouverture, résultat seul |
 | 4-q3 | 4 | Toutes les cases cochées (remplace 4-q4, retirée par l'utilisateur) | comprendre | à retester | — | — | à retester | F/cours:form-complex-checkbox-text | — | `name="x[]"` donne un tableau |
 | 2-q9 | 2 | `foreach` clé et valeur (remplace 2-q3, non testée) | comprendre | à retester | — | — | à retester | à confirmer au test | — | geste direct des tableaux associatifs |
 | 3-q1 | 3 | Passage de paramètres page → vue (réécrite à la demande de l'utilisateur, non testée) | appliquer | à retester | — | — | à retester | S/cours:29d1f832-84c5-46a0-8092-547e028c6421 | — | geste central de `render()` |
@@ -45,6 +45,7 @@
 ### Écriture en prod (2026-11-03)
 - `edit_quiz_config` : `negativeMarking` passé de `true` à `false`.
 - 20 `add_quiz_question`, positions 0 à 19, relues dans la réponse du serveur : énoncés, propositions et bonnes réponses identiques à `selection.json`.
+- Plus tard le 2026-11-03, à la demande de l'utilisateur : `edit_quiz_question` sur la position 6 (4-q2, même id). « Pourquoi préférer la version A ? » devient « On ouvre cette page en cliquant sur un lien du menu. Qu'affiche-t-elle ? » (3 propositions, 30 s), relue dans la réponse du serveur.
 
 | Position | Candidate | Id en prod |
 |---|---|---|
