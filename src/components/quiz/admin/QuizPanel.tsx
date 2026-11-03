@@ -12,6 +12,17 @@ import {api, quizUrl, type ApiIssue, type QuizEnvelope} from "@/components/quiz/
 import type {Quiz, QuizQuestion} from "@/lib/quiz/quizTypes";
 import {renderInline} from "@/lib/inlineMarkdown";
 import {inlineCodeFit} from "@/components/quiz/QuizStage";
+import {BlockRenderer} from "@/components/builder/BlockRenderer";
+import type {Block} from "@/types/CourseContent";
+
+/** Énoncé complet (texte et code), tel que les étudiants le verront. */
+export function QuestionStatement({blocks}: {blocks: Block[]}) {
+    return (
+        <div className="flex flex-col gap-3 text-sm">
+            <BlockRenderer blocks={blocks}/>
+        </div>
+    );
+}
 
 function summary(question: QuizQuestion): string {
     for (const block of question.blocks) {
@@ -201,6 +212,7 @@ export default function QuizPanel({moduleId, moduleSlug}: {moduleId: string; mod
                                                          className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-data-[state=open]/question:rotate-180 motion-reduce:transition-none"/>
                                         </CollapsibleTrigger>
                                         <CollapsibleContent className="flex flex-col gap-4 border-t px-4 pb-4 pt-3">
+                                            <QuestionStatement blocks={question.blocks}/>
                                             <ul className="flex flex-col gap-1.5" aria-label={`Propositions de la question ${index + 1}`}>
                                                 {question.options.map((option) => (
                                                     <li key={option.id} className={`flex items-start gap-2 text-sm ${inlineCodeFit}`}>
