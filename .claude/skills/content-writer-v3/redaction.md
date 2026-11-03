@@ -114,7 +114,6 @@ Lancez en parallèle, dans un même message, les agents applicables :
 |---|---|---|---|
 | `relecteur-style` | oui | oui | oui |
 | `relecteur-coherence` | oui | oui | oui |
-| `relecteur-pedagogie` | oui | oui | oui |
 | `etudiant-fragile` | mode lecture | non | mode exécution |
 | `relecteur-contrat` | non | non | oui |
 | `etudiant-rapide` | non | non | oui |
@@ -159,12 +158,6 @@ git -C <clone> archive fin-tp-<n-1> | tar -x -C "<dir>/depart"
 Branche absente : dites-le à l'utilisateur et proposez de reconstruire l'état depuis les
 énoncés des TP précédents, qui font foi sur `main`. Le clone exige ses identifiants : ne
 les saisissez jamais.
-
-`relecteur-pedagogie` n'a ni véto ni gravité et ne compte pas comme un cycle
-supplémentaire. Il reçoit les chemins du plan et des exports, les objectifs et notions du
-brief, les notions enseignées et les verdicts verbatim. Sa liste va telle quelle à
-l'utilisateur, qui tranche ligne à ligne ; une case vide de la matrice d'alignement part au
-rédacteur.
 
 ## 5. Contrôle, arbitrage, correction
 

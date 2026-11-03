@@ -121,9 +121,7 @@ Mettez « Étape en cours » à « plan : relecture, cycle 1 ». Lancez en paral
 un même message :
 
 - `relecteur-coherence`, mode **plan** ;
-- `relecteur-contrat`, mode **plan** ;
-- `relecteur-pedagogie`, mode **plan** : sans véto, il ne compte pas comme un cycle
-  supplémentaire ; sa liste est présentée telle quelle à l'utilisateur.
+- `relecteur-contrat`, mode **plan**.
 
 Chaque prompt contient, et seulement cela : le mode (« plan »), module, section, le
 **chemin absolu du fichier de section** (ils le lisent avec `Read` ; la garde
