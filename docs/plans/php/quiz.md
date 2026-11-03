@@ -13,7 +13,7 @@
 | Q8 | Domaine du quiz | cinéma, randonnée ou jeux de société ; cinéma recommandé | cinéma | 2026-11-02 |
 
 ## Passage du 2026-11-02 : sections 1, 2, 3, 4
-- **Étape en cours** : en attente de validation ; propositions et énoncés raccourcis après les tests, à retester (cadrage validé le 2026-11-02)
+- **Étape en cours** : en attente de validation et de confirmation d'écriture en prod (second test fait le 2026-11-03)
 - **Contexte** : quiz prod `92466c6f-0119-457e-b6db-0214fe00649d`, 0 question, `negativeMarking: true` ; aucune de ces sections n'a de « Matériau quiz » ni de `curriculum` en base.
 - **Génération** : 44 candidates (S1 9, S2 8, S3 8, S4 11, transversal 8), présélection 32, sélection 21, 1 400 s (23 min 20).
 - **Répartition Bloom** : comprendre 4, appliquer 5, analyser 7, evaluer 5
@@ -41,6 +41,14 @@
 | 4-q11 | 4 | GET ou POST selon le formulaire (réécrite à la demande de l'utilisateur, non testée) | evaluer | à retester | — | — | à retester | F/cours (à confirmer au test) | — | choix de la méthode, geste du TP |
 | t-q6 | 1, 2 | `array_filter` et `fn` (réécrite à la demande de l'utilisateur, non testée) | appliquer | à retester | — | — | à retester | O/cours:tri-filter-callout-txt | — | usage direct du filtre |
 | t-q10 | 2, 3 | Getter dans une vue (remplace t-q8, non testée) | comprendre | à retester | — | — | à retester | à confirmer au test | — | relie objet et vue |
+
+### Second test (2026-11-03), version finale : 20 questions, 1 065 s (17 min 45)
+- **Bloom** : comprendre 7, appliquer 7, évaluer 4, analyser 2.
+- **Lecture croisée** : fragile 20/20, rapide 20/20, aucun BLOQUANT, aucune question discriminante. Les deux étudiants ont lu les supports par extraits ; plusieurs blocs sont cités par numéro de ligne.
+- **Points sans source explicite relevés par les étudiants** : 4-q8 (clé `1 =>` conservée), 3-q8 (portée de la constante), t-q1 (message exact de l'avertissement), t-q9 (texte pour un nombre).
+- **Test sans énoncé** : t-q11 et 3-q8 trouvables par la forme ; 3-q8 corrigée (distracteurs allongés), t-q11 gardée (reconnaître `htmlspecialchars` est la compétence visée).
+- **Retouches de l'utilisateur** : domaine cinéma ; propositions et énoncés réduits ; 4-q4, 3-q5, t-q5 retirées ; 1-q3, 2-q2, 2-q8, 3-q1, 4-q11, t-q1, t-q6 réécrites ; 2-q3, t-q4, t-q8 remplacées par 2-q9, t-q11, t-q10 ; t-q9 et 4-q5 simplifiées ; plus de question piège.
+- **Rien n'est écrit en prod.**
 
 - **Réécriture du 2026-11-02** : les 21 questions sont transposées dans le cinéma (ni le TP ni le cours), propositions réduites au résultat, énoncés raccourcis. La lecture croisée ci-dessus porte sur la version d'avant : à refaire.
 - **Écartées à la présélection (12)** : 1-q1 et 1-q9 (niveau `analyser` plein ou récitation), 1-q4, 1-q5, 2-q1, 2-q5, 3-q2, 3-q3, 3-q7, 4-q1, 4-q3, t-q3 (proche de t-q2).
