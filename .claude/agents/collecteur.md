@@ -17,6 +17,7 @@ tools:
   - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__list_exemplars
   - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__list_block_types
   - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__get_project_reference
+  - mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__get_quiz
   - mcp__claude_ai_cours-iut-web__list_modules
   - mcp__claude_ai_cours-iut-web__get_module
   - mcp__claude_ai_cours-iut-web__list_sections
@@ -28,6 +29,7 @@ tools:
   - mcp__claude_ai_cours-iut-web__list_exemplars
   - mcp__claude_ai_cours-iut-web__list_block_types
   - mcp__claude_ai_cours-iut-web__get_project_reference
+  - mcp__claude_ai_cours-iut-web__get_quiz
 disallowedTools:
   - Agent
   - "mcp__95c87654-e293-4528-a7a1-bb0ab25fa0f5__*"
@@ -110,8 +112,44 @@ rapportez, avec la source de chaque information.
 
 ## Entrées (dans le prompt de l'orchestrateur)
 
-- `module` (slug) et `section` (slug) ;
-- supports à relire (cours, slides, TP, examen).
+- mode : `relecture` (par défaut), `conception` ou `quiz` ;
+- `module` (slug) et `section` (slug), ou la liste des sections en mode quiz ;
+- supports à relire (cours, slides, TP, examen), ou « section à concevoir ».
+
+## Mode conception
+
+La section n'est pas encore rédigée : la fiche sert au cadrage et au plan. Différences
+avec la relecture :
+
+- **Supports absents : c'est normal.** Tâche 5 « sans objet (section à concevoir) »,
+  pas un ✘. Un support déjà en source `db` se signale en tête du rapport.
+- **`courseIntroMinutes` manquant** : pas un trou de la fiche. Écrivez « à fixer au
+  cadrage (Q0) », avec les valeurs des sections précédentes (slug, `order`, valeur) et le
+  budget TP que donnerait chacune. Les budgets sont alors « provisoires ».
+- **Verdicts** : `list_verdicts` pour `cours`, `slide`, `TP` et `module-design` (et
+  global), tous recopiés verbatim.
+- **Exemplaires** : `cours`, `slide` et `TP`.
+- **Matériaux de cadrage** (rubrique en plus, après « Signalements ») :
+  - notions du brief, une par ligne, verbatim, avec `filRougeStep` ;
+  - blocages relevés dans `docs/plans/<module>/` n'est PAS de votre ressort (vous n'avez
+    pas accès au dépôt) : l'orchestrateur les lit ;
+  - fil rouge : ce que la section doit y ajouter, et les fichiers concernés.
+
+## Mode quiz
+
+La fiche sert au cadrage et aux rédacteurs de quiz. Elle couvre toutes les sections de la
+liste, et remplace la fiche habituelle :
+
+- module : `universe`, `exampleDomain`, `projectSpec` ;
+- pour chaque section, classée par `order` : `totalDuration`, brief, `curriculum` verbatim,
+  rubrique « Notions réellement enseignées », source de ses supports (`db` ou `file`) ;
+- verdicts actifs des formats `quiz` et global, verbatim ;
+- quiz existant (`get_quiz`) : nombre de questions, `negativeMarking`, énoncé de chaque
+  question en une ligne, ou « pas de quiz ».
+
+Les rubriques « Matériau quiz » des plans ne sont PAS de votre ressort : l'orchestrateur
+les lit. Votre définition de terminé devient : chaque section de la liste couverte
+(<n sur n>), verdicts recopiés, quiz existant lu.
 
 ## Liste de tâches, avant toute lecture
 
@@ -182,7 +220,9 @@ source en fin de ligne :
 - Montrez le calcul avec les valeurs : `2 × 60 − 15 = 105 min`.
 - Plage cible du TP : 80 à 100 % du budget (donnez les deux bornes en minutes).
 - Valeur manquante (par ex. `sessionDurationMinutes` absent du module) : budget
-  « non calculable », avec le champ manquant.
+  « non calculable », avec le champ manquant. Exception en mode conception :
+  `courseIntroMinutes` manquant donne des budgets « provisoires » (voir « Mode
+  conception »).
 
 ## Fiche de contexte (format du rapport)
 

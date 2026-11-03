@@ -148,9 +148,7 @@ comptez comme blocage, même si elle a réussi.
 3. **Avant chaque variante réaliste** : écrivez votre prédiction du résultat (sortie,
    erreur, rendu), PUIS exécutez, PUIS comparez. Mauvaise prédiction = explication
    insuffisante en amont (citez le bloc qui aurait dû vous préparer).
-4. **Chaque erreur fréquente** (`callout warning`) : reproduisez-la si elle est
-   reproductible et comparez le message obtenu au message cité.
-5. **Bilan final**, pour chaque notion du brief : pouvez-vous dire à quoi elle sert
+4. **Bilan final**, pour chaque notion du brief : pouvez-vous dire à quoi elle sert
    (une phrase, avec le bloc source) et l'utiliser (un mini-exemple exécuté, autre que
    ceux du cours) ? Réponses : oui / partiellement / non, avec la raison.
 
@@ -192,7 +190,7 @@ reçoit une remarque MAJEUR (« démarrage > 2 min »).
 ## Liste de tâches, avant d'agir
 
 Avec l'outil de liste de tâches s'il est disponible, sinon écrite : une tâche par
-exemple de code, par variante à prédire, par erreur fréquente à reproduire et par
+exemple de code, par variante à prédire et par
 notion du bilan (mode lecture) ; une tâche par exercice (mode exécution). Recopiez-la en
 tête du rapport avec le statut de chacune.
 
@@ -253,3 +251,45 @@ Les sorties de commandes citées sont courtes (les lignes utiles, pas tout le lo
 Vous ne vous déclarez terminé que si les critères du mode joué sont tous ✔, preuve à
 l'appui. Un exercice ni fini ni bloqué, un exemple non exécuté (hors limite
 d'environnement notée), une étape sans colonne source : ✘, rapport « incomplet ».
+
+## Mode quiz
+
+Vous répondez à des questions de quiz, sans les bonnes réponses, comme un étudiant fragile qui a suivi
+les sections citées dans le prompt.
+
+**Ce que vous savez** : `/work/supports/quiz.md` (les questions),
+`/work/supports/<section>/cours.md` et `tp.md` pour chaque section, et la rubrique
+« Notions réellement enseignées » du prompt. Lisez-les par la commande autorisée
+(`docker exec … sh -c 'cd /work/fragile-quiz && cat /work/supports/quiz.md'`).
+
+**Règles** :
+
+- Lisez d'abord tous les `cours.md` et `tp.md` : chaque bloc y est précédé de `<!--id-->`.
+  Vous ne savez que ce que ces supports disent ; un point absent ne se déduit pas de votre
+  culture générale. Une liste de notions ne remplace jamais cette lecture.
+- Vous n'exécutez aucun code d'une question : vous raisonnez, comme en séance.
+- Une question peut avoir plusieurs propositions justes.
+- Chaque réponse cite l'`id` du bloc du cours ou du TP qui la justifie. Sans bloc citable,
+  écrivez « aucune source » : c'est une réponse devinée, même si vous êtes sûr de vous.
+- Temps estimé en secondes : lecture de l'énoncé et de chaque proposition, puis réflexion.
+- Si une question vous paraît ambiguë, répondez quand même et dites pourquoi.
+
+**Rapport** (remplace le format et la définition de terminé du TP) :
+
+```
+# Quiz, un étudiant fragile
+Statut du rapport : terminé | incomplet
+
+## Liste de tâches
+- [x] Question <id>
+
+## Réponses
+| Question | Lettres choisies | Justification (une ligne) | Bloc cité | Temps (s) | Ambiguïté |
+|---|---|---|---|---|---|
+
+## Définition de terminé
+- ✔/✘ chaque question a une réponse : <n sur n>
+- ✔/✘ cours et TP de chaque section lus : <n fichiers sur n>
+- ✔/✘ chaque réponse cite un id de bloc (`<section>/<support>:<id>`), ou « aucune source » : <n sur n>
+- ✔/✘ aucun code exécuté, aucun fichier hors de /work/fragile-quiz
+```

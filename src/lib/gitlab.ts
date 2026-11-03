@@ -176,15 +176,18 @@ export async function ensureProject(
 }
 
 /** Chemins des blobs du repo (branche par défaut), toutes pages. Repo vide → []. */
-export async function listRepoFiles(cfg: GitlabConfig, projectId: number): Promise<string[]> {
+export async function listRepoFiles(cfg: GitlabConfig, projectId: number, ref?: string): Promise<string[]> {
+    const refParam = ref ? `&ref=${encodeURIComponent(ref)}` : "";
     const paths: string[] = [];
     let page = "1";
     const pagesSeen = new Set<string>();
     while (page && !pagesSeen.has(page)) {
         pagesSeen.add(page);
         const res = await gitlabFetch(cfg,
-            `/projects/${projectId}/repository/tree?recursive=true&per_page=100&page=${page}`);
-        if (res.status === 404) return []; // repo sans aucun commit
+            `/projects/${projectId}/repository/tree?recursive=true&per_page=100&page=${page}${refParam}`);
+        // Sans ref, un 404 veut dire « repo sans aucun commit » ; avec une ref demandée,
+        // il veut dire qu'elle n'existe pas, ce qui ne doit pas passer pour un dépôt vide.
+        if (res.status === 404 && !ref) return [];
         if (!res.ok) throw await gitlabError(res, "lecture de l'arborescence");
         const items = await res.json() as Array<{ type: string; path: string }>;
         paths.push(...items.filter((i) => i.type === "blob").map((i) => i.path));
@@ -194,13 +197,13 @@ export async function listRepoFiles(cfg: GitlabConfig, projectId: number): Promi
     return paths;
 }
 
-/** Contenu d'un fichier sur `main`, décodé depuis la base64 renvoyée par l'API. */
+/** Contenu d'un fichier sur `ref` (`main` par défaut), décodé depuis la base64 renvoyée par l'API. */
 export async function readRepoFile(
-    cfg: GitlabConfig, projectId: number, filePath: string
+    cfg: GitlabConfig, projectId: number, filePath: string, ref = "main"
 ): Promise<string> {
     const res = await gitlabFetch(
         cfg,
-        `/projects/${projectId}/repository/files/${encodeURIComponent(filePath)}?ref=main`
+        `/projects/${projectId}/repository/files/${encodeURIComponent(filePath)}?ref=${encodeURIComponent(ref)}`
     );
     if (!res.ok) throw await gitlabError(res, `lecture du fichier ${filePath}`);
     const file = await res.json() as { content: string };

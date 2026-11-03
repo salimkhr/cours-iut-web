@@ -69,3 +69,6 @@ src/cours/**/REVIEW.md
 
 # Sauvegardes de migration (scripts/migrate-*)
 /backups/
+
+# Brouillons des supports du pipeline content-writer-v3 (la prod garde la version finale)
+docs/plans/*/brouillons/

@@ -56,27 +56,19 @@ describe("Skills pédagogiques — documents", () => {
         }
     });
 
-    it("content-writer contient le workflow, la grammaire et les invariants", () => {
+    it("content-writer renvoie vers chaque mode du pipeline Claude Code", () => {
         const cw = SKILL_DOCUMENTS["content-writer"].content;
-        for (const kw of ["list_verdicts", "list_exemplars", "list_block_types",
-            "80", "100 %", "contrat de consigne", "fil rouge", "curriculum",
-            "promote_exemplar", "distill_verdicts", "get_content", "save_content",
-            "code-with-preview", "download-file", "collapsible", "projectRef",
-            "slide-note", "Créez", "vouvoyé"]) {
-            expect(cw).toContain(kw);
+        for (const mode of ["conception", "conception-rapide", "redaction", "relecture", "examen", "propagation", "quiz"]) {
+            expect(cw).toContain(`/content-writer-v3 ${mode} <module>`);
         }
     });
 
-    it("l'examen est décrit comme TP indépendant hors fil rouge", () => {
+    it("content-writer interdit la rédaction et oriente vers les autres documents", () => {
         const cw = SKILL_DOCUMENTS["content-writer"].content;
-        expect(cw).toContain("TP indépendant");
-        expect(cw).toContain("HORS fil rouge");
-    });
-
-    it("content-writer documente le format de l'arbre de blocs", () => {
-        const doc = SKILL_DOCUMENTS["content-writer"];
-        expect(doc.content).toContain("Format de l'arbre de blocs");
-        expect(doc.content).toContain("get_project_reference");
+        expect(cw).toContain("Ne rédigez aucun support");
+        expect(cw).toContain("`retouche`");
+        expect(cw).toContain("`module-design`");
+        expect(cw).not.toContain("save_content");
     });
 
     it("retouche décrit le déroulé, les outils autorisés et le journal", () => {

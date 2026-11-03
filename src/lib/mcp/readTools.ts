@@ -263,6 +263,7 @@ export function registerReadTools(
             const sections = readableSections(mod, isAdmin).map((s) => ({
                 slug: s.path,
                 title: s.title ?? s.path,
+                order: s.order,
                 // totalDuration: fallback à 1 pour la compatibilité avec les anciennes sections
                 // sans durée renseignée. La plupart des sections ont des valeurs explicites en DB.
                 totalDuration: s.totalDuration ?? 1,
@@ -647,7 +648,7 @@ export function registerReadTools(
     // ── get_pedagogical_skill_document ────────────────────────────────────────
     server.tool(
         "get_pedagogical_skill_document",
-        "Retourne un document de skill pédagogique. id = module-design (conception de module) | content-writer (rédaction cours/TP/slides/examen) | retouche (petite correction en prod depuis l'app Claude).",
+        "Retourne un document de skill pédagogique. id = module-design (conception de module) | content-writer (renvoi vers le pipeline Claude Code pour la rédaction cours/TP/slides/examen) | retouche (petite correction en prod depuis l'app Claude).",
         {
             id: z.string().describe("ID du document : module-design | content-writer | retouche"),
         },

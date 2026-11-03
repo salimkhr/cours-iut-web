@@ -8,19 +8,20 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
 - Les agents n'ont pas l'outil `Agent` : ils ne lancent aucun subagent (Claude Code le permettrait, jusqu'à trois niveaux). L'orchestrateur n'est PAS un agent, c'est le skill `content-writer` v3, exécuté dans la session principale. Il dialogue avec moi, lance les agents, arbitre leurs rapports et fait la clôture.
 - Méthode inspirée de obra/superpowers (brainstorming → plan → exécution) : toutes mes décisions remontent AVANT la rédaction, qui devient de l'exécution.
 - Aucun agent n'écrit en prod. Seul l'orchestrateur le fait, après ma confirmation explicite.
-- L'actuel `content-writer` (v2) reste en place et utilisable jusqu'à ce que je valide la v3.
+- Le `content-writer` v2 a laissé place à la v3 le 2026-11-02 : le document servi par le MCP n'est plus qu'un renvoi vers `/content-writer-v3` et `retouche` (`docs/pipeline/bascule-v2-v3.md`).
 
 ## 2. Workflow de section
 
 1. `collecteur` → fiche de contexte compacte.
 2. **Cadrage** (session principale) : à partir de la fiche, l'orchestrateur me pose ses questions UNE PAR UNE (ce que les étudiants ratent d'habitude sur ce sujet, les erreurs que je vois réellement en TP, les exemples qui marchent en classe, ce que je veux absolument voir ou éviter). Il propose ensuite 2 ou 3 angles pédagogiques avec leurs compromis et en recommande un. Sortie : une **fiche de conception** que je valide. Aucune rédaction pendant cette phase.
 3. **Plan**, écrit par l'orchestrateur, assez détaillé pour que les rédacteurs n'aient plus de décision à prendre :
-   - cours : pour chaque notion, l'exemple exact (données comprises), la variante réaliste, l'erreur fréquente avec son message réel, le minutage ;
+   - cours : pour chaque notion, l'exemple exact (données comprises), la variante réaliste, le minutage (décision du 2026-10-31 : plus d'erreur fréquente servie dans le cours, ni en `callout warning` ni en texte, car les étudiants apprennent en analysant leurs erreurs) ;
    - slides : liste des slides (titre, idée unique, type de bloc principal, minutage) ;
    - TP : chaque exercice avec son contrat de consigne entièrement rempli, sa durée, sa part guidée ou fil rouge ; les bonus avec leur contrat.
    `relecteur-coherence` et `relecteur-contrat` relisent le PLAN avant que je le voie (fuite du fil rouge, notions hors curriculum, budget hors plage, contrat incomplet). Puis je le valide.
-   Le plan est persistant : `docs/plans/<module>/<section>.md` (ou via `publish_private_document` si plus adapté, à me proposer).
+   Le plan est persistant : `docs/plans/<module>/<section>.md`, commité (fichiers de suivi seuls) à chaque point de validation (décision du 2026-10-27 ; `publish_private_document` écarté : il remplace toute l'arborescence du dépôt GitLab, n'a pas d'outil de relecture et dépend de GitLab). Les messages d'erreur du plan sont exécutés dans le bac à sable.
 4. **Exécution** séquentielle, chaque support validé avant le suivant : `redacteur-cours` → `redacteur-slides` → `redacteur-tp`. Chaque rédacteur reçoit le plan de son support et les supports déjà validés. Il suit le plan à la lettre : un écart nécessaire est signalé à l'orchestrateur, jamais improvisé.
+   Les rédacteurs n'écrivent sur aucun serveur : chacun rend l'arbre de blocs de son support dans un **brouillon** (`docs/plans/<module>/brouillons/<section>/<support>.json`, ignoré par git), validé et exporté par un script local (`src/scripts/brouillon.ts`, même validation et même export que le serveur, mêmes `id` qu'en prod). Relecteurs et étudiants lisent cet export. Après ma validation d'un support, l'orchestrateur seul l'écrit en prod (`save_content`), avec ma confirmation explicite, et la relecture navigateur se fait en prod (décision du 2026-10-28 : staging n'a pas les cours, le push staging → prod pousse le module entier et les `id` divergent entre les serveurs).
 5. **Relecture** en parallèle :
    - `relecteur-style`, `relecteur-coherence` : tous les supports ;
    - `etudiant-fragile` : cours (mode lecture) et TP (mode exécution) ;
@@ -28,8 +29,9 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
    - aucun étudiant sur les slides.
 6. **Arbitrage** par l'orchestrateur (§ 6), puis les remarques retenues vont au rédacteur du format concerné, qui corrige.
 7. Relecture navigateur par moi.
-8. `correction` (TP uniquement) : écrit, exécute, vérifie, pousse.
-9. **Clôture** par l'orchestrateur : `curriculum` de la section, verdicts, exemplaire, mise à jour du plan avec les écarts réellement faits, rubrique **« Matériau quiz »** dans le plan (gestes clés du TP : code, API imposée, résultat observé ; blocages relevés par l'étudiant fragile ; erreurs fréquentes du cours), copie vers prod avec ma confirmation explicite.
+   Le dépôt de référence a une branche `fin-tp-<n>` par fin de TP (décision du 2026-10-31) : l'entrée d'un TP est `fin-tp-<n-1>`, `main` est l'état final.
+8. `correction` (TP uniquement) : écrit, exécute, vérifie dans le bac à sable. L'orchestrateur relit et pousse (`push_correction`) avec ma confirmation explicite : le push publie sur un GitLab public et écrit `hasCorrection` en prod (décision du 2026-10-28, § 1).
+9. **Clôture** par l'orchestrateur : `curriculum` de la section, verdicts, exemplaire, mise à jour du plan avec les écarts réellement faits, rubrique **« Matériau quiz »** dans le plan (gestes clés du TP : code, API imposée, résultat observé ; blocages relevés par l'étudiant fragile), copie vers prod avec ma confirmation explicite.
 
 **Mode rapide** (sur demande, section simple) : saute le cadrage, garde le plan et sa validation.
 
@@ -39,18 +41,21 @@ Ce document fait foi pour toutes les étapes de déploiement. Une étape n'impl�
 
 | Agent | Modèle | Outils |
 |---|---|---|
-| collecteur | haiku | MCP lecture seule (list_*, get_*, export_content_compact, list_verdicts, list_exemplars) |
-| redacteur-cours | opus | MCP lecture + écriture staging uniquement |
-| redacteur-slides | sonnet | MCP lecture + écriture staging uniquement |
-| redacteur-tp | opus | MCP lecture + écriture staging + get_project_reference |
+| collecteur | haiku | MCP lecture seule (list_*, get_*, get_quiz, export_content_compact, list_verdicts, list_exemplars) |
+| redacteur-cours | opus | MCP lecture prod ; écriture de son seul brouillon + validation par le script (garde en hook) |
+| redacteur-slides | sonnet | idem cours |
+| redacteur-tp | opus | idem cours + get_project_reference, export_content_compact |
 | relecteur-style | sonnet | MCP lecture seule |
-| relecteur-coherence | sonnet | MCP lecture seule + get_project_reference |
-| relecteur-contrat | haiku | MCP lecture seule |
+| relecteur-coherence | sonnet | MCP lecture seule + get_project_reference + get_quiz (analyse d'impact, § 8) + Read limité aux plans (`docs/plans/<module>/*.md`, garde en hook) |
+| relecteur-pedagogie | sonnet | MCP lecture seule + get_project_reference + Read limité aux plans et aux exports de brouillon (garde en hook) ; décision du 2026-10-31 : relit le plan et chaque support, ne rend que les problèmes, sans véto, sans cycle supplémentaire ; mis de côté le 2026-11-02 : l'orchestrateur ne le lance plus |
+| relecteur-contrat | haiku | MCP lecture seule + Read limité aux plans (garde en hook) |
 | etudiant-fragile | sonnet | lecture du contenu de la section uniquement + Bash (bac à sable) |
 | etudiant-rapide | sonnet | idem fragile |
-| correction | sonnet | Bash, push_correction |
-| redacteur-quiz-section | sonnet | MCP lecture + get_quiz, aucune écriture |
-| redacteur-quiz-transversal | opus | MCP lecture + get_quiz, aucune écriture |
+| correction | sonnet | Bash (bac à sable, garde en hook) ; le push est fait par l'orchestrateur |
+| redacteur-quiz-section | sonnet | MCP lecture + get_quiz ; écriture de son seul brouillon + validation par le script (garde en hook) |
+| redacteur-quiz-transversal | opus | idem section + get_project_reference |
+
+Amendement du 2026-10-28 (étape 3) : aucune écriture MCP pour les rédacteurs ni pour `correction` (§ 1, § 2 étapes 4 et 8). Relecteurs : `Read` aussi limité aux exports de brouillon (`docs/plans/<module>/brouillons/<section>/*.md`), y compris pour `relecteur-style`.
 
 Modèles : les rédacteurs cours et TP restent en opus au départ. Le plan prenant les décisions en amont, sonnet pourrait suffire : comparaison à prévoir avec skill-creator (même section, opus vs sonnet).
 
@@ -60,9 +65,9 @@ Les règles du `content-writer` v2 sont réparties entre les agents. En plus :
 
 **collecteur** : fiche structurée (budgets calculés, universe, exampleDomain, projectSpec, brief, curriculum précédents, état du fil rouge, verdicts et exemplaire pertinents par format ; pour le quiz : matériaux quiz des plans et questions existantes). Section sans brief → le signaler, ne rien inventer.
 
-**redacteur-cours** : ne reçoit PAS le dépôt de référence ni le détail du fil rouge, seulement le nom de son domaine pour l'éviter. Le minimum pour démarrer le TP. Chaque notion : exemple minimal → variante réaliste → erreur fréquente (`callout warning`, message d'erreur réel). Domaine d'illustration = `exampleDomain`, noms et données = `universe`.
+**redacteur-cours** : ne reçoit PAS le dépôt de référence ni le détail du fil rouge, seulement le nom de son domaine pour l'éviter. Le minimum pour démarrer le TP. Chaque notion : exemple minimal → variante réaliste, sans erreur fréquente servie. Domaine d'illustration = `exampleDomain`, noms et données = `universe`.
 
-**redacteur-slides** : part du cours validé, n'ajoute aucune notion (signale si besoin). Une idée par slide, `slide-transition` entre les parties, `slide-code` avec `highlight`, `slide-code-with-preview` pour tout rendu visuel, une `slide-note` par slide (oral, erreur fréquente, question à la salle). Repère : 1 à 2 min par slide.
+**redacteur-slides** : part du cours validé, n'ajoute aucune notion (signale si besoin). Une idée par slide, `slide-transition` entre les parties, `slide-code` avec `highlight`, `slide-code-with-preview` pour tout rendu visuel, une `slide-note` par slide (oral, question à la salle). Repère : 1 à 2 min par slide.
 
 **redacteur-tp** : contrat de consigne complet par exercice, bonus compris (fichier cible, noms exacts, données d'entrée, API imposée, résultat observable, critère de validation). Budget 80–100 %, bonus hors budget. Progression guidée → fil rouge (`projectRef: true`). Cible réelle via get_project_reference (repli : export_content_compact des TP précédents). Démarrage < 2 min pour l'étudiant fragile. Impératif vouvoyé. Notion manquante dans le cours → le signaler à l'orchestrateur, ne pas l'expliquer dans le TP. Après validation, transmet la liste des contrats à `correction`.
 Mode examen : hors fil rouge, curriculum uniquement, pas de cadrage ni de validation du plan (le plan est quand même écrit pour la traçabilité), pas de correction ; curriculum vide → arrêt.
@@ -93,7 +98,7 @@ Liste de remarques, chacune avec : `id` du bloc, gravité (BLOQUANT / MAJEUR / M
 3. Le style s'applique à tout, y compris au guidage ajouté.
 4. L'étudiant rapide ne modifie que les bonus.
 
-Si le fragile bloque sur la notion visée elle-même : indice en `collapsible`, jamais la réponse.
+Jamais d'indice ni de solution dans un TP (décision du 2026-10-27). Si le fragile bloque sur la notion visée elle-même : au premier exercice qui la pratique, le cours est insuffisant (retour au plan du cours ; la consigne ne gagne au plus qu'une précision sur la méthode imposée) ; plus loin dans le TP, désaccord que je tranche.
 Durées : la mesure du fragile fait foi ; hors plage 80–100 % → retour au plan (que je revalide).
 Les MINEURS peuvent être ignorés.
 
@@ -101,18 +106,18 @@ Les MINEURS peuvent être ignorés.
 
 ## 7. Workflow quiz de module
 
-Le quiz est unique par module : workflow séparé, lancé sur demande, sur tout ou partie des sections rédigées. Principe : générer large, puis sélectionner.
+Le quiz est unique par module : workflow séparé, lancé sur demande, sur une liste de sections rédigées (par exemple `/content-writer-v3 quiz php 1-4`, décision du 2026-11-02). Principe : générer large, puis sélectionner.
 
 1. `collecteur` : cours et TP validés, matériaux quiz des plans, curriculum, questions existantes (get_quiz).
-2. **Cadrage** : l'orchestrateur me pose ses questions UNE PAR UNE, chacune avec une valeur par défaut argumentée : sections couvertes ; nombre total de questions et répartition par section ; part transversale (repère 20–30 %) ; usage (révision, début de séance, évaluation notée) ; points négatifs ; durée totale visée ; notions à cibler ou exclure. Récapitulatif, je valide.
+2. **Cadrage** : l'orchestrateur me pose ses questions UNE PAR UNE, chacune avec une valeur par défaut argumentée : sections couvertes ; nombre total de questions et répartition par section ; part transversale (repère 20–30 %) ; usage (révision, début de séance, évaluation notée) ; points négatifs ; durée totale visée ; notions à cibler ou exclure ; domaine du quiz (trois propositions absentes des supports). Récapitulatif, je valide.
 3. **Génération en parallèle** : un `redacteur-quiz-section` PAR SECTION (contexte de sa seule section, vivier d'environ 8 questions) et un `redacteur-quiz-transversal` (curriculum, matériaux quiz et code du fil rouge de toutes les sections visées ; questions qui relient plusieurs sections).
 4. **Présélection** : environ 1,5 fois la taille cible.
 5. **Tests** sur la présélection ; les questions qui échouent sont corrigées une fois par leur auteur ou écartées.
 6. **Sélection finale**.
 7. Je valide ; les questions écartées me sont listées à part (une ligne chacune) pour échange éventuel.
-8. Ajout sur staging (`create_quiz` si besoin), puis proposition de copie vers prod.
+8. Après ma confirmation explicite, ajout en prod par l'orchestrateur (`create_quiz` si besoin, `add_quiz_question`), relu avec `get_quiz` (décision du 2026-11-02 : staging n'a pas les cours et aucun mécanisme ne copie un quiz ; une question n'atteint les étudiants qu'au lancement d'une session). Les étiquettes restent dans `docs/plans/<module>/quiz.md`, le schéma n'ayant pas de champ pour elles.
 
-**Règles de rédaction (section et transversal)** : vérifier la compréhension de la théorie derrière ce que l'étudiant a FAIT en TP. Chaque question part d'un geste réel du TP et interroge le pourquoi ou le « que se passe-t-il si » : prédire la sortie d'une variante, diagnostiquer une erreur, choisir entre deux codes apparemment équivalents, justifier une méthode imposée. Énoncé autosuffisant (code remontré dans un bloc `code`). Interdits : récitation, pièges de syntaxe sans enjeu, notion hors curriculum. Distracteurs = vraies idées fausses (erreurs fréquentes, blocages du fragile), jamais absurdes. Par question : propositions (≥ 1 correcte, ≥ 1 incorrecte), `durationSeconds` réaliste, `weight`, étiquettes (section(s), geste visé, notion, type, niveau de Bloom, difficulté). Niveaux de Bloom utilisés : comprendre, appliquer, analyser, évaluer. « Se souvenir » est exclu (c'est de la récitation) et « créer » ne se prête pas au QCM. Aucun doublon avec le quiz existant.
+**Règles de rédaction (section et transversal)** : vérifier la compréhension de la théorie derrière ce que l'étudiant a FAIT en TP. Chaque question part d'un geste réel du TP, transposé dans un domaine neuf fixé au cadrage, ni celui du TP ni celui du cours (décision du 2026-11-02), et interroge le pourquoi ou le « que se passe-t-il si » : prédire la sortie d'une variante, diagnostiquer une erreur, choisir entre deux codes apparemment équivalents, justifier une méthode imposée. Énoncé autosuffisant (code remontré dans un bloc `code`). Interdits : récitation, pièges de syntaxe sans enjeu, notion hors curriculum. Distracteurs = vraies idées fausses (erreurs fréquentes, blocages du fragile), jamais absurdes. Par question : propositions (≥ 1 correcte, ≥ 1 incorrecte), `durationSeconds` réaliste, `weight`, étiquettes (section(s), geste visé, notion, type, niveau de Bloom, difficulté). Niveaux de Bloom utilisés : comprendre, appliquer, analyser, évaluer. « Se souvenir » est exclu (c'est de la récitation) et « créer » ne se prête pas au QCM. Aucun doublon avec le quiz existant.
 
 **Tests** :
 - `etudiant-fragile` et `etudiant-rapide` répondent séparément, sans les bonnes réponses : choix, justification d'une ligne, temps estimé.
@@ -131,6 +136,8 @@ Se déclenche quand un élément validé change après coup (support d'une secti
 3. **Rapport** trié de l'impact le plus fort au plus faible, avec propositions.
 4. **Mises à jour** par le circuit normal (amendement du plan → rédacteur → relecture → ma validation). Jamais de cascade sans mon accord explicite.
 5. Plans concernés mis à jour avec le changement et sa date.
+
+Le journal est lu à chaque lancement de `/content-writer-v3`, quel que soit le mode ; ses entrées sont soldées par `mark_retouches_processed` après ma confirmation. Limites : une correction dépendante reste « à vérifier », `relecteur-coherence` ne lisant pas ses dépôts.
 
 ## 9. Skill « retouche » (hors Claude Code)
 
@@ -165,7 +172,7 @@ Le fichier reste court : on remplace le contenu d'une étape terminée par sa sy
 
 `docs/pipeline/etat.md` (§ 11) ne suit que le déploiement du pipeline. La production des contenus est suivie à part, au niveau section, module et agent.
 
-**Statut de section**, en tête du plan `docs/plans/<module>/<section>.md` : phase en cours (cadrage, plan, cours, slides, TP, relecture navigateur, correction, clôture), ce qui est validé et quand, désaccords en attente, prochaine action. L'orchestrateur le met à jour à chaque point de validation. À la reprise d'une section, il le lit et me résume en deux lignes où on en est avant de continuer.
+**Statut de section**, en tête du plan `docs/plans/<module>/<section>.md` : phase en cours (cadrage, plan, cours, slides, TP, relecture, relecture navigateur, correction, clôture), étape en cours, ce qui est validé et quand, désaccords en attente, prochaine action. L'orchestrateur le met à jour à chaque point de validation (et commite alors les fichiers de suivi), et met aussi à jour l'étape en cours et les réponses du cadrage au fil de l'eau, sans commit, pour la reprise fine. À la reprise d'une section, il le lit et me résume en deux lignes où on en est avant de continuer.
 
 **État du module**, `docs/plans/<module>/etat.md` : tableau des sections avec leur phase, et pour le quiz : dernier cadrage, sections couvertes, nombre de questions publiées. Mis à jour à chaque clôture de section et à chaque fin de workflow quiz ou propagation.
 
@@ -191,9 +198,9 @@ Chaque agent a une définition de terminé (ci-dessous). Il ne se déclare termi
 - sources prévues toutes lues, ou indisponibilité signalée (dépôt de référence absent, etc.).
 
 **redacteur-cours**
-- chaque notion du plan rédigée avec ses trois temps (exemple, variante, erreur fréquente avec message réel) ;
+- chaque notion du plan rédigée avec son exemple et sa variante ;
 - aucun écart au plan, ou chaque écart signalé ;
-- écriture sur staging relue avec `get_content` : l'arbre correspond à ce qui était prévu ;
+- brouillon validé par le script (sortie collée) : l'arbre correspond à ce qui était prévu ;
 - uniquement des types de blocs du registre ;
 - minutage total dans le budget.
 
@@ -201,7 +208,7 @@ Chaque agent a une définition de terminé (ci-dessous). Il ne se déclare termi
 - chaque slide du plan présente, une idée par slide ;
 - une `slide-note` sur chaque slide ;
 - aucune notion absente du cours ;
-- écriture relue avec `get_content` ;
+- brouillon validé par le script (sortie collée) ;
 - minutage total dans le budget.
 
 **redacteur-tp**
@@ -209,7 +216,7 @@ Chaque agent a une définition de terminé (ci-dessous). Il ne se déclare termi
 - budget recalculé, entre 80 et 100 % ;
 - chaque résultat observable rattaché au dépôt de référence (ou aux TP précédents à défaut) ;
 - impératif vouvoyé dans toutes les consignes ;
-- écriture relue avec `get_content` ;
+- brouillon validé par le script (sortie collée) ;
 - liste des contrats prête pour `correction`.
 
 **relecteur-style**
@@ -242,7 +249,7 @@ Chaque agent a une définition de terminé (ci-dessous). Il ne se déclare termi
 - un dossier par exercice, plus `fil-rouge/` et `README.md` ;
 - noms de fichiers identiques aux contrats ;
 - chaque fichier exécuté, sa sortie collée dans le rapport et comparée au résultat observable annoncé ;
-- push effectué, rappel `correctionIsAvailable` fait.
+- (orchestrateur, après ma confirmation) push effectué, rappel `correctionIsAvailable` fait.
 
 **redacteur-quiz-section**
 - chaque geste du matériau quiz de la section examiné (retenu comme point de départ ou écarté avec la raison) ;
@@ -257,4 +264,5 @@ Chaque agent a une définition de terminé (ci-dessous). Il ne se déclare termi
 - le point de validation prévu a été obtenu de moi, explicitement ;
 - statut de section et état du module à jour ;
 - aucun rapport d'agent marqué « incomplet » laissé sans suite ;
+- chaque écriture prod précédée de ma confirmation explicite et relue (`comparer` du brouillon à `get_content` : identique) ;
 - en fin de session de déploiement : `docs/pipeline/etat.md` à jour.

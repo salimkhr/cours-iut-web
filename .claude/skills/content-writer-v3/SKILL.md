@@ -1,61 +1,146 @@
 ---
 name: content-writer-v3
-description: Orchestrateur du pipeline multi-agents de relecture d'une section de cours (étape 1, relecture seule). Lance le collecteur, les relecteurs et les étudiants simulés sur les supports existants en prod, arbitre leurs rapports et présente une synthèse, sans rien corriger.
+description: Orchestrateur du pipeline multi-agents de rédaction de cours. Mode relecture (supports existants en prod, synthèse arbitrée sans correction), modes conception / conception-rapide (cadrage, puis plan relu et validé), mode redaction (supports rédigés en brouillon d'après le plan, relus, validés, écrits en prod par l'orchestrateur seul, puis correction et clôture) et mode propagation (journal des retouches, analyse d'impact d'une modification, mises à jour sur accord) et mode quiz (questions sur une liste de sections, générées large, testées, sélectionnées). Lance les agents, arbitre leurs rapports, tient le statut de section.
 disable-model-invocation: true
-argument-hint: "[module] [section]"
+argument-hint: "[relecture|conception|conception-rapide|redaction|examen|propagation|quiz] [module] [section, ou sections du quiz : 1-4]"
 ---
 
-# content-writer v3 : relecture d'une section (étape 1)
+# content-writer v3 : orchestrateur d'une section
 
 **Ce skill ne charge JAMAIS le content-writer v2** : ni le fichier
 `skills/content-writer/main.md`, ni `get_pedagogical_skill_manifest`, ni
 `get_pedagogical_skill_document` (sur aucun serveur). Les règles utiles de la v2 sont
-déjà réparties dans les agents de `.claude/agents/`. Pendant ce workflow, la consigne
-générale du `CLAUDE.md` du dépôt (« charger d'abord le skill pédagogique du serveur »)
-ne s'applique pas.
+déjà réparties dans les agents de `.claude/agents/`.
 
-Référence : `docs/pipeline/spec.md` (§ 2 étape 5, § 5, § 6, § 12, § 13). En cas de
+Référence : `docs/pipeline/spec.md` (§ 2, § 5, § 6, § 12, § 13). En cas de
 contradiction entre ce skill et la spec, arrêtez-vous et signalez-la à l'utilisateur.
+
+## Modes
+
+| Mode | Ce qu'il fait | Suite |
+|---|---|---|
+| `relecture` | relit des supports déjà rédigés (cours, slides, TP) et présente une synthèse arbitrée, sans rien corriger | § 1 à § 11 ci-dessous |
+| `conception` | section non rédigée : cadrage (questions une par une, angles, fiche de conception validée), puis plan relu et validé | § 1 à § 3, puis `cadrage.md`, puis `plan.md` |
+| `conception-rapide` | section simple : plan relu et validé, sans cadrage (seule Q0 si `courseIntroMinutes` manque) | § 1 à § 3, puis `plan.md` |
+| `redaction` | plan validé : cours, slides puis TP rédigés en brouillon, relus, validés un par un, écrits en prod par vous ; correction et clôture | § 1 à § 3, puis `redaction.md`, puis `cloture.md` |
+| `examen` | examen de fin de module, hors fil rouge, sur les seuls `curriculum` : plan écrit pour la traçabilité (sans cadrage ni validation du plan), rédaction par `redacteur-tp` en mode examen, sans correction | § 1 à § 3, `plan.md` § 2 (sans § 4 et § 5), puis `redaction.md` |
+| `propagation` | un élément validé a changé après coup, ou le journal des retouches a des entrées en attente : inventaire des dépendances, analyse d'impact, rapport trié, mises à jour sur accord | § 1 à § 3, puis `propagation.md` |
+| `quiz` | quiz unique du module, sur une liste de sections (`1-4`) : cadrage, génération, présélection, tests, sélection, validation, écriture en prod par vous | § 1, puis `quiz.md` |
+
+Mode absent : à la reprise, **le statut de section fait foi** (son champ « Mode »), même
+si des supports sont déjà en source `db` : une section en cours de rédaction a son cours
+en prod avant son TP. Sans statut : section sans support en source `db` → `conception`,
+plan validé dans `docs/plans/` → `redaction`, sinon `relecture` ; demandez confirmation
+en une question.
 
 ## Ce que fait ce skill, et ce qu'il ne fait pas
 
-- Mode unique : **relecture** de supports déjà rédigés (cours, slides, TP) d'une
-  section que l'utilisateur désigne.
 - Source : le serveur MCP **prod**, en lecture seule. Outils de prod : préfixe
   `mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__` dans l'app Desktop,
   `mcp__claude_ai_cours-iut-web__` en CLI. N'utilisez jamais le serveur staging
   (`95c87654-…`, `claude_ai_cours-iut-staging`) ni le serveur local `cours-iut-mcp`.
-- **Aucune écriture MCP**, ni prod ni staging. **Aucune correction** des supports :
-  la sortie est une synthèse arbitrée. Les seules écritures sont les deux fichiers de
-  suivi (`docs/plans/<module>/<section>.md` et `docs/plans/<module>/etat.md`) et le
-  dossier temporaire du bac à sable. Rien n'est commité.
-- **Un seul cycle** de relecture. Relancer un agent dont le rapport est incomplet
-  (couverture ou preuves) est permis et ne compte pas comme cycle.
+- Modes `relecture`, `conception`, `conception-rapide` : **aucune écriture MCP**, ni
+  prod ni staging, **aucune rédaction ni correction** de supports. La sortie est une
+  synthèse arbitrée (relecture) ou un plan validé (conception).
+- Modes `redaction` et `examen` : les rédacteurs écrivent des **brouillons**
+  (`docs/plans/<module>/brouillons/<section>/`, ignoré par git), jamais sur un serveur.
+  **Vous êtes le seul à écrire en prod** (`save_content`, `edit_section`,
+  `push_correction`, `add_verdict`, `promote_exemplar`), chaque fois après la
+  confirmation explicite de l'utilisateur pour cette écriture précise. Jamais staging,
+  jamais `isAvailable` sans sa demande (`redaction.md` § 0).
+- Mode `propagation` : le rapport d'impact n'écrit rien. Les mises à jour acceptées
+  suivent les règles du mode `redaction` ; `mark_retouches_processed` s'y ajoute, après
+  confirmation explicite (`propagation.md` § 0).
+- Mode `quiz` : vous seul écrivez en prod (`create_quiz`, `add_quiz_question`), après la
+  validation de la sélection et la confirmation de l'écriture (`quiz.md` § 7).
+- Dans tous les modes, les autres écritures sont les fichiers de suivi
+  (`docs/plans/<module>/<section>.md` et `docs/plans/<module>/etat.md`), les dossiers
+  temporaires du bac à sable et les commits de ces fichiers de suivi (« Commits »).
+- Relecture : **un seul cycle**. Plan : **deux cycles** au plus (`plan.md` § 4).
+  Rédaction : **deux cycles** « relecture → correction » par support (`redaction.md` § 5).
+  Relancer un agent dont le rapport est incomplet (couverture ou preuves) est permis et
+  ne compte pas comme cycle.
 
 Annexes de ce dossier, à lire au moment indiqué :
 
+- `cadrage.md` : questions du cadrage, angles, fiche de conception (mode `conception`) ;
+- `plan.md` : format du plan, messages d'erreur exécutés, relecture et validation du plan ;
+- `redaction.md` : brouillons, rédacteurs, relecture, arbitrage et correction, validation,
+  écriture en prod, relecture navigateur (mode `redaction`) ;
+- `cloture.md` : correction du TP et clôture de la section (mode `redaction`) ;
+- `propagation.md` : dépendances, analyse d'impact, rapport et mises à jour (mode
+  `propagation`) ;
+- `quiz.md` : cadrage, génération, tests, sélection et écriture du quiz (mode `quiz`) ;
 - `bac-a-sable.md` : commandes de création, de contrôle et de nettoyage du conteneur ;
 - `suivi.md` : format du statut de section et de l'état du module.
 
 ## Arguments
 
-`$0` = slug du module, `$1` = slug de la section. Si l'un manque ou n'existe pas en prod
-(`list_modules`, `list_sections`), proposez la liste des slugs et attendez le choix de
-l'utilisateur. Demandez aussi quels supports relire si ce n'est pas dit : par défaut,
-tous ceux qui existent en source `db`.
+`$0` = mode, `$1` = slug du module, `$2` = slug de la section. Si le module ou la
+section manque ou n'existe pas en prod (`list_modules`, `list_sections`), proposez la
+liste des slugs et attendez le choix de l'utilisateur. En relecture, demandez aussi
+quels supports relire si ce n'est pas dit : par défaut, tous ceux qui existent en source
+`db`. En mode `propagation`, la section est facultative : sans elle, toutes les retouches
+en attente du module sont traitées. En mode `quiz`, `$2` est une plage ou une liste de
+sections (`quiz.md` § 0).
+
+## Commits
+
+À chaque **point de validation** obtenu de l'utilisateur (fiche de conception, plan,
+réponse à la synthèse d'une relecture, support validé, relecture navigateur, clôture),
+commitez les seuls fichiers de suivi du module (les brouillons sont ignorés par git) :
+
+```bash
+git add -- docs/plans/<module>/<section>.md docs/plans/<module>/etat.md
+git commit -m "docs(plans): <module>/<section>, <point validé>" -- docs/plans/<module>/<section>.md docs/plans/<module>/etat.md
+```
+
+Chemins explicites seulement : jamais `git add -A` ni `git add .` (le dossier est partagé
+avec d'autres sessions et contient des fichiers non suivis). Jamais `--no-verify` : si
+le hook pre-commit échoue, montrez l'erreur à l'utilisateur. Pas de push. Les mises à
+jour entre deux points de validation (« Étape en cours », réponses du cadrage) sont
+écrites sans commit.
 
 ## Liste de tâches de l'orchestrateur
 
 Tenez une liste de tâches visible par l'utilisateur avec l'outil de liste de tâches de
 votre client (`TodoWrite` ou `TaskCreate`/`TaskUpdate` en CLI, `update_plan` dans l'app
-Desktop). Une seule tâche en cours à la fois. Liste type :
+Desktop). Une seule tâche en cours à la fois.
+
+Liste type du mode `conception` (`conception-rapide` : sans les tâches 4 à 6) :
+
+1. Lire le statut de la section (reprise)
+2. Collecter le contexte (collecteur, mode conception)
+3. Contrôler la fiche
+4. Cadrage : Q0 à Q5, une par une
+5. Proposer les angles, faire choisir
+6. Fiche de conception : validation, commit
+7. Écrire le plan
+8. Exécuter les erreurs et les exemples dans le bac à sable
+9. Relecture du plan (cohérence, contrat), cycle 1
+10. Arbitrer, amender le plan (cycle 2 si besoin)
+11. Validation du plan, statut, état du module, commit
+
+Liste type du mode `redaction` (tâches 4 à 6 répétées pour les slides puis le TP ; le
+détail de chaque support est dans `redaction.md` § 1) :
+
+1. Lire le statut de la section (reprise)
+2. Collecter le contexte (collecteur, mode conception)
+3. Contrôler la fiche, comparer budgets et verdicts au plan validé
+4. Cours : rédaction, relecture, arbitrage, correction (deux cycles au plus)
+5. Cours : validation, écriture en prod (confirmation), commit
+6. Cours : relecture navigateur, commit
+7. Correction du TP, push (confirmation)
+8. Clôture : curriculum, verdicts, matériau quiz, statut, commit
+
+Liste type du mode `relecture` :
 
 1. Lire le statut de la section (reprise)
 2. Collecter le contexte (collecteur)
 3. Contrôler la fiche
 4. Exporter les supports et fixer la couverture
 5. Préparer le bac à sable (ports par étudiant)
-6. Préparer les supports dans le bac à sable (agent d'aide, § 5 bis)
+6. Préparer les supports dans le bac à sable (`preparateur`, § 5 bis)
 7. Lancer les relectures en parallèle
 8. Contrôler couverture et preuves des rapports
 9. Arbitrer
@@ -63,20 +148,58 @@ Desktop). Une seule tâche en cours à la fois. Liste type :
 11. Mettre à jour le statut et l'état du module
 12. Présenter la synthèse
 
-À la reprise d'une relecture interrompue, reconstruisez cette liste à partir du statut
-de section (étape 1) et reprenez à la première tâche non faite.
+Liste type du mode `propagation` :
+
+1. Lire le journal des retouches et les plans concernés
+2. Lister les changements, confirmer le périmètre
+3. Inventaire des dépendances
+4. Analyse d'impact (`relecteur-coherence`, un par section)
+5. Contrôler les rapports, écrire le suivi
+6. Présenter le rapport trié, attendre la décision
+7. Mises à jour acceptées, une à une
+8. Solder les retouches (confirmation), état du module, commit
+
+Liste type du mode `quiz` :
+
+1. Lire le journal, `quiz.md` et l'état du module
+2. Collecter le contexte des sections visées
+3. Cadrage : Q1 à Q8, une par une
+4. Génération : un agent par section, un transversal
+5. Présélection
+6. Tests : deux étudiants, sans énoncé, lecture croisée
+7. Corriger ou écarter, sélection finale
+8. Validation, écriture en prod (confirmation), relecture
+9. `quiz.md`, état du module, commit
+
+À la reprise d'une section interrompue, reconstruisez la liste du mode à partir du
+statut de section (étape 1) et reprenez à la première tâche non faite.
 
 ## 1. Reprise
 
 Lisez `docs/plans/<module>/<section>.md` et `docs/plans/<module>/etat.md` s'ils
 existent (format dans `suivi.md`). S'il y a un statut, résumez en deux lignes à
-l'utilisateur où en est la section (phase, dernière relecture, désaccords en attente)
-avant de continuer. Gardez la liste des **remarques écartées** des relectures
-précédentes : elle sert à l'arbitrage (règle 9).
+l'utilisateur où en est la section (phase, étape en cours, ce qui est validé ;
+désaccords en attente et prochaine action) avant de continuer. Gardez la liste des
+**remarques écartées** des relectures précédentes (de supports ou du plan) : elle sert à
+l'arbitrage (règle 9).
+
+**Journal des retouches, à chaque lancement** : avant tout le reste, quel que soit le mode,
+appelez `list_retouches` en prod avec `status: pending` et `module`. S'il y a des entrées,
+dites-en le nombre, les sections touchées et le `summary` de chacune, puis proposez
+`propagation` en une question. L'utilisateur peut continuer le mode demandé : les entrées
+restent en attente. `list_retouches` indisponible : dites-le et continuez.
+
+Reprise fine : « Étape en cours » dit où la session s'est arrêtée (« cadrage : Q3
+posée », « plan : relecture, cycle 1 »…). Les réponses déjà notées ne sont pas reposées ;
+une question posée sans réponse notée est reposée. La fiche du collecteur n'est pas
+gardée : relancez le collecteur (§ 2), puis comparez ses budgets et ses verdicts à ceux
+de la fiche de conception ou du plan ; un changement en prod depuis (verdict ajouté,
+`totalDuration` modifié) se signale à l'utilisateur avant de continuer.
 
 ## 2. Collecteur
 
-Lancez l'agent `collecteur` avec : module, section, supports à relire. Il rend la fiche
+Lancez l'agent `collecteur` avec : mode (`relecture` ou `conception`), module, section,
+supports à relire (relecture) ou « section à concevoir » (conception). Il rend la fiche
 de contexte.
 
 ## 3. Contrôle de la fiche
@@ -91,6 +214,16 @@ de contexte.
 - **Support en source « file »** : il est invisible à `export_content_compact`, il ne
   peut pas être relu. Signalez-le et retirez-le du périmètre.
 - Serveur MCP prod indisponible : arrêt immédiat, dites-le.
+- **Mode redaction** : le plan validé fait foi. Un budget ou un verdict qui a changé en
+  prod depuis sa validation se signale à l'utilisateur (amendement possible du plan,
+  `redaction.md` § 7). Passez ensuite à `redaction.md`.
+- **Mode propagation** : pas de collecteur, ces § 2 et § 3 ne s'appliquent pas. Passez
+  directement à `propagation.md`, avec le plan et le journal lus au § 1.
+- **Mode conception** : la section a déjà un support en source `db` → demandez s'il
+  faut passer en relecture ou le reconcevoir (rien n'est écrasé : le plan est un
+  fichier du dépôt). `courseIntroMinutes` manquant n'est pas un trou de la fiche : c'est
+  la Q0 du cadrage. Puis passez à `cadrage.md` (ou `plan.md` en mode rapide) ; les § 4
+  à § 11 ci-dessous ne concernent que la relecture.
 
 ## 4. Supports et référence de couverture
 
@@ -105,7 +238,7 @@ Pour chaque support : `export_content_compact` (le texte que reçoivent les agen
 les `<!--blockId-->`) et `get_content` (la liste des blocs). Dressez pour chaque
 support la liste des `id` à couvrir, et pour chaque agent son sous-ensemble (style :
 blocs porteurs de texte ; cohérence : tous les blocs ; contrat et rapide : exercices et
-bonus ; fragile : exemples de code, variantes, erreurs fréquentes, exercices).
+bonus ; fragile : exemples de code, variantes, exercices).
 
 **Compter les marqueurs.** Un marqueur est une ligne qui ne contient que `<!--id-->`
 (indentation tolérée) ; l'en-tête `<!-- export: … -->` et les commentaires HTML d'un
@@ -119,7 +252,7 @@ antérieure à cette correction, par exemple) se signale dans la synthèse, et l
 manquants sont lus avec `get_content`.
 
 `get_content` dépasse la limite de sortie des outils MCP sur les gros supports (cours
-et TP de PHP 4, par exemple) : c'est l'agent de préparation (§ 5 bis) qui le lit, pas
+et TP de PHP 4, par exemple) : c'est `preparateur` (§ 5 bis) qui le lit, pas
 votre contexte.
 
 Repérez aussi les blocs `download-file` du TP et ce qui sert d'état de départ au fil
@@ -132,7 +265,7 @@ les prérequis de session (`bac-a-sable.md` § 0 : règle de permission, test de
 la garde). Suivez ensuite `bac-a-sable.md` : image `cours-iut-bac:1`, run-id, dossier
 `%TEMP%\cours-iut-bac\<run-id>` avec ses sous-dossiers, conteneur
 `cours-iut-bac-<run-id>` en `--network none`. Les fichiers des `download-file` vont
-dans `fournis/` (agent de préparation, § 5 bis), et dans `depart/` l'état initial du fil rouge
+dans `fournis/` (`preparateur`, § 5 bis), et dans `depart/` l'état initial du fil rouge
 s'il est reconstituable depuis le dépôt de référence. Ce qui manque est dit aux
 étudiants dans leur prompt (limite d'environnement).
 
@@ -153,39 +286,39 @@ une plage de ports réservée, et n'en sort pas :
 Un support qui impose un port (`php -S localhost:8000`) : l'étudiant prend le premier
 port de sa plage et le note comme adaptation d'environnement, pas comme blocage.
 
-## 5 bis. Préparation des supports (agent d'aide)
+## 5 bis. Préparation des supports (agent `preparateur`)
 
 Les supports ne sont pas collés dans les prompts des étudiants (trop de contexte
-pour l'orchestrateur). Un agent d'aide les dépose dans le bac à sable, une fois le
+pour l'orchestrateur). L'agent `preparateur` les dépose dans le bac à sable, une fois le
 dossier créé (`bac-a-sable.md` § 1) et avant le lancement des étudiants. **Écart à la
 lettre de la spec** (§ 2 et § 4 : contenu « dans le prompt ») : à faire valider par
 l'utilisateur ; il est noté dans la synthèse.
 
-Lancez un agent `general-purpose` avec ce prompt (valeurs entre chevrons remplies) :
+`preparateur` n'a que quatre outils MCP de lecture prod (`export_content_compact`,
+`get_content`, `list_sections`, `get_section`), aucun outil d'écriture MCP, et une garde
+(`docker/etudiant-sandbox/garde-preparateur.mjs`, hook de son frontmatter) qui limite
+`Write` à `<dir>\supports\cours.md`, `<dir>\supports\tp.md`, `<dir>\fournis\…` et
+`<scratchpad>\couverture-<run-id>.md`, et `Bash` à `curl` depuis
+`https://salimkhraimeche.dev/download/` et `unzip`, vers `<dir>\fournis\`. Ses cas sont
+scriptés dans `tests/sandbox/garde-preparateur.test.ts`. Comme pour les étudiants, la
+garde ne tourne que dans une session interactive dans un dossier approuvé : jamais de
+`preparateur` depuis `claude -p`.
+
+Lancez l'agent `preparateur` avec ce prompt (valeurs entre chevrons remplies), et rien
+d'autre :
 
 ```
-Tâche de préparation, lecture seule. Outils MCP permis, sur le serveur prod
-uniquement (préfixe mcp__d1db0efe-14b0-4182-97b9-d6f36625dc09__ ou
-mcp__claude_ai_cours-iut-web__) : export_content_compact, get_content. Tout autre
-outil MCP est interdit (aucune écriture, aucun outil staging 95c87654-…, aucun
-get_pedagogical_skill_*). Outil d'écriture de fichiers : seulement dans les chemins
-ci-dessous.
 Module <module>, section <section>.
-1. export_content_compact type cours → <dir>\supports\cours.md ; type TP →
-   <dir>\supports\tp.md. Texte de l'outil verbatim, sans retouche.
-2. get_content du TP (et du cours) : pour chaque bloc download-file, écrire
-   props.code tel quel dans <dir>\fournis\<props.filename> (sous-dossiers créés si
-   le nom en contient).
-3. Fichier de couverture <scratchpad>\couverture-<run-id>.md : par support, la liste
-   des blocs (id, type, id du parent), le total, et les exercices et bonus (titre, id).
-   Comparer les ids à ceux des lignes `<!--id-->` de l'export ; écrire l'écart.
-4. Ne jamais copier les slides dans <dir>. Ne rien écrire ailleurs.
-Rendre : les chemins écrits avec leur taille, les totaux de blocs, l'écart
-export / get_content.
+Supports à préparer : <cours, TP>.
+Run-id : <run-id>.
+Dossier du bac à sable : <dir>  (chemin Windows long, %LOCALAPPDATA%\Temp\cours-iut-bac\<run-id>)
+Scratchpad : <scratchpad>  (dossier qui finit par \scratchpad)
 ```
 
-Vérifiez son rendu (fichiers présents, totaux cohérents avec votre référence de
-l'étape 4). Les étudiants lisent ensuite `/work/supports/` par la commande autorisée
+Vérifiez son rendu (définition de terminé complète, fichiers présents, totaux et écart
+export / `get_content` cohérents avec votre référence de l'étape 4, liste « Non déposé »
+lue : un fichier écarté comme état de fin se tranche avec l'utilisateur). Un rapport
+incomplet se relance comme ceux des autres agents (§ 7). Les étudiants lisent ensuite `/work/supports/` par la commande autorisée
 (`docker exec … sh -c 'cd /work/<dossier> && cat /work/supports/tp.md'`) ; leur prompt
 le dit, avec la liste des fichiers. Les relecteurs, eux, reçoivent toujours l'export
 dans leur prompt (ou le lisent par `export_content_compact`).
@@ -211,7 +344,10 @@ Aucun étudiant sur les slides. Chaque prompt d'agent contient, et seulement cel
   aucun verdict pour ce format → écrivez « aucun verdict actif pour <format> ». Pour la
   cohérence, en plus : la fiche du collecteur, dont la rubrique « Notions réellement
   enseignées » **verbatim**, et l'export du cours (si le support relu est les slides ou
-  le TP). Pour le contrat, en plus : le budget TP avec son calcul ;
+  le TP). Pour le contrat, en plus : le budget TP avec son calcul, et les durées du
+  plan s'il existe (sinon « pas de plan : durées non disponibles »). Pour un TP, à tous :
+  la règle « jamais d'indice ni de solution dans un TP, elle prime sur la phrase sur
+  l'indice replié du verdict `6ac67a63137711fbe6236783` » ;
 - **étudiants** : chemin du support relu dans `/work/supports/` (mode lecture :
   `cours.md` ; mode exécution et rapide : `tp.md` et `cours.md`), rubrique « Notions
   réellement enseignées » de la fiche **verbatim** (à défaut : curriculum des sections
@@ -263,9 +399,17 @@ Sur l'ensemble des remarques :
    retenue en conséquence.
 4. **Étudiant rapide** : il ne fait modifier que les bonus. Ses remarques hors bonus
    sont écartées, sauf si un autre agent fait la même.
-5. **Notion visée** : si le fragile bloque sur la notion que l'exercice travaille,
-   la proposition retenue est un indice en `collapsible`, jamais la réponse. Réécrivez
-   toute proposition qui donnerait la réponse.
+5. **Notion visée** : jamais d'indice ni de solution dans un TP (décision de
+   l'utilisateur du 2026-10-27 ; elle prime sur la phrase « un indice replié qui donne
+   le principe et le piège » du verdict `6ac67a63137711fbe6236783`). Si le fragile bloque
+   sur la notion que l'exercice travaille :
+   - au **premier exercice qui pratique cette notion** (début de la partie guidée) :
+     le cours est insuffisant. La remarque part au plan du cours (exemple ou variante à
+     renforcer) ; la consigne ne gagne au plus qu'une précision sur la méthode ou l'API
+     imposée, jamais la solution ni un renvoi « relisez le cours » ;
+   - **plus loin** dans le TP : désaccord à trancher par l'utilisateur (règle 8), avec
+     votre recommandation.
+   Réécrivez ou écartez toute proposition qui donnerait la réponse ou un indice.
 6. **Durées** : la mesure du fragile fait foi. Total du tronc commun hors 80–100 % du
    budget TP → signalé comme désaccord à trancher (dans le pipeline complet, c'est un
    retour au plan que l'utilisateur revalide).
@@ -296,6 +440,7 @@ Créez ou mettez à jour `docs/plans/<module>/<section>.md` (statut en tête, ph
 « relecture », date, synthèse arbitrée, désaccords en attente, remarques écartées,
 prochaine action) et `docs/plans/<module>/etat.md` (tableau des sections avec leur
 phase). Format exact dans `suivi.md`. Ne touchez pas au reste d'un plan existant.
+Commit (« Commits ») une fois que l'utilisateur a répondu à la synthèse.
 
 ## 11. Synthèse arbitrée
 
@@ -323,7 +468,27 @@ n'enchaînez sur rien d'autre.
 
 ## Définition de terminé de l'orchestrateur (spec § 13)
 
-À la fin, listez critère par critère, ✔ avec preuve ou ✘ avec raison :
+**Mode conception**, à la fin de chaque phase (fiche de conception, plan) :
+
+- ✔/✘ point de validation obtenu de l'utilisateur, explicitement (sa réponse citée) ;
+- ✔/✘ statut de section et état du module à jour, et commités (hash du commit) ;
+- ✔/✘ chaque notion du brief a son repère N, chaque élément du plan sa durée, totaux
+  calculés (phase plan) ;
+- ✔/✘ chaque message d'erreur du plan exécuté, avec outil et version, ou marqué « non
+  vérifié » avec la raison (phase plan) ;
+- ✔/✘ relecture du plan : rapports complets, au plus deux cycles, désaccords restants
+  présentés (phase plan) ;
+- ✔/✘ bac à sable supprimé (sorties de `bac-a-sable.md` § 6), s'il a servi ;
+- ✔/✘ aucune écriture MCP, aucun support rédigé.
+
+**Mode redaction** : définition de terminé par support (`redaction.md` § 8), puis celle
+de la correction et de la clôture (`cloture.md` § 3).
+
+**Mode propagation** : `propagation.md` § 7.
+
+**Mode quiz** : `quiz.md` § 9.
+
+**Mode relecture**. À la fin, listez critère par critère, ✔ avec preuve ou ✘ avec raison :
 
 - ✔/✘ la synthèse arbitrée a été présentée à l'utilisateur (point de validation de la
   relecture ; sa réponse est attendue, pas supposée) ;

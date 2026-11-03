@@ -2,6 +2,20 @@ import {describe, expect, test} from "bun:test";
 import {renderToStaticMarkup} from "react-dom/server";
 import OptionResult from "@/components/quiz/OptionResult";
 import Podium from "@/components/quiz/projection/Podium";
+import {QuestionStatement} from "@/components/quiz/admin/QuizPanel";
+import type {Block} from "@/types/CourseContent";
+
+describe("QuestionStatement", () => {
+    test("affiche les blocs de code de l'énoncé, pas seulement le texte", () => {
+        const blocks = [
+            {id: "c", type: "code", props: {language: "php", code: "echo $titre;"}},
+            {id: "q", type: "text", props: {content: "Que s'affiche-t-il ?"}},
+        ] as Block[];
+        const html = renderToStaticMarkup(<QuestionStatement blocks={blocks}/>);
+        expect(html).toContain("titre");
+        expect(html).toContain("Que s&#x27;affiche-t-il ?");
+    });
+});
 
 describe("OptionResult", () => {
     test("bonne réponse : libellé explicite, pas seulement la couleur", () => {

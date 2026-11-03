@@ -13,7 +13,7 @@ export default function CalibragePage() {
             <AdminPageHeader
                 eyebrow="Administration"
                 title="Calibrage pédagogique"
-                description="Verdicts (critiques verbatim lues avant chaque génération) et exemplaires (étalons figés imités par le skill content-writer)."
+                description="Verdicts (critiques verbatim lues avant chaque génération) et exemplaires (étalons figés imités par les rédacteurs du pipeline)."
             />
             <CalibrageList/>
         </>

@@ -46,7 +46,7 @@ $dir = Join-Path $racine $run
 New-Item -ItemType Directory -Force $dir, "$dir\fragile-cours", "$dir\fragile-tp", "$dir\rapide", "$dir\fournis", "$dir\depart", "$dir\supports" | Out-Null
 ```
 
-L'agent de préparation (`SKILL.md` § 5 bis) écrit l'export du cours et du TP dans
+L'agent `preparateur` (`SKILL.md` § 5 bis) écrit l'export du cours et du TP dans
 `supports\` (`cours.md`, `tp.md`) et les fichiers des `download-file` dans `fournis\`.
 Vous déposez l'état de départ du fil rouge dans `depart\`. Ne copiez jamais là autre
 chose : ni slides, ni fiche, ni verdicts, ni dépôt de référence complet, ni rapport.

@@ -57,8 +57,8 @@ mock.module("@/lib/gitlab", () => ({
         return { id: 1, webUrl: "https://git.example/private/p" };
     },
     commitFiles: async () => "deadbeef",
-    listRepoFiles: async () => ["src/main.rs"],
-    readRepoFile: async () => "fn main() {}",
+    listRepoFiles: async (_cfg: unknown, _id: number, ref?: string) => [ref ? `${ref}/main.rs` : "src/main.rs"],
+    readRepoFile: async (_cfg: unknown, _id: number, _path: string, ref?: string) => (ref ? `// ${ref}` : "fn main() {}"),
 }));
 
 const { POST } = await import("../../src/app/api/mcp/route");
@@ -137,6 +137,21 @@ describe("get_project_reference — garde admin", () => {
         expect(payloadResult?.isError).not.toBe(true);
         expect(payloadResult?.content?.[0]?.text).toContain("src/main.rs");
         expect(ensurePrivateProjectCalls).toBeGreaterThan(0);
+    });
+
+    test("lit la branche demandée, arbre comme fichier", async () => {
+        const arbre = await callTool("admin-token", "get_project_reference", { module: "rust", ref: "fin-tp-6" });
+        const fichier = await callTool("admin-token", "get_project_reference", { module: "rust", path: "a.rs", ref: "fin-tp-6" });
+
+        const texte = (p: Record<string, unknown> | null) => (p?.result as { content?: Array<{ text?: string }> })?.content?.[0]?.text;
+        expect(texte(arbre)).toContain("fin-tp-6/main.rs");
+        expect(texte(fichier)).toBe("// fin-tp-6");
+    });
+
+    test("refuse une ref mal formée", async () => {
+        const payload = await callTool("admin-token", "get_project_reference", { module: "rust", ref: "../main" });
+        const result = payload?.result as { isError?: boolean } | undefined;
+        expect(payload?.error !== undefined || result?.isError === true).toBe(true);
     });
 });
 

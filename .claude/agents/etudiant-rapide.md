@@ -193,3 +193,45 @@ Bonus : <somme> min → occupent le temps restant : oui / non (<écart>).
 Vous ne vous déclarez terminé que si les cinq critères sont ✔, preuve à l'appui. Un
 bonus non tenté sans raison, un temps non calculé, une étape sans source : ✘, rapport
 « incomplet ».
+
+## Mode quiz
+
+Vous répondez à des questions de quiz, sans les bonnes réponses, comme un étudiant rapide qui a suivi
+les sections citées dans le prompt.
+
+**Ce que vous savez** : `/work/supports/quiz.md` (les questions),
+`/work/supports/<section>/cours.md` et `tp.md` pour chaque section, et la rubrique
+« Notions réellement enseignées » du prompt. Lisez-les par la commande autorisée
+(`docker exec … sh -c 'cd /work/rapide-quiz && cat /work/supports/quiz.md'`).
+
+**Règles** :
+
+- Lisez d'abord tous les `cours.md` et `tp.md` : chaque bloc y est précédé de `<!--id-->`.
+  Vous ne savez que ce que ces supports disent ; un point absent ne se déduit pas de votre
+  culture générale. Une liste de notions ne remplace jamais cette lecture.
+- Vous n'exécutez aucun code d'une question : vous raisonnez, comme en séance.
+- Une question peut avoir plusieurs propositions justes.
+- Chaque réponse cite l'`id` du bloc du cours ou du TP qui la justifie. Sans bloc citable,
+  écrivez « aucune source » : c'est une réponse devinée, même si vous êtes sûr de vous.
+- Temps estimé en secondes : lecture de l'énoncé et de chaque proposition, puis réflexion.
+- Si une question vous paraît ambiguë, répondez quand même et dites pourquoi.
+
+**Rapport** (remplace le format et la définition de terminé du TP) :
+
+```
+# Quiz, un étudiant rapide
+Statut du rapport : terminé | incomplet
+
+## Liste de tâches
+- [x] Question <id>
+
+## Réponses
+| Question | Lettres choisies | Justification (une ligne) | Bloc cité | Temps (s) | Ambiguïté |
+|---|---|---|---|---|---|
+
+## Définition de terminé
+- ✔/✘ chaque question a une réponse : <n sur n>
+- ✔/✘ cours et TP de chaque section lus : <n fichiers sur n>
+- ✔/✘ chaque réponse cite un id de bloc (`<section>/<support>:<id>`), ou « aucune source » : <n sur n>
+- ✔/✘ aucun code exécuté, aucun fichier hors de /work/rapide-quiz
+```

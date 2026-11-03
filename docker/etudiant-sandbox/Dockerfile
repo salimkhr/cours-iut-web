@@ -24,7 +24,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-      php-cli php-sqlite3 php-mysql php-mbstring php-xml php-intl php-curl \
+      php-cli php-sqlite3 php-mysql php-pgsql php-mbstring php-xml php-intl php-curl \
       python3 python3-venv python3-pip \
       build-essential pkg-config \
       sqlite3 postgresql git jq tree less ca-certificates curl tzdata \

@@ -1,6 +1,6 @@
 # État du module `php`
 
-Mis à jour le 2026-10-27.
+Mis à jour le 2026-11-03.
 
 | # | Section | Phase | Dernière action | Date | Prochaine action |
 |---|---|---|---|---|---|
@@ -9,7 +9,7 @@ Mis à jour le 2026-10-27.
 | 4 | 4-formulaire | relecture | synthèse arbitrée présentée | 2026-10-27 | choix des remarques à corriger, 1 désaccord |
 | 5 | 5-lire-des-donnees-en-base | — | — | — | — |
 | 6 | 6-ecrire-des-donnees-en-base | — | — | — | — |
-| 7 | 7-sessions-et-authentification | — | — | — | — |
+| 7 | 7-sessions-et-authentification | clôture | curriculum écrit en prod | 2026-11-01 | relecture navigateur du TP et des slides |
 | 9 | 9-symfony | — | — | — | — |
 | 8 | 8-examen | — | — | — | — |
 | 10 | 10-twig | — | — | — | — |
@@ -21,6 +21,6 @@ Ordre du tableau : celui de `list_sections` en prod (la section 2 y est en 10e p
 Rapports bruts de la relecture du 2026-10-27 : `docs/plans/php/rapports/2026-10-27-relecture-php-1-4.md`.
 
 ## Quiz
-- Dernier cadrage : non renseigné
-- Sections couvertes : non renseigné
-- Questions publiées : non renseigné
+- Dernier cadrage : 2026-11-02 (sections 1 à 4, évaluation notée, sans points négatifs, domaine cinéma)
+- Sections couvertes : 1-bases-du-php, 2-programmation-orientee-objet, 3-structurer-son-code, 4-formulaire
+- Questions publiées : 20, écrites en prod le 2026-11-03 (`docs/plans/php/quiz.md`)
