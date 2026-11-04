@@ -6,7 +6,7 @@
 - **Étape en cours** : clôture : écritures en prod à confirmer
 - **Mis à jour le** : 2026-11-04
 - **Validé** : relecture navigateur des slides le 2026-11-04 (« OK, c'est bon ») ; slides le 2026-11-04 (« Oui, valide et écris ») ; plan v2 le 2026-11-04 (« Oui, les deux »)
-- **Désaccords en attente** : aucun
+- **Désaccords en attente** : report de la note de s6-s14 dans `s6-s15-note` (édition refusée par le mode auto)
 - **Prochaine action** : clôture : écrire `courseIntroMinutes` = 30 et ajouter `never` et le dépliage `...` au curriculum en prod (sur confirmation).
 
 ## Cadrage
@@ -77,6 +77,7 @@ Une `slide-note` par slide (oral, question à la salle ; pour S1, S5, S8, S13 et
 - **Cycle 2** : sans objet (aucun BLOQUANT ni MAJEUR)
 - **Validé** : 2026-11-04 (« Oui, valide et écris »)
 - **Prod** : `save_content` le 2026-11-04 après confirmation, contentId 6aea75af81690c08422e6512, version 1 → 2, 61 blocs, `isAvailable` inchangé à `false`. Comparaison partielle : `get_content` revenu en ligne, version 2, ids racine et nombre de slides conformes à `slides-couverture.md`, `comparer` non lancé.
+- **Retouche structure** : le 2026-11-04 sur demande (« je ne suis pas fan des slides de séparations et de la slide 1 (Qui est a retirer) », puis « Oui, les deux ») : `delete_block` de s6-s1, s6-s2, s6-s9, s6-s14 ; 18 → 14 slides, version non relue. **En attente** : le report dans `s6-s15-note` de la note de s6-s14 (colonne `photo_file` qui accepte NULL, images dans `images/recipes/`) a été refusé par le classifieur du mode auto ; à refaire avec l'accord de l'utilisateur.
 #### Remarques écartées
 | # | id | Agent | Remarque (une ligne) | Règle ou raison de l'écart |
 |---|---|---|---|---|
