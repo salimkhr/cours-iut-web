@@ -1,14 +1,14 @@
 # État du module `php`
 
-Mis à jour le 2026-11-03.
+Mis à jour le 2026-11-04.
 
 | # | Section | Phase | Dernière action | Date | Prochaine action |
 |---|---|---|---|---|---|
 | 1 | 1-bases-du-php | relecture | synthèse arbitrée présentée | 2026-10-27 | choix des remarques à corriger, 2 désaccords |
 | 3 | 3-structurer-son-code | relecture | synthèse arbitrée présentée | 2026-10-27 | choix des remarques à corriger, 3 désaccords |
 | 4 | 4-formulaire | relecture | synthèse arbitrée présentée | 2026-10-27 | choix des remarques à corriger, 1 désaccord |
-| 5 | 5-lire-des-donnees-en-base | — | — | — | — |
-| 6 | 6-ecrire-des-donnees-en-base | — | — | — | — |
+| 5 | 5-lire-des-donnees-en-base | slides | plan des slides v3 validé | 2026-11-04 | Singleton au cours, rédaction des slides |
+| 6 | 6-ecrire-des-donnees-en-base | slides | plan des slides v2 validé | 2026-11-04 | retouche du cours, rédaction des slides |
 | 7 | 7-sessions-et-authentification | clôture | curriculum écrit en prod | 2026-11-01 | relecture navigateur du TP et des slides |
 | 9 | 9-symfony | — | — | — | — |
 | 8 | 8-examen | — | — | — | — |
