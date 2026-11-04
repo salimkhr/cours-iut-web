@@ -63,6 +63,7 @@ Une `slide-note` par slide (oral, question à la salle ; pour S1, S8, S17 et S18
 ## Rédaction
 ### Cours (ajout)
 - **Prod** : le 2026-11-04 après confirmation (« Oui, écris en prod ») : `insert_block` d'un texte sur le motif Singleton (`2242960c-3b99-4b5b-b85f-679d639fd7f9`) et d'un diagramme « Deux repositories, une seule connexion » (`b6671e09-6494-4f86-8b1f-18d18663abeb`) après `db5-repo-single-t1` ; version 81 → 83, 95 → 97 blocs, relu par `get_content`.
+- **Retouche schéma** : le 2026-11-04 sur demande (« met des diagrame de class plutot que du SQL pour le shema », puis « Oui, les deux ») : le bloc `db5-base-sql` (CREATE TABLE et INSERT) est remplacé par un `classDiagram` « Recettes et ingrédients » (`a04ba11b-d81a-4a00-9527-e43ba216b60c`) ; types sans taille (les parenthèses sont lues comme des méthodes par Mermaid), données d'exemple laissées à `schema.sql`. Version après retouche non relue ; rendu vérifié avec Mermaid 11.17.2 (page du site derrière la connexion).
 
 ### Slides
 - **Brouillon** : docs/plans/php/brouillons/5-lire-des-donnees-en-base/slides.json (71 blocs, 20 slides, ordre S1 à S4, S20, S5 à S19)
@@ -83,6 +84,7 @@ Une `slide-note` par slide (oral, question à la salle ; pour S1, S8, S17 et S18
 - **Cycle 2** : sans objet (aucun BLOQUANT ni MAJEUR)
 - **Validé** : 2026-11-04 (« Oui, valide et écris »)
 - **Prod** : `save_content` le 2026-11-04 après confirmation, contentId 6aea755381690c08422e6511, version 1 → 2, 71 blocs, `isAvailable` inchangé à `false`. Comparaison partielle : `get_content` revenu en ligne, version 2, ids racine et nombre de slides conformes à `slides-couverture.md`, `comparer` non lancé.
+- **Retouche schéma** : le 2026-11-04, même demande : en S7, `s5-s7-code` (SQL) remplacé par le même `classDiagram` (`0a8137ec-f8da-45b0-b3b1-4dd614551898`), `s5-s7-note` : « pourquoi `unit` peut être NULL ». Version après retouche non relue.
 
 ## Relectures du plan
 ### Cycle 1, plan v1 (2026-11-04)
