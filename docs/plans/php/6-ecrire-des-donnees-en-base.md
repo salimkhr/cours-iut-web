@@ -6,7 +6,7 @@
 - **Étape en cours** : clôture : écritures en prod à confirmer
 - **Mis à jour le** : 2026-11-04
 - **Validé** : relecture navigateur des slides le 2026-11-04 (« OK, c'est bon ») ; slides le 2026-11-04 (« Oui, valide et écris ») ; plan v2 le 2026-11-04 (« Oui, les deux »)
-- **Désaccords en attente** : report de la note de s6-s14 dans `s6-s15-note` (édition refusée par le mode auto)
+- **Désaccords en attente** : aucun
 - **Prochaine action** : clôture : écrire `courseIntroMinutes` = 30 et ajouter `never` et le dépliage `...` au curriculum en prod (sur confirmation).
 
 ## Cadrage
@@ -77,7 +77,8 @@ Une `slide-note` par slide (oral, question à la salle ; pour S1, S5, S8, S13 et
 - **Cycle 2** : sans objet (aucun BLOQUANT ni MAJEUR)
 - **Validé** : 2026-11-04 (« Oui, valide et écris »)
 - **Prod** : `save_content` le 2026-11-04 après confirmation, contentId 6aea75af81690c08422e6512, version 1 → 2, 61 blocs, `isAvailable` inchangé à `false`. Comparaison partielle : `get_content` revenu en ligne, version 2, ids racine et nombre de slides conformes à `slides-couverture.md`, `comparer` non lancé.
-- **Retouche structure** : le 2026-11-04 sur demande (« je ne suis pas fan des slides de séparations et de la slide 1 (Qui est a retirer) », puis « Oui, les deux ») : `delete_block` de s6-s1, s6-s2, s6-s9, s6-s14 ; 18 → 14 slides, version non relue. **En attente** : le report dans `s6-s15-note` de la note de s6-s14 (colonne `photo_file` qui accepte NULL, images dans `images/recipes/`) a été refusé par le classifieur du mode auto ; à refaire avec l'accord de l'utilisateur.
+- **Retouche structure** : le 2026-11-04 sur demande (« je ne suis pas fan des slides de séparations et de la slide 1 (Qui est a retirer) », puis « Oui, les deux ») : `delete_block` de s6-s1, s6-s2, s6-s9, s6-s14 ; 18 → 14 slides, version non relue. Note de s6-s14 (colonne `photo_file`, `images/recipes/`) reportée en tête de `s6-s15-note`.
+- **Retouche surlignage** : le 2026-11-04 après relecture dans Chrome et confirmation (« Oui, applique tout ») : `highlight` de s6-s5-code `1 | 3-12 | 9 | 10 | 8`, s6-s6-code `1 | 3-11 | 12 | 14` (les étapes 13 et 15 tombaient sur des lignes vides), s6-s10-code `4-7 | 9-12 | 10 | 14`, s6-s16-code `1-5 | 7-18 | 13 | 22-23 | 25` (26 était vide), s6-s17-code `1 | 3-6 | 9 | 10-11`. Relu par `get_content` : version 12, 14 slides, valeurs conformes.
 #### Remarques écartées
 | # | id | Agent | Remarque (une ligne) | Règle ou raison de l'écart |
 |---|---|---|---|---|

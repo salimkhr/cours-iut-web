@@ -86,6 +86,7 @@ Une `slide-note` par slide (oral, question à la salle ; pour S1, S8, S17 et S18
 - **Prod** : `save_content` le 2026-11-04 après confirmation, contentId 6aea755381690c08422e6511, version 1 → 2, 71 blocs, `isAvailable` inchangé à `false`. Comparaison partielle : `get_content` revenu en ligne, version 2, ids racine et nombre de slides conformes à `slides-couverture.md`, `comparer` non lancé.
 - **Retouche schéma** : le 2026-11-04, même demande : en S7, `s5-s7-code` (SQL) remplacé par le même `classDiagram` (`0a8137ec-f8da-45b0-b3b1-4dd614551898`), `s5-s7-note` : « pourquoi `unit` peut être NULL ». Version après retouche non relue.
 - **Retouche structure** : le 2026-11-04 sur demande (« je ne suis pas fan des slides de séparations et de la slide 1 (Qui est a retirer) », puis « Oui, les deux ») : `delete_block` de s5-s1, s5-s2, s5-s6, s5-s12, s5-s16 ; 20 → 15 slides, version non relue. Verdict enregistré en prod (`6aeb0b8c81690c08422e6513`).
+- **Retouche surlignage** : le 2026-11-04 après relecture dans Chrome et confirmation (« Oui, applique tout ») : `highlight` de s5-s5-code `3 | 5 | 7 | 8-13 | 16`, s5-s14-code `6 | 8 | 9 | 4`, s5-s15-code `5 | 2-3`, s5-s17-code `1 | 3-7 | 9-16 | 18`. Version non relue.
 
 ## Relectures du plan
 ### Cycle 1, plan v1 (2026-11-04)
