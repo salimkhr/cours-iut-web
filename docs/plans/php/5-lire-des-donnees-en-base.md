@@ -3,11 +3,11 @@
 ## Statut
 - **Mode** : redaction (slides seules : cours et TP déjà en prod, inchangés)
 - **Phase** : slides
-- **Étape en cours** : slides : en attente de rédaction
+- **Étape en cours** : slides : en attente de validation
 - **Mis à jour le** : 2026-11-04
 - **Validé** : plan v3 le 2026-11-04 (« Oui, les deux »)
 - **Désaccords en attente** : aucun
-- **Prochaine action** : paragraphe sur le motif Singleton à ajouter au cours (demande du 2026-11-04, « Cours aussi »), puis rédaction des slides.
+- **Prochaine action** : l'utilisateur valide les slides, puis écriture en prod.
 
 ## Cadrage
 | # | Question | Défaut proposé | Réponse de l'utilisateur | Date |
@@ -59,6 +59,28 @@ Règles (décision de l'utilisateur du 2026-10-31, appliquée au PHP 7) : aucune
 | S19 | À retenir | besoin → outil | `slide-table` (`db5-recap-table`) | toutes | 1 min |
 
 Une `slide-note` par slide (oral, question à la salle ; pour S1, S8, S17 et S18, une phrase sur ce que l'étudiant fera dans Onzer, avec le seul nom du fil rouge). Notes de vocabulaire à prévoir : `const` (S4), `abstract`, `static`, `self::` (S5, d'après `db5-repo-single-table`), `extends` et `private const` (S17), `http_response_code(404)` (S18). Ordre d'affichage : S1 à S4, S20, S5 à S19 (S20 garde son numéro, repère ajouté). Total : S1, S7, S11 et S19 à 1 min, 12 slides à 2 min (dont S20), 4 transitions à 0,5 min : 4 + 24 + 2 = 30 min. Les transitions sont des intercalaires : la plage 1 à 2 min ne s'applique qu'aux slides de contenu.
+
+## Rédaction
+### Cours (ajout)
+- **Prod** : le 2026-11-04 après confirmation (« Oui, écris en prod ») : `insert_block` d'un texte sur le motif Singleton (`2242960c-3b99-4b5b-b85f-679d639fd7f9`) et d'un diagramme « Deux repositories, une seule connexion » (`b6671e09-6494-4f86-8b1f-18d18663abeb`) après `db5-repo-single-t1` ; version 81 → 83, 95 → 97 blocs, relu par `get_content`.
+
+### Slides
+- **Brouillon** : docs/plans/php/brouillons/5-lire-des-donnees-en-base/slides.json (71 blocs, 20 slides, ordre S1 à S4, S20, S5 à S19)
+- **Rédacteur** : rendu le 2026-11-04 (validation lancée par l'orchestrateur : cwd du rédacteur hors racine) ; écarts de forme acceptés : S20 en flowchart comme le plan, S9 sans commentaire « à ne pas faire », tableaux réduits en S8, S15, S19, numéros des transitions en `eyebrow`.
+- **Cycle 1** (2026-11-04) : style ✔ (71 blocs, 4 MINEURS), cohérence ✔ (20 slides, 7 MINEURS ; `slides-couverture.md` non lisible par sa garde, export entier lu) ; retenues 11, écartées 0 ; ids modifiés : s5-s1-note, s5-s2-note, s5-s3-note, s5-s6-note, s5-s7-note, s5-s8-note, s5-s9-note, s5-s13-table, s5-s13-note, s5-s14-note, s5-s15-table, s5-s15-note, s5-s17-note, s5-s18-code, s5-s18-note, s5-s20-note ; `valider` VALIDE, 71 marqueurs pour 71 blocs.
+| # | id | Gravité | Agents | Problème | Décision | Fait au cycle |
+|---|---|---|---|---|---|---|
+| 1 | s5-s2-note, s5-s6-note | MINEUR | style | annonce du plan des slides suivantes | retenue | 1 |
+| 2 | s5-s1/s8/s17/s18-note | MINEUR | style | « Dans Onzer, vous… » adressé aux étudiants | retenue : gardée en S1 et S18, à la 3e personne | 1 |
+| 3 | 8 notes | MINEUR | style | clôture « Question : … ? » répétée | retenue : gardée en S9, S11, S18 | 1 |
+| 4 | s5-s15-table | MINEUR | cohérence | extrait sans « … » face à ORDER BY | retenue | 1 |
+| 5 | s5-s13-table | MINEUR | cohérence | `$time` absent | retenue : `Recipe::$time` | 1 |
+| 6 | s5-s18-code | MINEUR | cohérence | renvoi à `ingredients.php` non projeté | retenue | 1 |
+| 7 | s5-s14-note | MINEUR | cohérence | `(int)` non expliqué | retenue | 1 |
+| 8 | s5-s20-note | MINEUR | cohérence | « motif de conception » non défini | retenue | 1 |
+| 9 | s5-s9-note | MINEUR | cohérence | `ILIKE` utilisé avant d'être expliqué | retenue | 1 |
+| 10 | s5-s7-note | MINEUR | cohérence | question sans réponse attendue | retenue | 1 |
+- **Cycle 2** : sans objet (aucun BLOQUANT ni MAJEUR)
 
 ## Relectures du plan
 ### Cycle 1, plan v1 (2026-11-04)

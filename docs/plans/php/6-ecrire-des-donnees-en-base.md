@@ -3,11 +3,11 @@
 ## Statut
 - **Mode** : redaction (slides seules ; cours en prod amendé, TP inchangé)
 - **Phase** : slides
-- **Étape en cours** : slides : en attente de rédaction
+- **Étape en cours** : slides : en attente de validation
 - **Mis à jour le** : 2026-11-04
 - **Validé** : plan v2 le 2026-11-04 (« Oui, les deux »)
 - **Désaccords en attente** : aucun
-- **Prochaine action** : retouche du cours en prod (confirmée : « Oui, écris en prod »), puis rédaction des slides.
+- **Prochaine action** : l'utilisateur valide les slides, puis écriture en prod.
 
 ## Cadrage
 | # | Question | Défaut proposé | Réponse de l'utilisateur | Date |
@@ -61,6 +61,25 @@ Règles (décision de l'utilisateur du 2026-10-31, appliquée au PHP 7) : aucune
 | S18 | À retenir | besoin → outil, sans la ligne du formulaire dynamique | `slide-table` (`db6-recap-table`) | toutes | 2 min |
 
 Une `slide-note` par slide (oral, question à la salle ; pour S1, S5, S8, S13 et S17, une phrase sur ce que l'étudiant fera dans Onzer, avec le seul nom du fil rouge). Total : S1 à 1,5 min, S8 à 1 min, 13 slides à 2 min, 3 transitions à 0,5 min : 2,5 + 26 + 1,5 = 30 min. Les transitions sont des intercalaires : la plage 1 à 2 min ne s'applique qu'aux slides de contenu. Notions à signaler au curriculum : `never` (S6), dépliage `...` (S10).
+
+## Rédaction
+### Cours (retouche)
+- **Prod** : le 2026-11-04 après confirmation (« Oui, écris en prod ») : `delete_block` db6-dyn-btn (10 blocs), `edit_block` db6-sec-dyn, db6-intro, db6-ins-page-t2, db6-recap-table ; version 104 → 109, 114 → 104 blocs, relu par `get_content` (aucune occurrence restante de `add_line` ni de « formulaire dynamique »).
+
+### Slides
+- **Brouillon** : docs/plans/php/brouillons/6-ecrire-des-donnees-en-base/slides.json (61 blocs, 18 slides)
+- **Rédacteur** : rendu le 2026-11-04 (validation lancée par l'orchestrateur : cwd du rédacteur hors racine) ; écarts de forme acceptés : S10 tableau à 2 lignes sans la remarque MySQL, S11 code réduit au champ nom, S16 `validatePhoto()` réduite au contrôle du type, numéros des transitions en `eyebrow`.
+- **Cycle 1** (2026-11-04) : style ✔ (61 blocs, 5 MINEURS), cohérence ✔ (18 slides, 1 MINEUR) ; retenues 2, écartées 4 ; ids modifiés : s6-s1-note, s6-s5-note, s6-s8-note, s6-s11-note, s6-s13-note, s6-s17-note ; `valider` VALIDE, 61 marqueurs pour 61 blocs.
+| # | id | Gravité | Agents | Problème | Décision | Fait au cycle |
+|---|---|---|---|---|---|---|
+| 1 | s6-s1/s5/s8/s13/s17-note | MINEUR | style | « Dans Onzer, vous… » répété cinq fois, adressé aux étudiants | retenue : gardée en S5 et S17, tournée vers le présentateur | 1 |
+| 2 | s6-s11-note | MINEUR | style | trois différences annoncées, deux citées | retenue | 1 |
+- **Cycle 2** : sans objet (aucun BLOQUANT ni MAJEUR)
+#### Remarques écartées
+| # | id | Agent | Remarque (une ligne) | Règle ou raison de l'écart |
+|---|---|---|---|---|
+| 1 | s6-s2/s9/s14-transition | style | numérotation à la main | le numéro est le champ `eyebrow`, affiché par l'export |
+| 2 | s6-s2, s6-s9, s6-s14 | cohérence | numéro absent du titre de la slide | même raison : `eyebrow` |
 
 ## Relectures du plan
 ### Cycle 1, plan v1 (2026-11-04)
