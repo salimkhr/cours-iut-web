@@ -7,8 +7,8 @@ Mis à jour le 2026-11-04.
 | 1 | 1-bases-du-php | relecture | synthèse arbitrée présentée | 2026-10-27 | choix des remarques à corriger, 2 désaccords |
 | 3 | 3-structurer-son-code | relecture | synthèse arbitrée présentée | 2026-10-27 | choix des remarques à corriger, 3 désaccords |
 | 4 | 4-formulaire | relecture | synthèse arbitrée présentée | 2026-10-27 | choix des remarques à corriger, 1 désaccord |
-| 5 | 5-lire-des-donnees-en-base | relecture navigateur | slides écrites en prod (v2), Singleton ajouté au cours | 2026-11-04 | relecture navigateur des slides |
-| 6 | 6-ecrire-des-donnees-en-base | relecture navigateur | slides écrites en prod (v2), formulaire dynamique retiré du cours | 2026-11-04 | relecture navigateur des slides |
+| 5 | 5-lire-des-donnees-en-base | clôture | slides relues au navigateur, Singleton ajouté au cours | 2026-11-04 | `courseIntroMinutes` = 30 en prod |
+| 6 | 6-ecrire-des-donnees-en-base | clôture | slides relues au navigateur, formulaire dynamique retiré du cours | 2026-11-04 | `courseIntroMinutes` = 30, curriculum (`never`, `...`) en prod |
 | 7 | 7-sessions-et-authentification | clôture | curriculum écrit en prod | 2026-11-01 | relecture navigateur du TP et des slides |
 | 9 | 9-symfony | — | — | — | — |
 | 8 | 8-examen | — | — | — | — |

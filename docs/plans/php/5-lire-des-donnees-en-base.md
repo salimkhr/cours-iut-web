@@ -2,12 +2,12 @@
 
 ## Statut
 - **Mode** : redaction (slides seules : cours et TP déjà en prod, inchangés)
-- **Phase** : relecture navigateur
-- **Étape en cours** : slides : relecture navigateur
+- **Phase** : clôture
+- **Étape en cours** : clôture : écritures en prod à confirmer
 - **Mis à jour le** : 2026-11-04
-- **Validé** : slides le 2026-11-04 (« Oui, valide et écris ») ; plan v3 le 2026-11-04 (« Oui, les deux »)
+- **Validé** : relecture navigateur des slides le 2026-11-04 (« OK, c'est bon ») ; slides le 2026-11-04 (« Oui, valide et écris ») ; plan v3 le 2026-11-04 (« Oui, les deux »)
 - **Désaccords en attente** : aucun
-- **Prochaine action** : relecture navigateur des slides par l'utilisateur ; curriculum à compléter à la clôture.
+- **Prochaine action** : clôture : écrire `courseIntroMinutes` = 30 en prod (sur confirmation).
 
 ## Cadrage
 | # | Question | Défaut proposé | Réponse de l'utilisateur | Date |
