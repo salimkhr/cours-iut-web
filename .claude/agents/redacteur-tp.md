@@ -259,7 +259,7 @@ pas réutilisé.
 jamais une suite de sections à plat. Les `section` racine sont les quelques grandes
 **parties** du sujet (deux ou trois) ; elles contiennent des **sous-parties**, qui
 contiennent des **sous-sous-parties**, toutes en `section` imbriquées. L'arborescence est
-celle du plan. Exception : les slides, à plat, découpées par `slide-transition`.
+celle du plan. Exception : les slides, à plat, sans `slide-transition`.
 
 Pas de numérotation dans les titres (« 1. », « A — », « Exercice 3 — ») : le rendu la
 génère. Le texte des blocs `text` accepte le Markdown inline (gras, `code`, liens).

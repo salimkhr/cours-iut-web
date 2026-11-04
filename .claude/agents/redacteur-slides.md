@@ -115,8 +115,11 @@ Il manque une entrée : rapport « incomplet », sans rien écrire.
 - **Une slide par ligne du plan** (`S1`…), id `s1`, `s2`…, avec le titre, l'idée unique
   et le bloc principal prévus. Une slide est un bloc `slide` racine ; ses enfants sont
   des blocs `slide-*`, `columns`, `diagram` ou `file-tree`.
-- `slide-transition` entre deux parties ; `slide-code` avec `highlight` pour montrer les
-  lignes qui comptent ; `slide-code-with-preview` pour tout rendu visuel.
+- Ni slide d'introduction en tête, ni `slide-transition` entre deux parties (verdict
+  `6aeb0b8c81690c08422e6513`). `slide-code` avec `highlight` pour montrer les lignes qui
+  comptent : une étape par instruction que la note commente, jamais une ligne vide, une
+  instruction sur plusieurs lignes surlignée en entier. `slide-code-with-preview` pour
+  tout rendu visuel.
 - **Une `slide-note` sur chaque slide** (`s1-note`…) : ce que dit l'enseignant, l'erreur
   fréquente à annoncer, ou la question à poser à la salle.
 - **Aucune notion absente du cours validé.** Une slide qui en aurait besoin : écart à
@@ -215,7 +218,7 @@ pas réutilisé.
 jamais une suite de sections à plat. Les `section` racine sont les quelques grandes
 **parties** du sujet (deux ou trois) ; elles contiennent des **sous-parties**, qui
 contiennent des **sous-sous-parties**, toutes en `section` imbriquées. L'arborescence est
-celle du plan. Exception : les slides, à plat, découpées par `slide-transition`.
+celle du plan. Exception : les slides, à plat, sans `slide-transition`.
 
 Pas de numérotation dans les titres (« 1. », « A — », « Exercice 3 — ») : le rendu la
 génère. Le texte des blocs `text` accepte le Markdown inline (gras, `code`, liens).

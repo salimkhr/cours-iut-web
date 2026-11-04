@@ -184,6 +184,22 @@ remarque, même s'il s'écarte de votre grille.
    slide : MAJEUR. Notion présente dans les slides et absente du cours : MAJEUR. Slide
    qui porte deux idées : MINEUR. Slide sans `slide-note` : MAJEUR. Rendu visuel sans
    `slide-code-with-preview` : MINEUR.
+5 bis. **Surlignage des `slide-code`** (slides) : l'export écrit les étapes au-dessus du
+   code (`_Surlignage : 3 | 5-7 | 16_`), une étape par groupe séparé par `|`, lignes
+   numérotées à partir de 1. Numérotez le code et confrontez chaque étape au titre et à la
+   `slide-note` de la slide :
+   - étape qui tombe sur une ligne vide ou au-delà de la dernière ligne : MAJEUR ;
+   - ligne qui porte l'idée du titre, ou instruction que la note commente (affectation,
+     appel, condition, clause SQL), jamais surlignée : MAJEUR (ex. `getPdo()` surligné en
+     `3 | 5 | 7 | 16` sans l'affectation `self::$pdo = new PDO(...)` des lignes 10-13) ;
+   - instruction sur plusieurs lignes surlignée en partie (seule la première ligne d'une
+     constante de cinq lignes) : MINEUR ;
+   - étapes dans un autre ordre que celui de la note : MINEUR.
+   Un `slide-code` sans surlignage n'est pas une remarque quand la slide le lit en entier.
+   Preuve : l'étape, puis chaque ligne en cause avec son numéro et son verbatim. Proposition :
+   la nouvelle valeur complète de `highlight`. Si l'export ne montre aucune ligne
+   `_Surlignage_` alors que la slide doit en avoir, lisez la propriété `highlight` avec
+   `get_content` (export d'une version antérieure du serveur).
 6. **Arborescence** (cours et TP) : arborescence différente de celle du plan (parties,
    sous-parties, sous-sous-parties), ou suite de sections à plat : MAJEUR. Titre de sous-partie qui décrit le
    format (« Exemple », « Variante ») au lieu du contenu : MINEUR.
@@ -224,7 +240,7 @@ ou exercice et par critère :
 - cours / slides : une tâche par bloc d'exemple (code, données, scénario) × critère 1 ;
   une tâche par notion utilisée × critère 2 ; une tâche par notion du brief × critères 2
   et 3 ;
-- slides : une tâche par slide × critère 5 ;
+- slides : une tâche par slide × critère 5 ; une tâche par `slide-code` × critère 5 bis ;
 - TP : une tâche par exercice et par bonus × critères 2 et 4 ; une tâche « progression
   guidé → fil rouge » ;
 - tous supports : une tâche « grammaire des blocs » (critère 6) par partie (`section`).
@@ -253,12 +269,14 @@ Statut du rapport : terminé | incomplet
 - curriculum : <n notions confrontées sur n>, notions introduites par la section : ...
 - dépôt (TP) : <n résultats observables confrontés sur n>, fichiers lus : <chemins>
 - cours (slides) : <n slides comparées sur n>
+- surlignage (slides) : <n slide-code confrontés sur n>, étapes sur ligne vide : <n>
 
 ## Définition de terminé
 - ✔/✘ chaque exemple vérifié contre l'exampleDomain : <n sur n>
 - ✔/✘ chaque notion utilisée confrontée aux curriculum : <n sur n>
 - ✔/✘ pour un TP : chaque résultat observable confronté au dépôt : <n sur n> (sans objet sinon)
 - ✔/✘ pour des slides : comparaison au cours faite : <n slides sur n> (sans objet sinon)
+- ✔/✘ pour des slides : chaque `slide-code` confronté à son surlignage, ligne par ligne : <n sur n> (sans objet sinon)
 - ✔/✘ chaque « enseignée nulle part » prouvé par search_content (requête, limite, sections antérieures) : <n sur n>
 - ✔/✘ aucune proposition ne contredit un verdict transmis ; verdict cité quand la forme est changée : <n verdicts transmis, n cités>
 ```
