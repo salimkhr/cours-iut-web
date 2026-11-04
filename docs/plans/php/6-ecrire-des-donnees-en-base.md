@@ -2,12 +2,12 @@
 
 ## Statut
 - **Mode** : redaction (slides seules ; cours en prod amendé, TP inchangé)
-- **Phase** : slides
-- **Étape en cours** : slides : en attente de validation
+- **Phase** : relecture navigateur
+- **Étape en cours** : slides : relecture navigateur
 - **Mis à jour le** : 2026-11-04
-- **Validé** : plan v2 le 2026-11-04 (« Oui, les deux »)
+- **Validé** : slides le 2026-11-04 (« Oui, valide et écris ») ; plan v2 le 2026-11-04 (« Oui, les deux »)
 - **Désaccords en attente** : aucun
-- **Prochaine action** : l'utilisateur valide les slides, puis écriture en prod.
+- **Prochaine action** : relecture navigateur des slides par l'utilisateur ; curriculum à compléter à la clôture.
 
 ## Cadrage
 | # | Question | Défaut proposé | Réponse de l'utilisateur | Date |
@@ -75,6 +75,8 @@ Une `slide-note` par slide (oral, question à la salle ; pour S1, S5, S8, S13 et
 | 1 | s6-s1/s5/s8/s13/s17-note | MINEUR | style | « Dans Onzer, vous… » répété cinq fois, adressé aux étudiants | retenue : gardée en S5 et S17, tournée vers le présentateur | 1 |
 | 2 | s6-s11-note | MINEUR | style | trois différences annoncées, deux citées | retenue | 1 |
 - **Cycle 2** : sans objet (aucun BLOQUANT ni MAJEUR)
+- **Validé** : 2026-11-04 (« Oui, valide et écris »)
+- **Prod** : `save_content` le 2026-11-04 après confirmation, contentId 6aea75af81690c08422e6512, version 1 → 2, 61 blocs, `isAvailable` inchangé à `false`. Comparaison partielle : `get_content` revenu en ligne, version 2, ids racine et nombre de slides conformes à `slides-couverture.md`, `comparer` non lancé.
 #### Remarques écartées
 | # | id | Agent | Remarque (une ligne) | Règle ou raison de l'écart |
 |---|---|---|---|---|

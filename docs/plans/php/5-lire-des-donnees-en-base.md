@@ -2,12 +2,12 @@
 
 ## Statut
 - **Mode** : redaction (slides seules : cours et TP déjà en prod, inchangés)
-- **Phase** : slides
-- **Étape en cours** : slides : en attente de validation
+- **Phase** : relecture navigateur
+- **Étape en cours** : slides : relecture navigateur
 - **Mis à jour le** : 2026-11-04
-- **Validé** : plan v3 le 2026-11-04 (« Oui, les deux »)
+- **Validé** : slides le 2026-11-04 (« Oui, valide et écris ») ; plan v3 le 2026-11-04 (« Oui, les deux »)
 - **Désaccords en attente** : aucun
-- **Prochaine action** : l'utilisateur valide les slides, puis écriture en prod.
+- **Prochaine action** : relecture navigateur des slides par l'utilisateur ; curriculum à compléter à la clôture.
 
 ## Cadrage
 | # | Question | Défaut proposé | Réponse de l'utilisateur | Date |
@@ -81,6 +81,8 @@ Une `slide-note` par slide (oral, question à la salle ; pour S1, S8, S17 et S18
 | 9 | s5-s9-note | MINEUR | cohérence | `ILIKE` utilisé avant d'être expliqué | retenue | 1 |
 | 10 | s5-s7-note | MINEUR | cohérence | question sans réponse attendue | retenue | 1 |
 - **Cycle 2** : sans objet (aucun BLOQUANT ni MAJEUR)
+- **Validé** : 2026-11-04 (« Oui, valide et écris »)
+- **Prod** : `save_content` le 2026-11-04 après confirmation, contentId 6aea755381690c08422e6511, version 1 → 2, 71 blocs, `isAvailable` inchangé à `false`. Comparaison partielle : `get_content` revenu en ligne, version 2, ids racine et nombre de slides conformes à `slides-couverture.md`, `comparer` non lancé.
 
 ## Relectures du plan
 ### Cycle 1, plan v1 (2026-11-04)
