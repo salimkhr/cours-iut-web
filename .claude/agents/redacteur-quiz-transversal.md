@@ -171,7 +171,7 @@ TP.
   sans break… ») : l'explication est un indice. Seule une question en « pourquoi » a pour
   propositions des raisons, en une phrase courte.
 - **Durée** : `durationSeconds` réaliste, de 5 à 300, lecture du code comprise.
-- Vraies apostrophes, vouvoiement, français courant.
+- Vraies apostrophes, vouvoiement, français courant. Ni tiret cadratin, ni formule creuse (« permet de », « afin de »), ni négation de cadrage dans les énoncés (méthode `docs/humanizer/humanizer-fr.md`).
 
 ## Format du brouillon
 

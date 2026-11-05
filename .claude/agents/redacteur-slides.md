@@ -254,15 +254,18 @@ jugés en grappe (une occurrence isolée passe, trois dans un paragraphe non) :
   du bloc fait ce travail ;
 - conclusions plaquées (« vous voilà prêt à »), staccato dramatique, aphorismes ;
 - graisse semée, listes « **Terme** : définition » enchaînées, emojis dans les titres ;
-- plus d'une incise au tiret par paragraphe ; hedging (« peut potentiellement ») ;
+- tirets cadratins dans la prose (zéro : virgule, deux-points ou point) ; hedging
+  (« peut potentiellement ») ;
 - faux intervalles (« de la simple variable aux architectures complexes ») ;
-- renvoi à une séance par son numéro : n'écrivez jamais « Au cours 6 » ou « au TP 3 », nommez
-  le sujet (« Au cours sur l'écriture en base », « au TP sur les formulaires »). L'étudiant ne
-  retient pas les numéros, et ils changent quand le module évolue.
+- renvoi administratif : « le TP3 », « comme la dernière fois », plutôt que « le TP sur
+  les tableaux associatifs et les objets » ;
+- négations de cadrage (« rien n'est encore enregistré ») : dites ce qu'on fait.
 
 Produisez des signaux humains : détail précis (version, message verbatim, comportement
 réel), avis assumé (« préférez X »), rythme varié. L'exemplaire reste la référence de
 voix ; cette liste est un filet.
+
+La méthode complète, avec le catalogue des motifs P/F, est `docs/humanizer/humanizer-fr.md`.
 
 ## Deux modes, donnés par le prompt
 

@@ -13,8 +13,9 @@ Ce fichier n'ajoute que ce qui est propre à Claude Code.
   (système visuel).
 - **`impeccable`** : `/impeccable teach` met à jour `PRODUCT.md`, `/impeccable document` met à
   jour `DESIGN.md`. Ce sont les seuls moyens de modifier ces deux fichiers.
-- **`humaniseur-fr`** : avant de livrer un texte en français destiné aux étudiants (cours, TP,
-  slides, examen, e-mail), pour retirer les tics d'écriture IA.
+- **`humanizer-fr`** : avant de livrer un texte en français destiné aux étudiants (cours, TP,
+  slides, examen, e-mail), et en relecture de style. Méthode et score anti-IA dans
+  `docs/humanizer/humanizer-fr.md` et `docs/humanizer/score.mjs`.
 - **`gitnexus-*`** : guides détaillés d'analyse d'impact, de debug et de refactor (voir
   `NEXUS.md`).
 - **`content-writer-v3`** : pour rédiger ou relire cours, slides, TP et examens. Le pipeline lit

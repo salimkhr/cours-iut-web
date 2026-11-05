@@ -76,7 +76,7 @@ describe("Skills pédagogiques — documents", () => {
         for (const kw of ["edit_block", "insert_block", "get_content", "search_content",
             "log_retouche", "dependencyNote", "get_quiz", "edit_quiz_question",
             "save_content", "vouvoy", "curriculum", "exampleDomain", "prod",
-            "humaniseur-fr", "/content-writer-v3"]) {
+            "humanizer-fr", "/content-writer-v3"]) {
             expect(rt).toContain(kw);
         }
         // save_content n'apparaît que pour être interdit.

@@ -4,7 +4,7 @@
 - **Corrections ponctuelles PHP 1 à 4 (prod)** : 49 blocs appliqués le 2026-10-27, 10 de plus le 2026-11-02 ; plus aucune en attente (statuts dans `docs/plans/php/`). `edit_block` en prod parfois refusé par le classifieur du mode automatique : réessayer avec confirmation. `delete_block` refusé le 2026-11-02 : `sl2-classe-res` affiche « (aucune sortie) » au lieu d'être supprimé.
 - **Fait** :
   - `docs/pipeline/spec.md` : référence ; § 1 et § 9 amendés le 2026-10-27 ; § 2, § 3, § 6 et § 12 amendés le 2026-10-28 (étape 2) ; § 2 (étapes 4 et 8), § 3 et § 13 amendés le 2026-10-28 (étape 3).
-  - `.claude/skills/humaniseur-fr/` (copie locale, MIT) ; `.gitignore` versionne `.claude/skills/` et `.claude/agents/`, ignore `docs/plans/*/brouillons/`.
+  - `.claude/skills/humanizer-fr/` (renvoi vers la méthode anti-IA `docs/humanizer/humanizer-fr.md` et son score `docs/humanizer/score.mjs`, qui remplacent l'ancien `humaniseur-fr` le 2026-11-05) ; `.gitignore` versionne `.claude/skills/` et `.claude/agents/`, ignore `docs/plans/*/brouillons/`.
   - Étape 1 : sept agents, dont `preparateur` ; orchestrateur `.claude/skills/content-writer-v3/` ; bac à sable `docker/etudiant-sandbox/` (image `cours-iut-bac:1`), gardes `garde-bac.mjs` et `garde-preparateur.mjs`.
   - Étape 6 : `skills/retouche/main.md`, outils `log_retouche` / `list_retouches` / `mark_retouches_processed`, index `retouches_status_recent`.
   - Étape 2 : `cadrage.md`, `plan.md`, modes `conception` et `conception-rapide`, mode plan des relecteurs, `garde-relecteur.mjs` (synthèse : commit 54e6279).
