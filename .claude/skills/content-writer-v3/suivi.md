@@ -53,6 +53,7 @@ rubrique concernée, sans toucher aux autres.
 ### Cours
 - **Brouillon** : docs/plans/<module>/brouillons/<section>/cours.json (<n> blocs)
 - **Rédacteur** : rendu le <date> (<n> relance(s)) ; écarts au plan : aucun | <repère : décision>
+- **Score anti-IA** : <total> (M <n>, B <b>, V <v>) ; passes anti-IA de plus : <n> ; après cycle 1 : <total>
 - **Cycle 1** (<date>) : rapports style ✔, cohérence ✔, fragile ✔ ; retenues <n>, écartées <n> ; ids modifiés : <liste>
 | # | id | Gravité | Agents | Problème | Décision | Fait au cycle |
 |---|---|---|---|---|---|---|

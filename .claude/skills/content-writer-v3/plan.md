@@ -75,7 +75,8 @@ Règles :
   imbriquées : deux ou trois grandes parties par thème (PHP 7 : « Les sessions »,
   « L'authentification »), des sous-parties (une par notion ou groupe d'exercices), des
   sous-sous-parties titrées par ce qu'on y apprend. Les slides restent à plat
-  (`slide-transition`), dans l'ordre du cours.
+  dans l'ordre du cours, sans slide d'introduction ni `slide-transition` (verdict
+  `6aeb0b8c81690c08422e6513`).
 - **Pas d'indice ni de solution** dans le plan d'un TP : ni ligne de code de solution
   dans une consigne, ni corrigé ou indice en `collapsible`. La consigne impose la
   méthode (champ 4). Cette règle prime sur la phrase « un indice replié qui donne le

@@ -115,8 +115,11 @@ Il manque une entrée : rapport « incomplet », sans rien écrire.
 - **Une slide par ligne du plan** (`S1`…), id `s1`, `s2`…, avec le titre, l'idée unique
   et le bloc principal prévus. Une slide est un bloc `slide` racine ; ses enfants sont
   des blocs `slide-*`, `columns`, `diagram` ou `file-tree`.
-- `slide-transition` entre deux parties ; `slide-code` avec `highlight` pour montrer les
-  lignes qui comptent ; `slide-code-with-preview` pour tout rendu visuel.
+- Ni slide d'introduction en tête, ni `slide-transition` entre deux parties (verdict
+  `6aeb0b8c81690c08422e6513`). `slide-code` avec `highlight` pour montrer les lignes qui
+  comptent : une étape par instruction que la note commente, jamais une ligne vide, une
+  instruction sur plusieurs lignes surlignée en entier. `slide-code-with-preview` pour
+  tout rendu visuel.
 - **Une `slide-note` sur chaque slide** (`s1-note`…) : ce que dit l'enseignant, l'erreur
   fréquente à annoncer, ou la question à poser à la salle.
 - **Aucune notion absente du cours validé.** Une slide qui en aurait besoin : écart à
@@ -215,7 +218,7 @@ pas réutilisé.
 jamais une suite de sections à plat. Les `section` racine sont les quelques grandes
 **parties** du sujet (deux ou trois) ; elles contiennent des **sous-parties**, qui
 contiennent des **sous-sous-parties**, toutes en `section` imbriquées. L'arborescence est
-celle du plan. Exception : les slides, à plat, découpées par `slide-transition`.
+celle du plan. Exception : les slides, à plat, sans `slide-transition`.
 
 Pas de numérotation dans les titres (« 1. », « A — », « Exercice 3 — ») : le rendu la
 génère. Le texte des blocs `text` accepte le Markdown inline (gras, `code`, liens).
@@ -251,15 +254,18 @@ jugés en grappe (une occurrence isolée passe, trois dans un paragraphe non) :
   du bloc fait ce travail ;
 - conclusions plaquées (« vous voilà prêt à »), staccato dramatique, aphorismes ;
 - graisse semée, listes « **Terme** : définition » enchaînées, emojis dans les titres ;
-- plus d'une incise au tiret par paragraphe ; hedging (« peut potentiellement ») ;
+- tirets cadratins dans la prose (zéro : virgule, deux-points ou point) ; hedging
+  (« peut potentiellement ») ;
 - faux intervalles (« de la simple variable aux architectures complexes ») ;
-- renvoi à une séance par son numéro : n'écrivez jamais « Au cours 6 » ou « au TP 3 », nommez
-  le sujet (« Au cours sur l'écriture en base », « au TP sur les formulaires »). L'étudiant ne
-  retient pas les numéros, et ils changent quand le module évolue.
+- renvoi administratif : « le TP3 », « comme la dernière fois », plutôt que « le TP sur
+  les tableaux associatifs et les objets » ;
+- négations de cadrage (« rien n'est encore enregistré ») : dites ce qu'on fait.
 
 Produisez des signaux humains : détail précis (version, message verbatim, comportement
 réel), avis assumé (« préférez X »), rythme varié. L'exemplaire reste la référence de
 voix ; cette liste est un filet.
+
+La méthode complète, avec le catalogue des motifs P/F, est `docs/humanizer/humanizer-fr.md`.
 
 ## Deux modes, donnés par le prompt
 

@@ -132,6 +132,16 @@ describe("blocksToMarkdown — fidélité", () => {
         expect(md).toContain("````markdown\n# Titre\n```bash\nls\n```\n````");
     });
 
+    it("slide-code : étapes de surlignage au-dessus du code, rien sans surlignage", () => {
+        const blocks: Block[] = [
+            { id: "sc1", type: "slide-code", props: { language: "php", code: "$a = 1;\n$b = 2;", highlight: "1 | 2" } },
+            { id: "sc2", type: "slide-code", props: { language: "php", code: "$c = 3;", highlight: "" } },
+        ];
+        const md = blocksToMarkdown(blocks);
+        expect(md).toContain("<!--sc1-->\n_Surlignage : 1 | 2_\n```php\n$a = 1;");
+        expect(md).toContain("<!--sc2-->\n```php\n$c = 3;");
+    });
+
     it("file-tree : titre et chemins", () => {
         const blocks: Block[] = [{
             id: "ft", type: "file-tree",

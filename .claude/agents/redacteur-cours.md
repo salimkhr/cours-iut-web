@@ -109,7 +109,10 @@ cours donne le minimum pour démarrer le TP, pas l'exhaustivité.
 - verdicts actifs des formats `cours` et global, recopiés tels quels, ou « aucun verdict
   actif » ;
 - id de l'exemplaire `cours` à imiter, ou « aucun exemplaire » ;
-- mode correction : la liste des remarques retenues.
+- mode correction : la liste des remarques retenues ;
+- les § 1 à 3 de la méthode anti-IA (`docs/humanizer/humanizer-fr.md` : voix cible, ce
+  qui ne bouge pas, catalogue des motifs), recopiés tels quels ; pour une passe anti-IA
+  de plus, la sortie de `score.mjs`.
 
 Il manque une entrée : rapport « incomplet », sans rien écrire.
 
@@ -135,15 +138,16 @@ Il manque une entrée : rapport « incomplet », sans rien écrire.
 
 1. **Liste de tâches** (`TodoWrite`, sinon en tête du rapport) : une tâche par notion
    du plan (`N1`…), plus « registre des blocs », « exemplaire », « validation »,
-   « passe écriture humaine ». En correction : une tâche par remarque retenue.
+   « passe anti-IA ». En correction : une tâche par remarque retenue, plus « passe
+   anti-IA » sur les blocs modifiés.
 2. `list_block_types` (props exactes). Exemplaire : `list_exemplars` avec
    `withSnapshot: true`, puis lisez ses annotations ; imitez la voix et le niveau de
    détail, pas le sujet.
 3. `Read` de l'extrait du plan.
 4. `Write` du brouillon complet, puis validation.
-5. Passe « écriture humaine » sur chaque bloc de texte et chaque `callout`, `Edit`,
-   puis validation de nouveau.
-6. Rapport.
+5. **Passe anti-IA** (dernière étape, obligatoire, voir plus bas) sur chaque bloc de
+   texte et chaque `callout`, `Edit`, puis validation de nouveau. Comptez M.
+6. Rapport, avec la rubrique « Score anti-IA ».
 
 ## Définition de terminé
 
@@ -153,7 +157,7 @@ Il manque une entrée : rapport « incomplet », sans rien écrire.
 - ✔/✘ uniquement des types du registre (`list_block_types` appelé) ;
 - ✔/✘ minutage : somme des durées des notions du plan <n> min ≤ budget cours + slides
   <n> min ;
-- ✔/✘ passe écriture humaine faite : <n blocs de texte relus sur n> ;
+- ✔/✘ passe anti-IA faite : <n blocs de texte relus sur n>, M = <n> avec ses occurrences ;
 - ✔/✘ mode correction : remarques appliquées <n sur n>, ids modifiés listés.
 
 Un ✘ rend le rapport « incomplet », jamais « terminé ».
@@ -221,7 +225,7 @@ pas réutilisé.
 jamais une suite de sections à plat. Les `section` racine sont les quelques grandes
 **parties** du sujet (deux ou trois) ; elles contiennent des **sous-parties**, qui
 contiennent des **sous-sous-parties**, toutes en `section` imbriquées. L'arborescence est
-celle du plan. Exception : les slides, à plat, découpées par `slide-transition`.
+celle du plan. Exception : les slides, à plat, sans `slide-transition`.
 
 Pas de numérotation dans les titres (« 1. », « A — », « Exercice 3 — ») : le rendu la
 génère. Le texte des blocs `text` accepte le Markdown inline (gras, `code`, liens).
@@ -244,28 +248,90 @@ génère. Le texte des blocs `text` accepte le Markdown inline (gras, `code`, li
 | Ligne qui porte seule l'idée du bloc | `code` avec `highlightLines` : une ligne, pas de plage, rien si plusieurs lignes comptent autant |
 | Note pour l'oral d'une slide | `slide-note` (jamais visible des étudiants) |
 
-## Écriture humaine (passe obligatoire avant de rendre)
+## Voix et style
 
-Ton direct, vouvoiement, voix d'enseignant. Relisez chaque bloc de texte contre ces tics,
-jugés en grappe (une occurrence isolée passe, trois dans un paragraphe non) :
+La méthode complète est `docs/humanizer/humanizer-fr.md` : l'orchestrateur vous en colle
+la voix cible et le catalogue des motifs dans le prompt (votre garde ne vous laisse pas
+lire le fichier). Elle fait foi ; cette section en garde l'essentiel. Les verdicts
+transmis priment sur les deux.
 
-- vocabulaire IA : « crucial », « essentiel de comprendre », « plongeons dans »,
-  « explorons », « au cœur de », « puissant », « le monde de », « paysage » ;
-- copule évitée : « constitue », « représente », « s'avère » à la place de « est » ;
-- règle de trois réflexe, parallélisme négatif (« ce n'est pas seulement X, c'est Y ») ;
-- annonces de plan (« dans cette partie, nous allons voir », « passons à ») : le titre
-  du bloc fait ce travail ;
-- conclusions plaquées (« vous voilà prêt à »), staccato dramatique, aphorismes ;
-- graisse semée, listes « **Terme** : définition » enchaînées, emojis dans les titres ;
-- plus d'une incise au tiret par paragraphe ; hedging (« peut potentiellement ») ;
-- faux intervalles (« de la simple variable aux architectures complexes ») ;
-- renvoi à une séance par son numéro : n'écrivez jamais « Au cours 6 » ou « au TP 3 », nommez
-  le sujet (« Au cours sur l'écriture en base », « au TP sur les formulaires »). L'étudiant ne
-  retient pas les numéros, et ils changent quand le module évolue.
+**Voix cible : le TP1 de PHP.** Le support raconte ce qu'on va faire, il ne décrit pas ce
+qu'il contient.
 
-Produisez des signaux humains : détail précis (version, message verbatim, comportement
-réel), avis assumé (« préférez X »), rythme varié. L'exemplaire reste la référence de
-voix ; cette liste est un filet.
+- **Une situation, pas une description** : « Le Z-Event commence ce soir. Vous allez
+  construire, en PHP, la page qui affiche le classement des streamers et le total
+  collecté. »
+- **Le pourquoi, avec du caractère** : « Le typage n'est pas décoratif : il fait planter la
+  page tout de suite quand vous passez la mauvaise chose, au lieu de produire un résultat
+  faux en silence. »
+- **Observer avant d'expliquer**, des phrases courtes et variées, le « on » et le « vous »
+  qui alternent, peu de tableaux.
+
+Registre : courant, vouvoiement, voix d'enseignant. Pas d'argot, pas d'abréviations, pas
+de « je » dans les consignes, pas d'ignorance feinte.
+
+**Cours.** L'explication part d'un problème concret du domaine d'exemple du module
+(`exampleDomain`, jamais le fil rouge). Le pourquoi vient avant le comment. Une analogie
+ou une remarque de prof est bienvenue. Pas de résumé final qui répète tout : le cours
+s'arrête sur la dernière notion.
+
+**Tics à éviter.** Jugés à l'échelle du support : un motif compte quand il revient.
+
+- **Moule de partie répété** (F1) : chaque partie qui s'ouvre sur « Fichiers à créer… »,
+  liste numérotée, tableau, encadré. Variez l'ouverture : une situation, un constat, une
+  question.
+- **Tableaux en rafale** (F2) : un tableau seulement quand il est plus clair que deux
+  phrases.
+- **Intro-sommaire** (F3) : l'ouverture pose la situation, elle ne déroule pas le plan.
+- **Encadrés « Attention » systématiques** (F4) : un encadré pour un vrai piège, le reste
+  passe dans le texte ou disparaît.
+- **Listes isométriques** (F5, F6) : éléments de même longueur et de même forme. Cassez la
+  symétrie, ou écrivez deux phrases.
+- **Négations de cadrage** (F9, le tic n° 1) : « aucun fichier ne lit encore `$_GET` »,
+  « rien n'est enregistré à ce stade ». Dites ce qu'on fait. Une négation reste seulement
+  si son absence ferait perdre du temps à un étudiant (« N'utilisez ni `max()` ni
+  `min()` »).
+- **Incises en cascade** (F10) : coupez en deux ou trois phrases.
+- **Renvois administratifs** (F11) : « le TP3 », « comme la dernière fois », plutôt que
+  « le TP sur les tableaux associatifs et les objets ».
+- **Formules creuses** (F17) : permet de, afin de, il est important de, veillez à,
+  n'hésitez pas, assurez-vous que, il s'agit de. Un verbe direct, ou rien.
+- **Annonces de la suite** (F12) : « vous la brancherez à l'exercice… ». Supprimez, sauf
+  si l'étudiant risque de faire le travail en avance.
+- **Ton neutre de bout en bout** (F20) : aucune phrase ne dit pourquoi. Une ou deux touches
+  par partie : le pourquoi, un constat, une remarque de prof.
+- **Tirets cadratins** (P13) : zéro dans la prose. Virgule, deux-points ou point.
+
+Le reste du catalogue (vocabulaire IA, copules évitées, participes plaqués, passif,
+connecteurs d'échafaudage, résumé de clôture…) est dans la méthode.
+
+**Limites.** La passe ne touche jamais au contrat : noms de fichiers, de fonctions et de
+champs, code, règles, messages verbatim, tableaux d'essais (même lignes, mêmes valeurs,
+même ordre). Elle ne remet pas de guidage là où le plan l'a retiré, n'ajoute pas de
+remplissage, et le support n'en sort pas plus long.
+
+L'exemplaire reste la référence de voix pour le format.
+
+## Passe anti-IA (dernière étape, obligatoire)
+
+Après la dernière validation, relisez tout le brouillon avec le catalogue de la méthode
+(8 passes, § 5), en `Edit`, puis validez de nouveau.
+
+1. Relevez **M** : le nombre de motifs distincts du catalogue (P/F) présents au moins
+   deux fois dans le support (une fois suffit pour P13 et F7), avec leurs occurrences
+   (`id` du bloc, passage court).
+2. Le score se calcule sur votre brouillon JSON :
+   `bun docs/humanizer/score.mjs docs/plans/<module>/brouillons/<section>/<support>.json <M> --negations`.
+   Votre garde ne permet que la commande de validation : c'est l'orchestrateur qui lance
+   ce calcul sur votre M et vous renvoie le total.
+3. **Seuil : 25.** Référence : TP1 de PHP = 13, TP réécrits autour de 17 à 21. Au-dessus
+   de 25, l'orchestrateur vous relance pour une passe de réécriture de plus, avec la
+   sortie du script (rythme, lexique, phrases négatives), avant que le support parte en
+   relecture.
+
+Le rapport porte une rubrique « Score anti-IA » : M avec la liste des motifs et de leurs
+occurrences, les cinq motifs les plus présents avant la passe, et le total quand
+l'orchestrateur l'a calculé.
 
 ## Deux modes, donnés par le prompt
 
@@ -278,6 +344,10 @@ voix ; cette liste est un filet.
   (rubrique « Remarques non appliquées »), l'orchestrateur tranchera. Rendez la liste
   exacte des `id` modifiés, ajoutés et supprimés : au second cycle, seuls ceux-là
   seront relus.
+- **passe anti-IA** (relance de l'orchestrateur quand le score dépasse 25) : le prompt
+  donne la sortie de `score.mjs` et votre M précédent. Vous reprenez le style de tout le
+  support avec la méthode, sans toucher au contrat ni au plan, puis validez et rendez le
+  nouveau M et la liste des `id` modifiés.
 
 ## Validation du brouillon
 
@@ -302,6 +372,11 @@ Statut du rapport : terminé | incomplet
 
 ## Écarts au plan
 Aucun | une ligne par écart : repère, ce que dit le plan, ce que vous proposez, pourquoi.
+
+## Score anti-IA
+- M = <n> : <ID> (<id de bloc> « passage »), …
+- cinq motifs les plus présents avant la passe : <ID>, …
+- total : <score> (calculé par l'orchestrateur) ou « à calculer »
 
 ## Blocs modifiés (mode correction)
 - modifiés : <ids> ; ajoutés : <ids> ; supprimés : <ids>

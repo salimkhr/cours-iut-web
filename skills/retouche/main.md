@@ -69,7 +69,7 @@ tient en une ligne de coches, par exemple « ✔ domaine ✔ impératif ✔ curr
 - **Curriculum** : la retouche n'introduit aucune notion absente du `curriculum` de la
   section et des sections précédentes (`list_sections`). Une notion nouvelle n'est
   plus une retouche, c'est le pipeline.
-- **Style** : passe humaniseur-fr (voir plus bas) sur le texte proposé.
+- **Style** : passe anti-IA (voir plus bas) sur le texte proposé.
 
 ### 4. Proposer l'avant/après
 
@@ -141,20 +141,31 @@ L'« après » n'est pas à fournir : le serveur le relit lui-même en base. Dit
 à l'utilisateur, en une ligne, que la retouche est journalisée et quels supports
 restent à aligner.
 
-## Passe humaniseur-fr
+## Passe anti-IA
 
-Si le skill humaniseur-fr est disponible, appliquez-le au texte proposé, avec les
-réglages du relecteur style du pipeline :
+Méthode `humanizer-fr` du dépôt (les motifs gardent ses identifiants). Le texte proposé
+suit la voix du TP1 de PHP : une situation plutôt qu'une description, le pourquoi avant
+le comment, des phrases courtes et variées. Registre courant, vouvoiement, voix
+d'enseignant ; ni argot, ni abréviations, ni « je » dans une consigne.
 
-- registre courant, vouvoiement, voix d'enseignant ; ne demandez pas le registre à
-  l'utilisateur, il est fixé ;
-- dans la partie 4 du skill, désactivez seulement l'argot, les abréviations, le
-  « je » dans les consignes et l'ignorance feinte ; le reste s'applique ;
-- patterns 36 (absence de trous) et 28 (Markdown résiduel) désactivés : un support
-  de cours répond aux questions qu'il pose, et le Markdown y est le format natif ;
-- patterns 16, 17 et 34 (gras, listes à en-têtes, sur-sectionnement) : seul l'abus
-  compte, le gras d'un terme défini ou une liste de fichiers à créer restent
-  légitimes.
+Relisez l'« Après » contre ces motifs :
 
-Sans le skill, la coche « style » devient « style non vérifié », et dites-le à
-l'utilisateur.
+- négation de cadrage (F9) : « rien n'est encore enregistré », « aucun fichier ne lit
+  `$_GET` ». Dites ce qu'on fait ; une négation reste si son absence fait perdre du temps
+  à un étudiant ;
+- incises en cascade (F10) : coupez la phrase ;
+- renvoi administratif (F11) : « le TP3 », « comme la dernière fois », plutôt que « le TP
+  sur les tableaux associatifs et les objets » ;
+- annonce de la suite (F12), écho de fin (F7) : à retirer ;
+- formules creuses (F17) : permet de, afin de, il est important de, veillez à,
+  n'hésitez pas, assurez-vous que ;
+- vocabulaire IA (P7) : crucial, essentiel, robuste, notamment, au sein de, mettre en
+  place ;
+- tirets cadratins dans la prose (P13) : zéro ;
+- encadré « Attention » pour un rappel banal (F4), tableau là où deux phrases suffisent
+  (F2), liste à éléments tous de même forme (F5).
+
+Ce qui ne bouge jamais : noms de fichiers, de fonctions et de champs, code, règles et
+messages verbatim, tableaux d'essais. L'« Après » n'est pas plus long que l'« Avant ».
+Le score chiffré de la méthode se calcule dans le dépôt, pas ici : la coche « style »
+dit seulement que la passe est faite.

@@ -43,7 +43,7 @@ suivant (le rédacteur suivant reçoit l'export des supports validés). Un suppo
 du plan est sauté. Pour chaque support, les tâches sont :
 
 1. Rédaction (agent rédacteur)
-2. Contrôle du rendu, validation, export, couverture
+2. Contrôle du rendu, validation, export, couverture, score anti-IA
 3. Relecture, cycle 1
 4. Arbitrage, correction par le rédacteur
 5. Relecture des blocs modifiés, cycle 2 (si besoin) ; désaccords restants
@@ -84,7 +84,10 @@ d'autre :
 - verdicts actifs du format, plus `global` et le module, **recopiés verbatim** de la
   fiche (`SKILL.md` § 6, « Copie, jamais reformulation ») ;
 - exemplaire du format (id), ou « aucun exemplaire » ;
-- TP : la règle « jamais d'indice ni de solution » (`SKILL.md` § 6).
+- TP : la règle « jamais d'indice ni de solution » (`SKILL.md` § 6) ;
+- les § 1 à 3 de `docs/humanizer/humanizer-fr.md` (voix cible, ce qui ne bouge pas,
+  catalogue des motifs), recopiés tels quels : la garde du rédacteur ne lui laisse pas
+  lire le fichier.
 
 Le rédacteur du cours ne reçoit jamais le dépôt de référence ni l'état du fil rouge.
 
@@ -96,6 +99,17 @@ Le rédacteur du cours ne reçoit jamais le dépôt de référence ni l'état du
   par `N` (ids `n1`…), une slide par `S`, une section par `E` et `B`.
 - Relancez vous-même `valider`, puis `exporter` et `couverture`. `exporter` doit dire
   « <n> marqueurs pour <n> blocs ».
+- **Score anti-IA** (obligatoire, la garde du rédacteur ne lui permet pas de le lancer) :
+  avec le M que rend le rédacteur (rubrique « Score anti-IA », occurrences comprises),
+  ```bash
+  bun docs/humanizer/score.mjs docs/plans/<m>/brouillons/<s>/<support>.json <M> --negations
+  ```
+  Vérifiez que M tient : un motif évident qui manque à sa liste compte. **Seuil : 25**
+  (TP1 de PHP = 13, TP réécrits autour de 17 à 21). Au-dessus, relancez le rédacteur en
+  mode « passe anti-IA » avec la sortie du script, puis `valider`, `exporter` et
+  rescorez ; au plus deux passes de plus, hors cycle. Toujours au-dessus : dites-le à
+  l'utilisateur avec les motifs qui pèsent, avant la relecture. Le total complète le
+  rapport du rédacteur et va dans le fichier de section (`suivi.md`).
 - **Écarts au plan** : chacun est lu. Un écart qui change un exemple, un message, un
   contrat, une durée ou une notion est présenté à l'utilisateur (une question par
   écart, avec votre recommandation) ; accepté, il amende le plan (§ 7). Un écart de
@@ -122,7 +136,8 @@ Lancez en parallèle, dans un même message, les agents applicables :
 que l'export n'est pas collé : vous donnez son **chemin absolu** (`<support>.md`), qu'ils
 lisent avec `Read`, avec le chemin du plan et le mode (« brouillon, première passe » ou
 « brouillon, cycle 2 : ids <liste> »). Cohérence et contrat comparent aussi le support
-au plan. Cohérence, pour les slides et le TP : chemin de l'export du cours validé.
+au plan. Style : les § 1 à 4 de la méthode anti-IA et la sortie de `score.mjs` sur le
+brouillon (`SKILL.md` § 6). Cohérence, pour les slides et le TP : chemin de l'export du cours validé.
 Contrat : budget avec son calcul et durées du plan.
 
 **Étudiants** : bac à sable comme en relecture (`SKILL.md` § 5, `bac-a-sable.md`), mais
@@ -173,7 +188,8 @@ les saisissez jamais.
 4. **Correction** : relancez le rédacteur en mode `correction`, cycle 1, avec les seules
    remarques **retenues** : `id`, problème, proposition arbitrée (déjà reformulée selon
    la règle 3, sans indice). Contrôlez son rendu (§ 3) : remarques appliquées, liste des
-   ids modifiés, ajoutés, supprimés ; `valider`, `exporter`, `couverture`.
+   ids modifiés, ajoutés, supprimés ; `valider`, `exporter`, `couverture`, score
+   anti-IA (§ 3, même seuil).
 
 **Limite des boucles** (spec § 6) : deux cycles « relecture → correction » par support.
 

@@ -347,7 +347,10 @@ Aucun étudiant sur les slides. Chaque prompt d'agent contient, et seulement cel
   le TP). Pour le contrat, en plus : le budget TP avec son calcul, et les durées du
   plan s'il existe (sinon « pas de plan : durées non disponibles »). Pour un TP, à tous :
   la règle « jamais d'indice ni de solution dans un TP, elle prime sur la phrase sur
-  l'indice replié du verdict `6ac67a63137711fbe6236783` » ;
+  l'indice replié du verdict `6ac67a63137711fbe6236783` ». Pour le style, en plus : les
+  § 1 à 4 de `docs/humanizer/humanizer-fr.md` recopiés tels quels, et la sortie de
+  `bun docs/humanizer/score.mjs <export ou brouillon> --negations` sur le support relu
+  (en relecture d'un support en prod : l'export enregistré dans le scratchpad) ;
 - **étudiants** : chemin du support relu dans `/work/supports/` (mode lecture :
   `cours.md` ; mode exécution et rapide : `tp.md` et `cours.md`), rubrique « Notions
   réellement enseignées » de la fiche **verbatim** (à défaut : curriculum des sections
