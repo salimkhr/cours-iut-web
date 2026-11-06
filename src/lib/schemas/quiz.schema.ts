@@ -42,7 +42,8 @@ export const quizQuestionSchema = z.object({
     position: z.number().int().min(0).default(0),
     blocks: quizBlocksSchema,
     options: z.array(quizOptionSchema).min(2, "Au moins deux propositions"),
-    weight: z.number().positive("Le poids doit être strictement positif").default(1),
+    // Poids 0 : question d'échauffement, jouée mais hors barème.
+    weight: z.number().nonnegative("Le poids ne peut pas être négatif").default(1),
     durationSeconds: z.number().int().min(5, "Minimum 5 secondes").max(300, "Maximum 300 secondes").default(30),
 }).superRefine((question, ctx) => {
     const correct = question.options.filter((o) => o.correct).length;

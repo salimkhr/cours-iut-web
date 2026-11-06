@@ -37,8 +37,8 @@ describe("quizQuestionSchema", () => {
         expect(quizQuestionSchema.safeParse(dup).success).toBe(false);
     });
 
-    test("refuse poids nul ou négatif", () => {
-        expect(quizQuestionSchema.safeParse({...base(), weight: 0}).success).toBe(false);
+    test("accepte un poids nul, refuse un poids négatif", () => {
+        expect(quizQuestionSchema.safeParse({...base(), weight: 0}).success).toBe(true);
         expect(quizQuestionSchema.safeParse({...base(), weight: -1}).success).toBe(false);
     });
 

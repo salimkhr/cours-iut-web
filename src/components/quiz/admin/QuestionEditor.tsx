@@ -120,7 +120,7 @@ export default function QuestionEditor({initial, onSave, onCancel}: Props) {
                 <div className="flex flex-col gap-2">
                     <Label htmlFor={`${errorId}-weight`}>Poids</Label>
                     <Input
-                        id={`${errorId}-weight`} type="number" min={0.5} step={0.5}
+                        id={`${errorId}-weight`} type="number" min={0} step={0.5}
                         value={draft.weight}
                         onChange={(event) => setDraft((d) => ({...d, weight: Number(event.target.value)}))}
                     />

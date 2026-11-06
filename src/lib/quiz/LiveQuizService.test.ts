@@ -213,6 +213,34 @@ describe("déroulé complet", () => {
         expect(await results.listGroups("m1")).toEqual(["G1", "G2"]);
     });
 
+    test("une question de poids 0 est jouée mais absente du relevé", async () => {
+        await quizzes.create("m1", {negativeMarking: false});
+        await quizzes.addQuestion("m1", {
+            blocks: blocks(), weight: 0, durationSeconds: 5,
+            options: [{text: "drôle", correct: true}, {text: "triste", correct: false}],
+        });
+        const quiz = await quizzes.addQuestion("m1", {
+            blocks: blocks(), durationSeconds: 5,
+            options: [{text: "oui", correct: true}, {text: "non", correct: false}],
+        });
+        const [warmup, real] = quiz.questions;
+        const good = (q: typeof warmup) => q.options.filter((o) => o.correct).map((o) => o.id);
+        const s = await create();
+        await live.join(s.id, ana);
+        await live.start(s.id);
+
+        expect((await live.submitAnswer(s.id, "u1", good(warmup))).scoreObtained).toBe(0);
+        await live.closeCurrentQuestion(s.id);
+        await live.next(s.id);
+        await live.next(s.id);
+        await live.submitAnswer(s.id, "u1", good(real));
+        await live.closeCurrentQuestion(s.id);
+
+        const [row] = await new QuizResultsRepository(client.db("test-live-quiz")).list({moduleId: "m1"});
+        expect([row.score, row.scoreMax, row.percent]).toEqual([1, 1, 100]);
+        expect(row.answers.map((a) => [a.questionId, a.questionNumber])).toEqual([[real.id, 1]]);
+    });
+
     test("diffuse un état par audience à chaque transition", async () => {
         await seedQuiz();
         const s = await create();

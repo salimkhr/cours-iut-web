@@ -27,7 +27,7 @@ const questionShape = {
         text: z.string().describe("Texte court de la proposition"),
         correct: z.boolean(),
     })).describe("≥ 2 propositions, ≥ 1 correcte et ≥ 1 incorrecte"),
-    weight: z.number().positive().optional().describe("Poids de la question (défaut 1)"),
+    weight: z.number().nonnegative().optional().describe("Poids de la question (défaut 1, 0 = hors barème)"),
     durationSeconds: z.number().int().min(5).max(300).optional().describe("Durée en secondes (défaut 30, de 5 à 300)"),
 };
 

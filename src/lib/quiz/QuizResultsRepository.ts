@@ -108,7 +108,9 @@ export class QuizResultsRepository {
                 const session: QuizSession = {id: doc._id, ...doc};
                 const mine = answersByKey.get(`${p.sessionId}:${p.userId}`) ?? [];
                 const max = totalPossible(session);
-                const details = session.quiz.questions.flatMap((question, index): ResultAnswerDetail[] => {
+                // Une question de poids 0 (échauffement) est jouée mais absente du relevé.
+                const scored = session.quiz.questions.filter((question) => question.weight > 0);
+                const details = scored.flatMap((question, index): ResultAnswerDetail[] => {
                     const answer = mine.find((a) => a.questionId === question.id);
                     if (!answer) return [];
                     const text = (id: string) => question.options.find((o) => o.id === id)?.text ?? id;
