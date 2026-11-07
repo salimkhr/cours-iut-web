@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import {usePathname} from "next/navigation";
-import {FileSpreadsheet, GraduationCap, Newspaper, Users, Wrench} from "lucide-react";
+import {Coins, FileSpreadsheet, GraduationCap, Newspaper, Users, Wrench} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {ADMIN_NAV_GROUPS, type AdminNavIconId, type AdminNavItem} from "@/components/admin/adminDashboardConfig";
 
@@ -12,6 +12,7 @@ const NAV_ICONS: Record<AdminNavIconId, typeof Users> = {
     calibrage: GraduationCap,
     vacations: FileSpreadsheet,
     veille: Newspaper,
+    rag: Coins,
 };
 
 export default function AdminSidebar() {
