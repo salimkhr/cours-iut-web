@@ -9,7 +9,7 @@ export const RAG_USAGE_COLLECTION = "rag_usage";
 /** Prix public de mistral-embed relevé en novembre 2026 : 0,10 $ le million de tokens. */
 const PRICE_PER_MILLION_USD = 0.1;
 
-export type RagStep = "index" | "search";
+export type RagStep = "index" | "sync" | "search";
 
 export interface RagUsageEntry {
     createdAt: Date;

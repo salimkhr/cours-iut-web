@@ -4,6 +4,7 @@ import {connectToDB} from "@/lib/mongodb";
 import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
 import RagUsagePanel from "@/components/admin/RagUsagePanel";
 import {listUsage, summarizeUsage} from "@/lib/rag/usage";
+import {DEFAULT_COLLECTION, getLastSync} from "@/lib/rag/runSync";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 
 export const metadata = generatePageMetadata({
@@ -17,18 +18,20 @@ export default async function AdminRagPage() {
         notFound();
     }
 
-    const entries = await listUsage(await connectToDB(), 200);
+    const db = await connectToDB();
+    const [entries, lastSyncAt] = await Promise.all([listUsage(db, 200), getLastSync(db, DEFAULT_COLLECTION)]);
 
     return (
         <>
             <AdminPageHeader
                 eyebrow="Administration"
                 title="Appels RAG"
-                description="Chaque appel à l'API d'embedding de Mistral : indexation des cours et recherches. Les 200 plus récents, totaux calculés sur cette liste."
+                description="Mise à jour de l'index et chaque appel à l'API d'embedding de Mistral : indexation, synchros et recherches. Les 200 plus récents, totaux calculés sur cette liste."
             />
             <RagUsagePanel
                 entries={entries.map((entry) => ({...entry, createdAt: entry.createdAt.toISOString()}))}
                 summary={summarizeUsage(entries)}
+                lastSyncAt={lastSyncAt?.toISOString() ?? null}
             />
         </>
     );

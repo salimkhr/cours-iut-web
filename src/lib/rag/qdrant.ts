@@ -43,6 +43,36 @@ export async function recreateCollection(config: QdrantConfig, name: string, siz
     await call(config, "PUT", `/collections/${name}`, { vectors: { size, distance: "Cosine" } });
 }
 
+/** Crée la collection si elle n'existe pas encore, sans toucher à son contenu sinon. */
+export async function ensureCollection(config: QdrantConfig, name: string, size: number): Promise<void> {
+    const { exists } = await call<{ exists: boolean }>(config, "GET", `/collections/${name}/exists`);
+    if (!exists) await call(config, "PUT", `/collections/${name}`, { vectors: { size, distance: "Cosine" } });
+}
+
+/** Tous les points de la collection (sans leurs vecteurs), avec les champs de payload demandés. */
+export async function scrollPoints(
+    config: QdrantConfig,
+    name: string,
+    fields: string[]
+): Promise<{ id: string; payload: Record<string, unknown> }[]> {
+    const points: { id: string; payload: Record<string, unknown> }[] = [];
+    let offset: string | null | undefined;
+    do {
+        const page = await call<{ points: { id: string; payload: Record<string, unknown> }[]; next_page_offset: string | null }>(
+            config, "POST", `/collections/${name}/points/scroll`,
+            { limit: 256, with_payload: fields, with_vector: false, ...(offset ? { offset } : {}) }
+        );
+        points.push(...page.points);
+        offset = page.next_page_offset;
+    } while (offset);
+    return points;
+}
+
+export async function deletePoints(config: QdrantConfig, name: string, ids: string[]): Promise<void> {
+    if (ids.length === 0) return;
+    await call(config, "POST", `/collections/${name}/points/delete?wait=true`, { points: ids });
+}
+
 export async function upsertPoints(config: QdrantConfig, name: string, points: QdrantPoint[]): Promise<void> {
     await call(config, "PUT", `/collections/${name}/points?wait=true`, { points });
 }
