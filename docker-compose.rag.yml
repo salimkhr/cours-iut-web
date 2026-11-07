@@ -1,0 +1,13 @@
+# RAG — services locaux de développement (pas de déploiement Dokploy).
+# docker compose -f docker-compose.rag.yml up -d
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.20.0
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6333:6333" # API REST + dashboard (/dashboard)
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+volumes:
+  qdrant_data:
