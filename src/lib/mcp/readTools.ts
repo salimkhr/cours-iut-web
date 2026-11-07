@@ -98,7 +98,7 @@ function redactModule(mod: ModuleDoc, isAdmin: boolean): ModuleDoc {
 }
 
 /** Couples module → sections lisibles par un non-admin (allowlist de recherche). */
-async function readableSectionMap(db: Db): Promise<Map<string, Set<string>>> {
+export async function readableSectionMap(db: Db): Promise<Map<string, Set<string>>> {
     const modules = await db.collection<ModuleDoc>("modules")
         .find({isVisible: {$ne: false}}, {projection: {_id: 0, path: 1, "sections.path": 1, "sections.isAvailable": 1}})
         .toArray();

@@ -49,6 +49,16 @@ describe("client Qdrant", () => {
         expect(hits).toEqual(found);
     });
 
+    test("traduit le filtre en conditions Qdrant sur le payload", async () => {
+        const calls: Call[] = [];
+        await searchPoints(qdrant(calls, {points: []}), "cours", [1], 5, {moduleSlug: "php", moduleVisible: true});
+
+        expect(calls[0].body).toEqual({
+            query: [1], limit: 5, with_payload: true,
+            filter: {must: [{key: "moduleSlug", match: {value: "php"}}, {key: "moduleVisible", match: {value: true}}]},
+        });
+    });
+
     test("crée la collection seulement si elle n'existe pas", async () => {
         const absent: Call[] = [];
         await ensureCollection(qdrant(absent, {exists: false}), "cours", 1024);

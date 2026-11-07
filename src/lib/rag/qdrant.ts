@@ -77,11 +77,22 @@ export async function upsertPoints(config: QdrantConfig, name: string, points: Q
     await call(config, "PUT", `/collections/${name}/points?wait=true`, { points });
 }
 
-export async function searchPoints(config: QdrantConfig, name: string, vector: number[], limit: number): Promise<QdrantHit[]> {
+/** Égalités exactes sur le payload, toutes requises (ex. `{ moduleSlug: "php", moduleVisible: true }`). */
+export type PayloadFilter = Record<string, string | boolean>;
+
+export async function searchPoints(
+    config: QdrantConfig,
+    name: string,
+    vector: number[],
+    limit: number,
+    filter?: PayloadFilter
+): Promise<QdrantHit[]> {
+    const must = Object.entries(filter ?? {}).map(([key, value]) => ({ key, match: { value } }));
     const result = await call<{ points: QdrantHit[] }>(config, "POST", `/collections/${name}/points/query`, {
         query: vector,
         limit,
         with_payload: true,
+        ...(must.length > 0 ? { filter: { must } } : {}),
     });
     return result.points;
 }
