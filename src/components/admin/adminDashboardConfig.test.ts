@@ -27,6 +27,7 @@ describe("adminDashboardConfig", () => {
             "export-import",
             "slide-repair",
             "indexes",
+            "rag-index",
         ]);
         expect(labels.some((label) => label.includes("synchron"))).toBe(false);
     });

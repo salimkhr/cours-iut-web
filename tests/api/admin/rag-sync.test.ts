@@ -33,7 +33,7 @@ afterAll(async () => {
 
 beforeEach(() => { session = null; });
 
-const req = () => new Request("http://localhost/api/admin/rag/sync", { method: "POST" });
+const req = (body?: string) => new Request("http://localhost/api/admin/rag/sync", { method: "POST", body });
 
 describe("POST /api/admin/rag/sync", () => {
     test("refuse un non-admin", async () => {
@@ -51,5 +51,21 @@ describe("POST /api/admin/rag/sync", () => {
 
         expect(res.status).toBe(500);
         expect(await res.json()).toEqual({ error: "MISTRAL_API_KEY manquante" });
+    });
+
+    test("accepte une demande de réindexation complète", async () => {
+        session = { user: { id: "u1", role: "admin" } };
+
+        const res = await POST(req(JSON.stringify({ full: true })), undefined);
+
+        // Sans clé, la synchro échoue après validation : le corps a bien été accepté.
+        expect(res.status).toBe(500);
+    });
+
+    test("refuse un corps invalide", async () => {
+        session = { user: { id: "u1", role: "admin" } };
+
+        expect((await POST(req(JSON.stringify({ full: "oui" })), undefined)).status).toBe(400);
+        expect((await POST(req("pas du json"), undefined)).status).toBe(400);
     });
 });

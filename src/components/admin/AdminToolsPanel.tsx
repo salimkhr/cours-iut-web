@@ -1,7 +1,7 @@
 "use client";
 
 import {useState} from "react";
-import {ArrowRight, Database, ListChecks, Loader2, UploadCloud, Wrench} from "lucide-react";
+import {ArrowRight, Database, ListChecks, Loader2, ScanSearch, UploadCloud, Wrench} from "lucide-react";
 import {toast} from "sonner";
 import {Button} from "@/components/ui/button";
 import MigrateSheet from "@/components/admin/MigrateSheet";
@@ -16,7 +16,11 @@ const TOOL_ICONS = {
     "export-import": UploadCloud,
     "slide-repair": Wrench,
     indexes: ListChecks,
+    "rag-index": ScanSearch,
 } as const;
+
+/** Actions lancées directement (sans panneau) : le résultat s'affiche dans une notification. */
+const INSTANT_ACTIONS = new Set<string>(["indexes", "rag-index"]);
 
 export type {ModuleOption} from "@/components/admin/adminTypes";
 
@@ -28,20 +32,36 @@ export default function AdminToolsPanel({modules}: AdminToolsPanelProps) {
     const [migrationOpen, setMigrationOpen] = useState(false);
     const [exportImportOpen, setExportImportOpen] = useState(false);
     const [slideRepairOpen, setSlideRepairOpen] = useState(false);
-    const [indexesBusy, setIndexesBusy] = useState(false);
+    const [busy, setBusy] = useState<string | null>(null);
 
-    /** Pas de panneau : l'action est instantanée, le résultat s'affiche dans une notification. */
     async function runIndexes() {
-        setIndexesBusy(true);
+        const res = await fetch("/api/admin/indexes", {method: "POST"});
+        const data = (await res.json().catch(() => ({}))) as {indexes?: string[]; error?: string};
+        if (!res.ok) throw new Error(data.error ?? "Création des index impossible");
+        toast.success(`${data.indexes?.length ?? 0} index en place.`, {description: data.indexes?.join(", ")});
+    }
+
+    async function runRagIndex() {
+        const res = await fetch("/api/admin/rag/sync", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({full: true}),
+        });
+        const data = (await res.json().catch(() => ({}))) as {contentsChecked?: number; chunksEmbedded?: number; error?: string};
+        if (!res.ok) throw new Error(data.error ?? "Indexation RAG impossible");
+        toast.success(`Index RAG reconstruit : ${data.chunksEmbedded ?? 0} morceaux.`, {
+            description: `${data.contentsChecked ?? 0} cours et TP vectorisés.`,
+        });
+    }
+
+    async function runInstant(id: string) {
+        setBusy(id);
         try {
-            const res = await fetch("/api/admin/indexes", {method: "POST"});
-            const data = (await res.json().catch(() => ({}))) as {indexes?: string[]; error?: string};
-            if (!res.ok) throw new Error(data.error ?? "Création des index impossible");
-            toast.success(`${data.indexes?.length ?? 0} index en place.`, {description: data.indexes?.join(", ")});
+            await (id === "indexes" ? runIndexes() : runRagIndex());
         } catch (e) {
-            toast.error(e instanceof Error ? e.message : "Création des index impossible");
+            toast.error(e instanceof Error ? e.message : "Action impossible");
         } finally {
-            setIndexesBusy(false);
+            setBusy(null);
         }
     }
 
@@ -50,6 +70,8 @@ export default function AdminToolsPanel({modules}: AdminToolsPanelProps) {
             <div className="grid gap-4 md:grid-cols-2">
                 {ADMIN_TOOL_ACTIONS.map((action) => {
                     const Icon = TOOL_ICONS[action.id];
+                    const instant = INSTANT_ACTIONS.has(action.id);
+                    const running = busy === action.id;
                     return (
                         <article
                             key={action.id}
@@ -71,16 +93,16 @@ export default function AdminToolsPanel({modules}: AdminToolsPanelProps) {
                                 type="button"
                                 variant="outline"
                                 className="min-h-11 gap-2 border-bridge-500/45"
-                                disabled={action.id === "indexes" && indexesBusy}
+                                disabled={busy !== null && instant}
                                 onClick={() => {
                                     if (action.id === "migration") setMigrationOpen(true);
                                     else if (action.id === "export-import") setExportImportOpen(true);
-                                    else if (action.id === "indexes") void runIndexes();
+                                    else if (instant) void runInstant(action.id);
                                     else setSlideRepairOpen(true);
                                 }}
                             >
-                                {action.id === "indexes" ? (indexesBusy ? "En cours…" : "Lancer") : "Ouvrir"}
-                                {action.id === "indexes" && indexesBusy
+                                {instant ? (running ? "En cours…" : "Lancer") : "Ouvrir"}
+                                {running
                                     ? <Loader2 className="size-4 animate-spin" aria-hidden="true"/>
                                     : <ArrowRight className="size-4" aria-hidden="true"/>}
                             </Button>

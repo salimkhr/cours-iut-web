@@ -1,5 +1,5 @@
 export type AdminNavIconId = "users" | "tools" | "calibrage" | "vacations" | "veille" | "rag";
-export type AdminToolActionId = "migration" | "export-import" | "slide-repair" | "indexes";
+export type AdminToolActionId = "migration" | "export-import" | "slide-repair" | "indexes" | "rag-index";
 
 export interface AdminNavItem {
     href: string;
@@ -54,5 +54,10 @@ export const ADMIN_TOOL_ACTIONS = [
         id: "indexes",
         title: "Index MongoDB",
         description: "Crée les index manquants de la base de cet environnement (modules, contenus, signatures, veille). Sans risque : ne touche pas aux données.",
+    },
+    {
+        id: "rag-index",
+        title: "Index RAG",
+        description: "Vide l'index sémantique puis revectorise tous les cours et TP (environ 30 s et 0,03 $). À lancer à l'installation ou après un changement de découpage ; ensuite, la synchro de la page RAG suffit.",
     },
 ] as const satisfies readonly AdminToolAction[];
