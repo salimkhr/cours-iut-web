@@ -5,11 +5,11 @@
 import type { Db } from "mongodb";
 import { DEFAULT_MAX_WORDS } from "@/lib/rag/chunk";
 import { createMistralClient, embedTexts, EMBED_DIMENSIONS, EMBED_MODEL } from "@/lib/rag/embed";
-import { deletePoints, ensureCollection, recreateCollection, scrollPoints, upsertPoints, type QdrantConfig } from "@/lib/rag/qdrant";
+import { qdrantFromEnv, ragCollection } from "@/lib/rag/config";
+import { deletePoints, ensureCollection, recreateCollection, scrollPoints, upsertPoints } from "@/lib/rag/qdrant";
 import { SYNC_PAYLOAD_FIELDS, syncContents, type IndexableContent, type SyncReport } from "@/lib/rag/sync";
 import { logUsage } from "@/lib/rag/usage";
 
-export const DEFAULT_COLLECTION = "cours_mistral";
 const CONTENT_TYPES = ["cours", "TP"];
 const SYNC_STATE_COLLECTION = "rag_sync";
 
@@ -59,14 +59,15 @@ export async function saveLastSync(db: Db, collection: string, date: Date): Prom
 export interface RunSyncOptions {
     /** Repart d'une collection vide et revectorise tout. */
     full?: boolean;
+    /** Par défaut, la collection de l'environnement (RAG_COLLECTION). */
     collection?: string;
     maxWords?: number;
 }
 
-export async function runSync(db: Db, { full = false, collection = DEFAULT_COLLECTION, maxWords = DEFAULT_MAX_WORDS }: RunSyncOptions = {}): Promise<SyncReport & { durationMs: number }> {
+export async function runSync(db: Db, { full = false, collection = ragCollection(), maxWords = DEFAULT_MAX_WORDS }: RunSyncOptions = {}): Promise<SyncReport & { durationMs: number }> {
     const apiKey = process.env.MISTRAL_API_KEY;
     if (!apiKey) throw new Error("MISTRAL_API_KEY manquante");
-    const qdrant: QdrantConfig = { url: process.env.QDRANT_URL ?? "http://localhost:6333" };
+    const qdrant = qdrantFromEnv();
     const client = createMistralClient(apiKey);
 
     // Pris avant la lecture : une modification faite pendant la synchro sera vue la fois suivante.

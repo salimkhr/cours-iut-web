@@ -5,7 +5,8 @@
 
 import { connectToDB } from "@/lib/mongodb";
 import { DEFAULT_MAX_WORDS } from "@/lib/rag/chunk";
-import { DEFAULT_COLLECTION, runSync } from "@/lib/rag/runSync";
+import { ragCollection } from "@/lib/rag/config";
+import { runSync } from "@/lib/rag/runSync";
 import { costUsd } from "@/lib/rag/usage";
 
 function option(name: string, fallback: string): string {
@@ -14,7 +15,7 @@ function option(name: string, fallback: string): string {
 }
 
 async function main() {
-    const collection = option("collection", DEFAULT_COLLECTION);
+    const collection = option("collection", ragCollection());
     const maxWords = Number(option("max-words", String(DEFAULT_MAX_WORDS)));
     const report = await runSync(await connectToDB(), { full: true, collection, maxWords });
 

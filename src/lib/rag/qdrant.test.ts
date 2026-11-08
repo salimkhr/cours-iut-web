@@ -49,6 +49,20 @@ describe("client Qdrant", () => {
         expect(hits).toEqual(found);
     });
 
+    test("envoie la clé API quand elle est configurée", async () => {
+        const headers: Record<string, string>[] = [];
+        const fetchImpl = (async (_url: string, init: RequestInit) => {
+            headers.push(init.headers as Record<string, string>);
+            return Response.json({result: true});
+        }) as unknown as typeof fetch;
+
+        await upsertPoints({url: "http://q", apiKey: "cle", fetchImpl}, "cours", []);
+        await upsertPoints({url: "http://q", fetchImpl}, "cours", []);
+
+        expect(headers[0]["api-key"]).toBe("cle");
+        expect(headers[1]["api-key"]).toBeUndefined();
+    });
+
     test("traduit le filtre en conditions Qdrant sur le payload", async () => {
         const calls: Call[] = [];
         await searchPoints(qdrant(calls, {points: []}), "cours", [1], 5, {moduleSlug: "php", moduleVisible: true});

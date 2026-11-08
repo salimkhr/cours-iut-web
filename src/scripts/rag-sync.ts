@@ -3,12 +3,13 @@
 // bun run rag:sync [--collection=cours_mistral]
 
 import { connectToDB } from "@/lib/mongodb";
-import { DEFAULT_COLLECTION, runSync } from "@/lib/rag/runSync";
+import { ragCollection } from "@/lib/rag/config";
+import { runSync } from "@/lib/rag/runSync";
 import { costUsd } from "@/lib/rag/usage";
 
 async function main() {
     const arg = process.argv.find(a => a.startsWith("--collection="));
-    const collection = arg ? arg.slice("--collection=".length) : DEFAULT_COLLECTION;
+    const collection = arg ? arg.slice("--collection=".length) : ragCollection();
     const report = await runSync(await connectToDB(), { collection });
 
     console.log(`Synchro de « ${collection} » :`);

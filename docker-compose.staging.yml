@@ -5,8 +5,9 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - CLAMAV_HOST=clamav
+      - CLAMAV_HOST=clamav-staging
       - CLAMAV_PORT=3310
+      - QDRANT_URL=http://qdrant-staging:6333
     env_file:
       - .env
     restart: unless-stopped

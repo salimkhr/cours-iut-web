@@ -3,8 +3,8 @@ import type {Db} from "mongodb";
 import {z} from "zod";
 import {readableSectionMap} from "@/lib/mcp/readTools";
 import {createMistralClient, embedTexts, EMBED_MODEL} from "@/lib/rag/embed";
+import {qdrantFromEnv, ragCollection} from "@/lib/rag/config";
 import {searchPoints, type PayloadFilter, type QdrantHit} from "@/lib/rag/qdrant";
-import {DEFAULT_COLLECTION} from "@/lib/rag/runSync";
 import {logUsage} from "@/lib/rag/usage";
 
 // Outil MCP de recherche sémantique dans l'index RAG (Qdrant). Mêmes règles d'accès que
@@ -19,8 +19,7 @@ export const searchIndex: SemanticSearch = async (query, limit, filter) => {
     const apiKey = process.env.MISTRAL_API_KEY;
     if (!apiKey) throw new Error("MISTRAL_API_KEY manquante");
     const {vectors, tokens} = await embedTexts([query], {client: createMistralClient(apiKey)});
-    const qdrant = {url: process.env.QDRANT_URL ?? "http://localhost:6333"};
-    const hits = await searchPoints(qdrant, process.env.RAG_COLLECTION ?? DEFAULT_COLLECTION, vectors[0], limit, filter);
+    const hits = await searchPoints(qdrantFromEnv(), ragCollection(), vectors[0], limit, filter);
     return {hits, tokens};
 };
 
@@ -66,7 +65,7 @@ export function registerRagTools(
             }
             await logUsage(db, {
                 step: "search", model: EMBED_MODEL, inputs: 1, tokens: found.tokens,
-                durationMs: Date.now() - started, collection: process.env.RAG_COLLECTION ?? DEFAULT_COLLECTION, query,
+                durationMs: Date.now() - started, collection: ragCollection(), query,
             });
 
             const allowed = isAdmin ? null : await readableSectionMap(db);

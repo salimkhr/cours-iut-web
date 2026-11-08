@@ -4,7 +4,8 @@ import {connectToDB} from "@/lib/mongodb";
 import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
 import RagUsagePanel from "@/components/admin/RagUsagePanel";
 import {listUsage, summarizeUsage} from "@/lib/rag/usage";
-import {DEFAULT_COLLECTION, getLastSync} from "@/lib/rag/runSync";
+import {getLastSync} from "@/lib/rag/runSync";
+import {ragCollection} from "@/lib/rag/config";
 import {generatePageMetadata} from "@/lib/generatePageMetadata";
 
 export const metadata = generatePageMetadata({
@@ -19,7 +20,7 @@ export default async function AdminRagPage() {
     }
 
     const db = await connectToDB();
-    const [entries, lastSyncAt] = await Promise.all([listUsage(db, 200), getLastSync(db, DEFAULT_COLLECTION)]);
+    const [entries, lastSyncAt] = await Promise.all([listUsage(db, 200), getLastSync(db, ragCollection())]);
 
     return (
         <>

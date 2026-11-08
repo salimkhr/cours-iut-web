@@ -6,6 +6,8 @@ import { createHash } from "node:crypto";
 
 export interface QdrantConfig {
     url: string;
+    /** Clé exigée par Qdrant (QDRANT__SERVICE__API_KEY côté serveur), envoyée en en-tête `api-key`. */
+    apiKey?: string;
     fetchImpl?: typeof fetch;
 }
 
@@ -27,10 +29,10 @@ export function pointId(key: string): string {
     return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
 }
 
-async function call<T>({ url, fetchImpl = fetch }: QdrantConfig, method: string, path: string, body?: unknown): Promise<T> {
+async function call<T>({ url, apiKey, fetchImpl = fetch }: QdrantConfig, method: string, path: string, body?: unknown): Promise<T> {
     const res = await fetchImpl(`${url}${path}`, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(apiKey ? { "api-key": apiKey } : {}) },
         body: body === undefined ? undefined : JSON.stringify(body),
     });
     if (!res.ok) throw new Error(`Qdrant ${res.status} : ${await res.text()}`);

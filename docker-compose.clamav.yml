@@ -1,3 +1,7 @@
+# ClamAV pour Dokploy : une instance par environnement, dans le projet de l'app. Les instances
+# partagent dokploy-network : chacune y prend l'alias de son env, celui que vise CLAMAV_HOST
+# dans docker-compose.yml (clamav-prod) et docker-compose.staging.yml (clamav-staging).
+# Onglet Environment de ce service : CLAMAV_ALIAS.
 services:
   clamav:
     image: clamav/clamav:stable
@@ -5,7 +9,7 @@ services:
     networks:
       dokploy-network:
         aliases:
-          - clamav
+          - ${CLAMAV_ALIAS:?CLAMAV_ALIAS requis (clamav-staging ou clamav-prod)}
     volumes:
       - clamav_db:/var/lib/clamav
       - /etc/dokploy/volumes/cours-iut-web-quarantine:/quarantine
