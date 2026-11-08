@@ -72,5 +72,13 @@ export async function ensureIndexes(db: Db): Promise<string[]> {
         ),
     );
 
+    // Journal d'usage du RAG : listé du plus récent au plus ancien.
+    created.push(
+        await db.collection("rag_usage").createIndex(
+            { createdAt: -1 },
+            { name: "rag_usage_recent" },
+        ),
+    );
+
     return created;
 }

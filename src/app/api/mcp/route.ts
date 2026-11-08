@@ -10,6 +10,7 @@ import { getPublicOrigin } from "@/lib/publicOrigin";
 import { blockDefs, getBlockDef, createBlockInstance } from "@/lib/blockDefs";
 import { assertSectionAcceptsContent } from "@/lib/mcp/assertSectionAcceptsContent";
 import { registerQuizTools } from "@/lib/mcp/quizTools";
+import { registerRagTools } from "@/lib/mcp/ragTools";
 import { registerRetoucheTools } from "@/lib/mcp/retoucheTools";
 import { registerReadTools, CONTENT_TYPE, boolOrString, asBool, type ModuleDoc } from "@/lib/mcp/readTools";
 import { validateBlockTree } from "@/lib/validateBlockTree";
@@ -220,6 +221,7 @@ function buildMcpServer(user: { id: string; role: string }): McpServer {
     registerQuizTools(server, { isAdmin, getDb: connectToDB });
     registerRetoucheTools(server, { isAdmin, getDb: connectToDB });
     registerReadTools(server, { isAdmin, getDb: connectToDB });
+    registerRagTools(server, { isAdmin, getDb: connectToDB });
 
     const iconNameSchema = z.string()
         .refine((v) => isValidIcon(v), {

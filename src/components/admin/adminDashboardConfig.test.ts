@@ -15,6 +15,7 @@ describe("adminDashboardConfig", () => {
             "/admin/outils",
             "/admin/vacations",
             "/admin/veille",
+            "/admin/rag",
         ]);
     });
 
@@ -26,6 +27,7 @@ describe("adminDashboardConfig", () => {
             "export-import",
             "slide-repair",
             "indexes",
+            "rag-index",
         ]);
         expect(labels.some((label) => label.includes("synchron"))).toBe(false);
     });
