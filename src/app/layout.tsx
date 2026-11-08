@@ -1,5 +1,5 @@
 import type {Metadata} from 'next';
-import {IBM_Plex_Sans, JetBrains_Mono} from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 import NavBar from "@/components/NavBar";
 import {ThemeProvider} from "@/components/ThemeProvider";
@@ -7,15 +7,17 @@ import {Toaster} from "@/components/ui/sonner";
 import {getModulesTheme} from "@/lib/getModules";
 import {generateModuleThemeCss} from "@/lib/generateModuleThemeCss";
 
-const jetbrainsMono = JetBrains_Mono({
-    subsets: ['latin'],
-    weight: ['400', '500', '600', '700'],
+// Polices variables (sous-ensemble latin de Google Fonts) versionnées dans le dépôt : le build
+// ne dépend plus de Google Fonts, dont les réponses instables faisaient échouer la CI.
+const jetbrainsMono = localFont({
+    src: './fonts/jetbrains-mono-latin.woff2',
+    weight: '100 800',
     variable: '--font-jetbrains-mono',
 });
 
-const ibmPlexSans = IBM_Plex_Sans({
-    subsets: ['latin'],
-    weight: ['400', '500', '600', '700'],
+const ibmPlexSans = localFont({
+    src: './fonts/ibm-plex-sans-latin.woff2',
+    weight: '100 700',
     variable: '--font-ibm-plex-sans',
 });
 
