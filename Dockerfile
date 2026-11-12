@@ -49,7 +49,7 @@ RUN bunx next build --webpack && bun run postbuild
 # -----------------------------
 # Production
 # -----------------------------
-FROM node:20-alpine AS runner
+FROM node:24-alpine AS runner
 
 WORKDIR /app
 

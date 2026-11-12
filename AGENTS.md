@@ -77,9 +77,10 @@ installé mais sans configuration).
 
 ## Pièges connus
 
-- **`bson` épinglé à `7.2.0`** (dépendance + `overrides`) : dès 7.3, son chargement lit
-  `v8.startupSnapshot`, que Bun n'implémente pas, et tout `import "mongodb"` plante. Le driver
-  reste donc en `mongodb@~7.6.0`, car 7.7 exige `bson ^7.3.2`.
+- **Une seule copie de `bson`** (dépendance + `overrides`, même plage) : le code importe
+  `ObjectId` depuis `bson`, le driver aussi ; deux copies casseraient les `instanceof`.
+  L'ancien épinglage à `7.2.0` (crash sur `v8.startupSnapshot` sous Bun) est levé depuis
+  Bun 1.4.4 + `bson@7.3.4`.
 - **ESLint 10 bloqué** : `eslint-plugin-react` appelle `context.getFilename()`, supprimé.
   Restez en `eslint@^9`.
 - **TypeScript 7 bloqué** : `typescript-eslint` le refuse explicitement. Restez en `6.0.3`.
