@@ -144,7 +144,7 @@ export default function PolitiqueConfidentialitePage() {
                             6. Sécurité
                         </h2>
                         <p>
-                            Les mots de passe sont hachés (bcrypt). Les communications sont chiffrées
+                            Les mots de passe sont hachés (scrypt). Les communications sont chiffrées
                             via HTTPS. L&apos;accès aux données est contrôlé par un système de rôles.
                         </p>
                     </div>

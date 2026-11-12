@@ -90,7 +90,7 @@ Vous pouvez également introduire une réclamation auprès de la **CNIL** (Commi
 
 ## 6. Sécurité
 
-Des mesures techniques et organisationnelles appropriées sont mises en œuvre pour protéger vos données contre tout accès non autorisé, perte ou altération : chiffrement des mots de passe (hachage bcrypt), connexions HTTPS, contrôle d'accès par rôles.
+Des mesures techniques et organisationnelles appropriées sont mises en œuvre pour protéger vos données contre tout accès non autorisé, perte ou altération : hachage des mots de passe (scrypt), connexions HTTPS, contrôle d'accès par rôles.
 
 ---
 
