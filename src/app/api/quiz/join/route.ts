@@ -1,6 +1,7 @@
 import {NextResponse} from "next/server";
 import {z} from "zod";
 import {authenticate, getLiveQuiz, identityFromUser, liveErrorResponse} from "@/lib/quiz/liveQuizServer";
+import {isGenericAccount} from "@/lib/genericAccount";
 import {readJson} from "@/lib/quiz/quizApi";
 
 export const dynamic = "force-dynamic";
@@ -11,6 +12,13 @@ const bodySchema = z.object({code: z.string().trim().min(4).max(64)});
 export async function POST(req: Request) {
     const auth = await authenticate();
     if (!auth.ok) return auth.response;
+    // Le compte générique est partagé : ses résultats ne seraient rattachables à personne.
+    if (isGenericAccount(auth.user) && !auth.manager) {
+        return NextResponse.json(
+            {error: "Connectez-vous avec votre compte personnel pour participer", code: "generic_account"},
+            {status: 403},
+        );
+    }
     const parsed = bodySchema.safeParse(await readJson(req));
     if (!parsed.success) return NextResponse.json({error: "Code invalide"}, {status: 400});
 

@@ -16,8 +16,8 @@ let registry: LiveQuizRegistry;
 let quizzes: QuizService;
 let optionIds: Record<string, {good: string[]; bad: string[]}>;
 
-const ana: Identity = {userId: "u1", firstName: "Ana", lastName: "Martin", group: "G1"};
-const bob: Identity = {userId: "u2", firstName: "Bob", lastName: "Durand", group: "G2"};
+const ana: Identity = {userId: "u1", firstName: "Ana", lastName: "Martin", group: "G1", email: "ana@etu.test"};
+const bob: Identity = {userId: "u2", firstName: "Bob", lastName: "Durand", group: "G2", email: null};
 
 const blocks = () => [{id: crypto.randomUUID(), type: "text", props: {content: "Q ?"}}];
 
@@ -85,6 +85,14 @@ describe("création de session", () => {
 });
 
 describe("participation", () => {
+    test("join enregistre l'e-mail du participant", async () => {
+        await seedQuiz();
+        const s = await create();
+        await live.join(s.id, {...ana, email: "a@etu.test"});
+        const doc = await client.db("test-live-quiz").collection("quiz_participants").findOne({sessionId: s.id, userId: "u1"});
+        expect(doc?.email).toBe("a@etu.test");
+    });
+
     test("join est idempotent et refermé après le lobby pour les nouveaux", async () => {
         await seedQuiz();
         const s = await create();

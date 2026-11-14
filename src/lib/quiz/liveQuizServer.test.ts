@@ -4,11 +4,16 @@ import {InvalidTransitionError} from "@/lib/quiz/quizMachine";
 import {QuizSessionError} from "@/lib/quiz/LiveQuizService";
 
 describe("identityFromUser", () => {
+    test("recopie l'e-mail du compte, null s'il manque", () => {
+        expect(identityFromUser({id: "u", name: "Ana Lopez", email: "ana@etu.test"}).email).toBe("ana@etu.test");
+        expect(identityFromUser({id: "u", name: "Ana Lopez"}).email).toBeNull();
+    });
+
     test("sépare prénom et nom au premier espace", () => {
         expect(identityFromUser({id: "1", name: "Salim Khraimeche", group: "G1"}))
-            .toEqual({userId: "1", firstName: "Salim", lastName: "Khraimeche", group: "G1"});
+            .toEqual({userId: "1", firstName: "Salim", lastName: "Khraimeche", group: "G1", email: null});
         expect(identityFromUser({id: "2", name: "Jean  De La Fontaine"}))
-            .toEqual({userId: "2", firstName: "Jean", lastName: "De La Fontaine", group: null});
+            .toEqual({userId: "2", firstName: "Jean", lastName: "De La Fontaine", group: null, email: null});
     });
 
     test("nom absent ou mono-mot", () => {

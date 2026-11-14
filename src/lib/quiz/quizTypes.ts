@@ -59,6 +59,8 @@ export interface QuizParticipant {
     firstName: string;
     lastName: string;
     group: string | null;
+    /** Absent des participants créés avant l'export ScoDoc. */
+    email?: string | null;
     joinedAt: number;
     score: number;
     timeMs: number;

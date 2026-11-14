@@ -25,6 +25,7 @@ export interface Identity {
     firstName: string;
     lastName: string;
     group: string | null;
+    email: string | null;
 }
 
 interface SessionDoc extends Omit<QuizSession, "id"> {
@@ -173,6 +174,7 @@ export class LiveQuizService {
             firstName: identity.firstName,
             lastName: identity.lastName,
             group: identity.group,
+            email: identity.email,
             joinedAt: this.clock(),
             score: 0,
             timeMs: 0,
