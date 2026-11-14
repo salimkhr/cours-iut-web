@@ -6,6 +6,7 @@ import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {api} from "@/components/quiz/quizClient";
+import ScodocExportButton from "@/components/quiz/admin/ScodocExportButton";
 import type {ResultRow, SessionSummary} from "@/lib/quiz/QuizResultsRepository";
 
 const ALL = "__all__";
@@ -92,6 +93,7 @@ export default function QuizResultsTable({moduleId}: {moduleId: string}) {
                         </SelectContent>
                     </Select>
                 </div>
+                <ScodocExportButton sessionId={sessionId === ALL ? null : sessionId}/>
             </div>
 
             {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
