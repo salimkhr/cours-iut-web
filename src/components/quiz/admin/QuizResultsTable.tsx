@@ -6,7 +6,7 @@ import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {api} from "@/components/quiz/quizClient";
-import ScodocExportButton from "@/components/quiz/admin/ScodocExportButton";
+import ScodocExportButton, {ScodocReportView, useScodocExport} from "@/components/quiz/admin/ScodocExportButton";
 import type {ResultRow, SessionSummary} from "@/lib/quiz/QuizResultsRepository";
 
 const ALL = "__all__";
@@ -28,6 +28,8 @@ export default function QuizResultsTable({moduleId}: {moduleId: string}) {
     const [sessionId, setSessionId] = useState(ALL);
     const [data, setData] = useState<Payload | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const scodocSession = sessionId === ALL ? null : sessionId;
+    const scodoc = useScodocExport(scodocSession);
 
     useEffect(() => {
         // Anti-rebond : la recherche ne part qu'après une courte pause de frappe.
@@ -93,8 +95,11 @@ export default function QuizResultsTable({moduleId}: {moduleId: string}) {
                         </SelectContent>
                     </Select>
                 </div>
-                <ScodocExportButton sessionId={sessionId === ALL ? null : sessionId}/>
+                <ScodocExportButton sessionId={scodocSession} pending={scodoc.pending} onUpload={scodoc.upload}/>
             </div>
+
+            {scodoc.error && <p role="alert" className="text-sm text-destructive">{scodoc.error}</p>}
+            <ScodocReportView report={scodoc.report}/>
 
             {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
 
