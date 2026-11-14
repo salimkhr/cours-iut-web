@@ -1,5 +1,6 @@
 import type {Db} from "mongodb";
 import {totalPossible} from "@/lib/quiz/quizPublicState";
+import type {ScodocEntry} from "@/lib/quiz/scodocSheet";
 import type {QuizAnswer, QuizParticipant, QuizSession} from "@/lib/quiz/quizTypes";
 
 export interface ResultFilters {
@@ -142,5 +143,22 @@ export class QuizResultsRepository {
             .sort((a, b) => b.sessionDate - a.sessionDate
                 || a.lastName.localeCompare(b.lastName, "fr")
                 || a.firstName.localeCompare(b.firstName, "fr"));
+    }
+
+    /** Notes d'une session pour la feuille ScoDoc ; `null` si la session n'existe pas. */
+    async scodocEntries(sessionId: string): Promise<ScodocEntry[] | null> {
+        const doc = await this.db.collection<SessionDoc>("quiz_sessions").findOne({_id: sessionId});
+        if (!doc) return null;
+        const scoreMax = totalPossible({id: doc._id, ...doc});
+        const participants = await this.db.collection<QuizParticipant>("quiz_participants")
+            .find({sessionId}).toArray();
+        return participants.map((p) => ({
+            // Les anciens participants n'ont pas d'e-mail enregistré.
+            email: p.email ?? null,
+            firstName: p.firstName,
+            lastName: p.lastName,
+            score: p.score,
+            scoreMax,
+        }));
     }
 }
