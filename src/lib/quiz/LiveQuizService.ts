@@ -26,6 +26,8 @@ export interface Identity {
     lastName: string;
     group: string | null;
     email: string | null;
+    /** Identifiant IUT (better-auth `username`). */
+    username: string | null;
 }
 
 interface SessionDoc extends Omit<QuizSession, "id"> {
@@ -175,6 +177,7 @@ export class LiveQuizService {
             lastName: identity.lastName,
             group: identity.group,
             email: identity.email,
+            username: identity.username,
             joinedAt: this.clock(),
             score: 0,
             timeMs: 0,

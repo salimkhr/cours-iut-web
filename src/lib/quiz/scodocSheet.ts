@@ -2,6 +2,8 @@ import ExcelJS from "exceljs";
 
 export interface ScodocEntry {
     email: string | null;
+    /** Identifiant IUT, partie locale de la colonne H de ScoDoc. */
+    username: string | null;
     firstName: string;
     lastName: string;
     score: number;
@@ -38,12 +40,12 @@ function normalizeEmail(value: string | null | undefined): string {
     return (value ?? "").trim().toLowerCase();
 }
 
-/** Fusionne les entrées de plusieurs sessions : une par e-mail, avec la meilleure note ; les entrées sans e-mail restent telles quelles. */
+/** Fusionne les entrées de plusieurs sessions : une par identité (username, sinon e-mail), avec la meilleure note ; les entrées sans identité restent telles quelles. */
 export function mergeScodocEntries(entries: ScodocEntry[]): ScodocEntry[] {
     const best = new Map<string, ScodocEntry>();
     const merged: ScodocEntry[] = [];
     for (const entry of entries) {
-        const key = normalizeEmail(entry.email);
+        const key = normalizeEmail(entry.username) || normalizeEmail(entry.email);
         if (key === "") {
             merged.push(entry);
             continue;
@@ -81,11 +83,14 @@ export async function fillScodocSheet(
         throw new ScodocSheetError();
     }
 
-    // Participants indexés par e-mail ; sans e-mail, ils ne peuvent jamais être appariés.
+    // Participants indexés par identifiant IUT puis par e-mail (repli) ; sans l'un ni l'autre, ils ne sont jamais appariés.
+    const byUsername = new Map<string, ScodocEntry>();
     const byEmail = new Map<string, ScodocEntry>();
     for (const entry of entries) {
-        const key = normalizeEmail(entry.email);
-        if (key !== "") byEmail.set(key, entry);
+        const username = normalizeEmail(entry.username);
+        if (username !== "") byUsername.set(username, entry);
+        const email = normalizeEmail(entry.email);
+        if (email !== "") byEmail.set(email, entry);
     }
 
     let filled = 0;
@@ -94,7 +99,8 @@ export async function fillScodocSheet(
     for (let r = FIRST_STUDENT_ROW; r <= sheet.rowCount; r++) {
         if (!sheet.getCell(r, COL_ID).text.startsWith("!")) continue;
         const key = normalizeEmail(sheet.getCell(r, COL_EMAIL).text);
-        const entry = byEmail.get(key);
+        const local = key.split("@")[0];
+        const entry = (local !== "" ? byUsername.get(local) : undefined) ?? byEmail.get(key);
         if (entry) {
             sheet.getCell(r, COL_NOTE).value = scodocNote(entry.score, entry.scoreMax);
             used.add(entry);

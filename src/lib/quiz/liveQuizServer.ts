@@ -37,7 +37,7 @@ export async function getLiveQuiz(): Promise<LiveQuizService> {
     return g.service;
 }
 
-type SessionUser = {id: string; name?: string | null; role?: string | null; group?: string | null; email?: string | null};
+type SessionUser = {id: string; name?: string | null; role?: string | null; group?: string | null; email?: string | null; username?: string | null};
 
 /** Le compte stocke « Prénom Nom » dans `name` ; on sépare au premier espace. */
 export function identityFromUser(user: SessionUser): Identity {
@@ -49,6 +49,7 @@ export function identityFromUser(user: SessionUser): Identity {
         lastName: space === -1 ? "" : name.slice(space + 1),
         group: user.group ?? null,
         email: user.email ?? null,
+        username: user.username ?? null,
     };
 }
 

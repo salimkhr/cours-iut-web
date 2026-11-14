@@ -62,6 +62,8 @@ export interface QuizParticipant {
     group: string | null;
     /** Absent des participants créés avant l'export ScoDoc. */
     email?: string | null;
+    /** Identifiant IUT ; absent des participants créés avant l'appariement par identifiant. */
+    username?: string | null;
     joinedAt: number;
     score: number;
     timeMs: number;

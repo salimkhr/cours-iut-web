@@ -155,6 +155,7 @@ export class QuizResultsRepository {
         return participants.map((p) => ({
             // Les anciens participants n'ont pas d'e-mail enregistré.
             email: p.email ?? null,
+            username: p.username ?? null,
             firstName: p.firstName,
             lastName: p.lastName,
             score: p.score,
@@ -179,6 +180,7 @@ export class QuizResultsRepository {
                 }
                 entries.push({
                     email: p.email ?? null,
+                    username: p.username ?? null,
                     firstName: p.firstName,
                     lastName: p.lastName,
                     score: p.score,

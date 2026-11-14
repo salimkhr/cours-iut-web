@@ -113,7 +113,7 @@ export function ScodocReportView({report}: {report: ScodocReport | null}) {
                     </p>
                     {report.filled === 0 && report.unmatched.length > 0 && (
                         <p className="font-medium text-destructive">
-                            Aucun e-mail ne correspond : cette session date peut-être d&apos;avant l&apos;enregistrement des e-mails. Ne déposez pas cette feuille dans ScoDoc.
+                            Aucun étudiant reconnu : cette session date peut-être d&apos;avant l&apos;enregistrement des identifiants. Ne déposez pas cette feuille dans ScoDoc.
                         </p>
                     )}
                     {report.unmatched.length > 0 && (

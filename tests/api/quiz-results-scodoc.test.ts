@@ -35,7 +35,8 @@ beforeAll(async () => {
         userId: "u1",
         firstName: "Abdellah",
         lastName: "ACHAFIK",
-        email: "aa@etu.test",
+        email: "abdellah.achafik@etu.test",
+        username: "aa251867",
         group: null,
         score: 7,
     });
@@ -48,7 +49,7 @@ async function buildSheet(): Promise<ArrayBuffer> {
     const wb = new ExcelJS.Workbook();
     const ws = wb.addWorksheet("Feuille");
     ws.getRow(8).values = ["!50721", "Nom", "Prénom", "Groupe", "Note sur 20", "Remarque", "NIP", "Email"];
-    ws.getRow(9).values = ["!1", "ACHAFIK", "Abdellah", "G1", undefined, undefined, "1", "aa@etu.test"];
+    ws.getRow(9).values = ["!1", "ACHAFIK", "Abdellah", "G1", undefined, undefined, "1", "AA251867@etu.test"];
     ws.getRow(10).values = ["!2", "BERTIN", "Zoe", "G1", undefined, undefined, "2", "bb@etu.test"];
     return (await wb.xlsx.writeBuffer()) as ArrayBuffer;
 }
@@ -126,9 +127,9 @@ describe("POST /api/quiz/results/scodoc", () => {
                     quiz: {negativeMarking: false, questions: [{id: "q1", weight: 10, options: []}]}},
             ]);
             await db.collection("quiz_participants").insertMany([
-                {sessionId: "y1", userId: "u1", firstName: "Abdellah", lastName: "ACHAFIK", email: "aa@etu.test", group: null, score: 5},
-                {sessionId: "y2", userId: "u1", firstName: "Abdellah", lastName: "ACHAFIK", email: "AA@etu.test", group: null, score: 18},
-                {sessionId: "y0", userId: "u2", firstName: "Zoe", lastName: "BERTIN", email: "bb@etu.test", group: null, score: 10},
+                {sessionId: "y1", userId: "u1", firstName: "Abdellah", lastName: "ACHAFIK", email: "abdellah.achafik@etu.test", username: "aa251867", group: null, score: 5},
+                {sessionId: "y2", userId: "u1", firstName: "Abdellah", lastName: "ACHAFIK", email: "Abdellah.Achafik@etu.test", username: "AA251867", group: null, score: 18},
+                {sessionId: "y0", userId: "u2", firstName: "Zoe", lastName: "BERTIN", email: "zoe.bertin@etu.test", username: "bb123456", group: null, score: 10},
             ]);
         });
 

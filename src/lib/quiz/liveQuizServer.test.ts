@@ -9,11 +9,16 @@ describe("identityFromUser", () => {
         expect(identityFromUser({id: "u", name: "Ana Lopez"}).email).toBeNull();
     });
 
+    test("recopie l'identifiant IUT (username), null s'il manque", () => {
+        expect(identityFromUser({id: "u", name: "Ana Lopez", username: "ab123456"}).username).toBe("ab123456");
+        expect(identityFromUser({id: "u", name: "Ana Lopez"}).username).toBeNull();
+    });
+
     test("sépare prénom et nom au premier espace", () => {
         expect(identityFromUser({id: "1", name: "Salim Khraimeche", group: "G1"}))
-            .toEqual({userId: "1", firstName: "Salim", lastName: "Khraimeche", group: "G1", email: null});
+            .toEqual({userId: "1", firstName: "Salim", lastName: "Khraimeche", group: "G1", email: null, username: null});
         expect(identityFromUser({id: "2", name: "Jean  De La Fontaine"}))
-            .toEqual({userId: "2", firstName: "Jean", lastName: "De La Fontaine", group: null, email: null});
+            .toEqual({userId: "2", firstName: "Jean", lastName: "De La Fontaine", group: null, email: null, username: null});
     });
 
     test("nom absent ou mono-mot", () => {

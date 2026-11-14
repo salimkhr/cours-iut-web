@@ -16,8 +16,8 @@ let registry: LiveQuizRegistry;
 let quizzes: QuizService;
 let optionIds: Record<string, {good: string[]; bad: string[]}>;
 
-const ana: Identity = {userId: "u1", firstName: "Ana", lastName: "Martin", group: "G1", email: "ana@etu.test"};
-const bob: Identity = {userId: "u2", firstName: "Bob", lastName: "Durand", group: "G2", email: null};
+const ana: Identity = {userId: "u1", firstName: "Ana", lastName: "Martin", group: "G1", email: "ana@etu.test", username: "an123456"};
+const bob: Identity = {userId: "u2", firstName: "Bob", lastName: "Durand", group: "G2", email: null, username: null};
 
 const blocks = () => [{id: crypto.randomUUID(), type: "text", props: {content: "Q ?"}}];
 
@@ -91,6 +91,14 @@ describe("participation", () => {
         await live.join(s.id, {...ana, email: "a@etu.test"});
         const doc = await client.db("test-live-quiz").collection("quiz_participants").findOne({sessionId: s.id, userId: "u1"});
         expect(doc?.email).toBe("a@etu.test");
+    });
+
+    test("join enregistre l'identifiant IUT du participant", async () => {
+        await seedQuiz();
+        const s = await create();
+        await live.join(s.id, ana);
+        const doc = await client.db("test-live-quiz").collection("quiz_participants").findOne({sessionId: s.id, userId: "u1"});
+        expect(doc?.username).toBe("an123456");
     });
 
     test("join est idempotent et refermé après le lobby pour les nouveaux", async () => {

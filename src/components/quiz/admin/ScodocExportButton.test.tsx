@@ -31,12 +31,12 @@ describe("ScodocReportView", () => {
         expect(html).toContain("Participants sans ligne dans la feuille :");
         expect(html).toContain("MARTIN Ana");
         expect(html).toContain("à la main");
-        expect(html).not.toContain("Aucun e-mail ne correspond");
+        expect(html).not.toContain("Aucun étudiant reconnu");
     });
 
     test("avertit quand rien n'est rempli et que des participants restent", () => {
         const html = renderToStaticMarkup(<ScodocReportView report={{...report, filled: 0}}/>);
-        expect(html).toContain("Aucun e-mail ne correspond : cette session date peut-être d&#x27;avant l&#x27;enregistrement des e-mails. Ne déposez pas cette feuille dans ScoDoc.");
+        expect(html).toContain("Aucun étudiant reconnu : cette session date peut-être d&#x27;avant l&#x27;enregistrement des identifiants. Ne déposez pas cette feuille dans ScoDoc.");
     });
 
     test("sans rapport, la zone de statut reste montée et vide", () => {

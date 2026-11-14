@@ -28,6 +28,7 @@ async function buildSheet(rows: Row[], a8 = "!50721"): Promise<ArrayBuffer> {
 
 const entry = (over: Partial<ScodocEntry> = {}): ScodocEntry => ({
     email: "aa@etu.test",
+    username: null,
     firstName: "Abdellah",
     lastName: "ACHAFIK",
     score: 7,
@@ -90,6 +91,29 @@ describe("fillScodocSheet", () => {
         expect(report.absent).toBe(2);
     });
 
+    test("apparie sur l'identifiant IUT même si l'e-mail du compte diffère de la colonne H", async () => {
+        const rows: Row[] = [{id: "!1", nom: "ACHAFIK", prenom: "Abdellah", email: "AA251867@etu.univ-lehavre.fr"}];
+        const {buffer, report} = await fillScodocSheet(await buildSheet(rows), [
+            entry({username: "aa251867", email: "abdellah.achafik@etu.univ-lehavre.fr"}),
+        ]);
+        expect((await reload(buffer)).getCell("E9").value).toBe(14);
+        expect(report).toEqual({filled: 1, absent: 0, unmatched: []});
+    });
+
+    test("retombe sur l'e-mail quand le username est null", async () => {
+        const rows: Row[] = [{id: "!1", nom: "A", prenom: "B", email: "old@etu.test"}];
+        const {report} = await fillScodocSheet(await buildSheet(rows), [entry({username: null, email: "old@etu.test"})]);
+        expect(report).toEqual({filled: 1, absent: 0, unmatched: []});
+    });
+
+    test("range en unmatched une entrée dont le username ne correspond à aucune ligne", async () => {
+        const {report} = await fillScodocSheet(await buildSheet(two), [
+            entry({username: "zz999999", email: "zz@autre.test", firstName: "Zed", lastName: "Z"}),
+        ]);
+        expect(report.filled).toBe(0);
+        expect(report.unmatched).toEqual([{firstName: "Zed", lastName: "Z"}]);
+    });
+
     test("conserve colonnes masquées et autres valeurs", async () => {
         const {buffer} = await fillScodocSheet(await buildSheet(two), [entry()]);
         const ws = await reload(buffer);
@@ -117,6 +141,15 @@ describe("mergeScodocEntries", () => {
             entry({email: "aa@etu.test", score: 5, scoreMax: 10}),
             entry({email: "  AA@Etu.test ", score: 8, scoreMax: 10}),
             entry({email: "aa@etu.test", score: 3, scoreMax: 5}),
+        ]);
+        expect(merged).toHaveLength(1);
+        expect(scodocNote(merged[0].score, merged[0].scoreMax)).toBe(16);
+    });
+
+    test("fusionne par username malgré e-mails et casse différents", () => {
+        const merged = mergeScodocEntries([
+            entry({username: "aa251867", email: "a.b@etu.test", score: 5, scoreMax: 10}),
+            entry({username: " AA251867 ", email: "autre@etu.test", score: 8, scoreMax: 10}),
         ]);
         expect(merged).toHaveLength(1);
         expect(scodocNote(merged[0].score, merged[0].scoreMax)).toBe(16);
