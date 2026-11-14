@@ -5,6 +5,7 @@ import {getServerSession} from "@/lib/auth";
 import AuthLayout from "@/components/login/AuthLayout";
 import AccountTabs from "@/components/login/AccountTabs";
 import {Group} from "@/lib/schemas/register.schema";
+import {isGenericAccount} from "@/lib/genericAccount";
 
 export const metadata: Metadata = generatePageMetadata({
     defaultTitle: "Mon compte — Cours Web",
@@ -14,7 +15,7 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function AccountPage() {
     const session = await getServerSession();
     if (!session) redirect("/login?redirect_to=/account");
-    if (session.user.email.endsWith("@salimkhraimeche.dev")) redirect("/");
+    if (isGenericAccount(session.user)) redirect("/");
 
     const {name, email, image} = session.user;
     const [firstName = "", ...rest] = (name ?? "").split(" ");
