@@ -38,6 +38,28 @@ function normalizeEmail(value: string | null | undefined): string {
     return (value ?? "").trim().toLowerCase();
 }
 
+/** Fusionne les entrées de plusieurs sessions : une par e-mail, avec la meilleure note ; les entrées sans e-mail restent telles quelles. */
+export function mergeScodocEntries(entries: ScodocEntry[]): ScodocEntry[] {
+    const best = new Map<string, ScodocEntry>();
+    const merged: ScodocEntry[] = [];
+    for (const entry of entries) {
+        const key = normalizeEmail(entry.email);
+        if (key === "") {
+            merged.push(entry);
+            continue;
+        }
+        const current = best.get(key);
+        if (!current) {
+            best.set(key, entry);
+            merged.push(entry);
+        } else if (scodocNote(entry.score, entry.scoreMax) > scodocNote(current.score, current.scoreMax)) {
+            best.set(key, entry);
+            merged[merged.indexOf(current)] = entry;
+        }
+    }
+    return merged;
+}
+
 /** Remplit la colonne E (Note sur 20) d'une feuille de saisie ScoDoc avec les notes du quiz. */
 export async function fillScodocSheet(
     input: ArrayBuffer,

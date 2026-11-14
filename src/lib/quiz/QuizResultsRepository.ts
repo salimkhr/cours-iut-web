@@ -161,4 +161,31 @@ export class QuizResultsRepository {
             scoreMax,
         }));
     }
+
+    /** Notes de toutes les sessions du module créées à partir de `since` (une entrée par session et participant, sans doublon d'identifiant sans e-mail). */
+    async scodocEntriesForModule(moduleId: string, since: number): Promise<ScodocEntry[]> {
+        const sessions = await this.db.collection<SessionDoc>("quiz_sessions")
+            .find({moduleId, createdAt: {$gte: since}}).toArray();
+        const entries: ScodocEntry[] = [];
+        const seenWithoutEmail = new Set<string>();
+        for (const doc of sessions) {
+            const scoreMax = totalPossible({id: doc._id, ...doc});
+            const participants = await this.db.collection<QuizParticipant>("quiz_participants")
+                .find({sessionId: doc._id}).toArray();
+            for (const p of participants) {
+                if (!p.email) {
+                    if (seenWithoutEmail.has(p.userId)) continue;
+                    seenWithoutEmail.add(p.userId);
+                }
+                entries.push({
+                    email: p.email ?? null,
+                    firstName: p.firstName,
+                    lastName: p.lastName,
+                    score: p.score,
+                    scoreMax,
+                });
+            }
+        }
+        return entries;
+    }
 }

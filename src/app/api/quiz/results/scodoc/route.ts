@@ -3,7 +3,8 @@ import {z} from "zod";
 import {connectToDB} from "@/lib/mongodb";
 import {authenticate} from "@/lib/quiz/liveQuizServer";
 import {QuizResultsRepository} from "@/lib/quiz/QuizResultsRepository";
-import {fillScodocSheet, ScodocSheetError} from "@/lib/quiz/scodocSheet";
+import {academicYearStart} from "@/lib/quiz/academicYear";
+import {fillScodocSheet, mergeScodocEntries, ScodocSheetError} from "@/lib/quiz/scodocSheet";
 
 export const dynamic = "force-dynamic";
 
@@ -11,11 +12,15 @@ const MAX_BYTES = 2 * 1024 * 1024;
 const XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
 const formSchema = z.object({
-    sessionId: z.string().min(1),
+    sessionId: z.string().min(1).optional(),
+    moduleId: z.string().min(1).optional(),
     file: z.instanceof(File),
-});
+}).refine((value) => value.sessionId || value.moduleId);
 
-/** Remplit la feuille de saisie ScoDoc déposée avec les notes d'une session : enseignant ou administrateur uniquement, jamais via le MCP. */
+/** Valeur de champ texte, ou undefined si absente ou vide. */
+const field = (form: FormData, name: string) => form.get(name) || undefined;
+
+/** Remplit la feuille de saisie ScoDoc déposée avec les notes d'une session, ou de toutes celles du module cette année : enseignant ou administrateur uniquement, jamais via le MCP. */
 export async function POST(req: Request) {
     const auth = await authenticate({manager: true});
     if (!auth.ok) return auth.response;
@@ -27,20 +32,33 @@ export async function POST(req: Request) {
         } catch {
             return NextResponse.json({error: "Formulaire invalide"}, {status: 400});
         }
-        const parsed = formSchema.safeParse({sessionId: form.get("sessionId"), file: form.get("file")});
+        const parsed = formSchema.safeParse({
+            sessionId: field(form, "sessionId"),
+            moduleId: field(form, "moduleId"),
+            file: form.get("file"),
+        });
         if (!parsed.success) {
-            return NextResponse.json({error: "sessionId et fichier requis"}, {status: 400});
+            return NextResponse.json({error: "sessionId ou moduleId, et fichier requis"}, {status: 400});
         }
-        const {sessionId, file} = parsed.data;
+        const {sessionId, moduleId, file} = parsed.data;
         if (file.size > MAX_BYTES) {
             return NextResponse.json({error: "Fichier trop volumineux (2 Mo maximum)"}, {status: 413});
         }
 
         const repo = new QuizResultsRepository(await connectToDB());
-        const entries = await repo.scodocEntries(sessionId);
-        if (!entries) return NextResponse.json({error: "Session introuvable"}, {status: 404});
+        let entries;
+        if (sessionId) {
+            entries = await repo.scodocEntries(sessionId);
+            if (!entries) return NextResponse.json({error: "Session introuvable"}, {status: 404});
+        } else {
+            // Toutes les sessions du module cette année universitaire : une même feuille couvre tous les groupes de TD.
+            entries = await repo.scodocEntriesForModule(moduleId as string, academicYearStart(new Date()).getTime());
+            if (entries.length === 0) {
+                return NextResponse.json({error: "Aucune session cette année pour ce module"}, {status: 404});
+            }
+        }
 
-        const {buffer, report} = await fillScodocSheet(await file.arrayBuffer(), entries);
+        const {buffer, report} = await fillScodocSheet(await file.arrayBuffer(), mergeScodocEntries(entries));
         const asciiName = file.name.replace(/[^\x20-\x7e]/g, "_").replace(/["\\]/g, "_") || "feuille.xlsx";
         return new NextResponse(new Uint8Array(buffer), {
             status: 200,

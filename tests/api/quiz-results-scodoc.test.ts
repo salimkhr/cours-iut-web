@@ -53,8 +53,9 @@ async function buildSheet(): Promise<ArrayBuffer> {
     return (await wb.xlsx.writeBuffer()) as ArrayBuffer;
 }
 
-function post(fields: {sessionId?: string; file?: File}) {
+function post(fields: {sessionId?: string; moduleId?: string; file?: File}) {
     const form = new FormData();
+    if (fields.moduleId !== undefined) form.set("moduleId", fields.moduleId);
     if (fields.sessionId !== undefined) form.set("sessionId", fields.sessionId);
     if (fields.file) form.set("file", fields.file);
     return POST(new Request("http://localhost/api/quiz/results/scodoc", {method: "POST", body: form}));
@@ -73,7 +74,7 @@ describe("POST /api/quiz/results/scodoc", () => {
         expect((await post({sessionId: "s1", file: await xlsxFile()})).status).toBe(401);
     });
 
-    test("400 sans sessionId ou sans fichier", async () => {
+    test("400 sans sessionId ni moduleId, ou sans fichier", async () => {
         admin();
         expect((await post({file: await xlsxFile()})).status).toBe(400);
         expect((await post({sessionId: "s1"})).status).toBe(400);
@@ -110,5 +111,43 @@ describe("POST /api/quiz/results/scodoc", () => {
         await wb.xlsx.load(await res.arrayBuffer());
         expect(wb.worksheets[0].getCell("E9").value).toBe(14);
         expect(wb.worksheets[0].getCell("E10").value).toBe("ABS");
+    });
+
+    describe("toutes les sessions de l'année", () => {
+        const now = Date.now();
+        const oldDate = now - 400 * 24 * 3600 * 1000;
+        beforeAll(async () => {
+            await db.collection("quiz_sessions").insertMany([
+                {_id: "y1" as never, moduleId: "m2", shortCode: "Y1", createdAt: now,
+                    quiz: {negativeMarking: false, questions: [{id: "q1", weight: 10, options: []}]}},
+                {_id: "y2" as never, moduleId: "m2", shortCode: "Y2", createdAt: now,
+                    quiz: {negativeMarking: false, questions: [{id: "q1", weight: 20, options: []}]}},
+                {_id: "y0" as never, moduleId: "m2", shortCode: "Y0", createdAt: oldDate,
+                    quiz: {negativeMarking: false, questions: [{id: "q1", weight: 10, options: []}]}},
+            ]);
+            await db.collection("quiz_participants").insertMany([
+                {sessionId: "y1", userId: "u1", firstName: "Abdellah", lastName: "ACHAFIK", email: "aa@etu.test", group: null, score: 5},
+                {sessionId: "y2", userId: "u1", firstName: "Abdellah", lastName: "ACHAFIK", email: "AA@etu.test", group: null, score: 18},
+                {sessionId: "y0", userId: "u2", firstName: "Zoe", lastName: "BERTIN", email: "bb@etu.test", group: null, score: 10},
+            ]);
+        });
+
+        test("meilleure note entre deux sessions, session d'une année passée ignorée", async () => {
+            admin();
+            const res = await post({moduleId: "m2", file: await xlsxFile()});
+            expect(res.status).toBe(200);
+            expect(JSON.parse(decodeURIComponent(res.headers.get("X-Scodoc-Report") ?? ""))).toEqual({filled: 1, absent: 1, unmatched: []});
+            const wb = new ExcelJS.Workbook();
+            await wb.xlsx.load(await res.arrayBuffer());
+            expect(wb.worksheets[0].getCell("E9").value).toBe(18);
+            expect(wb.worksheets[0].getCell("E10").value).toBe("ABS");
+        });
+
+        test("404 sans session cette année pour le module", async () => {
+            admin();
+            const res = await post({moduleId: "m1", file: await xlsxFile()});
+            expect(res.status).toBe(404);
+            expect((await res.json()).error).toBe("Aucune session cette année pour ce module");
+        });
     });
 });

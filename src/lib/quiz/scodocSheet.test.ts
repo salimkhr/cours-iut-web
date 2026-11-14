@@ -1,6 +1,6 @@
 import {describe, expect, test} from "bun:test";
 import ExcelJS from "exceljs";
-import {fillScodocSheet, scodocNote, ScodocSheetError, type ScodocEntry} from "./scodocSheet";
+import {fillScodocSheet, mergeScodocEntries, scodocNote, ScodocSheetError, type ScodocEntry} from "./scodocSheet";
 
 type Row = {id: string; nom: string; prenom: string; email: ExcelJS.CellValue};
 
@@ -108,5 +108,24 @@ describe("fillScodocSheet", () => {
         const bytes = new TextEncoder().encode("hello");
         const input = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
         await expect(fillScodocSheet(input, [entry()])).rejects.toBeInstanceOf(ScodocSheetError);
+    });
+});
+
+describe("mergeScodocEntries", () => {
+    test("garde la meilleure note pour un e-mail dupliqué (casse et espaces différents)", () => {
+        const merged = mergeScodocEntries([
+            entry({email: "aa@etu.test", score: 5, scoreMax: 10}),
+            entry({email: "  AA@Etu.test ", score: 8, scoreMax: 10}),
+            entry({email: "aa@etu.test", score: 3, scoreMax: 5}),
+        ]);
+        expect(merged).toHaveLength(1);
+        expect(scodocNote(merged[0].score, merged[0].scoreMax)).toBe(16);
+    });
+
+    test("conserve les entrées sans e-mail et les entrées uniques", () => {
+        const a = entry({email: null, lastName: "A"});
+        const b = entry({email: null, lastName: "B"});
+        const c = entry({email: "cc@etu.test"});
+        expect(mergeScodocEntries([a, b, c])).toEqual([a, b, c]);
     });
 });

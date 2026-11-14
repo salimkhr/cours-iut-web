@@ -29,7 +29,7 @@ export default function QuizResultsTable({moduleId}: {moduleId: string}) {
     const [data, setData] = useState<Payload | null>(null);
     const [error, setError] = useState<string | null>(null);
     const scodocSession = sessionId === ALL ? null : sessionId;
-    const scodoc = useScodocExport(scodocSession);
+    const scodoc = useScodocExport(scodocSession, moduleId);
 
     useEffect(() => {
         // Anti-rebond : la recherche ne part qu'après une courte pause de frappe.

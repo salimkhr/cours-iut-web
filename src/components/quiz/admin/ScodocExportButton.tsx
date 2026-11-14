@@ -24,13 +24,13 @@ export function parseReport(header: string | null): ScodocReport | null {
     }
 }
 
-/** Gère l'envoi de la feuille et le téléchargement du fichier rempli pour une session. */
-export function useScodocExport(sessionId: string | null) {
+/** Gère l'envoi de la feuille et le téléchargement du fichier rempli pour une session, ou pour toutes celles du module cette année si `sessionId` est null. */
+export function useScodocExport(sessionId: string | null, moduleId: string) {
     const [pending, setPending] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [report, setReport] = useState<ScodocReport | null>(null);
 
-    // Un rapport ne vaut que pour la session qui l'a produit.
+    // Un rapport ne vaut que pour la sélection qui l'a produit.
     const [reportSession, setReportSession] = useState(sessionId);
     if (reportSession !== sessionId) {
         setReportSession(sessionId);
@@ -39,13 +39,13 @@ export function useScodocExport(sessionId: string | null) {
     }
 
     const upload = async (file: File) => {
-        if (!sessionId) return;
         setPending(true);
         setError(null);
         setReport(null);
         try {
             const body = new FormData();
-            body.set("sessionId", sessionId);
+            if (sessionId) body.set("sessionId", sessionId);
+            else body.set("moduleId", moduleId);
             body.set("file", file);
             const res = await fetch("/api/quiz/results/scodoc", {method: "POST", body});
             if (!res.ok) {
@@ -89,12 +89,12 @@ export default function ScodocExportButton({sessionId, pending = false, onUpload
 
     return (
         <div className="flex items-center gap-3">
-            <Button type="button" variant="outline" disabled={!sessionId || pending}
+            <Button type="button" variant="outline" disabled={pending}
                     onClick={() => inputRef.current?.click()}>
                 Remplir une feuille ScoDoc
             </Button>
             {!sessionId && (
-                <span className="text-sm text-muted-foreground">Choisissez une session</span>
+                <span className="text-sm text-muted-foreground">Toutes les sessions de l&apos;année</span>
             )}
             <input ref={inputRef} type="file" hidden onChange={onFile}
                    accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>

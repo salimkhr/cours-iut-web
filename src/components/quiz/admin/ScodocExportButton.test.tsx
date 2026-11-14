@@ -3,17 +3,17 @@ import {renderToStaticMarkup} from "react-dom/server";
 import ScodocExportButton, {ScodocReportView, parseReport} from "./ScodocExportButton";
 
 describe("ScodocExportButton", () => {
-    test("sans session, le bouton est désactivé et l'aide est affichée", () => {
+    test("sans session choisie, le bouton est actif et l'aide annonce toutes les sessions de l'année", () => {
         const html = renderToStaticMarkup(<ScodocExportButton sessionId={null}/>);
         expect(html).toContain("Remplir une feuille ScoDoc");
-        expect(html).toMatch(/<button[^>]*\sdisabled=""/);
-        expect(html).toContain("Choisissez une session");
+        expect(html).not.toMatch(/<button[^>]*\sdisabled=""/);
+        expect(html).toContain("Toutes les sessions de l&#x27;année");
     });
 
     test("avec une session, le bouton est actif et sans aide", () => {
         const html = renderToStaticMarkup(<ScodocExportButton sessionId="abc"/>);
         expect(html).not.toMatch(/<button[^>]*\sdisabled=""/);
-        expect(html).not.toContain("Choisissez une session");
+        expect(html).not.toContain("Toutes les sessions de l");
     });
 
     test("pendant l'envoi, le bouton est désactivé", () => {
