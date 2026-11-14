@@ -275,6 +275,33 @@ describe("déroulé complet", () => {
     });
 });
 
+describe("durée de vie des sessions", () => {
+    test("une session terminée perd expiresAt, une session en lobby le garde", async () => {
+        const quiz = await seedQuiz();
+        const [q1, q2] = quiz.questions.map((q) => q.id);
+        const finished = await create();
+        const lobby = await create();
+        await live.join(finished.id, ana);
+        await live.start(finished.id);
+        now += 1000;
+        await live.submitAnswer(finished.id, "u1", optionIds[q1].good);
+        await live.closeCurrentQuestion(finished.id);
+        await live.next(finished.id);
+        await live.next(finished.id);
+        now += 500;
+        await live.submitAnswer(finished.id, "u1", optionIds[q2].good);
+        await live.closeCurrentQuestion(finished.id);
+        await live.next(finished.id);
+
+        const raw = client.db("test-live-quiz").collection("quiz_sessions");
+        const done = await raw.findOne({_id: finished.id as never});
+        expect(done?.phase).toBe("finished");
+        expect(done).not.toHaveProperty("expiresAt");
+        const waiting = await raw.findOne({_id: lobby.id as never});
+        expect(waiting?.expiresAt).toBeInstanceOf(Date);
+    });
+});
+
 describe("join concurrent", () => {
     test("deux join simultanés ne créent qu'un participant, même sans index", async () => {
         await seedQuiz();

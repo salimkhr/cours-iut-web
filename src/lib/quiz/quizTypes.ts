@@ -50,7 +50,8 @@ export interface QuizSession {
     deadline: number | null;
     createdAt: number;
     endedAt: number | null;
-    expiresAt: Date;
+    /** Absent une fois la session terminée : le TTL ne purge que les sessions abandonnées. */
+    expiresAt?: Date;
 }
 
 export interface QuizParticipant {

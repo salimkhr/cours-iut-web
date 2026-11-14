@@ -241,7 +241,9 @@ export class LiveQuizService {
                 questionStartedAt: next.questionStartedAt,
                 deadline: next.deadline,
                 endedAt: next.endedAt,
-            }},
+            },
+            // Une session terminée est conservée (résultats, export ScoDoc) : on retire son expiration TTL.
+            ...(next.phase === "finished" ? {$unset: {expiresAt: ""}} : {})},
         );
         if (result.matchedCount === 0) return;
         if (next.phase === "question_open") this.schedule(sessionId, next.deadline);
