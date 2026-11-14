@@ -135,7 +135,7 @@ ne bouge pas, catalogue des motifs, score), avec la sortie de
   Deux marqueurs dans le même bloc : MINEUR. Trois ou plus dans le même bloc ou
   paragraphe : MAJEUR. Exceptions, signalés seuls en MAJEUR : un tiret cadratin dans la
   prose (P13), un écho de fin (F7), un artéfact de chatbot.
-- **Motifs de structure** (F1 à F6, F20, F21, P38) : ils se jugent à l'échelle du support
+- **Motifs de structure** (F1 à F6, F20, F21, F22, P17, P36, P38) : ils se jugent à l'échelle du support
   et vont dans la tâche « support entier ». Un moule répété de partie en partie est une
   remarque même si chaque partie, prise seule, n'en porte qu'un signe.
 
@@ -201,11 +201,12 @@ cellules de `table`, consignes, `slide-note`, légendes). Chaque tâche couvre l
 critères de la grille :
 
 - A. vocabulaire (F17, F18, F19, P7, P14, P18, P22) ;
-- B. structure (F1 à F8, P15, P38, P49), jugée surtout à l'échelle du support ;
+- B. structure (F1 à F8, F22, P15, P16, P17, P38, P49), jugée surtout à l'échelle du
+  support ;
 - C. phrases et rythme (F9, F10, F13 à F16, P8, P9, P11, P13, P30) ;
-- D. registre, ton et voix (vouvoiement, impératif en consigne, F11, F12, F20, F21, P24,
-  P32, P39, P45, P53) ;
-- E. artéfacts (hors catalogue).
+- D. registre, ton et voix (vouvoiement, impératif en consigne, F11, F12, F20, F21, F23, F24, P4,
+  P24, P32, P36, P37, P39, P45, P53) ;
+- E. artéfacts (hors catalogue : P19, P33, P34, P35, cf. § 3.5 de la méthode).
 
 Les critères B et D se jugent aussi à l'échelle du support entier (une tâche
 « support entier : B, D, score » en fin de liste).

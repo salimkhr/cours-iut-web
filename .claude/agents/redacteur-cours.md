@@ -301,6 +301,8 @@ s'arrête sur la dernière notion.
 - **Ton neutre de bout en bout** (F20) : aucune phrase ne dit pourquoi. Une ou deux touches
   par partie : le pourquoi, un constat, une remarque de prof.
 - **Tirets cadratins** (P13) : zéro dans la prose. Virgule, deux-points ou point.
+- **Redite d'une partie à l'autre** (F22) : une règle se dit une fois, puis on y renvoie.
+- **Majuscules à l'anglaise** (P16) : dans un titre, une majuscule au premier mot seulement.
 
 Le reste du catalogue (vocabulaire IA, copules évitées, participes plaqués, passif,
 connecteurs d'échafaudage, résumé de clôture…) est dans la méthode.
