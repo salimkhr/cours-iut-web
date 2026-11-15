@@ -72,3 +72,18 @@ describe("JoinQuizButton", () => {
         expect(html).toContain("--module-color:#123456");
     });
 });
+
+describe("Statement (énoncé sur ordinateur)", () => {
+    test("rend le texte et le code, masqué sur téléphone, sans bouton Copier actif", async () => {
+        const {Statement} = await import("@/components/quiz/play/PlayScreen");
+        const blocks = [
+            {id: "c", type: "code", props: {language: "php", code: "echo $titre;"}},
+            {id: "q", type: "text", props: {content: "Que s'affiche-t-il ?"}},
+        ] as Block[];
+        const html = renderToStaticMarkup(<Statement blocks={blocks}/>);
+        expect(html).toContain("titre");
+        expect(html).toContain("Que s&#x27;affiche-t-il ?");
+        expect(html).toMatch(/class="hidden [^"]*md:flex/);
+        expect(html).toContain("[&amp;_button]:hidden");
+    });
+});

@@ -10,6 +10,8 @@ import OptionResult from "@/components/quiz/OptionResult";
 import {api} from "@/components/quiz/quizClient";
 import {useQuizStream} from "@/components/quiz/useQuizStream";
 import type {StudentState} from "@/lib/quiz/quizPublicState";
+import {BlockRenderer} from "@/components/builder/BlockRenderer";
+import type {Block} from "@/types/CourseContent";
 
 const fmt = (n: number) => (Math.round(n * 100) / 100).toString().replace(".", ",");
 
@@ -20,7 +22,7 @@ function Shell({mode = "title", moduleSlug, children}: {mode?: "title" | "conten
         // faire défiler pour voir la question et le bouton « Valider » (même règle que la projection).
         <QuizStage mode={mode} moduleSlug={moduleSlug} className="min-h-[calc(100dvh-var(--navbar-h))]">
             {/* Colonne de téléphone, élargie sur ordinateur (mode PC) pour ne pas laisser un ruban au milieu de l'écran. */}
-            <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-5 pt-5 pb-[calc(2.5rem+env(safe-area-inset-bottom))] md:max-w-2xl md:px-8 md:pt-10">{children}</div>
+            <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-5 pt-5 pb-[calc(2.5rem+env(safe-area-inset-bottom))] md:max-w-3xl md:px-8 md:pt-10">{children}</div>
         </QuizStage>
     );
 }
@@ -32,6 +34,18 @@ function TitleEyebrow({moduleTitle}: {moduleTitle: string}) {
             <span>{moduleTitle}</span>
             <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${moduleFill}`}/>
             <span>Quiz</span>
+        </div>
+    );
+}
+
+/**
+ * Énoncé complet (texte et code), sur ordinateur seulement. Comme sur la projection, « Copier » est
+ * masqué : coller le code dans un éditeur pour l'exécuter donnerait la réponse.
+ */
+export function Statement({blocks}: {blocks: Block[]}) {
+    return (
+        <div className="hidden flex-col gap-3 text-lg font-semibold leading-snug md:flex [&_*]:max-w-none [&_button]:hidden [&_:not(pre)>code]:!text-[1em]">
+            <BlockRenderer blocks={blocks}/>
         </div>
     );
 }
@@ -78,7 +92,8 @@ function StudentView({sessionId}: {sessionId: string}) {
                     badge={String(question.index + 1).padStart(2, "0")}
                     title={`Question ${question.index + 1} sur ${question.total}`}
                 />
-                {/* L'énoncé reste sur l'écran projeté : le téléphone ne montre que les propositions. */}
+                {/* Sur téléphone, l'énoncé reste sur l'écran projeté ; sur ordinateur, la place permet de l'afficher en entier. */}
+                <Statement blocks={question.blocks}/>
                 <AnswerForm
                     key={question.id}
                     sessionId={sessionId}
@@ -101,6 +116,7 @@ function StudentView({sessionId}: {sessionId: string}) {
                     badge={String(question.index + 1).padStart(2, "0")}
                     title={`Correction · question ${question.index + 1}`}
                 />
+                <Statement blocks={question.blocks}/>
                 <p className="text-2xl font-bold" role="status">
                     {reveal.scoreObtained > 0 ? "+" : ""}{fmt(reveal.scoreObtained)} point{reveal.scoreObtained > 1 ? "s" : ""} sur {fmt(reveal.scoreMax)}
                 </p>
