@@ -5,6 +5,10 @@ import Module from "@/types/Module";
 import Section from "@/types/Section";
 import TagsBadges from "@/components/page/TagsBadges";
 import {slideTextSizes} from "@/components/Slides/ui/config/slideConfig";
+import Snowfall from "@/components/seasonal/Snowfall";
+import SantaFlyby from "@/components/seasonal/SantaFlyby";
+import SnowBank from "@/components/seasonal/SnowBank";
+import BridgeLights from "@/components/seasonal/BridgeLights";
 
 interface SlideTitleProps {
     module: Module;
@@ -35,6 +39,11 @@ export const SlideTitle: React.FC<SlideTitleProps> = ({module, section}) => {
             aria-label="Pont en bois clair traverse par la lumiere"
             className="relative flex h-screen w-full overflow-hidden bg-bridge-50 bg-no-repeat bg-right-bottom bg-cover bg-[url('/images/header/pont-light.png')] dark:bg-bridge-900 dark:bg-[url('/images/header/pont-dark.png')]"
         >
+            {/* Neige au pied du pont et lumières (mode sombre), sous le voile :
+                elles s'estompent avec l'image. */}
+            <SnowBank/>
+            <BridgeLights/>
+
             <div
                 aria-hidden="true"
                 className="absolute inset-0 z-0 bg-linear-to-b from-bridge-50 via-bridge-50/95 to-bridge-50/76 dark:from-bridge-900 dark:via-bridge-900/96 dark:to-bridge-900/82 lg:bg-linear-to-r lg:from-bridge-50 lg:via-bridge-50/88 lg:to-transparent lg:dark:from-bridge-900 lg:dark:via-bridge-900/90 lg:dark:to-bridge-900/28"
@@ -80,6 +89,14 @@ export const SlideTitle: React.FC<SlideTitleProps> = ({module, section}) => {
                 </div>
             </div>
 
+            {/* Thème de Noël : neige et passage du traîneau sur la garde de
+                section uniquement : neige sous le texte, traîneau devant (rien sur
+                téléphone ni hors saison). */}
+            <div className="hidden sm:contents">
+                <Snowfall/>
+                <SantaFlyby/>
+            </div>
+
             <div className="relative z-10 flex min-h-full w-full items-center px-6 py-10 sm:px-10 lg:pl-32 lg:pr-14 xl:pl-44">
                 <div className="w-full max-w-[860px] xl:max-w-[920px]">
                     <div className="mb-5 flex flex-wrap items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-brand-dark/70 dark:text-bridge-100/75 md:text-base lg:text-[0.9rem]">
@@ -93,7 +110,7 @@ export const SlideTitle: React.FC<SlideTitleProps> = ({module, section}) => {
 
                     <h2 className="max-w-5xl text-balance text-[2.4rem] font-extrabold leading-[0.9] tracking-normal !text-brand-dark dark:!text-brand-light sm:text-[3rem] md:text-[3.6rem] lg:text-[4.8rem] xl:text-[6.4rem]">
                         {section.title}
-                        <span className="text-(--module-color) dark:text-(--module-color-dark)">.</span>
+                        <span className="title-dot text-(--module-color) dark:text-(--module-color-dark)">.</span>
                     </h2>
 
                     <span

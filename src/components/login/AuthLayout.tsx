@@ -4,6 +4,10 @@ import {type CSSProperties, type ReactNode} from "react";
 import {useIsDark} from "@/hook/useIsDark";
 import {useMounted} from "@/hook/useMounted";
 import {cn} from "@/lib/utils";
+import Snowfall from "@/components/seasonal/Snowfall";
+import SantaFlyby from "@/components/seasonal/SantaFlyby";
+import SnowBank from "@/components/seasonal/SnowBank";
+import BridgeLights from "@/components/seasonal/BridgeLights";
 
 interface AuthLayoutProps {
     title: string;
@@ -41,6 +45,11 @@ export default function AuthLayout({title, description, children, wide = false}:
             )}
             style={{backgroundImage: `url(${heroImage})`}}
         >
+            {/* Neige au pied du pont et lumières (mode sombre), sous le voile :
+                elles s'estompent avec l'image. */}
+            <SnowBank/>
+            <BridgeLights/>
+
             {/* Gradient overlay — solide à gauche → transparent à droite (desktop).
                 Reprend exactement la DA du HeroSection de la home : le pont reste
                 visible sur la moitié droite, le contenu sur la gauche. */}
@@ -104,13 +113,21 @@ export default function AuthLayout({title, description, children, wide = false}:
                     />
                 </div>
             </div>
+            {/* Thème de Noël : neige et passage du traîneau, comme sur le hero
+                (rien sur téléphone, rien hors saison). `sm:contents` laisse les
+                calques se positionner sur la section. */}
+            <div className="hidden sm:contents">
+                <Snowfall/>
+                <SantaFlyby lane="top"/>
+            </div>
+
             <div className="relative z-10 mx-auto w-full max-w-7xl min-h-screen flex items-start lg:items-center justify-center lg:justify-start px-6 lg:pl-12 lg:pr-6 py-12 lg:py-20 opacity-0 animate-fade-in">
                 {/* Bloc unique en haut-gauche, comme la home : titre + descriptif
                     + formulaire empilés. Le pont reste libre sur la moitié droite. */}
                 <div className="w-full">
                     <h1 className="font-extrabold tracking-tight leading-[0.95] text-brand-dark dark:text-brand-light text-4xl sm:text-5xl lg:text-6xl text-center lg:text-left">
                         {title}
-                        <span className="text-brand-accent-dark">.</span>
+                        <span className="title-dot text-brand-accent-dark">.</span>
                     </h1>
                     <span
                         aria-hidden="true"

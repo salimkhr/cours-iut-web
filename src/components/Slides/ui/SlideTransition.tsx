@@ -116,7 +116,7 @@ export const SlideTransition: React.FC<SlideTransitionProps> = ({
 
             <h2 className="text-balance text-[2.4rem] font-extrabold leading-[0.92] tracking-[-0.025em] !text-brand-dark dark:!text-brand-light md:text-[3.6rem] lg:text-[4.8rem]">
                 {title}
-                <span className="text-(--module-color) dark:text-(--module-color-dark)">.</span>
+                <span className="title-dot text-(--module-color) dark:text-(--module-color-dark)">.</span>
             </h2>
 
             <span

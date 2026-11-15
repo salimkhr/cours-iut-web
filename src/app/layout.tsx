@@ -1,4 +1,4 @@
-import type {Metadata} from 'next';
+import type {Metadata, Viewport} from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import NavBar from "@/components/NavBar";
@@ -6,6 +6,7 @@ import {ThemeProvider} from "@/components/ThemeProvider";
 import {Toaster} from "@/components/ui/sonner";
 import {getModulesTheme} from "@/lib/getModules";
 import {generateModuleThemeCss} from "@/lib/generateModuleThemeCss";
+import {getSeasonalTheme} from "@/lib/seasonalTheme";
 
 // Polices variables (sous-ensemble latin de Google Fonts) versionnées dans le dépôt : le build
 // ne dépend plus de Google Fonts, dont les réponses instables faisaient échouer la CI.
@@ -30,10 +31,15 @@ export const metadata: Metadata = {
         icon: '/icons/icon-192x192.png',
         apple: '/icons/icon-192x192.png'
     },
-    other: {
-        'theme-color': '#C2410C'
-    }
 };
+
+// Couleur de la barre du navigateur (mobile) : le primaire du thème en cours,
+// brique hors saison, rouge houx pendant le thème de Noël.
+export function generateViewport(): Viewport {
+    return {
+        themeColor: getSeasonalTheme() === "noel" ? '#B42318' : '#C2410C',
+    };
+}
 
 export default async function RootLayout({children}: { children: React.ReactNode }) {
     // Tolérant à la phase de build (DB mockée) : pas de couleur → fallback globals.css.
@@ -43,9 +49,10 @@ export default async function RootLayout({children}: { children: React.ReactNode
     } catch {
         themeCss = "";
     }
+    const isNoel = getSeasonalTheme() === "noel";
 
     return (
-        <html lang="fr" className={`${jetbrainsMono.variable} ${ibmPlexSans.variable}`} suppressHydrationWarning>
+        <html lang="fr" className={`${jetbrainsMono.variable} ${ibmPlexSans.variable}${isNoel ? " theme-noel" : ""}`} suppressHydrationWarning>
             <body className="min-h-screen font-sans bg-background text-foreground">
                 {themeCss && (
                     <style id="module-theme-vars" dangerouslySetInnerHTML={{__html: themeCss}}/>

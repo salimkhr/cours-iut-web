@@ -2,6 +2,10 @@
 
 import type {CSSProperties, ReactNode, Ref} from "react";
 import {cn} from "@/lib/utils";
+import Snowfall from "@/components/seasonal/Snowfall";
+import SantaFlyby from "@/components/seasonal/SantaFlyby";
+import SnowBank from "@/components/seasonal/SnowBank";
+import BridgeLights from "@/components/seasonal/BridgeLights";
 
 /** Surface « carte » du système : bridge, bordure chaude, ombre chaude. */
 export const quizCard = cn(
@@ -103,11 +107,21 @@ export default function QuizStage({children, mode = "content", moduleSlug, class
         >
             {mode === "title" ? (
                 <>
+                    {/* Thème de Noël (masqué hors saison) : neige au pied du pont et
+                        lumières en mode sombre, sous le voile comme l'image. */}
+                    <SnowBank/>
+                    <BridgeLights/>
                     <div
                         aria-hidden="true"
                         className="absolute inset-0 z-0 bg-linear-to-b from-bridge-50 via-bridge-50/95 to-bridge-50/76 dark:from-bridge-900 dark:via-bridge-900/96 dark:to-bridge-900/82 lg:bg-linear-to-r lg:from-bridge-50 lg:via-bridge-50/88 lg:to-transparent lg:dark:from-bridge-900 lg:dark:via-bridge-900/90 lg:dark:to-bridge-900/28"
                     />
                     <GridLines/>
+                    {/* Neige qui tombe et traîneau qui survole le titre, comme sur
+                        l'accueil (rien sur téléphone). */}
+                    <div className="hidden sm:contents">
+                        <Snowfall/>
+                        <SantaFlyby ceiling="h1"/>
+                    </div>
                 </>
             ) : (
                 <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 select-none overflow-hidden">
@@ -126,7 +140,7 @@ export function QuizTitle({children, className}: {children: ReactNode; className
         <div>
             <h1 className={cn("text-balance font-extrabold leading-[0.9] tracking-normal !text-brand-dark dark:!text-brand-light", className ?? "text-4xl sm:text-5xl")}>
                 {children}
-                <span className={moduleAccent}>.</span>
+                <span className={`title-dot ${moduleAccent}`}>.</span>
             </h1>
             <span aria-hidden="true" className={cn("mt-5 block h-1 w-16 rounded-full", moduleFill)}/>
         </div>

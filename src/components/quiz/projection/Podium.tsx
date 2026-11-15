@@ -53,6 +53,8 @@ export default function Podium({entries, size = "md"}: Props) {
                             >
                                 <span className={cn(
                                     "flex shrink-0 items-center justify-center rounded-full font-extrabold tabular-nums text-white dark:text-brand-dark",
+                                    // Thème de Noël : bonnet sur la pastille du premier (globals.css).
+                                    first && entry && "podium-winner",
                                     first ? moduleFill : "bg-brand-primary",
                                     lg ? "size-12 text-2xl" : "size-8 text-base",
                                 )}>

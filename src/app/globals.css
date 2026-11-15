@@ -887,3 +887,513 @@ input:-webkit-autofill {
     height: 100%;
     overflow: auto;
 }
+
+/* ==========================================================================
+   Thème de Noël — classe `theme-noel` posée sur <html> par le layout
+   (src/lib/seasonalTheme.ts). La palette bridge reste : seul le primaire passe
+   du brique au rouge houx, avec un vert sapin et un or en accents.
+   Contrastes vérifiés : #B42318 sur crème 6.3:1 (texte blanc 6.3:1),
+   #F0857A sur fond sombre 6.3:1 (texte brand-dark 6.6:1).
+   ========================================================================== */
+.theme-noel {
+    --color-brand-primary: #B42318;      /* rouge houx */
+    --color-brand-accent: #D4A23A;       /* or bougie */
+    --color-brand-accent-dark: #8A1A12;  /* hover sur le primaire, texte blanc 8.9:1 */
+    --noel-red: #B42318;
+    --noel-green: #1F5E3B;               /* vert sapin, 7.3:1 sur crème */
+    --noel-gold: #D4A23A;
+    --noel-snow: color-mix(in srgb, var(--color-bridge-400) 60%, transparent);
+}
+
+.theme-noel.dark {
+    --color-brand-primary: #F0857A;
+    --color-brand-accent: #E8C468;
+    --color-brand-accent-dark: #D9655A;
+    --noel-red: #F0857A;
+    --noel-green: #6FBF8E;
+    --noel-gold: #E8C468;
+    --noel-snow: color-mix(in srgb, var(--color-bridge-50) 75%, transparent);
+}
+
+/* Neige du hero : calque entre le voile du hero (z-0) et son texte (z-10).
+   Absente hors thème de Noël et si l'utilisateur limite les animations. */
+.noel-snow {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.theme-noel .noel-snow {
+    display: block;
+}
+
+/* Chaque flocon est une colonne haute comme le hero : `translateY(100%)` le
+   fait descendre de toute la hauteur du hero, quelle qu'elle soit. Le point
+   blanc est dessiné en haut de la colonne. */
+.noel-flake {
+    position: absolute;
+    top: -10px;
+    height: 100%;
+    animation-name: noel-fall, noel-sway;
+    animation-timing-function: linear, ease-in-out;
+    animation-iteration-count: infinite, infinite;
+    animation-direction: normal, alternate;
+    will-change: transform, translate;
+}
+
+.noel-flake::before {
+    content: "";
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: var(--noel-snow);
+}
+
+/* Deux propriétés distinctes (`transform` et `translate`) : la chute et le
+   balancement se combinent sans s'écraser, et restent sur le compositeur. */
+@keyframes noel-fall {
+    from { transform: translateY(0); }
+    to   { transform: translateY(calc(100% + 10px)); }
+}
+
+@keyframes noel-sway {
+    from { translate: calc(var(--noel-sway) * -0.5) 0; }
+    to   { translate: calc(var(--noel-sway) * 0.5) 0; }
+}
+
+/* Traîneau du père Noël : la piste fait la largeur du hero, `translateX(100%)`
+   l'emmène donc d'un bord à l'autre. Hauteur, montée, durée et sens sont tirés
+   au hasard à chaque passage (SantaFlyby.tsx). Il vole DEVANT le texte du
+   hero (z-index au-dessus du contenu, en z-10) ; `pointer-events: none` laisse
+   les liens et boutons cliquables à travers lui. */
+.noel-santa-track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    pointer-events: none;
+    animation: noel-santa-fly var(--santa-duration, 9s) linear forwards,
+               noel-santa-rise var(--santa-duration, 9s) ease-in-out forwards;
+}
+
+.noel-santa-track[data-direction="rtl"] {
+    animation-direction: reverse, reverse;
+}
+
+.noel-santa {
+    --santa-ink: var(--color-brand-dark);
+    --santa-deer: #7A4E2E;
+    --santa-deer-light: #C49A6C;
+    --santa-antler: #4A3020;
+    --santa-sack: #A9784A;
+    --santa-fur: #FBF4EA;
+    --santa-skin: #F2C9A6;
+    --santa-cheek: #E8907C;
+    --santa-red: #C62F22;
+    display: block;
+    width: clamp(150px, 15vw, 220px);
+    height: auto;
+    overflow: visible;
+    rotate: var(--santa-tilt, 0deg);
+    animation: noel-santa-bob 1.1s ease-in-out infinite alternate;
+}
+
+.dark .noel-santa {
+    --santa-ink: var(--color-bridge-50);
+    --santa-deer: #B98758;
+    --santa-deer-light: #E2C29A;
+    --santa-antler: #EAD5B8;
+    --santa-sack: #C0925F;
+    --santa-red: #D9443A;
+}
+
+/* Hero compact (pages module, section, contenu) : traîneau à l'échelle du bandeau. */
+.noel-santa-track[data-compact] .noel-santa {
+    width: clamp(110px, 10vw, 150px);
+}
+
+.noel-santa-track[data-direction="rtl"] .noel-santa {
+    scale: -1 1;
+}
+
+/* Galop : les deux paires de pattes battent en sens opposé. */
+.noel-gallop-front,
+.noel-gallop-back {
+    transform-box: fill-box;
+    animation: noel-gallop 0.42s ease-in-out infinite alternate;
+}
+
+.noel-gallop-front {
+    transform-origin: 0% 0%;
+}
+
+.noel-gallop-back {
+    transform-origin: 100% 0%;
+    animation-direction: alternate-reverse;
+}
+
+@keyframes noel-gallop {
+    from { transform: rotate(-14deg); }
+    to   { transform: rotate(12deg); }
+}
+
+.noel-trail {
+    animation: noel-trail-twinkle 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes noel-trail-twinkle {
+    from { opacity: 0.45; }
+    to   { opacity: 1; }
+}
+
+@keyframes noel-santa-fly {
+    from { transform: translateX(-280px); }
+    to   { transform: translateX(100%); }
+}
+
+@keyframes noel-santa-rise {
+    from { translate: 0 0; }
+    to   { translate: 0 var(--santa-rise, 0px); }
+}
+
+@keyframes noel-santa-bob {
+    from { transform: translateY(-3px); }
+    to   { transform: translateY(3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .noel-snow,
+    .noel-santa-track {
+        display: none;
+    }
+}
+
+/* Stalactites à la jonction bas du hero : une rangée accrochée au bord
+   inférieur, qui pend sur le haut de la zone suivante. Posée après le hero
+   (qui coupe ce qui déborde), sous la carte des compteurs (z-10) qui le
+   chevauche. Motif irrégulier de 240 px répété, découpé par un masque SVG.
+   Deux couches de fond, sans animation : le reflet de chaque stalactite
+   (même tuile que le masque) et le dégradé de la glace. */
+.noel-icicles {
+    display: none;
+    position: relative;
+    /* z-index 0 : tout bloc positionné qui suit (cartes de compteurs des pages
+       module et section) passe devant, même sans z-index propre. */
+    z-index: 0;
+    width: 100%;
+    height: 0;
+    pointer-events: none;
+}
+
+.theme-noel .noel-icicles {
+    display: block;
+}
+
+.noel-icicles::before {
+    --ice-top: #D3E1E8;
+    --ice-tip: #A9C3D1;
+    --ice-tile: 240px 30px;
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 30px;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22240%22 height=%2230%22 viewBox=%220 0 240 30%22%3E%3Cpath d=%22M0 1.2 H240%22 stroke=%22white%22 stroke-opacity=%220.9%22 stroke-width=%221.4%22/%3E%3Cpath d=%22M4.3 4.5 Q4.6 5.9 5.6 10.1 M16.8 4.5 Q17.2 11.3 18.4 19.5 M29.5 4.5 Q29.8 4.5 30.6 7.8 M43.0 4.5 Q43.4 8.6 44.5 14.8 M57.8 4.5 Q58.0 3.6 58.7 6.2 M69.5 4.5 Q70.0 12.6 71.4 21.8 M86.3 4.5 Q86.6 5.4 87.6 9.4 M99.0 4.5 Q99.4 8.1 100.5 14.0 M113.8 4.5 Q114.0 4.0 114.7 7.0 M125.8 4.5 Q126.2 10.8 127.4 18.7 M142.3 4.5 Q142.6 5.9 143.6 10.1 M155.5 4.5 Q156.0 13.5 157.4 23.4 M173.5 4.5 Q173.8 5.0 174.6 8.6 M186.0 4.5 Q186.4 9.0 187.5 15.6 M201.3 4.5 Q201.6 6.8 202.6 11.7 M214.8 4.5 Q215.0 4.0 215.7 7.0 M227.0 4.5 Q227.4 9.9 228.5 17.2%22 stroke=%22white%22 stroke-opacity=%220.75%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 fill=%22none%22/%3E%3C/svg%3E"),
+        linear-gradient(to bottom, var(--ice-top), var(--ice-tip));
+    background-size: var(--ice-tile), 100% 100%;
+    background-repeat: repeat-x, no-repeat;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22240%22 height=%2230%22 viewBox=%220 0 240 30%22%3E%3Cpath fill=%22white%22 d=%22M0 0 H240 V4 Q120 6 0 4 Z M2.5 3 Q4.25 7.8 6 13 Q7.75 7.8 9.5 3 Z M14.5 3 Q16.75 15.0 19 25 Q21.25 15.0 23.5 3 Z M28 3 Q29.5 6.0 31 10 Q32.5 6.0 34 3 Z M41 3 Q43 11.4 45 19 Q47 11.4 49 3 Z M56.5 3 Q57.75 4.8 59 8 Q60.25 4.8 61.5 3 Z M67 3 Q69.5 16.8 72 28 Q74.5 16.8 77 3 Z M84.5 3 Q86.25 7.2 88 12 Q89.75 7.2 91.5 3 Z M97 3 Q99 10.8 101 18 Q103 10.8 105 3 Z M112.5 3 Q113.75 5.4 115 9 Q116.25 5.4 117.5 3 Z M123.5 3 Q125.75 14.4 128 24 Q130.25 14.4 132.5 3 Z M140.5 3 Q142.25 7.8 144 13 Q145.75 7.8 147.5 3 Z M153 3 Q155.5 18.0 158 30 Q160.5 18.0 163 3 Z M172 3 Q173.5 6.6 175 11 Q176.5 6.6 178 3 Z M184 3 Q186 12.0 188 20 Q190 12.0 192 3 Z M199.5 3 Q201.25 9.0 203 15 Q204.75 9.0 206.5 3 Z M213.5 3 Q214.75 5.4 216 9 Q217.25 5.4 218.5 3 Z M225 3 Q227 13.2 229 22 Q231 13.2 233 3 Z%22/%3E%3C/svg%3E") repeat-x 0 0 / 240px 30px;
+    mask: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22240%22 height=%2230%22 viewBox=%220 0 240 30%22%3E%3Cpath fill=%22white%22 d=%22M0 0 H240 V4 Q120 6 0 4 Z M2.5 3 Q4.25 7.8 6 13 Q7.75 7.8 9.5 3 Z M14.5 3 Q16.75 15.0 19 25 Q21.25 15.0 23.5 3 Z M28 3 Q29.5 6.0 31 10 Q32.5 6.0 34 3 Z M41 3 Q43 11.4 45 19 Q47 11.4 49 3 Z M56.5 3 Q57.75 4.8 59 8 Q60.25 4.8 61.5 3 Z M67 3 Q69.5 16.8 72 28 Q74.5 16.8 77 3 Z M84.5 3 Q86.25 7.2 88 12 Q89.75 7.2 91.5 3 Z M97 3 Q99 10.8 101 18 Q103 10.8 105 3 Z M112.5 3 Q113.75 5.4 115 9 Q116.25 5.4 117.5 3 Z M123.5 3 Q125.75 14.4 128 24 Q130.25 14.4 132.5 3 Z M140.5 3 Q142.25 7.8 144 13 Q145.75 7.8 147.5 3 Z M153 3 Q155.5 18.0 158 30 Q160.5 18.0 163 3 Z M172 3 Q173.5 6.6 175 11 Q176.5 6.6 178 3 Z M184 3 Q186 12.0 188 20 Q190 12.0 192 3 Z M199.5 3 Q201.25 9.0 203 15 Q204.75 9.0 206.5 3 Z M213.5 3 Q214.75 5.4 216 9 Q217.25 5.4 218.5 3 Z M225 3 Q227 13.2 229 22 Q231 13.2 233 3 Z%22/%3E%3C/svg%3E") repeat-x 0 0 / 240px 30px;
+}
+
+.noel-icicles[data-compact]::before {
+    --ice-tile: 176px 22px;
+    height: 22px;
+    -webkit-mask-size: 176px 22px;
+    mask-size: 176px 22px;
+}
+
+.dark .noel-icicles::before {
+    --ice-top: rgba(236, 244, 247, 0.9);
+    --ice-tip: rgba(176, 205, 220, 0.55);
+}
+
+/* Neige au pied du pont (SnowBank.tsx). Le calque couvre le conteneur et
+   sert de conteneur de requête : le SVG y prend la taille exacte de
+   l'illustration en `cover` (1782 × 883), soit une largeur de
+   max(100 % de la largeur, 1782/883 × 100 % de la hauteur), calée en bas à
+   droite comme elle. */
+.noel-snowbank,
+.noel-bridge-lights {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    container-type: size;
+}
+
+.theme-noel .noel-snowbank,
+.theme-noel.dark .noel-bridge-lights {
+    display: block;
+}
+
+.noel-snowbank svg,
+.noel-bridge-lights svg {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: max(100cqw, 201.81cqh);
+    height: auto;
+    aspect-ratio: 1782 / 883;
+}
+
+/* Liseré de crête : détache la neige du fond crème en mode clair. */
+.noel-snowbank-crest {
+    stroke: #A9BFCB;
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+}
+
+.noel-snowbank-top {
+    stop-color: #FFFFFF;
+}
+
+.noel-snowbank-base {
+    stop-color: #CCDAE1;
+}
+
+.noel-snowbank-shine {
+    stroke: #FFFFFF;
+    stroke-width: 3;
+    stroke-linecap: round;
+    opacity: 0.9;
+}
+
+.dark .noel-snowbank-crest {
+    stroke: #F4F7F8;
+}
+
+.dark .noel-snowbank-top {
+    stop-color: #EEF3F5;
+}
+
+.dark .noel-snowbank-base {
+    stop-color: #A3B6BF;
+}
+
+/* Pont illuminé (BridgeLights.tsx), en mode sombre seulement : ampoules
+   chaudes le long du tablier et feux rouges au sommet des pylônes. Lumière
+   fixe, sans scintillement. */
+.noel-bridge-bulb {
+    fill: #FFE2A8;
+}
+
+.noel-bridge-glow {
+    fill: #FFB454;
+    opacity: 0.55;
+}
+
+.noel-bridge-beacon {
+    fill: #FF6B57;
+}
+
+.noel-bridge-wire {
+    stroke: #3A2C20;
+    stroke-width: 1.2;
+    opacity: 0.8;
+}
+
+/* Point des titres en boule de Noël. Le « . » reste dans le texte (lecteurs
+   d'écran, copier-coller) mais devient invisible ; sa couleur courante (celle
+   du module) remplit la boule. Positions en em : la boule suit la taille du
+   titre. `bottom` part du bas de la boîte inline, soit la descente de la
+   police (~0.275em pour IBM Plex Sans) sous la ligne de base. */
+.theme-noel .title-dot {
+    position: relative;
+    -webkit-text-fill-color: transparent;
+}
+
+.theme-noel .title-dot::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0.27em;
+    width: 0.25em;
+    height: 0.25em;
+    translate: -50% 0;
+    border-radius: 9999px;
+    background:
+        radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.7) 0 0.025em, transparent 0.07em),
+        radial-gradient(circle at 70% 75%, rgba(0, 0, 0, 0.18), transparent 60%),
+        currentColor;
+}
+
+/* Attache dorée et anneau au-dessus de la boule. */
+.theme-noel .title-dot::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: calc(0.27em + 0.235em);
+    width: 0.1em;
+    height: 0.11em;
+    translate: -50% 0;
+    background:
+        linear-gradient(var(--noel-gold), var(--noel-gold)) bottom / 100% 0.05em no-repeat,
+        radial-gradient(circle at 50% 45%, transparent 0.016em, var(--noel-gold) 0.018em 0.032em, transparent 0.034em) top / 100% 0.07em no-repeat;
+}
+
+/* Cadeau lâché par un clic sur le traîneau (SantaFlyby.tsx) : il tombe en
+   tournant jusqu'au bas du décor et s'y pose ; un lutin venu de la gauche le
+   ramasse (il disparaît au sol à `--pickup-at`) et repart avec. */
+/* Échelle commune : la largeur du traîneau (même formule que `.noel-santa`).
+   Cadeau et lutin sont deux fois plus grands qu'à l'échelle stricte du
+   traîneau, pour rester lisibles au sol. */
+.noel-gift,
+.noel-elf {
+    --santa-w: clamp(150px, 15vw, 220px);
+    --gift-size: max(16px, calc(var(--santa-w) * 0.084));
+}
+
+.noel-gift[data-compact],
+.noel-elf[data-compact] {
+    --santa-w: clamp(110px, 10vw, 150px);
+}
+
+.noel-gift {
+    position: absolute;
+    z-index: 1;
+    width: var(--gift-size);
+    height: var(--gift-size);
+    translate: -50% -50%;
+    pointer-events: none;
+    animation:
+        noel-gift-fall var(--gift-fall-duration, 1.4s) cubic-bezier(0.45, 0, 0.85, 0.55) forwards,
+        noel-gift-pickup 0.01s linear var(--pickup-at, 99s) forwards;
+}
+
+.noel-gift svg,
+.noel-elf svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+:is(.noel-gift, .noel-elf)[data-color="red"]   { --gift: #C62F22; --gift-ribbon: #E8C468; }
+:is(.noel-gift, .noel-elf)[data-color="green"] { --gift: #1F6B45; --gift-ribbon: #F2D27A; }
+:is(.noel-gift, .noel-elf)[data-color="gold"]  { --gift: #D4A23A; --gift-ribbon: #C62F22; }
+
+.noel-gift-box    { fill: var(--gift); }
+.noel-gift-lid    { fill: color-mix(in srgb, var(--gift) 82%, #000); }
+.noel-gift-ribbon { fill: var(--gift-ribbon); }
+
+@keyframes noel-gift-fall {
+    0%   { transform: translateY(0) rotate(0deg); }
+    80%  { transform: translateY(var(--gift-fall)) rotate(var(--gift-spin)); }
+    90%  { transform: translateY(calc(var(--gift-fall) - 6px)) rotate(var(--gift-spin)); }
+    100% { transform: translateY(var(--gift-fall)) rotate(var(--gift-spin)); }
+}
+
+@keyframes noel-gift-pickup {
+    to { opacity: 0; }
+}
+
+/* Lutin : posé sur le sol du décor (pieds au niveau du bas du cadeau), il
+   part hors champ à gauche, rejoint le cadeau, s'arrête, fait demi-tour et
+   ressort. `--elf-reach` place ses mains sur le cadeau. */
+.noel-elf {
+    --elf-w: calc(var(--santa-w) * 0.168);
+    --elf-reach: calc(var(--elf-w) * 0.8);
+    --elf-feet: calc(var(--gift-size) / 2);
+    position: absolute;
+    left: 0;
+    z-index: 1;
+    width: var(--elf-w);
+    height: calc(var(--elf-w) * 38 / 30);
+    translate: 0 calc(-100% + var(--elf-feet));
+    pointer-events: none;
+    animation: noel-elf-trip var(--elf-duration) linear var(--elf-start) both;
+}
+
+/* Le demi-tour retourne le dessin, pas le conteneur : `scale` s'appliquant
+   avant `transform`, il inverserait aussi le déplacement. */
+.noel-elf svg {
+    animation: noel-elf-turn var(--elf-duration) linear var(--elf-start) both;
+}
+
+@keyframes noel-elf-trip {
+    0%       { transform: translateX(var(--elf-offscreen)); }
+    45%, 55% { transform: translateX(calc(var(--elf-x) - var(--elf-reach))); }
+    100%     { transform: translateX(var(--elf-offscreen)); }
+}
+
+/* Demi-tour au moment du ramassage. */
+@keyframes noel-elf-turn {
+    0%, 50%     { scale: 1 1; }
+    50.1%, 100% { scale: -1 1; }
+}
+
+.noel-elf-carry {
+    opacity: 0;
+    animation: noel-elf-carry var(--elf-duration) linear var(--elf-start) both;
+}
+
+@keyframes noel-elf-carry {
+    0%, 49.9% { opacity: 0; }
+    50%, 100% { opacity: 1; }
+}
+
+/* Marche : les jambes battent en opposition. */
+.noel-elf-leg-a,
+.noel-elf-leg-b {
+    transform-box: fill-box;
+    transform-origin: 50% 0%;
+    animation: noel-elf-step 0.32s ease-in-out infinite alternate;
+}
+
+.noel-elf-leg-b {
+    animation-direction: alternate-reverse;
+}
+
+@keyframes noel-elf-step {
+    from { transform: rotate(-18deg); }
+    to   { transform: rotate(18deg); }
+}
+
+.noel-elf-legs   { stroke: #C62F22; stroke-width: 2.6; stroke-linecap: round; fill: none; }
+.noel-elf-shoe   { stroke: #3A2618; stroke-width: 2.4; stroke-linecap: round; fill: none; }
+.noel-elf-tunic  { fill: #1F6B45; }
+.noel-elf-arm    { stroke: #1F6B45; stroke-width: 3; stroke-linecap: round; fill: none; }
+.noel-elf-collar { stroke: #E8C468; stroke-width: 1.3; stroke-linejoin: round; fill: none; }
+.noel-elf-belt   { stroke: #3A2618; stroke-width: 1.8; }
+.noel-elf-buckle { fill: none; stroke: #E8C468; stroke-width: 0.8; }
+.noel-elf-skin   { fill: #F2C9A6; }
+.noel-elf-cheek  { fill: #E8907C; }
+.noel-elf-eye    { fill: #2A1D12; }
+.noel-elf-hat    { fill: #C62F22; }
+.noel-elf-hat-tip { stroke: #C62F22; stroke-width: 3; stroke-linecap: round; fill: none; }
+.noel-elf-hat-band { stroke: #FBF4EA; stroke-width: 2; stroke-linecap: round; }
+.noel-elf-pompom { fill: #FBF4EA; }
+
+/* Quiz, thème de Noël : bonnet de père Noël posé de travers sur la pastille du
+   premier au podium (Podium.tsx). Taille relative à la pastille. */
+.theme-noel .podium-winner {
+    position: relative;
+}
+
+.theme-noel .podium-winner::before {
+    content: "";
+    position: absolute;
+    left: -40%;
+    top: -30%;
+    width: 90%;
+    height: 72%;
+    rotate: -24deg;
+    pointer-events: none;
+    background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M5 25 Q10 5 28 5 Q37 6 35 17 L29 12 Q20 12 17 25 Z' fill='%23C62F22' stroke='%237A1A12' stroke-width='1'/%3E%3Crect x='2' y='22' width='19' height='7' rx='3.5' fill='%23FBF4EA' stroke='%23B9A48C' stroke-width='1'/%3E%3Ccircle cx='35' cy='18' r='4.2' fill='%23FBF4EA' stroke='%23B9A48C' stroke-width='1'/%3E%3C/svg%3E");
+}
