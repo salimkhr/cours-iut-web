@@ -1,4 +1,4 @@
-import {describe, expect, test} from "bun:test";
+import {describe, expect, mock, test} from "bun:test";
 import {renderToStaticMarkup} from "react-dom/server";
 import OptionResult from "@/components/quiz/OptionResult";
 import Podium from "@/components/quiz/projection/Podium";
@@ -47,5 +47,28 @@ describe("Podium", () => {
         const html = renderToStaticMarkup(<Podium entries={[]}/>);
         expect(html).toContain("le classement est vide");
         expect(html).not.toContain("Ana M.");
+    });
+});
+
+describe("JoinCodeForm", () => {
+    test("champ étiqueté, aide visible, bouton désactivé tant que rien n'est saisi", async () => {
+        mock.module("next/navigation", () => ({useRouter: () => ({push: () => {}})}));
+        const {default: JoinCodeForm} = await import("@/components/quiz/play/JoinCodeForm");
+        const html = renderToStaticMarkup(<JoinCodeForm/>);
+        expect(html).toContain('for="quiz-code"');
+        expect(html).toContain('id="quiz-code"');
+        expect(html).toContain('aria-describedby="quiz-code-help"');
+        expect(html).toContain("affiché sous le QR code");
+        expect(html).toMatch(/<button[^>]*type="submit"[^>]*disabled/);
+    });
+});
+
+describe("JoinQuizButton", () => {
+    test("lien vers la saisie du code, aux couleurs du module", async () => {
+        const {default: JoinQuizButton} = await import("@/components/quiz/JoinQuizButton");
+        const html = renderToStaticMarkup(<JoinQuizButton accentColor="#123456" accentColorDark="#abcdef"/>);
+        expect(html).toMatch(/<a[^>]*href="\/quiz"/);
+        expect(html).toContain("Rejoindre le quiz");
+        expect(html).toContain("--module-color:#123456");
     });
 });

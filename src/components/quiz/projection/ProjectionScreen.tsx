@@ -98,7 +98,7 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
                                 <>
                                     <QuizTitle className="text-[6.4rem]">Rejoignez le quiz</QuizTitle>
                                     <p className="mt-6 max-w-3xl text-[1.5rem] leading-relaxed text-bridge-600 dark:text-bridge-300">
-                                        Scannez le QR code avec votre téléphone et connectez-vous avec votre compte.
+                                        Sur téléphone, scannez le QR code. Sur ordinateur, ouvrez l&apos;adresse ci-contre et tapez le code.
                                     </p>
                                     <div className="mt-10 flex max-w-4xl items-center gap-10 border-t border-bridge-500/35 pt-8 dark:border-bridge-400/30">
                                         <div className="w-[22rem] shrink-0">
@@ -106,11 +106,12 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
                                         </div>
                                         <div className="flex flex-col gap-5">
                                             <div>
-                                                <p className={quizEyebrow}>Code de secours</p>
-                                                <p className="text-6xl font-extrabold tracking-[0.15em] tabular-nums">{state.shortCode}</p>
-                                                <p className="mt-1 text-lg text-bridge-600 dark:text-bridge-300">
-                                                    {joinUrl && `${new URL(joinUrl).host}/quiz/`}<span className="font-semibold">{state.shortCode}</span>
+                                                <p className={quizEyebrow}>Sur ordinateur</p>
+                                                <p className="mt-1 text-3xl font-semibold">
+                                                    {joinUrl && `${new URL(joinUrl).host}/quiz`}
                                                 </p>
+                                                <p className={`${quizEyebrow} mt-4`}>Code</p>
+                                                <p className="text-6xl font-extrabold tracking-[0.15em] tabular-nums">{state.shortCode}</p>
                                             </div>
                                             <p className="text-3xl font-bold tabular-nums" role="status">
                                                 {state.participantCount} participant{plural(state.participantCount)} connecté{plural(state.participantCount)}

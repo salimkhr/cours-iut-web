@@ -19,7 +19,8 @@ function Shell({mode = "title", moduleSlug, children}: {mode?: "title" | "conten
         // Le menu du site occupe le haut de l'écran : sans cette hauteur, la page dépasse d'autant et oblige à
         // faire défiler pour voir la question et le bouton « Valider » (même règle que la projection).
         <QuizStage mode={mode} moduleSlug={moduleSlug} className="min-h-[calc(100dvh-var(--navbar-h))]">
-            <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-5 pt-5 pb-[calc(2.5rem+env(safe-area-inset-bottom))]">{children}</div>
+            {/* Colonne de téléphone, élargie sur ordinateur (mode PC) pour ne pas laisser un ruban au milieu de l'écran. */}
+            <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-5 pt-5 pb-[calc(2.5rem+env(safe-area-inset-bottom))] md:max-w-2xl md:px-8 md:pt-10">{children}</div>
         </QuizStage>
     );
 }
@@ -40,6 +41,7 @@ function Failure({message}: {message: string}) {
         <Shell>
             <QuizTitle className="text-4xl">Impossible de rejoindre le quiz</QuizTitle>
             <p role="alert" className="text-base">{message}</p>
+            <Link href="/quiz" className="font-semibold underline underline-offset-4">Saisir un autre code</Link>
             <Link href="/" className="font-semibold underline underline-offset-4">Retour aux modules</Link>
         </Shell>
     );
