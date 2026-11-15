@@ -16,6 +16,7 @@ import {getServerSession} from "@/lib/auth";
 import {getCorrectionBaseUrl} from "@/lib/gitlab";
 import ContextualModuleAdmin from "@/components/admin/ContextualModuleAdmin";
 import LaunchQuizButton from "@/components/quiz/LaunchQuizButton";
+import JoinQuizButton from "@/components/quiz/JoinQuizButton";
 import {canManageQuiz} from "@/lib/quiz/permissions";
 import {QuizService} from "@/lib/quiz/QuizService";
 import {connectToDB} from "@/lib/mongodb";
@@ -42,8 +43,9 @@ export default async function Module({params}: ModulePageProps) {
     const session = await getServerSession();
     const isAdmin = session?.user.role === 'admin';
 
-    // Quiz live : lancement réservé à l'enseignant, seulement si le module a des questions.
-    const quizQuestionCount = canManageQuiz(session)
+    // Quiz live : l'enseignant le lance, l'étudiant le rejoint ; rien n'apparaît si le module n'a pas de question.
+    const manager = canManageQuiz(session);
+    const quizQuestionCount = session
         ? ((await new QuizService(await connectToDB()).get(String(currentModule._id)))?.questions.length ?? 0)
         : 0;
 
@@ -83,7 +85,13 @@ export default async function Module({params}: ModulePageProps) {
                         />
                     )}
                     <ModuleInfo currentModule={currentModule}/>
-                    {canManageQuiz(session) && (
+                    {session && !manager && quizQuestionCount > 0 && (
+                        <JoinQuizButton
+                            accentColor={moduleColor(currentModule)}
+                            accentColorDark={moduleColor(currentModule, 'dark')}
+                        />
+                    )}
+                    {manager && (
                         <LaunchQuizButton
                             moduleId={String(currentModule._id)}
                             moduleSlug={currentModule.path}

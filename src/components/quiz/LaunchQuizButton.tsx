@@ -12,6 +12,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {api} from "@/components/quiz/quizClient";
+import {QUIZ_BUTTON_CLASS} from "@/components/quiz/quizButtonClass";
 
 interface Props {
     moduleId: string;
@@ -22,8 +23,6 @@ interface Props {
     questionCount: number;
 }
 
-const BUTTON_CLASS =
-    "group h-auto gap-2 rounded-lg border-[3px] border-(--module-color) bg-transparent px-6 py-3 text-sm font-semibold tracking-wide text-brand-dark shadow-none transition-all duration-300 hover:border-(--module-color) hover:bg-(--module-color) hover:text-white dark:text-brand-light dark:hover:text-brand-dark";
 
 /**
  * Menu « Quiz » de la page du module (enseignant uniquement) : lancer une session live, gérer les
@@ -54,7 +53,7 @@ export default function LaunchQuizButton({moduleId, moduleSlug, accentColor, acc
         <div className="flex flex-col gap-1">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button type="button" variant="outline" style={style} className={BUTTON_CLASS} disabled={busy}>
+                    <Button type="button" variant="outline" style={style} className={QUIZ_BUTTON_CLASS} disabled={busy}>
                         {busy ? "Création de la session…" : "Quiz"}
                         <Play className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true"/>
                     </Button>
