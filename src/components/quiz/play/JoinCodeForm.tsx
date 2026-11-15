@@ -7,7 +7,7 @@ import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {normalizeJoinCode, SHORT_CODE_LENGTH} from "@/lib/quiz/joinCode";
 
-/** Mode ordinateur : le code affiché sous le QR remplace le scan. */
+/** Mode ordinateur : le code affiché à côté du QR remplace le scan. */
 export default function JoinCodeForm() {
     const router = useRouter();
     const [value, setValue] = useState("");
@@ -53,7 +53,7 @@ export default function JoinCodeForm() {
                 role={error ? "alert" : undefined}
                 className={error ? "text-sm font-semibold text-destructive" : "text-sm text-bridge-600 dark:text-bridge-300"}
             >
-                {error ?? "Le code est affiché sous le QR code, au tableau. Les majuscules ne comptent pas."}
+                {error ?? "Saisissez le code du quiz."}
             </p>
         </form>
     );

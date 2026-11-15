@@ -58,7 +58,7 @@ describe("JoinCodeForm", () => {
         expect(html).toContain('for="quiz-code"');
         expect(html).toContain('id="quiz-code"');
         expect(html).toContain('aria-describedby="quiz-code-help"');
-        expect(html).toContain("affiché sous le QR code");
+        expect(html).toContain("Saisissez le code du quiz.");
         expect(html).toMatch(/<button[^>]*type="submit"[^>]*disabled/);
     });
 });
