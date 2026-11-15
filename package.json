@@ -26,6 +26,7 @@
     "rag:search": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/rag-search.ts",
     "rag:usage": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/rag-usage.ts",
     "seed-quiz-test-users": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/seed-quiz-test-users.ts",
+    "quiz-rehearsal": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/quiz-rehearsal.ts",
     "migrate:project-spec": "bunx dotenv-cli -e .env -e .env.local -- bun src/scripts/migrate-project-spec.ts",
     "generate-skill": "bun scripts/generate-skill.ts",
     "seed-oauth-client": "bunx dotenv-cli -e .env -e .env.local -- bun scripts/seed-oauth-client.ts",
