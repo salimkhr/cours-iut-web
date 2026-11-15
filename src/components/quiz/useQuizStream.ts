@@ -2,8 +2,9 @@
 
 import {useEffect, useState} from "react";
 import type {QuizPublicState} from "@/lib/quiz/quizPublicState";
+import {connectQuizStream, type StreamConnection} from "@/components/quiz/quizStreamConnection";
 
-export type StreamConnection = "connecting" | "connected" | "reconnecting";
+export type {StreamConnection};
 
 export interface QuizStream<T extends QuizPublicState> {
     state: T | null;
@@ -14,8 +15,8 @@ export interface QuizStream<T extends QuizPublicState> {
 
 /**
  * Charge d'abord l'état persistant (récupération après reconnexion), puis suit
- * le flux SSE. EventSource se reconnecte seul ; le serveur renvoie l'état
- * courant à chaque ouverture, donc aucune mise à jour n'est perdue.
+ * le flux SSE. Le serveur renvoie l'état courant à chaque ouverture, donc
+ * aucune mise à jour n'est perdue ; la reprise est décrite dans `connectQuizStream`.
  */
 export function useQuizStream<T extends QuizPublicState>(
     sessionId: string,
@@ -25,37 +26,17 @@ export function useQuizStream<T extends QuizPublicState>(
     const [connection, setConnection] = useState<StreamConnection>("connecting");
     const [error, setError] = useState<QuizStream<T>["error"]>(null);
 
-    useEffect(() => {
-        let closed = false;
-        let source: EventSource | null = null;
-        const query = audience === "projection" ? "?audience=projection" : "";
-
-        void fetch(`/api/quiz/sessions/${sessionId}/state${query}`, {cache: "no-store"})
-            .then(async (res) => {
-                if (closed) return;
-                const json = await res.json().catch(() => null);
-                if (!res.ok) {
-                    setError({status: res.status, message: json?.error ?? "Session indisponible"});
-                    return;
-                }
-                setState(json as T);
-                source = new EventSource(`/api/quiz/sessions/${sessionId}/stream${query}`);
-                source.addEventListener("state", (event) => {
-                    setState(JSON.parse((event as MessageEvent<string>).data) as T);
-                    setConnection("connected");
-                });
-                source.onopen = () => setConnection("connected");
-                source.onerror = () => setConnection("reconnecting");
-            })
-            .catch(() => {
-                if (!closed) setError({status: 0, message: "Connexion impossible"});
-            });
-
-        return () => {
-            closed = true;
-            source?.close();
-        };
-    }, [sessionId, audience]);
+    useEffect(() => connectQuizStream<T>(sessionId, audience, {
+        onState: setState,
+        onConnection: setConnection,
+        onFatal: setError,
+    }, {
+        fetch: (url, init) => fetch(url, init),
+        createEventSource: (url) => new EventSource(url),
+        setTimeout: (fn, ms) => window.setTimeout(fn, ms),
+        clearTimeout: (handle) => window.clearTimeout(handle as number),
+        document,
+    }), [sessionId, audience]);
 
     return {state, connection, error};
 }
