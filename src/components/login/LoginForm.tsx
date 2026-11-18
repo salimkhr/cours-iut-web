@@ -15,12 +15,12 @@ import {Field, FieldLabel} from "@/components/ui/field";
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group";
 import {Label} from "@/components/ui/label";
 
-import CaptchaPending, {BlinkingBot} from "@/components/login/CaptchaPending";
+import CaptchaPending, {BlinkingBot, CaptchaUnavailable, useTurnstileLoadFailure} from "@/components/login/CaptchaPending";
 import {loginSchema, LoginValues} from "@/lib/schemas/login.schema";
 import {authErrorMessage} from "@/lib/authErrors";
 
 
-export default function LoginForm({redirectTo = "/"}: {redirectTo?: string}) {
+export default function LoginForm({redirectTo = "/", captchaRequired}: {redirectTo?: string; captchaRequired: boolean}) {
     const router = useRouter();
 
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
@@ -28,8 +28,11 @@ export default function LoginForm({redirectTo = "/"}: {redirectTo?: string}) {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
-    const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_TOKEN;
-    const captchaRequired = !!sitekey;
+    // `captchaRequired` est décidé côté serveur : faux depuis le réseau de l'IUT,
+    // où challenges.cloudflare.com est bloqué en examen.
+    const sitekey = captchaRequired ? process.env.NEXT_PUBLIC_TURNSTILE_TOKEN : undefined;
+    const {failed: captchaFailed, onScriptError} = useTurnstileLoadFailure(sitekey);
+    const captchaShown = !!sitekey;
 
     const {
         register,
@@ -90,7 +93,7 @@ export default function LoginForm({redirectTo = "/"}: {redirectTo?: string}) {
         setLoading(true);
         setError(null);
 
-        if (captchaRequired && !captchaToken) {
+        if (captchaShown && !captchaToken) {
             setError("Veuillez valider le captcha");
             setLoading(false);
             return;
@@ -138,6 +141,7 @@ export default function LoginForm({redirectTo = "/"}: {redirectTo?: string}) {
             {sitekey && (
                 <Script
                     src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+                    onError={onScriptError}
                     async
                     defer
                 />
@@ -236,7 +240,7 @@ export default function LoginForm({redirectTo = "/"}: {redirectTo?: string}) {
                 )}
 
                 {/* Submit */}
-                <Button type="submit" disabled={loading || (captchaRequired && !captchaToken)} size="lg" className="group w-full h-auto rounded-lg bg-brand-accent-dark text-white dark:text-brand-dark hover:bg-brand-accent-dark hover:-translate-y-0.5 border-2 border-brand-accent-dark px-6 py-3 text-sm font-semibold tracking-wide shadow-[0_8px_24px_-10px_rgba(194,65,12,0.55)] hover:shadow-[0_14px_36px_-12px_rgba(194,65,12,0.75)] transition-all duration-300 flex items-center justify-center gap-2"
+                <Button type="submit" disabled={loading || (captchaShown && !captchaToken)} size="lg" className="group w-full h-auto rounded-lg bg-brand-accent-dark text-white dark:text-brand-dark hover:bg-brand-accent-dark hover:-translate-y-0.5 border-2 border-brand-accent-dark px-6 py-3 text-sm font-semibold tracking-wide shadow-[0_8px_24px_-10px_rgba(194,65,12,0.55)] hover:shadow-[0_14px_36px_-12px_rgba(194,65,12,0.75)] transition-all duration-300 flex items-center justify-center gap-2"
                 >
                     {loading ? (
                         <>
@@ -248,7 +252,7 @@ export default function LoginForm({redirectTo = "/"}: {redirectTo?: string}) {
                             {/* Pendant la vérification anti-robot, l'icône devient un
                                 robot qui cligne : le bouton grisé montre qu'il se
                                 passe quelque chose, sans que son libellé change. */}
-                            {captchaRequired && !captchaToken
+                            {captchaShown && !captchaToken
                                 ? <BlinkingBot size={16} className="shrink-0"/>
                                 : <LogIn className="h-4 w-4"/>}
                             Se connecter
@@ -256,7 +260,7 @@ export default function LoginForm({redirectTo = "/"}: {redirectTo?: string}) {
                     )}
                 </Button>
 
-                {captchaRequired && !captchaToken && !loading && <CaptchaPending/>}
+                {captchaShown && !captchaToken && !loading && (captchaFailed ? <CaptchaUnavailable/> : <CaptchaPending/>)}
             </form>
 
             <p className="text-center text-sm mt-6 text-brand-gray-700 dark:text-brand-gray-300">

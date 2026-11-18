@@ -15,7 +15,9 @@ const MESSAGES: Record<string, string> = {
     PASSWORD_TOO_LONG: "Le mot de passe est trop long.",
     INVALID_PASSWORD: "Mot de passe incorrect.",
     INVALID_TOKEN: "Lien invalide ou expiré.",
-    MISSING_RESPONSE: "La vérification anti-robot n’est pas terminée. Réessayez dans un instant.",
+    // Le formulaire bloque l'envoi sans jeton : ce code ne survient que si la page a été
+    // servie sans captcha (réseau de l'IUT) et l'envoi vu d'une autre IP.
+    MISSING_RESPONSE: "La vérification anti-robot n’a pas eu lieu. Rechargez la page puis réessayez.",
     VERIFICATION_FAILED: "La vérification anti-robot a échoué. Réessayez.",
 };
 

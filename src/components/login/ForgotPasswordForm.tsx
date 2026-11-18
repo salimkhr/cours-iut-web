@@ -11,19 +11,23 @@ import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
+import {CaptchaUnavailable, useTurnstileLoadFailure} from "@/components/login/CaptchaPending";
 
 const schema = z.object({
     email: z.string().email("Adresse email invalide"),
 });
 type Values = z.infer<typeof schema>;
 
-export default function ForgotPasswordForm() {
+export default function ForgotPasswordForm({captchaRequired}: {captchaRequired: boolean}) {
     const [sent, setSent] = useState(false);
     const [serverError, setServerError] = useState<string | null>(null);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
-    const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_TOKEN;
-    const captchaRequired = !!sitekey;
+    // `captchaRequired` est décidé côté serveur : faux depuis le réseau de l'IUT,
+    // où challenges.cloudflare.com est bloqué en examen.
+    const sitekey = captchaRequired ? process.env.NEXT_PUBLIC_TURNSTILE_TOKEN : undefined;
+    const {failed: captchaFailed, onScriptError} = useTurnstileLoadFailure(sitekey);
+    const captchaShown = !!sitekey;
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Values>({
         resolver: zodResolver(schema),
@@ -111,6 +115,7 @@ export default function ForgotPasswordForm() {
             {sitekey && (
                 <Script
                     src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+                    onError={onScriptError}
                     async
                     defer
                 />
@@ -146,12 +151,14 @@ export default function ForgotPasswordForm() {
 
                 <Button
                     type="submit"
-                    disabled={isSubmitting || (captchaRequired && !captchaToken)}
+                    disabled={isSubmitting || (captchaShown && !captchaToken)}
                     size="lg"
                     className="w-full bg-brand-accent-dark text-white dark:text-brand-dark hover:bg-brand-accent-dark/90 flex items-center justify-center gap-2"
                 >
-                    {isSubmitting ? "Envoi…" : captchaRequired && !captchaToken ? "Validation du captcha…" : <><Send className="h-4 w-4"/>Envoyer le lien</>}
+                    {isSubmitting ? "Envoi…" : captchaShown && !captchaToken ? "Validation du captcha…" : <><Send className="h-4 w-4"/>Envoyer le lien</>}
                 </Button>
+
+                {captchaShown && !captchaToken && captchaFailed && <CaptchaUnavailable/>}
 
                 <p className="text-center text-sm text-brand-gray-700 dark:text-brand-gray-300">
                     <Link
