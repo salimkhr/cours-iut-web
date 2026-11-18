@@ -13,9 +13,10 @@ type Props = {
     email: string;
     imageUrl: string | null;
     group: Group | null;
+    extraTime: boolean;
 };
 
-export default function AccountTabs({initialFirstName, initialLastName, email, imageUrl, group}: Props) {
+export default function AccountTabs({initialFirstName, initialLastName, email, imageUrl, group, extraTime}: Props) {
     return (
         <div className="space-y-5">
 
@@ -63,6 +64,7 @@ export default function AccountTabs({initialFirstName, initialLastName, email, i
                         email={email}
                         imageUrl={imageUrl}
                         group={group}
+                        extraTime={extraTime}
                     />
                 </TabsContent>
 

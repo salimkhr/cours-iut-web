@@ -2,8 +2,9 @@ import {randomBytes, randomUUID} from "node:crypto";
 import type {Db} from "mongodb";
 import {QuizService} from "@/lib/quiz/QuizService";
 import {LiveQuizRegistry} from "@/lib/quiz/LiveQuizRegistry";
-import {closeQuestion, isOpenAt, nextQuestion, startQuiz} from "@/lib/quiz/quizMachine";
+import {isOpenAt, nextReview, normalizedTime, progressAt, startQuiz, startReview} from "@/lib/quiz/quizMachine";
 import {buildState, type QuizAudience, type QuizPublicState, type StateData} from "@/lib/quiz/quizPublicState";
+import {participantSeed, questionsFor} from "@/lib/quiz/quizOptionOrder";
 import {scoreQuestion} from "@/lib/quiz/quizScoring";
 import type {QuizAnswer, QuizParticipant, QuizSession} from "@/lib/quiz/quizTypes";
 
@@ -28,6 +29,8 @@ export interface Identity {
     email: string | null;
     /** Identifiant IUT (better-auth `username`). */
     username: string | null;
+    /** Tiers-temps déclaré sur le compte. */
+    extraTime: boolean;
 }
 
 interface SessionDoc extends Omit<QuizSession, "id"> {
@@ -49,8 +52,9 @@ function isDuplicate(error: unknown): boolean {
 }
 
 /**
- * Cycle de vie d'une session : création (instantané du quiz), participation,
- * réponses, fermeture automatique des questions, publication SSE.
+ * Cycle de vie d'une session en deux temps :
+ * 1. `running` : chaque participant enchaîne les questions avec son propre chrono (× 4/3 en tiers-temps) ;
+ * 2. `review` : l'enseignant reparcourt les questions avec la correction, puis l'écran de fin.
  * Toute transition sensible est décidée ici, côté serveur.
  */
 export class LiveQuizService {
@@ -95,8 +99,7 @@ export class LiveQuizService {
                 quiz: {negativeMarking: quiz.negativeMarking, questions: structuredClone(quiz.questions)},
                 phase: "lobby",
                 questionIndex: -1,
-                questionStartedAt: null,
-                deadline: null,
+                startedAt: null,
                 createdAt: now,
                 endedAt: null,
                 expiresAt: new Date(now + SESSION_TTL_MS),
@@ -132,7 +135,7 @@ export class LiveQuizService {
     private async loadData(session: QuizSession): Promise<StateData> {
         const [participants, currentAnswers] = await Promise.all([
             this.participants.find({sessionId: session.id}).toArray(),
-            session.questionIndex >= 0
+            session.phase === "review"
                 ? this.answers.find({
                     sessionId: session.id,
                     questionId: session.quiz.questions[session.questionIndex]?.id ?? "",
@@ -144,12 +147,16 @@ export class LiveQuizService {
 
     /** État persistant pour une audience (reconnexion, état initial du flux SSE). */
     async getState(sessionId: string, audience: QuizAudience): Promise<QuizPublicState> {
-        const session = await this.requireSession(sessionId);
+        let session = await this.requireSession(sessionId);
         if (audience !== "projection" && !(await this.participants.findOne({sessionId, userId: audience.userId}))) {
             // Un compte qui n'a pas rejoint ne doit pas lire les énoncés.
             throw new QuizSessionError("not_participant", "Vous ne participez pas à cette session");
         }
-        await this.ensureTimer(session);
+        if (session.phase === "running") {
+            // Rattrape les échéances passées (chrono perdu au redémarrage, horloge client en avance).
+            await this.sweep(sessionId);
+            session = await this.requireSession(sessionId);
+        }
         return buildState(await this.loadData(session), audience);
     }
 
@@ -181,6 +188,11 @@ export class LiveQuizService {
             joinedAt: this.clock(),
             score: 0,
             timeMs: 0,
+            // Figé ici : changer la case du compte en pleine séance ne modifie pas les durées.
+            extraTime: identity.extraTime,
+            currentIndex: -1,
+            questionStartedAt: null,
+            deadline: null,
         };
         // Deux `join` simultanés (double appel de l'effet React, deux onglets) ne doivent
         // jamais créer deux lignes. Un upsert sur (sessionId, userId) n'est atomique que
@@ -196,109 +208,190 @@ export class LiveQuizService {
 
     // ── Pilotage ────────────────────────────────────────────────────────────
 
+    /** lobby → running : chaque participant ouvre la question 0 avec son propre chrono. */
     async start(sessionId: string): Promise<void> {
         const session = await this.requireSession(sessionId);
-        const next = startQuiz(session, this.clock());
+        const now = this.clock();
+        const next = startQuiz(session, now);
         const result = await this.sessions.updateOne(
             {_id: sessionId, phase: "lobby"},
-            {$set: {
-                phase: next.phase,
-                questionIndex: next.questionIndex,
-                questionStartedAt: next.questionStartedAt,
-                deadline: next.deadline,
-            }},
+            {$set: {phase: next.phase, startedAt: next.startedAt, questionIndex: next.questionIndex}},
         );
         if (result.matchedCount === 0) return;
-        this.schedule(sessionId, next.deadline);
-        await this.publish(sessionId);
+        await this.openFirst(session, now);
+        await this.sweep(sessionId, true);
     }
 
-    /** Appelé par le chronomètre à l'échéance et par l'enseignant. Idempotent. */
-    async closeCurrentQuestion(sessionId: string): Promise<void> {
+    /**
+     * Fin de la phase autonome, déclenchée par l'enseignant ou quand tout le monde a fini. Idempotent.
+     * Les questions restantes comptent comme non répondues.
+     */
+    async endRunning(sessionId: string): Promise<void> {
         const session = await this.getSession(sessionId);
-        if (!session || session.phase !== "question_open") return;
+        if (!session || session.phase !== "running") return;
         this.clearTimer(sessionId);
-        const next = closeQuestion(session);
-
-        // Garde atomique : un seul appelant (timer ou enseignant) fait la transition.
+        const next = startReview(session);
+        // Garde atomique : un seul appelant (chrono, dernière réponse ou enseignant) fait la transition.
         const result = await this.sessions.updateOne(
-            {_id: sessionId, phase: "question_open", questionIndex: session.questionIndex},
-            {$set: {phase: next.phase, questionStartedAt: null, deadline: null}},
+            {_id: sessionId, phase: "running"},
+            {$set: {phase: next.phase, questionIndex: next.questionIndex}},
         );
         if (result.matchedCount === 0) return;
 
-        await this.recordAbsences(session);
+        const questions = session.quiz.questions;
+        for (const p of await this.participants.find({sessionId}).toArray()) {
+            // Positions dans l'ordre propre au participant.
+            for (let index = Math.max(0, p.currentIndex ?? 0); index < questions.length; index++) {
+                await this.recordAbsence(session, p, index);
+            }
+            await this.participants.updateOne(
+                {sessionId, userId: p.userId},
+                {$set: progressAt(questions, questions.length, 0, false)},
+            );
+        }
         await this.publish(sessionId);
     }
 
+    /** « Suivant » pendant la correction ; après la dernière question, l'écran de fin. */
     async next(sessionId: string): Promise<void> {
         const session = await this.requireSession(sessionId);
-        const now = this.clock();
-        const next = nextQuestion(session, now);
+        const next = nextReview(session, this.clock());
         const result = await this.sessions.updateOne(
-            // Garde atomique sur la phase lue (reveal ou leaderboard) : un double clic n'avance qu'une fois.
-            {_id: sessionId, phase: session.phase, questionIndex: session.questionIndex},
-            {$set: {
-                phase: next.phase,
-                questionIndex: next.questionIndex,
-                questionStartedAt: next.questionStartedAt,
-                deadline: next.deadline,
-                endedAt: next.endedAt,
+            // Garde atomique sur la question lue : un double clic n'avance qu'une fois.
+            {_id: sessionId, phase: "review", questionIndex: session.questionIndex},
+            {
+                $set: {phase: next.phase, questionIndex: next.questionIndex, endedAt: next.endedAt},
+                // Une session terminée est conservée (résultats, export ScoDoc) : on retire son expiration TTL.
+                ...(next.phase === "finished" ? {$unset: {expiresAt: ""}} : {}),
             },
-            // Une session terminée est conservée (résultats, export ScoDoc) : on retire son expiration TTL.
-            ...(next.phase === "finished" ? {$unset: {expiresAt: ""}} : {})},
         );
         if (result.matchedCount === 0) return;
-        if (next.phase === "question_open") this.schedule(sessionId, next.deadline);
         await this.publish(sessionId);
     }
 
-    /** Les absents consomment la durée complète pour le départage, avec 0 point. */
-    private async recordAbsences(session: QuizSession): Promise<void> {
-        const question = session.quiz.questions[session.questionIndex];
-        const participants = await this.participants.find({sessionId: session.id}).toArray();
+    // ── Progression des participants ────────────────────────────────────────
+
+    /** Questions dans l'ordre propre au participant (échauffement en tête, le reste mélangé). */
+    private orderOf(session: QuizSession, userId: string) {
+        return questionsFor(session.quiz.questions, participantSeed(session.id, userId));
+    }
+
+    /**
+     * Ouvre la première question de chaque participant encore à -1 : au démarrage, ou pour un
+     * `join` qui a lu le lobby mais écrit après `start`. Vrai si quelqu'un a été lancé.
+     */
+    private async openFirst(session: QuizSession, now: number): Promise<boolean> {
+        let opened = false;
+        for (const p of await this.participants.find({sessionId: session.id, currentIndex: -1}).toArray()) {
+            const result = await this.participants.updateOne(
+                {sessionId: session.id, userId: p.userId, currentIndex: -1},
+                {$set: progressAt(this.orderOf(session, p.userId), 0, now, p.extraTime === true)},
+            );
+            if (result.modifiedCount > 0) opened = true;
+        }
+        return opened;
+    }
+
+    /**
+     * Enregistre une absence (0 point, durée normale complète). L'index unique
+     * (session, question, participant) arbitre la course avec une réponse envoyée au même instant.
+     */
+    private async recordAbsence(session: QuizSession, p: QuizParticipant, index: number): Promise<void> {
+        const question = this.orderOf(session, p.userId)[index];
+        if (!question) return;
+        const absent: QuizAnswer = {
+            sessionId: session.id,
+            questionId: question.id,
+            userId: p.userId,
+            selectedIds: [],
+            submittedAt: this.clock(),
+            timeMs: question.durationSeconds * 1000,
+            scoreObtained: 0,
+            scoreMax: question.weight,
+        };
+        try {
+            await this.answers.insertOne({...absent});
+            await this.participants.updateOne({sessionId: session.id, userId: p.userId}, {$inc: {timeMs: absent.timeMs}});
+        } catch (error) {
+            if (!isDuplicate(error)) throw error;
+        }
+    }
+
+    /** Passe le participant de la question `from` à la suivante, ouverte à `at`. Faux si un autre appel l'a déjà fait. */
+    private async advance(session: QuizSession, p: QuizParticipant, from: number, at: number): Promise<boolean> {
+        const result = await this.participants.updateOne(
+            {sessionId: session.id, userId: p.userId, currentIndex: from},
+            {$set: progressAt(this.orderOf(session, p.userId), from + 1, at, p.extraTime === true)},
+        );
+        return result.modifiedCount > 0;
+    }
+
+    /**
+     * Fait avancer les participants dont l'échéance est passée, ouvre la correction quand tout
+     * le monde a fini, sinon reprogramme le chrono sur la prochaine échéance. Une question
+     * expirée ouvre la suivante à son échéance, pas à l'heure du balayage : le calendrier de
+     * chacun ne dérive pas.
+     */
+    private async sweep(sessionId: string, force = false): Promise<void> {
+        const session = await this.getSession(sessionId);
+        if (!session || session.phase !== "running") return;
         const now = this.clock();
-        for (const p of participants) {
-            const absent: QuizAnswer = {
-                sessionId: session.id,
-                questionId: question.id,
-                userId: p.userId,
-                selectedIds: [],
-                submittedAt: now,
-                timeMs: question.durationSeconds * 1000,
-                scoreObtained: 0,
-                scoreMax: question.weight,
-            };
-            try {
-                await this.answers.insertOne({...absent});
-                await this.participants.updateOne(
-                    {sessionId: session.id, userId: p.userId},
-                    {$inc: {timeMs: absent.timeMs}},
-                );
-            } catch (error) {
-                if (!isDuplicate(error)) throw error;
+        const questions = session.quiz.questions;
+        let changed = force;
+
+        // Un `join` qui a lu le lobby mais écrit après `start` laisse un participant sans question :
+        // on lui ouvre la première à la volée (sa propre connexion au flux déclenche ce balayage).
+        if (await this.openFirst(session, now)) changed = true;
+
+        for (const p of await this.participants.find({sessionId, deadline: {$ne: null, $lte: now}}).toArray()) {
+            let index = p.currentIndex ?? 0;
+            let deadline = p.deadline ?? null;
+            while (index < questions.length && deadline !== null && deadline <= now) {
+                await this.recordAbsence(session, p, index);
+                if (!(await this.advance(session, p, index, deadline))) break;
+                changed = true;
+                const next = progressAt(this.orderOf(session, p.userId), index + 1, deadline, p.extraTime === true);
+                index = next.currentIndex;
+                deadline = next.deadline;
             }
         }
+
+        const participants = await this.participants.find({sessionId}).toArray();
+        if (participants.length > 0 && participants.every((p) => (p.currentIndex ?? -1) >= questions.length)) {
+            await this.endRunning(sessionId);
+            return;
+        }
+        const pending = participants.map((p) => p.deadline).filter((d): d is number => d != null);
+        this.schedule(sessionId, pending.length > 0 ? Math.min(...pending) : null);
+        // Une simple reconnexion ne doit pas rediffuser l'état à toute la salle.
+        if (changed) await this.publish(sessionId);
     }
 
     // ── Réponses ────────────────────────────────────────────────────────────
 
-    /** Idempotent : un double envoi renvoie la réponse déjà enregistrée. */
-    async submitAnswer(sessionId: string, userId: string, selectedIds: string[]): Promise<QuizAnswer> {
+    /**
+     * Réponse à la question en cours du participant, qui passe aussitôt à la suivante.
+     * `questionId` empêche qu'une réponse destinée à une question expirée tombe sur la suivante.
+     * Idempotent : un double envoi renvoie la réponse déjà enregistrée.
+     */
+    async submitAnswer(sessionId: string, userId: string, questionId: string, selectedIds: string[]): Promise<QuizAnswer> {
         const session = await this.requireSession(sessionId);
         const participant = await this.participants.findOne({sessionId, userId});
         if (!participant) throw new QuizSessionError("not_participant", "Vous ne participez pas à cette session");
 
-        const question = session.quiz.questions[session.questionIndex];
-        if (session.phase !== "question_open" || !question) {
-            throw new QuizSessionError("question_closed", "Temps écoulé");
-        }
-
-        const existing = await this.answers.findOne({sessionId, questionId: question.id, userId});
+        const existing = await this.answers.findOne({sessionId, questionId, userId});
         if (existing) return existing;
 
+        const index = participant.currentIndex ?? -1;
+        const question = this.orderOf(session, userId)[index];
+        if (session.phase !== "running" || !question || question.id !== questionId) {
+            throw new QuizSessionError("question_closed", "Temps écoulé");
+        }
         const now = this.clock();
-        if (!isOpenAt(session, now)) throw new QuizSessionError("question_closed", "Temps écoulé");
+        if (!isOpenAt({deadline: participant.deadline ?? null}, now)) {
+            await this.sweep(sessionId);
+            throw new QuizSessionError("question_closed", "Temps écoulé");
+        }
 
         const unique = [...new Set(selectedIds)];
         if (unique.length === 0) throw new QuizSessionError("empty_choice", "Sélectionnez au moins une proposition");
@@ -325,7 +418,7 @@ export class LiveQuizService {
             userId,
             selectedIds: unique,
             submittedAt: now,
-            timeMs: Math.max(0, now - (session.questionStartedAt ?? now)),
+            timeMs: normalizedTime(now - (participant.questionStartedAt ?? now), participant.extraTime === true),
             scoreObtained,
             scoreMax: question.weight,
         };
@@ -338,7 +431,8 @@ export class LiveQuizService {
             throw error;
         }
         await this.participants.updateOne({sessionId, userId}, {$inc: {score: scoreObtained, timeMs: answer.timeMs}});
-        await this.publish(sessionId);
+        await this.advance(session, participant, index, now);
+        await this.sweep(sessionId, true);
         return answer;
     }
 
@@ -350,29 +444,23 @@ export class LiveQuizService {
         this.timers.delete(sessionId);
     }
 
-    private schedule(sessionId: string, deadline: number | null): void {
+    /** Un seul chrono par session, calé sur la prochaine échéance parmi les participants. */
+    private schedule(sessionId: string, at: number | null): void {
         this.clearTimer(sessionId);
-        if (deadline === null) return;
-        const delay = Math.max(0, deadline - this.clock());
+        if (at === null) return;
+        const delay = Math.max(0, at - this.clock());
         const timer = setTimeout(() => {
             this.timers.delete(sessionId);
-            void this.closeCurrentQuestion(sessionId).catch((error) => console.error("[quiz] fermeture", error));
+            void this.sweep(sessionId).catch((error) => console.error("[quiz] échéance", error));
         }, delay);
         // Ne retient pas le processus pour le chronomètre seul.
         timer.unref?.();
         this.timers.set(sessionId, timer);
     }
 
-    private async ensureTimer(session: QuizSession): Promise<void> {
-        if (session.phase === "question_open" && !this.timers.has(session.id)) {
-            this.schedule(session.id, session.deadline);
-        }
-    }
-
-    /** À appeler après un redémarrage serveur : reprogramme ou ferme immédiatement. */
+    /** À appeler après un redémarrage serveur : rattrape les échéances et reprogramme le chrono. */
     async restore(sessionId: string): Promise<void> {
-        const session = await this.getSession(sessionId);
-        if (session) await this.ensureTimer(session);
+        await this.sweep(sessionId);
     }
 
     /** Annule tous les chronomètres (tests, arrêt propre). */

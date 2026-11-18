@@ -19,6 +19,7 @@ export const registerSchema = z.object({
         .string()
         .regex(IDENTIFIER_REGEX, "Format attendu : 2 lettres + 6 chiffres (ex. ab123456)"),
     group: z.enum(GROUPS).optional(),
+    extraTime: z.boolean().optional(),
     password: z.string().min(7, "Mot de passe trop court (7 caractères min.)"),
 }).superRefine((data, ctx) => {
     if (data.email.endsWith(STUDENT_EMAIL_DOMAIN) && !data.group) {

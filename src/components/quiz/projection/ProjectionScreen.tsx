@@ -4,13 +4,10 @@ import {useCallback, useEffect, useRef, useState} from "react";
 import {ChevronRight, Maximize, Minimize, Play, Square} from "lucide-react";
 import {BlockRenderer} from "@/components/builder/BlockRenderer";
 import {Button} from "@/components/ui/button";
-import Countdown from "@/components/quiz/Countdown";
 import OptionCard, {optionLetter} from "@/components/quiz/projection/OptionCard";
 import ProjectionFrame from "@/components/quiz/projection/ProjectionFrame";
-import Podium from "@/components/quiz/projection/Podium";
 import {QuizActionBar, QuizHeadband, QuizProgress, quizBarDivider} from "@/components/quiz/QuizChrome";
 import QuizStage, {QuizTitle, moduleFill, quizCard, quizEyebrow} from "@/components/quiz/QuizStage";
-import QrCode from "@/components/quiz/projection/QrCode";
 import {api} from "@/components/quiz/quizClient";
 import {useQuizStream} from "@/components/quiz/useQuizStream";
 import {useFullscreen} from "@/components/Slides/hooks/useFullscreen";
@@ -51,7 +48,7 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
             if (event.key !== "ArrowRight" && event.key !== " ") return;
             event.preventDefault();
             if (state.phase === "lobby") void act("start");
-            else if (state.phase === "reveal" || state.phase === "leaderboard") void act("next");
+            else if (state.phase === "review") void act("next");
         };
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
@@ -68,10 +65,11 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
         return <QuizStage mode="title" className="items-center justify-center p-8"><p role="status" className="text-xl">Chargement…</p></QuizStage>;
     }
 
-    const joinUrl = typeof window === "undefined" ? "" : `${window.location.origin}/quiz/${state.joinCode}`;
+    const joinHost = typeof window === "undefined" ? "" : `${window.location.host}/quiz`;
     const question = state.question;
     const isLast = question !== null && question.index === question.total - 1;
-    const onTitle = state.phase === "lobby" || state.phase === "leaderboard" || state.phase === "finished";
+    // Phase autonome : chacun est sur sa propre question, la projection ne montre que l'avancement.
+    const onTitle = state.phase !== "review";
     const eyebrow = `${state.moduleTitle} · Quiz`;
     const withCode = question !== null && hasCodeBlock(question.blocks);
 
@@ -98,67 +96,57 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
                                 <>
                                     <QuizTitle className="text-[6.4rem]">Rejoignez le quiz</QuizTitle>
                                     <p className="mt-6 max-w-3xl text-[1.5rem] leading-relaxed text-bridge-600 dark:text-bridge-300">
-                                        Sur téléphone, scannez le QR code. Sur ordinateur, ouvrez l&apos;adresse ci-contre et tapez le code.
+                                        Sur votre ordinateur, ouvrez l&apos;adresse ci-dessous et tapez le code.
+                                        Chacun avance ensuite à son rythme.
                                     </p>
-                                    <div className="mt-10 flex max-w-4xl items-center gap-10 border-t border-bridge-500/35 pt-8 dark:border-bridge-400/30">
-                                        <div className="w-[22rem] shrink-0">
-                                            {joinUrl && <QrCode value={joinUrl} label="QR code pour rejoindre le quiz"/>}
+                                    <div className="mt-10 flex max-w-4xl items-end gap-16 border-t border-bridge-500/35 pt-8 dark:border-bridge-400/30">
+                                        <div>
+                                            <p className={quizEyebrow}>Adresse</p>
+                                            <p className="mt-1 text-4xl font-semibold">{joinHost}</p>
+                                            <p className={`${quizEyebrow} mt-6`}>Code</p>
+                                            <p className="text-7xl font-extrabold tracking-[0.15em] tabular-nums">{state.shortCode}</p>
                                         </div>
-                                        <div className="flex flex-col gap-5">
-                                            <div>
-                                                <p className={quizEyebrow}>Sur ordinateur</p>
-                                                <p className="mt-1 text-3xl font-semibold">
-                                                    {joinUrl && `${new URL(joinUrl).host}/quiz`}
-                                                </p>
-                                                <p className={`${quizEyebrow} mt-4`}>Code</p>
-                                                <p className="text-6xl font-extrabold tracking-[0.15em] tabular-nums">{state.shortCode}</p>
-                                            </div>
-                                            <p className="text-3xl font-bold tabular-nums" role="status">
-                                                {state.participantCount} participant{plural(state.participantCount)} connecté{plural(state.participantCount)}
-                                            </p>
-                                        </div>
+                                        <p className="text-3xl font-bold tabular-nums" role="status">
+                                            {state.participantCount} participant{plural(state.participantCount)} connecté{plural(state.participantCount)}
+                                        </p>
                                     </div>
                                 </>
                             )}
 
-                            {state.phase === "leaderboard" && question && (
+                            {state.phase === "running" && (
                                 <>
-                                    <QuizTitle className="text-[6.4rem]">Classement</QuizTitle>
-                                    <p className="mt-6 text-[1.5rem] text-bridge-600 dark:text-bridge-300">
-                                        Après la question {question.index + 1} sur {question.total}
+                                    <QuizTitle className="text-[6.4rem]">Quiz en cours</QuizTitle>
+                                    <p className="mt-6 max-w-3xl text-[1.5rem] leading-relaxed text-bridge-600 dark:text-bridge-300">
+                                        Chacun répond sur son ordinateur. La correction commence quand tout le monde a terminé.
                                     </p>
-                                    <div className="mt-14 max-w-3xl"><Podium entries={state.podium} size="lg"/></div>
+                                    <p className="mt-14 text-[5rem] font-extrabold leading-none tabular-nums" role="status">
+                                        {state.finishedCount} <span className="text-[2.5rem] font-semibold text-bridge-600 dark:text-bridge-300">/ {state.participantCount}</span>
+                                    </p>
+                                    <p className="mt-3 text-2xl font-semibold">
+                                        participant{plural(state.participantCount)} {state.finishedCount > 1 ? "ont" : "a"} terminé
+                                    </p>
                                 </>
                             )}
 
                             {state.phase === "finished" && (
                                 <>
                                     <QuizTitle className="text-[6.4rem]">Quiz terminé</QuizTitle>
-                                    <div className="mt-14 max-w-3xl"><Podium entries={state.podium} size="lg"/></div>
+                                    <p className="mt-6 text-[1.5rem] text-bridge-600 dark:text-bridge-300">
+                                        {state.participantCount} participant{plural(state.participantCount)}
+                                    </p>
                                 </>
                             )}
                         </div>
                     </div>
                 )}
 
-                {/* Une seule page pour la question et la correction : les propositions restent en place,
-                    seuls leur état et le contenu du pied de page changent. */}
+                {/* Correction collective, question par question. */}
                 {!onTitle && question && (
                     <div className="flex h-full flex-col px-16 pb-24 pt-10">
                         <QuizHeadband
                             eyebrow={eyebrow}
                             badge={String(question.index + 1).padStart(2, "0")}
-                            title={`Question ${question.index + 1} sur ${question.total}`}
-                            aside={(
-                                // Anneau à droite du bandeau : il déborde vers le haut, dans la rangée de l'eyebrow,
-                                // pour ne pas allonger le bandeau. Même emplacement à la correction (coche).
-                                <div className="relative h-12 w-28 shrink-0">
-                                    <div className="absolute bottom-0 right-0 size-28">
-                                        <Countdown variant="ring" deadline={state.deadline} serverNow={state.serverNow} total={question.durationSeconds}
-                                                   ended={state.phase === "reveal"}/>
-                                    </div>
-                                </div>
-                            )}
+                            title={`Correction · question ${question.index + 1} sur ${question.total}`}
                         />
 
                         <div className="slide-body min-h-0 flex-1 overflow-hidden !pt-8">
@@ -179,16 +167,16 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
                                             letter={optionLetter(index)}
                                             text={option.text}
                                             compact={withCode}
-                                            state={state.phase === "reveal"
-                                                ? (state.correctIds?.includes(option.id) ? "correct" : "wrong")
-                                                : "idle"}
+                                            state={state.correctIds?.includes(option.id) ? "correct" : "wrong"}
+                                            stat={state.optionCounts
+                                                ? {count: state.optionCounts[option.id] ?? 0, total: state.answeredCount}
+                                                : undefined}
                                         />
                                     ))}
                                 </ul>
                             </div>
 
-                            {/* Mêmes compteurs dans les deux phases : la page ne saute pas à la correction.
-                                Le podium a son propre écran : le pied de page n'a plus à lui réserver de hauteur. */}
+
                             <div className="flex shrink-0 items-start border-t border-bridge-500/35 pt-4 dark:border-bridge-400/30">
                                 <div className="flex w-full items-baseline gap-12">
                                     <p className="text-2xl font-semibold">
@@ -219,14 +207,14 @@ export default function ProjectionScreen({sessionId}: {sessionId: string}) {
                             <Play className="size-4" aria-hidden="true"/> Démarrer
                         </Button>
                     )}
-                    {state.phase === "question_open" && (
+                    {state.phase === "running" && (
                         <Button variant="outline" className="cursor-pointer" disabled={busy} onClick={() => void act("reveal")}>
-                            <Square className="size-4" aria-hidden="true"/> Clore maintenant
+                            <Square className="size-4" aria-hidden="true"/> Passer à la correction
                         </Button>
                     )}
-                    {(state.phase === "reveal" || state.phase === "leaderboard") && (
+                    {state.phase === "review" && (
                         <Button className="cursor-pointer" disabled={busy} onClick={() => void act("next")}>
-                            {state.phase === "leaderboard" ? "Question suivante" : isLast ? "Terminer le quiz" : "Classement"}
+                            {isLast ? "Terminer le quiz" : "Question suivante"}
                             <ChevronRight className="size-4" aria-hidden="true"/>
                         </Button>
                     )}

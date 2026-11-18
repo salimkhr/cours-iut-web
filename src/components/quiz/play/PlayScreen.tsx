@@ -21,8 +21,8 @@ function Shell({mode = "title", moduleSlug, children}: {mode?: "title" | "conten
         // Le menu du site occupe le haut de l'écran : sans cette hauteur, la page dépasse d'autant et oblige à
         // faire défiler pour voir la question et le bouton « Valider » (même règle que la projection).
         <QuizStage mode={mode} moduleSlug={moduleSlug} className="min-h-[calc(100dvh-var(--navbar-h))]">
-            {/* Colonne de téléphone, élargie sur ordinateur (mode PC) pour ne pas laisser un ruban au milieu de l'écran. */}
-            <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-5 pt-5 pb-[calc(2.5rem+env(safe-area-inset-bottom))] md:max-w-3xl md:px-8 md:pt-10">{children}</div>
+            {/* Chaque étudiant suit le quiz sur ordinateur : une colonne de lecture confortable. */}
+            <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-8 pt-10 pb-10">{children}</div>
         </QuizStage>
     );
 }
@@ -39,12 +39,12 @@ function TitleEyebrow({moduleTitle}: {moduleTitle: string}) {
 }
 
 /**
- * Énoncé complet (texte et code), sur ordinateur seulement. Comme sur la projection, « Copier » est
- * masqué : coller le code dans un éditeur pour l'exécuter donnerait la réponse.
+ * Énoncé complet (texte et code) : chacun avance à son rythme, la projection ne l'affiche plus.
+ * « Copier » est masqué : coller le code dans un éditeur pour l'exécuter donnerait la réponse.
  */
 export function Statement({blocks}: {blocks: Block[]}) {
     return (
-        <div className="hidden flex-col gap-3 text-lg font-semibold leading-snug md:flex [&_*]:max-w-none [&_button]:hidden [&_:not(pre)>code]:!text-[1em]">
+        <div className="flex flex-col gap-3 text-lg font-semibold leading-snug [&_*]:max-w-none [&_button]:hidden [&_:not(pre)>code]:!text-[1em]">
             <BlockRenderer blocks={blocks}/>
         </div>
     );
@@ -84,7 +84,20 @@ function StudentView({sessionId}: {sessionId: string}) {
         );
     }
 
-    if (state.phase === "question_open" && question) {
+    if (state.phase === "running" && state.done) {
+        return (
+            <Shell moduleSlug={state.moduleSlug}>
+                <TitleEyebrow moduleTitle={state.moduleTitle}/>
+                <QuizTitle className="text-5xl">Vous avez terminé</QuizTitle>
+                <p className="text-lg text-bridge-600 dark:text-bridge-300" role="status">
+                    La correction commencera quand tout le monde aura fini, ou quand l&apos;enseignant la lancera.
+                </p>
+                {status}
+            </Shell>
+        );
+    }
+
+    if (state.phase === "running" && question) {
         return (
             <Shell mode="content" moduleSlug={state.moduleSlug}>
                 <QuizHeadband
@@ -92,7 +105,6 @@ function StudentView({sessionId}: {sessionId: string}) {
                     badge={String(question.index + 1).padStart(2, "0")}
                     title={`Question ${question.index + 1} sur ${question.total}`}
                 />
-                {/* Sur téléphone, l'énoncé reste sur l'écran projeté ; sur ordinateur, la place permet de l'afficher en entier. */}
                 <Statement blocks={question.blocks}/>
                 <AnswerForm
                     key={question.id}
@@ -100,14 +112,13 @@ function StudentView({sessionId}: {sessionId: string}) {
                     question={question}
                     deadline={state.deadline}
                     serverNow={state.serverNow}
-                    lockedWith={state.answer?.selectedIds ?? null}
                 />
                 {status}
             </Shell>
         );
     }
 
-    if (state.phase === "reveal" && question && state.reveal) {
+    if (state.phase === "review" && question && state.reveal) {
         const {reveal} = state;
         return (
             <Shell mode="content" moduleSlug={state.moduleSlug}>
@@ -133,31 +144,15 @@ function StudentView({sessionId}: {sessionId: string}) {
                 </ul>
                 <p className={`${quizCard} mt-auto p-4 text-lg font-semibold tabular-nums`}>
                     Score cumulé : {fmt(state.score)} / {fmt(state.scoreMax)}
-                    {state.rank !== null && <span className="block text-sm font-medium text-bridge-600 dark:text-bridge-300">Rang actuel : {state.rank}</span>}
                 </p>
                 {status}
             </Shell>
         );
     }
 
-    if (state.phase === "leaderboard") {
-        return (
-            <Shell moduleSlug={state.moduleSlug}>
-                <TitleEyebrow moduleTitle={state.moduleTitle}/>
-                <QuizTitle className="text-5xl">Classement</QuizTitle>
-                {question && (
-                    <p className="text-lg text-bridge-600 dark:text-bridge-300">Après la question {question.index + 1} sur {question.total}</p>
-                )}
-                {state.rank !== null && (
-                    <p className="text-5xl font-extrabold tabular-nums" role="status">
-                        {state.rank}<sup className="text-2xl">{state.rank === 1 ? "er" : "e"}</sup>
-                    </p>
-                )}
-                <p className="text-lg font-semibold tabular-nums">Score cumulé : {fmt(state.score)} / {fmt(state.scoreMax)}</p>
-                <p className="mt-auto text-sm text-bridge-600 dark:text-bridge-300">La question suivante arrive.</p>
-                {status}
-            </Shell>
-        );
+    if (state.phase !== "finished") {
+        // Phase autonome, entre deux questions : la suivante arrive par le flux.
+        return <Shell moduleSlug={state.moduleSlug}><p role="status">Question suivante…</p>{status}</Shell>;
     }
 
     return (
@@ -167,7 +162,6 @@ function StudentView({sessionId}: {sessionId: string}) {
             <p className="text-5xl font-extrabold tabular-nums" role="status">
                 {fmt(state.score)} <span className="text-2xl font-semibold text-bridge-600 dark:text-bridge-300">/ {fmt(state.scoreMax)}</span>
             </p>
-            {state.rank !== null && <p className="text-lg">Classement final : {state.rank}<sup>e</sup></p>}
             <Link href="/" className="mt-auto font-semibold underline underline-offset-4">Retour aux modules</Link>
         </Shell>
     );

@@ -13,7 +13,7 @@
 //   QUIZ_PROJECTIONS      flux de projection supplémentaires (défaut 1)
 //   QUIZ_FORWARDED_FOR    IP commune envoyée en X-Forwarded-For (simule le NAT de l'IUT)
 //   QUIZ_LONG_PAUSES      silences en secondes, après certaines questions (défaut "70")
-//   QUIZ_PAUSE            pause par défaut sur le classement, en secondes (défaut 2)
+//   QUIZ_PAUSE            pause par défaut sur chaque correction, en secondes (défaut 2)
 //
 // Les comptes de test n'existent qu'en local : le seed refuse toute autre base.
 
@@ -23,17 +23,18 @@ import {QUIZ_REHEARSAL_ADMIN, QUIZ_REHEARSAL_PASSWORD, rehearsalStudent} from ".
 const DB_NAME = "cours-iut-web";
 const TEST_MODULE_PATH = "zz-test-design";
 
-type Phase = "lobby" | "question_open" | "reveal" | "leaderboard" | "finished";
+type Phase = "lobby" | "running" | "review" | "finished";
 interface PublicState {
     phase: Phase;
     question: {id: string; index: number; total: number; options: {id: string; text: string}[]; expectedCount: number; durationSeconds: number} | null;
     deadline: number | null;
     serverNow: number;
     participantCount: number;
+    done?: boolean;
+    finishedCount?: number;
     reveal?: {scoreObtained: number; scoreMax: number} | null;
     score?: number;
     scoreMax?: number;
-    podium?: {rank: number; name: string; score: number}[];
 }
 
 // ── Seed (local uniquement) ─────────────────────────────────────────────────
@@ -209,7 +210,7 @@ async function run() {
     const projectionCount = Number(process.env.QUIZ_PROJECTIONS ?? 1);
     const longPauses = (process.env.QUIZ_LONG_PAUSES ?? "70").split(",").filter(Boolean).map(Number);
     const pause = Number(process.env.QUIZ_PAUSE ?? 2) * 1000;
-    /** Après quelles questions placer les silences : réparties sur les 20 classements. */
+    /** Après quelles questions placer les silences : réparties sur les 20 corrections. */
     const longPauseSlots = longPauses.map((_, i) => Math.floor(((i + 1) * 20) / (longPauses.length + 1)));
     const report: string[] = [];
     const latencies: Record<string, number[]> = {};
@@ -248,63 +249,79 @@ async function run() {
     for (const c of all) void follow(c, sessionId);
     await waitAll(all, 0, (s) => s.phase === "lobby", 15_000);
 
-    // 3. Questions.
-    let t = Date.now();
-    let res = await post(`/api/quiz/sessions/${sessionId}/start`, adminCookie);
-    if (res.status !== 200) throw new Error(`start : HTTP ${res.status}`);
-    let total = 0;
+    // 3. Phase autonome : chaque étudiant enchaîne ses questions à son rythme.
+    const t0 = Date.now();
+    const res0 = await post(`/api/quiz/sessions/${sessionId}/start`, adminCookie);
+    if (res0.status !== 200) throw new Error(`start : HTTP ${res0.status}`);
+    record("ouverture de la question 1", await waitAll(all, t0, (st) => st.phase === "running", 15_000));
     let answerErrors = 0;
-    for (let q = 0; ; q++) {
-        record("ouverture de question", await waitAll(all, t, (s) => s.phase === "question_open" && s.question?.index === q, 15_000));
-        const open = all[0].states.findLast((s) => s.state.phase === "question_open")!.state;
-        const question = open.question!;
-        total = question.total;
+    const latest = (c: Client) => c.states.at(-1)?.state;
 
-        // Réponses étalées sur la première moitié du temps ; un étudiant sur dix ne répond pas.
-        const window = question.durationSeconds * 1000 * 0.5;
-        await Promise.all(students.map(async (s, i) => {
-            if ((i + q) % 10 === 0) return;
-            await sleep(Math.random() * window);
+    await Promise.all(students.map(async (s, i) => {
+        let handled = -1;
+        for (;;) {
+            const state = latest(s);
+            if (!state || state.phase === "lobby") {
+                await sleep(25);
+                continue;
+            }
+            if (state.phase !== "running" || state.done) return;
+            const question = state.question;
+            if (!question || question.index === handled) {
+                await sleep(25);
+                continue;
+            }
+            handled = question.index;
+            // Un étudiant sur dix laisse filer la question : le chrono du serveur le fait avancer.
+            if ((i + question.index) % 10 === 0) continue;
+            // Réponse étalée sur la première moitié du temps accordé.
+            await sleep(Math.random() * question.durationSeconds * 1000 * 0.5);
             const ids = [...question.options].sort(() => Math.random() - 0.5).slice(0, question.expectedCount).map((o) => o.id);
             const sent = Date.now();
-            const r = await post(`/api/quiz/sessions/${sessionId}/answer`, s.cookie, {selectedIds: ids});
+            const r = await post(`/api/quiz/sessions/${sessionId}/answer`, s.cookie, {questionId: question.id, selectedIds: ids});
             if (r.status !== 200) {
                 answerErrors++;
-                console.warn(`  ! ${s.label} q${q} : réponse HTTP ${r.status}`);
+                console.warn(`  ! ${s.label} q${question.index} : réponse HTTP ${r.status}`);
             }
             record("réponse (aller-retour)", [Date.now() - sent]);
-        }));
+        }
+    }));
 
-        // Fermeture par le chronomètre du serveur.
-        const reveal = await waitAll(all, open.deadline! - 5_000, (s) => s.phase === "reveal" && s.question?.index === q, question.durationSeconds * 1000 + 15_000);
-        record("correction (écart entre clients)", [Math.max(...reveal) - Math.min(...reveal)]);
+    // Sans étudiant (mode staging), personne ne termine : l'enseignant passe lui-même à la correction.
+    if (studentCount === 0) {
+        const reveal = await post(`/api/quiz/sessions/${sessionId}/reveal`, adminCookie);
+        if (reveal.status !== 200) throw new Error(`reveal : HTTP ${reveal.status}`);
+    }
+
+    // 4. Correction collective : ouverte seule quand tout le monde a fini.
+    let t = Date.now();
+    let total = 0;
+    for (let q = 0; ; q++) {
+        record("correction", await waitAll(all, t, (st) => st.phase === "review" && st.question?.index === q, 600_000));
+        total = latest(all[0])!.question!.total;
         for (const s of students) {
-            const r = s.states.findLast((x) => x.state.phase === "reveal" && x.state.question?.index === q)!.state;
+            const r = s.states.findLast((x) => x.state.phase === "review" && x.state.question?.index === q)!.state;
             s.revealScores += r.reveal?.scoreObtained ?? 0;
         }
 
-        t = Date.now();
-        res = await post(`/api/quiz/sessions/${sessionId}/next`, adminCookie);
-        if (res.status !== 200) throw new Error(`next : HTTP ${res.status}`);
-        if (q === total - 1) {
-            record("fin", await waitAll(all, t, (s) => s.phase === "finished", 15_000));
-            break;
-        }
-        record("classement", await waitAll(all, t, (s) => s.phase === "leaderboard", 15_000));
-
-        // Silences longs répartis dans la séance (classement commenté), pour éprouver les flux inactifs.
+        // Silences longs répartis dans la séance (correction commentée), pour éprouver les flux inactifs.
         const silenceAt = longPauseSlots.indexOf(q);
         const silence = silenceAt >= 0 ? longPauses[silenceAt] * 1000 : pause;
-        if (silence > pause) console.log(`  silence de ${silence / 1000} s sur le classement (q${q})`);
+        if (silence > pause) console.log(`  silence de ${silence / 1000} s sur la correction (q${q})`);
         await sleep(silence);
 
         t = Date.now();
-        res = await post(`/api/quiz/sessions/${sessionId}/next`, adminCookie);
+        const res = await post(`/api/quiz/sessions/${sessionId}/next`, adminCookie);
         if (res.status !== 200) throw new Error(`next : HTTP ${res.status}`);
-        process.stdout.write(`  question ${q + 1}/${total} jouée\r`);
+        if (q === total - 1) {
+            record("fin", await waitAll(all, t, (st) => st.phase === "finished", 15_000));
+            break;
+        }
+        process.stdout.write(`  question ${q + 1}/${total} corrigée
+`);
     }
 
-    // 4. Cohérence des scores : somme des corrections reçues = score final affiché.
+    // 5. Cohérence des scores : somme des corrections reçues = score final affiché.
     let scoreMismatch = 0;
     for (const s of students) {
         const final = s.states.findLast((x) => x.state.phase === "finished")!.state;

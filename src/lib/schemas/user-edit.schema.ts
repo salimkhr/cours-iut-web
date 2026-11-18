@@ -6,6 +6,7 @@ export const userEditSchema = z.object({
     email: z.string().email("Email invalide"),
     username: z.string().min(3, "3 caractères min.").max(32, "32 caractères max.").optional(),
     group: z.string().optional(),
+    extraTime: z.boolean().optional(),
     role: z.enum(["user", "admin"]),
 });
 

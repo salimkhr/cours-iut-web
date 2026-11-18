@@ -23,6 +23,7 @@ export default async function getAdminUsers(): Promise<AdminUser[]> {
                 role?: string;
                 group?: string | null;
                 username?: string | null;
+                extraTime?: boolean | null;
                 banned?: boolean | null;
                 createdAt: Date | string;
             }) => ({
@@ -33,6 +34,7 @@ export default async function getAdminUsers(): Promise<AdminUser[]> {
                 role: u.role ?? "user",
                 group: u.group ?? null,
                 username: u.username ?? null,
+                extraTime: u.extraTime === true,
                 banned: u.banned ?? false,
                 createdAt: u.createdAt instanceof Date ? u.createdAt.toISOString() : String(u.createdAt),
             })

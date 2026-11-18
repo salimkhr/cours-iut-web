@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { userEditSchema, type UserEditValues } from '@/lib/schemas/user-edit.schema';
@@ -56,6 +57,7 @@ function EditForm({ user, onOpenChange, onUpdated }: EditFormProps) {
             email: user.email,
             username: user.username ?? undefined,
             group: user.group ?? '',
+            extraTime: user.extraTime ?? false,
             role: user.role === 'admin' ? 'admin' : 'user',
         },
     });
@@ -80,6 +82,7 @@ function EditForm({ user, onOpenChange, onUpdated }: EditFormProps) {
             email: data.email,
             username: data.username || null,
             group: data.group || null,
+            extraTime: data.extraTime ?? false,
             role: data.role,
             banned: bannedState,
         });
@@ -198,6 +201,20 @@ function EditForm({ user, onOpenChange, onUpdated }: EditFormProps) {
                                     {...register('group')}
                                 />
                             </div>
+                            <Controller
+                                control={control}
+                                name="extraTime"
+                                render={({ field }) => (
+                                    <div className="flex items-center gap-2">
+                                        <Checkbox
+                                            id="eu-extraTime"
+                                            checked={field.value ?? false}
+                                            onCheckedChange={(value) => field.onChange(value === true)}
+                                        />
+                                        <Label htmlFor="eu-extraTime" className="text-sm">Tiers-temps aux quiz</Label>
+                                    </div>
+                                )}
+                            />
                             <div>
                                 <Label htmlFor="eu-role" className={labelCn}>Rôle *</Label>
                                 <Controller

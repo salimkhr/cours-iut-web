@@ -9,7 +9,7 @@ interface Props {
     /** Absent sur la projection : personne n'y est identifié. */
     selected?: boolean;
     large?: boolean;
-    /** Repère A, B, C… commun à la projection et aux téléphones (l'ordre est mélangé). */
+    /** Repère A, B, C… commun à la projection et aux écrans des étudiants (l'ordre est mélangé). */
     letter?: string;
 }
 

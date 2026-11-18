@@ -7,7 +7,7 @@ import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {normalizeJoinCode, SHORT_CODE_LENGTH} from "@/lib/quiz/joinCode";
 
-/** Mode ordinateur : le code affiché à côté du QR remplace le scan. */
+/** Saisie du code court affiché sur la projection. */
 export default function JoinCodeForm() {
     const router = useRouter();
     const [value, setValue] = useState("");

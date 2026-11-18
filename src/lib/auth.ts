@@ -30,6 +30,13 @@ export const auth = betterAuth({
                 required: false,
                 input: true,
             },
+            /** Tiers-temps : chrono × 4/3 au quiz live. Déclaré par l'étudiant ou posé par un admin. */
+            extraTime: {
+                type: "boolean",
+                required: false,
+                defaultValue: false,
+                input: true,
+            },
         },
     },
 
