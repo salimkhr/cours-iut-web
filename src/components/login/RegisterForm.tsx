@@ -21,7 +21,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import CaptchaPending, {BlinkingBot} from "@/components/login/CaptchaPending";
+import CaptchaPending, {BlinkingBot, CaptchaUnavailable, useTurnstileLoadFailure} from "@/components/login/CaptchaPending";
 import {GROUPS, registerSchema, RegisterValues, STUDENT_EMAIL_DOMAIN} from "@/lib/schemas/register.schema";
 import {authErrorMessage} from "@/lib/authErrors";
 
@@ -40,14 +40,17 @@ function toEmailPart(str: string): string {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function RegisterForm() {
+export default function RegisterForm({captchaRequired}: {captchaRequired: boolean}) {
     const router = useRouter();
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [isEmailManual, setIsEmailManual] = useState(false);
 
-    const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_TOKEN;
-    const captchaRequired = !!sitekey;
+    // `captchaRequired` est décidé côté serveur : faux depuis le réseau de l'IUT,
+    // où challenges.cloudflare.com est bloqué en examen.
+    const sitekey = captchaRequired ? process.env.NEXT_PUBLIC_TURNSTILE_TOKEN : undefined;
+    const {failed: captchaFailed, onScriptError} = useTurnstileLoadFailure(sitekey);
+    const captchaShown = !!sitekey;
 
     const {
         register,
@@ -171,6 +174,7 @@ export default function RegisterForm() {
             {sitekey && (
                 <Script
                     src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+                    onError={onScriptError}
                     async
                     defer
                 />
@@ -335,7 +339,7 @@ export default function RegisterForm() {
                 {/* ── Submit ── */}
                 <Button
                     type="submit"
-                    disabled={isSubmitting || (captchaRequired && !captchaToken)}
+                    disabled={isSubmitting || (captchaShown && !captchaToken)}
                     size="lg"
                     className="group w-full h-auto rounded-lg bg-brand-accent-dark text-white dark:text-brand-dark hover:bg-brand-accent-dark hover:-translate-y-0.5 border-2 border-brand-accent-dark px-6 py-3 text-sm font-semibold tracking-wide shadow-[0_8px_24px_-10px_rgba(194,65,12,0.55)] hover:shadow-[0_14px_36px_-12px_rgba(194,65,12,0.75)] transition-all duration-300 flex items-center justify-center gap-2"
                 >
@@ -346,7 +350,7 @@ export default function RegisterForm() {
                         </>
                     ) : (
                         <>
-                            {captchaRequired && !captchaToken
+                            {captchaShown && !captchaToken
                                 ? <BlinkingBot size={16} className="shrink-0"/>
                                 : <UserPlus className="h-4 w-4"/>}
                             S&apos;inscrire
@@ -354,7 +358,7 @@ export default function RegisterForm() {
                     )}
                 </Button>
 
-                {captchaRequired && !captchaToken && !isSubmitting && <CaptchaPending/>}
+                {captchaShown && !captchaToken && !isSubmitting && (captchaFailed ? <CaptchaUnavailable/> : <CaptchaPending/>)}
 
                 <p className="text-center text-xs text-muted-foreground">
                     En créant un compte, vous acceptez les{" "}

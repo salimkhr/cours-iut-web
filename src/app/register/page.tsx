@@ -1,5 +1,5 @@
 import {redirect} from "next/navigation";
-import {getServerSession} from "@/lib/auth";
+import {getServerSession, isCaptchaRequired} from "@/lib/auth";
 import AuthLayout from "@/components/login/AuthLayout";
 import RegisterForm from "@/components/login/RegisterForm";
 
@@ -15,7 +15,7 @@ export default async function RegisterPage() {
             title="Inscription"
             description="Rejoignez la plateforme pédagogique. Accès complet aux cours, TP, slides et examens en HTML/CSS, JavaScript, PHP et plus."
         >
-            <RegisterForm/>
+            <RegisterForm captchaRequired={await isCaptchaRequired()}/>
         </AuthLayout>
     );
 }

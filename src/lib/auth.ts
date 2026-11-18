@@ -5,6 +5,7 @@ import {oauthProvider} from "@better-auth/oauth-provider";
 import {MongoClient} from "mongodb";
 import {headers} from "next/headers";
 import {Resend} from "resend";
+import {IP_ADDRESS_OPTIONS, isCaptchaExempt, relaxedSignInRateRule, withCaptchaExemption} from "@/lib/captchaExemption";
 
 // better-auth a besoin de l'instance Db au moment de la config (module load).
 // MongoClient.db() est lazy : la connexion réseau se fait à la première op,
@@ -102,13 +103,14 @@ export const auth = betterAuth({
         updateAge: 60 * 60 * 24,      // refresh quotidien
     },
 
-    advanced: {
-        // Derrière le proxy Dokploy, la vraie IP client est dans X-Forwarded-For.
-        ipAddress: {
-            ipAddressHeaders: [
-                "cf-connecting-ip",   // Cloudflare (si activé côté Dokploy)
-                "x-forwarded-for",    // standard RFC 7239
-            ],
+    advanced: IP_ADDRESS_OPTIONS.advanced,
+
+    rateLimit: {
+        customRules: {
+            // Une salle de l'IUT sort par une seule IP publique : la règle par défaut
+            // (3 connexions par 10 s et par IP) bloquerait l'ouverture d'un examen.
+            // Relevée depuis le réseau de l'IUT ou en mode examen (`@/lib/captchaExemption`).
+            "/sign-in/*": relaxedSignInRateRule(),
         },
     },
 
@@ -133,15 +135,17 @@ export const auth = betterAuth({
         // Captcha Turnstile : protège sign-in/sign-up contre les bots.
         // Le client doit envoyer le token Turnstile dans l'en-tête `x-captcha-response`.
         // Si la clé n'est pas définie (dev local sans Turnstile), on retire le plugin.
+        // Pas de captcha depuis le réseau de l'IUT (`IUT_NETWORK_CIDRS`) ni en mode
+        // examen : en salle d'examen, challenges.cloudflare.com est bloqué.
         ...(turnstileSecret
             ? [
-                captcha({
+                withCaptchaExemption(captcha({
                     provider: "cloudflare-turnstile",
                     secretKey: turnstileSecret,
                     // Liste par défaut de better-auth + connexion par identifiant (plugin username),
                     // sinon /sign-in/username contourne l'anti-robot.
                     endpoints: ["/sign-up/email", "/sign-in/email", "/sign-in/username", "/request-password-reset"],
-                }),
+                })),
             ]
             : []),
 
@@ -179,4 +183,13 @@ export type Session = typeof auth.$Infer.Session;
  */
 export async function getServerSession() {
     return auth.api.getSession({headers: await headers()});
+}
+
+/**
+ * Le formulaire doit-il afficher le captcha ? Non si Turnstile n'est pas configuré,
+ * ni pour une requête exemptée : réseau de l'IUT ou mode examen (`@/lib/captchaExemption`).
+ */
+export async function isCaptchaRequired(): Promise<boolean> {
+    if (!turnstileSecret) return false;
+    return !(await isCaptchaExempt(await headers()));
 }
