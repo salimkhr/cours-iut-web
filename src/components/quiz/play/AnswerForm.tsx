@@ -16,19 +16,20 @@ interface Props {
     question: PublicQuestion;
     deadline: number | null;
     serverNow: number;
-    /** Réponse déjà enregistrée côté serveur (reconnexion) : le formulaire démarre verrouillé. */
-    lockedWith: string[] | null;
 }
 
-/** La sélection reste modifiable jusqu'à l'envoi, puis se verrouille. */
-export default function AnswerForm({sessionId, question, deadline, serverNow, lockedWith}: Props) {
-    const [selected, setSelected] = useState<string[]>(lockedWith ?? []);
-    const [locked, setLocked] = useState(lockedWith !== null);
+/**
+ * La sélection reste modifiable jusqu'à l'envoi, puis se verrouille. Le serveur passe alors
+ * à la question suivante, qui remplace ce formulaire (clé = identifiant de question).
+ */
+export default function AnswerForm({sessionId, question, deadline, serverNow}: Props) {
+    const [selected, setSelected] = useState<string[]>([]);
+    const [locked, setLocked] = useState(false);
     const [sending, setSending] = useState(false);
     const [message, setMessage] = useState<{text: string; tone: "error" | "info"} | null>(null);
 
-    const isLocked = locked || lockedWith !== null;
-    const shown = lockedWith ?? selected;
+    const isLocked = locked;
+    const shown = selected;
 
     // Une seule bonne réponse : boutons radio. Sinon cases à cocher, plafonnées au nombre attendu
     // (le serveur refuse de toute façon une réponse qui en contient davantage).
@@ -43,14 +44,14 @@ export default function AnswerForm({sessionId, question, deadline, serverNow, lo
     async function submit() {
         setSending(true);
         setMessage({text: "Envoi de votre réponse…", tone: "info"});
-        const res = await api(`/api/quiz/sessions/${sessionId}/answer`, {method: "POST", body: {selectedIds: selected}});
+        const res = await api(`/api/quiz/sessions/${sessionId}/answer`, {method: "POST", body: {questionId: question.id, selectedIds: selected}});
         setSending(false);
         if (res.ok) {
             setLocked(true);
-            setMessage({text: "Réponse envoyée. Elle ne peut plus être modifiée.", tone: "info"});
+            setMessage({text: "Réponse envoyée. Question suivante…", tone: "info"});
         } else if (res.status === 409) {
             setLocked(true);
-            setMessage({text: "Temps écoulé : votre réponse n'a pas été prise en compte.", tone: "error"});
+            setMessage({text: "Temps écoulé : votre réponse n'a pas été prise en compte. Question suivante…", tone: "error"});
         } else {
             setMessage({text: `${res.error ?? "Envoi impossible"}. Vous pouvez réessayer tant que le temps n'est pas écoulé.`, tone: "error"});
         }
@@ -108,7 +109,7 @@ export default function AnswerForm({sessionId, question, deadline, serverNow, lo
                 </p>
                 {isLocked ? (
                     <div className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-bridge-500/40 bg-bridge-100/80 px-4 text-base font-semibold dark:bg-bridge-700/60">
-                        <Lock className="size-5" aria-hidden="true"/> Réponse verrouillée — en attente de la correction
+                        <Lock className="size-5" aria-hidden="true"/> Réponse verrouillée
                     </div>
                 ) : (
                     <Button type="submit" size="lg" className="min-h-12 text-base" disabled={selected.length === 0 || sending}>

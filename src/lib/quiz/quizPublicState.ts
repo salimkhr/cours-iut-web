@@ -1,7 +1,7 @@
 import type {Block} from "@/types/CourseContent";
-import {formatPublicName, rankParticipants, topOfPodium} from "@/lib/quiz/quizPodium";
-import type {QuizAnswer, QuizParticipant, QuizPhase, QuizSession} from "@/lib/quiz/quizTypes";
-import {shuffleOptions} from "@/lib/quiz/quizOptionOrder";
+import {windowMs} from "@/lib/quiz/quizMachine";
+import type {QuizAnswer, QuizParticipant, QuizPhase, QuizQuestion, QuizSession} from "@/lib/quiz/quizTypes";
+import {participantSeed, questionsFor, shuffleOptions} from "@/lib/quiz/quizOptionOrder";
 
 export type QuizAudience = "projection" | {userId: string};
 
@@ -13,13 +13,8 @@ export interface PublicQuestion {
     /** Propositions sans indicateur de justesse. */
     options: {id: string; text: string}[];
     expectedCount: number;
+    /** Durée accordée à ce destinataire (tiers-temps compris), en secondes. */
     durationSeconds: number;
-}
-
-export interface PodiumEntry {
-    rank: number;
-    name: string;
-    score: number;
 }
 
 interface BaseState {
@@ -29,21 +24,24 @@ interface BaseState {
     moduleSlug: string;
     phase: QuizPhase;
     participantCount: number;
+    /** Phase `running` : la question du participant ; phase `review` : la question corrigée. */
     question: PublicQuestion | null;
-    /** epoch ms : l'échéance fixée par le serveur. */
+    /** epoch ms : l'échéance fixée par le serveur pour ce destinataire. */
     deadline: number | null;
     serverNow: number;
 }
 
 export interface ProjectionState extends BaseState {
     audience: "projection";
-    joinCode: string;
     shortCode: string;
+    /** Phase `running` : participants qui ont répondu ou laissé passer toutes les questions. */
+    finishedCount: number;
+    /** Phase `review` : réponses non vides reçues sur la question corrigée. */
     answeredCount: number;
-    /** Renseigné uniquement à partir de `reveal`. */
+    /** Renseigné uniquement en `review`. */
     correctIds: string[] | null;
-    /** Renseigné en `leaderboard` et `finished` seulement. Jamais plus que le haut du classement. */
-    podium: PodiumEntry[];
+    /** `review` : nombre d'étudiants ayant coché chaque proposition (id → effectif). */
+    optionCounts: Record<string, number> | null;
 }
 
 export interface StudentReveal {
@@ -55,12 +53,11 @@ export interface StudentReveal {
 
 export interface StudentState extends BaseState {
     audience: "student";
-    /** Réponse déjà envoyée pour la question courante (verrouillée). */
-    answer: {selectedIds: string[]} | null;
+    /** Phase `running` : le participant a traité toutes les questions. */
+    done: boolean;
     reveal: StudentReveal | null;
     score: number;
     scoreMax: number;
-    rank: number | null;
 }
 
 export type QuizPublicState = ProjectionState | StudentState;
@@ -68,28 +65,33 @@ export type QuizPublicState = ProjectionState | StudentState;
 export interface StateData {
     session: QuizSession;
     participants: QuizParticipant[];
-    /** Réponses de la question courante uniquement. */
+    /** Phase `review` : réponses de la question corrigée uniquement. */
     currentAnswers: QuizAnswer[];
     now: number;
 }
 
-function publicQuestion(session: QuizSession): PublicQuestion | null {
-    if (session.questionIndex < 0 || session.phase === "lobby" || session.phase === "finished") return null;
-    const question = session.quiz.questions[session.questionIndex];
-    if (!question) return null;
+function toPublic(session: QuizSession, question: QuizQuestion, index: number, durationSeconds: number): PublicQuestion {
     return {
         id: question.id,
-        index: session.questionIndex,
+        index,
         total: session.quiz.questions.length,
         blocks: question.blocks,
-        // Mélangées, mais dans le même ordre pour la projection et les téléphones (graine session + question).
+        // Mélangées, mais dans le même ordre pour la projection et chaque étudiant (graine session + question).
         options: shuffleOptions(question.options.map(({id, text}) => ({id, text})), `${session.id}:${question.id}`),
         expectedCount: question.options.filter((o) => o.correct).length,
-        durationSeconds: question.durationSeconds,
+        durationSeconds,
     };
 }
 
-function base(data: StateData): BaseState {
+function reviewQuestion(session: QuizSession): PublicQuestion | null {
+    if (session.phase !== "review") return null;
+    const question = session.quiz.questions[session.questionIndex];
+    return question ? toPublic(session, question, session.questionIndex, question.durationSeconds) : null;
+}
+
+const isDone = (session: QuizSession, p: QuizParticipant) => (p.currentIndex ?? -1) >= session.quiz.questions.length;
+
+function base(data: StateData): Omit<BaseState, "question" | "deadline"> {
     const {session, participants, now} = data;
     return {
         sessionId: session.id,
@@ -97,8 +99,6 @@ function base(data: StateData): BaseState {
         moduleSlug: session.moduleSlug,
         phase: session.phase,
         participantCount: participants.length,
-        question: publicQuestion(session),
-        deadline: session.deadline,
         serverNow: now,
     };
 }
@@ -108,44 +108,64 @@ function correctIdsOf(session: QuizSession): string[] {
     return question ? question.options.filter((o) => o.correct).map((o) => o.id) : [];
 }
 
+function countChoices(session: QuizSession, answers: QuizAnswer[]): Record<string, number> {
+    const question = session.quiz.questions[session.questionIndex];
+    const counts: Record<string, number> = Object.fromEntries((question?.options ?? []).map((o) => [o.id, 0]));
+    for (const a of answers) {
+        for (const id of a.selectedIds) if (id in counts) counts[id]++;
+    }
+    return counts;
+}
+
 export function totalPossible(session: QuizSession): number {
     return session.quiz.questions.reduce((sum, q) => sum + q.weight, 0);
 }
 
 export function toProjectionState(data: StateData): ProjectionState {
     const {session, participants, currentAnswers} = data;
-    // Le podium a son propre écran (leaderboard) : la correction reste centrée sur la question.
-    const ranked = session.phase === "leaderboard" || session.phase === "finished";
-    const podium = ranked
-        ? topOfPodium(rankParticipants(participants)).map((p) => ({
-            rank: p.rank,
-            name: formatPublicName(p.firstName, p.lastName),
-            score: p.score,
-        }))
-        : [];
     return {
         ...base(data),
+        // En phase `running`, chacun est sur sa propre question : la projection n'en montre aucune.
+        question: reviewQuestion(session),
+        deadline: null,
         audience: "projection",
-        joinCode: session.joinCode,
         shortCode: session.shortCode,
-        // Les absents reçoivent une réponse vide à la clôture (départage) : ce ne sont pas des réponses reçues.
-        answeredCount: currentAnswers.filter((a) => a.selectedIds.length > 0).length,
-        correctIds: session.phase === "reveal" ? correctIdsOf(session) : null,
-        podium,
+        finishedCount: session.phase === "running" ? participants.filter((p) => isDone(session, p)).length : 0,
+        // Les absents reçoivent une réponse vide : ce ne sont pas des réponses reçues.
+        answeredCount: session.phase === "review" ? currentAnswers.filter((a) => a.selectedIds.length > 0).length : 0,
+        correctIds: session.phase === "review" ? correctIdsOf(session) : null,
+        optionCounts: session.phase === "review" ? countChoices(session, currentAnswers) : null,
     };
 }
 
 export function toStudentState(data: StateData, userId: string): StudentState {
     const {session, participants, currentAnswers} = data;
     const me = participants.find((p) => p.userId === userId);
+
+    let question: PublicQuestion | null = null;
+    let deadline: number | null = null;
+    if (session.phase === "running" && me) {
+        // Seule la question en cours du participant, dans son ordre à lui : jamais la suivante,
+        // jamais la correction. `index` est sa position (« Question 3 sur 21 »).
+        const index = me.currentIndex ?? -1;
+        const current = questionsFor(session.quiz.questions, participantSeed(session.id, userId))[index];
+        if (current && me.deadline != null) {
+            question = toPublic(session, current, index, windowMs(current.durationSeconds, me.extraTime === true) / 1000);
+            deadline = me.deadline;
+        }
+    } else {
+        question = reviewQuestion(session);
+    }
+
     const mine = currentAnswers.find((a) => a.userId === userId);
-    const ranked = rankParticipants(participants);
-    const myRank = ranked.find((p) => p.userId === userId)?.rank ?? null;
+    const corrected = session.phase === "review" || session.phase === "finished";
     return {
         ...base(data),
+        question,
+        deadline,
         audience: "student",
-        answer: mine && session.phase === "question_open" ? {selectedIds: mine.selectedIds} : null,
-        reveal: session.phase === "reveal"
+        done: session.phase === "running" && me !== undefined && isDone(session, me),
+        reveal: session.phase === "review"
             ? {
                 correctIds: correctIdsOf(session),
                 selectedIds: mine?.selectedIds ?? [],
@@ -153,9 +173,9 @@ export function toStudentState(data: StateData, userId: string): StudentState {
                 scoreMax: session.quiz.questions[session.questionIndex]?.weight ?? 0,
             }
             : null,
-        score: me?.score ?? 0,
+        // Le score cumulé dirait, question après question, si la réponse était juste : rien avant la correction.
+        score: corrected ? me?.score ?? 0 : 0,
         scoreMax: totalPossible(session),
-        rank: session.phase === "reveal" || session.phase === "leaderboard" || session.phase === "finished" ? myRank : null,
     };
 }
 

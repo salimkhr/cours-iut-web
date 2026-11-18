@@ -6,6 +6,7 @@ export default interface AdminUser {
     role: string;
     group?: string | null;
     username?: string | null;
+    extraTime?: boolean;
     banned?: boolean | null;
     createdAt: string;
 }

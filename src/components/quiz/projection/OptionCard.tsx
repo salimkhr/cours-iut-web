@@ -5,22 +5,42 @@ import {renderInline} from "@/lib/inlineMarkdown";
 
 export type OptionState = "idle" | "correct" | "wrong";
 
-/** A, B, C… : repère commun à la projection et aux téléphones, l'ordre étant mélangé. */
+/** A, B, C… : repère commun à la projection et aux écrans des étudiants, l'ordre étant mélangé. */
 export const optionLetter = (index: number) => String.fromCharCode(65 + index);
 
+interface Props {
+    letter: string;
+    text: string;
+    state: OptionState;
+    compact?: boolean;
+    /** Correction : combien d'étudiants ont coché cette proposition, sur combien de répondants. */
+    stat?: {count: number; total: number};
+}
+
 /**
- * Proposition de réponse sur la projection. Elle ne bouge pas entre la question et la correction :
- * seul son état change, et il se lit par l'icône et le libellé autant que par la couleur.
+ * Proposition de réponse sur la projection. Son état se lit par l'icône et le libellé autant que
+ * par la couleur. À la correction, une barre de fond donne la part des répondants qui l'ont cochée.
  */
-export default function OptionCard({letter, text, state, compact = false}: {letter: string; text: string; state: OptionState; compact?: boolean}) {
+export default function OptionCard({letter, text, state, compact = false, stat}: Props) {
+    const percent = stat && stat.total > 0 ? Math.round((stat.count / stat.total) * 100) : 0;
     return (
         <li className={cn(
-            "flex items-center gap-5 !rounded-2xl border-2 px-6 font-semibold leading-tight",
+            "relative isolate flex items-center gap-5 overflow-hidden !rounded-2xl border-2 px-6 font-semibold leading-tight",
             compact ? "py-3 text-3xl" : "py-4 text-4xl",
             state === "idle" && quizCard,
             state === "correct" && "border-emerald-700 bg-emerald-600/10 text-brand-dark dark:border-emerald-400 dark:text-brand-light",
             state === "wrong" && "border-bridge-500/30 bg-bridge-50/85 text-brand-dark/70 dark:bg-bridge-900/85 dark:text-brand-light/70",
         )}>
+            {stat && (
+                <span
+                    aria-hidden="true"
+                    className={cn(
+                        "absolute inset-y-0 left-0 -z-10 transition-[width] duration-700 ease-out motion-reduce:transition-none",
+                        state === "correct" ? "bg-emerald-600/20 dark:bg-emerald-400/20" : "bg-bridge-500/15 dark:bg-bridge-400/15",
+                    )}
+                    style={{width: `${percent}%`}}
+                />
+            )}
             <span aria-hidden="true" className={cn(
                 "flex shrink-0 items-center justify-center rounded-xl font-extrabold text-white dark:text-brand-dark",
                 compact ? "size-12 text-2xl" : "size-14 text-3xl",
@@ -29,6 +49,9 @@ export default function OptionCard({letter, text, state, compact = false}: {lett
                 {letter}
             </span>
             <span className={cn("min-w-0 flex-1", inlineCodeFit)}>{renderInline(text)}</span>
+            {stat && (
+                <span className={cn("shrink-0 font-extrabold tabular-nums", compact ? "text-3xl" : "text-4xl")}>{percent} %</span>
+            )}
             {/* Place réservée dès la question : le texte se replie de la même façon à la correction,
                 la carte ne change donc pas de hauteur. */}
             {state === "idle" && (

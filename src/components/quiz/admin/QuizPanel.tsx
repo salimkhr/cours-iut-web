@@ -85,7 +85,7 @@ export default function QuizPanel({moduleId, moduleSlug}: {moduleId: string; mod
                 <div>
                     <h2 className="text-lg font-bold">Pas encore de quiz pour ce module</h2>
                     <p className="text-sm text-muted-foreground">
-                        Un quiz par module, joué en direct depuis les téléphones des étudiants.
+                        Un quiz par module, joué en direct : chaque étudiant répond sur son ordinateur.
                     </p>
                 </div>
                 {error && <p role="alert" className="text-sm text-destructive">{error}</p>}

@@ -53,14 +53,14 @@ export async function PATCH(
         return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
 
-    const { firstName, lastName, email, username, group, role } = parsed.data;
+    const { firstName, lastName, email, username, group, role, extraTime } = parsed.data;
     const name = lastName ? `${firstName} ${lastName}` : firstName;
 
     try {
         // reason: better-auth admin plugin types not exposed for adminUpdateUser method
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (auth.api as any).adminUpdateUser({
-            body: { userId, data: { name, email } },
+            body: { userId, data: { name, email, extraTime: extraTime ?? false } },
             headers: await headers(),
         });
 

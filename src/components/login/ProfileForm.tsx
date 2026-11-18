@@ -11,6 +11,7 @@ import {authClient} from "@/lib/auth-client";
 import {Button} from "@/components/ui/button";
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group";
 import {Field, FieldError, FieldLabel} from "@/components/ui/field";
+import ExtraTimeField from "@/components/login/ExtraTimeField";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {GROUPS, Group, STUDENT_EMAIL_DOMAIN} from "@/lib/schemas/register.schema";
 import {createProfileSchema, ProfileValues} from "@/lib/schemas/profile.schema";
@@ -22,9 +23,10 @@ type Props = {
     email: string;
     imageUrl: string | null;
     group: Group | null;
+    extraTime: boolean;
 };
 
-export default function ProfileForm({initialFirstName, initialLastName, email, imageUrl, group}: Props) {
+export default function ProfileForm({initialFirstName, initialLastName, email, imageUrl, group, extraTime}: Props) {
     const router = useRouter();
     const [preview, setPreview] = useState<string | null>(imageUrl);
     const [pictureChanged, setPictureChanged] = useState(false);
@@ -38,6 +40,7 @@ export default function ProfileForm({initialFirstName, initialLastName, email, i
             firstName: initialFirstName,
             lastName: initialLastName,
             group: group ?? undefined,
+            extraTime,
         },
     });
 
@@ -79,6 +82,7 @@ export default function ProfileForm({initialFirstName, initialLastName, email, i
         const updateData: Record<string, unknown> = {
             name: `${values.firstName} ${values.lastName}`,
             group: values.group ?? null,
+            extraTime: values.extraTime ?? false,
         };
         if (imageUrl !== undefined) updateData.image = imageUrl;
 
@@ -186,6 +190,14 @@ export default function ProfileForm({initialFirstName, initialLastName, email, i
                     />
                     <FieldError errors={[errors.group]}/>
                 </Field>
+            )}
+
+            {isStudent && (
+                <Controller name="extraTime" control={control}
+                    render={({field}) => (
+                        <ExtraTimeField id="profile-extraTime" checked={field.value ?? false} onChange={field.onChange}/>
+                    )}
+                />
             )}
 
             <Button type="submit" disabled={isSubmitting} size="lg"

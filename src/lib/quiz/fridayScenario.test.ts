@@ -9,12 +9,14 @@ import {QuizResultsRepository} from "@/lib/quiz/QuizResultsRepository";
 import {QuizService} from "@/lib/quiz/QuizService";
 import type {ProjectionState, QuizPublicState, StudentState} from "@/lib/quiz/quizPublicState";
 import {fillScodocSheet, mergeScodocEntries, scodocNote} from "@/lib/quiz/scodocSheet";
+import {participantSeed, questionsFor} from "@/lib/quiz/quizOptionOrder";
 import type {Quiz} from "@/lib/quiz/quizTypes";
 
 /**
  * Répétition générale d'une séance réelle : deux sessions de 20 étudiants, menées en même temps,
  * sur un quiz de 21 questions dont la première (échauffement) a un poids de 0.
- * Réponses concurrentes, absents, réponses tardives, doubles clics, puis résultats et feuille ScoDoc.
+ * Chacun avance à son rythme, dans son propre ordre (un sur cinq en tiers-temps) : réponses concurrentes, absents,
+ * réponses tardives, doubles clics, correction collective, puis résultats et feuille ScoDoc.
  */
 
 const STUDENTS = 20;
@@ -38,6 +40,7 @@ const student = (session: number, index: number): Identity => {
         group: `G${session + 1}`,
         email: `${username}@etu.univ.test`,
         username,
+        extraTime: index % 5 === 0,
     };
 };
 
@@ -148,49 +151,59 @@ async function runSession(k: number): Promise<Run> {
     // Double clic sur « Démarrer ».
     await Promise.all([live.start(session.id), live.start(session.id)]);
     let lateRejected = 0;
+    const participants = db.collection("quiz_participants");
 
-    for (let q = 0; q < QUESTIONS; q++) {
-        const current = await live.getSession(session.id);
-        expect(current?.phase).toBe("question_open");
-        expect(current?.questionIndex).toBe(q);
-        const question = quiz.questions[q];
-
-        now += 3_000;
-        await Promise.all(people.map(async (p, i) => {
-            const b = behaviour(k, i, q);
-            if (b === "absent") return;
-            // Double envoi (réseau lent) : une seule réponse comptée.
-            const [a1, a2] = await Promise.all([
-                live.submitAnswer(session.id, p.userId, selection(question, b)),
-                live.submitAnswer(session.id, p.userId, selection(question, b)),
-            ]);
-            expect(a1.scoreObtained).toBe(a2.scoreObtained);
-        }));
-
-        // Un absent tente de répondre après l'échéance.
-        now += DURATION * 1000;
-        const absentee = people.findIndex((_, i) => behaviour(k, i, q) === "absent");
-        if (absentee >= 0) {
-            await expect(live.submitAnswer(session.id, people[absentee].userId, selection(question, "allGood")))
+    // Horloge événementielle : chaque étudiant répond 3 s après l'ouverture de sa question,
+    // ou laisse filer jusqu'à son échéance s'il est absent sur cette question.
+    for (;;) {
+        if ((await live.getSession(session.id))?.phase !== "running") break;
+        const pending = (await participants.find({sessionId: session.id, deadline: {$ne: null}}).toArray())
+            .map((doc) => {
+                const i = people.findIndex((p) => p.userId === doc.userId);
+                // Position dans l'ordre de l'étudiant → indice de la question dans le quiz.
+                const order = questionsFor(quiz.questions, participantSeed(session.id, doc.userId as string));
+                const q = quiz.questions.findIndex((x) => x.id === order[doc.currentIndex as number].id);
+                const absent = behaviour(k, i, q) === "absent";
+                return {i, q, absent, at: absent ? doc.deadline as number : (doc.questionStartedAt as number) + 3_000};
+            })
+            .sort((x, y) => x.at - y.at);
+        const event = pending[0];
+        expect(event).toBeDefined();
+        now = Math.max(now, event.at);
+        const p = people[event.i];
+        const question = quiz.questions[event.q];
+        if (event.absent) {
+            // L'absent tente de répondre pile à l'échéance : refusé.
+            await expect(live.submitAnswer(session.id, p.userId, question.id, selection(question, "allGood")))
                 .rejects.toMatchObject({code: "question_closed"});
             lateRejected++;
+            await live.restore(session.id);
+        } else {
+            // Double envoi (réseau lent) : une seule réponse comptée.
+            const b = behaviour(k, event.i, event.q);
+            const [a1, a2] = await Promise.all([
+                live.submitAnswer(session.id, p.userId, question.id, selection(question, b)),
+                live.submitAnswer(session.id, p.userId, question.id, selection(question, b)),
+            ]);
+            expect(a1.scoreObtained).toBe(a2.scoreObtained);
         }
+    }
 
-        // Le chronomètre et l'enseignant ferment en même temps.
-        await Promise.all([live.closeCurrentQuestion(session.id), live.closeCurrentQuestion(session.id)]);
-        expect((await live.getSession(session.id))?.phase).toBe("reveal");
-
-        const reveal = projection.at(-1);
-        expect(reveal?.phase).toBe("reveal");
-        expect(reveal?.answeredCount).toBe(people.filter((_, i) => behaviour(k, i, q) !== "absent").length);
+    // Tout le monde a fini : la correction s'est ouverte seule. L'enseignant reparcourt les questions.
+    for (let q = 0; q < QUESTIONS; q++) {
+        const current = await live.getSession(session.id);
+        expect(current?.phase).toBe("review");
+        expect(current?.questionIndex).toBe(q);
+        const question = quiz.questions[q];
         expect(await db.collection("quiz_answers").countDocuments({sessionId: session.id, questionId: question.id})).toBe(STUDENTS);
 
-        // Double clic sur « Suivant » : reveal → leaderboard (ou finished), une seule fois.
+        // Double clic sur « Suivant » : on n'avance qu'une fois.
         await Promise.all([live.next(session.id), live.next(session.id)]);
+        const review = projection.at(-1);
         if (q < QUESTIONS - 1) {
-            expect((await live.getSession(session.id))?.phase).toBe("leaderboard");
-            expect(projection.at(-1)?.podium.length).toBe(3);
-            await Promise.all([live.next(session.id), live.next(session.id)]);
+            expect(review?.phase).toBe("review");
+            expect(review?.question?.index).toBe(q + 1);
+            expect(review?.answeredCount).toBe(people.filter((_, i) => behaviour(k, i, q + 1) !== "absent").length);
         }
     }
     return {sessionId: session.id, projection, firstStudent, lateRejected};
@@ -208,7 +221,7 @@ describe.each([false, true])("séance de vendredi (points négatifs : %p)", (neg
             expect(run.lateRejected).toBeGreaterThan(0);
 
             // Échauffement : affiché comme question 1/21, poids 0 côté étudiant.
-            const warmup = run.firstStudent.find((s) => s.phase === "reveal" && s.question?.index === 0);
+            const warmup = run.firstStudent.find((s) => s.phase === "review" && s.question?.index === 0);
             expect(warmup?.question?.total).toBe(QUESTIONS);
             expect(warmup?.reveal?.scoreMax).toBe(0);
             expect(warmup?.reveal?.scoreObtained).toBe(0);
@@ -216,7 +229,6 @@ describe.each([false, true])("séance de vendredi (points négatifs : %p)", (neg
 
             const final = run.projection.at(-1);
             expect(final?.phase).toBe("finished");
-            expect(final?.podium.length).toBe(3);
 
             // Score de chaque étudiant = somme attendue, sans la question 0.
             const participants = await db.collection("quiz_participants").find({sessionId: run.sessionId}).toArray();
@@ -225,8 +237,10 @@ describe.each([false, true])("séance de vendredi (points négatifs : %p)", (neg
                 const expected = Array.from({length: QUESTIONS}, (_, q) => expectedScore(q, behaviour(k, i, q), negative))
                     .reduce((a, b) => a + b, 0);
                 expect(p?.score).toBeCloseTo(expected, 6);
-                // Départage : chaque question consomme du temps (3 s répondu, 20 s absent).
-                expect(p?.timeMs).toBeGreaterThanOrEqual(QUESTIONS * 3_000);
+                // Temps relevé : chaque question consomme du temps (3 s répondu, ramené à 2,25 s en
+                // tiers-temps ; 20 s absent), sans que le tiers-temps ne pèse plus lourd.
+                expect(p?.timeMs).toBeGreaterThanOrEqual(QUESTIONS * 2_250);
+                expect(p?.timeMs).toBeLessThanOrEqual(QUESTIONS * DURATION * 1000);
             }
         }
 

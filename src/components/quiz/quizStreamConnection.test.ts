@@ -110,8 +110,8 @@ describe("connectQuizStream", () => {
         expect(h.sources).toHaveLength(1);
         expect(h.sources[0].url).toBe("/api/quiz/sessions/s1/stream");
         h.sources[0].emitOpen();
-        h.sources[0].emitState("question_open");
-        expect(h.states).toEqual(["lobby", "question_open"]);
+        h.sources[0].emitState("running");
+        expect(h.states).toEqual(["lobby", "running"]);
         expect(h.connections.at(-1)).toBe("connected");
         h.dispose();
     });
@@ -127,7 +127,7 @@ describe("connectQuizStream", () => {
     });
 
     test("502 du proxy (CLOSED) : recharge l'état et rouvre un flux, avec un délai croissant", async () => {
-        const h = harness([{status: 200, body: {phase: "lobby"}}, {status: 502}, {status: 200, body: {phase: "reveal"}}]);
+        const h = harness([{status: 200, body: {phase: "lobby"}}, {status: 502}, {status: 200, body: {phase: "review"}}]);
         await h.flush();
         h.sources[0].emitError(true);
         expect(h.connections.at(-1)).toBe("reconnecting");
@@ -138,7 +138,7 @@ describe("connectQuizStream", () => {
         expect(h.sources).toHaveLength(1);
 
         await h.fireLastTimer(); // /state répond enfin
-        expect(h.states).toEqual(["lobby", "reveal"]);
+        expect(h.states).toEqual(["lobby", "review"]);
         expect(h.sources).toHaveLength(2);
         h.sources[1].emitOpen();
         expect(h.connections.at(-1)).toBe("connected");
@@ -176,7 +176,7 @@ describe("connectQuizStream", () => {
     });
 
     test("au réveil du téléphone, repart d'un état frais et d'un flux neuf", async () => {
-        const h = harness([{status: 200, body: {phase: "question_open"}}, {status: 200, body: {phase: "leaderboard"}}]);
+        const h = harness([{status: 200, body: {phase: "running"}}, {status: 200, body: {phase: "finished"}}]);
         await h.flush();
         h.setVisibility("hidden");
         expect(h.fetches).toBe(1);
@@ -184,7 +184,7 @@ describe("connectQuizStream", () => {
         await h.flush();
         expect(h.sources[0].closed).toBe(true);
         expect(h.sources).toHaveLength(2);
-        expect(h.states).toEqual(["question_open", "leaderboard"]);
+        expect(h.states).toEqual(["running", "finished"]);
         h.dispose();
     });
 

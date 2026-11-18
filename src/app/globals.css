@@ -1380,20 +1380,3 @@ input:-webkit-autofill {
 .noel-elf-hat-band { stroke: #FBF4EA; stroke-width: 2; stroke-linecap: round; }
 .noel-elf-pompom { fill: #FBF4EA; }
 
-/* Quiz, thème de Noël : bonnet de père Noël posé de travers sur la pastille du
-   premier au podium (Podium.tsx). Taille relative à la pastille. */
-.theme-noel .podium-winner {
-    position: relative;
-}
-
-.theme-noel .podium-winner::before {
-    content: "";
-    position: absolute;
-    left: -40%;
-    top: -30%;
-    width: 90%;
-    height: 72%;
-    rotate: -24deg;
-    pointer-events: none;
-    background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M5 25 Q10 5 28 5 Q37 6 35 17 L29 12 Q20 12 17 25 Z' fill='%23C62F22' stroke='%237A1A12' stroke-width='1'/%3E%3Crect x='2' y='22' width='19' height='7' rx='3.5' fill='%23FBF4EA' stroke='%23B9A48C' stroke-width='1'/%3E%3Ccircle cx='35' cy='18' r='4.2' fill='%23FBF4EA' stroke='%23B9A48C' stroke-width='1'/%3E%3C/svg%3E");
-}

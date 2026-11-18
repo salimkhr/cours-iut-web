@@ -13,6 +13,7 @@ import {authClient} from "@/lib/auth-client";
 import {Button} from "@/components/ui/button";
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group";
 import {Field, FieldDescription, FieldError, FieldLabel} from "@/components/ui/field";
+import ExtraTimeField from "@/components/login/ExtraTimeField";
 import {
     Select,
     SelectContent,
@@ -65,7 +66,10 @@ export default function RegisterForm() {
     const isStudent = (watchedEmail ?? "").endsWith(STUDENT_EMAIL_DOMAIN);
 
     useEffect(() => {
-        if (!isStudent) setValue("group", undefined);
+        if (!isStudent) {
+            setValue("group", undefined);
+            setValue("extraTime", undefined);
+        }
     }, [isStudent, setValue]);
 
 
@@ -131,6 +135,7 @@ export default function RegisterForm() {
                 username: values.identifier,
                 password: values.password,
                 group: values.group,
+                extraTime: values.extraTime ?? false,
                 fetchOptions,
             });
 
@@ -284,6 +289,17 @@ export default function RegisterForm() {
                     )}
                 </div>
 
+                {/* ── Tiers-temps (étudiants) ── */}
+                {isStudent && (
+                    <Controller
+                        name="extraTime"
+                        control={control}
+                        render={({field}) => (
+                            <ExtraTimeField id="extraTime" checked={field.value ?? false} onChange={field.onChange}/>
+                        )}
+                    />
+                )}
+
                 {/* ── Mot de passe ── */}
                 <Field>
                     <FieldLabel htmlFor="password">Mot de passe</FieldLabel>
@@ -308,12 +324,8 @@ export default function RegisterForm() {
                             </button>
                         </InputGroupAddon>
                     </InputGroup>
-                    {/* Les règles étaient invisibles jusqu'au premier échec, et
-                        rien ne disait si ce mot de passe était celui de l'intranet. */}
-                    <FieldDescription>
-                        7 caractères minimum. Choisissez-en un propre à cette plateforme :
-                        ce n&apos;est pas celui de l&apos;intranet.
-                    </FieldDescription>
+                    {/* Les règles étaient invisibles jusqu'au premier échec. */}
+                    <FieldDescription>7 caractères minimum.</FieldDescription>
                     <FieldError className="text-brand-accent-dark" errors={[errors.password]}/>
                 </Field>
 

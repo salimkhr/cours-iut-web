@@ -21,6 +21,7 @@ export default async function AccountPage() {
     const [firstName = "", ...rest] = (name ?? "").split(" ");
     const lastName = rest.join(" ");
     const group = (session.user as Record<string, unknown>).group as Group | null ?? null;
+    const extraTime = (session.user as Record<string, unknown>).extraTime === true;
 
     return (
         <AuthLayout
@@ -34,6 +35,7 @@ export default async function AccountPage() {
                 email={email}
                 imageUrl={image ?? null}
                 group={group}
+                extraTime={extraTime}
             />
         </AuthLayout>
     );

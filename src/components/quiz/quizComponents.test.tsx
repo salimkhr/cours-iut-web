@@ -1,7 +1,6 @@
 import {describe, expect, mock, test} from "bun:test";
 import {renderToStaticMarkup} from "react-dom/server";
 import OptionResult from "@/components/quiz/OptionResult";
-import Podium from "@/components/quiz/projection/Podium";
 import {QuestionStatement} from "@/components/quiz/admin/QuizPanel";
 import type {Block} from "@/types/CourseContent";
 
@@ -36,20 +35,6 @@ describe("OptionResult", () => {
     });
 });
 
-describe("Podium", () => {
-    test("affiche rang, nom public et points", () => {
-        const html = renderToStaticMarkup(<Podium entries={[{rank: 1, name: "Ana M.", score: 2.5}]}/>);
-        expect(html).toContain("Ana M.");
-        expect(html).toContain("2,5");
-    });
-
-    test("sans entrée : marches vides et message explicite", () => {
-        const html = renderToStaticMarkup(<Podium entries={[]}/>);
-        expect(html).toContain("le classement est vide");
-        expect(html).not.toContain("Ana M.");
-    });
-});
-
 describe("JoinCodeForm", () => {
     test("champ étiqueté, aide visible, bouton désactivé tant que rien n'est saisi", async () => {
         mock.module("next/navigation", () => ({useRouter: () => ({push: () => {}})}));
@@ -74,7 +59,7 @@ describe("JoinQuizButton", () => {
 });
 
 describe("Statement (énoncé sur ordinateur)", () => {
-    test("rend le texte et le code, masqué sur téléphone, sans bouton Copier actif", async () => {
+    test("rend le texte et le code, toujours visible, sans bouton Copier actif", async () => {
         const {Statement} = await import("@/components/quiz/play/PlayScreen");
         const blocks = [
             {id: "c", type: "code", props: {language: "php", code: "echo $titre;"}},
@@ -83,7 +68,7 @@ describe("Statement (énoncé sur ordinateur)", () => {
         const html = renderToStaticMarkup(<Statement blocks={blocks}/>);
         expect(html).toContain("titre");
         expect(html).toContain("Que s&#x27;affiche-t-il ?");
-        expect(html).toMatch(/class="hidden [^"]*md:flex/);
+        expect(html).toMatch(/^<div class="flex flex-col/);
         expect(html).toContain("[&amp;_button]:hidden");
     });
 });

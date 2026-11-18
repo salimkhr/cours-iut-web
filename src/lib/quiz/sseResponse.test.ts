@@ -23,7 +23,7 @@ let sessionId: string;
 
 const student = (i: number): Identity => ({
     userId: `u${i}`, firstName: `Prenom${i}`, lastName: `NOM${i}`, group: "G1",
-    email: `e${i}@etu.test`, username: `e${i}`,
+    email: `e${i}@etu.test`, username: `e${i}`, extraTime: false,
 });
 
 /** Lit le flux SSE et rend chaque `event: state` décodé, au fil de l'eau. */
@@ -90,7 +90,7 @@ const request = (signal: AbortSignal, query = "") =>
     new Request(`http://localhost/api/quiz/sessions/${sessionId}/stream${query}`, {signal});
 
 describe("flux SSE du quiz", () => {
-    test("envoie l'état initial, puis chaque transition, sans jamais révéler la bonne réponse en question ouverte", async () => {
+    test("envoie l'état initial, puis chaque transition, sans jamais révéler la bonne réponse pendant la phase autonome", async () => {
         await live.join(sessionId, student(1));
         const abort = new AbortController();
         const res = await sseResponse(request(abort.signal), sessionId, {userId: "u1"});
@@ -102,13 +102,13 @@ describe("flux SSE du quiz", () => {
 
         await live.start(sessionId);
         const open = await stream.next();
-        expect(open.phase).toBe("question_open");
+        expect(open.phase).toBe("running");
         expect(open.question?.index).toBe(0);
         expect(stream.raw.at(-1)).not.toContain("\"correct\"");
 
-        await live.closeCurrentQuestion(sessionId);
+        await live.endRunning(sessionId);
         const reveal = await stream.next();
-        expect(reveal.phase).toBe("reveal");
+        expect(reveal.phase).toBe("review");
         expect(reveal.audience === "student" && reveal.reveal?.scoreMax).toBe(0);
 
         abort.abort();
@@ -130,15 +130,17 @@ describe("flux SSE du quiz", () => {
 
         await live.start(sessionId);
         const states = await Promise.all(streams.map((s) => s.next()));
-        expect(states.every((s) => s.phase === "question_open" && s.question?.index === 0)).toBe(true);
+        expect(states.every((s) => s.phase === "running" && s.question?.index === 0)).toBe(true);
 
         // Chaque réponse est diffusée à tous : 40 réponses → 40 états de plus par flux.
         const optionId = states[0].question?.options.find((o) => o.text === "oui")?.id as string;
-        await Promise.all(states.map((_, i) => live.submitAnswer(sessionId, `u${i}`, [optionId])));
+        const questionId = states[0].question?.id as string;
+        await Promise.all(states.map((_, i) => live.submitAnswer(sessionId, `u${i}`, questionId, [optionId])));
         for (const s of streams) {
             let last: QuizPublicState | undefined;
             for (let n = 0; n < 40; n++) last = await s.next();
-            expect(last?.audience === "student" && last.answer?.selectedIds).toEqual([optionId]);
+            // Chacun est passé à la question 2.
+            expect(last?.question?.index).toBe(1);
         }
 
         aborts.forEach((a) => a.abort());

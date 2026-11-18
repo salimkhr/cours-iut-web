@@ -10,7 +10,7 @@ interface Props {
 
 /**
  * Pendant étudiant du menu « Quiz » de l'enseignant : sur ordinateur, ouvre la saisie du code
- * affiché au tableau (sur téléphone, le QR code mène directement à la session).
+ * affiché au tableau.
  */
 export default function JoinQuizButton({accentColor, accentColorDark}: Props) {
     const style = {"--module-color": accentColor, "--module-color-dark": accentColorDark} as React.CSSProperties;

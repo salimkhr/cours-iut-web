@@ -24,8 +24,12 @@ export interface Quiz {
     updatedAt: string;
 }
 
-/** `leaderboard` : classement affiché entre la correction d'une question et la question suivante. */
-export type QuizPhase = "lobby" | "question_open" | "reveal" | "leaderboard" | "finished";
+/**
+ * - `running` : chaque participant enchaîne les questions seul, avec son propre chrono ;
+ * - `review` : la classe reparcourt les questions, correction projetée (`questionIndex`) ;
+ * - `finished` : écran de fin (score de chacun sur son écran).
+ */
+export type QuizPhase = "lobby" | "running" | "review" | "finished";
 
 /** Instantané du quiz copié dans la session au lancement. */
 export interface QuizSnapshot {
@@ -43,11 +47,10 @@ export interface QuizSession {
     shortCode: string;
     quiz: QuizSnapshot;
     phase: QuizPhase;
-    /** Index de la question courante (-1 en lobby). */
+    /** Question corrigée en `review` ; -1 sinon. */
     questionIndex: number;
-    /** epoch ms ; null hors question ouverte. */
-    questionStartedAt: number | null;
-    deadline: number | null;
+    /** epoch ms du démarrage (phase `running`) ; null en lobby. */
+    startedAt: number | null;
     createdAt: number;
     endedAt: number | null;
     /** Absent une fois la session terminée : le TTL ne purge que les sessions abandonnées. */
@@ -66,7 +69,15 @@ export interface QuizParticipant {
     username?: string | null;
     joinedAt: number;
     score: number;
+    /** Temps cumulé ramené à la durée normale (divisé par 4/3 en tiers-temps), affiché dans les résultats. */
     timeMs: number;
+    /** Tiers-temps, copié du compte au moment de rejoindre. Jamais diffusé hors de son propre état. */
+    extraTime?: boolean;
+    /** Question en cours (-1 avant le départ, `questions.length` une fois terminé). */
+    currentIndex?: number;
+    /** epoch ms ; null hors question en cours. */
+    questionStartedAt?: number | null;
+    deadline?: number | null;
 }
 
 export interface QuizAnswer {

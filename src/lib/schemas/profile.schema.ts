@@ -6,6 +6,7 @@ export const profileSchema = z.object({
     firstName: z.string().min(2, "Prénom trop court"),
     lastName: z.string().min(2, "Nom trop court"),
     group: z.enum(GROUPS).optional(),
+    extraTime: z.boolean().optional(),
     picture: z.instanceof(File).optional(),
 });
 
@@ -14,6 +15,7 @@ export function createProfileSchema(email: string) {
         firstName: z.string().min(2, "Prénom trop court"),
         lastName: z.string().min(2, "Nom trop court"),
         group: z.enum(GROUPS).optional(),
+        extraTime: z.boolean().optional(),
         picture: z.instanceof(File).optional(),
     }).superRefine((data, ctx) => {
         if (email.endsWith(STUDENT_EMAIL_DOMAIN) && !data.group) {

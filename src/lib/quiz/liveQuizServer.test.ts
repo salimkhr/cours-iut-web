@@ -16,9 +16,9 @@ describe("identityFromUser", () => {
 
     test("sépare prénom et nom au premier espace", () => {
         expect(identityFromUser({id: "1", name: "Salim Khraimeche", group: "G1"}))
-            .toEqual({userId: "1", firstName: "Salim", lastName: "Khraimeche", group: "G1", email: null, username: null});
+            .toEqual({userId: "1", firstName: "Salim", lastName: "Khraimeche", group: "G1", email: null, username: null, extraTime: false});
         expect(identityFromUser({id: "2", name: "Jean  De La Fontaine"}))
-            .toEqual({userId: "2", firstName: "Jean", lastName: "De La Fontaine", group: null, email: null, username: null});
+            .toEqual({userId: "2", firstName: "Jean", lastName: "De La Fontaine", group: null, email: null, username: null, extraTime: false});
     });
 
     test("nom absent ou mono-mot", () => {

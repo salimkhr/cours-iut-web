@@ -1,5 +1,8 @@
 import type {QuizPhase, QuizSession} from "@/lib/quiz/quizTypes";
 
+/** Tiers-temps : un tiers de temps en plus sur chaque question. */
+export const EXTRA_TIME_FACTOR = 4 / 3;
+
 export class InvalidTransitionError extends Error {
     constructor(from: QuizPhase, action: string) {
         super(`Transition impossible : « ${action} » depuis l'état « ${from} »`);
@@ -7,50 +10,58 @@ export class InvalidTransitionError extends Error {
     }
 }
 
-type MachineState = Pick<QuizSession, "phase" | "questionIndex" | "questionStartedAt" | "deadline" | "endedAt"> & {
-    quiz: {questions: {durationSeconds: number}[]};
+type MachineState = Pick<QuizSession, "phase" | "questionIndex" | "startedAt" | "endedAt"> & {
+    quiz: {questions: unknown[]};
 };
 
-function open<T extends MachineState>(session: T, index: number, now: number): T {
-    const question = session.quiz.questions[index];
-    return {
-        ...session,
-        phase: "question_open",
-        questionIndex: index,
-        questionStartedAt: now,
-        deadline: now + question.durationSeconds * 1000,
-    };
-}
-
-/** lobby → question_open (question 0). */
+/** lobby → running : chacun commence la question 0. */
 export function startQuiz<T extends MachineState>(session: T, now: number): T {
     if (session.phase !== "lobby") throw new InvalidTransitionError(session.phase, "démarrer");
     if (session.quiz.questions.length === 0) throw new Error("Le quiz ne contient aucune question");
-    return open(session, 0, now);
+    return {...session, phase: "running", startedAt: now, questionIndex: -1};
 }
 
-/** question_open → reveal (échéance atteinte ou fermeture manuelle). */
-export function closeQuestion<T extends MachineState>(session: T): T {
-    if (session.phase !== "question_open") throw new InvalidTransitionError(session.phase, "fermer la question");
-    return {...session, phase: "reveal", questionStartedAt: null, deadline: null};
+/** running → review (question 0) : tout le monde a fini, ou l'enseignant passe à la correction. */
+export function startReview<T extends MachineState>(session: T): T {
+    if (session.phase !== "running") throw new InvalidTransitionError(session.phase, "passer à la correction");
+    return {...session, phase: "review", questionIndex: 0};
 }
 
-/**
- * « Suivant » de l'enseignant :
- * - reveal → leaderboard : le classement s'intercale entre la correction et la question suivante ;
- * - reveal de la dernière question → finished : l'écran final porte déjà le podium ;
- * - leaderboard → question_open (index + 1).
- */
-export function nextQuestion<T extends MachineState>(session: T, now: number): T {
-    if (session.phase === "leaderboard") return open(session, session.questionIndex + 1, now);
-    if (session.phase !== "reveal") throw new InvalidTransitionError(session.phase, "question suivante");
+/** « Suivant » pendant la correction ; après la dernière question, l'écran de fin. */
+export function nextReview<T extends MachineState>(session: T, now: number): T {
+    if (session.phase !== "review") throw new InvalidTransitionError(session.phase, "question suivante");
     if (session.questionIndex + 1 >= session.quiz.questions.length) {
-        return {...session, phase: "finished", questionStartedAt: null, deadline: null, endedAt: now};
+        return {...session, phase: "finished", endedAt: now};
     }
-    return {...session, phase: "leaderboard"};
+    return {...session, questionIndex: session.questionIndex + 1};
 }
 
-/** Une réponse est acceptée tant que `now` est strictement avant l'échéance. */
-export function isOpenAt(session: Pick<QuizSession, "phase" | "deadline">, now: number): boolean {
-    return session.phase === "question_open" && session.deadline !== null && now < session.deadline;
+// ── Progression d'un participant ────────────────────────────────────────────
+
+export interface Progress {
+    currentIndex: number;
+    questionStartedAt: number | null;
+    deadline: number | null;
+}
+
+/** Durée accordée à une question, en ms. */
+export function windowMs(durationSeconds: number, extraTime: boolean): number {
+    return Math.round(durationSeconds * 1000 * (extraTime ? EXTRA_TIME_FACTOR : 1));
+}
+
+/** Ouvre la question `index` à `at`, ou marque le participant comme ayant terminé. */
+export function progressAt(questions: {durationSeconds: number}[], index: number, at: number, extraTime: boolean): Progress {
+    const question = questions[index];
+    if (!question) return {currentIndex: questions.length, questionStartedAt: null, deadline: null};
+    return {currentIndex: index, questionStartedAt: at, deadline: at + windowMs(question.durationSeconds, extraTime)};
+}
+
+/** Une réponse est acceptée tant que `now` est strictement avant l'échéance du participant. */
+export function isOpenAt(progress: Pick<Progress, "deadline">, now: number): boolean {
+    return progress.deadline !== null && now < progress.deadline;
+}
+
+/** Temps ramené à la durée normale : le tiers-temps n'apparaît pas dans les temps relevés. */
+export function normalizedTime(elapsedMs: number, extraTime: boolean): number {
+    return Math.round(Math.max(0, elapsedMs) / (extraTime ? EXTRA_TIME_FACTOR : 1));
 }
