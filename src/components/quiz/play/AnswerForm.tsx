@@ -16,13 +16,15 @@ interface Props {
     question: PublicQuestion;
     deadline: number | null;
     serverNow: number;
+    /** Faux quand l'écran affiche déjà le chrono ailleurs (bandeau de l'écran étudiant). */
+    showCountdown?: boolean;
 }
 
 /**
  * La sélection reste modifiable jusqu'à l'envoi, puis se verrouille. Le serveur passe alors
  * à la question suivante, qui remplace ce formulaire (clé = identifiant de question).
  */
-export default function AnswerForm({sessionId, question, deadline, serverNow}: Props) {
+export default function AnswerForm({sessionId, question, deadline, serverNow, showCountdown = true}: Props) {
     const [selected, setSelected] = useState<string[]>([]);
     const [locked, setLocked] = useState(false);
     const [sending, setSending] = useState(false);
@@ -65,10 +67,10 @@ export default function AnswerForm({sessionId, question, deadline, serverNow}: P
                 if (!isLocked && selected.length > 0) void submit();
             }}
         >
-            <Countdown deadline={deadline} serverNow={serverNow} total={question.durationSeconds} size="md"/>
+            {showCountdown && <Countdown deadline={deadline} serverNow={serverNow} total={question.durationSeconds} size="md"/>}
 
             <fieldset disabled={isLocked || sending} className="flex flex-col gap-3">
-                <legend className="mb-3 text-lg font-bold">
+                <legend className="mb-3 text-base font-bold text-brand-gray-700 dark:text-brand-gray-300">
                     Choisissez {question.expectedCount} réponse{question.expectedCount > 1 ? "s" : ""}
                 </legend>
                 {question.options.map((option, index) => {
