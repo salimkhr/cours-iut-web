@@ -3,6 +3,9 @@
 import {useEffect, useState} from "react";
 import Link from "next/link";
 import AnswerForm from "@/components/quiz/play/AnswerForm";
+import {splitStatement} from "@/components/quiz/play/statementLayout";
+import Countdown from "@/components/quiz/Countdown";
+import {cn} from "@/lib/utils";
 import {optionLetter} from "@/components/quiz/projection/OptionCard";
 import {QuizHeadband} from "@/components/quiz/QuizChrome";
 import QuizStage, {QuizTitle, moduleFill, quizCard} from "@/components/quiz/QuizStage";
@@ -21,8 +24,12 @@ function Shell({mode = "title", moduleSlug, children}: {mode?: "title" | "conten
         // Le menu du site occupe le haut de l'écran : sans cette hauteur, la page dépasse d'autant et oblige à
         // faire défiler pour voir la question et le bouton « Valider » (même règle que la projection).
         <QuizStage mode={mode} moduleSlug={moduleSlug} className="min-h-[calc(100dvh-var(--navbar-h))]">
-            {/* Chaque étudiant suit le quiz sur ordinateur : une colonne de lecture confortable. */}
-            <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-8 pt-10 pb-10">{children}</div>
+            {/* Garde (attente, fin) : une colonne de lecture. Question et correction : pleine largeur, code et
+                réponses côte à côte pour tenir sur un écran d'ordinateur sans défiler. */}
+            <div className={cn(
+                "mx-auto flex w-full flex-1 flex-col gap-4 px-8",
+                mode === "content" ? "max-w-7xl pt-6 pb-6" : "max-w-3xl pt-10 pb-10",
+            )}>{children}</div>
         </QuizStage>
     );
 }
@@ -44,8 +51,35 @@ function TitleEyebrow({moduleTitle}: {moduleTitle: string}) {
  */
 export function Statement({blocks}: {blocks: Block[]}) {
     return (
-        <div className="flex flex-col gap-3 text-lg font-semibold leading-snug [&_*]:max-w-none [&_button]:hidden [&_:not(pre)>code]:!text-[1em]">
+        // La carte de code garde ici l'espacement de la colonne, pas la marge verticale des pages de cours.
+        <div className="flex flex-col gap-3 text-lg font-semibold leading-snug [&_*]:max-w-none [&_button]:hidden [&_:not(pre)>code]:!text-[1em] [&_.course-code-card]:!my-0">
             <BlockRenderer blocks={blocks}/>
+        </div>
+    );
+}
+
+/**
+ * Énoncé avec code : contexte et code à gauche, question et réponses à droite (même hauteur d'écran).
+ * Sans code : une seule colonne de lecture.
+ */
+function QuestionLayout({blocks, children}: {blocks: Block[]; children: React.ReactNode}) {
+    const {context, prompt} = splitStatement(blocks);
+    if (context.length === 0) {
+        return (
+            // Pas de flex-1 : le bouton « Valider » reste sous les réponses au lieu de tomber en bas de l'écran.
+            <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+                <Statement blocks={prompt}/>
+                {children}
+            </div>
+        );
+    }
+    return (
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+            <Statement blocks={context}/>
+            <div className="flex flex-col gap-4">
+                {prompt.length > 0 && <Statement blocks={prompt}/>}
+                {children}
+            </div>
         </div>
     );
 }
@@ -104,15 +138,23 @@ function StudentView({sessionId}: {sessionId: string}) {
                     eyebrow={eyebrow}
                     badge={String(question.index + 1).padStart(2, "0")}
                     title={`Question ${question.index + 1} sur ${question.total}`}
+                    aside={
+                        // Chrono en haut à droite, toujours au même endroit, hors du fil de lecture.
+                        <div className="size-20 shrink-0">
+                            <Countdown deadline={state.deadline} serverNow={state.serverNow} total={question.durationSeconds} variant="ring"/>
+                        </div>
+                    }
                 />
-                <Statement blocks={question.blocks}/>
-                <AnswerForm
-                    key={question.id}
-                    sessionId={sessionId}
-                    question={question}
-                    deadline={state.deadline}
-                    serverNow={state.serverNow}
-                />
+                <QuestionLayout blocks={question.blocks}>
+                    <AnswerForm
+                        key={question.id}
+                        sessionId={sessionId}
+                        question={question}
+                        deadline={state.deadline}
+                        serverNow={state.serverNow}
+                        showCountdown={false}
+                    />
+                </QuestionLayout>
                 {status}
             </Shell>
         );
@@ -127,24 +169,25 @@ function StudentView({sessionId}: {sessionId: string}) {
                     badge={String(question.index + 1).padStart(2, "0")}
                     title={`Correction · question ${question.index + 1}`}
                 />
-                <Statement blocks={question.blocks}/>
-                <p className="text-2xl font-bold" role="status">
-                    {reveal.scoreObtained > 0 ? "+" : ""}{fmt(reveal.scoreObtained)} point{reveal.scoreObtained > 1 ? "s" : ""} sur {fmt(reveal.scoreMax)}
-                </p>
-                <ul className="flex flex-col gap-3">
-                    {question.options.map((option, index) => (
-                        <OptionResult
-                            key={option.id}
-                            letter={optionLetter(index)}
-                            text={option.text}
-                            correct={reveal.correctIds.includes(option.id)}
-                            selected={reveal.selectedIds.includes(option.id)}
-                        />
-                    ))}
-                </ul>
-                <p className={`${quizCard} mt-auto p-4 text-lg font-semibold tabular-nums`}>
-                    Score cumulé : {fmt(state.score)} / {fmt(state.scoreMax)}
-                </p>
+                <QuestionLayout blocks={question.blocks}>
+                    <p className="text-2xl font-bold" role="status">
+                        {reveal.scoreObtained > 0 ? "+" : ""}{fmt(reveal.scoreObtained)} point{reveal.scoreObtained > 1 ? "s" : ""} sur {fmt(reveal.scoreMax)}
+                    </p>
+                    <ul className="flex flex-col gap-3">
+                        {question.options.map((option, index) => (
+                            <OptionResult
+                                key={option.id}
+                                letter={optionLetter(index)}
+                                text={option.text}
+                                correct={reveal.correctIds.includes(option.id)}
+                                selected={reveal.selectedIds.includes(option.id)}
+                            />
+                        ))}
+                    </ul>
+                    <p className={`${quizCard} mt-auto p-4 text-lg font-semibold tabular-nums`}>
+                        Score cumulé : {fmt(state.score)} / {fmt(state.scoreMax)}
+                    </p>
+                </QuestionLayout>
                 {status}
             </Shell>
         );

@@ -294,7 +294,9 @@ async function run() {
     }
 
     // 4. Correction collective : ouverte seule quand tout le monde a fini.
-    let t = Date.now();
+    // La correction s'ouvre sur la dernière réponse, souvent avant la fin des boucles étudiantes :
+    // on compte donc depuis le départ, sinon l'état déjà reçu est ignoré.
+    let t = t0;
     let total = 0;
     for (let q = 0; ; q++) {
         record("correction", await waitAll(all, t, (st) => st.phase === "review" && st.question?.index === q, 600_000));
