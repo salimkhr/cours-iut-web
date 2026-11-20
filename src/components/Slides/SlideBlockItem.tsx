@@ -22,6 +22,13 @@ const slideColumnSpanClass: Record<number, string> = {
     9: "md:col-span-9",
 };
 
+/** Champ texte facultatif : `""` (valeur par défaut du builder) vaut absent. Sinon
+ *  `CodeCard` afficherait un onglet vide à la place du nom du langage. */
+function optionalText(value: unknown): string | undefined {
+    const text = typeof value === "string" ? value.trim() : "";
+    return text || undefined;
+}
+
 interface SlideBlockItemProps {
     block: Block;
     /** Enveloppe optionnelle des blocs imbriqués (items de liste, contenu de
@@ -44,6 +51,7 @@ export function SlideBlockItem({block, renderNested}: SlideBlockItemProps) {
             return (
                 <SlideCode
                     language={String(block.props.language ?? "javascript")}
+                    filename={optionalText(block.props.filename)}
                     highlight={block.props.highlight ? String(block.props.highlight) : undefined}
                 >
                     {String(block.props.code ?? "")}
@@ -87,6 +95,7 @@ export function SlideBlockItem({block, renderNested}: SlideBlockItemProps) {
                 <SlideCodeWithPreview
                     language={String(block.props.language ?? "html")}
                     code={String(block.props.code ?? "")}
+                    filename={optionalText(block.props.filename)}
                     secondaryLanguage={block.props.secondaryLanguage ? String(block.props.secondaryLanguage) : undefined}
                     secondaryCode={block.props.secondaryCode ? String(block.props.secondaryCode) : undefined}
                     preview={block.props.preview ? String(block.props.preview) : undefined}

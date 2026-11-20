@@ -116,6 +116,7 @@ export const blockPropsSchemas: Record<string, z.ZodTypeAny> = {
     "slide-code": z.object({
         language: z.string(),
         code: z.string(),
+        filename: z.string().optional(),
         highlight: z.string().optional(),
     }),
     "slide-list": z.object({ ordered: z.boolean() }),
@@ -144,6 +145,7 @@ export const blockPropsSchemas: Record<string, z.ZodTypeAny> = {
     "slide-code-with-preview": z.object({
         language: z.string(),
         code: z.string(),
+        filename: z.string().optional(),
         preview: z.string().optional(),
         secondaryLanguage: z.string().optional(),
         secondaryCode: z.string().optional(),

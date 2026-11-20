@@ -391,9 +391,10 @@ const clientParts: Record<string, ClientPart> = {
     },
     "slide-code": {
         icon: Code,
-        render: ({ language, code, highlight }: BlockRenderProps) => (
+        render: ({ language, code, filename, highlight }: BlockRenderProps) => (
             <CodeCard
                 language={String(language ?? "javascript")}
+                filename={String(filename ?? "").trim() || undefined}
                 highlightLines={highlight ? String(highlight) : undefined}
             >
                 {String(code ?? "")}
@@ -430,10 +431,11 @@ const clientParts: Record<string, ClientPart> = {
     },
     "slide-code-with-preview": {
         icon: Eye,
-        render: ({ language, code, secondaryLanguage, secondaryCode, preview, highlight, secondaryHighlight }: BlockRenderProps) => (
+        render: ({ language, code, filename, secondaryLanguage, secondaryCode, preview, highlight, secondaryHighlight }: BlockRenderProps) => (
             <SlideCodeWithPreview
                 language={String(language ?? "html")}
                 code={String(code ?? "")}
+                filename={String(filename ?? "").trim() || undefined}
                 secondaryLanguage={secondaryLanguage ? String(secondaryLanguage) : undefined}
                 secondaryCode={secondaryCode ? String(secondaryCode) : undefined}
                 preview={preview ? String(preview) : undefined}

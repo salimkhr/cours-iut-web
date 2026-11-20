@@ -374,10 +374,13 @@ function renderBlock(block: Block, depth: number, limitations: Set<string>): str
             const lang = str(props.language);
             // Étapes de surlignage (« 3 | 5-7 ») : les relecteurs les confrontent au code.
             const highlight = str(props.highlight).trim();
-            if (highlight) {
-                return `${annotation}\n_Surlignage : ${highlight}_\n${fence(code, lang)}`;
-            }
-            return `${annotation}\n${fence(code, lang)}`;
+            const filename = str(props.filename).trim();
+            const head = [
+                annotation,
+                ...(filename ? [`_${filename}_`] : []),
+                ...(highlight ? [`_Surlignage : ${highlight}_`] : []),
+            ].join("\n");
+            return `${head}\n${fence(code, lang)}`;
         }
 
         case "code-with-preview":
