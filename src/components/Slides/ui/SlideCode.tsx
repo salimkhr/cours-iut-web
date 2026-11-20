@@ -91,6 +91,7 @@ export const SlideCode: React.FC<SlideCodeProps> = ({
                 {...props}
                 className="!my-0 flex min-h-0 flex-1 flex-col"
                 showActions={false}
+                presentation
                 highlightLines={currentHighlight}
             />
             <style jsx global>{`

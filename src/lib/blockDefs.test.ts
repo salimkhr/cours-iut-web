@@ -118,3 +118,26 @@ test("un second code sans langage est refusé, un second panneau absent reste va
     expect(issue?.path).toEqual(["secondaryLanguage"]);
     expect(issue?.message).toContain("second panneau");
 });
+
+test("slide-code et slide-code-with-preview acceptent un nom de fichier facultatif", () => {
+    for (const type of ["slide-code", "slide-code-with-preview"] as const) {
+        const def = blockDefs.find((blockDef) => blockDef.type === type);
+        const field = def?.fields.find((f) => f.key === "filename");
+
+        expect(field?.type).toBe("text");
+        expect(field?.label).toBe("Nom de fichier");
+        expect(def?.defaultProps.filename).toBe("");
+
+        // Zod retire les clés inconnues : si un seul des deux schémas connaissait
+        // `filename`, l'autre l'effacerait à la validation.
+        const sample = {language: "php", code: "<?php", filename: "repositories/RecipeRepository.php"};
+        for (const schema of [def!.schema, blockPropsSchemas[type]]) {
+            const parsed = schema.safeParse(sample);
+            expect(parsed.success).toBe(true);
+            expect((parsed.data as {filename?: string}).filename).toBe(sample.filename);
+            expect(schema.safeParse({language: "php", code: "<?php"}).success).toBe(true);
+        }
+    }
+
+    expect(blockDefs.find((d) => d.type === "slide-code")?.fields.find((f) => f.key === "filename")?.placeholder).toBe("app.js");
+});

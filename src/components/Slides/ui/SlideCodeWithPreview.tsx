@@ -9,6 +9,8 @@ import {useSlides} from "@/components/Slides/context/SlidesContext";
 interface SlideCodeWithPreviewProps {
     language: string;
     code: string;
+    /** Nom de fichier du premier panneau, affiché dans l'onglet à la place du langage. */
+    filename?: string;
     secondaryLanguage?: string;
     secondaryCode?: string;
     preview?: string;
@@ -40,6 +42,7 @@ interface SlideCodeWithPreviewProps {
 export const SlideCodeWithPreview: React.FC<SlideCodeWithPreviewProps> = ({
                                                                              language,
                                                                              code,
+                                                                             filename,
                                                                              secondaryLanguage,
                                                                              secondaryCode,
                                                                              preview,
@@ -70,7 +73,10 @@ export const SlideCodeWithPreview: React.FC<SlideCodeWithPreviewProps> = ({
     }, [stepCount, registerSteps]);
 
     const panels = [
-        {language, code, highlightLines: highlightGroups[currentStep] || undefined},
+        // Le nom est porté par l'objet du panneau, pas par un index : le filtre
+        // ci-dessous retire un premier panneau vide, et le nom ne doit pas glisser
+        // sur le second.
+        {language, code, filename, highlightLines: highlightGroups[currentStep] || undefined},
         {
             language: secondaryLanguage ?? "",
             code: secondaryCode ?? "",
@@ -84,6 +90,7 @@ export const SlideCodeWithPreview: React.FC<SlideCodeWithPreviewProps> = ({
         <div className={cn("flex w-full min-h-0 flex-1 flex-col slide-code-container", className)}>
             <CodeWithPreviewCard
                 fillAvailableHeight
+                presentation
                 panels={panels}
                 sources={previewValue ? {
                     language,

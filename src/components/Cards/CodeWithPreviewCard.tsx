@@ -30,6 +30,8 @@ export interface CodePanelData {
      *  le signale. Passer `false` pour un code dont l'alignement compte plus que la
      *  complétude — un tableau de données, une colonne de valeurs. */
     wrap?: boolean;
+    /** Nom de fichier affiché dans l'onglet à la place du langage, comme `CodeCard`. */
+    filename?: string;
 }
 
 /** "2,5-7" → [2, 5, 6, 7]. Même grammaire que `CodeCard`. */
@@ -54,6 +56,8 @@ interface CodeWithPreviewCardProps {
     currentModule?: Module;
     /** Dans une slide, partager la hauteur disponible entre les panneaux. */
     fillAvailableHeight?: boolean;
+    /** Onglets de l'en-tête à la taille de projection (slides). */
+    presentation?: boolean;
 }
 
 type MobileTab = 'code' | 'preview';
@@ -81,7 +85,7 @@ const handleMonacoMount: OnMount = (editor) => {
 
 const EDITABLE_FIELDS: EditableField[] = ["code", "secondaryCode"];
 
-export default function CodeWithPreviewCard({panels, sources, className, currentModule, fillAvailableHeight = false}: CodeWithPreviewCardProps) {
+export default function CodeWithPreviewCard({panels, sources, className, currentModule, fillAvailableHeight = false, presentation = false}: CodeWithPreviewCardProps) {
     const rootRef = useRef<HTMLDivElement>(null);
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
     const [mobileTab, setMobileTab] = useState<MobileTab>('code');
@@ -217,9 +221,12 @@ export default function CodeWithPreviewCard({panels, sources, className, current
                 {panels.map((panel, index) => (
                     <span
                         key={index}
-                        className="inline-flex items-center bg-white/15 backdrop-blur-sm rounded px-2.5 py-1 text-xs font-mono text-white/95"
+                        className={cn(
+                            "inline-flex items-center bg-white/15 backdrop-blur-sm rounded font-mono text-white/95",
+                            presentation ? "px-3 py-1 text-base lg:text-xl max-w-full truncate" : "px-2.5 py-1 text-xs",
+                        )}
                     >
-                        {panel.language.toLowerCase()}
+                        {panel.filename ?? panel.language.toLowerCase()}
                     </span>
                 ))}
                 {previewDoc && (

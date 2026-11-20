@@ -22,6 +22,9 @@ export interface CodeCardProps {
     /** Copier / Télécharger / Afficher. Sans objet quand le bloc est projeté
      *  (slides) : personne ne clique sur un vidéoprojecteur. */
     showActions?: boolean;
+    /** Onglet du nom de fichier à la taille de projection (slides). Le plafond de
+     *  220px des cours tronquait déjà un chemin comme `repositories/X.php`. */
+    presentation?: boolean;
 }
 
 export default function CodeCard({
@@ -35,6 +38,7 @@ export default function CodeCard({
                                      collapsible = false,
                                      highlightLines,
                                      showActions = true,
+                                     presentation = false,
                                  }: CodeCardProps) {
     const [copied, setCopied] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -82,11 +86,17 @@ export default function CodeCard({
 
             {/* Onglet fichier / langage */}
             <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-sm rounded px-2.5 py-1 text-xs font-mono text-white/95 truncate max-w-[220px]">
+                <span className={cn(
+                    "inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-sm rounded font-mono text-white/95 truncate",
+                    presentation ? "px-3 py-1 text-base lg:text-xl max-w-full" : "px-2.5 py-1 text-xs max-w-[220px]",
+                )}>
                     {filename ?? title ?? `${language.toLowerCase()}`}
                 </span>
                 {filename && (
-                    <span className="shrink-0 text-[11px] font-semibold tracking-[0.18em] uppercase text-white/45">
+                    <span className={cn(
+                        "shrink-0 font-semibold tracking-[0.18em] uppercase text-white/45",
+                        presentation ? "text-sm lg:text-base" : "text-[11px]",
+                    )}>
                         {language}
                     </span>
                 )}
